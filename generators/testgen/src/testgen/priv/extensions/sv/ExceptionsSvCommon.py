@@ -14,9 +14,9 @@ from testgen.asm.helpers import write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.sv.access import add_rwx_test, mode_switch, virtual_address
-from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
-from testgen.priv.extensions.sv.page_tables import PteFlags, SvMode, create_page_mapping
-from testgen.priv.extensions.sv.Sv import MPRV_CLEANUP, mstatus_setup
+from testgen.priv.extensions.sv.generate import SvRegs, begin_sv_test, end_sv_test, sv_data
+from testgen.priv.extensions.sv.page_tables import PTE_SETUP_ADDR_REG, PteFlags, SvMode, create_page_mapping
+from testgen.priv.extensions.sv.Sv import mprv_cleanup, mstatus_setup
 
 # medeleg[9] would delegate the S-mode ecall that T-SBI uses to enter M-mode.
 _MEDELEG_VALUES = (*(1 << bit for bit in range(9)), 1 << 12, 1 << 13, 1 << 15, 0xB1FF)
@@ -50,9 +50,8 @@ class _Target:
     def mprv(self) -> bool:
         return self.mode == "Mmode"
 
-    @property
-    def setup(self) -> tuple[str, ...]:
-        return mstatus_setup(f"mprv_{self.effective_mode[0].lower()}") if self.mprv else ()
+    def setup(self, scratch: int) -> tuple[str, ...]:
+        return mstatus_setup(f"mprv_{self.effective_mode[0].lower()}", scratch) if self.mprv else ()
 
     def coverpoints(self, *, medeleg: bool, misaligned: bool) -> dict[str, str]:
         suffix = self.mode[0].lower()
@@ -78,7 +77,7 @@ class _Target:
 
 
 def _atomic_access(
-    test_data: TestData, target: _Target, name: str, address: list[str], coverpoints: dict[str, str]
+    test_data: TestData, regs: SvRegs, target: _Target, name: str, address: list[str], coverpoints: dict[str, str]
 ) -> list[str]:
     covergroup = f"{target.suite}_cg"
     labels = {
@@ -86,25 +85,27 @@ def _atomic_access(
         for op, coverpoint in coverpoints.items()
     }
     enter, leave = mode_switch(target.mode, target.driver_mode)
-    lines = [*address, *enter, *target.setup, "addi a2, a2, 1", ""]
+    setup = target.setup(regs.scratch)
+    value, addr, load = (f"x{reg}" for reg in (regs.value, regs.addr, regs.load))
+    lines = [*address, *enter, *setup, f"addi {value}, {value}, 1", ""]
     if target.operation == "Zaamo":
-        lines.extend([f"{labels['amoadd']}:", "amoadd.w a3, a2, (a5)", "nop"])
-        results = ((13, labels["amoadd"]),)
+        lines.extend([f"{labels['amoadd']}:", f"amoadd.w {load}, {value}, ({addr})", "nop"])
+        results = ((regs.load, labels["amoadd"]),)
     else:
         lines.extend(
             [
                 f"{labels['lr']}:",
-                "lr.w a3, (a5)",
+                f"lr.w {load}, ({addr})",
                 "nop",
-                *target.setup,
+                *setup,
                 f"{labels['sc']}:",
-                "sc.w a4, a2, (a5)",
+                f"sc.w x{regs.result}, {value}, ({addr})",
                 "nop",
             ]
         )
-        results = ((13, labels["lr"]), (14, labels["sc"]))
+        results = ((regs.load, labels["lr"]), (regs.result, labels["sc"]))
     if target.mprv:
-        lines.extend(["", *MPRV_CLEANUP])
+        lines.extend(["", *mprv_cleanup(regs.scratch)])
     lines.extend(["", *leave, "", *(write_sigupd(reg, test_data, label=label) for reg, label in results)])
     return lines
 
@@ -112,6 +113,7 @@ def _atomic_access(
 def _add_access(
     test_data: TestData,
     sv: SvMode,
+    regs: SvRegs,
     target: _Target,
     number: int,
     *,
@@ -127,31 +129,34 @@ def _add_access(
         sv,
         va,
         level,
+        destination=regs.addr,
+        scratch=regs.scratch,
         physical_address=physical_address,
         physical_address_is_label=physical_address == "rvtest_data_1",
     )
     if misaligned:
-        address.append("addi a5, a5, 2")
+        address.append(f"addi x{regs.addr}, x{regs.addr}, 2")
     coverpoints = target.coverpoints(medeleg=medeleg, misaligned=misaligned)
     if target.operation == "rwx":
         access = add_rwx_test(
             test_data,
             sv,
+            regs,
             target.mode,
             va,
             level,
             f"test{number}",
             driver_mode=target.driver_mode,
             address=address,
-            setup=target.setup,
-            cleanup=MPRV_CLEANUP if target.mprv else (),
+            setup=target.setup(regs.scratch),
+            cleanup=mprv_cleanup(regs.scratch) if target.mprv else (),
             repeat_setup=target.mprv,
             physical_fetch=target.mprv,
             coverpoints=coverpoints,
             covergroup=f"{target.suite}_cg",
         )
     else:
-        access = _atomic_access(test_data, target, f"test{number}", address, coverpoints)
+        access = _atomic_access(test_data, regs, target, f"test{number}", address, coverpoints)
     return [
         *create_page_mapping(
             sv, virtual_address=va, physical_address=physical_address, leaf_level=level, leaf_flags=permissions
@@ -171,22 +176,28 @@ def _make_mode_test(
     topic = "exceptions" if base_cases else "medeleg"
 
     setup_asm: tuple[str, ...] = ()
-    saved_medeleg = medeleg_value = 0
+    saved_medeleg = 0
     if medeleg_cases:
-        saved_medeleg, medeleg_value = test_data.int_regs.get_registers(2, reg_range=[8, 9])
+        # Allocated before the chunk's registers so it is never x6, which the page-table macros clobber.
+        saved_medeleg = test_data.int_regs.get_register(exclude_regs=[0, PTE_SETUP_ADDR_REG])
         setup_asm = (f"csrr x{saved_medeleg}, medeleg",)
+    regs = SvRegs.allocate(test_data)
     if target.mprv and target.operation == "rwx":
         # MPRV does not affect instruction fetches. If it did, fetching the target routine
         # through its invalid identity PTE would fault.
         identity = PteFlags(valid=False, user=target.effective_mode == "Umode")
         level = sv.levels - 1
+        # regs.value is free here: begin_sv_test initializes it after setup_asm.
+        pa, perms, temp, table, va = (
+            f"x{reg}" for reg in (regs.addr, regs.load, regs.value, regs.result, regs.scratch)
+        )
         setup_asm = (
             *setup_asm,
-            "LA(a0, rvtest_data_1)",
-            f"LI(a1, {identity})",
-            f"LA(t1, {sv.page_table_label(level)})",
-            "LA(a3, rvtest_data_1)",
-            f"PTE_SETUP_COMMON(a0, a1, t0, t1, a3, LEVEL{level})",
+            f"LA({pa}, rvtest_data_1)",
+            f"LI({perms}, {identity})",
+            f"LA({table}, {sv.page_table_label(level)})",
+            f"LA({va}, rvtest_data_1)",
+            f"PTE_SETUP_COMMON({pa}, {perms}, {temp}, {table}, {va}, LEVEL{level})",
         )
         setup_asm = (*setup_asm, "sfence.vma")
 
@@ -199,6 +210,7 @@ def _make_mode_test(
         banner = f"cp_misaligned_priority_{suffix}"
     chunk = begin_sv_test(
         test_data,
+        regs,
         sv,
         target.effective_mode,
         f"{sv.name}_{topic}{operation_name}_{mode_name}",
@@ -214,6 +226,7 @@ def _make_mode_test(
             access = _add_access(
                 test_data,
                 sv,
+                regs,
                 target,
                 number,
                 valid=valid,
@@ -227,19 +240,23 @@ def _make_mode_test(
         for medeleg in _MEDELEG_VALUES:
             chunk.code.extend(
                 [
-                    f"LI(x{medeleg_value}, {medeleg:#x})",
-                    f"csrw medeleg, x{medeleg_value}",
-                    *_add_access(test_data, sv, target, number, medeleg=True),
-                    *_add_access(test_data, sv, target, number + 1, va="va_data_invalid", valid=False, medeleg=True),
+                    f"LI(x{regs.scratch}, {medeleg:#x})",
+                    f"csrw medeleg, x{regs.scratch}",
+                    *_add_access(test_data, sv, regs, target, number, medeleg=True),
+                    *_add_access(
+                        test_data, sv, regs, target, number + 1, va="va_data_invalid", valid=False, medeleg=True
+                    ),
                 ]
             )
             number += 2
         chunk.code.append(f"csrw medeleg, x{saved_medeleg}")
-        test_data.int_regs.return_registers([saved_medeleg, medeleg_value])
 
-    chunk.raw_data.extend(sv_data(sv))
+    chunk.raw_data.extend(sv_data(sv, regs))
     chunk.trap_sigupd_count = trap_sigupd_count(200)
-    return test_data.end_test_chunk()
+    tc = end_sv_test(test_data, regs)
+    if medeleg_cases:
+        test_data.int_regs.return_register(saved_medeleg)
+    return tc
 
 
 def make_exception_suite(

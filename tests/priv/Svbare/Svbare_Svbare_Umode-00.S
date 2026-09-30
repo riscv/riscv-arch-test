@@ -27,27 +27,26 @@
 // Set up test environment and declare main entry point
 RVTEST_BEGIN
 
-main:
-  LI(a2, 0x800)
+  LI(x9, 0x800)
   csrw satp, x0
 Svbare_cg_cp_satp_satp_bare:
-  # Read satp into x14 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x14, Svbare_cg_cp_satp_satp_bare, Svbare_cg_cp_satp_satp_bare_str)
+  # Read satp into x13 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x13, Svbare_cg_cp_satp_satp_bare, Svbare_cg_cp_satp_satp_bare_str)
   RVTEST_TSBI_GOTO_UMODE
-  LA(a5, rvtest_data_1)
-  addi a2, a2, 16
+  LA(x8, rvtest_data_1)
+  addi x9, x9, 16
 Svbare_cg_cp_bare_access_test1_store:
-  sw a2, 20(a5)
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Svbare_cg_cp_bare_access_test1_store, Svbare_cg_cp_bare_access_test1_store_str)
+  sw x9, 20(x8)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Svbare_cg_cp_bare_access_test1_store, Svbare_cg_cp_bare_access_test1_store_str)
 Svbare_cg_cp_bare_access_test1_load:
-  lw a3, 20(a5)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svbare_cg_cp_bare_access_test1_load, Svbare_cg_cp_bare_access_test1_load_str)
+  lw x15, 20(x8)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svbare_cg_cp_bare_access_test1_load, Svbare_cg_cp_bare_access_test1_load_str)
 Svbare_cg_cp_bare_access_test1_exec:
-  jalr ra, a5, 0
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Svbare_cg_cp_bare_access_test1_exec, Svbare_cg_cp_bare_access_test1_exec_str)
+  jalr ra, x8, 0
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svbare_cg_cp_bare_access_test1_exec, Svbare_cg_cp_bare_access_test1_exec_str)
   RVTEST_TSBI_GOTO_SMODE
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -61,7 +60,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi a4, a2, 4
+  addi x13, x9, 4
   jr ra
   nop
   .word 0xbeefcaf1

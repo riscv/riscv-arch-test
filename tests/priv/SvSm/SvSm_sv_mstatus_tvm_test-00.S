@@ -33,25 +33,24 @@ RVTEST_BEGIN
 // cp_satp_access
 /////////////////////////////////
 
-main:
-  LI(a0, MSTATUS_TVM)
-  csrs mstatus, a0
+  LI(x6, MSTATUS_TVM)
+  csrs mstatus, x6
 SvSm_cg_cp_satp_access_tvm:
-  # Read mstatus into x14 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(mstatus, x14, SvSm_cg_cp_satp_access_tvm, SvSm_cg_cp_satp_access_tvm_str)
-  li a0, 0
-  csrw satp, a0
+  # Read mstatus into x13 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(mstatus, x13, SvSm_cg_cp_satp_access_tvm, SvSm_cg_cp_satp_access_tvm_str)
+  li x6, 0
+  csrw satp, x6
 SvSm_cg_cp_satp_access_m_csrw:
-  # Read satp into x14 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x14, SvSm_cg_cp_satp_access_m_csrw, SvSm_cg_cp_satp_access_m_csrw_str)
-  csrs satp, a0
+  # Read satp into x13 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x13, SvSm_cg_cp_satp_access_m_csrw, SvSm_cg_cp_satp_access_m_csrw_str)
+  csrs satp, x6
 SvSm_cg_cp_satp_access_m_csrs:
-  # Read satp into x14 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x14, SvSm_cg_cp_satp_access_m_csrs, SvSm_cg_cp_satp_access_m_csrs_str)
-  csrc satp, a0
+  # Read satp into x13 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x13, SvSm_cg_cp_satp_access_m_csrs, SvSm_cg_cp_satp_access_m_csrs_str)
+  csrc satp, x6
 SvSm_cg_cp_satp_access_m_csrc:
-  # Read satp into x14 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x14, SvSm_cg_cp_satp_access_m_csrc, SvSm_cg_cp_satp_access_m_csrc_str)
+  # Read satp into x13 and check against expected.
+  RVTEST_SIGUPD_CSR_READ(satp, x13, SvSm_cg_cp_satp_access_m_csrc, SvSm_cg_cp_satp_access_m_csrc_str)
   sfence.vma
   RVTEST_TSBI_GOTO_SMODE
   csrw satp, zero

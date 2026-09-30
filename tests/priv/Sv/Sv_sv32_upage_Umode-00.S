@@ -34,8 +34,6 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 
-main:
-
 // Virtual addresses for code and test regions
 
 // Virtual address of rvtest_data_1
@@ -52,13 +50,14 @@ main:
 // accessible, so the code is mapped again at va_rvtest_code_begin. Registering
 // that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
 // to can fetch from.
+// SAVE_AREA_SETUP takes the M-mode save area in a0 and clobbers t0 and t1.
   LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL1)
 
   SATP_SETUP_SV32 // Enable address translation.
   sfence.vma
 
-  LI(a2, 0x800) // Test signature initialization
+  LI(x13, 0x800) // Test signature initialization
 
 
 // 4MB page at level 1
@@ -67,37 +66,37 @@ main:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 Sv_cp_sv32_upage_Umode_test1_store:
-  sw a2, 20(a5)
+  sw x13, 20(x14)
   nop
 
 // Load
 Sv_cp_sv32_upage_Umode_test1_load:
-  lw a3, 20(a5)
+  lw x15, 20(x14)
   nop
 
 // Execute
 Sv_cp_sv32_upage_Umode_test1_exec:
-  jalr ra, a5, 0
+  jalr ra, x14, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_upage_Umode_test1_store, Sv_cp_sv32_upage_Umode_test1_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test1_load, Sv_cp_sv32_upage_Umode_test1_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_upage_Umode_test1_exec, Sv_cp_sv32_upage_Umode_test1_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test1_store, Sv_cp_sv32_upage_Umode_test1_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv32_upage_Umode_test1_load, Sv_cp_sv32_upage_Umode_test1_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv32_upage_Umode_test1_exec, Sv_cp_sv32_upage_Umode_test1_exec_str)
 
 
 // 4MB page at level 1
@@ -106,37 +105,37 @@ Sv_cp_sv32_upage_Umode_test1_exec:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 Sv_cp_sv32_upage_Umode_test2_store:
-  sw a2, 20(a5)
+  sw x13, 20(x14)
   nop
 
 // Load
 Sv_cp_sv32_upage_Umode_test2_load:
-  lw a3, 20(a5)
+  lw x15, 20(x14)
   nop
 
 // Execute
 Sv_cp_sv32_upage_Umode_test2_exec:
-  jalr ra, a5, 0
+  jalr ra, x14, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_upage_Umode_test2_store, Sv_cp_sv32_upage_Umode_test2_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test2_load, Sv_cp_sv32_upage_Umode_test2_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_upage_Umode_test2_exec, Sv_cp_sv32_upage_Umode_test2_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test2_store, Sv_cp_sv32_upage_Umode_test2_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv32_upage_Umode_test2_load, Sv_cp_sv32_upage_Umode_test2_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv32_upage_Umode_test2_exec, Sv_cp_sv32_upage_Umode_test2_exec_str)
 
 
 // 4MB page at level 1
@@ -145,37 +144,37 @@ Sv_cp_sv32_upage_Umode_test2_exec:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 Sv_cp_sv32_upage_Umode_test3_store:
-  sw a2, 20(a5)
+  sw x13, 20(x14)
   nop
 
 // Load
 Sv_cp_sv32_upage_Umode_test3_load:
-  lw a3, 20(a5)
+  lw x15, 20(x14)
   nop
 
 // Execute
 Sv_cp_sv32_upage_Umode_test3_exec:
-  jalr ra, a5, 0
+  jalr ra, x14, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_upage_Umode_test3_store, Sv_cp_sv32_upage_Umode_test3_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test3_load, Sv_cp_sv32_upage_Umode_test3_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_upage_Umode_test3_exec, Sv_cp_sv32_upage_Umode_test3_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test3_store, Sv_cp_sv32_upage_Umode_test3_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv32_upage_Umode_test3_load, Sv_cp_sv32_upage_Umode_test3_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv32_upage_Umode_test3_exec, Sv_cp_sv32_upage_Umode_test3_exec_str)
 
 
 // 4MB page at level 1
@@ -184,37 +183,37 @@ Sv_cp_sv32_upage_Umode_test3_exec:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 Sv_cp_sv32_upage_Umode_test4_store:
-  sw a2, 20(a5)
+  sw x13, 20(x14)
   nop
 
 // Load
 Sv_cp_sv32_upage_Umode_test4_load:
-  lw a3, 20(a5)
+  lw x15, 20(x14)
   nop
 
 // Execute
 Sv_cp_sv32_upage_Umode_test4_exec:
-  jalr ra, a5, 0
+  jalr ra, x14, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_upage_Umode_test4_store, Sv_cp_sv32_upage_Umode_test4_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test4_load, Sv_cp_sv32_upage_Umode_test4_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_upage_Umode_test4_exec, Sv_cp_sv32_upage_Umode_test4_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test4_store, Sv_cp_sv32_upage_Umode_test4_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv32_upage_Umode_test4_load, Sv_cp_sv32_upage_Umode_test4_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv32_upage_Umode_test4_exec, Sv_cp_sv32_upage_Umode_test4_exec_str)
 
 
 // 4MB page at level 1
@@ -223,37 +222,37 @@ Sv_cp_sv32_upage_Umode_test4_exec:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 Sv_cp_sv32_upage_Umode_test5_store:
-  sw a2, 20(a5)
+  sw x13, 20(x14)
   nop
 
 // Load
 Sv_cp_sv32_upage_Umode_test5_load:
-  lw a3, 20(a5)
+  lw x15, 20(x14)
   nop
 
 // Execute
 Sv_cp_sv32_upage_Umode_test5_exec:
-  jalr ra, a5, 0
+  jalr ra, x14, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_upage_Umode_test5_store, Sv_cp_sv32_upage_Umode_test5_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test5_load, Sv_cp_sv32_upage_Umode_test5_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_upage_Umode_test5_exec, Sv_cp_sv32_upage_Umode_test5_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test5_store, Sv_cp_sv32_upage_Umode_test5_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv32_upage_Umode_test5_load, Sv_cp_sv32_upage_Umode_test5_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv32_upage_Umode_test5_exec, Sv_cp_sv32_upage_Umode_test5_exec_str)
 
 
 // 4KB page at level 0
@@ -263,33 +262,33 @@ Sv_cp_sv32_upage_Umode_test5_exec:
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, va_data)
+  LI(x14, va_data)
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 Sv_cp_sv32_upage_Umode_test6_store:
-  sw a2, 20(a5)
+  sw x13, 20(x14)
   nop
 
 // Load
 Sv_cp_sv32_upage_Umode_test6_load:
-  lw a3, 20(a5)
+  lw x15, 20(x14)
   nop
 
 // Execute
 Sv_cp_sv32_upage_Umode_test6_exec:
-  jalr ra, a5, 0
+  jalr ra, x14, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_upage_Umode_test6_store, Sv_cp_sv32_upage_Umode_test6_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test6_load, Sv_cp_sv32_upage_Umode_test6_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_upage_Umode_test6_exec, Sv_cp_sv32_upage_Umode_test6_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test6_store, Sv_cp_sv32_upage_Umode_test6_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv32_upage_Umode_test6_load, Sv_cp_sv32_upage_Umode_test6_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv32_upage_Umode_test6_exec, Sv_cp_sv32_upage_Umode_test6_exec_str)
 
 
 // 4KB page at level 0
@@ -299,33 +298,33 @@ Sv_cp_sv32_upage_Umode_test6_exec:
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, va_data)
+  LI(x14, va_data)
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 Sv_cp_sv32_upage_Umode_test7_store:
-  sw a2, 20(a5)
+  sw x13, 20(x14)
   nop
 
 // Load
 Sv_cp_sv32_upage_Umode_test7_load:
-  lw a3, 20(a5)
+  lw x15, 20(x14)
   nop
 
 // Execute
 Sv_cp_sv32_upage_Umode_test7_exec:
-  jalr ra, a5, 0
+  jalr ra, x14, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_upage_Umode_test7_store, Sv_cp_sv32_upage_Umode_test7_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test7_load, Sv_cp_sv32_upage_Umode_test7_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_upage_Umode_test7_exec, Sv_cp_sv32_upage_Umode_test7_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test7_store, Sv_cp_sv32_upage_Umode_test7_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv32_upage_Umode_test7_load, Sv_cp_sv32_upage_Umode_test7_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv32_upage_Umode_test7_exec, Sv_cp_sv32_upage_Umode_test7_exec_str)
 
 
 // 4KB page at level 0
@@ -335,33 +334,33 @@ Sv_cp_sv32_upage_Umode_test7_exec:
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, va_data)
+  LI(x14, va_data)
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 Sv_cp_sv32_upage_Umode_test8_store:
-  sw a2, 20(a5)
+  sw x13, 20(x14)
   nop
 
 // Load
 Sv_cp_sv32_upage_Umode_test8_load:
-  lw a3, 20(a5)
+  lw x15, 20(x14)
   nop
 
 // Execute
 Sv_cp_sv32_upage_Umode_test8_exec:
-  jalr ra, a5, 0
+  jalr ra, x14, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_upage_Umode_test8_store, Sv_cp_sv32_upage_Umode_test8_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test8_load, Sv_cp_sv32_upage_Umode_test8_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_upage_Umode_test8_exec, Sv_cp_sv32_upage_Umode_test8_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test8_store, Sv_cp_sv32_upage_Umode_test8_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv32_upage_Umode_test8_load, Sv_cp_sv32_upage_Umode_test8_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv32_upage_Umode_test8_exec, Sv_cp_sv32_upage_Umode_test8_exec_str)
 
 
 // 4KB page at level 0
@@ -371,33 +370,33 @@ Sv_cp_sv32_upage_Umode_test8_exec:
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, va_data)
+  LI(x14, va_data)
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 Sv_cp_sv32_upage_Umode_test9_store:
-  sw a2, 20(a5)
+  sw x13, 20(x14)
   nop
 
 // Load
 Sv_cp_sv32_upage_Umode_test9_load:
-  lw a3, 20(a5)
+  lw x15, 20(x14)
   nop
 
 // Execute
 Sv_cp_sv32_upage_Umode_test9_exec:
-  jalr ra, a5, 0
+  jalr ra, x14, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_upage_Umode_test9_store, Sv_cp_sv32_upage_Umode_test9_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test9_load, Sv_cp_sv32_upage_Umode_test9_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_upage_Umode_test9_exec, Sv_cp_sv32_upage_Umode_test9_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test9_store, Sv_cp_sv32_upage_Umode_test9_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv32_upage_Umode_test9_load, Sv_cp_sv32_upage_Umode_test9_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv32_upage_Umode_test9_exec, Sv_cp_sv32_upage_Umode_test9_exec_str)
 
 
 // 4KB page at level 0
@@ -407,33 +406,33 @@ Sv_cp_sv32_upage_Umode_test9_exec:
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, va_data)
+  LI(x14, va_data)
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 Sv_cp_sv32_upage_Umode_test10_store:
-  sw a2, 20(a5)
+  sw x13, 20(x14)
   nop
 
 // Load
 Sv_cp_sv32_upage_Umode_test10_load:
-  lw a3, 20(a5)
+  lw x15, 20(x14)
   nop
 
 // Execute
 Sv_cp_sv32_upage_Umode_test10_exec:
-  jalr ra, a5, 0
+  jalr ra, x14, 0
   nop
 
   RVTEST_TSBI_GOTO_SMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_upage_Umode_test10_store, Sv_cp_sv32_upage_Umode_test10_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test10_load, Sv_cp_sv32_upage_Umode_test10_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_upage_Umode_test10_exec, Sv_cp_sv32_upage_Umode_test10_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_upage_Umode_test10_store, Sv_cp_sv32_upage_Umode_test10_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv32_upage_Umode_test10_load, Sv_cp_sv32_upage_Umode_test10_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv32_upage_Umode_test10_exec, Sv_cp_sv32_upage_Umode_test10_exec_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -449,7 +448,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi a4, a2, 4
+  addi x9, x13, 4
   jr ra
   nop
   .word 0xbeefcaf1

@@ -42,9 +42,7 @@ RVTEST_BEGIN
 #define PMP_REGION_SIZE (((1 << (PMP_REGION_SHIFT - 2)) - 1) >> 1)
 #define PMP_MASK        ~PMP_REGION_SIZE
 
-main:
-
-  RVTEST_PMP_SET_BACKGROUND x4
+  RVTEST_PMP_SET_BACKGROUND x8
 
   LA(x5, rvtest_data_1)
   srl x5, x5, PMP_SHIFT
@@ -70,15 +68,16 @@ main:
 // accessible, so the code is mapped again at va_rvtest_code_begin. Registering
 // that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
 // to can fetch from.
+// SAVE_AREA_SETUP takes the M-mode save area in a0 and clobbers t0 and t1.
   LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL2)
 
   SATP_SETUP_RV64(sv39) // Enable address translation.
   sfence.vma
 
-  LI(t0, MENVCFG_CBZE)
-  csrs menvcfg, t0
-  csrs senvcfg, t0
+  LI(x8, MENVCFG_CBZE)
+  csrs menvcfg, x8
+  csrs senvcfg, x8
 
   LI(x4, (((PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(0)))
 SvPMPZicbo_cp_pmpcfg_pmpcfg0_x:
@@ -89,14 +88,14 @@ SvPMPZicbo_cp_pmpcfg_pmpcfg0_x:
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x15, (va_data >> 30) << 30)
+  LA(x8, rvtest_data_1)
+  slli x8, x8, 34
+  srli x8, x8, 34
+  add x15, x15, x8
   RVTEST_TSBI_GOTO_UMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test1_cbo_zero:
-  cbo.zero (a5)
+  cbo.zero (x15)
   nop
   RVTEST_TSBI_GOTO_MMODE
 
@@ -104,14 +103,14 @@ SvPMPZicbo_cg_cp_pmp_zicbo_test1_cbo_zero:
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x15, (va_data >> 21) << 21)
+  LA(x8, rvtest_data_1)
+  slli x8, x8, 43
+  srli x8, x8, 43
+  add x15, x15, x8
   RVTEST_TSBI_GOTO_UMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test2_cbo_zero:
-  cbo.zero (a5)
+  cbo.zero (x15)
   nop
   RVTEST_TSBI_GOTO_MMODE
 
@@ -120,14 +119,14 @@ SvPMPZicbo_cg_cp_pmp_zicbo_test2_cbo_zero:
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x15, (va_data >> 12) << 12)
+  LA(x8, rvtest_data_1)
+  slli x8, x8, 52
+  srli x8, x8, 52
+  add x15, x15, x8
   RVTEST_TSBI_GOTO_UMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test3_cbo_zero:
-  cbo.zero (a5)
+  cbo.zero (x15)
   nop
   RVTEST_TSBI_GOTO_MMODE
 
@@ -146,7 +145,7 @@ RVTEST_DATA_BEGIN
   .p2align (UDB_PMP_GRANULARITY)
 rvtest_data_1:
   nop
-  addi a4, a2, 4
+  addi x14, x13, 4
   jr ra
   nop
   .word 0xbeefcaf1          // Random word

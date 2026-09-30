@@ -12,6 +12,7 @@ from collections.abc import Mapping, Sequence
 
 from testgen.asm.helpers import write_sigupd
 from testgen.data.state import TestData
+from testgen.priv.extensions.sv.generate import SvRegs
 from testgen.priv.extensions.sv.page_tables import SvMode
 
 
@@ -20,24 +21,27 @@ def virtual_address(
     va: str,
     level: int,
     *,
-    destination: str = "a5",
+    destination: int,
+    scratch: int,
     physical_address: str = "rvtest_data_1",
     physical_address_is_label: bool = True,
     merge_sv32_base_page: bool = False,
-    scratch: str = "a0",
 ) -> list[str]:
-    """Build a virtual address from its mapped physical-address offset."""
+    """Build a virtual address in x``destination`` from its mapped physical-address offset.
+
+    x``scratch`` is clobbered.
+    """
     if sv.xlen == 32 and level == 0 and not merge_sv32_base_page:
-        return [f"LI({destination}, {va})"]
+        return [f"LI(x{destination}, {va})"]
 
     shift = sv.page_offset_bits(level)
     load = "LA" if physical_address_is_label else "LI"
     return [
-        f"LI({destination}, ({va} >> {shift}) << {shift})",
-        f"{load}({scratch}, {physical_address})",
-        f"slli {scratch}, {scratch}, {sv.xlen - shift}",
-        f"srli {scratch}, {scratch}, {sv.xlen - shift}",
-        f"add {destination}, {destination}, {scratch}",
+        f"LI(x{destination}, ({va} >> {shift}) << {shift})",
+        f"{load}(x{scratch}, {physical_address})",
+        f"slli x{scratch}, x{scratch}, {sv.xlen - shift}",
+        f"srli x{scratch}, x{scratch}, {sv.xlen - shift}",
+        f"add x{destination}, x{destination}, x{scratch}",
     ]
 
 
@@ -51,6 +55,7 @@ def mode_switch(mode: str, driver_mode: str | None) -> tuple[list[str], list[str
 def add_rwx_test(
     test_data: TestData,
     sv: SvMode,
+    regs: SvRegs,
     mode: str,
     va: str,
     level: int,
@@ -68,8 +73,9 @@ def add_rwx_test(
 ) -> list[str]:
     """Add native records and code for one virtual-memory access test.
 
-    ``address`` replaces the default sequence that builds ``va`` in a5. ``repeat_setup`` reruns ``setup`` after
-    the store and the load, because a trap taken in M-mode changes mstatus.MPP.
+    ``address`` replaces the default sequence that builds ``va`` in ``regs.addr``. ``repeat_setup`` reruns
+    ``setup`` after the store and the load, because a trap taken in M-mode changes mstatus.MPP. ``setup`` and
+    ``cleanup`` may use only ``regs.scratch``.
     """
     assert test_data.test_chunk is not None
     default_coverpoint = f"cp_{test_data.test_chunk.split_name}"
@@ -84,32 +90,33 @@ def add_rwx_test(
     }
     enter, leave = mode_switch(mode, driver_mode)
     repeated = setup if repeat_setup else ()
+    value, addr, load = (f"x{reg}" for reg in (regs.value, regs.addr, regs.load))
     lines = [
-        *(virtual_address(sv, va, level) if address is None else address),
+        *(virtual_address(sv, va, level, destination=regs.addr, scratch=regs.scratch) if address is None else address),
         *enter,
         *setup,
-        "addi a2, a2, 16",
+        f"addi {value}, {value}, 16",
         "",
         "// Store",
         f"{labels['store']}:",
-        "sw a2, 20(a5)",
+        f"sw {value}, 20({addr})",
         "nop",
         *repeated,
         "",
         "// Load",
         f"{labels['load']}:",
-        "lw a3, 20(a5)",
+        f"lw {load}, 20({addr})",
         "nop",
         *repeated,
     ]
     if include_exec:
         lines.extend(
             [
-                *(("LA(a5, rvtest_data_1)",) if physical_fetch else ()),
+                *((f"LA({addr}, rvtest_data_1)",) if physical_fetch else ()),
                 "",
                 "// Execute",
                 f"{labels['exec']}:",
-                "jalr ra, a5, 0",
+                f"jalr ra, {addr}, 0",
                 "nop",
             ]
         )
@@ -118,8 +125,12 @@ def add_rwx_test(
     if leave:
         lines.extend(["", *leave])
     lines.extend(
-        ["", write_sigupd(12, test_data, label=labels["store"]), write_sigupd(13, test_data, label=labels["load"])]
+        [
+            "",
+            write_sigupd(regs.value, test_data, label=labels["store"]),
+            write_sigupd(regs.load, test_data, label=labels["load"]),
+        ]
     )
     if include_exec:
-        lines.append(write_sigupd(14, test_data, label=labels["exec"]))
+        lines.append(write_sigupd(regs.result, test_data, label=labels["exec"]))
     return lines

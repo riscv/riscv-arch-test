@@ -72,11 +72,11 @@ covergroup SvH_vsstage_cg with function sample(ins_t ins);
             bins off = {0};
             bins on  = {1};
         }
-        henvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "")[61] {
+        henvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "adue") {
             bins off = {0};
             bins on  = {1};
         }
-        henvcfg_pbmte : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "")[62] {
+        henvcfg_pbmte : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pbmte") {
             bins off = {0};
             bins on  = {1};
         }
@@ -309,7 +309,7 @@ covergroup SvH_twostage_cg with function sample(ins_t ins);
             bins off = {0};
             bins on  = {1};
         }
-        henvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "")[61] {
+        henvcfg_adue : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "adue") {
             bins off = {0};
             bins on  = {1};
         }

@@ -8,9 +8,9 @@ SPDX-License-Identifier: Apache-2.0
 [PicoRV32](https://github.com/YosysHQ/picorv32) is a size-optimized RV32IMC core from YosysHQ.
 The configuration runs the `picorv32_axi` testbench under Verilator at commit `ef203c2`.
 
-| Config             | ISA                                     | Modes                      |
-| ------------------ | --------------------------------------- | -------------------------- |
-| `picorv32-rv32imc` | RV32IMC_Zmmul_Zca_Zihintntl_Zihintpause | Unprivileged only, no CSRs |
+| Config             | ISA               | Modes                      |
+| ------------------ | ----------------- | -------------------------- |
+| `picorv32-rv32imc` | RV32IMC_Zmmul_Zca | Unprivileged only, no CSRs |
 
 PicoRV32 implements no CSRs or privileged state. UDB needs `Sm` to express `MXLEN`, so the
 configuration declares `Sm 1.11.0`. `include_priv_tests: False` and an undefined

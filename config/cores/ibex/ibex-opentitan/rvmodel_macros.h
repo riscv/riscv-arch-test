@@ -1,6 +1,7 @@
 # rvmodel_macros.h
 # RVMODEL macro definitions for the lowRISC Ibex core in Ibex Simple System
 # Written against lowRISC/ibex commit e9f55342edbd27e9e17a0e41b1c95a81abb5eac8
+# Copyright (c) 2026, Harvey Mudd College
 # SPDX-License-Identifier: Apache-2.0
 
 #ifndef _RVMODEL_MACROS_H

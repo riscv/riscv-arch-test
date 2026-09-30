@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copyright (c) 2026, Harvey Mudd College
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 # Setup environment for Ibex after install / cache restore
 # Usage: setup-ibex.sh <install-dir>
 

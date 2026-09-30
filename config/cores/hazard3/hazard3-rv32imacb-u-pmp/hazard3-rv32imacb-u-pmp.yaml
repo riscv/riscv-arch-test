@@ -35,6 +35,12 @@ implemented_extensions:
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0" }
   - { name: Zicntr, version: "= 2.0" }
+  # The decoder accepts every FENCE encoding, so pause runs as a fence that orders nothing,
+  # and ntl.* and c.ntl.* are adds to x0.
+  # https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/hdl/hazard3_decode.v#L520
+  # https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/hdl/hazard3_instr_decompress.v#L236-L238
+  - { name: Zihintntl, version: "= 1.0.0" }
+  - { name: Zihintpause, version: "= 2.0.0" }
   - { name: U, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.12.0" }
 

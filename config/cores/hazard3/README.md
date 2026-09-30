@@ -4,9 +4,9 @@
 Raspberry Pi RP2350. The configuration runs Hazard3's Verilator testbench, pinned to commit `ba0c83c`
 on the `develop` branch.
 
-| Config                    | ISA                                                               | Modes                 |
-| ------------------------- | ----------------------------------------------------------------- | --------------------- |
-| `hazard3-rv32imacb-u-pmp` | RV32IMAC_Zba_Zbb_Zbc_Zbs_Zbkb_Zbkc_Zbkx_Zcb_Zicsr_Zifencei_Zicntr | M + U, 16 PMP regions |
+| Config                    | ISA                                                                                     | Modes                 |
+| ------------------------- | --------------------------------------------------------------------------------------- | --------------------- |
+| `hazard3-rv32imacb-u-pmp` | RV32IMAC_Zba_Zbb_Zbc_Zbs_Zbkb_Zbkc_Zbkx_Zcb_Zicsr_Zifencei_Zicntr_Zihintntl_Zihintpause | M + U, 16 PMP regions |
 
 Hazard3 implements privileged specification 1.12.
 

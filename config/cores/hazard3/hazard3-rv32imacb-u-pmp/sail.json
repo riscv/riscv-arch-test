@@ -452,10 +452,10 @@
       "supported": true
     },
     "Zihintntl": {
-      "supported": false
+      "supported": true
     },
     "Zihintpause": {
-      "supported": false
+      "supported": true
     },
     // Sail's Zihpm flag also gates mhpmcounter3..31 and mhpmevent3..31, which Hazard3 decodes
     // as read-only zero. With writable_hpm_counters and mcounteren[31:3] zero, U-mode

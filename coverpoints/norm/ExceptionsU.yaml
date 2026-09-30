@@ -1,8 +1,33 @@
 normative_rule_definitions:
-  # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to
-  # the value of xIE; xIE is set to 0; and xPP is set to y.
-  - names: [mstatus_xpie_trap_op, mstatus_xie_trap_op, mstatus_xpp_trap_op]
+  # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to the
+  # value of xIE; xIE is set to 0; and xPP is set to y.
+  - name: mstatus_xpie_xie_xpp_trap_op
+    # These trap signatures record xstatus; the cp_ecall_u T-SBI test checks only xepc
+    coverpoint: ["ExceptionsU_cg/{cp_illegal_instruction, cp_breakpoint}"]
+
+  # When a trap is taken, SPP is set to 0 if the trap originated from user mode, or 1
+  # otherwise.
+  - name: sstatus_spp
+    coverpoint: ["ExceptionsU_cg/{cp_illegal_instruction, cp_breakpoint}"]
+
+  # When a trap is delegated to S-mode, scause, sepc, stval, SPP, SPIE, and SIE are
+  # written. On configurations with S-mode, the boot code delegates U-mode exceptions.
+  - name: trap_del_s_mode_op
+    coverpoint:
+      [
+        "ExceptionsU_cg/{cp_breakpoint, cp_load_access_fault, cp_store_access_fault}",
+      ]
+
+  # When executed in U-mode, S-mode, or M-mode, ECALL generates an
+  # environment-call-from-U-mode, -S-mode, or -M-mode exception, respectively.
+  - name: ecall_priv_mode_op
+    # TODO: the T-SBI ecall tests check only xepc, not the environment-call cause
     coverpoint: ["ExceptionsU_cg/cp_ecall_u"]
+
+  # ECALL and EBREAK set the receiving mode's epc to the address of the ECALL or EBREAK
+  # instruction itself.
+  - name: ecall_ebreak_epc_value
+    coverpoint: ["ExceptionsU_cg/{cp_ecall_u, cp_breakpoint}"]
 
   # An instruction-address-misaligned exception is generated on a taken branch or unconditional jump
   # if the target address is not IALIGN-bit aligned. This exception is reported on the branch or jump
@@ -30,8 +55,13 @@ normative_rule_definitions:
   - name: ia_fault_exc_on_target
     coverpoint: ["ExceptionsU_cg/cp_instr_access_fault"]
 
-  # The EBREAK instruction is used to return control to a debugging environment.
-  - name: ebreak_op
+  # The insn:ebreak[] instruction is used to return control to a debugging environment.
+  - name: ebreak_debug_env_op
+    coverpoint: ["ExceptionsU_cg/cp_breakpoint"]
+  # The EBREAK instruction is used by debuggers to cause control to be transferred back to
+  # a debugging environment. Unless overridden by an external debug environment, EBREAK
+  # raises a breakpoint exception and performs no other operation.
+  - name: ebreak_debugger_transfer_op
     coverpoint: ["ExceptionsU_cg/cp_breakpoint"]
 
   # Naturally aligned loads and stores do not raise an address-misaligned
@@ -40,6 +70,7 @@ normative_rule_definitions:
     coverpoint: ["ExceptionsU_cg/cp_{load, store}_address_misaligned"]
 
   # Load and load-reserved instructions generate load exceptions.
+  # On configurations with S-mode, the cause is reported in scause.
   - name: mcause_exccode_ld_ldrsv
     coverpoint: ["ExceptionsU_cg/cp_load_access_fault"]
 
@@ -49,5 +80,10 @@ normative_rule_definitions:
 
   # Exception codes reflect the relative priority of simultaneously-raised
   # exceptions.
-  - name: mcause_exccode_pri
+  - name: mcause_exccode_priority_order
+    coverpoint: ["ExceptionsU_cg/cp_misaligned_priority_{load, store}"]
+
+  # Load/store/AMO address-misaligned exceptions may have either higher or lower
+  # priority than load/store/AMO page-fault and access-fault exceptions.
+  - name: mcause_exccode_priority_misaligned
     coverpoint: ["ExceptionsU_cg/cp_misaligned_priority_{load, store}"]

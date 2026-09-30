@@ -1,0 +1,16 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for the CHIPS Alliance VeeR EH1 core
+
+ci_enabled: true
+
+# chipsalliance/Cores-VeeR-EH1 @ d04b1c7a:
+#   Sm        Sail's mtimecmp resets to 0, so mip.MTIP is set in the reference run only (#2635)
+#   Zifencei  The testbench's instruction memory never sees stores, so fence.i fetches stale code
+#   I         fence.tso is illegal: the decoder requires fm = 0
+#             https://github.com/chipsalliance/Cores-VeeR-EH1/blob/d04b1c7a/design/dec/decode#L56
+exclude_extensions: "Sm,Zifencei,I"
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache"
+install_script: ".github/scripts/install-veer-eh1.sh"
+setup_script: ".github/scripts/setup-veer-eh1.sh"

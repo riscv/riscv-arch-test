@@ -23,12 +23,16 @@ covergroup Zcb_c_lbu_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rdp : coverpoint ins.get_gpr_c_reg(ins.current.rd)  iff (ins.trap == 0 )  {
+    cp_rd_p : coverpoint ins.get_gpr_c_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
+    }
+
+    cp_uimm_2 : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+        bins uimm[] = {[0:3]}; // 2-bit byte offsets for c.lbu and c.sb
     }
 
 endgroup
@@ -44,12 +48,16 @@ covergroup Zcb_c_lh_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rdp : coverpoint ins.get_gpr_c_reg(ins.current.rd)  iff (ins.trap == 0 )  {
+    cp_rd_p : coverpoint ins.get_gpr_c_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
+    }
+
+    cp_uimm_2h : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+        bins uimm[] = {0, 2}; // halfword offsets for c.lh, c.lhu, and c.sh
     }
 
 endgroup
@@ -65,12 +73,16 @@ covergroup Zcb_c_lhu_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rdp : coverpoint ins.get_gpr_c_reg(ins.current.rd)  iff (ins.trap == 0 )  {
+    cp_rd_p : coverpoint ins.get_gpr_c_reg(ins.current.rd)  iff (ins.trap == 0 )  {
         // RD register assignment
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
+    }
+
+    cp_uimm_2h : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+        bins uimm[] = {0, 2}; // halfword offsets for c.lh, c.lhu, and c.sh
     }
 
 endgroup
@@ -106,6 +118,8 @@ covergroup Zcb_c_not_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -116,7 +130,7 @@ covergroup Zcb_c_not_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -129,7 +143,7 @@ covergroup Zcb_c_sb_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -157,6 +171,8 @@ covergroup Zcb_c_sb_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -167,8 +183,12 @@ covergroup Zcb_c_sb_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs2p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
+    cp_rs2_p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
+    }
+
+    cp_uimm_2 : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+        bins uimm[] = {[0:3]}; // 2-bit byte offsets for c.lbu and c.sb
     }
 
 endgroup
@@ -180,7 +200,7 @@ covergroup Zcb_c_sh_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -208,6 +228,8 @@ covergroup Zcb_c_sh_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -218,8 +240,12 @@ covergroup Zcb_c_sh_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs2p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
+    cp_rs2_p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
+    }
+
+    cp_uimm_2h : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+        bins uimm[] = {0, 2}; // halfword offsets for c.lh, c.lhu, and c.sh
     }
 
 endgroup
@@ -255,6 +281,8 @@ covergroup Zcb_c_zext_b_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -265,7 +293,7 @@ covergroup Zcb_c_zext_b_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 

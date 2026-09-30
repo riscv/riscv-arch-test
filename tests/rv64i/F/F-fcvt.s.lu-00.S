@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 192
+#define SIGUPD_COUNT 198
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -430,6 +430,22 @@ F_fcvt_s_lu_cg_cp_rs1_edges_0x100000001:
   # Check if f16 contains the expected result. Also checks fflags. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x8, x7, f4, f16, F_fcvt_s_lu_cg_cp_rs1_edges_0x100000001, F_fcvt_s_lu_cg_cp_rs1_edges_0x100000001_str)
 
+# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs1: x29 = 0x0000000080000000
+  fsflagsi 0b00000 # clear all fflags
+F_fcvt_s_lu_cg_cp_rs1_edges_0x80000000:
+  fcvt.s.lu f15, x29 # perform operation
+  # Check if f15 contains the expected result. Also checks fflags. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x8, x7, f4, f15, F_fcvt_s_lu_cg_cp_rs1_edges_0x80000000, F_fcvt_s_lu_cg_cp_rs1_edges_0x80000000_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs1: x17 = 0x000000007fffffff
+  fsflagsi 0b00000 # clear all fflags
+F_fcvt_s_lu_cg_cp_rs1_edges_0x7fffffff:
+  fcvt.s.lu f2, x17 # perform operation
+  # Check if f2 contains the expected result. Also checks fflags. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x8, x7, f4, f2, F_fcvt_s_lu_cg_cp_rs1_edges_0x7fffffff, F_fcvt_s_lu_cg_cp_rs1_edges_0x7fffffff_str)
+
 /////////////////////////////////
 // cp_fd
 /////////////////////////////////
@@ -745,6 +761,19 @@ F_fcvt_s_lu_cg_cp_frm_2_brup:
   RVTEST_SIGUPD_F(x2, x8, x7, f7, f1, F_fcvt_s_lu_cg_cp_frm_2_brup, F_fcvt_s_lu_cg_cp_frm_2_brup_str)
 
 /////////////////////////////////
+// cp_csr_fflags_n
+/////////////////////////////////
+
+# Testcase cp_csr_fflags_n (fflags = 00001)
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs1: x11 = 0xff3e5a8bd5df8d40
+  fsflagsi 0b00000 # clear all fflags
+  csrsi fcsr, 0b00001 # set fflags
+F_fcvt_s_lu_cg_cp_csr_fflags_n_b00001:
+  fcvt.s.lu f21, x11 # perform operation
+  # Check if f21 contains the expected result. Also checks fflags. x2 is the signature ptr, x8 is the link ptr, x7 is a temp reg, f7 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x8, x7, f7, f21, F_fcvt_s_lu_cg_cp_csr_fflags_n_b00001, F_fcvt_s_lu_cg_cp_csr_fflags_n_b00001_str)
+
+/////////////////////////////////
 // cp_csr_frm
 /////////////////////////////////
 
@@ -853,6 +882,8 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000fffffffe
 .dword 0x0000000100000000
 .dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
 .dword 0x7d5ae7cda14d54a7
 .dword 0x2d022df193ace1bd
 .dword 0xb335609150cde089
@@ -891,6 +922,7 @@ RVTEST_DATA_BEGIN
 .dword 0x1cbe8ca13db0b648
 .dword 0xa9cb03ab5fa2be71
 .dword 0x90e2e8c9b98d3b9c
+.dword 0xff3e5a8bd5df8d40
 .dword 0x24601be51fbb80d5
 .dword 0x3d221871efb6bb09
 .dword 0xe384a41d4a34c8fc
@@ -946,49 +978,52 @@ F_fcvt_s_lu_cg_cp_rs1_edges_0xffffffff_str: .string "\"test: 45; cg: F_fcvt.s.lu
 F_fcvt_s_lu_cg_cp_rs1_edges_0xfffffffe_str: .string "\"test: 46; cg: F_fcvt.s.lu_cg; cp: cp_rs1_edges; bin: 0xfffffffe\""
 F_fcvt_s_lu_cg_cp_rs1_edges_0x100000000_str: .string "\"test: 47; cg: F_fcvt.s.lu_cg; cp: cp_rs1_edges; bin: 0x100000000\""
 F_fcvt_s_lu_cg_cp_rs1_edges_0x100000001_str: .string "\"test: 48; cg: F_fcvt.s.lu_cg; cp: cp_rs1_edges; bin: 0x100000001\""
-F_fcvt_s_lu_cg_cp_fd_b0_str: .string "\"test: 49; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b0\""
-F_fcvt_s_lu_cg_cp_fd_b1_str: .string "\"test: 50; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b1\""
-F_fcvt_s_lu_cg_cp_fd_b2_str: .string "\"test: 51; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b2\""
-F_fcvt_s_lu_cg_cp_fd_b3_str: .string "\"test: 52; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b3\""
-F_fcvt_s_lu_cg_cp_fd_b4_str: .string "\"test: 53; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b4\""
-F_fcvt_s_lu_cg_cp_fd_b5_str: .string "\"test: 54; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b5\""
-F_fcvt_s_lu_cg_cp_fd_b6_str: .string "\"test: 55; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b6\""
-F_fcvt_s_lu_cg_cp_fd_b7_str: .string "\"test: 56; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b7\""
-F_fcvt_s_lu_cg_cp_fd_b8_str: .string "\"test: 57; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b8\""
-F_fcvt_s_lu_cg_cp_fd_b9_str: .string "\"test: 58; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b9\""
-F_fcvt_s_lu_cg_cp_fd_b10_str: .string "\"test: 59; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b10\""
-F_fcvt_s_lu_cg_cp_fd_b11_str: .string "\"test: 60; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b11\""
-F_fcvt_s_lu_cg_cp_fd_b12_str: .string "\"test: 61; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b12\""
-F_fcvt_s_lu_cg_cp_fd_b13_str: .string "\"test: 62; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b13\""
-F_fcvt_s_lu_cg_cp_fd_b14_str: .string "\"test: 63; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b14\""
-F_fcvt_s_lu_cg_cp_fd_b15_str: .string "\"test: 64; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b15\""
-F_fcvt_s_lu_cg_cp_fd_b16_str: .string "\"test: 65; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b16\""
-F_fcvt_s_lu_cg_cp_fd_b17_str: .string "\"test: 66; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b17\""
-F_fcvt_s_lu_cg_cp_fd_b18_str: .string "\"test: 67; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b18\""
-F_fcvt_s_lu_cg_cp_fd_b19_str: .string "\"test: 68; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b19\""
-F_fcvt_s_lu_cg_cp_fd_b20_str: .string "\"test: 69; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b20\""
-F_fcvt_s_lu_cg_cp_fd_b21_str: .string "\"test: 70; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b21\""
-F_fcvt_s_lu_cg_cp_fd_b22_str: .string "\"test: 71; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b22\""
-F_fcvt_s_lu_cg_cp_fd_b23_str: .string "\"test: 72; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b23\""
-F_fcvt_s_lu_cg_cp_fd_b24_str: .string "\"test: 73; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b24\""
-F_fcvt_s_lu_cg_cp_fd_b25_str: .string "\"test: 74; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b25\""
-F_fcvt_s_lu_cg_cp_fd_b26_str: .string "\"test: 75; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b26\""
-F_fcvt_s_lu_cg_cp_fd_b27_str: .string "\"test: 76; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b27\""
-F_fcvt_s_lu_cg_cp_fd_b28_str: .string "\"test: 77; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b28\""
-F_fcvt_s_lu_cg_cp_fd_b29_str: .string "\"test: 78; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b29\""
-F_fcvt_s_lu_cg_cp_fd_b30_str: .string "\"test: 79; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b30\""
-F_fcvt_s_lu_cg_cp_fd_b31_str: .string "\"test: 80; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b31\""
-F_fcvt_s_lu_cg_cp_frm_2_bdyn_str: .string "\"test: 81; cg: F_fcvt.s.lu_cg; cp: cp_frm_2; bin: bdyn\""
-F_fcvt_s_lu_cg_cp_frm_2_brdn_str: .string "\"test: 82; cg: F_fcvt.s.lu_cg; cp: cp_frm_2; bin: brdn\""
-F_fcvt_s_lu_cg_cp_frm_2_brmm_str: .string "\"test: 83; cg: F_fcvt.s.lu_cg; cp: cp_frm_2; bin: brmm\""
-F_fcvt_s_lu_cg_cp_frm_2_brne_str: .string "\"test: 84; cg: F_fcvt.s.lu_cg; cp: cp_frm_2; bin: brne\""
-F_fcvt_s_lu_cg_cp_frm_2_brtz_str: .string "\"test: 85; cg: F_fcvt.s.lu_cg; cp: cp_frm_2; bin: brtz\""
-F_fcvt_s_lu_cg_cp_frm_2_brup_str: .string "\"test: 86; cg: F_fcvt.s.lu_cg; cp: cp_frm_2; bin: brup\""
-F_fcvt_s_lu_cg_cp_csr_frm_rne_str: .string "\"test: 87; cg: F_fcvt.s.lu_cg; cp: cp_csr_frm; bin: rne\""
-F_fcvt_s_lu_cg_cp_csr_frm_rtz_str: .string "\"test: 88; cg: F_fcvt.s.lu_cg; cp: cp_csr_frm; bin: rtz\""
-F_fcvt_s_lu_cg_cp_csr_frm_rdn_str: .string "\"test: 89; cg: F_fcvt.s.lu_cg; cp: cp_csr_frm; bin: rdn\""
-F_fcvt_s_lu_cg_cp_csr_frm_rup_str: .string "\"test: 90; cg: F_fcvt.s.lu_cg; cp: cp_csr_frm; bin: rup\""
-F_fcvt_s_lu_cg_cp_csr_frm_rmm_str: .string "\"test: 91; cg: F_fcvt.s.lu_cg; cp: cp_csr_frm; bin: rmm\""
+F_fcvt_s_lu_cg_cp_rs1_edges_0x80000000_str: .string "\"test: 49; cg: F_fcvt.s.lu_cg; cp: cp_rs1_edges; bin: 0x80000000\""
+F_fcvt_s_lu_cg_cp_rs1_edges_0x7fffffff_str: .string "\"test: 50; cg: F_fcvt.s.lu_cg; cp: cp_rs1_edges; bin: 0x7fffffff\""
+F_fcvt_s_lu_cg_cp_fd_b0_str: .string "\"test: 51; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b0\""
+F_fcvt_s_lu_cg_cp_fd_b1_str: .string "\"test: 52; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b1\""
+F_fcvt_s_lu_cg_cp_fd_b2_str: .string "\"test: 53; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b2\""
+F_fcvt_s_lu_cg_cp_fd_b3_str: .string "\"test: 54; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b3\""
+F_fcvt_s_lu_cg_cp_fd_b4_str: .string "\"test: 55; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b4\""
+F_fcvt_s_lu_cg_cp_fd_b5_str: .string "\"test: 56; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b5\""
+F_fcvt_s_lu_cg_cp_fd_b6_str: .string "\"test: 57; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b6\""
+F_fcvt_s_lu_cg_cp_fd_b7_str: .string "\"test: 58; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b7\""
+F_fcvt_s_lu_cg_cp_fd_b8_str: .string "\"test: 59; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b8\""
+F_fcvt_s_lu_cg_cp_fd_b9_str: .string "\"test: 60; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b9\""
+F_fcvt_s_lu_cg_cp_fd_b10_str: .string "\"test: 61; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b10\""
+F_fcvt_s_lu_cg_cp_fd_b11_str: .string "\"test: 62; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b11\""
+F_fcvt_s_lu_cg_cp_fd_b12_str: .string "\"test: 63; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b12\""
+F_fcvt_s_lu_cg_cp_fd_b13_str: .string "\"test: 64; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b13\""
+F_fcvt_s_lu_cg_cp_fd_b14_str: .string "\"test: 65; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b14\""
+F_fcvt_s_lu_cg_cp_fd_b15_str: .string "\"test: 66; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b15\""
+F_fcvt_s_lu_cg_cp_fd_b16_str: .string "\"test: 67; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b16\""
+F_fcvt_s_lu_cg_cp_fd_b17_str: .string "\"test: 68; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b17\""
+F_fcvt_s_lu_cg_cp_fd_b18_str: .string "\"test: 69; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b18\""
+F_fcvt_s_lu_cg_cp_fd_b19_str: .string "\"test: 70; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b19\""
+F_fcvt_s_lu_cg_cp_fd_b20_str: .string "\"test: 71; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b20\""
+F_fcvt_s_lu_cg_cp_fd_b21_str: .string "\"test: 72; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b21\""
+F_fcvt_s_lu_cg_cp_fd_b22_str: .string "\"test: 73; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b22\""
+F_fcvt_s_lu_cg_cp_fd_b23_str: .string "\"test: 74; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b23\""
+F_fcvt_s_lu_cg_cp_fd_b24_str: .string "\"test: 75; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b24\""
+F_fcvt_s_lu_cg_cp_fd_b25_str: .string "\"test: 76; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b25\""
+F_fcvt_s_lu_cg_cp_fd_b26_str: .string "\"test: 77; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b26\""
+F_fcvt_s_lu_cg_cp_fd_b27_str: .string "\"test: 78; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b27\""
+F_fcvt_s_lu_cg_cp_fd_b28_str: .string "\"test: 79; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b28\""
+F_fcvt_s_lu_cg_cp_fd_b29_str: .string "\"test: 80; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b29\""
+F_fcvt_s_lu_cg_cp_fd_b30_str: .string "\"test: 81; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b30\""
+F_fcvt_s_lu_cg_cp_fd_b31_str: .string "\"test: 82; cg: F_fcvt.s.lu_cg; cp: cp_fd; bin: b31\""
+F_fcvt_s_lu_cg_cp_frm_2_bdyn_str: .string "\"test: 83; cg: F_fcvt.s.lu_cg; cp: cp_frm_2; bin: bdyn\""
+F_fcvt_s_lu_cg_cp_frm_2_brdn_str: .string "\"test: 84; cg: F_fcvt.s.lu_cg; cp: cp_frm_2; bin: brdn\""
+F_fcvt_s_lu_cg_cp_frm_2_brmm_str: .string "\"test: 85; cg: F_fcvt.s.lu_cg; cp: cp_frm_2; bin: brmm\""
+F_fcvt_s_lu_cg_cp_frm_2_brne_str: .string "\"test: 86; cg: F_fcvt.s.lu_cg; cp: cp_frm_2; bin: brne\""
+F_fcvt_s_lu_cg_cp_frm_2_brtz_str: .string "\"test: 87; cg: F_fcvt.s.lu_cg; cp: cp_frm_2; bin: brtz\""
+F_fcvt_s_lu_cg_cp_frm_2_brup_str: .string "\"test: 88; cg: F_fcvt.s.lu_cg; cp: cp_frm_2; bin: brup\""
+F_fcvt_s_lu_cg_cp_csr_fflags_n_b00001_str: .string "\"test: 89; cg: F_fcvt.s.lu_cg; cp: cp_csr_fflags_n; bin: b00001\""
+F_fcvt_s_lu_cg_cp_csr_frm_rne_str: .string "\"test: 90; cg: F_fcvt.s.lu_cg; cp: cp_csr_frm; bin: rne\""
+F_fcvt_s_lu_cg_cp_csr_frm_rtz_str: .string "\"test: 91; cg: F_fcvt.s.lu_cg; cp: cp_csr_frm; bin: rtz\""
+F_fcvt_s_lu_cg_cp_csr_frm_rdn_str: .string "\"test: 92; cg: F_fcvt.s.lu_cg; cp: cp_csr_frm; bin: rdn\""
+F_fcvt_s_lu_cg_cp_csr_frm_rup_str: .string "\"test: 93; cg: F_fcvt.s.lu_cg; cp: cp_csr_frm; bin: rup\""
+F_fcvt_s_lu_cg_cp_csr_frm_rmm_str: .string "\"test: 94; cg: F_fcvt.s.lu_cg; cp: cp_csr_frm; bin: rmm\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

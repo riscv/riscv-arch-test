@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copyright (c) 2026, Harvey Mudd College
-# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# SPDX-License-Identifier: Apache-2.0
 # Install the VeeR EL2 testbench (Verilator) for CI.
 # Usage: install-veer-el2.sh <install-dir>
 # Cache key derives from sha256(this file); bump the pins below to invalidate.

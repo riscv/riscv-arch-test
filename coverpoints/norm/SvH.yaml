@@ -37,8 +37,16 @@ normative_rule_definitions:
         "SvH_gstage_cg/cp_hgatp_gpa_width",
         "SvH_twostage_cg/cp_hgatp_sv32x4_gpa",
       ]
+  # Each G-stage mode walks its tables with the Sv algorithm for permissions, every leaf level and A/D bits, and
+  # faults on guest physical address bits above its width
   - names: [hgatp_mode_sv39x4, hgatp_mode_sv48x4, hgatp_mode_Sv57x4]
-    coverpoint: ["SvH_gstage_cg/cp_hgatp_gpa_width"]
+    coverpoint:
+      [
+        "SvH_gstage_cg/cp_hgatp_perm",
+        "SvH_gstage_cg/cp_hgatp_adue",
+        "SvH_twostage_cg/cp_twostage_perm",
+        "SvH_gstage_cg/cp_hgatp_gpa_width",
+      ]
   - names: [hgatp_mode_sv32x4]
     coverpoint: ["SvH_twostage_cg/cp_hgatp_sv32x4_gpa"]
 

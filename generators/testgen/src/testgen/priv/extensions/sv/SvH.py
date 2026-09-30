@@ -30,6 +30,7 @@ from testgen.priv.extensions.sv.page_tables import (
     VS_SV32,
     VS_SV39,
     VS_SV48,
+    VS_SV57,
     PteExpression,
     PteFlags,
     SvMode,
@@ -64,11 +65,14 @@ HLV_CG = "SvH_hlv_cg"
 CSR_CG = "SvH_csr_cg"
 
 
-def begin_chunk(test_data: TestData, split_name: str, title: str, description: str) -> TestChunk:
-    """Start a chunk whose data section holds two physical test pages.
+def begin_chunk(
+    test_data: TestData, split_name: str, title: str, description: str, stages: Sequence[SvMode] = ()
+) -> TestChunk:
+    """Start a chunk whose data section holds two physical test pages and the page tables ``stages`` need.
 
     svh_page is an odd 4 KiB page, so no superpage leaf maps it aligned.  It starts with ret, holds the load/store
-    word at offset 8 and ends with a nop that straddles the next page, which continues with ret.
+    word at offset 8 and ends with a nop that straddles the next page, which continues with ret.  The framework
+    provides the root and level 0-1 tables; the chunk adds the level 2 and 3 tables that Sv48 and Sv57 walk.
     """
     chunk = test_data.begin_test_chunk(split_name)
     chunk.section_header = comment_banner(title, description)
@@ -86,6 +90,9 @@ def begin_chunk(test_data: TestData, split_name: str, title: str, description: s
             ".skip 4096 - 6",
         ]
     )
+    for stage in stages:
+        for level in range(2, stage.levels - 1):
+            chunk.raw_data.extend([".p2align 12", f"{stage.page_table_label(level)}:", ".skip 4096"])
     return chunk
 
 
@@ -274,6 +281,12 @@ def perm_flags(perm: str, user: bool) -> PteFlags:
     return PteFlags(user=user, read="r" in perm, write="w" in perm, execute="x" in perm)
 
 
+def address_width(mode: SvMode) -> int:
+    """The width of the addresses that ``mode`` translates: virtual addresses, or guest physical addresses for x4."""
+    top = mode.levels - 1
+    return mode.page_offset_bits(top) + mode.index_bits(top)
+
+
 ###########################
 # VS-stage translation (hgatp = Bare)
 ###########################
@@ -287,6 +300,7 @@ def _t_vs_perm(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode, mo
         "cp_vsatp_perm, cp_vsatp_sum, cp_vsstatus_mxr",
         f"In {mode}-mode with hgatp = Bare, store, load and fetch through VS-stage leaves with U = 0, 1 and each\n"
         "legal RWX, with vsstatus.SUM = 0, 1 and vsstatus.MXR = 0, 1",
+        stages=(vs,),
     )
     va = vs.data_va
     reg = test_data.int_regs.get_register()
@@ -335,6 +349,7 @@ def _t_vs_pte(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode) -> 
         "In VS-mode with hgatp = Bare, access through VS-stage leaves that are invalid, a level-0 pointer, or have\n"
         "RSW, reserved or PBMT bits (PBMT with henvcfg.PBMTE = 0, 1), and through leaves with A or D clear\n"
         "with henvcfg.ADUE = 0 (page fault) and 1 (hardware update, checked in the PTE)",
+        stages=(vs,),
     )
     va = vs.data_va
     reg = test_data.int_regs.get_register()
@@ -390,6 +405,7 @@ def _t_g_perm(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, mode
         f"In {mode}-mode with vsatp = Bare, store, load and fetch through G-stage leaves with U = 0, 1 and each\n"
         "legal RWX, and load from an execute-only G-stage page with sstatus.MXR = 0, 1 and vsstatus.MXR = 0, 1.\n"
         "Only sstatus.MXR makes it readable",
+        stages=(g,),
     )
     va = g.data_va
     reg = test_data.int_regs.get_register()
@@ -432,6 +448,7 @@ def _t_g_pte(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> No
         "In VS-mode with vsatp = Bare, access through G-stage leaves that are invalid, a level-0 pointer, have RSW,\n"
         "reserved, G or PBMT bits (PBMT with menvcfg.PBMTE = 0, 1), are misaligned superpages, or have A or D clear\n"
         "with menvcfg.ADUE = 0 (guest-page fault) and 1 (hardware update, checked in the PTE)",
+        stages=(g,),
     )
     va = g.data_va
     code = guest_chunk_setup(test_data, g, None, "VS")
@@ -472,10 +489,15 @@ def _t_g_pte(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> No
     test_chunks.append(test_data.end_test_chunk())
 
 
-def _t_gpa_width(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, first_bit: int) -> None:
-    """Guest physical addresses with one bit set from ``first_bit`` up; bits beyond the mode's width fault."""
+def _t_gpa_width(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> None:
+    """Guest physical addresses with one bit set; bits beyond the mode's width fault.
+
+    The set bit starts at bit 37, above the guest physical addresses of the test image and the other tests, or at
+    the lowest root-table index bit if that is higher, because the address is mapped by a root-table leaf.
+    """
     top = g.levels - 1
-    width = g.page_offset_bits(top) + g.index_bits(top)
+    width = address_width(g)
+    first_bit = max(37, g.page_offset_bits(top))
     chunk = begin_chunk(
         test_data,
         f"{g.name}_gpa_width",
@@ -594,6 +616,7 @@ def _t_two_stage(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, v
         "cp_twostage_perm, cp_twostage_mxr",
         f"In {mode}-mode, store, load and fetch where the VS-stage or the G-stage denies the access, and load and\n"
         "fetch from execute-only and read-only pages with vsstatus.MXR = 0, 1 and sstatus.MXR = 0, 1",
+        stages=(g, vs),
     )
     user = mode == "VU"
     va = vs.data_va
@@ -703,6 +726,7 @@ def _t_implicit(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs
         "In VS-mode, access through a VS-stage leaf table whose G-stage leaf is invalid, execute-only, not user,\n"
         "has A clear, or is read-only while the hardware updates VS-stage A/D bits, and through VS-stage and\n"
         "G-stage leaves with A or D clear, with menvcfg.ADUE and henvcfg.ADUE = 0, 1.  Updated PTEs are checked",
+        stages=(g, vs),
     )
     va = vs.data_va
     ptes = {"vs": (vs, vs.data_va), "table": (g, f"({g.data_va} + 0x1000)"), "page": (g, g.data_va)}
@@ -730,6 +754,7 @@ def _t_page_sizes(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, 
         f"{g.name}_page_sizes",
         "cp_twostage_perm",
         "In VS-mode, store, load and fetch through each VS-stage page size combined with each G-stage page size",
+        stages=(g, vs),
     )
     code = guest_chunk_setup(test_data, g, vs, "VS")
     for vs_level in vs.levels_desc:
@@ -787,6 +812,7 @@ def _t_straddle(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs
         "In VS-mode, execute a 4-byte instruction in the last halfword of a page whose next page is mapped, has an\n"
         "invalid G-stage leaf (instruction guest-page fault) or an invalid VS-stage leaf (instruction page fault).\n"
         "stval holds the address of the next page",
+        stages=(g, vs),
     )
     next_va = f"({vs.data_va} + 0x1000)"
     next_gpa = f"({g.data_va} + 0x1000)"
@@ -833,6 +859,7 @@ def _t_hedeleg(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs:
         f"In {mode}-mode with hedeleg[12], [13], [15], [20], [21] and [23] written with 1, access through an invalid\n"
         "and a read-only VS-stage leaf (page faults taken in VS-mode) and an invalid G-stage leaf (guest-page faults\n"
         "taken in HS-mode)",
+        stages=(g, vs),
     )
     user = mode == "VU"
     reg = test_data.int_regs.get_register()
@@ -869,6 +896,7 @@ def _t_hlv(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvM
         "In HS-mode, execute hlv.w, hlvx.wu and hsv.w on VS-stage pages with U = 0, 1, with hstatus.SPVP = 0, 1,\n"
         "vsstatus.SUM = 0, 1 and sstatus.SUM = 0, 1 (ignored), and hlv.w and hlvx.wu on execute-only VS-stage and\n"
         "G-stage pages with vsstatus.MXR = 0, 1 and sstatus.MXR = 0, 1",
+        stages=(g, vs),
     )
     va = f"{vs.data_va} + 8"
     reg = test_data.int_regs.get_register()
@@ -1200,27 +1228,50 @@ def _t_bare(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> Non
     test_chunks.append(test_data.end_test_chunk())
 
 
-def _make_svh(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
+def _vs_stage_tests(test_data: TestData, vs: SvMode) -> list[TestChunk]:
+    """VS-stage translation with hgatp = Bare."""
     test_chunks: list[TestChunk] = []
-    _t_bare(test_data, test_chunks, g)
     for mode in ("VS", "VU"):
         _t_vs_perm(test_data, test_chunks, vs, mode)
     _t_vs_pte(test_data, test_chunks, vs)
+    return test_chunks
+
+
+def _g_stage_tests(test_data: TestData, g: SvMode) -> list[TestChunk]:
+    """G-stage translation with vsatp = Bare."""
+    test_chunks: list[TestChunk] = []
     for mode in ("VS", "VU"):
         _t_g_perm(test_data, test_chunks, g, mode)
     _t_g_pte(test_data, test_chunks, g)
+    if g.xlen == 64:
+        _t_gpa_width(test_data, test_chunks, g)
+    return test_chunks
+
+
+def _two_stage_tests(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
+    """VS-stage and G-stage translation together, in guest accesses and in HLV, HLVX and HSV."""
+    test_chunks: list[TestChunk] = []
     for mode in ("VS", "VU"):
         _t_two_stage(test_data, test_chunks, g, vs, mode)
-    for mode in ("VS", "VU"):
-        _t_hedeleg(test_data, test_chunks, g, vs, mode)
     _t_implicit(test_data, test_chunks, g, vs)
     _t_page_sizes(test_data, test_chunks, g, vs)
     _t_hlv(test_data, test_chunks, g, vs)
     if g.xlen == 32:
         _t_sv32x4_gpa(test_data, test_chunks, g, vs)
-        return test_chunks
-    _t_atp_mode(test_data, test_chunks)
-    _t_gpa_width(test_data, test_chunks, SV39X4, 37)
+    return test_chunks
+
+
+def _make_svh(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChunk]:
+    """Every SvH test for the smallest G-stage and VS-stage modes of each XLEN."""
+    test_chunks: list[TestChunk] = []
+    _t_bare(test_data, test_chunks, g)
+    test_chunks.extend(_vs_stage_tests(test_data, vs))
+    test_chunks.extend(_g_stage_tests(test_data, g))
+    test_chunks.extend(_two_stage_tests(test_data, g, vs))
+    for mode in ("VS", "VU"):
+        _t_hedeleg(test_data, test_chunks, g, vs, mode)
+    if g.xlen == 64:
+        _t_atp_mode(test_data, test_chunks)
     return test_chunks
 
 
@@ -1242,6 +1293,8 @@ def _make_svh_napot(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChun
 TIME_CSR = "TIME_CSR_IMPLEMENTED: true"
 SV32_PARAMS = [TIME_CSR, "SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"]
 SV39_PARAMS = [TIME_CSR, "SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"]
+SV48_PARAMS = [TIME_CSR, "SV48X4_TRANSLATION: true", "SV48_VSMODE_TRANSLATION: true"]
+SV57_PARAMS = [TIME_CSR, "SV57X4_TRANSLATION: true", "SV57_VSMODE_TRANSLATION: true"]
 BOOT = ["#define BOOT_TO_SMODE"]
 
 
@@ -1272,18 +1325,38 @@ def make_svh_napot_sv39(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
+    "SvH", required_extensions=["H"], extra_defines=BOOT, params=[TIME_CSR, "SV48_VSMODE_TRANSLATION: true"]
+)
+def make_svh_vs_sv48(test_data: TestData) -> list[TestChunk]:
+    return _vs_stage_tests(test_data, VS_SV48)
+
+
+@add_priv_test_generator(
     "SvH", required_extensions=["H"], extra_defines=BOOT, params=[TIME_CSR, "SV48X4_TRANSLATION: true"]
 )
-def make_svh_gpa_width_sv48x4(test_data: TestData) -> list[TestChunk]:
-    test_chunks: list[TestChunk] = []
-    _t_gpa_width(test_data, test_chunks, SV48X4, 39)
-    return test_chunks
+def make_svh_g_sv48x4(test_data: TestData) -> list[TestChunk]:
+    return _g_stage_tests(test_data, SV48X4)
+
+
+@add_priv_test_generator("SvH", required_extensions=["H"], extra_defines=BOOT, params=SV48_PARAMS)
+def make_svh_two_stage_sv48(test_data: TestData) -> list[TestChunk]:
+    return _two_stage_tests(test_data, SV48X4, VS_SV48)
+
+
+@add_priv_test_generator(
+    "SvH", required_extensions=["H"], extra_defines=BOOT, params=[TIME_CSR, "SV57_VSMODE_TRANSLATION: true"]
+)
+def make_svh_vs_sv57(test_data: TestData) -> list[TestChunk]:
+    return _vs_stage_tests(test_data, VS_SV57)
 
 
 @add_priv_test_generator(
     "SvH", required_extensions=["H"], extra_defines=BOOT, params=[TIME_CSR, "SV57X4_TRANSLATION: true"]
 )
-def make_svh_gpa_width_sv57x4(test_data: TestData) -> list[TestChunk]:
-    test_chunks: list[TestChunk] = []
-    _t_gpa_width(test_data, test_chunks, SV57X4, 48)
-    return test_chunks
+def make_svh_g_sv57x4(test_data: TestData) -> list[TestChunk]:
+    return _g_stage_tests(test_data, SV57X4)
+
+
+@add_priv_test_generator("SvH", required_extensions=["H"], extra_defines=BOOT, params=SV57_PARAMS)
+def make_svh_two_stage_sv57(test_data: TestData) -> list[TestChunk]:
+    return _two_stage_tests(test_data, SV57X4, VS_SV57)

@@ -6,7 +6,7 @@ ci_enabled: true
 
 # lowRISC/ibex e9f5534; paths are under https://github.com/lowRISC/ibex/blob/e9f5534/
 #   PMPSm  Testbench never faults a fetch; a jump to address 0 runs RAM: examples/simple_system/rtl/ibex_simple_system.sv#L134
-#   Sm     HPM counters are 32 bits, not 64, so mhpmcounter3h..12h read 0: ibex_configs.yaml#L60
+#   Sm     Sail cannot model 32-bit HPM counters (mhpmcounter3h..12h read 0): ibex_configs.yaml#L60
 exclude_extensions: "PMPSm,Sm"
 
 apt_packages: "autoconf flex bison help2man libfl-dev libelf-dev ccache python3-venv"

@@ -41,8 +41,17 @@ git init "$INSTALL_DIR/ara"
   make -C hardware checkout
   make -C hardware apply-patches
 
-  # 3. Widen the testbench's ELF loader window, then verilate.
+  # 3. Widen the testbench's ELF loader window.
   "$SCRIPT_DIR/setup-ara.sh" "$INSTALL_DIR" --patch-only
+
+  # 4. Enable CVA6's bit-manipulation unit (RVB: Zba, Zbb, Zbc, Zbs) and its ZKN
+  #    instructions (Zbkb), which cv64a6_imafdcv_sv39 leaves off, then verilate.
+  sed -i "s/^\( *\)cfg.NrPMPEntries          = 0;/&\n\1cfg.RVB                   = 1'b1;\n\1cfg.ZKN                   = 1'b1;/" \
+    hardware/src/ara_soc.sv
+  grep -q "cfg.ZKN                   = 1'b1;" hardware/src/ara_soc.sv || {
+    echo "install-ara.sh: failed to enable RVB and ZKN in hardware/src/ara_soc.sv" >&2
+    exit 1
+  }
 
   # nr_lanes=4 with VLEN=512. VLEN is an independent -G parameter; 512 is roughly 15x
   # cheaper in wall clock than Ara's 4096 default and about 8x smaller in signature

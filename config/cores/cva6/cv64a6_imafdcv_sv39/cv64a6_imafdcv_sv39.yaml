@@ -21,8 +21,8 @@ name: cv64a6_imafdcv_sv39
 description: CVA6 (cv64a6_imafdcv_sv39) with the Ara vector unit, 4 lanes, VLEN 512
 
 implemented_extensions:
-  # misa is read-only and reports A, C, D, F, I, M, S, U, V, X with MXL=2, i.e.
-  # 0x8000_0000_00B4_112D (measured).  Quote: "riscv::CSR_MISA: csr_rdata = IsaCode;"
+  # misa is read-only and reports A, B, C, D, F, I, M, S, U, V, X with MXL=2, i.e.
+  # 0x8000_0000_00B4_112F (measured).  Quote: "riscv::CSR_MISA: csr_rdata = IsaCode;"
   #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L601
   #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L308
   - { name: I, version: "= 2.1" }
@@ -56,6 +56,19 @@ implemented_extensions:
 
   - { name: Zicsr, version: "= 2.0" }
   - { name: Zifencei, version: "= 2.0.0" }
+
+  # B (Zba, Zbb, Zbs), Zbc, Zbkb and Zbkc: install-ara.sh sets cfg.RVB and cfg.ZKN in the Ara
+  # SoC.  RVB decodes Zba, Zbb, Zbs and clmul/clmulh/clmulr, and sets misa.B.  ZKN adds
+  # pack, packh, packw and brev8.  xperm4/xperm8 are not decoded, so there is no Zbkx.
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/decoder.sv#L761-L810
+  #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L309
+  - { name: B, version: "= 1.0.0" }
+  - { name: Zba, version: "= 1.0.0" }
+  - { name: Zbb, version: "= 1.0.0" }
+  - { name: Zbs, version: "= 1.0.0" }
+  - { name: Zbc, version: "= 1.0.0" }
+  - { name: Zbkb, version: "= 1.0.0" }
+  - { name: Zbkc, version: "= 1.0.0" }
 
   # Instruction fetches and page-table walks both read the cacheable, coherent L2.
   - { name: Ziccif, version: "= 1.0.0" }
@@ -145,7 +158,7 @@ implemented_extensions:
   - { name: Ssu64xl, version: "= 1.0.0" }
 
   # Not implemented, and deliberately absent:
-  #   B / Zb* : "localparam CVA6ConfigBExtEn = 0;"
+  #   Zbkx    : no xperm4/xperm8 decode.
   #   Zicond  : "localparam CVA6ConfigRVZiCond = 0;"
   #   H       : "localparam CVA6ConfigHExtEn = 0;"
   #   Zcb / Zcmp / Zcmt, Zfa, Zfh, Zicbom/Zicbop/Zicboz, Svinval, Svnapot, Svpbmt,
@@ -157,7 +170,7 @@ implemented_extensions:
 params:
   # misa.X reads 1.  The Ara SoC turns on CVA6's scalar half-precision FPU (XF16) from
   # FPUSupport, which defaults to FPUSupportHalfSingleDouble, and CVA6 counts XF16 as a
-  # non-standard extension.  Measured misa = 0x8000_0000_00B4_112D (bit 23 set).
+  # non-standard extension.  misa bit 23 is set.
   #   Quote: "cfg.XF16                  = FPUSupport[3];"
   #   https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/src/ara_soc.sv#L456
   #   Quote: "FPUSupportHalfSingleDouble = 6'b111000,"
@@ -180,6 +193,7 @@ params:
   #   Quote: "riscv::CSR_MISA: ;"  (the write case body is empty)
   #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1535
   MUTABLE_MISA_A: false
+  MUTABLE_MISA_B: false
   MUTABLE_MISA_M: false
   MUTABLE_MISA_F: false
   MUTABLE_MISA_D: false

@@ -3,11 +3,12 @@
 [CVA6](https://github.com/pulp-platform/cva6) `cv64a6_imafdcv_sv39` with the
 [Ara](https://github.com/pulp-platform/ara) vector unit. The configuration is pinned to Ara commit
 `34bd3bc1`, which carries CVA6 `99eac9a6`, and runs the Ara SoC under Verilator with 4 lanes and
-VLEN 512.
+VLEN 512. `install-ara.sh` also turns on CVA6's bit-manipulation unit (`RVB`) and its `ZKN`
+instructions, which this CVA6 configuration leaves off.
 
-| Config                | ISA                                         | Modes   |
-| --------------------- | ------------------------------------------- | ------- |
-| `cv64a6_imafdcv_sv39` | RV64IMAFDCV_Zicsr_Zifencei_Zihpm_Sv39_Svade | M, S, U |
+| Config                | ISA                                                        | Modes   |
+| --------------------- | ---------------------------------------------------------- | ------- |
+| `cv64a6_imafdcv_sv39` | RV64IMAFDCBV_Zicsr_Zifencei_Zihpm_Zbc_Zbkb_Zbkc_Sv39_Svade | M, S, U |
 
 ## Building and running
 

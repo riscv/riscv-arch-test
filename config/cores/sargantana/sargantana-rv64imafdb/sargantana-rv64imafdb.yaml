@@ -25,14 +25,10 @@ description: >-
 #   "localparam bit RVF = 1'b1; ... localparam bit RVD = 1'b1; ... localparam bit RVA = 1'b1;"
 #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/def_pkg.sv#L30-L34
 #
-# Two misa bits are deliberately NOT claimed here:
-#   * V (bit 21).  RVV 1.0 encodings are decoded, but only a subset: no segment
-#     loads/stores, mew must be 0, only the 1-register whole-register forms, and one
-#     non-standard opcode ("F6_VCNT = 6'b010001, //Custom instruction",
-#     https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/riscv_pkg.sv#L380).
-#   * H (bit 7).  def_pkg::RVH = 1, so the hypervisor CSRs, HLV/HSV and the H bits of
-#     mstatus, mie, mip and mideleg exist, but nothing in the vendor flow tests them.
-# Neither is claimed, so the Sm and S suites see the extra misa, mstatus, mie and mip bits.
+# misa.V (bit 21) is set but V is not claimed.  RVV 1.0 encodings are decoded, but only a
+# subset: no segment loads/stores, mew must be 0, only the 1-register whole-register forms,
+# and one non-standard opcode ("F6_VCNT = 6'b010001, //Custom instruction",
+# https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/riscv_pkg.sv#L380).
 implemented_extensions:
   # "localparam logic [63:0] ISA_CODE = ... | (1 << 8) // I ... | (1 << 63); // RV64"
   #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/def_pkg.sv#L81-L94
@@ -74,6 +70,8 @@ implemented_extensions:
   - { name: Zba, version: "= 1.0.0" }
   - { name: Zbb, version: "= 1.0.0" }
   - { name: Zbs, version: "= 1.0.0" }
+  # No Zbc or Zbk*: F3_CLMUL is defined in riscv_pkg.sv but never decoded, and there is no
+  # pack, brev8, zip or xperm.
   # "// Zicond
   #  {F7_CZERO, F3_SRL_SRA}: begin ... decode_instr_int.instr_type = CZ_EQZ;"
   #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/datapath/rtl/id_stage/rtl/decoder.sv#L694-L699
@@ -165,6 +163,25 @@ implemented_extensions:
   # OF and inhibit bits, scountovf, and the LCOFI interrupt in mip/mie/mideleg.
   #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/hpm_counters.sv#L21
   - { name: Sscofpmf, version: "= 1.0.0" }
+  # "localparam bit RVH = 1'b1; // Is H extension enabled"
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/def_pkg.sv#L42
+  # The hypervisor CSRs are at csr_bsc.sv#L562-L668 (read) and #L1309-L1515 (write), and
+  # HLV/HLVX/HSV are decoded at decoder.sv#L3000.
+  - { name: H, version: "= 1.0.0" }
+  # Every hcounteren bit is writable ("hcounteren_d = csr_wdata[31:0];", csr_bsc.sv#L1385).
+  - { name: Shcounterenw, version: "= 1.0.0" }
+  # hgatp accepts Bare and Sv39x4, matching satp's Bare and Sv39 (csr_bsc.sv#L1396-L1414).
+  - { name: Shgatpa, version: "= 1.0.0" }
+  # htval gets GPA >> 2 on every guest-page fault ("htval_d = {{25{1'b0}}, ex_tval2};",
+  # csr_bsc.sv#L2098).
+  - { name: Shtvala, version: "= 1.0.0" }
+  # vsatp accepts the same Bare and Sv39 modes as satp (csr_bsc.sv#L1501-L1511).
+  - { name: Shvsatpa, version: "= 1.0.0" }
+  # vstval is written from the same ex_tval as stval (csr_bsc.sv#L2084).
+  - { name: Shvstvala, version: "= 1.0.0" }
+  # In Direct mode vstvec.BASE holds any 4-byte-aligned address
+  # ("vstvec_d = {csr_wdata[63:2], 1'b0, csr_wdata[0]};", csr_bsc.sv#L1484).
+  - { name: Shvstvecd, version: "= 1.0.0" }
 
 params:
   # ---------------- Sm ----------------
@@ -566,3 +583,112 @@ params:
   # "mask = riscv_pkg::MSTATEEN0_SE | riscv_pkg::MSTATEEN0_ENVCFG;"
   #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L1612-L1631
   MSTATEEN_ENVCFG_TYPE: rw
+  # ---------------- H ----------------
+  MUTABLE_MISA_H: false
+  # hstatus.VSXL is forced to 64 every cycle ("hstatus_d.vsxl = riscv_pkg::XLEN_64;",
+  # csr_bsc.sv#L1837), and vsstatus.UXL likewise.
+  VSXLEN: [64]
+  VUXLEN: [64]
+  # hstatus.VSBE is in HSTATUS_WRITE_MASK (def_pkg.sv#L123), but nothing in rtl/ reads it, so
+  # every access is little-endian.
+  VS_MODE_ENDIANNESS: little
+  VU_MODE_ENDIANNESS: little
+  # "parameter VMID_WIDTH = 11" (csr_bsc.sv#L28), and top_drac.sv does not override it.
+  VMID_WIDTH: 11
+  # hgeip and hgeie read 0 and ignore writes (csr_bsc.sv#L581-L586, #L1376-L1380).
+  NUM_EXTERNAL_GUEST_INTERRUPTS: 0
+  # "if ((hgatp.mode != def_pkg::MODE_OFF) && (hgatp.mode != def_pkg::MODE_SV39x4))
+  #    hgatp_d.mode = hgatp_q.mode;"  (csr_bsc.sv#L1409-L1410)
+  GSTAGE_MODE_BARE: true
+  SV39X4_TRANSLATION: true
+  SV48X4_TRANSLATION: false
+  SV57X4_TRANSLATION: false
+  # "if ((vsatp.mode == def_pkg::MODE_OFF) || (vsatp.mode == def_pkg::MODE_SV39)) vsatp_d = vsatp;"
+  # (csr_bsc.sv#L1510-L1511): a write with any other mode is dropped.
+  VSSTAGE_MODE_BARE: true
+  SV39_VSMODE_TRANSLATION: true
+  SV48_VSMODE_TRANSLATION: false
+  SV57_VSMODE_TRANSLATION: false
+  IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
+  # "vstvec_d = {csr_wdata[63:2], 1'b0, csr_wdata[0]};" (csr_bsc.sv#L1484)
+  VSTVEC_MODES: [0, 1]
+  TRAP_ON_ECALL_FROM_VS: true
+  # hvip.VSSIP/VSTIP/VSEIP are writable (csr_bsc.sv#L1352-L1358).
+  VSEI_INTR_IMPL: true
+  VSSI_INTR_IMPL: true
+  VSTI_INTR_IMPL: true
+  # vstval takes the same ex_tval as stval (csr_bsc.sv#L2003-L2019, #L2084).
+  REPORT_VA_IN_VSTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION: true
+  REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION: true
+  # htval and mtval2 get ex_tval2, which is GPA >> 2 on a guest-page fault
+  # (csr_bsc.sv#L2021-L2029, #L2098, #L2144).
+  REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_LOAD_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_STORE_AMO_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_INSTRUCTION_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT: true
+  # Every source of ex_tinst drives zero (e.g. "translated_instr.ex.tinst = '0;",
+  # load_store_queue.sv#L159-L207), so mtinst and htinst are always written with 0.
+  TINST_VALUE_ON_BREAKPOINT: "always zero"
+  TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED: "always zero"
+  TINST_VALUE_ON_LOAD_ACCESS_FAULT: "always zero"
+  TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED: "always zero"
+  TINST_VALUE_ON_LOAD_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_MCALL: "always zero"
+  TINST_VALUE_ON_SCALL: "always zero"
+  TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT: "always zero"
+  TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED: "always zero"
+  TINST_VALUE_ON_STORE_AMO_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_UCALL: "always zero"
+  TINST_VALUE_ON_VIRTUAL_INSTRUCTION: "always zero"
+  TINST_VALUE_ON_VSCALL: "always zero"
+  # "mask = (riscv_pkg::HSTATEEN0_SE | riscv_pkg::HSTATEEN0_ENVCFG) & mstateen0_q;"
+  # (csr_bsc.sv#L1422-L1429)
+  HSTATEEN_ENVCFG_TYPE: rw
+  # "hcounteren_d = csr_wdata[31:0];" (csr_bsc.sv#L1385)
+  HCOUNTENABLE_EN:
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true

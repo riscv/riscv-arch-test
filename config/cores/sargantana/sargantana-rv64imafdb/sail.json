@@ -38,9 +38,10 @@
       "len": 32,
       "value": "0xFFFF_FFFF"
     },
+    // "hcounteren_d = csr_wdata[31:0];" (csr_bsc.sv#L1385)
     "hcounteren_writable_bits": {
       "len": 32,
-      "value": "0x0"
+      "value": "0xFFFF_FFFF"
     },
     // `mtvec.{direct,vectored}.supported` indicates whether the
     // corresponding mode is supported for `mtvec`.  At least one mode
@@ -81,12 +82,13 @@
         "base_alignment": 2
       }
     },
+    // "vstvec_d = {csr_wdata[63:2], 1'b0, csr_wdata[0]};" (csr_bsc.sv#L1484)
     "vstvec": {
       "direct": {
-        "supported": false
+        "supported": true
       },
       "vectored": {
-        "supported": false,
+        "supported": true,
         "base_alignment": 2
       }
     },
@@ -103,8 +105,9 @@
         // csr_bsc.sv#L1536-L1553 builds the medeleg write mask from INSTR_ADDR_MISALIGNED,
         // INSTR_ACCESS_FAULT, ILLEGAL_INSTR, BREAKPOINT, LD_ADDR_MISALIGNED,
         // LD_ACCESS_FAULT, ST_AMO_ADDR_MISALIGNED, ST_AMO_ACCESS_FAULT, USER_ECALL,
-        // INSTR_PAGE_FAULT, LOAD_PAGE_FAULT and ST_AMO_PAGE_FAULT; SUPERVISOR_ECALL is not in it.
-        "value": "0x0000_0000_0000_b1FF"
+        // INSTR_PAGE_FAULT, LOAD_PAGE_FAULT and ST_AMO_PAGE_FAULT, plus VIRTUALSUPERVISOR_ECALL,
+        // the guest-page faults and VIRTUAL_INSTRUCTION because RVH = 1; SUPERVISOR_ECALL is not in it.
+        "value": "0x0000_0000_00F0_B5FF"
       }
     },
     "mideleg": {
@@ -128,10 +131,10 @@
     // `xtval` registers.
     "xtval_nonzero": {
       "illegal_instruction": true,
-      "virtual_instruction": false,
-      "load_guest_page_fault": false,
-      "samo_guest_page_fault": false,
-      "fetch_guest_page_fault": false,
+      "virtual_instruction": true,
+      "load_guest_page_fault": true,
+      "samo_guest_page_fault": true,
+      "fetch_guest_page_fault": true,
       "software_breakpoint": true,
       "hardware_breakpoint": true,
       "load_address_misaligned": true,
@@ -209,7 +212,8 @@
     // will have lower values.
     "physaddr_bits": 42,
     "asidlen": 13,
-    "vmidlen": 14,
+    // "parameter VMID_WIDTH = 11" (csr_bsc.sv#L28)
+    "vmidlen": 11,
     // PMP is not implemented.  pmpcfg0-3 and pmpaddr0-15 are empty case arms in
     // csr_bsc.sv#L881-L903 (read) and #L1801-L1822 (write): they read as zero and drop
     // writes without trapping, and there is no address matcher anywhere in rtl/.
@@ -530,26 +534,33 @@
       "supported": true
     },
 
+    // hgeip and hgeie read 0 (csr_bsc.sv#L581-L586); hgatp takes Bare or Sv39x4
+    // (#L1409-L1410); vsatp takes Bare or Sv39 (#L1510-L1511).
     "H": {
-      "supported": false,
-      "geilen": 63,
+      "supported": true,
+      "geilen": 0,
       "guest_page_fault_writes_htval": true,
       "hgatp_modes": {
         "Sv32x4": false,
         "Sv39x4": true,
-        "Sv48x4": true,
-        "Sv57x4": true
+        "Sv48x4": false,
+        "Sv57x4": false
       },
-      "vsatp_modes": { "Sv32": false, "Sv39": true, "Sv48": true, "Sv57": true }
+      "vsatp_modes": {
+        "Sv32": false,
+        "Sv39": true,
+        "Sv48": false,
+        "Sv57": false
+      }
     },
 
     "Sha": { "supported": false },
-    "Shcounterenw": { "supported": false },
-    "Shgatpa": { "supported": false },
-    "Shtvala": { "supported": false },
-    "Shvsatpa": { "supported": false },
-    "Shvstvala": { "supported": false },
-    "Shvstvecd": { "supported": false },
+    "Shcounterenw": { "supported": true },
+    "Shgatpa": { "supported": true },
+    "Shtvala": { "supported": true },
+    "Shvsatpa": { "supported": true },
+    "Shvstvala": { "supported": true },
+    "Shvstvecd": { "supported": true },
     "Sstvecd": { "supported": true },
     "Svukte": { "supported": false },
     "Zilx": { "supported": false },

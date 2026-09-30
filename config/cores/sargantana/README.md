@@ -5,9 +5,9 @@ Supercomputing Center. It is tested as integrated in [core_tile](https://github.
 (instruction cache, OpenHW HPDcache and MMU) under Verilator, pinned to core_tile `2528e7df`
 (core `403975c`) with the default `drac_pkg::DracDefaultConfig`.
 
-| Config                  | ISA                                                                   | Modes     |
-| ----------------------- | --------------------------------------------------------------------- | --------- |
-| `sargantana-rv64imafdb` | RV64IMAFDB_Zicsr_Zifencei_Zicond_Zicbom_Zicbop_Zicboz_Zfa_Zfhmin_Sv39 | M + S + U |
+| Config                  | ISA                                                                    | Modes         |
+| ----------------------- | ---------------------------------------------------------------------- | ------------- |
+| `sargantana-rv64imafdb` | RV64IMAFDBH_Zicsr_Zifencei_Zicond_Zicbom_Zicbop_Zicboz_Zfa_Zfhmin_Sv39 | M + S + U + H |
 
 ## Building and running
 

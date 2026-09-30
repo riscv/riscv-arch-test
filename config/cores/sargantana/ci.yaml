@@ -22,8 +22,8 @@ ci_enabled: true
 #   ZicntrS       U mode may read a counter if mcounteren or scounteren allows it: csr:csr_bsc.sv#L2558
 #   ZicntrU       Same counter-enable bug: csr:csr_bsc.sv#L2558
 #   Zifencei      fence.i does not drain the HPDcache write buffer first: core:control_unit/rtl/control_unit.sv#L323
-#   Sm            mstatus.MPP and menvcfg.CBIE keep the reserved 0b10: csr:csr_bsc.sv#L1525, #L1595; misa and the
-#                 mstatus/mie/mip bits show V and H, which are not claimed
+#   Sm            mstatus.MPP and menvcfg.CBIE keep the reserved 0b10: csr:csr_bsc.sv#L1525, #L1595; mideleg.SGEI
+#                 is read-only one with GEILEN = 0: csr:csr_bsc.sv#L1559-L1560; misa.V is set without V
 #   S             sepc[1] is writable with IALIGN = 32: csr:csr_bsc.sv#L1244; senvcfg.CBIE keeps 0b10: #L1242
 #   InterruptsSm  mideleg is applied after the interrupt is picked by cause, so a delegated SEI hides an M-level STI:
 #                 csr:csr_bsc.sv#L1888-L1936

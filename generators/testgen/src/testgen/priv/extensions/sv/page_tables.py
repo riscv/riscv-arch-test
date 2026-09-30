@@ -69,6 +69,23 @@ class SvMode:
         widened = self.stage == "g" and level == self.levels - 1
         return (10 if self.xlen == 32 else 9) + (2 if widened else 0)
 
+    @property
+    def pte_bytes(self) -> int:
+        return 4 if self.xlen == 32 else 8
+
+    def access_fault_pte_address(self) -> str:
+        """The first PTE-aligned address at or above RVMODEL_ACCESS_FAULT_ADDRESS, inside the faulting region, which the
+        ACT contract guarantees for only 128 bytes from that address."""
+        return f"((RVMODEL_ACCESS_FAULT_ADDRESS + {self.pte_bytes - 1}) & ~{self.pte_bytes - 1})"
+
+    def access_fault_walk_va(self, virtual_address: str, level: int) -> str:
+        """``virtual_address`` with its index at ``level`` replaced, so that a walk whose table at ``level`` is the page
+        of access_fault_pte_address reads the PTE at that address."""
+        shift = self.page_offset_bits(level)
+        mask = ((1 << self.index_bits(level)) - 1) << shift
+        index = f"(({self.access_fault_pte_address()} & 0xFFF) / {self.pte_bytes})"
+        return f"((({virtual_address}) & ~{mask:#x}) | ({index} << {shift}))"
+
     def page_table_label(self, level: int) -> str:
         """Return the table that contains a leaf PTE at ``level``."""
         _check_level(self, level)

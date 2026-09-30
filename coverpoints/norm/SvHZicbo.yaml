@@ -86,36 +86,23 @@ normative_rule_definitions:
   - names: [sstatus_sum, H_vm_gpapriv]
     coverpoint: ["SvHZicbo_cg/{cp_vs_sum,cp_g_pte}"]
 
-  # Guest-page faults write mtval2, with a pseudoinstruction in mtinst for implicit VS-stage accesses
-  - names:
-      [
-        mtval2_trapval,
-        mtval2_trapval_vstrans,
-        H_trap_xtinst_guestpage,
-        fault_excep_csr,
-      ]
+  # Guest-page faults write htval, with a pseudoinstruction in htinst for implicit VS-stage accesses
+  - names: [htval_trapval, H_trap_xtinst_guestpage, fault_excep_csr]
     coverpoint: ["SvHZicbo_cg/{cp_vs_gpa,cp_vs_gpa_implicit,cp_g_pte}"]
 
-  # PMA and PMP apply to the supervisor physical address
-  - names: [pma_chk_paddr, H_pmp]
-    coverpoint: ["SvHZicbo_cg/{cp_vs_gpa,cp_g_pa,cp_pmp}"]
+  # PMAs apply to the supervisor physical address
+  - names: [pma_chk_paddr]
+    coverpoint: ["SvHZicbo_cg/{cp_vs_gpa,cp_g_pa}"]
 
   # If CBO.INVAL is enabled in HS-mode to perform a flush operation, then when the
   # instruction is enabled in VS- or VU-mode it performs a flush operation, even if CBIE
   # is set to 0b11. Otherwise, when the instruction is enabled for execution, its behavior
   # depends on the CBIE encoding, as follows:
-  - name: cbo-inval_h_mode_enabled_op
-    coverpoint:
-      [
-        "Not tested: TODO store to a block, execute cbo.inval in VS-mode and VU-mode with menvcfg.CBIE or henvcfg.CBIE = 01, and check that a load returns the stored data",
-      ]
-  - name: cbo-inval_h_mode_flush_enc
-    coverpoint:
-      [
-        "Not tested: TODO store to a block, execute cbo.inval in VS-mode and VU-mode with menvcfg.CBIE or henvcfg.CBIE = 01, and check that a load returns the stored data",
-      ]
+  # A store, then cbo.inval with a CBIE field = 01, then a load that returns the stored data
+  - names: [cbo-inval_h_mode_enabled_op, cbo-inval_h_mode_flush_enc]
+    coverpoint: ["SvHZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}"]
   - name: cbo-inval_h_mode_inval_enc
     coverpoint:
       [
-        "Not tested: TODO store to a block, execute cbo.inval in VS-mode and VU-mode with menvcfg.CBIE or henvcfg.CBIE = 01, and check that a load returns the stored data",
+        "Not tested: whether an invalidate discards stored data depends on the cache hierarchy, so a test cannot tell it from a flush",
       ]

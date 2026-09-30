@@ -298,6 +298,9 @@
     `ifdef COVER_SVHZICBO
         svhzicbo_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SVHZICBOSM
+        svhzicbosm_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SVPMP
         svpmp_sample(hart, issue, ins);
     `endif

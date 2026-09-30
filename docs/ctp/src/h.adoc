@@ -139,16 +139,19 @@ include::norm/SvHSm_norm_rules.adoc[]
 
 include::norm/SvH_norm_rules.adoc[]
 
-==== SvHZicbo Hypervisor Virtual Memory with Cache-Block Operations
+==== SvHZicboSm and SvHZicbo Hypervisor Virtual Memory with Cache-Block Operations
 
-SvHZicbo checks cache-block operations under two-stage translation, their permission and fault reporting, and the
-henvcfg enables in VS and VU modes.
+SvHZicbo boots to HS-mode and checks cache-block operations under two-stage translation, their permission and fault
+reporting, and the henvcfg enables in VS and VU modes.  SvHZicboSm boots to M-mode to check PMP on their final
+address.
 
 [[t-SvHZicbo-coverpoints]]
 .SvHZicbo Coverpoints
 ,===
 https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=2005939128#gid=2005939128[Google Sheet Testplan]
 ,===
+
+include::norm/SvHZicboSm_norm_rules.adoc[]
 
 include::norm/SvHZicbo_norm_rules.adoc[]
 

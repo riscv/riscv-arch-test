@@ -53,6 +53,31 @@ covergroup Shtvala_cg with function sample(ins_t ins);
         cp_load_guest_page_fault:  cross priv_mode_vs_vu, lw,   load_guest_page_fault,  htval_gpa;
         cp_store_guest_page_fault: cross priv_mode_vs_vu, sw,   store_guest_page_fault, htval_gpa;
         cp_instr_guest_page_fault: cross priv_mode_vs_vu, jalr, instr_guest_page_fault, htval_gpa;
+
+        `ifdef UDB_MISALIGNED_LDST
+        `ifdef UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES
+            hlv_w : coverpoint ins.current.insn {
+                wildcard bins hlv_w = {HLV_W};
+            }
+            hsv_w : coverpoint ins.current.insn {
+                wildcard bins hsv_w = {HSV_W};
+            }
+            // A word two bytes below the end of a page, which continues into the next page
+            straddle : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
+                bins page_end = {'hFFE};
+            }
+            // htval holds the guest physical address of the page boundary, where the faulting part begins.  The
+            // test sets htval to a random value before each trap.
+            htval_page_boundary : coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") << 2) & 'hFFF) {
+                bins page_boundary = {0};
+            }
+
+            cp_load_straddle_guest_page_fault:  cross priv_mode_vs_vu, lw, load_guest_page_fault, straddle, htval_page_boundary;
+            cp_store_straddle_guest_page_fault: cross priv_mode_vs_vu, sw, store_guest_page_fault, straddle, htval_page_boundary;
+            cp_hlv_straddle_guest_page_fault:   cross priv_mode_hs, hlv_w, load_guest_page_fault, straddle, htval_page_boundary;
+            cp_hsv_straddle_guest_page_fault:   cross priv_mode_hs, hsv_w, store_guest_page_fault, straddle, htval_page_boundary;
+        `endif
+        `endif
     `endif
 endgroup
 

@@ -103,6 +103,7 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
         pte_lines: list[str],
         *,
         physical_address: str | None = None,
+        va: str = "va_data",
         before: tuple[str, ...] = (),
         after: tuple[str, ...] = (),
         ifdef: str | None = None,
@@ -112,13 +113,13 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
         address = (
             virtual_address(
                 sv,
-                "va_data",
+                va,
                 level,
                 physical_address=physical_address,
                 physical_address_is_label=False,
             )
             if physical_address is not None
-            else virtual_address(sv, "va_data", level)
+            else virtual_address(sv, va, level)
         )
         lines = [
             f"  // Test case {number}: {description} | Test in {mode[0]}-Mode | expected = {expected}",
@@ -214,6 +215,10 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
                 [*walk, leaf(PteFlags.nonleaf("PTE_U") if umode else PteFlags.nonleaf(), level)],
             )
 
+        # The table at this level is the page of the access-fault region, and the address's index there selects a
+        # PTE inside the region
+        walk_fault_va = sv.access_fault_walk_va("va_data", level)
+        walk_fault_table = {level + 1: sv.access_fault_pte_address()}
         if not top and level > 0:
             add(
                 level,
@@ -221,12 +226,11 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
                 "Store access fault",
                 [
                     *create_page_walk(
-                        sv,
-                        leaf_level=level,
-                        table_addresses={level + 1: "RVMODEL_ACCESS_FAULT_ADDRESS"},
+                        sv, leaf_level=level, virtual_address=walk_fault_va, table_addresses=walk_fault_table
                     ),
                     leaf(walk_fault_permissions, level),
                 ],
+                va=walk_fault_va,
                 ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
             )
         if level == 0:
@@ -236,13 +240,12 @@ def _add_exception_cases(test_data: TestData, chunk: TestChunk, sv: SvMode, mode
                 "Store access fault",
                 [
                     *create_page_walk(
-                        sv,
-                        leaf_level=level,
-                        table_addresses={1: "RVMODEL_ACCESS_FAULT_ADDRESS"},
+                        sv, leaf_level=level, virtual_address=walk_fault_va, table_addresses=walk_fault_table
                     ),
                     leaf(leaf_permissions, level),
                 ],
                 physical_address="RVMODEL_ACCESS_FAULT_ADDRESS",
+                va=walk_fault_va,
                 ifdef="RVMODEL_ACCESS_FAULT_ADDRESS",
             )
         add(

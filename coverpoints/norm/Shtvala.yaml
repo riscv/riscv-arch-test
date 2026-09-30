@@ -19,3 +19,13 @@ normative_rule_definitions:
         "Shtvala_cg/cp_store_guest_page_fault",
         "Shtvala_cg/cp_instr_guest_page_fault",
       ]
+
+  # A misaligned guest load or store whose second part has an unmapped guest physical address reports the
+  # faulting part: stval holds the page-boundary address, htval its guest physical address, and htinst's
+  # Addr. Offset the distance from the original address.
+  - names: [H_straddle, H_tinst_addr_offset, stval_op_load_store_fault]
+    coverpoint:
+      [
+        "Shtvala_cg/{cp_load_straddle_guest_page_fault,cp_store_straddle_guest_page_fault}",
+        "Shtvala_cg/{cp_hlv_straddle_guest_page_fault,cp_hsv_straddle_guest_page_fault}",
+      ]

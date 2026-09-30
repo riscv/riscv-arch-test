@@ -74,8 +74,10 @@
 ##### IO #####
 
 # The testbench prints only word stores (wstrb 0xF in one of the four lanes of the
-# 16-byte AXI beat), so each character goes out as an sw.
-#   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/smart_run/logical/tb/tb_verilator.v#L335-L338
+# 16-byte AXI beat), so each character goes out as an sw.  It samples the write data a
+# cycle after the strobes, so a store in the next cycle would replace the character;
+# the fence keeps the stores apart.
+#   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/smart_run/logical/tb/tb_verilator.v#L288-L351
 #define RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR) \
 1:                           ;                        \
   lbu  _R1, 0(_STR_PTR)      ; /* Load byte */        \
@@ -83,6 +85,7 @@
 2:                           ;                        \
   li   _R2, C910_CONSOLE     ;                        \
   sw   _R1, 0(_R2)           ;                        \
+  fence                      ;                        \
   addi _STR_PTR, _STR_PTR, 1 ; /* Next char */        \
   j 1b                       ; /* Loop */             \
 3:

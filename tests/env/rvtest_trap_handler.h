@@ -2289,7 +2289,22 @@ tsbi_instr_table:
 //   6. Restores registers and returns via xret
 //==============================================================================
 
-\__MODE__\()trapsig_ptr_upd:                     // pre-update trap signature pointer
+\__MODE__\()trapsig_ptr_upd:
+        // An instruction armed by RVTEST_OPTIONAL_TRAP may legally either complete or raise one exception.
+        // When it raises that exception, disarm it and resume after the instruction without recording a
+        // trap, so the signature is the same for both outcomes. Any other trap is recorded as usual.
+        LA(     T3, rvtest_optional_trap)
+        LREG    T4, 0(T3)                          // T4 = armed instruction address (0 when disarmed)
+        csrr    T2, CSR_XEPC
+        bne     T2, T4, \__MODE__\()record_trap
+        LREG    T4, REGWIDTH(T3)                   // T4 = the exception it may raise
+        bne     T5, T4, \__MODE__\()record_trap     // interrupts never match: xcause MSB is set
+        SREG    zero, 0(T3)                        // disarm
+        addi    T2, T2, 4                          // the armed instruction is 4 bytes
+        csrw    CSR_XEPC, T2
+        j       resto_\__MODE__\()rtn
+
+\__MODE__\()record_trap:                         // pre-update trap signature pointer
         li      T2, 4*REGWIDTH                    // T2 = default entry size (4 words for exceptions)
         bgez    T5, \__MODE__\()xcpt_sig_sv       // if xcause MSB=0 -> exception, keep 4-word size
 

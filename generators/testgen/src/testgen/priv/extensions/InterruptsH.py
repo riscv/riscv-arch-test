@@ -174,6 +174,40 @@ def _priority_s_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _priority_lcofi_tests(test_data: TestData) -> list[str]:
+    """A pending LCOFI is taken after the VS-level interrupts."""
+    tmp_reg = test_data.int_regs.get_register()
+    lines = [
+        comment_banner(
+            "cp_priority_lcofi",
+            "With hvip = hie = 0x444, hideleg = 0 and sie.LCOFIE = 1, raise LCOFI, then set sstatus.SIE.\n"
+            "HS-mode takes VSEI, VSSI and VSTI, then LCOFI",
+        ),
+        "#ifdef SSCOFPMF_SUPPORTED",
+        "csrw hideleg, zero",
+        f"LI(x{tmp_reg}, MIP_VS_MASK)",
+        f"csrw hvip, x{tmp_reg}",
+        f"csrw hie, x{tmp_reg}",
+        f"LI(x{tmp_reg}, MIP_LCOFIP)",
+        f"csrw sie, x{tmp_reg}",
+        "RVTEST_SET_LCOFI_INT_S",
+        f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
+        test_data.add_testcase("lcofi", "cp_priority_lcofi", _CG),
+        f"csrr x{tmp_reg}, sip",
+        write_sigupd(tmp_reg, test_data),
+        "csrsi sstatus, SSTATUS_SIE",
+        f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
+        "csrci sstatus, SSTATUS_SIE",
+        "RVTEST_CLR_LCOFI_INT_S",
+        "csrw sie, zero",
+        "csrw hvip, zero",
+        "csrw hie, zero",
+        "#endif // SSCOFPMF_SUPPORTED",
+    ]
+    test_data.int_regs.return_register(tmp_reg)
+    return lines
+
+
 def _alias_tests(test_data: TestData) -> list[str]:
     """hie, hip, vsie and vsip as views of mie, mip and each other through hideleg."""
     tmp_reg, mask_reg = test_data.int_regs.get_registers(2)
@@ -429,7 +463,12 @@ def make_interruptsh(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.new_test_chunk(test_chunks, "priority")
     tc.code.extend(
-        [*_priority_tests(test_data, "hie"), *_priority_tests(test_data, "hideleg"), *_priority_s_tests(test_data)]
+        [
+            *_priority_tests(test_data, "hie"),
+            *_priority_tests(test_data, "hideleg"),
+            *_priority_s_tests(test_data),
+            *_priority_lcofi_tests(test_data),
+        ]
     )
 
     tc = test_data.new_test_chunk(test_chunks, "alias")

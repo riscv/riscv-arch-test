@@ -145,6 +145,54 @@ def _mideleg_mip_tests(test_data: TestData, mode: str) -> list[str]:
     return lines
 
 
+def _priority_level_tests(test_data: TestData, mode: str) -> list[str]:
+    """Enter VS or VU mode with interrupts pending for two or three of M-mode (MSI), HS-mode (SSI, delegated by
+    mideleg) and VS-mode (VSSI, delegated by hideleg).  They are taken in the order M, HS, VS."""
+    coverpoint = f"cp_priority_levels_{mode.lower()}"
+    tmp_reg = test_data.int_regs.get_register()
+    levels = {
+        "m": ("MSI", "MSW", "UDB_MSI_INTR_IMPL"),
+        "hs": ("SSI", "SSW", "UDB_SSI_INTR_IMPL"),
+        "vs": ("VSSI", "VSSW", None),
+    }
+    lines = [
+        comment_banner(
+            coverpoint,
+            "With mstatus.MIE = 0, mideleg.SSI = 1, hideleg.VSSI = 1, mie.MSIE = mie.SSIE = mie.VSSIE = 1 and\n"
+            f"vsstatus.SIE = 1, raise two or three of MSI, SSI and VSSI and enter {mode}-mode.  M-mode takes MSI,\n"
+            "then HS-mode takes SSI, then VS-mode takes VSSI",
+        ),
+        "csrci mstatus, MSTATUS_MIE",
+        f"LI(x{tmp_reg}, MIP_SSIP)",
+        f"csrw mideleg, x{tmp_reg}",
+        f"LI(x{tmp_reg}, MIP_VSSIP)",
+        f"csrw hideleg, x{tmp_reg}",
+        f"LI(x{tmp_reg}, SSTATUS_SIE)",
+        f"csrs vsstatus, x{tmp_reg}",
+    ]
+    for combo in (("m", "hs"), ("m", "vs"), ("hs", "vs"), ("m", "hs", "vs")):
+        guards = [levels[level][2] for level in combo if levels[level][2]]
+        lines.extend(
+            [
+                *[f"#ifdef {guard}" for guard in guards],
+                f"LI(x{tmp_reg}, MIP_MSIP | MIP_SSIP | MIP_VSSIP)",
+                f"csrw mie, x{tmp_reg}",
+                *[f"RVTEST_SET_{levels[level][1]}_INT_M" for level in combo],
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
+                test_data.add_testcase("_".join(combo), coverpoint, _CG),
+                f"RVTEST_TSBI_GOTO_{mode}MODE",
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
+                "RVTEST_TSBI_GOTO_MMODE",
+                *[f"RVTEST_CLR_{levels[level][1]}_INT_M" for level in combo],
+                "csrw mie, zero",
+                *[f"#endif // {guard}" for guard in reversed(guards)],
+            ]
+        )
+    lines.extend(["csrw mideleg, zero", "csrw hideleg, zero"])
+    test_data.int_regs.return_register(tmp_reg)
+    return lines
+
+
 @add_priv_test_generator(
     "InterruptsHSm",
     required_extensions=["Sm", "H"],
@@ -161,6 +209,9 @@ def make_interruptshsm(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.new_test_chunk(test_chunks, "mideleg_mip")
     tc.code.extend([*_mideleg_mip_tests(test_data, "VS"), *_mideleg_mip_tests(test_data, "VU")])
+
+    tc = test_data.new_test_chunk(test_chunks, "priority_levels")
+    tc.code.extend([*_priority_level_tests(test_data, "VS"), *_priority_level_tests(test_data, "VU")])
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

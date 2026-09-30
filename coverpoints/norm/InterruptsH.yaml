@@ -74,9 +74,9 @@ normative_rule_definitions:
   - name: hip_img
     coverpoint: ["InterruptsH_hs_cg/cp_hip_write"]
 
-  # Simultaneous interrupts destined for HS-mode are taken in the order SEI, SSI, STI, SGEI, VSEI, VSSI, VSTI
+  # Simultaneous interrupts destined for HS-mode are taken in the order SEI, SSI, STI, SGEI, VSEI, VSSI, VSTI, LCOFI
   - names: [hsint_priority]
-    coverpoint: ["InterruptsH_hs_cg/cp_priority_{en_vsi, deleg_vsi, s}"]
+    coverpoint: ["InterruptsH_hs_cg/cp_priority_{en_vsi, deleg_vsi, s, lcofi}"]
 
   # Bits SGEIP, VSEIP, VSTIP, and VSSIP in mip are aliases for the same bits in hypervisor
   # CSR hip, while SGEIE, VSEIE, VSTIE, and VSSIE in mie are aliases for the same bits in

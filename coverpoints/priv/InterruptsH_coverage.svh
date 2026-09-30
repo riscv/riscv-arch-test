@@ -123,6 +123,19 @@ covergroup InterruptsH_hs_cg with function sample(ins_t ins);
     }
     cp_priority_s: cross priv_mode_hs, set_sie, sip_s, sie_ones, hvip_all, hie_all, hideleg_none;
 
+    // A pending LCOFI with every VS-level interrupt pending and enabled: LCOFI is taken last
+    `ifdef SSCOFPMF_SUPPORTED
+        sip_lcofi : coverpoint {ins.prev.csr[CSR_SIP][13], ins.prev.csr[CSR_SIP][9], ins.prev.csr[CSR_SIP][5],
+                                ins.prev.csr[CSR_SIP][1]} {
+            bins lcofi = {4'b1000};
+        }
+        sie_lcofi : coverpoint {ins.prev.csr[CSR_SIE][13], ins.prev.csr[CSR_SIE][9], ins.prev.csr[CSR_SIE][5],
+                                ins.prev.csr[CSR_SIE][1]} {
+            bins lcofi = {4'b1000};
+        }
+        cp_priority_lcofi: cross priv_mode_hs, set_sie, sip_lcofi, sie_lcofi, hvip_all, hie_all, hideleg_none;
+    `endif
+
     // hie, hip, vsie and vsip through hideleg
     mie_vs_all : coverpoint `INTERRUPTSH_VS(ins.prev.csr[CSR_MIE]) {
         bins all = {3'b111};

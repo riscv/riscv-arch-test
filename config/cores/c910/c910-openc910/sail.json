@@ -457,6 +457,9 @@
       // the reservation set.
       "invalidate_on_same_hart_store": false
     },
+    // mip.MEIP, MTIP and MSIP all exist.  The UDB config sets MEI_INTR_IMPL and
+    // MTI_INTR_IMPL false only because ACT cannot raise those interrupts on this SoC.
+    //   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L2119-L2122
     "interrupts": {
       "machine": {
         "software": { "supported": true },
@@ -868,6 +871,10 @@
     "Sstvala": {
       "supported": false
     },
+    // The page table walker raises a page fault when A is clear, or when D is clear on a
+    // store, and never updates the PTE.  The UDB config cannot declare Svade because UDB
+    // defines it only for Sm >= 1.12.
+    //   https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/mmu/rtl/ct_mmu_ptw.v#L678-L679
     "Svade": {
       "supported": true
     },

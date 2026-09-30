@@ -106,6 +106,14 @@ include::norm/ZicntrHSm_norm_rules.adoc[]
 
 include::norm/ZicntrH_norm_rules.adoc[]
 
+==== SmcntrpmfH Hypervisor Counter Privilege Mode Filtering
+
+SmcntrpmfH checks that the VSINH and VUINH bits of mcyclecfg and minstretcfg stop cycle and instret in VS-mode
+and VU-mode.  With every mode inhibited the counter must not change across a visit to VS-mode or VU-mode; with
+only that mode counting, cycle must advance and instret must advance by exactly the instructions retired there.
+
+include::norm/SmcntrpmfH_norm_rules.adoc[]
+
 ==== PMPH Hypervisor Physical Memory Protection
 
 PMPH boots to M-mode and checks PMP on accesses from VS and VU modes, on HLV, HLVX and HSV, and on G-stage and

@@ -46,7 +46,7 @@ ci_enabled: true
 #      (https://gitlab.com/qemu-project/qemu/-/work_items/4595)
 #    InterruptsHSm also needs a writable mip.LCOFIP (https://gitlab.com/qemu-project/qemu/-/work_items/3969).
 #    qemu-rv32-max: the max CPU does not implement Zicfilp on RV32, so henvcfg.LPE is read-only zero.
-exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H,HSm,ExceptionsH,ExceptionsHSm,ExceptionsHF,ExceptionsHV,InterruptsH,InterruptsHSm,SstcH,SstcHSm,ZicntrH,SvinvalH,SvinvalHSm,Shvstvala,Shtvala,SvH,SvHSm,PMPH,SvHZicbo,HTrap"
+exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H,HSm,ExceptionsH,ExceptionsHSm,ExceptionsHF,ExceptionsHV,InterruptsH,InterruptsHSm,SstcH,SstcHSm,ZicntrH,SvinvalH,SvinvalHSm,Shvstvala,Shtvala,SvH,SvHSm,PMPH,SvHZicbo,HTrap,SmcntrpmfH"
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
 shards: 1

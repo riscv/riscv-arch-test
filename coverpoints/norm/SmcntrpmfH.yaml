@@ -1,0 +1,25 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # mcyclecfg and minstretcfg configure privilege mode filtering of cycle and instret; VSINH and VUINH
+  # inhibit counting in VS-mode and VU-mode
+  - names: [mcyclecfg_op, counter_inhibited_behavior]
+    coverpoint:
+      [
+        "SmcntrpmfH_cg/cp_mcyclecfg_vs",
+        "SmcntrpmfH_cg/cp_mcyclecfg_vu",
+        "SmcntrpmfH_cg/cp_minstretcfg_vs",
+        "SmcntrpmfH_cg/cp_minstretcfg_vu",
+      ]
+
+  # cycle counts only while the hart is in a non-inhibited mode
+  - name: cycle_counting
+    coverpoint:
+      ["SmcntrpmfH_cg/cp_mcyclecfg_vs", "SmcntrpmfH_cg/cp_mcyclecfg_vu"]
+
+  # instret counts instructions that retire in a non-inhibited mode; a trapping ecall does not retire and an
+  # mret counts only when M-mode is not inhibited
+  - names: [instret_non_inhibited, instret_exception, instret_xret]
+    coverpoint:
+      ["SmcntrpmfH_cg/cp_minstretcfg_vs", "SmcntrpmfH_cg/cp_minstretcfg_vu"]

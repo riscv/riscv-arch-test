@@ -62,7 +62,9 @@ covergroup ZicfilpS_cg with function sample(ins_t ins);
     cp_zicfilp_lpad_missing_instruction_exception: cross priv_mode_s, lpe_enabled, lp_branch_prev, not_lpad;
 
     cp_zicfilp_lpad_label_mismatch: cross priv_mode_s, lpe_enabled, lp_branch_prev, lpad_lpl_nonzero, lpl_match, x7_label, x7_low_bits {
+        // A matching LPL passes the check (cp_zicfilp_lpad_valid_execution covers it)
         ignore_bins ig_match   = binsof(lpl_match.match);
+        // x7[31:12]=0 with LPL!=0 is the sc4_x7_label_zero bin of cp_zicfilp_lpad_label_match_mismatch
         ignore_bins ig_x7_zero = binsof(x7_label.label_zero);
     }
 
@@ -70,13 +72,16 @@ covergroup ZicfilpS_cg with function sample(ins_t ins);
 
     cp_zicfilp_lpad_label_exception_delivery: cross priv_mode_s, lpe_enabled, lp_branch_prev, lpad_lpl_nonzero, lpl_match,
                                                     x7_label, sw_check_exc, xtval_lpad, spelp {
+        // A matching LPL raises no exception, so there is no delivery to cover
         ignore_bins ig_match   = binsof(lpl_match.match);
+        // x7[31:12]=0 with LPL!=0 is the sc4_x7_label_zero bin of cp_zicfilp_lpad_label_match_mismatch
         ignore_bins ig_x7_zero = binsof(x7_label.label_zero);
     }
 
     cp_disabled_zicfilp: cross priv_mode_s, lpe_disabled, lp_branch_prev, lpad_lpl_nonzero;
 
     cp_lpad_no_sw_exception_elp_clear_zicfilp: cross priv_mode_s, lpe_enabled, lp_branch_prev, lpad_lpl_nonzero, lpl_match, pc_aligned {
+        // A mismatched LPL raises a software-check exception (cp_zicfilp_lpad_label_exception_delivery covers it)
         ignore_bins ig_mismatch = binsof(lpl_match.mismatch);
     }
 

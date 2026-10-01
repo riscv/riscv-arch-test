@@ -45,6 +45,8 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
     exc_pattern = re.compile(r"handling exc#(?:load|store/amo)-(?:access|page)-fault .* tval=0x([0-9a-fA-F]+)")
     interrupt_pattern = re.compile(r"Handling interrupt")
     fetch_faults = ("fetch-access-fault", "fetch-page-fault", "fetch-guest-page-fault")
+    # Memory operand in the disassembly, such as "0x4(x9)" in "lw x13, 0x4(x9)" or "(x6)" in "amoadd.w x8, x14, (x6)"
+    mem_operand_pattern = re.compile(r"(-?0x[0-9a-fA-F]+)?\(x(\d+)\)")
 
     # Mode mapping
     mode_map = {"M": "3", "S": "1", "HS": "1", "U": "0"}
@@ -74,6 +76,8 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
         tlb_va: dict[int, str] = {}
         walk_vpn = 0
         translating = False
+        # Integer register values, tracked from the logged writes, to compute effective addresses
+        xregs = [0] * 32
         for i in range(len(lines)):
             line = lines[i]
 
@@ -98,6 +102,18 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
                 if tlb_flush_pattern.match(disasm):
                     tlb.clear()
                     tlb_va.clear()
+
+                # VIRT_ADR_I is the PC. VIRT_ADR_D is the effective address of a scalar load, store, AMO, or CMO,
+                # whether or not the access faults. jalr names a jump target, prefetch does not access memory, and
+                # a vector access has an address per element, so they get no VIRT_ADR_D.
+                # Sail prints the PC with XLEN/4 hex digits.
+                next_output += f" VIRT_ADR_I {pc}"
+                mnemonic = disasm.partition(" ")[0]
+                mem_match = mem_operand_pattern.search(disasm)
+                if mem_match and mnemonic != "jalr" and not mnemonic.startswith(("prefetch.", "v")):
+                    offset, base = mem_match.groups()
+                    vaddr = (xregs[int(base)] + int(offset or "0", 16)) & ((1 << (4 * len(pc))) - 1)
+                    next_output += f" VIRT_ADR_D {vaddr:0{len(pc)}X}"
 
                 # Check for register updates until the next instruction line.  Sail logs every
                 # element a vector instruction writes as a separate whole-register update, so a
@@ -168,6 +184,8 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
                     j += 1
                 for (reg_type, reg_num), reg_val in reg_writes.items():
                     next_output += f" {reg_type} {reg_num} {reg_val}"
+                    if reg_type == "X":
+                        xregs[int(reg_num)] = int(reg_val, 16)
                 if trap:
                     next_output += " TRAP 1"
                 if pte_i is not None:

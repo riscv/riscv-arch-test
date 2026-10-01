@@ -27,18 +27,30 @@ ci_enabled: true
 #     on RV32 the IMSIC bit is writable although Sail does not model IMSIC
 # ZawrsU and ZawrsS fail on qemu due to stval mismatching, filed QEMU issue https://gitlab.com/qemu-project/qemu/-/work_items/4080
 # Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
-# ZicfissU, ZicfissS, ZicfissSm, ZicfissV: QEMU bugs
-#  1. a shadow stack instruction on a non-SS page other than xwr=001 gets the ordinary permission
-#     check instead of a store/AMO access fault: SSPOPCHK on an RW page raises a software check
-#     (https://gitlab.com/qemu-project/qemu/-/work_items/4379), and SSPUSH/SSAMOSWAP on RW/RWX pages
-#     write, and on X/RX pages raise a store/AMO page fault (https://github.com/riscv/riscv-arch-test/issues/2603)
-#  2. the M-mode SSAMOSWAP access fault leaves a stale mtval, the previous fault's address, rather than
-#     zero or the faulting address (https://gitlab.com/qemu-project/qemu/-/work_items/4380)
-#  3. SSPOPCHK with satp.MODE=Bare below M does not fault (https://gitlab.com/qemu-project/qemu/-/work_items/4432)
-#  4. senvcfg.SSE keeps 1 after menvcfg.SSE is cleared (https://gitlab.com/qemu-project/qemu/-/work_items/4224)
-#  5. ssp[1:0] are writable; SSPOPCHK to a PMP read-only region does not fault; cbo.* on an SS page
-#     does not fault after a load has cached its translation (https://github.com/riscv/riscv-arch-test/issues/2603)
+# ZicfissU, ZicfissS, ZicfissSm, ZicfissV excluded due to QEMU bugs:
+#  1. sspopchk raises a software-check exception where a store/AMO access fault must take priority
+#     (https://gitlab.com/qemu-project/qemu/-/work_items/4379)
+#  2. the M-mode SSAMOSWAP access fault reports an mtval that disagrees with the reference model
+#     (https://gitlab.com/qemu-project/qemu/-/work_items/4380)
+#  3. ssp bits [1:0] are writable (https://gitlab.com/qemu-project/qemu/-/issues/4621)
+#  4. sspush and ssamoswap write RW/RWX pages and page-fault on X/RX pages
+#     (https://gitlab.com/qemu-project/qemu/-/issues/4622)
+#  5. sspopchk from a PMP read-only region does not fault
+#     (https://gitlab.com/qemu-project/qemu/-/issues/4623)
+#  6. cbo.clean/flush/inval to a shadow stack page execute once the page is in the TLB
+#     (https://gitlab.com/qemu-project/qemu/-/issues/4624)
+#  7. SSPOPCHK with satp.MODE=Bare below M does not fault (https://gitlab.com/qemu-project/qemu/-/work_items/4432)
+#  8. senvcfg.SSE keeps 1 after menvcfg.SSE is cleared (https://gitlab.com/qemu-project/qemu/-/work_items/4224)
 exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,ZicfissU,ZicfissS,ZicfissSm,ZicfissV"
+# qemu-rv32-mu, qemu-rv64-mu: U-mode cbo.zero/clean/flush/inval raise illegal-instruction without S-mode
+#   because check_zicbo_envcfg() also requires senvcfg, which does not exist
+#   (https://gitlab.com/qemu-project/qemu/-/work_items/4596)
+# qemu-rv64-m, qemu-rv64-mu: mstatus.SXL/UXL read as 64-bit when S/U are not implemented
+#   (https://gitlab.com/qemu-project/qemu/-/work_items/4456)
+exclude_configs:
+  - qemu-rv32-mu
+  - qemu-rv64-m
+  - qemu-rv64-mu
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
 shards: 1

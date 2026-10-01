@@ -28,11 +28,3 @@ normative_rule_definitions:
   - name: Zca_align16
     # A 32-bit ebreak at an address that is 2 mod 4
     coverpoint: ["ExceptionsSm_cg/cp_ebreak_straddle64"]
-
-  # csr:misa[c] must be clear if any of the following holds:
-  - name: misa_C_set_line
-    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
-  # ext:zca[] is not implemented MXLEN=32, ext:f[] is implemented, and ext:zcf[] is not
-  # implemented ext:d[] is implemented, and ext:zcd[] is not implemented
-  - name: misa_C_set_list
-    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]

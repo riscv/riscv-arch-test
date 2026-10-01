@@ -11,6 +11,7 @@ import random
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
+    emulated_load_lines,
     handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
@@ -127,7 +128,22 @@ def format_vsseg_like_type(
 
     # Reload after storing to arbitrary memory
     equivalent_load = "vl" + instr_str[2:]
-    if params.maskval:
+    if test_data.config.vector_scalar_check:
+        mask_suffix = ", v0.t" if params.maskval else ""
+        test = [
+            f"{instr_str} v{params.vs3}, (x{params.rs1}){mask_suffix}",
+            *emulated_load_lines(
+                test_data,
+                vd=reload_register,
+                eew=8 if vs3_mask else eew,
+                emul=emul,
+                base_reg=params.rs1,
+                segments=segments,
+                masked=bool(params.maskval),
+                mask_load=vs3_mask,
+            ),
+        ]
+    elif params.maskval:
         test = [
             f"{instr_str} v{params.vs3}, (x{params.rs1}), v0.t",
             f"{equivalent_load} v{params.vd}, (x{params.rs1}), v0.t",

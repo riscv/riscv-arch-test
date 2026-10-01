@@ -20,7 +20,7 @@ from testgen.data.test_chunk import TestChunk, split_test_chunks
 from testgen.formatters.registry import get_instruction_type_config
 from testgen.instructions.vector import parse_vector_instruction_info
 from testgen.io.templates import canonicalize_extensions
-from testgen.io.testplans import read_testplan
+from testgen.io.testplans import read_testplan, split_vector_scalar_check
 from testgen.io.writer import write_test_file
 
 
@@ -57,6 +57,10 @@ def generate_unpriv_extension_tests(
         output_test_dir: Directory to output generated tests
         is_vector: Set in vector test suites
     """
+    # Scalar self-checking suites (e.g. Vx8-scalarcheck) generate the base suite into their own directory
+    output_suite = testsuite
+    testsuite, vector_scalar_check = split_vector_scalar_check(testsuite)
+
     # Read testplan for this testsuite
     if is_vector:
         match = re.search(r"([^0-9]*)\d*$", testsuite)
@@ -73,7 +77,7 @@ def generate_unpriv_extension_tests(
         testsuite = "E"
 
     # Create testsuite-wide test configuration
-    output_dir = output_test_dir / f"rv{xlen}{'e' if E_ext else 'i'}/{testsuite}"
+    output_dir = output_test_dir / f"rv{xlen}{'e' if E_ext else 'i'}/{output_suite}"
     output_dir.mkdir(parents=True, exist_ok=True)
     generated_files: set[Path] = set()
 
@@ -91,6 +95,7 @@ def generate_unpriv_extension_tests(
             E_ext=E_ext,
             sew=sew,
             extra_extension=extra_extension,
+            vector_scalar_check=vector_scalar_check,
         )
 
     # Iterate through each instruction in the testsuite; generate separate test files for each
@@ -194,6 +199,8 @@ def _generate_unpriv_tests_for_instruction(
                 f"#define RVTEST_SEW {sew}",
                 f"#define VDSEW {vdsew}",
             ]
+            if test_config.vector_scalar_check:
+                extra_defines.append("#define RVTEST_VEC_SCALAR_CHECK")
         else:
             extra_defines = []
             vdsew = 0

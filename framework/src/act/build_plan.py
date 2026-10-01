@@ -460,7 +460,8 @@ def gen_coverage_tasks(
                 tracelist_file.write_text(tracelist_contents)
 
         # Coverage collection task
-        coverage_tag = f"{coverage_group.stem.upper()}_COVERAGE"
+        # Scalar self-checking vector suites (e.g. Vx8-scalarcheck) use the covergroups of their base suite
+        coverage_tag = f"{coverage_group.stem.removesuffix('-scalarcheck').upper()}_COVERAGE"
         coverage_define_list = [coverage_tag]
         if verbose:
             coverage_define_list.append("FCOV_VERBOSE")

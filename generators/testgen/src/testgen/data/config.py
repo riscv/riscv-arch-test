@@ -34,6 +34,8 @@ class TestConfig:
         extra_params: Optional list of extra parameter requirements for the test.
         extra_extension: Extensions required in addition to the testsuite's own, from a testplan row's
                          ExtraExtension column. It is appended to the file and covergroup name prefix.
+        vector_scalar_check: Vector tests check results with scalar code and only use vset{i}vl{i},
+                             vle<eew>.v, and vse<eew>.v outside the instruction under test.
     """
 
     xlen: int
@@ -46,6 +48,7 @@ class TestConfig:
     march_extensions: list[str] | None = None
     extra_params: list[str] | None = None
     extra_extension: str = ""
+    vector_scalar_check: bool = False
 
     @property
     def name_prefix(self) -> str:

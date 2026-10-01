@@ -47,6 +47,7 @@ SIM="$SNAPSHOT/obj_dir/Vtb_top"
   echo "run-veer-el2.sh: no simulator at $SIM (set VEER_SNAPSHOT or --snapshot)" >&2
   exit 2
 }
+SIM="$(realpath "$SIM")"
 
 # The testbench reads program.hex and writes its logs in the current directory, so each
 # test runs in its own directory.

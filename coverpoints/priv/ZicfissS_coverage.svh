@@ -218,9 +218,11 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
 
     cp_sspush_s:                   cross priv_mode_s, ss_push_instr, pte_ss_page;
     cp_sspopchk_match_s:           cross priv_mode_s, ss_pop_instr, sspopchk_outcome, pte_ss_page {
+        // Mismatching pops trap and are counted in cp_sspopchk_mismatch_s.
         ignore_bins mismatch = binsof(sspopchk_outcome.mismatched);
     }
     cp_sspopchk_mismatch_s:        cross priv_mode_s, ss_pop_instr, sspopchk_outcome, pte_ss_page, stval_ss_fault {
+        // Matching pops retire without a trap and are counted in cp_sspopchk_match_s.
         ignore_bins match = binsof(sspopchk_outcome.matched);
     }
     cp_sspopchk_fault_priority_s:  cross priv_mode_s, ss_pop_instr, ssp_fault_address;

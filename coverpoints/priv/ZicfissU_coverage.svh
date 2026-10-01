@@ -405,9 +405,11 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     cp_ssp_low_bits_ro_zero:       cross priv_mode_u, csr_reg_ops, ssp_csr, ssp_wr_low_bits, ssp_rd_low_bits;
     cp_sspush:                     cross priv_mode_u, ss_push_instr, ss_push_value, pte_ss_page;
     cp_sspopchk_match:             cross priv_mode_u, ss_pop_instr, sspopchk_outcome, pte_ss_page {
+        // Mismatching pops trap and are counted in cp_sspopchk_mismatch.
         ignore_bins mismatch = binsof(sspopchk_outcome.mismatched);
     }
     cp_sspopchk_mismatch:          cross priv_mode_u, ss_pop_instr, sspopchk_outcome, pte_ss_page, stval_ss_fault {
+        // Matching pops retire without a trap and are counted in cp_sspopchk_match.
         ignore_bins match = binsof(sspopchk_outcome.matched);
     }
     cp_sspopchk_fault_priority:    cross priv_mode_u, ss_pop_instr, ssp_fault_address;

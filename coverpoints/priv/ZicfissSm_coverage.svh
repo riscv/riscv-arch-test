@@ -257,6 +257,7 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
         cp_envcfg_sse_rdonly0_henvcfg: cross priv_mode_m, henvcfg_csr, menvcfg_sse, sse_bit_write, henvcfg_sse_readback {
             illegal_bins rdonly0_cannot_read_one =
                 binsof(menvcfg_sse.sse_off) && binsof(henvcfg_sse_readback.reads_one);
+            // With menvcfg.SSE=1 henvcfg.SSE is writable and reads back what was written.
             ignore_bins writable_reads_back =
                 binsof(menvcfg_sse.sse_on) &&
                 ((binsof(sse_bit_write.set_sse) && binsof(henvcfg_sse_readback.reads_zero)) ||
@@ -266,6 +267,7 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
         cp_envcfg_sse_rdonly0_virt: cross priv_mode_vs, senvcfg_csr, henvcfg_sse, sse_bit_write, senvcfg_sse_readback {
             illegal_bins rdonly0_cannot_read_one =
                 binsof(henvcfg_sse.sse_off) && binsof(senvcfg_sse_readback.reads_one);
+            // With henvcfg.SSE=1 senvcfg.SSE is writable and reads back what was written.
             ignore_bins writable_reads_back =
                 binsof(henvcfg_sse.sse_on) &&
                 ((binsof(sse_bit_write.set_sse) && binsof(senvcfg_sse_readback.reads_zero)) ||

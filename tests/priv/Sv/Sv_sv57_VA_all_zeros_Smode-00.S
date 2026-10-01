@@ -82,6 +82,7 @@ main:
   slli t0, t0, 28
   ori t0, t0, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V
   SREG t0, 0(a0)
+  sfence.vma
 
 // 4KB page at level 0
 

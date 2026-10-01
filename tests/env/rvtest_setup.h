@@ -275,29 +275,14 @@
       RVMODEL_IO_INIT(T1, T2, T3)
     #endif
 
-    // Boot to the lowest supported privilege mode unless a test requests M-mode or S-mode.
-    RVTEST_BOOT_TO_MMODE
-    // The BOOT_TO_MMODE symbol will be defined in any tests that should run in M-mode.
-    // Otherwise continue to a lower privilege mode (if one exists) depending on the type of test
-    #ifndef BOOT_TO_MMODE
-      #ifdef S_SUPPORTED
-        RVTEST_BOOT_TO_SMODE
-      #endif
-      // The BOOT_TO_SMODE symbol will be defined in any tests that should run in S-mode.
-      // Otherwise continue to U-mode if U-mode supported
-      #ifndef BOOT_TO_SMODE
-        #ifdef U_SUPPORTED
-          RVTEST_BOOT_TO_UMODE
-        #endif
-      #endif
-    #endif
-
     #ifdef S_SUPPORTED
       rvtest_identity_map:
         // Identity maps rvtest_data_begin, forming an aligned Sv32 megapage,
         // Sv39 gigapage, Sv48 terapage and Sv57 petapage.
         // This allows the S-mode trap handler and save area to be accessed
         // without requiring prior page table entries setup.
+        // The map is written in M-mode before the boot mode switch, so sfence.vma can
+        // order the stores before the implicit page-table reads of later translations.
         LA(T1, rvtest_Sroot_pg_tbl)
         LA(T2, rvtest_data_begin)
         #if __riscv_xlen == 32
@@ -321,6 +306,26 @@
             sd   T4, 0(T3)
           .endr
         #endif
+        #if defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)
+          sfence.vma
+        #endif
+    #endif
+
+    // Boot to the lowest supported privilege mode unless a test requests M-mode or S-mode.
+    RVTEST_BOOT_TO_MMODE
+    // The BOOT_TO_MMODE symbol will be defined in any tests that should run in M-mode.
+    // Otherwise continue to a lower privilege mode (if one exists) depending on the type of test
+    #ifndef BOOT_TO_MMODE
+      #ifdef S_SUPPORTED
+        RVTEST_BOOT_TO_SMODE
+      #endif
+      // The BOOT_TO_SMODE symbol will be defined in any tests that should run in S-mode.
+      // Otherwise continue to U-mode if U-mode supported
+      #ifndef BOOT_TO_SMODE
+        #ifdef U_SUPPORTED
+          RVTEST_BOOT_TO_UMODE
+        #endif
+      #endif
     #endif
 
     // Clear the global trap counter at the end of boot code

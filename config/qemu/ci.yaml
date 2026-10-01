@@ -27,6 +27,11 @@ ci_enabled: true
 #     on RV32 the IMSIC bit is writable although Sail does not model IMSIC
 # ZawrsU and ZawrsS fail on qemu due to stval mismatching, filed QEMU issue https://gitlab.com/qemu-project/qemu/-/work_items/4080
 # Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
+# H: mstatus.MPV and mstatus.GVA are read-only zero, so mret never enters VS/VU: a guest's
+#    ecall is reported as cause 9/8 instead of 10, and a hypervisor CSR access from VS raises
+#    an illegal instruction instead of a virtual instruction exception
+#    (https://gitlab.com/qemu-project/qemu/-/issues/4620). QEMU has further hypervisor bugs
+#    filed the same day, 4611 through 4617, so this exclusion will be needed for a while.
 # ZicfilpSm: an RV32 mstatus write clears mstatush.MPELP, so MRET does not restore ELP
 #     (https://gitlab.com/qemu-project/qemu/-/work_items/4488), and mstatush.MPELP is not
 #     writable (https://gitlab.com/qemu-project/qemu/-/work_items/4220).
@@ -35,7 +40,7 @@ ci_enabled: true
 #     S-mode access to senvcfg then raises an illegal instruction (cause 2, xtval holding the
 #     csrrc encoding) and the landing-pad tests diverge from the reference on senvcfg.LPE.
 # All three suites pass on qemu-rv64-max, but exclusions apply to every QEMU config.
-exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,ZicfilpSm,ZicfilpS,ZicfilpU"
+exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H,ZicfilpSm,ZicfilpS,ZicfilpU"
 # qemu-rv32-mu, qemu-rv64-mu: U-mode cbo.zero/clean/flush/inval raise illegal-instruction without S-mode
 #   because check_zicbo_envcfg() also requires senvcfg, which does not exist
 #   (https://gitlab.com/qemu-project/qemu/-/work_items/4596)

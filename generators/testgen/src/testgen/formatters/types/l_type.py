@@ -11,7 +11,7 @@ from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
 
 l_config = InstructionTypeConfig(
-    required_params={"rd", "rs1", "temp_val", "immval", "temp_reg"},
+    required_params={"rd", "rs1", "temp_val", "immval"},
     imm_bits=12,
     imm_signed=True,
 )

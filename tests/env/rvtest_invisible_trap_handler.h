@@ -26,7 +26,6 @@
 
   invisible_Mtime_check_access:
     // Check counter permissions before emulating the missing CSR.
-    // TODO: Check hcounteren when H is supported.
     csrr    \DEST_REG, mstatus
     li      \VALUE_REG, MSTATUS_MPP
     and     \DEST_REG, \DEST_REG, \VALUE_REG
@@ -34,6 +33,30 @@
     csrr    \VALUE_REG, mcounteren
     andi    \VALUE_REG, \VALUE_REG, MCOUNTEREN_TIME
     beqz    \VALUE_REG, invisible_Mtime_done
+    #ifdef H_SUPPORTED
+      // From VS or VU (mstatus.MPV = 1), a clear hcounteren.TM, or a clear scounteren.TM
+      // in VU, raises a virtual-instruction exception rather than an illegal-instruction one.
+      #if UDB_MXLEN == 32
+        csrr    \VALUE_REG, CSR_MSTATUSH
+        andi    \VALUE_REG, \VALUE_REG, (1 << MPV_LSB)
+      #else
+        csrr    \VALUE_REG, mstatus
+        srli    \VALUE_REG, \VALUE_REG, (32 + MPV_LSB)
+        andi    \VALUE_REG, \VALUE_REG, 1
+      #endif
+      beqz    \VALUE_REG, invisible_Mtime_not_virtual
+      csrr    \VALUE_REG, CSR_HCOUNTEREN
+      andi    \VALUE_REG, \VALUE_REG, MCOUNTEREN_TIME
+      beqz    \VALUE_REG, invisible_Mtime_virtual
+      bnez    \DEST_REG, invisible_Mtime_read              // VS-mode
+      csrr    \VALUE_REG, scounteren
+      andi    \VALUE_REG, \VALUE_REG, MCOUNTEREN_TIME
+      bnez    \VALUE_REG, invisible_Mtime_read
+    invisible_Mtime_virtual:
+      li      \ACTION_REG, 3
+      j       invisible_Mtime_done
+    invisible_Mtime_not_virtual:
+    #endif
     #ifdef S_SUPPORTED
       bnez    \DEST_REG, invisible_Mtime_read              // S-mode access only needs mcounteren.TIME
       csrr    \VALUE_REG, scounteren
@@ -42,19 +65,44 @@
     #endif
 
   invisible_Mtime_read:
+    // T6 is saved by the trap entry, so it is free here.
     li      \VALUE_REG, RVMODEL_MTIME_ADDRESS
     #if UDB_MXLEN == 32
-      // timeh differs from time in CSR address bit 7, which is
-      // instruction bit 27. Convert that bit to byte offset 4 so timeh reads
-      // the high word at RVMODEL_MTIME_ADDRESS + 4.
-      srli    \DEST_REG, \INSTRUCTION_REG, 27
-      andi    \DEST_REG, \DEST_REG, 1
-      slli    \DEST_REG, \DEST_REG, 2
-      add     \VALUE_REG, \VALUE_REG, \DEST_REG
+      lw      \DEST_REG, 4(\VALUE_REG)
       lw      \VALUE_REG, 0(\VALUE_REG)
     #else
       ld      \VALUE_REG, 0(\VALUE_REG)
     #endif
+    #ifdef H_SUPPORTED
+      // time reads as mtime + htimedelta in VS and VU.
+      #if UDB_MXLEN == 32
+        csrr    T6, CSR_MSTATUSH
+        andi    T6, T6, (1 << MPV_LSB)
+        beqz    T6, invisible_Mtime_select
+        csrr    T6, CSR_HTIMEDELTA
+        add     \VALUE_REG, \VALUE_REG, T6
+        sltu    T6, \VALUE_REG, T6                   // carry out of the low word
+        add     \DEST_REG, \DEST_REG, T6
+        csrr    T6, CSR_HTIMEDELTAH
+        add     \DEST_REG, \DEST_REG, T6
+      #else
+        csrr    T6, mstatus
+        srli    T6, T6, (32 + MPV_LSB)
+        andi    T6, T6, 1
+        beqz    T6, invisible_Mtime_select
+        csrr    T6, CSR_HTIMEDELTA
+        add     \VALUE_REG, \VALUE_REG, T6
+      #endif
+    #endif
+  invisible_Mtime_select:
+    #if UDB_MXLEN == 32
+      // timeh differs from time in CSR address bit 7, which is instruction bit 27.
+      srli    T6, \INSTRUCTION_REG, 27
+      andi    T6, T6, 1
+      beqz    T6, invisible_Mtime_rd
+      mv      \VALUE_REG, \DEST_REG
+    #endif
+  invisible_Mtime_rd:
     // The CSR rd field uses the standard bits 11:7 location.
     srli    \DEST_REG, \INSTRUCTION_REG, 7
     andi    \DEST_REG, \DEST_REG, (INSN_FIELD_RD >> 7)
@@ -66,7 +114,8 @@
   invisible_Mhandler:
     // Reconstruct the illegal instruction.
     // Load with the trapped mode's access rights from mstatus.MPP. SUM and MXR
-    // permit reads from executable or readable lower-mode pages.
+    // permit reads from executable or readable lower-mode pages. MPRV also honors
+    // mstatus.MPV, so a fetch from VS or VU uses the guest's two-stage translation.
     csrr    T1, mepc
     li      T3, MSTATUS_MPRV | MSTATUS_SUM | MSTATUS_MXR
     csrrs   T4, mstatus, T3
@@ -100,6 +149,12 @@
     // Action 2 writes T5 to the GPR number in T4 before returning.
     addi    T3, T3, -1
     beqz    T3, invisible_Mwrite_gpr
+    #ifdef H_SUPPORTED
+      // Action 3 raises a virtual-instruction exception.
+      addi    T3, T3, -1
+      beqz    T3, invisible_Mvirtual_instruction
+      addi    T3, T3, 1
+    #endif
 
     // An invalid action is an integration error. Restore its value, report it, and stop the test.
     addi    T3, T3, 2
@@ -115,6 +170,24 @@
     call    rvmodel_io_write_str
     call    rvmodel_halt_fail
 
+  #ifdef H_SUPPORTED
+  invisible_Mvirtual_instruction:
+    // Take the exception in HS-mode if medeleg[22] delegates it, otherwise in M-mode.
+    li      T5, CAUSE_VIRTUAL_INSTRUCTION
+    csrr    T1, mstatus
+    csrr    T4, CSR_MEDELEG
+    srli    T4, T4, CAUSE_VIRTUAL_INSTRUCTION
+    andi    T4, T4, 1
+    bnez    T4, invisible_Mforward_hs
+    csrw    mcause, T5
+    #ifdef UDB_REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION
+      csrw    mtval, T2
+    #else
+      csrw    mtval, zero
+    #endif
+    j       invisible_Mnot_handled_in_M
+  #endif
+
   invisible_Mnot_handled:
     // Keep an unhandled instruction on the normal illegal-instruction path.
     li      T5, CAUSE_ILLEGAL_INSTRUCTION     // the custom hook may use T5 as scratch
@@ -129,12 +202,78 @@
       LREG    T4, medeleg_illegal_sv_off(sp)
       beqz    T4, invisible_Mnot_handled_in_M
 
+      #ifdef H_SUPPORTED
+        // From VS or VU, hedeleg[2] delegates the exception on to VS-mode.
+        #if UDB_MXLEN == 32
+          csrr    T4, CSR_MSTATUSH
+          andi    T4, T4, (1 << MPV_LSB)
+        #else
+          srli    T4, T1, 32
+          andi    T4, T4, (1 << MPV_LSB)
+        #endif
+        beqz    T4, invisible_Mforward_hs
+        csrr    T4, CSR_HEDELEG
+        andi    T4, T4, (1 << CAUSE_ILLEGAL_INSTRUCTION)
+        bnez    T4, invisible_Mforward_vs
+      #endif
+
+    invisible_Mforward_hs:
       // Copy the M-mode trap state to the corresponding S-mode CSRs (xepc, xcause, xtval).
+      // T1 holds mstatus and T5 the cause.
       csrr    T4, mepc
       csrw    sepc, T4
       csrw    scause, T5
-      csrr    T4, mtval
-      csrw    stval, T4
+      #ifdef H_SUPPORTED
+        LI(     T3, CAUSE_VIRTUAL_INSTRUCTION)
+        bne     T5, T3, invisible_Mforward_hs_illegal_tval
+        #ifdef UDB_REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION
+          csrw    stval, T2
+        #else
+          csrw    stval, zero
+        #endif
+        j       invisible_Mforward_hs_tval_done
+      invisible_Mforward_hs_illegal_tval:
+      #endif
+      #ifdef UDB_REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION
+        csrw    stval, T2
+      #else
+        csrw    stval, zero
+      #endif
+      invisible_Mforward_hs_tval_done:
+
+      #ifdef H_SUPPORTED
+        // Reproduce HS-mode trap entry: htval and htinst are zero, SPV and GVA are
+        // written, and SPVP is written only from a guest. Clearing MPV makes the mret
+        // below enter HS-mode.
+        csrw    htval, zero
+        csrw    htinst, zero
+        LI(     T3, HSTATUS_SPV | HSTATUS_GVA)
+        csrc    hstatus, T3
+        #if UDB_MXLEN == 32
+          csrr    T4, CSR_MSTATUSH
+          andi    T4, T4, (1 << MPV_LSB)
+        #else
+          srli    T4, T1, 32
+          andi    T4, T4, (1 << MPV_LSB)
+        #endif
+        beqz    T4, invisible_Mforward_host
+        LI(     T3, HSTATUS_SPV | HSTATUS_SPVP)
+        csrs    hstatus, T3
+        srli    T4, T1, MPP_LSB
+        andi    T4, T4, 1                         // nominal privilege: VS = 1, VU = 0
+        bnez    T4, invisible_Mforward_clear_mpv
+        LI(     T3, HSTATUS_SPVP)
+        csrc    hstatus, T3
+      invisible_Mforward_clear_mpv:
+        #if UDB_MXLEN == 32
+          li      T3, (1 << MPV_LSB)
+          csrc    CSR_MSTATUSH, T3
+        #else
+          LI(     T3, MSTATUS_MPV)
+          csrc    mstatus, T3
+        #endif
+      invisible_Mforward_host:
+      #endif
 
       // Reproduce S-mode trap entry: SPIE gets the prior SIE value, SIE is cleared,
       // and SPP records whether the interrupted mode was S or U.
@@ -150,14 +289,43 @@
 
       // Make the final mret enter S-mode at the stvec base. Exceptions do not
       // use a vectored offset, even when stvec.MODE is vectored.
+      csrr    T1, stvec
+      j       invisible_Mforward_enter
+
+      #ifdef H_SUPPORTED
+    invisible_Mforward_vs:
+      // Reproduce VS-mode trap entry for an illegal instruction. vsstatus takes the
+      // S-mode trap entry fields, SPP records whether the guest was in VS or VU, and
+      // hstatus is unchanged. MPV stays set, so the mret below enters VS-mode.
+      csrr    T4, mepc
+      csrw    CSR_VSEPC, T4
+      csrw    CSR_VSCAUSE, T5
+      #ifdef UDB_REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION
+        csrw    CSR_VSTVAL, T2
+      #else
+        csrw    CSR_VSTVAL, zero
+      #endif
+      csrr    T3, CSR_VSSTATUS
+      andi    T4, T3, MSTATUS_SIE
+      slli    T4, T4, 4                         // SIE -> SPIE
+      srli    T3, T1, MPP_LSB
+      andi    T3, T3, 1                         // trapped VS-mode -> SPP=1
+      slli    T3, T3, 8
+      or      T3, T3, T4
+      LI(     T4, MSTATUS_SIE | MSTATUS_SPIE | MSTATUS_SPP)
+      csrc    CSR_VSSTATUS, T4
+      csrs    CSR_VSSTATUS, T3
+      csrr    T1, CSR_VSTVEC
+      #endif
+
+    invisible_Mforward_enter:
+      andi    T1, T1, -4
+      csrw    mepc, T1
       LI(     T4, MSTATUS_MPP)
       csrc    mstatus, T4
       LI(     T4, MPP_SMODE)
       csrs    mstatus, T4
-      csrr    T1, stvec
-      andi    T1, T1, -4
-      csrw    mepc, T1
-      // Restore the saved M-mode registers, then execute mret into S-mode.
+      // Restore the saved M-mode registers, then execute mret into S-mode or VS-mode.
       SREG    zero, rvmodel_sv_off(sp)           // clear the fast-handler handoff marker
       LA(     T4, resto_Mrtn)
       jr      T4

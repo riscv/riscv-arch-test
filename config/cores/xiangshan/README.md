@@ -19,13 +19,21 @@ pinned to `e7bab53`, as the SimTop difftest emulator built with Verilator.
 
 ## Building and running
 
+XiangShan is not run in CI. To run it manually:
+
 ```bash
 .github/scripts/install-xiangshan.sh ~/repos/xiangshan-builds
 export PATH=$HOME/repos/xiangshan-builds/bin:$PATH
 export XIANGSHAN_EMU=$HOME/repos/xiangshan-builds/bin/emu
-make CONFIG_FILES=config/cores/xiangshan/xiangshan-kmhv2/test_config.yaml
-./run_tests.py --timeout 7200 "run-xiangshan.sh --elf" work/xiangshan-kmhv2/elfs
+make CONFIG_FILES=config/cores/xiangshan/xiangshan-kmhv2/test_config.yaml   # generate tests, build ELFs
+./run_tests.py -j 16 --timeout 14400 "$(cat config/cores/xiangshan/xiangshan-kmhv2/run_cmd.txt)" \
+  work/xiangshan-kmhv2/elfs
 ```
+
+Add `EXTENSIONS=<suites>` to the `make` command to build a subset. A test takes from 2 minutes to
+more than an hour at a few hundred cycles per second, so pass `--timeout` to `run_tests.py` as above:
+`make xiangshan-kmhv2` runs the same command with the 300 s default timeout, which most tests exceed.
+`run-xiangshan.sh` also takes a cycle limit (`XIANGSHAN_CYCLES`, default 20 M).
 
 The build needs mill 0.12.3 (downloaded by the script), a JDK 11 or newer, clang, and about 24 GB
 of memory for Chisel elaboration.

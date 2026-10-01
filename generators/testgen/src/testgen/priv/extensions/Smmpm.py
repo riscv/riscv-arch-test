@@ -11,6 +11,7 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
     PMM_CONFIGS,
+    TAG_GROUPS,
     generate_csr_write_tests,
     generate_fault_address_tests,
     generate_instruction_sweep_tests,
@@ -35,49 +36,53 @@ _CSR_TARGETS = ["mepc", "mscratch"]
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_smmpm(test_data: TestData) -> list[TestChunk]:
-    tc = test_data.begin_test_chunk()
-    lines = [
-        *mprv_data_section(),
-        comment_banner(
-            "Smmpm pointer masking -- M-mode only",
-            "mseccfg.PMM is programmed from M-mode; every probe also runs in M-mode.",
-        ),
-        "",
-    ]
+    chunks = []
     for pmm, pmlen, label in PMM_CONFIGS:
-        prefix = f"{label}_mmode"
-        lines.extend(
-            [
-                comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), M-mode"),
+        for part, uppers in enumerate(TAG_GROUPS, 1):
+            tc = test_data.begin_test_chunk(split_name=f"{label}_part{part}")
+            prefix = f"{label}_mmode"
+            lines = [
+                *mprv_data_section(),
+                comment_banner(
+                    f"Smmpm pointer masking -- M-mode only, PMM={pmm:#04b} (PMLEN={pmlen}), part {part}",
+                    "mseccfg.PMM is programmed from M-mode; every probe also runs in M-mode.",
+                ),
+                "",
                 *set_pmm_field("mseccfg", pmm, pmlen, test_data),
                 "#ifdef S_SUPPORTED",
                 *set_mxr(False, test_data, "mstatus"),
                 "#endif // S_SUPPORTED",
-                *generate_instruction_sweep_tests(prefix, test_data, COVERGROUP),
-                *generate_misaligned_tests(prefix, test_data, COVERGROUP),
-                *generate_jalr_tests(prefix, test_data, COVERGROUP),
-                *generate_fault_address_tests(prefix, test_data, COVERGROUP),
-                "#ifdef S_SUPPORTED",
-                *generate_mxr_tests(prefix, test_data, COVERGROUP, status_csr="mstatus"),
-                *set_mxr(False, test_data, "mstatus"),
-                "#endif // S_SUPPORTED",
-                *generate_csr_write_tests(prefix, pmlen, test_data, COVERGROUP, _CSR_TARGETS),
+                *generate_instruction_sweep_tests(prefix, test_data, COVERGROUP, uppers),
             ]
-        )
+            if part == 1:
+                lines.extend(
+                    [
+                        *generate_misaligned_tests(prefix, test_data, COVERGROUP),
+                        *generate_jalr_tests(prefix, test_data, COVERGROUP),
+                        *generate_fault_address_tests(prefix, test_data, COVERGROUP),
+                        "#ifdef S_SUPPORTED",
+                        *generate_mxr_tests(prefix, test_data, COVERGROUP, status_csr="mstatus"),
+                        *set_mxr(False, test_data, "mstatus"),
+                        "#endif // S_SUPPORTED",
+                        *generate_csr_write_tests(prefix, pmlen, test_data, COVERGROUP, _CSR_TARGETS),
+                    ]
+                )
+            lines.extend(set_pmm_field("mseccfg", 0b00, 0, test_data))
+            tc.code = lines
+            chunks.append(test_data.end_test_chunk())
 
-    lines.extend(
-        [
-            # MPRV with MPP=M only: the effective privilege stays M, so mseccfg.PMM
-            # governs. The MPP=U and MPP=S cases are governed by senvcfg.PMM and
-            # menvcfg.PMM, which come from Ssnpm and Smnpm, and live in SsnpmSm and
-            # SmnpmSSm.
-            *generate_mprv_mpp_m_tests(test_data, COVERGROUP),
-            *set_pmm_field("mseccfg", 0b00, 0, test_data),
-            "#ifdef S_SUPPORTED",
-            *set_mxr(False, test_data, "mstatus"),
-            "#endif // S_SUPPORTED",
-        ]
-    )
-    tc.code = lines
-    chunks = [test_data.end_test_chunk()]
+    # MPRV with MPP=M only: the effective privilege stays M, so mseccfg.PMM
+    # governs. The MPP=U and MPP=S cases are governed by senvcfg.PMM and
+    # menvcfg.PMM, which come from Ssnpm and Smnpm, and live in SsnpmSm and
+    # SmnpmSSm.
+    tc = test_data.begin_test_chunk(split_name="mprv")
+    tc.code = [
+        *mprv_data_section(),
+        *generate_mprv_mpp_m_tests(test_data, COVERGROUP),
+        *set_pmm_field("mseccfg", 0b00, 0, test_data),
+        "#ifdef S_SUPPORTED",
+        *set_mxr(False, test_data, "mstatus"),
+        "#endif // S_SUPPORTED",
+    ]
+    chunks.append(test_data.end_test_chunk())
     return chunks

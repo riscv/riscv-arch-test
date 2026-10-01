@@ -25,8 +25,12 @@
 
     pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm") {
         bins pmm_00_disabled = {2'b00};  // PMLEN = 0, no masking
-        bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
-        bins pmm_11_pmlen16 = {2'b11};   // PMLEN = 16, upper 16 bits masked
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+            bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
+        `endif
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+            bins pmm_11_pmlen16 = {2'b11};   // PMLEN = 16, upper 16 bits masked
+        `endif
     }
 
     //Declare pmm before including the shared PMM coverpoint file so the include can reference it.

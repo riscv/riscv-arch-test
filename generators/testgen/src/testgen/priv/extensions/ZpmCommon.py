@@ -30,6 +30,10 @@ UPPER_PATTERNS = [
     0xFF00,  # bits 63:56 -- fully stripped by PMLEN=16, partially by PMLEN=7
 ]
 
+# Each PMM setting is split into one file per tag group to keep tests near 100k instructions.
+# The first group's file also carries the shorter misaligned/JALR/fault/MXR probes.
+TAG_GROUPS = [UPPER_PATTERNS[:4], UPPER_PATTERNS[4:]]
+
 PMM_CONFIGS = [
     (0b00, 0, "pmm00"),
     (0b10, 7, "pmm10"),
@@ -245,9 +249,9 @@ def build_4k_image_map(
     """Map the 2 MiB region containing rvtest_code_begin as 512 identity 4 KiB leaves.
 
     The walk goes from the framework root through the tables named by *table_label*. A page gets
-    PTE_U when it lies inside one of *user_ranges*, each a (begin label, end label or byte size)
+    PTE_U when its base lies inside one of *user_ranges*, each a (begin label, end label or byte size)
     pair; everything else, such as the S-mode trap handler, stays supervisor-only.
-    Only six integer registers are free, so the range bounds are reloaded on each iteration.
+    All 512 leaves are written supervisor-only first; a second pass sets PTE_U on each range's pages.
     """
     tables = [table_label.format(level) for level in SV_MODES[mode].levels_desc[1:]]
     (r0,) = test_data.int_regs.get_registers(1)
@@ -262,38 +266,50 @@ def build_4k_image_map(
             f"srli x{r0}, x{r0}, 21",
             f"slli x{r0}, x{r0}, 21                  # x{r0} = 2 MiB-aligned base of the image",
             f"LA(x{r1}, {tables[-1]})",
-            f"li   x{count}, 512",
+            f"LI(x{count}, 512)",
+            f"LI(x{perms}, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))",
+            f"mv   x{s2}, x{r0}",
             "1:",
-            f"li   x{perms}, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)",
-        ]
-    )
-    for begin, end in user_ranges:
-        size = [f"LA(x{s2}, {end})", f"sub  x{s2}, x{s2}, x{s1}"] if isinstance(end, str) else [f"li   x{s2}, {end}"]
-        lines.extend(
-            [
-                f"LA(x{s1}, {begin})",
-                *size,
-                f"sub  x{s1}, x{r0}, x{s1}",
-                f"bltu x{s1}, x{s2}, 2f                # inside {begin} -> U-accessible",
-            ]
-        )
-    lines.extend(
-        [
-            "j    3f",
-            "2:",
-            f"ori  x{perms}, x{perms}, PTE_U",
-            "3:",
-            f"srli x{s1}, x{r0}, 12",
+            f"srli x{s1}, x{s2}, 12",
             f"slli x{s1}, x{s1}, 10",
             f"or   x{s1}, x{s1}, x{perms}",
             f"sd   x{s1}, 0(x{r1})",
             f"addi x{r1}, x{r1}, 8",
             f"lui  x{s1}, 1",
-            f"add  x{r0}, x{r0}, x{s1}",
+            f"add  x{s2}, x{s2}, x{s1}",
             f"addi x{count}, x{count}, -1",
             f"bnez x{count}, 1b",
+            f"LA(x{r1}, {tables[-1]})",
         ]
     )
+    for begin, end in user_ranges:
+        bound = [f"LA(x{s2}, {end})"] if isinstance(end, str) else [f"LI(x{s2}, {end})", f"add  x{s2}, x{s2}, x{s1}"]
+        lines.extend(
+            [
+                f"# PTE_U on pages based in [{begin}, {end if isinstance(end, str) else f'{begin} + {end}'})",
+                f"LA(x{s1}, {begin})",
+                *bound,
+                f"addi x{s1}, x{s1}, -1",
+                f"srli x{s1}, x{s1}, 12",
+                f"addi x{s1}, x{s1}, 1",
+                f"slli x{s1}, x{s1}, 12                  # first page base at or above {begin}",
+                "j    3f",
+                "2:",
+                f"sub  x{count}, x{s1}, x{r0}",
+                f"srli x{perms}, x{count}, 21",
+                f"bnez x{perms}, 4f                      # page outside the 2 MiB image",
+                f"srli x{count}, x{count}, 9             # leaf offset = page index * 8",
+                f"add  x{count}, x{count}, x{r1}",
+                f"ld   x{perms}, 0(x{count})",
+                f"ori  x{perms}, x{perms}, PTE_U",
+                f"sd   x{perms}, 0(x{count})",
+                "4:",
+                f"lui  x{count}, 1",
+                f"add  x{s1}, x{s1}, x{count}",
+                "3:",
+                f"bltu x{s1}, x{s2}, 2b",
+            ]
+        )
     test_data.int_regs.return_registers([r0, r1, count, perms, s1, s2])
     return lines
 
@@ -505,15 +521,20 @@ def _probe_zacas(mn: str, upper: int, binname: str, test_data: TestData, cg: str
 
 
 def _probe_cbo(mn: str, upper: int, binname: str, test_data: TestData, cg: str) -> list[str]:
+    """CBO through a tagged pointer, then a readback of the base.
+
+    cbo.inval has no readback: a load after it may return any earlier store to the block,
+    so only the trap signature (did the tagged address fault) is checked.
+    """
     b, a, data = test_data.int_regs.get_registers(3)
     lines = [
         *_tagged_address(b, a, "pm_lo_page", upper),
         *_seed(b, data),
         test_data.add_testcase(binname, CP_MASKING, cg),
         f"{mn} 0(x{a})",
-        f"ld x{data}, 0(x{b})",
-        write_sigupd(data, test_data),
     ]
+    if mn != "cbo.inval":
+        lines.extend([f"ld x{data}, 0(x{b})", write_sigupd(data, test_data)])
     test_data.int_regs.return_registers([b, a, data])
     return lines
 
@@ -546,9 +567,11 @@ def _probe_vec(
 # ── Common Test Generators ─────────────────────────────────────────────────
 
 
-def generate_instruction_sweep_tests(prefix: str, test_data: TestData, cg: str) -> list[str]:
+def generate_instruction_sweep_tests(
+    prefix: str, test_data: TestData, cg: str, uppers: list[int] = UPPER_PATTERNS
+) -> list[str]:
     lines = []
-    for upper in UPPER_PATTERNS:
+    for upper in uppers:
         lines.append(comment_banner(f"{prefix} {CP_MASKING}: tag 0x{upper:04X} -- full instruction sweep"))
         for mn in READS:
             lines.extend(_probe_load(mn, upper, _binname(prefix, upper, mn), test_data, cg))

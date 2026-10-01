@@ -24,8 +24,12 @@
 
     pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "pmm") {
         bins pmm_00_disabled = {2'b00};  // PMLEN = 0, no masking
-        bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
-        bins pmm_11_pmlen16 = {2'b11};   // PMLEN = 16, upper 16 bits masked
+        `ifdef UDB_SUPPORTED_PMLEN_SMNPM_7
+            bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
+        `endif
+        `ifdef UDB_SUPPORTED_PMLEN_SMNPM_16
+            bins pmm_11_pmlen16 = {2'b11};   // PMLEN = 16, upper 16 bits masked
+        `endif
     }
 
     //Declare pmm before including the shared PMM coverpoint file so the include can reference it.
@@ -34,8 +38,12 @@
     `ifdef SMMPM_SUPPORTED  // mseccfg.PMM exists only with Smmpm; it must not apply here
         mseccfg_pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mseccfg", "pmm") {
             bins pmm_00 = {2'b00};
-            bins pmm_10 = {2'b10};
-            bins pmm_11 = {2'b11};
+            `ifdef UDB_SUPPORTED_PMLEN_SMMPM_7
+                bins pmm_10 = {2'b10};
+            `endif
+            `ifdef UDB_SUPPORTED_PMLEN_SMMPM_16
+                bins pmm_11 = {2'b11};
+            `endif
         }
     `endif // SMMPM_SUPPORTED
 

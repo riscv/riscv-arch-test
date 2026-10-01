@@ -11,6 +11,7 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
     PMM_CONFIGS,
+    TAG_GROUPS,
     data_page,
     generate_fault_address_tests,
     generate_instruction_sweep_tests,
@@ -30,27 +31,28 @@ COVERGROUP = "SmnpmU_cg"
     march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
 )
 def make_smnpmu(test_data: TestData) -> list[TestChunk]:
-    tc = test_data.begin_test_chunk()
-    lines = [
-        ".pushsection .data",
-        *data_page("pm_lo_page"),
-        ".popsection",
-    ]
-
+    chunks = []
     for pmm, pmlen, label in PMM_CONFIGS:
-        prefix = f"{label}_bare"
-        lines.extend(
-            [
-                comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), physical addresses"),
+        for part, uppers in enumerate(TAG_GROUPS, 1):
+            tc = test_data.begin_test_chunk(split_name=f"{label}_part{part}")
+            prefix = f"{label}_bare"
+            lines = [
+                ".pushsection .data",
+                *data_page("pm_lo_page"),
+                ".popsection",
+                comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), physical addresses, part {part}"),
                 *set_pmm_field("menvcfg", pmm, pmlen, test_data, tsbi=True),
-                *generate_instruction_sweep_tests(prefix, test_data, COVERGROUP),
-                *generate_misaligned_tests(prefix, test_data, COVERGROUP),
-                *generate_jalr_tests(prefix, test_data, COVERGROUP),
-                *generate_fault_address_tests(prefix, test_data, COVERGROUP),
+                *generate_instruction_sweep_tests(prefix, test_data, COVERGROUP, uppers),
             ]
-        )
-
-    lines.extend(set_pmm_field("menvcfg", 0b00, 0, test_data, tsbi=True))
-    tc.code = lines
-    chunks = [test_data.end_test_chunk()]
+            if part == 1:
+                lines.extend(
+                    [
+                        *generate_misaligned_tests(prefix, test_data, COVERGROUP),
+                        *generate_jalr_tests(prefix, test_data, COVERGROUP),
+                        *generate_fault_address_tests(prefix, test_data, COVERGROUP),
+                    ]
+                )
+            lines.extend(set_pmm_field("menvcfg", 0b00, 0, test_data, tsbi=True))
+            tc.code = lines
+            chunks.append(test_data.end_test_chunk())
     return chunks

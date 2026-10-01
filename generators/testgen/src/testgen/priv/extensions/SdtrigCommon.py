@@ -62,7 +62,7 @@ UDB_DEFINES = [
     "#define UDB_SDTRIG_VU_AVAILABLE",
     # Sims that do not follow Suggested Trigger Timing in spec or fires several cycles after will mismatch MEPC in trap handler
     "#define SDTRIG_IMPRECISE_XEPC",
-    # TODO Uncomment once #2463mis merged
+    # TODO Uncomment once PR #2463 is merged
     # "#define SDTRIG_TRIGGER_BP_HANDLING"
 ]
 
@@ -294,7 +294,7 @@ def _config_mcontrol6(
 
     lines.extend(
         [
-            _csr_access(f"csrw tdata3, x{reg}", mode),
+            _csr_access(f"csrw tdata3, x{reg} # textra context matching ", mode),
             f"# tdata1: type={mcontrol6} priv={privbits:05b} xsl={xsl:03b} select={select} size={size} match={match} chain={chain}",
             *_load_tdata1(reg, mcontrol6, mode, lowfields),  # load data in tdata1
         ]
@@ -351,7 +351,7 @@ def _config_icount(
         [
             _csr_access(f"csrw tdata3, x{reg} # textra", mode),
             f"# tdata1: type={icount} priv={privbits:05b} count={count} pending={pending} action={action}",
-            *_load_tdata1(reg, icount, mode, lowfields),
+            *_load_tdata1(reg, icount, mode, lowfields),  # load data in tdata1
         ]
     )
     return lines
@@ -445,7 +445,7 @@ def _config_etrigger(
 
     lines.extend(
         [
-            _csr_access(f"csrw tdata3, x{reg}", mode),
+            _csr_access(f"csrw tdata3, x{reg} # textra context matching ", mode),
             f"# tdata1: type={etrigger} priv={privbits:05b} action={action}",
             *_load_tdata1(reg, etrigger, mode, lowfields),  # load data in tdata1
         ]
@@ -1918,7 +1918,7 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines.append(
         comment_banner(
             coverpoint,
-            "textra sselect=asid svalue match against satp.ASID",
+            "textra sselect=asid match against satp.ASID",
         )
     )
     asid_x = "((1 << UDB_ASID_WIDTH) - 2)"

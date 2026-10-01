@@ -1,14 +1,37 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # Compressed register-based floating-point loads and stores use the CL and CS formats,
+  # respectively, with the eight registers mapping to f8 to f15.
   - name: Zc_fp_regs
-    # Use a representative coverpoint; applies to others too
-    coverpoint: ["Zcd_c_fld_cg/{cp_fd_p}"]
+    coverpoint: ["Zcd_c_fld_cg/cp_fd_p", "Zcd_c_fsd_cg/cp_fs2_p"]
+  # insn:c.fldsp[] is an RV32DC/RV64DC-only instruction that loads a double-precision
+  # floating-point value from memory into floating-point register rd. It computes its
+  # effective address by adding the zero-extended offset, scaled by 8, to the stack
+  # pointer, x2. It expands to insn:fld[rd,offset(x2)].
   - name: c-fldsp_op
-    coverpoint: ["Zcd_c_fldsp_cg/{cp_fd, cp_imm_mul_8sp}"]
+    coverpoint: ["Zcd_c_fldsp_cg/{cp_fd, cp_imm_mul_8sp, cp_memval_fp_double}"]
+  # insn:c.fsdsp[] is an RV32DC/RV64DC-only instruction that stores a double-precision
+  # floating-point value in floating-point register rs2 to memory. It computes an
+  # effective address by adding the zero-extended offset, scaled by 8, to the stack
+  # pointer, x2. It expands to insn:fsd[rs2,offset(x2)].
+  - name: c-fsdsp_op
+    coverpoint: ["Zcd_c_fsdsp_cg/{cp_fs2, cp_imm_mul_8sp}"]
+  # insn:c.fld[] is an RV32DC/RV64DC-only instruction that loads a double-precision
+  # floating-point value from memory into floating-point register rd′. It computes an
+  # effective address by adding the zero-extended offset, scaled by 8, to the base
+  # address in register rs1′. It expands to insn:fld[rd′,offset(rs1′)].
   - name: c-fld_op
-    coverpoint: ["Zcd_c_fld_cg/{cp_rs1_p, cp_fd_p, cp_imm_mul_8}"]
+    coverpoint:
+      ["Zcd_c_fld_cg/{cp_rs1_p, cp_fd_p, cp_imm_mul_8, cp_memval_fp_double}"]
+  # insn:c.fsd[] is an RV32DC/RV64DC-only instruction that stores a double-precision
+  # floating-point value in floating-point register rs2′ to memory. It computes an
+  # effective address by adding the zero-extended offset, scaled by 8, to the base
+  # address in register rs1′. It expands to insn:fsd[rs2′,offset(rs1′)].
   - name: c-fsd_op
     coverpoint: ["Zcd_c_fsd_cg/{cp_rs1_p, cp_fs2_p, cp_imm_mul_8}"]
-  - name: c-fsdwsp_op
-    coverpoint: ["Zcd_c_fsdsp_cg/{cp_fs2, cp_imm_mul_8sp}"]
+  # If the ext:d[] extension is present, the ext:c[] extension additionally depends upon
+  # the extlink:zcd[] extension.
+  - name: C_dep_Zcd
+    coverpoint:
+      ["Not tested: extension dependency checked by the UDB configuration"]

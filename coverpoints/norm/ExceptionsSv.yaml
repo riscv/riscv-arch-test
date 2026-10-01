@@ -1,4 +1,10 @@
 normative_rule_definitions:
+  # Load/store/AMO address-misaligned exceptions may have either higher or lower
+  # priority than load/store/AMO page-fault and access-fault exceptions.
+  - name: mcause_exccode_priority_misaligned
+    coverpoint:
+      ["ExceptionsSv_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}"]
+
   # Priority|Exc.Code|Description === Highest|3|Instruction address breakpoint¶|12,
   # 1|During instruction address translation: First encountered page fault or access
   # fault¶|1|With physical address for instruction: Instruction access fault¶|2 0
@@ -12,11 +18,5 @@ normative_rule_definitions:
   - name: exc_priority
     coverpoint:
       [
-        "ExceptionsSv_cg/{cp_misaligned_priority_m, cp_misaligned_priority_s, cp_misaligned_priority_u, cp_misaligned_priority_fetch_m, cp_misaligned_priority_fetch_s, cp_misaligned_priority_fetch_u}",
+        "ExceptionsSv_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u, cp_misaligned_priority_fetch_s, cp_misaligned_priority_fetch_u}",
       ]
-
-  # If an instruction access-fault or instruction page-fault exception occurs on
-  # the target of a jump or taken branch, the exception is reported on the target
-  # instruction, not on the jump or branch instruction.
-  - name: ia_fault_exc_on_target
-    coverpoint: ["ExceptionsSv_cg/cp_instr_page_fault_m"]

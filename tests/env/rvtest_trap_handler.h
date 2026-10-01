@@ -55,7 +55,8 @@
 //    tramp_sz + 14*8        | 8             | xtvec_save     — original xTVEC value before prolog
 //    tramp_sz + 15*8        | 8             | xscratch_save  — original xSCRATCH value before prolog
 //    tramp_sz + 16*8        | 8             | medeleg_illegal_sv — shadow value of medeleg[2]
-//    tramp_sz + 17*8        | 8*REGWIDTH    | trapreg_sv     — ra scratch (slot 0), T1..T6 (slots 1-6), sp (slot 7)
+//    tramp_sz + 17*8        | 8             | tramp_copy_size — bytes saved for trampoline relocation
+//    tramp_sz + 18*8        | 8*REGWIDTH    | trapreg_sv     — ra scratch (slot 0), T1..T6 (slots 1-6), sp (slot 7)
 //    (after trapreg_sv)     | 8*REGWIDTH    | rvmodel_sv     — shared scratch area:
 //                           |               |   slot 0: fast-handler invisible-trap handoff marker
 //                           |               |   slots 2-3: fast-handler a1 and a2 save
@@ -74,7 +75,7 @@
 //    5. common_Xentry: save T4..T1, read xcause into T5
 //    6. Ecall detection -> T-SBI dispatch (if ecall and SBI call) OR normal trap sig
 //    7. Normal path: record trap signature (vect+mode, cause, epc/ip, tval/intID)
-//    8. Exception: relocate xEPC, bump past trapping instruction
+//    8. Exception: record xEPC, bump past trapping instruction
 //    9. Interrupt: clear interrupt source via dispatch table
 //   10. resto_Xrtn: restore T1..T6 and sp, xret to resume execution
 //
@@ -118,15 +119,8 @@
 //    S-mode handler:  handles ECALL_TEST, GOTO_S/U, S-mode CSR_ACCESS locally;
 //                     forwards GOTO_M/VS/VU, M-mode CSR_ACCESS, and loads/stores to M-mode via ecall
 //
-//  Two limits apply to calls made from a guest (V=1):
-//    - GOTO_S/U and the GOTO_M forwarding resume the caller by jumping to xEPC,
-//      which is a guest virtual address, while the hart is already in host
-//      context. That only lands on the caller when the guest's VS-stage and
-//      G-stage maps are identity, which is what the H tests set up.
-//    - CSR_ACCESS dispatches on the CSR number in the caller's encoding, so an
-//      S-mode CSR name from a guest (sstatus 0x100, say) is executed by the HS
-//      handler and changes HOST state, not the guest's. A guest that wants its
-//      own copy must name the vs* CSR (vsstatus 0x200).
+//  CSR_ACCESS from a guest runs in HS-mode, so S-mode CSR numbers access the
+//  HS-mode CSRs. A guest must use the vs* CSR numbers to access its own state.
 //
 //************************************************************************************
 
@@ -278,7 +272,7 @@
 
 #define actual_tramp_sz ((UDB_MXLEN + 3* NUM_SPECD_INTCAUSES + 9 + 5) * 4)  // total trampoline bytes
 #define tramp_sz        ((actual_tramp_sz+4) & -8)                       // round up to dword alignment
-#define ptr_sv_sz       (17*8)                                           // 17 metadata slots × 8 bytes each
+#define ptr_sv_sz       (18*8)                                           // 18 metadata slots × 8 bytes each
 #define reg_sv_sz       ( 8*REGWIDTH)                                    // 8 handler temp regs saved
 #define model_sv_sz     ( 8*REGWIDTH)                                    // 8 slots for RVMODEL macro scratch
 #define int_clr_sv_sz   ( 4*REGWIDTH)                                    // 4 slots: a0-a2 across interrupt clearing
@@ -297,7 +291,8 @@
 //   [tramp_sz + 1*8]            code_seg_siz    — code segment size
 //   ...                         (see full layout in FILE OVERVIEW above)
 //   [tramp_sz + 16*8]           medeleg_illegal_sv_off — logical medeleg[2] value
-//   [tramp_sz + 17*8]           trap_sv_off     — start of handler register save (T1..T6,sp,spare)
+//   [tramp_sz + 17*8]           tramp_copy_size_off — bytes saved for trampoline relocation
+//   [tramp_sz + 18*8]           trap_sv_off     — start of handler register save (T1..T6,sp,spare)
 //   [after trap_sv]             rvmodel_sv_off  — start of RVMODEL macro scratch area
 //   [after rvmodel_sv]          int_clr_sv_off  — a0-a2 save across interrupt clearing
 //
@@ -317,17 +312,16 @@
 #define vmem_seg_siz                (tramp_sz+ 7*8) // offset to virtual memory region size
 #define trapsig_ptr_off             (tramp_sz+ 8*8) // offset to current trap signature write pointer
 #define xsatp_sv_off                (tramp_sz+ 9*8) // offset to saved xSATP value
-#define sved_shared_off             (tramp_sz+10*8) // per-area shared slot: the S-mode area
-                                                    //   holds the saved hgatp; the M and VS
-                                                    //   copies are currently unused
-#define sved_mpp_off   (2*sv_area_sz+sved_shared_off) // saved MPP for MPRV tests (never written yet)
+#define sved_shared_off             (tramp_sz+10*8) // S prolog saves hgatp in the S area's slot
+                                                    //   and hideleg in the M area's slot
 #define tentry_addr_off             (tramp_sz+11*8) // offset to common handler entry point address
 #define xedeleg_sv_off              (tramp_sz+12*8) // offset to saved xEDELEG value
 #define xtvec_new_off               (tramp_sz+13*8) // offset to new xTVEC value (trampoline addr)
 #define xtvec_sav_off               (tramp_sz+14*8) // offset to saved original xTVEC value
 #define xscr_save_off               (tramp_sz+15*8) // offset to saved original xSCRATCH value
 #define medeleg_illegal_sv_off      (tramp_sz+16*8) // offset to logical medeleg[2] value
-#define trap_sv_off                 (tramp_sz+17*8) // offset to handler register save area (8 regs)
+#define tramp_copy_size_off         (tramp_sz+17*8) // number of bytes saved before overwriting the fixed vector
+#define trap_sv_off                 (tramp_sz+18*8) // offset to handler register save area (8 regs)
 // rvmodel_sv starts right after the 8 REGWIDTH-sized trapreg_sv slots. This must
 // be expressed in REGWIDTH (not 8*8) so the offset also matches the emitted
 // .data layout on RV32, where REGWIDTH is 4.
@@ -439,6 +433,56 @@
 .macro TSBI_RELOCATE_EPC __MODE__
 // Without S-mode there is no satp, and no S save area to register an alias in.
 #ifdef S_SUPPORTED
+  #ifdef H_SUPPORTED
+        // Guests use the code alias registered in the V save area.
+        LA(     T2, Mtramptbl_sv)
+        addi    T2, T2, sv_area_sz                   // step past the M area: two areas overflow the load immediate
+        LREG    T3, code_bgn_off+sv_area_sz(T2)      // T3 = registered guest code alias
+        addi    T2, T2, -sv_area_sz
+        LREG    T2, code_bgn_off(T2)                 // T2 = rvtest_code_begin
+        beq     T2, T3, 7f                           // no guest alias registered
+    .ifc \__MODE__ , M
+      #if (UDB_MXLEN==32)
+        csrr    T4, CSR_MSTATUSH                     // RV32: MPV lives in mstatush
+      #else
+        csrr    T4, CSR_MSTATUS
+        srli    T4, T4, 32                           // RV64: MPV is in the upper half of mstatus
+      #endif
+    .else
+        csrr    T4, CSR_HSTATUS                      // the S handler reads SPV instead
+    .endif
+        andi    T4, T4, (1 << MPV_LSB)               // mstatus.MPV and hstatus.SPV are both bit 7
+        bnez    T4, 6f                               // caller ran in the guest
+
+        // Host caller entering a guest: code region -> guest alias.
+        li      T4, TSBI_GOTO_VSMODE
+        blt     a0, T4, 7f                           // not entering a guest
+        csrr    T4, CSR_XEPC
+        sub     T4, T4, T2                           // T4 = offset into the code region
+        LA(     T2, Mtramptbl_sv)
+        LREG    T2, code_seg_siz(T2)                 // T2 = code region size
+        bgtu    T4, T2, 7f                           // caller is not in the code region
+        add     T4, T4, T3
+        csrw    CSR_XEPC, T4
+        j       9f
+
+        // Guest caller resuming in the host: guest alias -> the target's own view.
+6:      li      T4, TSBI_GOTO_VSMODE
+        bge     a0, T4, 9f                           // staying in the guest
+        csrr    T4, CSR_XEPC
+        sub     T4, T4, T3                           // T4 = offset into the guest alias
+        LA(     T3, Mtramptbl_sv)
+        LREG    T3, code_seg_siz(T3)                 // T3 = code region size
+        bgtu    T4, T3, 9f                           // caller is not in the guest alias
+        li      T3, TSBI_GOTO_UMODE
+        bne     a0, T3, 5f                           // M and S resume in the code region
+        LA(     T2, Mtramptbl_sv)
+        LREG    T2, code_bgn_off+sv_area_sz(T2)      // U resumes in the registered S alias
+5:      add     T4, T4, T2
+        csrw    CSR_XEPC, T4
+        j       9f
+7:
+  #endif
         LA(     T2, Mtramptbl_sv)
         LREG    T3, code_bgn_off+sv_area_sz(T2)      // T3 = registered code alias
         LREG    T2, code_bgn_off(T2)                 // T2 = rvtest_code_begin
@@ -492,33 +536,6 @@
 .endm
 
 //==============================================================================
-// RVTEST_SET_SPV — set or clear hstatus.SPV
-//
-// hstatus.SPV is the "previous virtualization mode" bit: sret returns to a
-// virtual mode (VS or VU) when it is set and to a non-virtual mode (HS or U)
-// when it is clear, with sstatus.SPP choosing the privilege level either way.
-// The hardware sets it on every trap out of a guest, so any handler path that
-// deliberately changes which world it returns to has to write it.
-//
-// Parameters:
-//   VAL:     1 to set SPV, 0 to clear it
-//   TMP_REG: scratch register, clobbered
-//
-// Assembles to nothing without H, so callers need no #ifdef of their own.
-//==============================================================================
-
-.macro RVTEST_SET_SPV VAL, TMP_REG
-#ifdef H_SUPPORTED
-        LI(     \TMP_REG, HSTATUS_SPV)
-  .if (\VAL != 0)
-        csrs    CSR_HSTATUS, \TMP_REG
-  .else
-        csrc    CSR_HSTATUS, \TMP_REG
-  .endif
-#endif
-.endm
-
-//==============================================================================
 // SECTION 8: INSTANTIATE_MODE_MACRO
 //
 // Helper macro that replicates a given macro for each supported privilege mode.
@@ -528,15 +545,10 @@
 //   RVTEST_TRAP_HANDLER S       — if S_SUPPORTED
 //   RVTEST_TRAP_HANDLER V       — if S_SUPPORTED && H_SUPPORTED
 //
-// There is no separate HS-mode instantiation. HS-mode has no trap CSRs of its
-// own: stvec, sscratch, sepc, scause and stval ARE the S-mode ones, so one
-// handler serves both and hstatus.SPV in trap signature word 0 says which world
-// the trap came from. The hypervisor CSRs that do need saving (hedeleg, hgatp)
-// are handled by the S prolog and epilog under H_SUPPORTED.
+// HS-mode uses the S-mode trap CSRs, so the S instantiation also serves HS.
+// The S prolog and epilog save and restore hedeleg, hideleg, and hgatp.
 //
-// The order must stay M, S, V: the save areas are laid out in this order and the
-// cross-area offsets (sved_mpp_off, the epilog and GOTO_LOWER_MODE area offsets,
-// trap_sig_sv) assume it.
+// The order must stay M, S, V. The save areas and cross-area offsets assume it.
 //
 // Used for PROLOG, HANDLER, EPILOG, and SAVEAREA instantiation.
 // The reverse order (V, S, M) is used for the epilogs in RVTEST_CODE_END.
@@ -1092,9 +1104,7 @@
 #ifndef RVMODEL_CLR_STIMER_INT
         #define  RVMODEL_CLR_STIMER_INT  RVTEST_DFLT_INT_HNDLR  // S-mode timer interrupt clear: abort
 #endif
-#ifndef RVMODEL_CLR_SEXT_INT
-        #define  RVMODEL_CLR_SEXT_INT(_R1, _R2) RVTEST_DFLT_INT_HNDLR  // S-mode ext interrupt clear: abort
-#endif
+// RVMODEL_CLR_SEXT_INT has no default: when undefined, rvtest_clr_sext_int_* clear mip.SEIP instead
 
 // VS-mode interrupt defaults
 #ifndef RVMODEL_SET_VSW_INT
@@ -1148,6 +1158,7 @@
         XCSR_RENAME_FROM_M \__MODE__             // set CSR_X* aliases for this mode (prolog runs in M-mode)
 
         LA(     T1, \__MODE__\()tramptbl_sv)     // T1 = address of this mode's save area in .data
+        SREG    zero, tramp_copy_size_off(T1)
 
 //---------- Initialize xSCRATCH ----------
 init_\__MODE__\()scratch:
@@ -1188,6 +1199,13 @@ init_\__MODE__\()edeleg:
     #endif
   .endif
        SREG    T2, xedeleg_sv_off(T1)            // store saved xedeleg in save area
+  .ifc \__MODE__ , S
+    #ifdef H_SUPPORTED
+        li      T2, 0
+        csrrw   T2, CSR_HIDELEG, T2              // save hideleg, write 0
+        SREG    T2, -1*sv_area_sz+sved_shared_off(T1) // store in the M area's shared slot
+    #endif
+  .endif
 
 //---------- Save and clear xSATP (non-M-mode only) ----------
 // Translation stays off (MODE=Bare) for the duration of the test.  The prolog runs in
@@ -1196,8 +1214,7 @@ init_\__MODE__\()edeleg:
 // paging (Sv*) program xsatp themselves.
 init_\__MODE__\()satp:
 .ifnc \__MODE__ , M                      // if HS, S or VS mode
-        // Bare with every other field zero: a Bare write with a nonzero PPN has an
-        // UNSPECIFIED effect. Tests that enable translation write the whole CSR.
+        // Bare with a nonzero PPN is UNSPECIFIED, so write the whole CSR as zero.
         csrrw   T4, CSR_XSATP, x0                 // xSATP = 0, old value in T4
         SREG    T4, xsatp_sv_off(T1)              // save old xSATP in save area
 .endif
@@ -1267,8 +1284,6 @@ init_\__MODE__\()tvec:
 #endif
         // xTVEC is NOT fully writable — need to copy trampoline to xTVEC target
         csrw    CSR_XTVEC, T3                      // restore original xTVEC (we'll overwrite its target)
-        andi    T5, T3, ~WDBYTMSK                  // T5 = original xTVEC BASE (MODE bits stripped)
-        beqz    T5, abort\__MODE__\()test           // if BASE is 0 (uninitialized reset value), can't relocate there — abort
         SREG    T3, xtvec_new_off(T1)               // update tvec_new with the original (now-in-use) xTVEC
 
 //---------- Copy trampoline to fixed xTVEC target ----------
@@ -1277,20 +1292,24 @@ init_\__MODE__\()tramp:
         addi    T3, T2, actual_tramp_sz            // T3 = end of target area
         mv      sp, T1                             // sp = save area base (for saving original code)
 
-// If the copy destination [T2,T3) overlaps the code below, the loop clobbers
-// itself and leaves a half-written trampoline, which shows up later as a bogus
-// SELFCHECK failure. Bail out instead; nothing has been written yet, so xTVEC
-// is still as the boot code left it.
-        LA(     T5, overwt_tt_\__MODE__\()loop)    // T5 = first instruction that must survive
-        LA(     T6, rvtest_\__MODE__\()prolog_done) // T6 = end of protected range (exclusive)
-        bgeu    T2, T6, ovlpok_\__MODE__\()tramp   // dest begins after protected code -> disjoint
-        bgeu    T5, T3, ovlpok_\__MODE__\()tramp   // protected code begins after dest  -> disjoint
-        j       abort\__MODE__\()test              // overlap -> cannot copy here; abort
+// Reserve the entire linked image, including framework code, data, and stack.
+// A fixed trap vector needs separate space outside [rvtest_entry_point, _end).
+        bgeu    T2, T3, overlap_\__MODE__\()tramp  // destination range wraps around XLEN
+        LA(     T5, rvtest_entry_point)
+        LA(     T6, _end)
+        bgeu    T2, T6, ovlpok_\__MODE__\()tramp
+        bgeu    T5, T3, ovlpok_\__MODE__\()tramp
+overlap_\__MODE__\()tramp:
+        LA(     T5, trap_vector_overlap_str)
+        j       abort\__MODE__\()test
 ovlpok_\__MODE__\()tramp:
 
 overwt_tt_\__MODE__\()loop:
         lw      T6, 0(T2)                          // read original instruction at xTVEC target
         sw      T6, 0(T1)                          // save it in trampoline save area
+        addi    T6, T1, WDBYTSZ
+        sub     T6, T6, sp
+        SREG    T6, tramp_copy_size_off(sp)        // include this word even if the write fails readback
         lw      T5, 0(T4)                          // read our trampoline instruction
         sw      T5, 0(T2)                          // write it to xTVEC target
         lw      T6, 0(T2)                          // read back to verify write succeeded
@@ -1310,8 +1329,10 @@ endcopy_\__MODE__\()tramp:
         csrr    T1, CSR_XSCRATCH                    // reload save area ptr from xSCRATCH (may have been modified)
         SREG    T4, tentry_addr_off(T1)              // update common entry point address (may differ if partial copy)
         beq     T3,T2, rvtest_\__MODE__\()prolog_done  // if full copy completed, prolog is done
+        LA(     T5, trap_vector_copy_failed_str)
 abort\__MODE__\()test:
-        mv      T3, T2                              // save copy progress for epilog cleanup
+        LA(     T6, rvtest_trap_prolog_error)
+        SREG    T5, 0(T6)
         LA(     T6, exit_\__MODE__\()cleanup)        // load address of cleanup label
         jr      T6                                   // long jump to cleanup (may be too far for branch)
 
@@ -1336,7 +1357,7 @@ rvtest_\__MODE__\()prolog_done:
 //    4. Common entry           — save T1-T4, read xcause
 //    5. T-SBI dispatch (NEW)   — check for ecall + dispatch SBI operations
 //    6. Trap signature update  — record trap info in signature region
-//    7. Exception handler      — relocate xEPC, bump past instruction
+//    7. Exception handler      — record xEPC, bump past instruction
 //    8. Interrupt handler      — clear interrupt source via dispatch table
 //    9. Restore and return     — restore T1-T6+sp, xret
 //
@@ -1769,9 +1790,7 @@ tsbi_\__MODE__\()goto_vu:
 //   - GOTO_UMODE:  set sstatus.SPP=0 (return to U-mode via sret)
 //   - CSR_ACCESS for S/U-mode CSRs: execute locally (CSR addr[9:8] != 11)
 //
-// LOCAL HANDLING, hypervisor builds only:
-//   - ECALL from VS-mode (cause 10), which is what a guest's T-SBI call is
-//   - GOTO_VSMODE / GOTO_VUMODE: sret reaches a virtual mode via hstatus.SPV
+//   - GOTO_VSMODE / GOTO_VUMODE (H only): set sstatus.SPP and hstatus.SPV=1
 //
 // FORWARDED TO M-MODE (requires M-mode privileges):
 //   - GOTO_MMODE:  needs M-mode to set MPP
@@ -1853,15 +1872,8 @@ tsbi_\__MODE__\()ecall_test:
         j       resto_\__MODE__\()rtn              // sret to caller with a0 = ecall address
 
         //--- S-mode GOTO_xMODE dispatch ---
-        //
-        // sret leaves HS-mode for the mode named by two bits: sstatus.SPP picks
-        // the privilege level and, when H is present, hstatus.SPV picks whether
-        // that level is virtual. So HS-mode can reach all four of HS, U, VS and
-        // VU on its own and only GOTO_MMODE has to be forwarded.
-        //
-        //   SPV=0 SPP=1 -> HS      SPV=1 SPP=1 -> VS
-        //   SPV=0 SPP=0 -> U       SPV=1 SPP=0 -> VU
-        //
+        // sret target:  SPV=0 SPP=1 -> HS    SPV=1 SPP=1 -> VS
+        //               SPV=0 SPP=0 -> U     SPV=1 SPP=0 -> VU
 tsbi_\__MODE__\()goto_mode:
         // a0 still holds the caller's operation code
         csrr    T4, CSR_XEPC                        // T4 = sepc (caller's ecall address)
@@ -1891,26 +1903,34 @@ tsbi_\__MODE__\()goto_mode:
 tsbi_\__MODE__\()goto_s:                          // Return to HS/S-mode via sret
         LI(     T3, SSTATUS_SPP)                   // T3 = SPP bit mask (bit 8)
         csrs    CSR_XSTATUS, T3                     // set sstatus.SPP = 1 (sret -> S-mode)
-        RVTEST_SET_SPV 0, T3                        // leave virtual mode
+#ifdef H_SUPPORTED
+        LI(     T3, HSTATUS_SPV)                    // leave virtual mode
+        csrc    CSR_HSTATUS, T3
+#endif
         j       resto_\__MODE__\()rtn              // sret returns to HS-mode at sepc
 
 tsbi_\__MODE__\()goto_u:                          // Return to U-mode via sret
         LI(     T3, SSTATUS_SPP)                   // T3 = SPP bit mask
         csrc    CSR_XSTATUS, T3                     // clear sstatus.SPP = 0 (sret -> U-mode)
-        RVTEST_SET_SPV 0, T3                        // leave virtual mode
+#ifdef H_SUPPORTED
+        LI(     T3, HSTATUS_SPV)                    // leave virtual mode
+        csrc    CSR_HSTATUS, T3
+#endif
         j       resto_\__MODE__\()rtn              // sret returns to U-mode at sepc
 
   #ifdef H_SUPPORTED
 tsbi_\__MODE__\()goto_vs:                         // Return to VS-mode via sret
         LI(     T3, SSTATUS_SPP)                   // T3 = SPP bit mask
         csrs    CSR_XSTATUS, T3                     // set sstatus.SPP = 1 (virtual supervisor)
-        RVTEST_SET_SPV 1, T3                        // enter virtual mode
+        LI(     T3, HSTATUS_SPV)                    // enter virtual mode
+        csrs    CSR_HSTATUS, T3
         j       resto_\__MODE__\()rtn              // sret returns to VS-mode at sepc
 
 tsbi_\__MODE__\()goto_vu:                         // Return to VU-mode via sret
         LI(     T3, SSTATUS_SPP)                   // T3 = SPP bit mask
         csrc    CSR_XSTATUS, T3                     // clear sstatus.SPP = 0 (virtual user)
-        RVTEST_SET_SPV 1, T3                        // enter virtual mode
+        LI(     T3, HSTATUS_SPV)                    // enter virtual mode
+        csrs    CSR_HSTATUS, T3
         j       resto_\__MODE__\()rtn              // sret returns to VU-mode at sepc
   #endif
 
@@ -1952,9 +1972,6 @@ tsbi_\__MODE__\()forward_goto_m:
         ecall                                      // trap to M-mode; M sets MPP=M and mrets back HERE in M-mode
         csrr    a0, CSR_XEPC                       // caller's ecall+4 (bumped before forwarding)
         jr      a0                                 // continue at the caller, in M-mode
-                                                   // NB: for a caller in VS/VU this xEPC is a guest
-                                                   // virtual address, so this only returns to the
-                                                   // caller under an identity guest map
 
         //--- S-mode CSR_ACCESS ---
 tsbi_\__MODE__\()csr_access:
@@ -1967,8 +1984,6 @@ tsbi_\__MODE__\()csr_access:
         j       tsbi_\__MODE__\()forward_to_m       // M-mode CSR -> forward to the M-mode handler
 11:
         // S-mode or U-mode CSR: find and execute the approved instruction locally.
-        // Executed in HS context, so a guest asking for an S-mode CSR name gets the
-        // host register; a guest must name the vs* CSR to reach its own copy.
         j       tsbi_\__MODE__\()instr_dispatch
 
 .endif  // --------- END S-MODE T-SBI DISPATCH ---------
@@ -2081,6 +2096,9 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x31A) // menvcfgh
         #endif
         TSBI_CSR_INSTR_TABLE(0x344) // mip
+        TSBI_CSR_INSTR_TABLE(0x350) // miselect
+        TSBI_CSR_INSTR_TABLE(0x351) // mireg
+        TSBI_CSR_INSTR_TABLE(0x35c) // mtopei
         TSBI_CSR_INSTR_TABLE(0x747) // mseccfg
         TSBI_CSR_INSTR_TABLE(0x320) // mcountinhibit
         //TSBI_CSR_INSTR_TABLE(0xB00) // mcycle - shouldn't be changed below M-mode
@@ -2097,6 +2115,9 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x15D) // stimecmph
         #endif
         TSBI_CSR_INSTR_TABLE(0x180) // satp
+        TSBI_CSR_INSTR_TABLE(0x150) // siselect
+        TSBI_CSR_INSTR_TABLE(0x151) // sireg
+        TSBI_CSR_INSTR_TABLE(0x15c) // stopei
         TSBI_CSR_INSTR_TABLE(0x7A0) // tselect
         TSBI_CSR_INSTR_TABLE(0x7A1) // tdata1
         TSBI_CSR_INSTR_TABLE(0x7A2) // tdata2
@@ -2108,8 +2129,7 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x5A8) // scontext
         TSBI_CSR_INSTR_TABLE(0x6A8) // hcontext
 #ifdef H_SUPPORTED
-        // Hypervisor and VS-mode CSRs. A guest running in VS or VU mode reaches
-        // every one of these through the T-SBI
+        // Hypervisor and VS-mode CSRs
         TSBI_CSR_INSTR_TABLE(0x600) // hstatus
         TSBI_CSR_INSTR_TABLE(0x602) // hedeleg
         TSBI_CSR_INSTR_TABLE(0x603) // hideleg
@@ -2176,10 +2196,10 @@ tsbi_instr_table:
 // or a genuine ecall exception that should be recorded in the signature).
 //
 // This section:
-//   1. Calculates the trap signature entry size (3, 4, or 5 words)
+//   1. Calculates the trap signature entry size (3, 4, or 6 words)
 //   2. Pre-increments the trap signature pointer and checks for overrun
 //   3. Records: vect+mode word, xcause, xepc/xip, xtval/intID
-//   4. For exceptions: relocates xEPC and bumps past the trapping instruction
+//   4. For exceptions: records xEPC and bumps past the trapping instruction
 //   5. For interrupts: dispatches to interrupt clearing routines
 //   6. Restores registers and returns via xret
 //==============================================================================
@@ -2195,28 +2215,18 @@ tsbi_instr_table:
         li      T2, 3*REGWIDTH                    // cause < timer -> SW or timer int (3 words)
         j       \__MODE__\()trap_sig_sv            // go to pointer update
 
-\__MODE__\()xcpt_sig_sv:                          // exception: check for hypervisor (5-word entry)
-// An exception entry carries one extra word on a hypervisor build: the second
-// trap value (mtval2 / htval, the faulting guest physical address). M decides at
-// run time from misa.H, which a test can clear. xtinst is deliberately not
-// recorded: its value is implementation-defined (UDB TINST_VALUE_ON_*), so a
-// legal DUT may disagree with the reference model.
+\__MODE__\()xcpt_sig_sv:                          // exception: check for hypervisor (6-word entry)
+// M and HS exception entries add mtval2/htval and mtinst/htinst when H is supported.
 .ifc \__MODE__ , M
 #ifdef H_SUPPORTED
-        csrr    T1, CSR_MISA
-        slli    T1, T1, UDB_MXLEN-8             // shift H bit into msb
-        bgez    T1, \__MODE__\()trap_sig_sv     // no hypervisor mode, keep std width
-        li      T2, 5*REGWIDTH                  // Hmode implemented &  Mmode trap, override preinc to be 5*regsz
+        li      T2, 6*REGWIDTH                  // hypervisor build: 6-word exception entries
 #endif
 .else
   .ifc \__MODE__ , V
-        // VS-mode has no second trap value: htval belongs to HS.
+        // VS-mode entries keep 4 words
   .else
 #ifdef H_SUPPORTED
-        // S/HS decides at build time, not from misa.H: misa is an M-mode CSR, so this
-        // handler cannot read it. An H build therefore requires misa.H to stay set for
-        // as long as the S/HS handler can be entered; the H CSR reads below assume it too.
-        li      T2, 5*REGWIDTH                    // S/HS on a hypervisor build: 5-word exception entries
+        li      T2, 6*REGWIDTH                    // S/HS on a hypervisor build: 6-word exception entries
 #endif
   .endif
 .endif
@@ -2280,6 +2290,8 @@ tsbi_instr_table:
 //   bit    12 = xIP[cause] (interrupt pending for this cause)
 //   bits 30:13 = xstatus[17:0] (filtered: XS,FS,VS and WPRI bits 4,2,0 cleared)
 //              = GVA/MPV/SPVP in place of xstatus[16:14] on M-mode and HS-mode traps
+// A hypervisor build adds two more words to an M-mode or HS-mode exception entry:
+// word 4 is the second trap value (mtval2 / htval) and word 5 is xtinst.
 
 sv_\__MODE__\()vect:
         LREG    T3, xtvec_new_off(sp)              // T3 = actual trampoline table address
@@ -2333,10 +2345,7 @@ sv_\__MODE__\()vect:
         li      T4, 0                                // VS-mode cannot read hstatus
   .else
   #ifdef H_SUPPORTED
-        // S and HS share one handler (the S prolog owns stvec), and a guest's
-        // trap lands in it, so both read hstatus: SPV and SPVP say whether the
-        // trap came from VS or VU, GVA whether xtval holds a guest address.
-        csrr    T4, CSR_HSTATUS
+        csrr    T4, CSR_HSTATUS                      // S/HS handler: hstatus SPVP, SPV, GVA
   #else
         li      T4, 0                                // no H: nothing to overlay
   #endif
@@ -2356,148 +2365,11 @@ sv_\__MODE__\()cause:
 
 //==============================================================================
 // EXCEPTION HANDLER
-// Handles EPC relocation, tval recording, and instruction skipping.
+// Records xEPC and xtval, then bumps past the trapping instruction.
 //==============================================================================
 
 common_\__MODE__\()excpt_handler:
         csrr    T3, CSR_XEPC                         // T3 = xEPC (faulting instruction address)
-        mv      T4, sp                               // T4 = this mode's save area (for relocation lookup)
-
-// --- EPC relocation logic ---
-// Determines whether xEPC needs to be offset-adjusted based on the trapping
-// mode's address translation state. If virtual memory is active (xSATP.MODE != bare),
-// xEPC is a virtual address and should NOT be relocated. If bare mode, it's a
-// physical address and needs relocation relative to code/data/vmem segment starts.
-
-.ifc \__MODE__ , M
- #ifndef S_SUPPORTED
-        j       vmem_adj_\__MODE__\()epc            // no S-mode -> always PA, always relocate
- #else
-        csrr    T6, CSR_MSTATUS
- // select MPP based on MPRV; if MPRV=1, substitute saved mstatus (with MPP bits)
-        slli    T2, T6, UDB_MXLEN-MPRV_LSB-1         /* put MPRV [17] into sign bit & test   */
-        bgez    T2, 1f
-        LI(     T6, sved_mpp_off)
-        add     T6, T6, sp
-        LREG    T6, 0(T6)                             // T6 = saved mstatus with original MPP
-                                                      // (nothing writes sved_mpp_off yet, so this
-                                                      //  reads the VS area's unused shared slot and
-                                                      //  the MPP bits come out as U -> satp path)
-
-1:      srli    T2, T6,  MPP_LSB                     // extract MPP[1:0]
-        andi    T2, T2,  MMODE_SIG                   // T2 = MPP value
-        addi    T2, T2, -MMODE_SIG                   // compare to M-mode (3)
-        beqz    T2, vmem_adj_\__MODE__\()epc         // MPP=M -> PA -> relocate
-
-        addi    T4, sp, 1*sv_area_sz                  // T4 -> S/HS mode save area
-#ifdef H_SUPPORTED
- // mstatus.MPV says which translation produced xEPC: the host's satp for a trap from
- // HS/U, or the guest's VS-stage and G-stage maps for one from VS/VU.
-        #if (UDB_MXLEN==64)
-                csrr    T6, CSR_MSTATUS
-        #else
-          #ifdef SM1P12P0_OR_LATER_SUPPORTED
-                csrr    T6, CSR_MSTATUSH
-          #else
-            li      T6, 0                   // no H: MPV always 0
-          #endif
-        #endif
-        slli    T6, T6, WDSZ-MPV_LSB-1               // MPV to MSB
-        bgez    T6, 1f                                // MPV=0 -> host trap -> satp decides
-
-        csrr    T2, CSR_VSATP                         // guest: VS-stage first
-        srli    T2, T2, MODE_LSB
-        LI(     T4, 2*sv_area_sz)                     // VS/VU save area
-        add     T4, T4, sp
-        bnez    T2, sv_\__MODE__\()epc               // VS MODE != bare -> VA -> skip relocation
-        csrr    T2, CSR_HGATP                         // then G-stage
-        srli    T2, T2, MODE_LSB
-        bnez    T2, sv_\__MODE__\()epc               // G-stage on -> guest physical -> skip relocation
-        j       vmem_adj_\__MODE__\()epc             // guest bare at both levels -> relocate
-1:
-#endif
-        csrr    T2, CSR_SATP                          // host trap: check satp.MODE
-        srli    T2, T2, MODE_LSB                      // extract MODE field
-        bnez    T2, sv_\__MODE__\()epc               // MODE != bare -> VA -> skip relocation
-  #endif
-.endif
-
-
-.ifc \__MODE__ ,  S
-#ifdef H_SUPPORTED
-        // The S/HS handler also receives every guest trap that HS delegation sends
-        // here, and a guest's xEPC is a guest address, not a host one, so the guest's
-        // own translation decides before the host's satp is consulted.
-        csrr    T2, CSR_HSTATUS
-        slli    T2, T2, UDB_MXLEN-MPV_LSB-1           // hstatus.SPV into the sign bit
-        bgez    T2, 1f                                // SPV=0 -> host trap -> satp decides
-        csrr    T2, CSR_VSATP
-        srli    T2, T2, MODE_LSB
-        bnez    T2, sv_\__MODE__\()epc               // guest VS-stage translation on -> VA -> skip
-        csrr    T2, CSR_HGATP
-        srli    T2, T2, MODE_LSB
-        bnez    T2, sv_\__MODE__\()epc               // G-stage on -> guest physical, not host PA -> skip
-        addi    T4, sp, 1*sv_area_sz                  // guest bare at both levels -> use the VS segments
-        j       vmem_adj_\__MODE__\()epc
-1:
-#endif
-        csrr    T2, CSR_SATP
-        srli    T2, T2, MODE_LSB
-        bnez    T2, sv_\__MODE__\()epc               // host VA -> skip
-.endif
-
-.ifc \__MODE__ ,  V
-        csrr    T2, CSR_SATP
-        srli    T2, T2, MODE_LSB
-        bnez    T2, sv_\__MODE__\()epc
-        // A guest with vsatp=Bare under an active G-stage has a guest physical
-        // xEPC, which must not be relocated either, but VS-mode cannot read
-        // hgatp to find out. Such a guest is not supported here yet.
-  .endif
-
-// --- Offset adjustment for physical addresses ---
-// A fault deliberately triggered at an address outside every test segment — the
-// model's access-fault probe address (RVMODEL_ACCESS_FAULT_ADDRESS, used by the
-// instruction/load/store access-fault tests) or a null (0) fetch target — has an
-// xEPC that cannot be expressed as a segment-relative offset. Record such an
-// xEPC raw and skip the segment relocation below, which would otherwise fall
-// through to abort_test on the out-of-range EPC. These are fixed constants,
-// identical on the DUT and the reference model, so the raw value is
-// deterministic. This is ALWAYS safe (a normal in-segment EPC never equals the
-// probe address or 0), so it is unconditional. It used to be gated behind
-// SKIP_MEPC — but the generators no longer emit that define, so keeping the
-// gate silently compiled this skip out and every access-fault test aborted on
-// its first deliberate probe (EPC=0 is outside vmem/code/data -> abort_test).
-vmem_adj_\__MODE__\()epc:
-        #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-                LI(     T2, RVMODEL_ACCESS_FAULT_ADDRESS)
-                beq     T3, T2, sv_\__MODE__\()epc
-                addi    T2, T2, 2
-                beq     T3, T2, sv_\__MODE__\()epc
-        #endif
-                beqz    T3, sv_\__MODE__\()epc
-        LREG    T2, vmem_bgn_off(T4)                  // check if EPC is in vmem segment
-        LREG    T6, vmem_seg_siz(T4)
-        add     T6, T6, T2
-        bgeu    T3, T6, code_adj_\__MODE__\()epc
-        bgeu    T3, T2,      adj_\__MODE__\()epc
-
-code_adj_\__MODE__\()epc:
-        LREG    T2, code_bgn_off(T4)                  // check if EPC is in code segment
-        LREG    T6, code_seg_siz(T4)
-        add     T6, T6, T2
-        bgeu    T3, T6, data_adj_\__MODE__\()epc
-        bgeu    T3, T2,      adj_\__MODE__\()epc
-
-data_adj_\__MODE__\()epc:
-        LREG    T2, data_bgn_off(T4)                  // check if EPC is in data segment
-        LREG    T6, data_seg_siz(T4)
-        add     T6, T6, T2
-        bgeu    T3, T6, abort_test                    // EPC beyond all known segments -> abort
-        bltu    T3, T2, abort_test                    // EPC before data segment -> abort
-
-adj_\__MODE__\()epc:
-        sub     T3, T3, T2                            // T3 = EPC - segment_begin (relocated offset)
 
 sv_\__MODE__\()epc:
 #ifdef SDTRIG_IMPRECISE_XEPC
@@ -2507,7 +2379,7 @@ sv_\__MODE__\()epc:
 #endif
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()epc, sv_\__MODE__\()epc_str) // write word 2: xEPC
 skpsv_\__MODE__\()epc:
-        csrr    T3, CSR_XEPC                          // re-read xEPC (T3 was modified by relocation)
+        csrr    T3, CSR_XEPC                          // reload xEPC (TRAP_SIGUPD may clobber T3 on its failure path)
 
         csrr    T2, CSR_XCAUSE
         LI(     T6, CAUSE_FETCH_PAGE_FAULT)
@@ -2549,7 +2421,10 @@ adj_\__MODE__\()epc_rtn:
         csrr    T2, CSR_HSTATUS
         slli    T2, T2, UDB_MXLEN-MPV_LSB-1          // hstatus.SPV into the sign bit
         bgez    T2, 2f                               // SPV=0 -> ordinary S/HS trap -> plain lhu
+        .option push                                 // h may not be in the test's march
+        .option arch, +h
         hlvx.hu T2, (T3)                             // fetch through the guest's translation
+        .option pop
         j       4f
 2:
   .endif
@@ -2581,30 +2456,27 @@ sv_\__MODE__\()tval:
 
 skp_\__MODE__\()tval:
 
-// --- Hypervisor-specific field: second trap value (word 4) ---
-// This must match the entry width chosen in \__MODE__\()xcpt_sig_sv above:
-// reserving five words and writing four leaves one word of the trap signature
-// unwritten, which reads back as the fill pattern and mismatches.
+// --- Hypervisor-specific fields: second trap value (word 4), xtinst (word 5) ---
+// Must match the entry width chosen in \__MODE__\()xcpt_sig_sv.
+// xtinst may be written with zero instead of the transformed instruction.
   .ifc \__MODE__ , M
         #ifdef H_SUPPORTED
-        csrr    T3, CSR_MISA            // skip mtval2 save if hypervisor is not enabled (misa[7] (H)-1)
-        slli    T3, T3, UDB_MXLEN-7-1
-        bgez    T3, 1f
-
         sv_\__MODE__\()Mtval2:
         csrr    T3, CSR_MTVAL2
         TRAP_SIGUPD(T4, T3, 4, sv_\__MODE__\()Mtval2, sv_Mtval2_str) // write word 4: mtval2
+        sv_\__MODE__\()Mtinst:
+        csrr    T3, CSR_MTINST
+        TRAP_SIGUPD_ZERO_OK(T4, T3, 5, sv_\__MODE__\()Mtinst, sv_Mtinst_str) // write word 5: mtinst
       #endif
   .else
     .ifnc \__MODE__ , V
       #ifdef H_SUPPORTED
-        // HS-mode is where a guest's traps land, so htval holds the faulting
-        // guest physical address, shifted right by 2. It reads as zero for a
-        // trap that did not come from a guest, which is what makes the fixed
-        // five-word entry safe for ordinary S-mode traps.
         sv_\__MODE__\()Htval2:
         csrr    T3, CSR_HTVAL
         TRAP_SIGUPD(T4, T3, 4, sv_\__MODE__\()Htval2, sv_Htval2_str) // write word 4: htval
+        sv_\__MODE__\()Htinst:
+        csrr    T3, CSR_HTINST
+        TRAP_SIGUPD_ZERO_OK(T4, T3, 5, sv_\__MODE__\()Htinst, sv_Htinst_str) // write word 5: htinst
       #endif
     .endif
   .endif
@@ -2739,8 +2611,10 @@ clrint_\__MODE__\()tbl:
   #endif
 #endif
 
- .rept NUM_SPECD_INTCAUSES-0xC
-        .dword  1                                    // causes 12..23: reserved -> default return
+        .dword  1                                    // cause 12: SGEI -> default return
+        .dword  \__MODE__\()clr_Lcof_int             // cause 13: local counter overflow interrupt
+ .rept NUM_SPECD_INTCAUSES-0xE
+        .dword  1                                    // causes 14..23: reserved -> default return
  .endr
  .rept UDB_MXLEN-NUM_SPECD_INTCAUSES
         .dword  0                       // impossible, quit test by jumping to  epilogs
@@ -2883,6 +2757,10 @@ excpt_\__MODE__\()hndlr_tbl:
         la      T2, resto_\__MODE__\()rtn
         jr      T2
 
+\__MODE__\()clr_Lcof_int:                            // local counter overflow interrupt: xIP.LCOFIP already cleared
+        la      T2, resto_\__MODE__\()rtn
+        jr      T2
+
 .popsection                                          // end of .text.rvmodel section
 
 //==============================================================================
@@ -2966,7 +2844,8 @@ rtn_fm_mmode:
         LI(T3, SSTATUS_SPP)                           // T3 = SPP bit mask
         csrs    CSR_XSTATUS, T3                        // set sstatus.SPP = 1 (sret -> S-mode)
 #ifdef H_SUPPORTED
-        RVTEST_SET_SPV 0, T3                          // a caller in VS/VU would otherwise sret back into VS
+        LI(     T3, HSTATUS_SPV)                      // a caller in VS/VU would otherwise sret back into VS
+        csrc    CSR_HSTATUS, T3
 #endif
         j       resto_\__MODE__\()rtn                 // restore regs and sret
 .endif
@@ -3232,7 +3111,7 @@ fast_Stval_mismatch:
 //    The epilogs are only emitted for STANDARD_SM_SUPPORTED; a platform with
 //    a custom (non-standard) M-mode compiles them out entirely and is
 //    responsible for its own cleanup.
-//  Uses: T1..T4, T6, mscratch to find the correct save area (T5 is preserved:
+//  Uses: T1..T4, T6 (T5 is preserved:
 //    it carries the abort_test 0xBAD0DEAD marker across the epilogs)
 //
 //==============================================================================
@@ -3243,17 +3122,8 @@ fast_Stval_mismatch:
 .option norvc
 
         XCSR_RENAME_FROM_M \__MODE__              // set CSR aliases for this mode (epilog runs in M-mode)
-        LI(T3, actual_tramp_sz)                   // T3 = trampoline size (used as loop bound)
-
 exit_\__MODE__\()cleanup:                         // entry point (also used by abort path)
-        csrr  T1, mscratch                        // T1 = M-mode save area base (from mscratch)
-      .ifc \__MODE__ , S
-        addi T1, T1, 1*sv_area_sz                 // S: offset to S save area
-      .else
-        .ifc \__MODE__ , V
-          addi T1, T1, 2*sv_area_sz               // V: offset to VS save area
-        .endif
-      .endif
+        LA(     T1, \__MODE__\()tramptbl_sv)
 
 // --- Restore xEDELEG ---
 resto_\__MODE__\()edeleg:
@@ -3287,6 +3157,8 @@ resto_\__MODE__\()satp:
   #ifdef H_SUPPORTED
         LREG    T2, sved_shared_off(T1)            // HS-mode: restore hgatp
         csrw    CSR_HGATP,  T2
+        LREG    T2, -1*sv_area_sz+sved_shared_off(T1) // HS-mode: restore hideleg
+        csrw    CSR_HIDELEG, T2
   #endif
 .endif
 
@@ -3298,12 +3170,12 @@ resto_\__MODE__\()scratch:
 // --- Restore xTVEC (and original trampoline code if it was overwritten) ---
 resto_\__MODE__\()xtvec:
         LREG    T4, xtvec_sav_off(T1)             // T4 = saved original xtvec
-        csrrw   T2, CSR_XTVEC, T4                  // restore xtvec, T2 = current xtvec
-        andi    T4, T4, ~WDBYTMSK                  // clear mode bits from saved xtvec
-        andi    T2, T2, ~WDBYTMSK                  // clear mode bits from current xtvec
-        bne     T4, T2, 1f                          // if saved != current -> trampoline wasn't overwritten, skip
+        csrw    CSR_XTVEC, T4                     // restore xtvec independently of relocation progress
+        andi    T2, T4, ~WDBYTMSK                 // destination BASE used by the prolog
+        LREG    T3, tramp_copy_size_off(T1)
+        beqz    T3, 1f                            // no saved bytes, including aborts before the first copy
 
-resto_\__MODE__\()tramp:                           // trampoline WAS overwritten -> restore original code
+resto_\__MODE__\()tramp:
         addi    T4, T1, tramp_sv_off               // T4 = saved trampoline code in save area
 
 resto_\__MODE__\()loop:
@@ -3311,7 +3183,9 @@ resto_\__MODE__\()loop:
         sw      T6, 0(T2)                          // write it back to xtvec target
         addi    T2, T2, WDBYTSZ                    // advance target pointer
         addi    T4, T4, WDBYTSZ                    // advance source pointer
-        blt     T2, T3, resto_\__MODE__\()loop     // continue until end of trampoline
+        addi    T3, T3, -WDBYTSZ
+        bnez    T3, resto_\__MODE__\()loop
+        SREG    zero, tramp_copy_size_off(T1)
   1:
         RVTEST_FENCEI                              // sync icache after restoring code
 
@@ -3367,13 +3241,14 @@ rvtest_\__MODE__\()end:                            // epilog is done for this mo
 
 \__MODE__\()trap_sig:      .dword  trap_sigptr                               // current trap signature write ptr
 \__MODE__\()satp_sv:       .dword 0                                          // saved xSATP value
-\__MODE__\()sved_shared:    .dword  0                                     // S-mode area: saved hgatp
+\__MODE__\()sved_shared:   .dword  0                                         // see sved_shared_off
 \__MODE__\()tentry_sv:     .dword  \__MODE__\()trampoline + actual_tramp_sz  // common entry point addr
 \__MODE__\()edeleg_sv:     .dword  0                                         // saved xEDELEG
 \__MODE__\()tvec_new:      .dword  0                                         // current xTVEC value (trampoline)
 \__MODE__\()tvec_save:     .dword  0                                         // original xTVEC before prolog
 \__MODE__\()scratch_save:  .dword  0                                         // original xSCRATCH before prolog
 \__MODE__\()medeleg_illegal_sv: .dword 0                                     // logical medeleg[2] value
+\__MODE__\()tramp_copy_size: .dword 0                                       // bytes saved for trampoline relocation
 \__MODE__\()trapreg_sv:    .fill   8, REGWIDTH, 0xdeadbeef                   // handler reg save: ra scratch (slot 0), T1..T6 (1-6), sp (7)
 
 // rvmodel_sv is shared scratch space. The fast trap handlers use slot 0 as the

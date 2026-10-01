@@ -8,42 +8,66 @@ normative_rule_definitions:
       [
         "ExceptionsSm_cg/{cp_instr_adr_misaligned_branch, cp_instr_adr_misaligned_jal, cp_instr_adr_misaligned_jalr}",
       ]
-  # When a trap is taken into M-mode, mepc is written with the virtual address of
-  # the instruction that was interrupted or that encountered the exception.
-  # Otherwise, mepc is never written by the implementation, though it may be
-  # explicitly written by software.
+  # When a trap is taken into M-mode, mepc is written with the virtual address of the
+  # instruction that was interrupted or that encountered the exception. Otherwise, mepc is
+  # never written by the implementation, though it may be explicitly written by software.
   - name: mepc_op
-    coverpoint: ["ExceptionsSm/cp_illegal_instruction (etc)"]
+    # Representative coverpoints; also the misaligned-address and load/store access-fault ones
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_instr_access_fault, cp_illegal_instruction, cp_breakpoint, cp_ecall_m}",
+      ]
 
-  # When a trap is taken into M-mode, mcause is written with a code indicating the
-  # event that caused the trap. Otherwise, mcause is never written by the
-  # implementation, though it may be explicitly written by software.
+  # When a trap is taken into M-mode, mcause is written with a code indicating the event
+  # that caused the trap. Otherwise, mcause is never written by the implementation, though
+  # it may be explicitly written by software.
   - name: mcause_op
+    # Representative coverpoints; also the misaligned-address and store access-fault ones.
+    # cp_ecall_m is left out: its T-SBI test checks only mepc.
     coverpoint:
       [
-        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
+        "ExceptionsSm_cg/{cp_instr_access_fault, cp_illegal_instruction, cp_breakpoint, cp_load_access_fault}",
       ]
 
-  # The Exception Code field contains a code identifying the last exception or
-  # interrupt.
+  # The Exception Code field contains a code identifying the last exception or interrupt.
   - name: mcause_exccode_op
+    # Representative coverpoints; also the misaligned-address and store access-fault ones.
+    # cp_ecall_m is left out: its T-SBI test checks only mepc.
     coverpoint:
       [
-        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
+        "ExceptionsSm_cg/{cp_instr_access_fault, cp_illegal_instruction, cp_breakpoint, cp_load_access_fault}",
       ]
 
-  - name: mcause_exccode_enc
+  # Interrupt|Exception Code|Description === 1 1 1 1|0 1 2 3|Reserved Supervisor software
+  # interrupt Reserved Machine software interrupt¶1 1 1 1|4 5 6 7|Reserved Supervisor
+  # timer interrupt Reserved Machine timer interrupt¶1 1 1 1|8 9 10 11|Reserved Supervisor
+  # external interrupt Reserved Machine external interrupt¶1 1 1 1|12 13 14-15
+  # ≥16|Reserved Counter-overflow interrupt Reserved Designated for platform use¶0 0 0 0 0
+  # 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0|0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18
+  # 19 20-23 24-31 32-47 48-63 ≥64|Instruction address misaligned Instruction access fault
+  # Illegal instruction Breakpoint Load address misaligned Load access fault Store/AMO
+  # address misaligned Store/AMO access fault Environment call from U-mode Environment
+  # call from S-mode Reserved Environment call from M-mode Instruction page fault Load
+  # page fault Reserved Store/AMO page fault Double trap Reserved Software check Hardware
+  # error Reserved Designated for custom use Reserved Designated for custom use Reserved
+  # ===
+  - name: mcause_exccode_enc_img
+    # Representative coverpoints; also the misaligned-address and store access-fault ones.
+    # cp_ecall_m is left out: its T-SBI test checks only mepc.
     coverpoint:
       [
-        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
+        "ExceptionsSm_cg/{cp_instr_access_fault, cp_illegal_instruction, cp_breakpoint, cp_load_access_fault}",
       ]
 
-  # Value|Name|Description === 0 1 ≥2|Direct Vectored ---|All traps set pc to BASE.
-  # Asynchronous interrupts set pc to BASE+4×cause. Reserved ===
+  # Value|Name|Description === 0|Direct|All traps set pc to
+  # csr::[base].¶1|Vectored|Asynchronous interrupts set pc to
+  # csr::[base]+4×cause.¶≥2|&#8201;&#8212;&#8201;|Reserved ===
   - name: mtvec_mode_enc
+    # Representative coverpoints; also the misaligned-address and store access-fault ones.
+    # cp_ecall_m is left out: its T-SBI test checks only mepc.
     coverpoint:
       [
-        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
+        "ExceptionsSm_cg/{cp_instr_access_fault, cp_illegal_instruction, cp_breakpoint, cp_load_access_fault}",
       ]
 
   # When MODE=Direct, all traps into machine mode cause the pc to be set to the
@@ -60,17 +84,20 @@ normative_rule_definitions:
       ["TODO: add a coverpoint for exceptions using mtvec direct and vectored"]
 
   # By default, all traps at any privilege level are handled in machine mode
-  - name: trap_def_M_mode
+  - name: trap_def_m_mode
+    # Representative coverpoints; also the misaligned-address and store access-fault ones.
+    # cp_ecall_m is left out: its T-SBI test checks only mepc.
     coverpoint:
       [
-        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
+        "ExceptionsSm_cg/{cp_instr_access_fault, cp_illegal_instruction, cp_breakpoint, cp_load_access_fault}",
       ]
 
   # Note that load and load-reserved instructions generate load exceptions
   - name: mcause_exccode_ld_ldrsv
     coverpoint:
       [
-        "ExceptionsSm/cp_{load_address_misaligned, load_access_fault}, TODO: no load-researved instructions here",
+        "ExceptionsSm_cg/{cp_load_address_misaligned, cp_load_access_fault}",
+        "ExceptionsZalrsc_cg/{cp_load_address_misaligned, cp_load_access_fault}",
       ]
 
   # No instruction-address-misaligned exception is generated for a conditional
@@ -82,7 +109,11 @@ normative_rule_definitions:
   # target of a jump or taken branch, the exception is reported on the target
   # instruction, not on the jump or branch instruction.
   - name: ia_fault_exc_on_target
-    coverpoint: ["ExceptionsSm_cg/cp_instr_access_fault, TODO for page fault"]
+    coverpoint:
+      [
+        "ExceptionsSm_cg/cp_instr_access_fault",
+        "ExceptionsSv_cg/cp_instr_page_fault_s",
+      ]
 
   - name: branch_misaligned_taken_exception
     coverpoint: ["ExceptionsSm_cg/cp_instr_adr_misaligned_branch"]
@@ -107,41 +138,35 @@ normative_rule_definitions:
   - name: load_exc_x0
     coverpoint:
       [
-        "TODO: currently have no cp in ExceptionsSM that tests for load with rd = x0",
+        "TODO: currently have no cp in ExceptionsSm that tests for load with rd = x0",
       ]
 
   # Loads and stores whose effective address is not naturally aligned to the
   # referenced datatype (i.e., the effective address is not divisible by the size of
   # the access in bytes) have behavior dependent on the EEI.
-  - name: MISALIGNED_LDST_EEI_DEPENDENT_BEHAVIOR
+  - name: misaligned_ldst_eei_dependent_behavior
     coverpoint:
       [
         "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
       ]
 
-  # misaligned loads and stores can be handled in hardware
-  - name: MISALIGNED_LDST_FULLY_HW_SUPPORTED
-    coverpoint:
-      [
-        "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
-      ]
-  # via an invisible trap into the execution environment implementation
-  - name: MISALIGNED_LDST_INVISIBLE_TRAP
-    coverpoint:
-      [
-        "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
-      ]
-
-  # combination of hardware and invisible trap depending on address.
-  - name: MISALIGNED_LDST_HW_OR_INVISIBLE_TRAP_FUNC_OF_ADDR
+  # misaligned loads and stores can be handled in hardware, or via an invisible trap into
+  # the execution environment implementation, or possibly a combination of hardware and
+  # invisible trap depending on address.
+  - name: misaligned_ldst_hw_support
     coverpoint:
       [
         "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
       ]
 
   # loads and stores that are not naturally aligned may either complete execution
-  # successfully or raise an exception.
-  - name: MISALIGNED_LDST_FULLY_HW_SUPPORTED_OR_VISIBLE_TRAP
+  # successfully or raise an exception. The exception raised can be either an
+  # address-misaligned exception or an access-fault exception. For a memory access that
+  # would otherwise be able to complete except for the misalignment, an access-fault
+  # exception can be raised instead of an address-misaligned exception if the misaligned
+  # access should not be emulated, e.g., if accesses to the memory region have side
+  # effects.
+  - name: misaligned_ldst_exc_type
     coverpoint:
       [
         "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
@@ -151,18 +176,7 @@ normative_rule_definitions:
   # invisibly, the EEI must define if exceptions caused by address misalignment
   # result in a contained trap (allowing software running inside the execution
   # environment to handle the trap) or a fatal trap (terminating execution).
-  - name: MISALIGNED_LDST_CONTAINED_OR_FATAL_TRAP
-    coverpoint:
-      [
-        "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
-      ]
-
-  # The exception raised can be either an address-misaligned exception or an
-  # access-fault exception. For a memory access that would otherwise be able to
-  # complete except for the misalignment, an access-fault exception can be raised
-  # instead of an address-misaligned exception if the misaligned access should not
-  # be emulated, e.g., if accesses to the memory region have side effects.
-  - name: ldst_addr_misaligned_or_access_fault_exc
+  - name: misaligned_ldst_contained_or_fatal_trap
     coverpoint:
       [
         "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
@@ -175,66 +189,33 @@ normative_rule_definitions:
         "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
       ]
 
-  # The ECALL instruction is used to make a service request to the execution
+  # The insn:ecall[] instruction is used to make a service request to the execution
   # environment.
-  - name: ecall_op
+  - name: ecall_service_request_op
+    coverpoint: ["ExceptionsSm_cg/cp_ecall_m"]
+  # The ECALL instruction is used to make a request to the supporting execution
+  # environment. When executed in U-mode, S-mode, or M-mode, it generates an
+  # environment-call-from-U-mode exception, environment-call-from-S-mode exception, or
+  # environment-call-from-M-mode exception, respectively, and performs no other operation.
+  - name: ecall_priv_mode_op
+    # TODO: the T-SBI ecall tests check only xepc, not the environment-call cause
     coverpoint: ["ExceptionsSm_cg/cp_ecall_m"]
 
-  # The EBREAK instruction is used to return control to a debugging environment.
-  - name: ebreak_op
+  # The insn:ebreak[] instruction is used to return control to a debugging environment.
+  - name: ebreak_debug_env_op
     coverpoint: ["ExceptionsSm_cg/cp_breakpoint"]
-
-  # When a trap is taken into M-mode, mepc is written with the virtual address of
-  # the instruction that was interrupted or that encountered the exception.
-  # Otherwise, mepc is never written by the implementation, though it may be
-  # explicitly written by software.
-  - name: mepc_op
-    coverpoint:
-      [
-        "ExceptionsSm_cg/{cp_instr_adr_misaligned_branch, cp_instr_access_fault, cp_illegal_instruction, cp_breakpoint, cp_load_address_misaligned, cp_load_access_fault, cp_store_address_misaligned, cp_store_access_fault, cp_ecall_m}",
-      ]
-
-  # When a trap is taken into M-mode, mcause is written with a code indicating the
-  # event that caused the trap. Otherwise, mcause is never written by the
-  # implementation, though it may be explicitly written by software.
-  - name: mcause_op
-    coverpoint:
-      [
-        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
-      ]
-
-  # The Exception Code field contains a code identifying the last exception or
-  # interrupt.
-  - name: mcause_exccode_op
-    coverpoint:
-      [
-        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
-      ]
-
-  - name: mcause_exccode_enc
-    coverpoint:
-      [
-        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
-      ]
-
-  # Value|Name|Description === 0 1 ≥2|Direct Vectored ---|All traps set pc to BASE.
-  # Asynchronous interrupts set pc to BASE+4×cause. Reserved ===
-  - name: mtvec_mode_enc
-    coverpoint: ["TODO show mtvec does not affect synchronous exceptions"]
-
-  # By default, all traps at any privilege level are handled in machine mode
-  - name: trap_def_M_mode
-    coverpoint:
-      [
-        "ExceptionsSm/cp_{instr_adr_misaligned_branch, instr_access_fault, illegal_instruction, breakpoint, load_address_misaligned, load_access_fault, store_address_misaligned, store_access_fault, ecall_m}",
-      ]
+  # The EBREAK instruction is used by debuggers to cause control to be transferred back to
+  # a debugging environment. Unless overridden by an external debug environment, EBREAK
+  # raises a breakpoint exception and performs no other operation.
+  - name: ebreak_debugger_transfer_op
+    coverpoint: ["ExceptionsSm_cg/cp_breakpoint"]
 
   # If an instruction may raise multiple synchronous exceptions, the decreasing
   # priority order of &lt;&lt;norm:exc_priority&gt;&gt; indicates which exception is
   # taken and reported in mcause. Load/store/AMO address-misaligned exceptions may
   # have either higher or lower priority than load/store/AMO page-fault and
   # access-fault exceptions.
-  - name: mcause_exccode_pri
+  - name: mcause_exccode_priority_order
     coverpoint:
       [
         "ExceptionsSm_cg/{cp_misaligned_priority_load, cp_misaligned_priority_store}",
@@ -256,11 +237,21 @@ normative_rule_definitions:
         "ExceptionsSm_cg/{cp_misaligned_priority_load, cp_misaligned_priority_store, cp_misaligned_priority_fetch}",
       ]
 
-  # medeleg has a bit position allocated for every synchronous exception shown in
-  # &lt;&lt;norm:mcause_exccode_enc_img&gt;&gt;, with the index of the bit position
-  # equal to the value returned in the mcause register
-  - name: medeleg_enc
-    coverpoint: ["ExceptionsSm_cg/cp_medeleg_msu"]
+  - name: medeleg_enc_img
+    # Representative coverpoints; also the other cp_medeleg_msu_* coverpoints
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ecall, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
+      ]
+  # csr:medeleg[] has a bit position allocated for every synchronous exception shown in
+  # &lt;&lt;norm:mcause_exccode_enc_img&gt;&gt;, with the index of the bit position equal
+  # to the value returned in the csr:mcause[] register
+  - name: medeleg_enc_txt
+    # Representative coverpoints; also the other cp_medeleg_msu_* coverpoints
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ecall, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
+      ]
 
   # When a trap is delegated to S-mode the scause register is written with the trap
   # cause; the sepc register is written with the virtual address of the instruction
@@ -268,32 +259,291 @@ normative_rule_definitions:
   # datum; the SPP field of mstatus is written with the active privilege mode at the
   # time of the trap; the SPIE field of mstatus is written with the value of the SIE
   # field at the time of the trap; and the SIE field of mstatus is cleared.
-  - name: trap_del_S_mode_op
-    coverpoint: ["ExceptionsSm_cg/cp_medeleg_msu"]
+  - name: trap_del_s_mode_op
+    # Representative coverpoints; also the other cp_medeleg_msu_* coverpoints except ecall,
+    # whose T-SBI test checks only xepc
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
+      ]
 
   # Traps never transition from a more-privileged mode to a less-privileged mode.
   # For example, if M-mode has delegated illegal-instruction exceptions to S-mode,
   # and M-mode software later executes an illegal instruction, the trap is taken in
   # M-mode, rather than being delegated to S-mode.
   - name: trap_never_trans_lower
-    coverpoint: ["ExceptionsSm_cg/cp_medeleg_msu"]
+    # Representative coverpoints; also the other cp_medeleg_msu_* coverpoints
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ecall, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
+      ]
 
   # traps may be taken horizontally. Using the same example, if M-mode has delegated
   # illegal-instruction exceptions to S-mode, and S-mode software later executes an
   # illegal instruction, the trap is taken in S-mode.
   - name: trap_horiz
-    coverpoint: ["ExceptionsSm_cg/cp_medeleg_msu"]
+    # Representative coverpoints; also the other cp_medeleg_msu_* coverpoints
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ecall, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
+      ]
 
-  # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to
-  # the value of xIE; xIE is set to 0; and xPP is set to y.
-  - names: [mstatus_xpie_trap_op, mstatus_xie_trap_op, mstatus_xpp_trap_op]
-    coverpoint: ["ExceptionsSm_cg/cp_medeleg_msu_ecall"]
+  # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to the
+  # value of xIE; xIE is set to 0; and xPP is set to y.
+  - name: mstatus_xpie_xie_xpp_trap_op
+    # These trap signatures record xstatus; the ecall ones check only xepc
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
+      ]
 
   # The SPP bit indicates the privilege level at which a hart was executing before
-  # entering supervisor mode. When a trap is taken, SPP is set to 0 if the trap
-  # originated from user mode, or 1 otherwise. When an SRET instruction (see ) is
-  # executed to return from the trap handler, the privilege level is set to user
-  # mode if the SPP bit is 0, or supervisor mode if the SPP bit is 1; SPP is then
-  # set to 0.
-  - names: [sstatus_spp_sz, sstatus_spp_acc, sstatus_spp_op]
-    coverpoint: ["ExceptionsSm_cg/cp_medeleg_msu_ecall"]
+  # entering supervisor mode. When a trap is taken, SPP is set to 0 if the trap originated
+  # from user mode, or 1 otherwise. When an SRET instruction (see ) is executed to return
+  # from the trap handler, the privilege level is set to user mode if the SPP bit is 0, or
+  # supervisor mode if the SPP bit is 1; SPP is then set to 0.
+  - name: sstatus_spp
+    # These trap signatures record xstatus; the ecall ones check only xepc
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_medeleg_msu_illegalinstruction, cp_medeleg_msu_ebreak, cp_medeleg_msu_loadaccessfault}",
+      ]
+
+  # PMAs do not vary by execution context.
+  - name: pma_indep_exec_context
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_medeleg_msu_instraccessfault, cp_medeleg_msu_loadaccessfault, cp_medeleg_msu_storeaccessfault}",
+      ]
+
+  # Precisely trapped PMA violations manifest as instruction, load, or store access-fault
+  # exceptions, distinct from virtual-memory page-fault exceptions.
+  - name: pma_precise_recom
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_instr_access_fault, cp_load_access_fault, cp_store_access_fault}",
+      ]
+
+  # Precise PMA traps might not always be possible, for example, when probing a legacy bus
+  # architecture that uses access failures as part of the discovery mechanism. In this case, error
+  # responses from peripheral devices will be reported as imprecise bus-error interrupts.
+  - name: pma_imprecise_ok
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
+
+  # The most important characterization of a given memory address range is whether it holds regular
+  # main memory or I/O devices. Regular main memory is required to have a number of properties,
+  # specified below, whereas I/O devices can have a much broader range of attributes. Memory regions
+  # that do not fit into regular main memory, for example, device scratchpad RAMs, are categorized
+  # as I/O regions.
+  - name: pma_mm_vs_io_def
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # Main memory regions always support read and write of all access widths required by the attached
+  # devices
+  - name: pma_mm_rw
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
+      ]
+
+  # can specify whether instruction fetch is supported.
+  - name: pma_mm_ifetch
+    coverpoint:
+      [
+        "Untestable: profile defines no main-memory region without instruction fetch",
+      ]
+
+  # the design of a processor or device accessing main memory might support other widths, but must
+  # be able to function with the types supported by the main memory.
+  - name: pma_mm_mandatory_sz
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # I/O regions can specify which combinations of read, write, or execute accesses to which data
+  # widths are supported.
+  - name: pma_io_rwx_per_sz
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
+
+  # For systems with page-based virtual memory, I/O and memory regions can specify which
+  # combinations of hardware page-table reads and hardware page-table writes are supported.
+  - name: pma_vm_hw_tbl_acc
+    coverpoint:
+      [
+        "TODO: walk a page table at RVMODEL_ACCESS_FAULT_ADDRESS and check for an access fault",
+      ]
+
+  # Some platforms might mandate that all of cacheable main memory support all atomic operations
+  - name: pma_cache_mm_all_atomics
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # Within AMOs, there are four levels of support: AMONone, AMOSwap, AMOLogical, and AMOArithmetic.
+  # AMONone indicates that no AMO operations are supported. AMOSwap indicates that only amoswap
+  # instructions are supported in this address range. AMOLogical indicates that swap instructions
+  # plus all the logical AMOs (amoand, amoor, amoxor) are supported. AMOArithmetic indicates that
+  # all RISC-V AMOs defined by the A extension are supported.
+  - name: pma_amo_levels
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
+
+  # Main memory and I/O regions may only support a subset or none of the processor-supported atomic
+  # operations.
+  - name: pma_amo_far_subset_proc
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
+
+  # The Zacas extension defines three additional levels of support: AMOCASW, AMOCASD, and AMOCASQ.
+  - name: pma_amo_Zacas_levels1
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # AMOCASW indicates that in addition to instructions indicated by AMOArithmetic-level support, the
+  # AMOCAS.W instruction is supported. AMOCASD indicates that in addition to instructions indicated
+  # by AMOCASW-level support, the AMOCAS.D instruction is supported. AMOCASQ indicates that in
+  # addition to instructions indicated by AMOCASD-level support, the AMOCAS.Q instruction is
+  # supported.
+  - name: pma_amo_Zacas_levels2
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
+
+  # AMOCASW/D/Q require AMOArithmetic-level support as the AMOCAS.W/D/Q instructions require ability
+  # to perform an arithmetic comparison and a swap operation.
+  - name: pma_amo_Zacas_req_arith
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # The AMOs specified by the Zabha extension require the same level of support as the corresponding
+  # instructions in the Zaamo standard extension or the Zacas extension.
+  - name: pma_amo_Zabha_req
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
+
+  # For LR/SC, there are three levels of support indicating combinations of the reservability and
+  # eventuality properties: RsrvNone, RsrvNonEventual, and RsrvEventual. RsrvNone indicates that no
+  # LR/SC operations are supported (the location is non-reservable). RsrvNonEventual indicates that
+  # the operations are supported (the location is reservable), but without the eventual success
+  # guarantee described in the unprivileged ISA specification. RsrvEventual indicates that the
+  # operations are supported and provide the eventual success guarantee.
+  - name: pma_rsrv_levels
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
+
+  # Implementations may raise access-fault exceptions instead of address-misaligned exceptions for
+  # some misaligned accesses, indicating the instruction should not be emulated by a trap handler.
+  - name: pma_mag_exc
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_load_address_misaligned, cp_store_address_misaligned}",
+      ]
+
+  # Each strongly ordered I/O region specifies a numbered ordering channel, which is a mechanism by
+  # which ordering guarantees can be provided between different I/O regions.
+  - name: pma_mo_io_chan_def
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
+
+  # Channel 0 is used to indicate point-to-point strong ordering only, where only accesses by the
+  # hart to the single associated I/O region are strongly ordered.
+  - name: pma_mo_io_chan_0
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
+
+  # Channel 1 is used to provide global strong ordering across all I/O regions. Any accesses by a
+  # hart to any I/O region associated with channel 1 can only be observed to have occurred in
+  # program order by all other harts and I/O devices, including relative to accesses made by that
+  # hart to relaxed I/O regions or strongly ordered I/O regions with different channel numbers. In
+  # other words, any access to a region in channel 1 is equivalent to executing a fence io,io
+  # instruction before and after the instruction.
+  - name: pma_mo_io_chan_1
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
+
+  # Other larger channel numbers provide program ordering to accesses by that hart across any
+  # regions with the same channel number
+  - name: pma_mo_io_chan_other
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
+
+  # Systems might support dynamic configuration of ordering properties on each memory region.
+  - name: pma_mo_dyn
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # If a PMA indicates non-cacheability, then accesses to that region must be satisfied by the
+  # memory itself, not by any caches.
+  - name: pma_non_cacheable
+    coverpoint: ["Untestable: no non-cacheable PMA region defined in profile"]
+
+  # For implementations with a cacheability-control mechanism, the situation may arise that a
+  # program uncacheably accesses a memory location that is currently cache-resident. In this
+  # situation, the cached copy must be ignored. This constraint is necessary to prevent
+  # more-privileged modes' speculative cache refills from affecting the behavior of less-privileged
+  # modes' uncacheable accesses.
+  - name: uncached_ignores_cached
+    coverpoint: ["Untestable: cache residency is not architecturally visible"]
+
+  # Main memory regions are assumed to be idempotent.
+  - name: pma_idp_mm
+    coverpoint: ["Descriptive spec text with no separately testable behavior"]
+
+  # hardware should always be designed to avoid speculative or redundant accesses to memory regions
+  # marked as non-idempotent
+  - name: pma_idp_no_spec
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
+
+  # Non-idempotent regions might not support misaligned accesses. Misaligned accesses to such
+  # regions should raise access-fault exceptions rather than address-misaligned exceptions
+  - name: pma_idp_misaligned_exc
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
+
+  # For non-idempotent regions, implicit reads and writes must not be performed early or
+  # speculatively, with the following exceptions. When a non-speculative implicit read is performed,
+  # an implementation is permitted to additionally read any of the bytes within a naturally aligned
+  # power-of-2 region containing the address of the non-speculative implicit read. Furthermore, when
+  # a non-speculative instruction fetch is performed, an implementation is permitted to additionally
+  # read any of the bytes within the next naturally aligned power-of-2 region of the same size (with
+  # the address of the region taken modulo 2^XLEN).
+  - name: pma_idp_implicit_ok
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
+
+  # The size of these naturally aligned power-of-2 regions is implementation-defined, but, for
+  # systems with page-based virtual memory, must not exceed the smallest supported page size.
+  - name: pma_idp_implicit_sz
+    coverpoint: ["Untestable: no I/O devices defined in profile"]
+
+  # Load/store/AMO address-misaligned exceptions may have either higher or lower priority than
+  # load/store/AMO page-fault and access-fault exceptions.
+  - name: mcause_exccode_priority_misaligned
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_misaligned_priority_load, cp_misaligned_priority_store}",
+        "ExceptionsSvSm_cg/cp_misaligned_priority_m",
+      ]
+
+  # When a trap is taken into M-mode, mtval is either set to zero or written with exception-specific
+  # information to assist software in handling the trap. Otherwise, mtval is never written by the
+  # implementation, though it may be explicitly written by software.
+  - name: mtval_op
+    # Representative coverpoints; the other ExceptionsSm_cg exception coverpoints also record mtval
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_illegal_instruction, cp_breakpoint, cp_load_address_misaligned, cp_store_address_misaligned}",
+      ]
+
+  # On a breakpoint exception raised by an EBREAK or C.EBREAK instruction, mtval is written with
+  # either zero or the virtual address of the instruction.
+  - name: mtval_ebreak_op
+    coverpoint:
+      [
+        "ExceptionsSm_cg/{cp_breakpoint, cp_ebreak_straddle64}",
+        "ExceptionsZc_cg/cp_breakpoint",
+      ]
+
+  # The mtval register can optionally also be used to return the faulting instruction bits on an
+  # illegal-instruction exception
+  - name: mtval_instr_bits_lead_in
+    coverpoint: ["ExceptionsSm_cg/cp_illegal_instruction"]
+
+  # the actual faulting instruction the first ILEN bits of the faulting instruction the first MXLEN
+  # bits of the faulting instruction
+  - name: mtval_instr_bits_list
+    coverpoint:
+      [
+        "ExceptionsSm_cg/cp_illegal_instruction",
+        "ExceptionsZc_cg/cp_illegal_instruction",
+      ]
+
+  # The value loaded into mtval on an illegal-instruction exception is right-justified and all
+  # unused upper bits are cleared to zero.
+  - name: mtval_ill_instr_exc_in_low_bits
+    coverpoint:
+      [
+        "ExceptionsSm_cg/cp_illegal_instruction",
+        "ExceptionsZc_cg/cp_illegal_instruction",
+      ]

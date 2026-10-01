@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 14
+#define SIGUPD_COUNT 15
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -33,54 +33,61 @@ RVTEST_BEGIN
 // cp_custom_fencei
 /////////////////////////////////
 
-# Testcase: normal fence.i
-  LI(x24, 3)
-  LA(x1, selfmodify_0)
-  RVTEST_TESTDATA_LOAD_INT(x3, x16) # load addi x24, x24, 5: x16 = 0x005c0c13
-  sw x16, 0(x1)
-Zifencei_fence_i_cg_cp_custom_fencei_normal_fence_i:
+  mv x29, x2 # switch signature pointer register to avoid conflict with test
+# Testcase fencei: normal fence.i
+  LI(x17, 3)
+  LA(x9, selfmodify_0)
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load addi x17, x17, 5: x6 = 0x00588893
+  sw x6, 0(x9)
+Zifencei_fence_i_cg_cp_custom_fencei_fencei:
   fence.i # normal fence.i
 selfmodify_0:
-  addi x24, x24, 1 # original code
-  # Check if x24 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x24, Zifencei_fence_i_cg_cp_custom_fencei_normal_fence_i, Zifencei_fence_i_cg_cp_custom_fencei_normal_fence_i_str)
+  addi x17, x17, 1 # original code
+  # Check if x17 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x17, Zifencei_fence_i_cg_cp_custom_fencei_fencei, Zifencei_fence_i_cg_cp_custom_fencei_fencei_str)
 
-# Testcase: fence.i with nonzero rs1
-  LI(x8, 3)
-  LA(x19, selfmodify_1)
-  RVTEST_TESTDATA_LOAD_INT(x3, x23) # load addi x8, x8, 7: x23 = 0x00740413
-  sw x23, 0(x19)
-Zifencei_fence_i_cg_cp_custom_fencei_fence_i_with_nonzero_rs1:
+# Testcase fencei_nonzerors1: fence.i with nonzero rs1
+  LI(x2, 0x0F0F0F0F) # nonzero value in the ignored rs1
+  LI(x24, 3)
+  LA(x20, selfmodify_1)
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load addi x24, x24, 7: x9 = 0x007c0c13
+  sw x9, 0(x20)
+Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerors1:
   .insn 0x0001100f # fence.i with nonzero rs1
 selfmodify_1:
-  addi x8, x8, 1 # original code
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Zifencei_fence_i_cg_cp_custom_fencei_fence_i_with_nonzero_rs1, Zifencei_fence_i_cg_cp_custom_fencei_fence_i_with_nonzero_rs1_str)
+  addi x24, x24, 1 # original code
+  # Check if x24 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x24, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerors1, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerors1_str)
 
-# Testcase: fence.i with nonzero rd
-  LI(x10, 3)
-  LA(x18, selfmodify_2)
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load addi x10, x10, 9: x12 = 0x00950513
-  sw x12, 0(x18)
-Zifencei_fence_i_cg_cp_custom_fencei_fence_i_with_nonzero_rd:
+# Testcase fencei_nonzerord: fence.i with nonzero rd
+  LI(x1, 0x5A5A5A5A) # fence.i must not write the ignored rd
+  LI(x11, 3)
+  LA(x19, selfmodify_2)
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load addi x11, x11, 9: x13 = 0x00958593
+  sw x13, 0(x19)
+Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerord:
   .insn 0x0000108f # fence.i with nonzero rd
 selfmodify_2:
-  addi x10, x10, 1 # original code
-  # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x10, Zifencei_fence_i_cg_cp_custom_fencei_fence_i_with_nonzero_rd, Zifencei_fence_i_cg_cp_custom_fencei_fence_i_with_nonzero_rd_str)
+  addi x11, x11, 1 # original code
+  # Check if x11 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x11, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerord, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerord_str)
+  # Check if x1 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x1, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerord, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerord_str)
 
-# Testcase: fence.i with nonzero funct12
-  LI(x16, 3)
-  LA(x13, selfmodify_3)
-  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load addi x16, x16, 13: x1 = 0x00d80813
-  sw x1, 0(x13)
-Zifencei_fence_i_cg_cp_custom_fencei_fence_i_with_nonzero_funct12:
+# Testcase fencei_nonzerof12: fence.i with nonzero funct12
+  LI(x17, 3)
+  LA(x14, selfmodify_3)
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load addi x17, x17, 13: x6 = 0x00d88893
+  sw x6, 0(x14)
+Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerof12:
   .insn 0x0010100f # fence.i with nonzero funct12
 selfmodify_3:
-  addi x16, x16, 1 # original code
-  # Check if x16 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x16, Zifencei_fence_i_cg_cp_custom_fencei_fence_i_with_nonzero_funct12, Zifencei_fence_i_cg_cp_custom_fencei_fence_i_with_nonzero_funct12_str)
+  addi x17, x17, 1 # original code
+  # Check if x17 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x17, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerof12, Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerof12_str)
 
+
+  mv x2, x29 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -89,16 +96,16 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test data
-.word 0x005c0c13
-.word 0x00740413
-.word 0x00950513
-.word 0x00d80813
+.word 0x00588893
+.word 0x007c0c13
+.word 0x00958593
+.word 0x00d88893
 
 // Testcase strings
-Zifencei_fence_i_cg_cp_custom_fencei_normal_fence_i_str: .string "\"test: 1; cg: Zifencei_fence.i_cg; cp: cp_custom_fencei; bin: normal fence.i\""
-Zifencei_fence_i_cg_cp_custom_fencei_fence_i_with_nonzero_rs1_str: .string "\"test: 2; cg: Zifencei_fence.i_cg; cp: cp_custom_fencei; bin: fence.i with nonzero rs1\""
-Zifencei_fence_i_cg_cp_custom_fencei_fence_i_with_nonzero_rd_str: .string "\"test: 3; cg: Zifencei_fence.i_cg; cp: cp_custom_fencei; bin: fence.i with nonzero rd\""
-Zifencei_fence_i_cg_cp_custom_fencei_fence_i_with_nonzero_funct12_str: .string "\"test: 4; cg: Zifencei_fence.i_cg; cp: cp_custom_fencei; bin: fence.i with nonzero funct12\""
+Zifencei_fence_i_cg_cp_custom_fencei_fencei_str: .string "\"test: 1; cg: Zifencei_fence.i_cg; cp: cp_custom_fencei; bin: fencei\""
+Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerors1_str: .string "\"test: 2; cg: Zifencei_fence.i_cg; cp: cp_custom_fencei; bin: fencei_nonzerors1\""
+Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerord_str: .string "\"test: 3; cg: Zifencei_fence.i_cg; cp: cp_custom_fencei; bin: fencei_nonzerord\""
+Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerof12_str: .string "\"test: 4; cg: Zifencei_fence.i_cg; cp: cp_custom_fencei; bin: fencei_nonzerof12\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

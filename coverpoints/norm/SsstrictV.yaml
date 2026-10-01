@@ -2,135 +2,256 @@
 
 normative_rule_definitions:
   # V reserved rules
-  - name: EMUL_NFIELDS_rsv
-    coverpoint: ["TODO"]
-  - name: EMUL_offgroup_rsv
-    coverpoint: ["TODO"]
-  - name: EMUL_rsv
-    coverpoint: ["TODO"]
-  - name: V_fp_EEW_IEEE_nsupported_rsv
-    coverpoint: ["TODO"]
+  - name: emul_nfields_rsv
+    coverpoint: ["SsstrictV_vlseg2e8_v_cg/cp_ssstrictv_ls_seg_vd_overflow"]
+  - name: emul_offgroup_rsv
+    coverpoint:
+      [
+        "Out-of-Scope: this behavior is unspecified even under Ssstrict, which does not cover CSR-state-dependent reserved conditions",
+      ]
+  - name: emul_rsv
+    coverpoint:
+      ["Out-of-Scope: reserved behavior that is not covered by Ssstrict"]
+  - name: V_fp_eew_ieee_nsupported_rsv
+    coverpoint: ["ExceptionsVf16_vfmv_f_s_cg/cp_vill"]
   - name: V_fp_eew_rsv
-    coverpoint: ["TODO"]
+    coverpoint: ["ExceptionsVf16_vfadd_vv_cg/cp_vill"]
   - name: V_inv_frm_rsv
-    coverpoint: ["TODO"]
+    coverpoint: ["Out-of-Scope: Ssstrict does not apply to CSR values"]
   - name: egs_ge_vlmax_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "Out-of-Scope: no Ssstrict-equivalent suite exists for the vector-crypto (Zvk*) extensions, and this reserved condition depends on CSR state, matching Ssstrict's own encoding-only scope boundary",
+      ]
   - name: egs_vl_rsv
-    coverpoint: ["TODO"]
-  - name: vadc_unmasked_rsv
-    coverpoint: ["TODO"]
-  - name: vadc_vd_v0_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "Out-of-Scope: no Ssstrict-equivalent suite exists for the vector-crypto (Zvk*) extensions, and this reserved condition depends on CSR state, matching Ssstrict's own encoding-only scope boundary",
+      ]
+  # Encodings corresponding to the unmasked versions (vm=1) are reserved.
+  - name: vadc_vsbc_unmasked_rsv
+    coverpoint:
+      [
+        "{SsstrictV_vadc_vvm_cg,SsstrictV_vsbc_vvm_cg}/cp_ssstrictv_vadc_vsbc_vm1_reserved",
+      ]
+  # For insn:vadc[] and insn:vsbc[], the instruction encoding is reserved if the
+  # destination vector register is v0.
+  - name: vadc_vsbc_vd_v0_rsv
+    coverpoint: ["SsstrictV_vadc_vim_cg/cp_ssstrictv_masking_vd_eq_v0"]
   - name: vcompress_masked_rsv
-    coverpoint: ["TODO"]
-  - name: vector_ls_EEW_rsv
-    coverpoint: ["TODO"]
-  - name: vector_ls_EMUL_offgroup_rsv
-    coverpoint: ["TODO"]
-  - name: vector_ls_EMUL_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      ["SsstrictV_vcompress_vm_cg/cp_ssstrictv_vcompress_vm0_reserved"]
+  - name: vector_ls_eew_rsv
+    coverpoint: ["ExceptionsVls_vloxei16_v_cg/cp_exceptionsv_index_eew16"]
+  - name: vector_ls_emul_offgroup_rsv
+    coverpoint: ["SsstrictV_vl8re8_v_cg/cp_ssstrictv_ls_wr_nreg8_vd_unaligned"]
+  - name: vector_ls_emul_rsv
+    coverpoint: ["ExceptionsVls_vloxei16_v_cg/cp_exceptionsv_index_eew16"]
   - name: vector_ls_ins_rsv
-    coverpoint: ["TODO"]
+    coverpoint: ["SsstrictV_vle8_v_cg/cp_ssstrictv_ls_eew_lt_sewmin"]
   - name: vector_ls_mew_rsv
-    coverpoint: ["TODO"]
+    coverpoint: ["SsstrictV_vle8_v_cg/cp_ssstrictv_ls_mew_reserved"]
   - name: vector_ls_seg_indexed_vreg_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      ["SsstrictV_vloxseg2ei8_v_cg/cp_ssstrictv_ls_seg_idx_vd_vs2_overlap"]
   - name: vector_ls_seg_rsv
-    coverpoint: ["TODO"]
+    coverpoint: ["SsstrictV_vlseg2e8_v_cg/cp_ssstrictv_ls_seg_vd_overflow"]
   - name: vector_ls_seg_wholereg_nf_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "SsstrictV_vl1re8_v_cg/cp_ssstrictv_ls_wr_nf_not_pow2",
+        "SsstrictV_vs1r_v_cg/cp_ssstrictv_ls_wr_nf_not_pow2",
+      ]
   - name: vfmv-s-f_masked_rsv
-    coverpoint: ["TODO"]
+    coverpoint: ["SsstrictV_vfmv_s_f_cg/cp_ssstrictv_vfmv_fs_sf_vm0_reserved"]
   - name: vfmv_vs2_nv0_rsv
-    coverpoint: ["TODO"]
+    coverpoint: ["SsstrictV_vfmv_v_f_cg/cp_ssstrictv_vfmv_vs2_not_v0_reserved"]
   - name: vid_vs2_nv0_rsv
-    coverpoint: ["TODO"]
+    coverpoint: ["SsstrictV_vid_v_cg/cp_ssstrictv_vid_vs2_not_v0_reserved"]
   - name: vmasklogical_masked_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "SsstrictV_vmand_mm_cg/cp_ssstrictv_mask_logical_vm0_reserved",
+        "SsstrictV_vmnand_mm_cg/cp_ssstrictv_mask_logical_vm0_reserved",
+        "SsstrictV_vmor_mm_cg/cp_ssstrictv_mask_logical_vm0_reserved",
+        "SsstrictV_vmxor_mm_cg/cp_ssstrictv_mask_logical_vm0_reserved",
+      ]
   - name: vmv-nr-r_nreg_rsv
-    coverpoint: ["TODO"]
+    coverpoint: ["SsstrictV_vmv1r_v_cg/cp_ssstrictv_vmvnr_simm_reserved"]
   - name: vmv-nr-r_unaligned_rsv
-    coverpoint: ["TODO"]
-  - name: vmv-s-x_masked_rsv
-    coverpoint: ["TODO"]
-  - name: vmv-x-s_masked_rsv
-    coverpoint: ["TODO"]
+    coverpoint: ["SsstrictV_vmv4r_v_cg/cp_ssstrictv_vmv4r_both_unaligned"]
+  # The encodings corresponding to the masked versions (vm=0) of insn:vmv.x.s[] and
+  # insn:vmv.s.x[] are reserved.
+  - name: vmv-s-x_vmv-x-s_masked_rsv
+    coverpoint: ["SsstrictV_vmv_s_x_cg/cp_ssstrictv_vmv_xs_sx_vm0_reserved"]
   - name: vmv_vs2_nv0_rsv
-    coverpoint: ["TODO"]
-  - name: vreg_offgroup_LMUL2_rsv
-    coverpoint: ["TODO"]
-  - name: vreg_offgroup_LMUL4_rsv
-    coverpoint: ["TODO"]
-  - name: vreg_offgroup_LMUL8_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "SsstrictV_vmv_v_v_cg/cp_ssstrictv_vmv_vs2_not_v0_reserved",
+        "SsstrictV_vmv_v_x_cg/cp_ssstrictv_vmv_vs2_not_v0_reserved",
+        "SsstrictV_vmv_v_i_cg/cp_ssstrictv_vmv_vs2_not_v0_reserved",
+      ]
+  - name: vreg_offgroup_lmul2_rsv
+    coverpoint:
+      [
+        "Out-of-Scope: reserved behavior that depends on prior CSR state is unspecified and outside Ssstrict's encoding-only methodology",
+      ]
+  - name: vreg_offgroup_lmul4_rsv
+    coverpoint:
+      [
+        "Out-of-Scope: reserved behavior that depends on prior CSR state is unspecified and outside Ssstrict's encoding-only methodology",
+      ]
+  - name: vreg_offgroup_lmul8_rsv
+    coverpoint:
+      [
+        "Out-of-Scope: reserved behavior that depends on prior CSR state is unspecified and outside Ssstrict's encoding-only methodology",
+      ]
   - name: vreg_overlap_rsv
-    coverpoint: ["TODO"]
-  - name: vreg_source_EEW_rsv
-    coverpoint: ["TODO"]
+    coverpoint: ["SsstrictV_vwadd_wv_cg/cp_ssstrictv_widening_source_overlap"]
+  - name: vreg_source_eew_rsv
+    coverpoint: ["SsstrictV_vwadd_wv_cg/cp_ssstrictv_widening_source_overlap"]
   - name: vreg_vmask_rsv
-    coverpoint: ["TODO"]
-  - name: vsbc_unmasked_rsv
-    coverpoint: ["TODO"]
-  - name: vsbc_vd_v0_rsv
-    coverpoint: ["TODO"]
-  - name: vsext_ill_eew_emul_rsv
-    coverpoint: ["TODO"]
+    coverpoint: ["SsstrictV_vadd_vv_cg/cp_ssstrictv_masking_vd_eq_v0"]
+  # If the source EEW is not a supported width, or source EMUL would be below the minimum
+  # legal LMUL, the instruction encoding is reserved.
+  - name: vsext_vzext_ill_eew_emul_rsv
+    coverpoint: ["ExceptionsVx_vsext_vf2_cg/cp_vill"]
   - name: vstart_val_rsv
-    coverpoint: ["TODO"]
+    coverpoint: ["ExceptionsVx_vsaddu_vv_cg/cp_vstart_gt_vl"]
   - name: vtype_lmul_fval_rsv
-    coverpoint: ["TODO"]
+    coverpoint: ["SmV_cg/cp_vtype_vill_set_vl_0"]
   - name: vtype_vsew_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "TODO: SmV_cg's rs2_sew coverpoint explicitly ignore_bins the reserved vsew encodings (100/101/110/111) rather than sampling them, and the one template that would exercise them (cp_vtype_walking1s.sv) is not wired into any generated covergroup",
+      ]
   - name: vtype_vset_rsv
-    coverpoint: ["TODO"]
-  - name: vzext_ill_eew_emul_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "Out-of-Scope: we cannot test reserved behavior that depends on prior vill state; outside Ssstrict's encoding-only methodology",
+      ]
 
   # Zvk* reserved rules
   - name: vclmul_sewn64_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "Out-of-Scope: reserved because of CSR state (vtype.sew); no Ssstrict-equivalent suite exists for Zvbc to exercise this reserved SEW encoding",
+      ]
   - name: vclmulh_sewn64_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "Out-of-Scope: reserved because of CSR state (vtype.sew); no Ssstrict-equivalent suite exists for Zvbc to exercise this reserved SEW encoding",
+      ]
   - name: veccrypto_sew_rsv
-    coverpoint: ["TODO"]
-  - name: veccrypto_vl_rsv
-    coverpoint: ["TODO"]
-  - name: veccrypto_vstart_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "Out-of-Scope: reserved because of CSR state (vtype.sew); no Ssstrict-equivalent suite exists to exercise these reserved SEW encodings; see the per-instruction _sewn32_rsv/_sewn64_rsv rules in each extension's own file",
+      ]
+  # Instructions that violate the csr:vl[] or csr:vstart[] requirements are reserved.
+  - names: [veccrypto_vl_rsv, veccrypto_vstart_rsv]
+    coverpoint:
+      [
+        "TODO: no Ssstrict-equivalent suite exists for the vector-crypto extensions to exercise vl/vstart values that violate the EGS constraint",
+      ]
   - name: vghsh-vv_sewn32_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "Out-of-Scope: reserved because of CSR state (vtype.sew); Zvkg only generates SEW=32 tests and there is no Ssstrict-equivalent suite for vector-crypto",
+      ]
   - name: vgmul-vv_sewn32_rsv
-    coverpoint: ["TODO"]
-  - name: vsha2ch-vv_Zvknha_sewn32_rsv
-    coverpoint: ["TODO"]
-  - name: vsha2ch-vv_Zvknhb_sewn32or64_rsv
-    coverpoint: ["TODO"]
-  - name: vsha2ch-vv_vdoverlapvs1vs2_rsv
-    coverpoint: ["TODO"]
-  - name: vsha2cl-vv_Zvknha_sewn32_rsv
-    coverpoint: ["TODO"]
-  - name: vsha2cl-vv_Zvknhb_sewn32or64_rsv
-    coverpoint: ["TODO"]
-  - name: vsha2cl-vv_vdoverlapvs1vs2_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "Out-of-Scope: reserved because of CSR state (vtype.sew); Zvkg only generates SEW=32 tests and there is no Ssstrict-equivalent suite for vector-crypto",
+      ]
+  # ext:zvknha[]: SEW is any value other than 32
+  - names: [vsha2ch-vv_Zvknha_sewn32_rsv, vsha2cl-vv_Zvknha_sewn32_rsv]
+    coverpoint:
+      [
+        "Out-of-Scope: reserved because of CSR state (vtype.sew); no suite drives it to a reserved value under Zvknha and there is no Ssstrict-equivalent suite for vector-crypto",
+      ]
+  # ext:zvknhb[]: SEW is any value other than 32 or 64
+  - names: [vsha2ch-vv_Zvknhb_sewn32or64_rsv, vsha2cl-vv_Zvknhb_sewn32or64_rsv]
+    coverpoint:
+      [
+        "Out-of-Scope: reserved because of CSR state (vtype.sew); no suite drives it to a reserved value under Zvknhb and there is no Ssstrict-equivalent suite for vector-crypto",
+      ]
+  # The vd register group overlaps with either vs1 or vs2
+  - names: [vsha2ch-vv_vdoverlapvs1vs2_rsv, vsha2cl-vv_vdoverlapvs1vs2_rsv]
+    coverpoint:
+      [
+        "TODO: this is an SsstrictV-style reserved-encoding test; no cmp_vd_vs1/cmp_vd_vs2-style register-aliasing coverpoint exists for this suite and no SsstrictV-equivalent suite exists for vector crypto",
+      ]
   - name: vsha2ms-vv_Zvknha_sewn32_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "Out-of-Scope: reserved because of CSR state (vtype.sew); no suite drives it to a reserved value under Zvknha and there is no Ssstrict-equivalent suite for vector-crypto",
+      ]
   - name: vsha2ms-vv_Zvknhb_sewn32or64_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "Out-of-Scope: reserved because of CSR state (vtype.sew); no suite drives it to a reserved value under Zvknhb and there is no Ssstrict-equivalent suite for vector-crypto",
+      ]
   - name: vsha2ms-vv_vdoverlapvs1vs2_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "TODO: this is an SsstrictV-style reserved-encoding test; no cmp_vd_vs1/cmp_vd_vs2-style register-aliasing coverpoint exists for this suite and no SsstrictV-equivalent suite exists for vector crypto",
+      ]
   - name: vsm3c-vi_sewn32_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "Out-of-Scope: reserved because of CSR state (vtype.sew); Zvksh only generates SEW=32 tests and there is no Ssstrict-equivalent suite for vector-crypto",
+      ]
   - name: vsm3c-vi_vdoverlapvs2_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "TODO: this is an SsstrictV-style reserved-encoding test; Zvksh_vsm3c_vi_cg has no vd/vs2 register-aliasing coverpoint and there is no Ssstrict-equivalent suite for vector-crypto",
+      ]
   - name: vsm3me-vv_sewn32_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "Out-of-Scope: reserved because of CSR state (vtype.sew); Zvksh only generates SEW=32 tests and there is no Ssstrict-equivalent suite for vector-crypto",
+      ]
   - name: vsm3me-vv_vdoverlapvs2_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "TODO: this is an SsstrictV-style reserved-encoding test; Zvksh_vsm3me_vv_cg has no vd/vs2 register-aliasing coverpoint (only vd/vs1 and vs1/vs2) and there is no Ssstrict-equivalent suite for vector-crypto",
+      ]
   - name: vsm4k-vi_sewn32_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "Out-of-Scope: reserved because of CSR state (vtype.sew); Zvksed only generates SEW=32 tests and there is no Ssstrict-equivalent suite for vector-crypto",
+      ]
   - name: vsm4r-vs_vdoverlapvs2_rsv
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "TODO: this is an SsstrictV-style reserved-encoding test; Zvksed_vsm4r_vs_cg has no vd/vs2 register-aliasing coverpoint and there is no Ssstrict-equivalent suite for vector-crypto",
+      ]
   - name: vsm4r_sewn32_rsv
+    coverpoint:
+      [
+        "Out-of-Scope: reserved because of CSR state (vtype.sew); Zvksed only generates SEW=32 tests and there is no Ssstrict-equivalent suite for vector-crypto",
+      ]
+
+  # Instructions that violate the csr:vl[] or csr:vstart[] requirements are reserved.
+  - name: veccrypto_vl_vstart_rsv
+    coverpoint: ["TODO"]
+
+  # For implementations with VLEN ≥ 128, vs2 refers to a single register. Thus, the vd register
+  # group must not overlap the vs2 register. However, in implementations where VLEN < 128, vs2
+  # refers to a register group comprised of the number of registers needed to hold the 128-bit
+  # scalar element group. In this case, the vd register group must not overlap this vs2 register
+  # group.
+  - name: veccrypto_vsins_vdvs2overlap
+    coverpoint: ["TODO"]
+
+  # ext:zvknha[]: SEW is any value other than 32
+  - name: vsha2chl-vv_Zvknha_sewn32_rsv
+    coverpoint: ["TODO"]
+
+  # ext:zvknhb[]: SEW is any value other than 32 or 64
+  - name: vsha2chl-vv_Zvknhb_sewn32or64_rsv
+    coverpoint: ["TODO"]
+
+  # The vd register group overlaps with either vs1 or vs2
+  - name: vsha2chl-vv_vdoverlapvs1vs2_rsv
     coverpoint: ["TODO"]

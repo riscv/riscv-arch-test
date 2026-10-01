@@ -21,10 +21,11 @@ Modified coverpoints for Zc* are summarized in <<t-Zc-modified-coverpoints>>.  A
 |===
 |Modified Coverpoint|Bins|Definition
 |cp_asm_count_nop|1|Number of times the canonical `c.nop` form is executed in the test with imm == 0, must be greater than 0.
-|cr_rs1_imm_edges_6bit|16*13|rs1 edges x Signed 6-bit immediates 0, 1, 2, 3, 4, 8 16, 30, 31, -32, -31, -2, -1
-|cr_rs1_imm_edges_6bit_n0|16*12|rs1 edges x cp_rs1_imm_edges_6bit excluding 0
-|cr_rs1_imm_edges_c|16*11|rs1 edges x unsigned 5 or 6-bit uimm 1, 2, 3, 4, 8, 14, 15, 16, 17, 30, 31. XLEN=64 adds 32, 33, 48, 62, 63
+|cr_rs1_imm_edges_6bit|12*13 (RV32), 18*13 (RV64)|rs1 edges x Signed 6-bit immediates 0, 1, 2, 3, 4, 8 16, 30, 31, -32, -31, -2, -1
+|cr_rs1_imm_edges_6bit_n0|12*12 (RV32), 18*12 (RV64)|rs1 edges x cp_rs1_imm_edges_6bit excluding 0
+|cr_rs1_imm_edges_c|12*11 (RV32), 18*11 (RV64)|rs1 edges x unsigned 5 or 6-bit uimm 1, 2, 3, 4, 8, 14, 15, 16, 17, 30, 31. XLEN=64 adds 32, 33, 48, 62, 63
 |cp_imm_edges_c_jal|21|Selected signed multiples of 2 from -2048 to 1024
+|cp_imm_edges_c_branch|15|Branch offsets for `c.beqz` and `c.bnez`: +2 to +128 setting each of offset[7:1] alone, and -2 to -256 in powers of 2
 |cmp_rs1_rs2_c|8|Same register x8-x15 for both rs1 and rs2 (and hence rd)
 |cp_imm_mul|31|Multiples of 4 from 0 to 124
 |cp_imm_mul_4sp|63|Multiples of 4 from 0 to 252
@@ -33,13 +34,15 @@ Modified coverpoints for Zc* are summarized in <<t-Zc-modified-coverpoints>>.  A
 |cp_imm_mul_addi16sp|63|Multiples of 16 from -512 to 496
 |cp_imm_mul_addi4spn|255|Multiples of 4 from 4 to 1020
 |cp_offset_jr|2 + 4|cp_offset + rs1_val[1:0] affecting lsb of load/store address
+|cp_uimm_2|4|Zcb byte offsets 0-3 for `c.lbu` and `c.sb`. The memory holds a distinct byte at each offset.
+|cp_uimm_2h|2|Zcb halfword offsets 0 and 2 for `c.lh`, `c.lhu`, and `c.sh`. The memory holds a distinct halfword at each offset.
 |cp_c_hint_{nop,add,addi,li,lui,mv}|63+31+64+63+31+31|Compressed standard hints using `c.nop`, `c.addi`, `c.li`, `c.lui`, `c.mv`, `c.add`
 |===
 
 
 include::norm/Zca_norm_rules.adoc[]
 
-*** check that c-lui_hint and c-sra_hint normative rules in table above get populated when
+*** check that c-lui_hint and c-srli_hint normative rules in table above get populated when
 https://github.com/RISC-V-Certification-Steering-Committee/riscv-isa-manual/pull/167/changes
 is merged.
 

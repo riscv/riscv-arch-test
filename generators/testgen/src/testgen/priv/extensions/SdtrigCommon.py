@@ -2029,16 +2029,16 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
 def generate_sdtrig_suite(test_data: TestData, mode: str) -> list[TestChunk]:
     """Assemble the full Sdtrig suite for ``mode`` ("Sm"/"S"/"U") as test chunks."""
     test_chunks: list[TestChunk] = []
-    # test_chunks.extend(_generate_access_tests(test_data, mode))
-    # test_chunks.extend(_generate_native_triggers_tests(test_data, mode))
+    test_chunks.extend(_generate_access_tests(test_data, mode))
+    test_chunks.extend(_generate_native_triggers_tests(test_data, mode))
     # test_chunks.extend(_generate_a_tests(test_data, mode))
     # test_chunks.extend(_generate_combined_accesses_tests(test_data, mode))
     # test_chunks.extend(_generate_cache_operations_tests(test_data, mode))
     # test_chunks.extend(_generate_address_matches_tests(test_data, mode))
     # test_chunks.extend(_generate_csr_tests(test_data, mode))
-    # test_chunks.extend(_generate_mcontrol6_tests(test_data, mode))
-    # test_chunks.extend(_generate_icount_tests(test_data, mode))
-    # test_chunks.extend(_generate_itrigger_tests(test_data, mode))
+    test_chunks.extend(_generate_mcontrol6_tests(test_data, mode))
+    test_chunks.extend(_generate_icount_tests(test_data, mode))
+    test_chunks.extend(_generate_itrigger_tests(test_data, mode))
     # test_chunks.extend(_generate_etrigger_tests(test_data, mode))
     test_chunks.extend(_generate_textra_tests(test_data, mode))
     return test_chunks

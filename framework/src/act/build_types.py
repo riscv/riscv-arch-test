@@ -29,6 +29,7 @@ class SubprocessAction:
     cmd: list[str]
     stdout_file: Path | None = None  # redirect stdout to file
     cwd: Path | None = None  # working directory for the subprocess
+    check_output: Callable[[str], str | None] | None = None  # returns an error message if output shows a failure
 
 
 @dataclass(frozen=True)

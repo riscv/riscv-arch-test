@@ -137,6 +137,15 @@ def execute_task(
                     output=output,
                     log_file=action.stdout_file,
                 )
+            error_message = action.check_output(output) if action.check_output is not None else None
+            if error_message is not None:
+                return task.key, BuildError(
+                    task_name=task.name,
+                    command=_task_str(task),
+                    returncode=returncode,
+                    output=error_message,
+                    log_file=action.stdout_file,
+                )
         except OSError as e:
             return task.key, _exception_error(task, e)
 

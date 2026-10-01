@@ -64,11 +64,6 @@ normative_rule_definitions:
     # RV32 c.ldsp with rd = x0
     coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10"]
 
-  # Zcmt rules
-  # For the encoding to be legal r1s' != r2s'.
-  - name: cm-mvsa01_res
-    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10"]
-
   # F rules
   # The behavior of floating-point instructions that depend on rounding mode when executed with a
   # reserved rounding mode is reserved, including both static reserved rounding modes (101–110) and
@@ -150,11 +145,6 @@ normative_rule_definitions:
   # High-half CSRs that only exist when XLEN=32. SsstrictS sweeps the supervisor,
   # hypervisor, and user CSR address ranges, so on RV64 these addresses are
   # exercised as nonexistent CSRs. M-mode high-half CSRs are in SsstrictSm.yaml.
-
-  # When XLEN>32, an attempt to access a high-half CSR always raises an
-  # illegal-instruction exception.
-  - name: H_illegal_high_half
-    coverpoint: ["SsstrictS_scsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}"]
 
   # When XLEN=32, hedelegh is a 32-bit read/write register that aliases bits 63:32 of
   # hedeleg. Register hedelegh does not exist when XLEN=64.

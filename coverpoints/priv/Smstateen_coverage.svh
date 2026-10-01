@@ -246,13 +246,15 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 
     // ── Sm1p13 + Hypervisor dependent coverpoints (cp_p1p13) ─────────────
 `ifdef SM1P13P0_OR_LATER_SUPPORTED
-    p1p13_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "p1p13") {
-        bins p1p13_disabled = {1'b0};
-        bins p1p13_enabled  = {1'b1};
-    }
-    // hedelegh is the high half of hedeleg and exists only on RV32.
+    // mstateen0.P1P13 only controls hedelegh, the high half of hedeleg, which exists only on RV32
+    // with the hypervisor extension; anywhere else the bit is read-only zero. On RV32 the bit is
+    // mstateen0h[24].
     `ifdef H_SUPPORTED
     `ifdef UDB_MXLEN_32
+        p1p13_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0h", "p1p13") {
+            bins p1p13_disabled = {1'b0};
+            bins p1p13_enabled  = {1'b1};
+        }
         hedelegh_csr: coverpoint ins.current.insn[31:20] {
             wildcard bins hedelegh = {CSR_HEDELEGH};
         }

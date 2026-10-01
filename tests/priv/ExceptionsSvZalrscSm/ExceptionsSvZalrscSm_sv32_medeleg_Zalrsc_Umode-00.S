@@ -76,11 +76,17 @@ main:
   RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_lr:
   lr.w a3, (a5)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_sc_success:
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -128,11 +134,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test2_sc:
   RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_lr:
   lr.w a3, (a5)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_sc_success:
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -180,11 +192,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test4_sc:
   RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_lr:
   lr.w a3, (a5)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_sc_success:
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -232,11 +250,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test6_sc:
   RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_lr:
   lr.w a3, (a5)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_sc_success:
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -284,11 +308,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test8_sc:
   RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_lr:
   lr.w a3, (a5)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_sc_success:
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -336,11 +366,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test10_sc:
   RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_lr:
   lr.w a3, (a5)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_sc_success:
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -388,11 +424,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test12_sc:
   RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_lr:
   lr.w a3, (a5)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_sc_success:
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -440,11 +482,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test14_sc:
   RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_lr:
   lr.w a3, (a5)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_sc_success:
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -492,11 +540,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test16_sc:
   RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_lr:
   lr.w a3, (a5)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_sc_success:
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -544,11 +598,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test18_sc:
   RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_lr:
   lr.w a3, (a5)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_sc_success:
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -596,11 +656,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test20_sc:
   RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_lr:
   lr.w a3, (a5)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_sc_success:
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -648,11 +714,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test22_sc:
   RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_lr:
   lr.w a3, (a5)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_sc_success:
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -700,11 +772,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test24_sc:
   RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_lr:
   lr.w a3, (a5)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_sc_success:
   nop
 
   RVTEST_TSBI_GOTO_MMODE

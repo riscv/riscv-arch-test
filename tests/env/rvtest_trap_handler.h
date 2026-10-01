@@ -716,11 +716,17 @@
 
 // Switch to M-mode via T-SBI.
 // After this macro, the processor is in M-mode and a0 is undefined.
+// The S-mode handler forwards a GOTO_MMODE from U, VS or VU to M-mode and then
+// resumes here in M-mode with jr a0, which sets ELP when mseccfg.MLPE=1 (Zicfilp).
+// So the instruction after the ecall is a 4-byte-aligned lpad 0, which is a no-op
+// when the handler returns here with mret instead.
 .macro RVTEST_TSBI_GOTO_MMODE
   .option push
+  .p2align 2                                     // align the lpad below (c.nop padding if needed)
   .option norvc                                  // ensure consistent code size
   li   a0, TSBI_GOTO_MMODE                      // a0 = 1 (GOTO_MMODE operation code)
   ecall                                          // trap to handler; handler sets MPP=M, mrets
+  auipc x0, 0                                    // lpad 0: landing pad for the forwarded jr a0
   .option pop
 .endm
 
@@ -1984,7 +1990,8 @@ tsbi_\__MODE__\()forward_goto_m:
         LREG    sp, trap_sv_off+7*REGWIDTH(sp)    // restore original sp (undo the xSCRATCH swap)
         ecall                                      // trap to M-mode; M sets MPP=M and mrets back HERE in M-mode
         csrr    a0, CSR_XEPC                       // caller's ecall+4 (bumped before forwarding)
-        jr      a0                                 // continue at the caller, in M-mode
+        jr      a0                                 // continue at the caller, in M-mode, at the lpad 0
+                                                   // that RVTEST_TSBI_GOTO_MMODE places after its ecall
 
         //--- S-mode CSR_ACCESS ---
 tsbi_\__MODE__\()csr_access:

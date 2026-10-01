@@ -104,9 +104,9 @@
     #ifdef STANDARD_SM_SUPPORTED
       RVTEST_TSBI_GOTO_MMODE
       #ifdef S_SUPPORTED
+        // Exact reverse of the prolog order (M, S, V).
         #ifdef H_SUPPORTED
           RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code
-          RVTEST_TRAP_EPILOG H        // actual h-mode prolog/epilog/handler code
         #endif
         RVTEST_TRAP_EPILOG S          // actual s-mode prolog/epilog/handler code
       #endif
@@ -968,7 +968,7 @@
         TRAP_CANARY
 
       trap_sigptr:
-          .fill TRAP_SIGUPD_COUNT*(SIG_STRIDE>>2),4,0xdeadbeef
+          .fill TRAP_SIGUPD_WORDS*(SIG_STRIDE>>2),4,0xdeadbeef
 
       // Create canary at end of signature region to detect overwrites
       sig_end_canary:
@@ -1015,20 +1015,35 @@
         csrw medeleg, zero  // don't delegate exceptions (until S-mode handler is set up)
       #endif
 
-      // initialize trap CSRs to known values
-      csrw mepc, zero
-      csrw mtval, zero
-      csrw mcause, zero
-
       // Set up trap handlers for all modes
       // S and H-mode setup could be deferred to RVTEST_BOOT_TO_SMODE, but that is upsetting the linker
       // and there is no harm setting up all the trap handlers here
       RVTEST_TRAP_PROLOG M
       #ifdef S_SUPPORTED
+        // Order matches INSTANTIATE_MODE_MACRO: M, S, V.
         RVTEST_TRAP_PROLOG S
         #ifdef H_SUPPORTED
-          RVTEST_TRAP_PROLOG H
           RVTEST_TRAP_PROLOG V
+        #endif
+      #endif
+
+      // Initialize trap CSRs to known values. This follows the prologs so that an
+      // unimplemented CSR traps to the M-mode handler instead of an uninitialized mtvec.
+      csrw mepc, zero
+      csrw mtval, zero
+      csrw mcause, zero
+      #ifdef S_SUPPORTED
+        csrw sepc, zero
+        csrw stval, zero
+        csrw scause, zero
+        #ifdef H_SUPPORTED
+          csrw mtval2, zero
+          csrw mtinst, zero
+          csrw htval, zero
+          csrw htinst, zero
+          csrw vsepc, zero
+          csrw vstval, zero
+          csrw vscause, zero
         #endif
       #endif
 
@@ -1361,6 +1376,86 @@
       li t0, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE
       csrw senvcfg, t0
     #endif
+
+    #ifdef H_SUPPORTED
+      // Initialize HS-mode CSRs.
+      // hstatus: every field zero except VSXL = 64 on RV64.
+      // Tests that need other values set them themselves.
+      LI(t0, HSTATUS_SPV | HSTATUS_SPVP | HSTATUS_HU | HSTATUS_VGEIN | \
+             HSTATUS_VTVM | HSTATUS_VTW | HSTATUS_VTSR | HSTATUS_VSBE)
+      csrc hstatus, t0
+      #if __riscv_xlen == 64
+        csrr t1, hstatus
+        LI(t0, ~HSTATUS_VSXL)
+        and t1, t1, t0
+        LI(t0, 0x0000000200000000)  // VSXL = 2
+        or t1, t1, t0
+        csrw hstatus, t1
+      #endif
+
+      // vsstatus: every field zero except UXL = 64 on RV64 and FS/VS dirty when supported.
+      li t0, 0
+      #if __riscv_xlen == 64
+        LI(t0, 0x0000000200000000)  // UXL = 2
+      #endif
+      #ifdef F_SUPPORTED
+        LI(t1, SSTATUS_FS)
+        or t0, t0, t1
+      #endif
+      #ifdef ZVL32B_SUPPORTED
+        LI(t1, SSTATUS_VS)
+        or t0, t0, t1
+      #endif
+      csrw vsstatus, t0
+
+      csrw htimedelta, zero
+      #if __riscv_xlen == 32
+        csrw htimedeltah, zero
+      #endif
+
+      // No pending virtual interrupts and no guest external interrupts enabled.
+      // hedeleg and hideleg are saved and cleared by RVTEST_TRAP_PROLOG S.
+      csrw hvip, zero
+      csrw hgeie, zero
+
+      // Make counters accessible from VS/VU-mode
+      li t0, -1
+      csrw hcounteren, t0
+
+      // henvcfg mirrors senvcfg: unprivileged configuration enabled, privileged features disabled.
+      #ifdef S1P12P0_OR_LATER_SUPPORTED
+        li t0, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE
+        csrw henvcfg, t0
+      #endif
+
+      // Enable access to standard state from VS/VU-mode, matching mstateen0 above.
+      // hstateen0.SE0 = 1: Enable access to sstateen0
+      // hstateen0.ENVCFG = 1: Enable access to senvcfg
+      // hstateen0.CSRIND = 1: Enable access to supervisor indirect CSR state
+      // hstateen0.AIA = 1: Enable access to Ssaia advanced interrupt architecture state
+      // hstateen0.IMSIC = 1: Enable access to IMSIC state
+      // hstateen0.SCONTEXT = 1: Enable access to scontext
+      // hstateen0.CTR = 1: Enable access to control transfer record state
+      // hstateen0.JVT = 1: Enable access to jvt for Zcmt
+      // hstateen0.FCSR = 1: Enable access to floating-point CSRs for Zfinx
+      // Keep custom state and reserved bits disabled. hstateen0 has no P1P13 or SRMCFG
+      // bit; that state is M-level only. A bit whose feature is not implemented reads
+      // as zero, so enabling the whole set costs nothing on a smaller hart.
+      #ifdef SSSTATEEN_SUPPORTED
+        #if __riscv_xlen == 64
+          LI(t0, HSTATEEN_SSTATEEN | HSTATEEN0_SENVCFG | HSTATEEN0_CSRIND | HSTATEEN0_AIA | \
+                 HSTATEEN0_IMSIC | HSTATEEN0_SCONTEXT | HSTATEEN0_CTR | HSTATEEN0_JVT | \
+                 HSTATEEN0_FCSR)
+          csrw hstateen0, t0
+        #else    // RV32
+          LI(t0, HSTATEENH_SSTATEEN | HSTATEEN0H_SENVCFG | HSTATEEN0H_CSRIND | HSTATEEN0H_AIA | \
+                 HSTATEEN0H_IMSIC | HSTATEEN0H_SCONTEXT | HSTATEEN0H_CTR)
+          csrw hstateen0h, t0
+          LI(t0, HSTATEEN0_JVT | HSTATEEN0_FCSR)
+          csrw hstateen0, t0
+        #endif
+      #endif
+    #endif // H_SUPPORTED
 
     // Boot into S-mode
     RVTEST_TSBI_GOTO_SMODE

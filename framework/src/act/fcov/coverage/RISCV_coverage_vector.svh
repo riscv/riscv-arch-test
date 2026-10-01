@@ -291,81 +291,57 @@ typedef enum {
     None
 } edge_vs2_ls_values_t;
 
-// val is the index register of an indexed load or store.  Its elements are as wide as the
-// instruction's width field says (the index EEW), not vtype.vsew: an ei8 index vector under an
-// e64 vtype packs eight indices into every 64-bit chunk, so the walk below goes by the index EEW.
-function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BITS val, logic [2:0] width);
+// val is the first register of the index operand of an indexed load or store, and insn is the
+// instruction.  Only the body elements (index < vl) supply addresses, so only they are checked.
+// The elements are as wide as the index EEW from the width field, not vtype.vsew.  The generator
+// clamps each index into [0, 2*VLMAX) and scales it by the bytes in one segment (nf * SEW/8,
+// rounded up to a power of two) so that segments do not overlap, so an index is in range when it
+// is below 2*VLMAX times that scale.
+function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BITS val, logic [31:0] insn);
+  `XLEN_BITS vl     = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vl", "vl");
+  `XLEN_BITS vsew   = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew");
+  int vlmax         = get_vtype_vlmax(hart, issue, `SAMPLE_BEFORE);
+  int segments      = int'(insn[31:29]) + 1;
+  int segment_bytes = segments * (2 ** (unsigned'(vsew[2:0])));  // nf * SEW/8
+  int scale         = 1;
+  int eew;
+  int elements;
+  longint unsigned bound;
+  longint unsigned elem;
+  logic all_zero    = 1'b1;
+  logic all_in_range = 1'b1;
 
-  logic all_values_within_range = 1'b1;
-
-  int vlmax                     = get_vtype_vlmax(hart, issue, `SAMPLE_BEFORE);
-
-  if (val == 0) begin
-    return zero;
-  end
-
-  //------------------------------------------
-  // Walk across VAL in chunks of the index EEW, the width the instruction's width field encodes
-  //------------------------------------------
-  case (width)
-    //--------------------------------------------------------------
-    //  8-bit elements
-    //--------------------------------------------------------------
-    3'b000: begin : EEW8
-      for (int idx = 1; idx <= `UDB_VLEN / 8; ++idx) begin
-        logic [7:0] elem = val[idx*8-1 -: 8];
-
-        if (signed'(elem) > vlmax*2 | signed'(elem) < -vlmax*2)   all_values_within_range = 1'b0; // if out of range fail coverage
-        if (signed'(elem) < 0)                                    all_values_within_range = 1'b0; // if element is negative and length is less than XLEN then fail coverage as it will be zero extended instead of treated as signed
-      end
-    end
-    //--------------------------------------------------------------
-    // 16-bit elements
-    //--------------------------------------------------------------
-    3'b101: begin : EEW16
-      for (int idx = 1; idx <= `UDB_VLEN / 16; ++idx) begin
-        logic [15:0] elem = val[idx*16-1 -: 16];
-
-        if (signed'(elem) > vlmax*2 | signed'(elem) < -vlmax*2)   all_values_within_range = 1'b0; // if out of range fail coverage
-        `ifndef COVER_E
-        if (signed'(elem) < 0)                                    all_values_within_range = 1'b0; // if element is negative and length is less than XLEN then fail coverage as it will be zero extended instead of treated as signed
-        `endif
-      end
-    end
-    //--------------------------------------------------------------
-    // 32-bit elements
-    //--------------------------------------------------------------
-    3'b110: begin : EEW32
-      for (int idx = 1; idx <= `UDB_VLEN / 32; ++idx) begin
-        logic [31:0] elem = val[idx*32-1 -: 32];
-
-        if (signed'(elem) > vlmax*2 | signed'(elem) < -vlmax*2)   all_values_within_range = 1'b0; // if out of range fail coverage
-        `ifdef UDB_MXLEN_64
-        if (signed'(elem) < 0)                                    all_values_within_range = 1'b0; // if element is negative and length is less than XLEN then fail coverage as it will be zero extended instead of treated as signed
-        `endif
-      end
-    end
-    //--------------------------------------------------------------
-    // 64-bit elements
-    //--------------------------------------------------------------
-    3'b111: begin : EEW64
-      for (int idx = 1; idx <= `UDB_VLEN / 64; ++idx) begin
-        logic [63:0] elem = val[idx*64-1 -: 64];
-
-        if (signed'(elem) > vlmax*2 | signed'(elem) < -vlmax*2)   all_values_within_range = 1'b0; // if out of range fail coverage
-      end
-    end
-    //--------------------------------------------------------------
-    default : begin
-      $error("ERROR: SystemVerilog Functional Coverage: Unsupported index width field: %b", width);
+  case (insn[14:12])
+    3'b000:  eew = 8;
+    3'b101:  eew = 16;
+    3'b110:  eew = 32;
+    3'b111:  eew = 64;
+    default: begin
+      $error("ERROR: SystemVerilog Functional Coverage: Unsupported index width field: %b", insn[14:12]);
       $fatal(1);
     end
   endcase
 
-  if (all_values_within_range) begin
-    return random_in_range;
+  while (scale < segment_bytes) scale = scale * 2;
+  bound = longint'(2 * vlmax) * scale;
+
+  // vs2_val holds only the first register of the index group
+  elements = (vl < `UDB_VLEN / eew) ? int'(vl) : `UDB_VLEN / eew;
+  if (elements == 0) return None;
+
+  for (int idx = 0; idx < elements; ++idx) begin
+    case (eew)
+      8:       elem = val[idx*8  +: 8];
+      16:      elem = val[idx*16 +: 16];
+      32:      elem = val[idx*32 +: 32];
+      default: elem = val[idx*64 +: 64];
+    endcase
+    if (elem != 0)     all_zero     = 1'b0;
+    if (elem >= bound) all_in_range = 1'b0;  // indices are zero-extended, so compare unsigned
   end
 
+  if (all_zero)     return zero;
+  if (all_in_range) return random_in_range;
   return None;
 endfunction
 

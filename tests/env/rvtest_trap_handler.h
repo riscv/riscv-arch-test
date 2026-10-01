@@ -1397,35 +1397,6 @@ rvtest_\__MODE__\()prolog_done:
         jr      T2
 .endm
 
-// A trap-signature mismatch is reported from inside the trap handler. Leave the trap's
-// double-trap state first, so that a trap taken while reporting is not a double trap:
-// mstatus.MDT (Smdbltrp) and mstatus.MPRV in the M-mode handler, sstatus.SDT (Ssdbltrp) in
-// the S-mode and VS-mode handlers. Uses x9 (T4), which the failure path treats as scratch.
-// The self-checking and reference builds emit the same instructions, so layouts match.
-.macro RVTEST_TRAP_FAIL_LEAVE __MODE__
-  .ifc \__MODE__, M
-    #ifdef SMDBLTRP_SUPPORTED
-      #if __riscv_xlen == 64
-        LI(x9, MSTATUS_MDT | MSTATUS_MPRV)
-        csrc CSR_MSTATUS, x9
-      #else
-        LI(x9, MSTATUSH_MDT)
-        csrc CSR_MSTATUSH, x9
-        LI(x9, MSTATUS_MPRV)
-        csrc CSR_MSTATUS, x9
-      #endif
-    #else
-      LI(x9, MSTATUS_MPRV)
-      csrc CSR_MSTATUS, x9
-    #endif
-  .else
-    #ifdef SSDBLTRP_SUPPORTED
-      LI(x9, SSTATUS_SDT)
-      csrc CSR_SSTATUS, x9
-    #endif
-  .endif
-.endm
-
 .macro RVTEST_TRAP_HANDLER __MODE__
 .option push
 .option rvc             // temporarily allow compress to allow c.nop alignment
@@ -2224,6 +2195,20 @@ tsbi_instr_table:
         csrr    T3, CSR_XSTATUS
         SREG    T3, 24(T4)
 
+.ifc \__MODE__ , M
+  #ifdef SMDBLTRP_SUPPORTED
+        // MRET would clear MDT, but the failure exits below leave without one and make a
+        // T-SBI ecall, which would be a double trap. rtn_fm_mmode clears MDT the same way.
+    #if (UDB_MXLEN==64)
+        LI(T4, MSTATUS_MDT)
+        csrc    CSR_MSTATUS, T4
+    #else // RV32
+        LI(T4, MSTATUSH_MDT)
+        csrc    CSR_MSTATUSH, T4
+    #endif // MXLEN
+  #endif // SMDBLTRP_SUPPORTED
+.endif
+
         // Check before any trap signature stores. The end canary immediately follows
         // trap_sigptr's allocated space, so the updated write pointer may equal
         // sig_end_canary but must never pass it.
@@ -2828,26 +2813,6 @@ rtn_fm_mmode:
 //==============================================================================
 //==============================================================================
 
-// The failure report runs while the fast handler is still inside the trap. Leave the
-// trap's double-trap state first, so that a trap taken while reporting is not a double
-// trap: clear mstatus.MDT (Smdbltrp) and mstatus.MPRV in the M-mode handler, and
-// sstatus.SDT (Ssdbltrp) in the S-mode handler. Selected by the handler's status CSR.
-#ifdef SMDBLTRP_SUPPORTED
-  #if UDB_MXLEN == 64
-    #define RVTEST_FAST_TRAP_LEAVE_CSR_MSTATUS LI(x9, MSTATUS_MDT | MSTATUS_MPRV) ; csrc CSR_MSTATUS, x9 ;
-  #else
-    #define RVTEST_FAST_TRAP_LEAVE_CSR_MSTATUS LI(x9, MSTATUSH_MDT) ; csrc CSR_MSTATUSH, x9 ; \
-                                               LI(x9, MSTATUS_MPRV) ; csrc CSR_MSTATUS, x9 ;
-  #endif
-#else
-  #define RVTEST_FAST_TRAP_LEAVE_CSR_MSTATUS LI(x9, MSTATUS_MPRV) ; csrc CSR_MSTATUS, x9 ;
-#endif
-#ifdef SSDBLTRP_SUPPORTED
-  #define RVTEST_FAST_TRAP_LEAVE_CSR_SSTATUS LI(x9, SSTATUS_SDT) ; csrc CSR_SSTATUS, x9 ;
-#else
-  #define RVTEST_FAST_TRAP_LEAVE_CSR_SSTATUS
-#endif
-
 // RVTEST_FAST_TRAP_FAILURE(epc, cause, tval, status, check, description)
 // Reports a fast-trap field mismatch. This path is cold, so it can use extra
 // registers to snapshot the trapping CSRs for the normal trap diagnostics.
@@ -2861,7 +2826,6 @@ rtn_fm_mmode:
         SREG x9, 16(x7)                                    ;\
         csrr x9, _STATUS                                   ;\
         SREG x9, 24(x7)                                    ;\
-        RVTEST_FAST_TRAP_LEAVE_##_STATUS                   \
         mv x6, a0                                          ;\
         mv x4, a1                                          ;\
         jal x7, failedtest_trap_x7_x9                      ;\
@@ -2924,6 +2888,17 @@ trap_handler_fastillegalinstr:
         LREG a1, rvmodel_sv_off+2*REGWIDTH(a0)  // restore caller's a1
         csrrw a0, CSR_MSCRATCH, a0      // restore mscratch = save ptr; a0 = caller's a0
 fast_Millegalinstruction:
+#ifdef SMDBLTRP_SUPPORTED
+        // MRET would clear MDT, but a mismatch report leaves without one and makes a T-SBI
+        // ecall, which would be a double trap. rtn_fm_mmode clears MDT the same way.
+  #if (UDB_MXLEN==64)
+        LI(a0, MSTATUS_MDT)
+        csrc    CSR_MSTATUS, a0
+  #else // RV32
+        LI(a0, MSTATUSH_MDT)
+        csrc    CSR_MSTATUSH, a0
+  #endif // MXLEN
+#endif // SMDBLTRP_SUPPORTED
         RVTEST_SIGUPD_FAST_TRAP(x2, a1, a0, CSR_MCAUSE, 0, fast_Mcause_mismatch)
         RVTEST_SIGUPD_FAST_TRAP(x2, a1, a0, CSR_MEPC, SIG_STRIDE, fast_Mepc_mismatch)
         RVTEST_SIGUPD_FAST_TRAP(x2, a1, a0, CSR_MTVAL, 2*SIG_STRIDE, fast_Mtval_mismatch)

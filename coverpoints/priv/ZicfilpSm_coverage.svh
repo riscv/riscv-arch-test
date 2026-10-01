@@ -124,7 +124,7 @@ covergroup ZicfilpSm_cg with function sample(ins_t ins);
     `endif
 
     // ELP before the current instruction: the previous instruction set it
-    elp_before: coverpoint (`ZICFILP_LP_BRANCH(ins.prev.insn) &&
+    elp_before: coverpoint (`ZICFILP_LP_BRANCH(ins.prev) &&
                             get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "mseccfg", "mlpe")) {
         bins no_lp_expected = {1'b0};
     }

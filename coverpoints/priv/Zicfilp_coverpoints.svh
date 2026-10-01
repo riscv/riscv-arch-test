@@ -16,14 +16,18 @@
 ///////////////////////////////////////////////
 
 // An indirect call/jump sets ELP=LP_EXPECTED (when xLPE=1) unless rs1 is x1, x5, or x7.
-// rs1=x0 is excluded from the compressed form because that encoding is c.ebreak.
+// TD is a trace record (ins.prev or ins.current). ZICFILP_RS1 is its decoded rs1 for jalr, c.jr and c.jalr,
+// and x0 for any other instruction. c.ebreak shares the c.jalr encoding with rs1=x0 and has no rs1 operand.
 `ifndef ZICFILP_LP_JALR
-    `define ZICFILP_LP_JALR(INSN)  (((INSN) ==? JALR) && !((INSN[19:15]) inside {5'd1, 5'd5, 5'd7}))
-    `define ZICFILP_LP_CJUMP(INSN) ((((INSN) ==? C_JR) || ((INSN) ==? C_JALR)) && !((INSN[11:7]) inside {5'd0, 5'd1, 5'd5, 5'd7}))
+    `define ZICFILP_INDIRECT(TD)   ((TD.insn ==? JALR) || (TD.insn ==? C_JR) || (TD.insn ==? C_JALR))
+    `define ZICFILP_RS1(TD)        ((`ZICFILP_INDIRECT(TD) && TD.has_rs1) ? ins.get_gpr_reg(TD.rs1) : x0)
+    `define ZICFILP_RS1_LINK(TD)   ((`ZICFILP_RS1(TD) == x1) || (`ZICFILP_RS1(TD) == x5) || (`ZICFILP_RS1(TD) == x7))
+    `define ZICFILP_LP_JALR(TD)    ((TD.insn ==? JALR) && !`ZICFILP_RS1_LINK(TD))
+    `define ZICFILP_LP_CJUMP(TD)   (((TD.insn ==? C_JR) || (TD.insn ==? C_JALR)) && (`ZICFILP_RS1(TD) != x0) && !`ZICFILP_RS1_LINK(TD))
     `ifdef ZCA_SUPPORTED
-        `define ZICFILP_LP_BRANCH(INSN) (`ZICFILP_LP_JALR(INSN) || `ZICFILP_LP_CJUMP(INSN))
+        `define ZICFILP_LP_BRANCH(TD) (`ZICFILP_LP_JALR(TD) || `ZICFILP_LP_CJUMP(TD))
     `else
-        `define ZICFILP_LP_BRANCH(INSN) `ZICFILP_LP_JALR(INSN)
+        `define ZICFILP_LP_BRANCH(TD) `ZICFILP_LP_JALR(TD)
     `endif
 `endif
 
@@ -31,35 +35,35 @@
     indirect_ct_prev: coverpoint ins.prev.insn {
         wildcard bins jalr = {JALR};
     }
-    rs1_all_prev: coverpoint ins.prev.insn[19:15] {
-        bins all_except_x0[] = {[5'd1:5'd31]};
+    rs1_all_prev: coverpoint `ZICFILP_RS1(ins.prev) {
+        ignore_bins x0 = {x0};
     }
-    rs1_link_prev: coverpoint ins.prev.insn[19:15] {
-        bins x1 = {5'd1};
-        bins x5 = {5'd5};
-        bins x7 = {5'd7};
+    rs1_link_prev: coverpoint `ZICFILP_RS1(ins.prev) {
+        bins x1 = {x1};
+        bins x5 = {x5};
+        bins x7 = {x7};
     }
     `ifdef ZCA_SUPPORTED
         indirect_ct_prev_c: coverpoint ins.prev.insn {
             wildcard bins c_jr   = {C_JR};
             wildcard bins c_jalr = {C_JALR};
         }
-        rs1_all_prev_c: coverpoint ins.prev.insn[11:7] {
-            bins all_except_x0[] = {[5'd1:5'd31]};
+        rs1_all_prev_c: coverpoint `ZICFILP_RS1(ins.prev) {
+            ignore_bins x0 = {x0};
         }
-        rs1_link_prev_c: coverpoint ins.prev.insn[11:7] {
-            bins x1 = {5'd1};
-            bins x5 = {5'd5};
-            bins x7 = {5'd7};
+        rs1_link_prev_c: coverpoint `ZICFILP_RS1(ins.prev) {
+            bins x1 = {x1};
+            bins x5 = {x5};
+            bins x7 = {x7};
         }
     `endif
 
     // Previous instruction was an Indirect_CT through a register other than x1/x5/x7:
     // with xLPE=1 the current instruction executes with ELP=LP_EXPECTED
     lp_branch_prev: coverpoint (
-        `ZICFILP_LP_JALR(ins.prev.insn)                                ? 2'd1 :
-        (`ZICFILP_LP_CJUMP(ins.prev.insn) && (ins.prev.insn ==? C_JR)) ? 2'd2 :
-        `ZICFILP_LP_CJUMP(ins.prev.insn)                               ? 2'd3 : 2'd0) {
+        `ZICFILP_LP_JALR(ins.prev)                                ? 2'd1 :
+        (`ZICFILP_LP_CJUMP(ins.prev) && (ins.prev.insn ==? C_JR)) ? 2'd2 :
+        `ZICFILP_LP_CJUMP(ins.prev)                               ? 2'd3 : 2'd0) {
         bins jalr = {2'd1};
         `ifdef ZCA_SUPPORTED
             bins c_jr   = {2'd2};
@@ -97,7 +101,7 @@
     `endif
 
     // Previous instruction was not an ELP-setting Indirect_CT, so the current instruction executes with ELP=NO_LP_EXPECTED
-    no_lp_branch_prev: coverpoint `ZICFILP_LP_BRANCH(ins.prev.insn) {
+    no_lp_branch_prev: coverpoint `ZICFILP_LP_BRANCH(ins.prev) {
         bins no_lp_expected = {1'b0};
     }
     // An LPAD that would fail the landing pad check if ELP were LP_EXPECTED:
@@ -144,12 +148,12 @@
     // an instruction access fault (logged with the JALR, which has no target record) or an illegal instruction
     priority_case: coverpoint {
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-            (`ZICFILP_LP_JALR(ins.current.insn) &&
+            (`ZICFILP_LP_JALR(ins.current) &&
              ((ins.current.imm + ins.current.rs1_val) == `RVMODEL_ACCESS_FAULT_ADDRESS)),
         `else
             1'b0,
         `endif
-        (`ZICFILP_LP_BRANCH(ins.prev.insn) && (ins.current.insn == 32'hFFFFFFFF))
+        (`ZICFILP_LP_BRANCH(ins.prev) && (ins.current.insn == 32'hFFFFFFFF))
     } {
         `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
             bins instr_access_fault = {2'b10};
@@ -159,8 +163,8 @@
 
     // Trap entry: a software-check exception at the target of an ELP-setting Indirect_CT (ELP=LP_EXPECTED),
     // or an ecall that no such Indirect_CT precedes (ELP=NO_LP_EXPECTED)
-    trap_case: coverpoint {(`ZICFILP_LP_BRANCH(ins.prev.insn) && !(ins.current.insn ==? LPAD)),
-                           (!`ZICFILP_LP_BRANCH(ins.prev.insn) && (ins.current.insn == ECALL))} {
+    trap_case: coverpoint {(`ZICFILP_LP_BRANCH(ins.prev) && !(ins.current.insn ==? LPAD)),
+                           (!`ZICFILP_LP_BRANCH(ins.prev) && (ins.current.insn == ECALL))} {
         bins lp_expected_not_lpad = {2'b10};
         bins no_lp_expected_ecall = {2'b01};
     }

@@ -3,7 +3,17 @@
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 # Build the Chipyard Verilator simulator for Rocket + Saturn + H (ACTRocketSaturnHConfig) for CI.
 # Usage: install-rocket.sh <install-dir>
-# Cache key derives from sha256(this file); bump the pins below to invalidate.
+# Cache key derives from sha256(this file); bump the pins below to invalidate. The patch
+# checksums are pinned here too, so a changed patch also changes the key.
+#
+# Chipyard 1.14.0 with its rocket-chip, Saturn master instead of Chipyard's Saturn pin, and three
+# local patches from config/cores/rocket/patches/ (see config/cores/rocket/README.md):
+#  - rocket-chip PR #3820 (open), which Saturn master's .vf scalar NaN-box check (Saturn PR #88)
+#    depends on;
+#  - a one-line rocket-chip TLB fix for a livelock on a guest-page fault behind a VS-stage
+#    superpage, so that the hypervisor suites run to completion;
+#  - a one-line Saturn fix for the permute/reduction sequencer deadlock (Saturn issue #74), so
+#    that the vector suites run to completion.
 #
 # Chipyard's own build-setup.sh installs a conda environment and a RISC-V toolchain; neither is
 # needed to build a Verilator simulator, so this script installs only what the build uses:
@@ -22,7 +32,26 @@ CHIPYARD_COMMIT="0acc1e1de2d3284bcd4d876956932a013ffe1949" # 1.14.0
 VERILATOR_VERSION="v5.036"
 FIRTOOL_VERSION="1.75.0" # conda-reqs/circt.json at the pinned Chipyard commit
 JDK_URL="https://api.adoptium.net/v3/binary/version/jdk-17.0.16%2B8/linux/x64/jdk/hotspot/normal/eclipse"
+SATURN_COMMIT="8ef05c9c6044f05750c49e166a784ef8fbdcb883" # saturn-vectors master, 2026-09-02
 CONFIG="ACTRocketSaturnHConfig"
+
+PATCH_DIR="$SCRIPT_DIR/../../config/cores/rocket/patches"
+# rocket-chip PR #3820 at its head commit d1d2c5e78138ddda9d439be0bb3081f107416ab9
+# (https://github.com/chipsalliance/rocket-chip/pull/3820): the FPU hands .vf scalars to the vector
+# unit as the full 64-bit register, so NaN-boxed single and half values keep their box. Without it,
+# Saturn master turns every NaN-boxed single or half .vf scalar into the canonical NaN.
+RC_PATCH="rocket-chip-pr3820-d1d2c5e7.patch"
+RC_PATCH_SHA256="cc402d03d5d1f8f057231c237c78d2ee0b4d6fd89bd5b990082da9135c1385a7"
+# rocket-chip rocket/TLB.scala: the superpage refill writes the entry that hit (waddr), as the
+# sectored refill does. Without it, a VS/VU access whose VS-stage leaf is a 2 MiB or 1 GiB page
+# and whose G-stage translation faults neither retires nor traps. No upstream issue or PR.
+TLB_PATCH="rocket-chip-tlb-superpage-gpa.patch"
+TLB_PATCH_SHA256="a0adf68d71ccf5caba8dc4674384eceaa2fd3421ebcce2bce8fed59928658d00"
+# Saturn backend/SpecialSequencer.scala: clear the permute sequencer's valid on acc_done only
+# while it holds an instruction (https://github.com/ucb-bar/saturn-vectors/issues/74). Without it,
+# a stale acc/acc_done pair drops a slide or reduction at dispatch and the vector unit deadlocks.
+SATURN_PATCH="saturn-acc-done-valid.patch"
+SATURN_PATCH_SHA256="17a31e3bcef3e556f34b1ae362862e29b15dad579e39890e766b1b79398d73a1"
 
 TOOLS="$INSTALL_DIR/tools"
 mkdir -p "$TOOLS"
@@ -53,6 +82,15 @@ git remote add origin "$CHIPYARD_REPO"
 git fetch --depth 1 origin "$CHIPYARD_COMMIT"
 git checkout FETCH_HEAD
 ./scripts/init-submodules-no-riscv-tools.sh --saturn
+git -C generators/saturn fetch origin "$SATURN_COMMIT"
+git -C generators/saturn checkout --detach "$SATURN_COMMIT"
+(
+  cd "$PATCH_DIR"
+  printf '%s  %s\n' "$RC_PATCH_SHA256" "$RC_PATCH" "$TLB_PATCH_SHA256" "$TLB_PATCH" \
+    "$SATURN_PATCH_SHA256" "$SATURN_PATCH" | sha256sum -c -
+)
+git -C generators/rocket-chip apply "$PATCH_DIR/$RC_PATCH" "$PATCH_DIR/$TLB_PATCH"
+git -C generators/saturn apply "$PATCH_DIR/$SATURN_PATCH"
 git submodule update --init --depth 1 toolchains/riscv-tools/riscv-isa-sim
 
 # 4. espresso. Without it on PATH, Chisel falls back to its QMC minimizer, which runs out of

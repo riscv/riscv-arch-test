@@ -21,9 +21,6 @@
 //   * G-stage translation adds the store/AMO guest-page-fault (cause 23) flavour of the
 //     SS fault-code remapping.
 //
-// henvcfg is not modelled by get_csr_val, so its SSE field (bit 3) is indexed directly
-// off the raw CSR array.
-//
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZICFISSH
@@ -91,7 +88,7 @@ covergroup ZicfissH_cg with function sample(ins_t ins);
         bins sse_off = {1'b0};
         bins sse_on  = {1'b1};
     }
-    henvcfg_sse: coverpoint ins.prev.csr[CSR_HENVCFG][3] {
+    henvcfg_sse: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse") {
         bins sse_off = {1'b0};
         bins sse_on  = {1'b1};
     }
@@ -103,7 +100,7 @@ covergroup ZicfissH_cg with function sample(ins_t ins);
     // which the trace does not re-log, so henvcfg.SSE is sampled as its effective value.
     vs_sse_state: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1),
                               ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
-                               ins.prev.csr[CSR_HENVCFG][3])} {
+                               get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse"))} {
         bins inactive_men_off = {2'b00};
         bins inactive_hen_off = {2'b10};
         bins active           = {2'b11};
@@ -111,7 +108,7 @@ covergroup ZicfissH_cg with function sample(ins_t ins);
     // VU-mode additionally needs senvcfg.SSE. menvcfg.SSE=0 forces both children read-only zero,
     // which the trace does not re-log, so both are sampled as their effective values.
     vu_sse_state: coverpoint {((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
-                               ins.prev.csr[CSR_HENVCFG][3]),
+                               get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse")),
                               ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
                                (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))} {
         bins inactive_both   = {2'b00};
@@ -120,7 +117,7 @@ covergroup ZicfissH_cg with function sample(ins_t ins);
         bins active          = {2'b11};
     }
     vu_sse_inactive: coverpoint {((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
-                                  ins.prev.csr[CSR_HENVCFG][3]),
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse")),
                                  ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
                                   (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))} {
         bins both_off = {2'b00};
@@ -137,7 +134,7 @@ covergroup ZicfissH_cg with function sample(ins_t ins);
         bins reads_zero = {1'b0};
         bins reads_one  = {1'b1};
     }
-    henvcfg_sse_readback: coverpoint ins.current.csr[CSR_HENVCFG][3] {
+    henvcfg_sse_readback: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "henvcfg", "sse") {
         bins reads_zero = {1'b0};
         bins reads_one  = {1'b1};
     }
@@ -156,7 +153,7 @@ covergroup ZicfissH_cg with function sample(ins_t ins);
                            ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
                             (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1)),
                            ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
-                            ins.prev.csr[CSR_HENVCFG][3])} {
+                            get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse"))} {
         bins m0s0h0 = {3'b000};
         bins m1s0h0 = {3'b100};
         bins m1s0h1 = {3'b101};
@@ -199,18 +196,18 @@ covergroup ZicfissH_cg with function sample(ins_t ins);
                 wildcard bins hsv_d = {HSV_D};
             `endif
         }
-        hstatus_hu: coverpoint ins.prev.csr[CSR_HSTATUS][9] {
+        hstatus_hu: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hu") {
             bins hu_clear = {1'b0};
             bins hu_set   = {1'b1};
         }
     `endif
     // Delegation of the software-check exception (cause 18).
-    medeleg_swchk: coverpoint ins.prev.csr[CSR_MEDELEG][18] {
+    medeleg_swchk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "medeleg", "deleg")[18] {
         bins not_delegated = {1'b0};
         bins delegated     = {1'b1};
     }
     `ifdef H_SUPPORTED
-        hedeleg_swchk: coverpoint ins.prev.csr[CSR_HEDELEG][18] {
+        hedeleg_swchk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg")[18] {
             bins not_delegated = {1'b0};
             bins delegated     = {1'b1};
         }
@@ -227,20 +224,20 @@ covergroup ZicfissH_cg with function sample(ins_t ins);
     }
     // vsatp.MODE=Bare makes SS instructions fault even with V=1.
     `ifdef UDB_MXLEN_64
-        vsatp_mode: coverpoint ins.current.csr[CSR_VSATP][63:60] {
+        vsatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vsatp", "mode")[3:0] {
             bins bare        = {4'b0000};
             bins translating = {[4'b1000:4'b1011]};
         }
-        hgatp_mode: coverpoint ins.current.csr[CSR_HGATP][63:60] {
+        hgatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hgatp", "mode")[3:0] {
             bins bare        = {4'b0000};
             bins translating = {[4'b1000:4'b1011]};
         }
     `else
-        vsatp_mode: coverpoint ins.current.csr[CSR_VSATP][31] {
+        vsatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vsatp", "mode")[0] {
             bins bare        = {1'b0};
             bins translating = {1'b1};
         }
-        hgatp_mode: coverpoint ins.current.csr[CSR_HGATP][31] {
+        hgatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hgatp", "mode")[0] {
             bins bare        = {1'b0};
             bins translating = {1'b1};
         }

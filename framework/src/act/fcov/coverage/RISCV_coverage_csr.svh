@@ -28,6 +28,7 @@ typedef enum {
   frm,
   hcounteren,
   hedeleg,
+  henvcfg,
   hgatp,
   hgeie,
   hgeip,
@@ -213,6 +214,24 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
     case(field)
       "deleg" : val = val & 'hffffffff;
       default: val = 0; // Todo: error
+    endcase
+  end
+  if (name == "henvcfg") begin
+    case(field)
+      "fiom" : val = val & 'h1;
+      "lpe" : val = (val >> 2) & 'h1;
+      "sse" : val = (val >> 3) & 'h1;
+      "cbie" : val = (val >> 4) & 'h3;
+      "cbcfe" : val = (val >> 6) & 'h1;
+      "cbze" : val = (val >> 7) & 'h1;
+`ifdef UDB_MXLEN_64
+      "pmm" : val = (val >> 32) & 64'h3;
+      "dte" : val = (val >> 59) & 64'h1;
+      "adue" : val = (val >> 61) & 64'h1;
+      "pbmte" : val = (val >> 62) & 64'h1;
+      "stce" : val = (val >> 63) & 64'h1;
+`endif
+      default: val = 0;
     endcase
   end
   if (name == "hgatp") begin

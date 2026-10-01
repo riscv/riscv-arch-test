@@ -122,11 +122,11 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     // and SXLEN can never be 32, so sample all three and let the signature comparison
     // against the reference model decide which bits this config holds at zero.
     `ifdef UDB_MXLEN_64
-        ssp_rd_low_bits: coverpoint ins.current.csr[CSR_SSP][2:0] {
+        ssp_rd_low_bits: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "ssp", "ssp")[2:0] {
             bins read_only_zero = {3'b000};
         }
     `else
-        ssp_rd_low_bits: coverpoint ins.current.csr[CSR_SSP][1:0] {
+        ssp_rd_low_bits: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "ssp", "ssp")[1:0] {
             bins read_only_zero = {2'b00};
         }
     `endif
@@ -146,7 +146,7 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     // ── Alignment building blocks ─────────────────────────────────────────
     // ssp[1:0] are read-only zero, and so is ssp[2] unless UXLEN or SXLEN can be 32. The
     // test writes all eight low-bit values; only these can be held.
-    ssp_LSBs: coverpoint ins.prev.csr[CSR_SSP][2:0] {
+    ssp_LSBs: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp")[2:0] {
         bins aligned_8 = {3'b000};
         `ifdef ZICFISS_SSP_BIT2_WRITABLE
             bins aligned_4 = {3'b100};
@@ -197,8 +197,8 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     }
     // On a software-check exception the trap value register reports shadow stack fault (code 3).
     // Guarded on the trap being taken by this instruction, since the CSR array is persistent.
-    stval_ss_fault: coverpoint ins.current.csr[CSR_STVAL]
-                    iff (ins.current.csr_wb[CSR_SEPC] && (ins.current.csr[CSR_SEPC] == ins.current.pc_rdata)) {
+    stval_ss_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval")
+                    iff (ins.current.csr_wb[CSR_SEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sepc", "sepc") == ins.current.pc_rdata)) {
         bins ss_fault = {3};
     }
 
@@ -263,13 +263,13 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
         }
     `endif
     // MXR governs whether an R=0 page is readable; the SS page is R=0 by construction.
-    sstatus_mxr: coverpoint ins.prev.csr[CSR_SSTATUS][19] {
+    sstatus_mxr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr") {
         bins mxr_clear = {1'b0};
         bins mxr_set   = {1'b1};
     }
     // Where ssp sits inside its page. A push decrements before storing, so a pointer
     // at the page base writes into the preceding page.
-    ssp_page_offset: coverpoint ins.prev.csr[CSR_SSP][11:0] {
+    ssp_page_offset: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp")[11:0] {
         bins at_page_base = {12'h000};
         bins near_base    = {[12'h001:12'h010]};
         bins mid_page     = {[12'h011:12'hFEF]};
@@ -374,7 +374,7 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     // access-fault must win over the software-check exception.
     // ssp pointed at an unmapped VA so the pop's load faults. The memory fault must
     // outrank the software-check exception that the value mismatch would otherwise raise.
-    ssp_fault_address: coverpoint ins.prev.csr[CSR_SSP] {
+    ssp_fault_address: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp") {
         `ifdef UDB_MXLEN_64
             bins unmapped = {64'h140400000};
         `else
@@ -383,7 +383,7 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     }
 
     // ssp on the shadow stack page, or on the unmapped page an active access would fault on.
-    ssp_state: coverpoint ins.prev.csr[CSR_SSP] {
+    ssp_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp") {
         `ifdef UDB_MXLEN_64
             bins ss_page  = {[64'h140300000:64'h140300FFF]};
             bins unmapped = {64'h140400000};

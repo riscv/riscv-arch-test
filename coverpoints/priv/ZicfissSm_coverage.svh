@@ -69,7 +69,7 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
         `endif
     }
     // ssp on the shadow stack page, or on the unmapped page an active access would fault on.
-    ssp_state: coverpoint ins.prev.csr[CSR_SSP] {
+    ssp_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp") {
         `ifdef UDB_MXLEN_64
             bins ss_page  = {[64'h140300000:64'h140300FFF]};
             bins unmapped = {64'h140400000};
@@ -94,7 +94,7 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     `ifdef UDB_NUM_USABLE_PMP_ENTRIES
     `ifndef UDB_NUM_USABLE_PMP_ENTRIES_0
     `ifndef UDB_NUM_USABLE_PMP_ENTRIES_1
-        pmp0_rw: coverpoint ins.current.csr[CSR_PMPCFG0][1:0] {
+        pmp0_rw: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_xwr")[1:0] {
             bins no_perm    = {2'b00};
             bins read_only  = {2'b01};
             bins read_write = {2'b11};
@@ -159,12 +159,11 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
         bins reads_one  = {1'b1};
     }
     `ifdef H_SUPPORTED
-        // henvcfg is not modelled by get_csr_val, so index the raw CSR. SSE is bit 3.
-        henvcfg_sse_readback: coverpoint ins.current.csr[CSR_HENVCFG][3] {
+        henvcfg_sse_readback: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "henvcfg", "sse") {
             bins reads_zero = {1'b0};
             bins reads_one  = {1'b1};
         }
-        henvcfg_sse: coverpoint ins.prev.csr[CSR_HENVCFG][3] {
+        henvcfg_sse: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse") {
             bins sse_off = {1'b0};
             bins sse_on  = {1'b1};
         }
@@ -173,19 +172,19 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     // ── Translation-mode building blocks ──────────────────────────────────
     // SSAMOSWAP must fault at M regardless of satp.MODE, so sweep Bare vs non-Bare.
     `ifdef UDB_MXLEN_64
-        satp_mode: coverpoint ins.current.csr[CSR_SATP][63:60] {
+        satp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
             bins bare     = {4'b0000};
             bins translating = {[4'b1000:4'b1011]};
         }
-        satp_bare: coverpoint ins.current.csr[CSR_SATP][63:60] {
+        satp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
             bins bare = {4'b0000};
         }
     `else
-        satp_mode: coverpoint ins.current.csr[CSR_SATP][31] {
+        satp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] {
             bins bare        = {1'b0};
             bins translating = {1'b1};
         }
-        satp_bare: coverpoint ins.current.csr[CSR_SATP][31] {
+        satp_bare: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] {
             bins bare = {1'b0};
         }
     `endif
@@ -220,12 +219,12 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     // This suite boots to M-mode, which leaves medeleg at zero, so a software-check exception
     // from S-mode is taken in M-mode and reports shadow stack fault (code 3) in mtval.
     // Guarded on the trap being taken by this instruction, since the CSR array is persistent.
-    sw_check_m: coverpoint ins.current.csr[CSR_MCAUSE]
-                iff (ins.current.csr_wb[CSR_MEPC] && (ins.current.csr[CSR_MEPC] == ins.current.pc_rdata)) {
-        bins cause_18 = {18};
+    sw_check_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause")
+                iff (ins.current.csr_wb[CSR_MEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mepc", "mepc") == ins.current.pc_rdata)) {
+        bins cause_18 = {SOFTWARE_CHECK};
     }
-    mtval_ss_fault: coverpoint ins.current.csr[CSR_MTVAL]
-                    iff (ins.current.csr_wb[CSR_MEPC] && (ins.current.csr[CSR_MEPC] == ins.current.pc_rdata)) {
+    mtval_ss_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mtval", "mtval")
+                    iff (ins.current.csr_wb[CSR_MEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mepc", "mepc") == ins.current.pc_rdata)) {
         bins ss_fault = {3};
     }
     cp_ss_swcheck_mtval:           cross priv_mode_s, ss_pop_instr, sw_check_m, mtval_ss_fault;

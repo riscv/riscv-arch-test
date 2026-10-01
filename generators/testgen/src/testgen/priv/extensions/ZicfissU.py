@@ -706,6 +706,12 @@ def _generate_page_access(test_data: TestData) -> list[str]:
 # ---------------------------------------------------------------------------
 
 
+# A fixed vl keeps every vector access within 16 bytes of its base whatever VLEN is, where VLMAX
+# could run past the shadow stack page. The strided and indexed accesses from the page below need
+# three elements to reach the SS page.
+_VECTOR_VL = 4
+
+
 def _generate_vector(test_data: TestData) -> list[str]:
     """A shadow stack page is readable by vector loads and not writable by vector stores.
 
@@ -728,7 +734,7 @@ def _generate_vector(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"LI(x{addr_reg}, ZICFISS_VA_SS + 0x800)",
-                    f"vsetvli x{tmp_reg}, x0, e{sew}, m1, tu, mu",
+                    f"vsetivli x{tmp_reg}, {_VECTOR_VL}, e{sew}, m1, tu, mu",
                     test_data.add_testcase(f"vle{sew}_ss_page_mxr{mxr}", "cp_ss_vector_load", _CG),
                     f"vle{sew}.v v1, (x{addr_reg})",
                     f"vmv.x.s x{tmp_reg}, v1   # the first element read from the SS page",
@@ -741,7 +747,7 @@ def _generate_vector(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"LI(x{addr_reg}, ZICFISS_VA_SS + 0x800)",
-                f"vsetvli x{tmp_reg}, x0, e{sew}, m1, tu, mu",
+                f"vsetivli x{tmp_reg}, {_VECTOR_VL}, e{sew}, m1, tu, mu",
                 test_data.add_testcase(f"vse{sew}_ss_page", "cp_ss_vector_store", _CG),
                 f"vse{sew}.v v1, (x{addr_reg})",
             ]
@@ -755,7 +761,7 @@ def _generate_vector(test_data: TestData) -> list[str]:
                 [
                     f"LI(x{addr_reg}, {base})",
                     f"LI(x{stride_reg}, 4)",
-                    f"vsetvli x{tmp_reg}, x0, e{sew}, m1, tu, mu",
+                    f"vsetivli x{tmp_reg}, {_VECTOR_VL}, e{sew}, m1, tu, mu",
                     test_data.add_testcase(f"vlse{sew}_{origin}", "cp_ss_vector_strided", _CG),
                     f"vlse{sew}.v v1, (x{addr_reg}), x{stride_reg}",
                 ]
@@ -764,7 +770,7 @@ def _generate_vector(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"LI(x{addr_reg}, {base})",
-                    f"vsetvli x{tmp_reg}, x0, e8, m1, tu, mu",
+                    f"vsetivli x{tmp_reg}, {_VECTOR_VL}, e8, m1, tu, mu",
                     "vid.v v2",
                     "vsll.vi v2, v2, 2   # byte offsets 0, 4, 8, ...",
                     test_data.add_testcase(f"{mnemonic.replace('.', '_')}_{origin}", "cp_ss_vector_indexed", _CG),

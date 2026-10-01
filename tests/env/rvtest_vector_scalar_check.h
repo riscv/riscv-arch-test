@@ -269,6 +269,52 @@
     VSC_ADDI(_LINK_REG, _TEMP_REG, VSC_OFF_ACT)                                          ;\
     vle##_EEW.v _VREG, (_LINK_REG)
 
+// The routines only use base integer instructions, so the tests do not require M.
+
+// _RD = _RD * _RS (low XLEN bits) by shift and add. _RS must be non-negative.
+// Clobbers _T1, _T2, and _T3.
+#define VSC_MUL(_RD, _RS, _T1, _T2, _T3) \
+    mv _T3, _RD                 ;\
+    mv _T1, _RS                 ;\
+    li _RD, 0                   ;\
+81:                             ;\
+    beqz _T1, 83f               ;\
+    andi _T2, _T1, 1            ;\
+    beqz _T2, 82f               ;\
+    add _RD, _RD, _T3           ;\
+82:                             ;\
+    slli _T3, _T3, 1            ;\
+    srli _T1, _T1, 1            ;\
+    j 81b                       ;\
+83:
+
+// Shifts the XLEN bits of _WORD into the unsigned remainder _REM modulo _DIV, most
+// significant bit first. Requires _DIV != 0 and _REM < _DIV. Clears _WORD and clobbers _CNT.
+#define VSC_REMU_WORD(_REM, _WORD, _DIV, _CNT) \
+    li _CNT, UDB_MXLEN          ;\
+91:                             ;\
+    beqz _CNT, 95f              ;\
+    addi _CNT, _CNT, -1         ;\
+    bltz _REM, 93f              ;\
+    slli _REM, _REM, 1          ;\
+    bgez _WORD, 92f             ;\
+    ori _REM, _REM, 1           ;\
+92:                             ;\
+    slli _WORD, _WORD, 1        ;\
+    bltu _REM, _DIV, 91b        ;\
+    sub _REM, _REM, _DIV        ;\
+    j 91b                       ;\
+    /* The shift carries out of XLEN, so the remainder is at least _DIV */ ;\
+93:                             ;\
+    slli _REM, _REM, 1          ;\
+    bgez _WORD, 94f             ;\
+    ori _REM, _REM, 1           ;\
+94:                             ;\
+    slli _WORD, _WORD, 1        ;\
+    sub _REM, _REM, _DIV        ;\
+    j 91b                       ;\
+95:
+
 // Loads bit _IDX of the byte array at _BASE into _RD. Clobbers _TMP.
 #define VSC_LOAD_BIT(_RD, _BASE, _IDX, _TMP)                                              \
     srli _TMP, _IDX, 3                                                                   ;\
@@ -629,25 +675,13 @@ rvtest_vsc_ifix_ld8_\L\()_\T:
 rvtest_vsc_ifix_rem_\L\()_\T:
     // Division by zero leaves the element unchanged
     beqz x10, rvtest_vsc_ifix_op_\L\()_\T
+    // x1 = {x15, x1} mod x10. x15 is 0 except for EEW=64 on RV32.
+    li x2, 0
 #if UDB_MXLEN == 32
-    // 64-bit remainder in 16-bit steps (divisor < 2^16)
-    li x2, 3
-    bne x11, x2, rvtest_vsc_ifix_rem32_\L\()_\T
-    remu x15, x15, x10
-    slli x15, x15, 16
-    srli x2, x1, 16
-    or x15, x15, x2
-    remu x15, x15, x10
-    slli x15, x15, 16
-    slli x2, x1, 16
-    srli x2, x2, 16
-    or x15, x15, x2
-    remu x1, x15, x10
-    li x15, 0
-    j rvtest_vsc_ifix_op_\L\()_\T
-rvtest_vsc_ifix_rem32_\L\()_\T:
+    VSC_REMU_WORD(x2, x15, x10, x12)
 #endif
-    remu x1, x1, x10
+    VSC_REMU_WORD(x2, x1, x10, x12)
+    mv x1, x2
 rvtest_vsc_ifix_op_\L\()_\T:
     LREG x2, VSC_FLAGS(\T)
     andi x2, x2, VSC_IFIX_SHIFT
@@ -728,7 +762,7 @@ rvtest_vsc_gather_active_\L\()_\T:
     andi x1, x1, 3
     bnez x1, rvtest_vsc_gather_not_unit_\L\()_\T
     LREG x10, VSC_NELEM(\T)
-    mul x10, x10, x3
+    VSC_MUL(x10, x3, x1, x2, x12)
     LREG x11, VSC_EEWLOG(\T)
     sll x10, x10, x11
     j rvtest_vsc_gather_addr_\L\()_\T
@@ -736,7 +770,7 @@ rvtest_vsc_gather_not_unit_\L\()_\T:
     li x2, 1
     bne x1, x2, rvtest_vsc_gather_indexed_\L\()_\T
     LREG x10, VSC_EXP2(\T)
-    mul x10, x10, x3
+    VSC_MUL(x10, x3, x1, x2, x12)
     j rvtest_vsc_gather_addr_\L\()_\T
     // Index values are zero-extended and truncated to XLEN
 rvtest_vsc_gather_indexed_\L\()_\T:

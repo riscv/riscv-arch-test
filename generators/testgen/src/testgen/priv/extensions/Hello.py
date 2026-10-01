@@ -149,22 +149,22 @@ def _interrupts(test_data: TestData) -> list[str]:
 
 
 def _timer(test_data: TestData) -> list[str]:
-    """RVMODEL_MTIME_ADDRESS, RVMODEL_MTIMECMP_ADDRESS and the interrupt timings.
+    """RVMODEL_MTIMECMP_ADDRESS and the timer set/clear path.
 
-    RVTEST_SET_MTIME_INT_SOON_M arms mtimecmp through those addresses and the
-    configured delay, so wrong device addresses show up as an interrupt that never
+    Writes mtimecmp to zero so the interrupt is pending at once on any hart, however
+    slowly its timer ticks; a wrong address shows up as an interrupt that never
     arrives. Only MTIE is enabled, for the reason in _interrupts.
     """
     r_idle, reg = test_data.int_regs.get_registers(2)
     lines = [
-        comment_banner("Hello: timer", "Arm mtimecmp through the model's device addresses"),
+        comment_banner("Hello: timer", "Raise the timer interrupt through mtimecmp"),
         test_data.add_testcase("mtimecmp", "cp_timer", _CG),
         "#ifdef UDB_MTI_INTR_IMPL",
         f"LI(x{reg}, MIP_MTIP)",
         f"csrw mie, x{reg}    # enable only the timer interrupt",
         "csrsi mstatus, 8    # mstatus.MIE = 1",
-        "RVTEST_SET_MTIME_INT_SOON_M",
-        f"RVTEST_IDLE_FOR_TIMER_INTERRUPT(x{r_idle})",
+        "RVTEST_SET_MTIME_INT_M",
+        f"RVTEST_IDLE_FOR_INTERRUPT(x{r_idle})",
         "RVTEST_CLR_MTIME_INT_M",
         "csrci mstatus, 8    # mstatus.MIE = 0",
         "csrw mie, zero",

@@ -27,10 +27,6 @@
   #define RVTEST_INVISIBLE_TRAP_HANDLER
 #endif
 
-#if defined(RVTEST_INVISIBLE_TRAP_HANDLER) && defined(H_SUPPORTED)
-  #error "Invisible trap emulation does not support traps from VS or VU mode yet."
-#endif
-
 // Implementation macros (halt, IO, interrupt set/clear) come from the shim in a
 // kit build, so skip those checks under RVMODEL_SHIM_EXTERN. Value macros (device
 // addresses, timings) are still required - they come from dut_environment.h.

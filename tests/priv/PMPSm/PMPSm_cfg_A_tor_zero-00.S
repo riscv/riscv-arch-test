@@ -149,15 +149,15 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMPSm_cp_cfg_A_tor0_region0_1_sw_top_str: .string "\"test: 25; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_1_sw_top\""
-PMPSm_cp_cfg_A_tor0_region0_2_sw_topm4_str: .string "\"test: 26; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_2_sw_top-4\""
-PMPSm_cp_cfg_A_tor0_region0_3_sw_zero_str: .string "\"test: 27; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_3_sw_zero\""
-PMPSm_cp_cfg_A_tor0_region0_4_lw_top_str: .string "\"test: 28; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_4_lw_top\""
-PMPSm_cp_cfg_A_tor0_region0_5_lw_topm4_str: .string "\"test: 29; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_5_lw_top-4\""
-PMPSm_cp_cfg_A_tor0_region0_6_lw_zero_str: .string "\"test: 30; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_6_lw_zero\""
-PMPSm_cp_cfg_A_tor0_region0_7_jalr_top_str: .string "\"test: 31; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_7_jalr_top\""
-PMPSm_cp_cfg_A_tor0_region0_8_jalr_topm4_str: .string "\"test: 32; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_8_jalr_top-4\""
-PMPSm_cp_cfg_A_tor0_region0_9_jalr_zero_str: .string "\"test: 33; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_9_jalr_zero\""
+PMPSm_cp_cfg_A_tor0_region0_1_sw_top_str: .string "\"test: 41; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_1_sw_top\""
+PMPSm_cp_cfg_A_tor0_region0_2_sw_topm4_str: .string "\"test: 42; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_2_sw_top-4\""
+PMPSm_cp_cfg_A_tor0_region0_3_sw_zero_str: .string "\"test: 43; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_3_sw_zero\""
+PMPSm_cp_cfg_A_tor0_region0_4_lw_top_str: .string "\"test: 44; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_4_lw_top\""
+PMPSm_cp_cfg_A_tor0_region0_5_lw_topm4_str: .string "\"test: 45; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_5_lw_top-4\""
+PMPSm_cp_cfg_A_tor0_region0_6_lw_zero_str: .string "\"test: 46; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_6_lw_zero\""
+PMPSm_cp_cfg_A_tor0_region0_7_jalr_top_str: .string "\"test: 47; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_7_jalr_top\""
+PMPSm_cp_cfg_A_tor0_region0_8_jalr_topm4_str: .string "\"test: 48; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_8_jalr_top-4\""
+PMPSm_cp_cfg_A_tor0_region0_9_jalr_zero_str: .string "\"test: 49; cg: PMPSm; cp: cp_cfg_A_tor0; bin: region0_9_jalr_zero\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

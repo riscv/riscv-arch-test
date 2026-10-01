@@ -88,11 +88,11 @@ def _make_pmpcfg_walk_chunk(test_data: TestData, number: int, byte: int) -> Test
     chunk.section_header = comment_banner(
         "cp_pmpcfg_walk",
         f"Write a walking one through bits {8 * byte}..{8 * byte + 7} of every pmpcfg CSR and check\n"
-        "the readback, skipping the reserved R=0/W=1 encoding and the A=NA4 bit.",
+        "the readback, skipping the reserved R=0/W=1 encoding and the A=TOR and A=NA4 bits.",
     )
     cases = 0
     for bit in range(8 * byte, 8 * byte + 8):
-        if bit % 8 in (1, 4):  # W without R is reserved; A=NA4 is optional.
+        if bit % 8 in (1, 3, 4):  # W without R is reserved; A=TOR and A=NA4 are optional.
             continue
         if chunk.code:
             chunk.code.append("")
@@ -121,10 +121,10 @@ _ENTRIES = tuple(range(14, -1, -1))
 # ---------------------------------------------------------------------------
 
 
-def _make_a_all_chunk(test_data: TestData) -> TestChunk:
-    chunk = test_data.begin_test_chunk("cfg_A_all")
+def _make_a_all_chunk(test_data: TestData, chunk_name: str, amodes: tuple[str, ...]) -> TestChunk:
+    chunk = test_data.begin_test_chunk(chunk_name)
     chunk.section_header = comment_banner(
-        "cp_cfg_A_all", "Write A = NA4, NAPOT, TOR and OFF into every byte of every pmpcfg CSR and read it back."
+        "cp_cfg_A_all", f"Write A = {', '.join(amodes)} into every byte of every pmpcfg CSR and read it back."
     )
     chunk.code.extend([*zero_pmp_regs(), "", "RVTEST_PMP_SET_BACKGROUND x4"])
 
@@ -137,7 +137,8 @@ def _make_a_all_chunk(test_data: TestData) -> TestChunk:
                 ]
             )
 
-    for name, const in (("NA4", "PMP_NA4"), ("NAPOT", "PMP_NAPOT"), ("TOR", "PMP_TOR"), ("OFF", None)):
+    for name in amodes:
+        const = None if name == "OFF" else f"PMP_{name}"
         chunk.code.extend(["", f"// PMP configuration: write A = {name} to every byte of every pmpcfg CSR"])
         if const:
             rv32_bytes = "|".join(f"(({const}&0xFF) << PMP{i}_CFG_SHIFT)" for i in range(4))
@@ -871,7 +872,7 @@ def make_pmpsm_base(test_data: TestData) -> list[TestChunk]:
     return [
         _make_zero_walk_chunk(test_data),
         *(_make_pmpcfg_walk_chunk(test_data, byte + 2, byte) for byte in range(4)),
-        _make_a_all_chunk(test_data),
+        _make_a_all_chunk(test_data, "cfg_A_all", ("NAPOT", "OFF")),
         _make_a_off_all_chunk(test_data),
         _make_l_access_all_chunk(test_data),
         _make_l_modify_chunk(test_data, "off"),
@@ -901,7 +902,11 @@ def make_pmpsm_rv64(test_data: TestData) -> list[TestChunk]:
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_NA4_SUPPORTED: true"],
 )
 def make_pmpsm_na4(test_data: TestData) -> list[TestChunk]:
-    return [_make_amode_all_chunk(test_data, "na4"), _make_legal_chunk(test_data, "na4")]
+    return [
+        _make_a_all_chunk(test_data, "cfg_A_all_na4", ("NA4",)),
+        _make_amode_all_chunk(test_data, "na4"),
+        _make_legal_chunk(test_data, "na4"),
+    ]
 
 
 @add_priv_test_generator(
@@ -929,6 +934,7 @@ def make_pmpsm_napot(test_data: TestData) -> list[TestChunk]:
 )
 def make_pmpsm_tor(test_data: TestData) -> list[TestChunk]:
     return [
+        _make_a_all_chunk(test_data, "cfg_A_all_tor", ("TOR",)),
         _make_a_tor_bot_chunk(test_data),
         _make_a_tor_zero_chunk(test_data),
         _make_l_modify_chunk(test_data, "tor"),

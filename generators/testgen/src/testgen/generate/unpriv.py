@@ -20,7 +20,7 @@ from testgen.data.test_chunk import TestChunk, split_test_chunks
 from testgen.formatters.registry import get_instruction_type_config
 from testgen.instructions.vector import parse_vector_instruction_info
 from testgen.io.templates import canonicalize_extensions
-from testgen.io.testplans import read_testplan, split_vector_scalar_check
+from testgen.io.testplans import VECTOR_SCALAR_CHECK_SUFFIX, read_testplan, split_vector_scalar_check
 from testgen.io.writer import write_test_file
 
 
@@ -57,8 +57,6 @@ def generate_unpriv_extension_tests(
         output_test_dir: Directory to output generated tests
         is_vector: Set in vector test suites
     """
-    # Scalar self-checking suites (e.g. Vx8-scalarcheck) generate the base suite into their own directory
-    output_suite = testsuite
     testsuite, vector_scalar_check = split_vector_scalar_check(testsuite)
 
     # Read testplan for this testsuite
@@ -75,6 +73,9 @@ def generate_unpriv_extension_tests(
     instructions = read_testplan(testplan_dir / f"{testplan}.csv")
     if testsuite == "I" and E_ext:
         testsuite = "E"
+
+    # Scalar self-checking suites (e.g. Vx8-scalarcheck) generate the base suite into their own directory
+    output_suite = testsuite + VECTOR_SCALAR_CHECK_SUFFIX if vector_scalar_check else testsuite
 
     # Create testsuite-wide test configuration
     output_dir = output_test_dir / f"rv{xlen}{'e' if E_ext else 'i'}/{output_suite}"

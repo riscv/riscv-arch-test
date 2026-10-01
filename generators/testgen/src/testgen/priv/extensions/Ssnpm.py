@@ -10,10 +10,11 @@ from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
+    EDGE_CASES,
     MODE_GUARDS,
     MODES,
     PMM_CONFIGS,
-    TAG_GROUPS,
+    SPLITS,
     build_4k_image_map,
     csr_op,
     data_page,
@@ -46,19 +47,23 @@ def make_ssnpm(test_data: TestData) -> list[TestChunk]:
     chunks = []
     for mode in MODES:
         for pmm, pmlen, label in PMM_CONFIGS:
-            for part, uppers in enumerate(TAG_GROUPS, 1):
-                tc = test_data.begin_test_chunk(split_name=f"{mode}_{label}_part{part}")
-                tc.code = _ssnpm_chunk(mode, pmm, pmlen, label, part, uppers, test_data)
+            # Each PMM setting is split into three files to keep every test under 100k instructions.
+            # sweep_lowtags and sweep_hightags run every load, store, AMO, CBO and vector instruction through
+            # a tagged pointer: the first with tags that leave bit 63 clear, the second with tags that set it.
+            # edgecases holds the remaining checks, such as misaligned accesses, JALR, access faults and MXR.
+            for split, uppers in SPLITS:
+                tc = test_data.begin_test_chunk(split_name=f"{mode}_{label}_{split}")
+                tc.code = _ssnpm_chunk(mode, pmm, pmlen, label, split, uppers, test_data)
                 chunks.append(test_data.end_test_chunk())
     return chunks
 
 
 def _ssnpm_chunk(
-    mode: str, pmm: int, pmlen: int, label: str, part: int, uppers: list[int], test_data: TestData
+    mode: str, pmm: int, pmlen: int, label: str, split: str, uppers: list[int], test_data: TestData
 ) -> list[str]:
-    """One satp mode, one senvcfg.PMM setting and one tag group, probed from U-mode.
+    """One satp mode, one senvcfg.PMM setting and one test split, probed from U-mode.
 
-    Part 1 also carries the probes that are not part of the instruction sweep.
+    The edge-case file carries the probes that are not part of the instruction sweep.
     """
     guard, is_bare = MODE_GUARDS[mode], mode == "bare"
     prefix = f"{label}_{mode}"
@@ -109,13 +114,13 @@ def _ssnpm_chunk(
 
     lines.extend(
         [
-            comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), satp={mode.upper()}, part {part}"),
+            comment_banner(f"PMM={pmm:#04b} (PMLEN={pmlen}), satp={mode.upper()}, {split}"),
             *set_pmm_field("senvcfg", pmm, pmlen, test_data, tsbi=True),
             *set_mxr(False, test_data, tsbi=True),
             *generate_instruction_sweep_tests(prefix, test_data, COVERGROUP, uppers),
         ]
     )
-    if part == 1:
+    if split == EDGE_CASES:
         if not is_bare:
             lines.extend(generate_sign_extension_tests(prefix, mode, test_data, COVERGROUP))
         lines.extend(
@@ -132,7 +137,7 @@ def _ssnpm_chunk(
     if not is_bare:
         lines.extend(satp_clear(tsbi=True))
     lines.append("RVTEST_TSBI_GOTO_SMODE")
-    if part == 1:
+    if split == EDGE_CASES:
         lines.extend(
             [
                 *set_pmm_field("senvcfg", pmm, pmlen, test_data),

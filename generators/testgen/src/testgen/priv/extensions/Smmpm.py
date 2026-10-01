@@ -10,8 +10,9 @@ from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
+    EDGE_CASES,
     PMM_CONFIGS,
-    TAG_GROUPS,
+    SPLITS,
     generate_csr_write_tests,
     generate_fault_address_tests,
     generate_instruction_sweep_tests,
@@ -38,13 +39,17 @@ _CSR_TARGETS = ["mepc", "mscratch"]
 def make_smmpm(test_data: TestData) -> list[TestChunk]:
     chunks = []
     for pmm, pmlen, label in PMM_CONFIGS:
-        for part, uppers in enumerate(TAG_GROUPS, 1):
-            tc = test_data.begin_test_chunk(split_name=f"{label}_part{part}")
+        # Each PMM setting is split into three files to keep every test under 100k instructions.
+        # sweep_lowtags and sweep_hightags run every load, store, AMO, CBO and vector instruction through
+        # a tagged pointer: the first with tags that leave bit 63 clear, the second with tags that set it.
+        # edgecases holds the remaining checks, such as misaligned accesses, JALR, access faults and MXR.
+        for split, uppers in SPLITS:
+            tc = test_data.begin_test_chunk(split_name=f"{label}_{split}")
             prefix = f"{label}_mmode"
             lines = [
                 *mprv_data_section(),
                 comment_banner(
-                    f"Smmpm pointer masking -- M-mode only, PMM={pmm:#04b} (PMLEN={pmlen}), part {part}",
+                    f"Smmpm pointer masking -- M-mode only, PMM={pmm:#04b} (PMLEN={pmlen}), {split}",
                     "mseccfg.PMM is programmed from M-mode; every probe also runs in M-mode.",
                 ),
                 "",
@@ -54,7 +59,7 @@ def make_smmpm(test_data: TestData) -> list[TestChunk]:
                 "#endif // S_SUPPORTED",
                 *generate_instruction_sweep_tests(prefix, test_data, COVERGROUP, uppers),
             ]
-            if part == 1:
+            if split == EDGE_CASES:
                 lines.extend(
                     [
                         *generate_misaligned_tests(prefix, test_data, COVERGROUP),

@@ -30,9 +30,16 @@ UPPER_PATTERNS = [
     0xFF00,  # bits 63:56 -- fully stripped by PMLEN=16, partially by PMLEN=7
 ]
 
-# Each PMM setting is split into one file per tag group to keep tests near 100k instructions.
-# The first group's file also carries the shorter misaligned/JALR/fault/MXR probes.
-TAG_GROUPS = [UPPER_PATTERNS[:4], UPPER_PATTERNS[4:]]
+# Each PMM setting is split into three files to keep tests under 100k instructions:
+#   sweep_lowtags  -- instruction sweep, tags with bit 63 clear (none, or bit 48, 56 or 57)
+#   sweep_hightags -- instruction sweep, tags with bit 63 set
+#   edgecases      -- misaligned, JALR, fault-address, MXR and the other non-sweep probes
+EDGE_CASES = "edgecases"
+SPLITS = [
+    ("sweep_lowtags", UPPER_PATTERNS[:4]),
+    ("sweep_hightags", UPPER_PATTERNS[4:]),
+    (EDGE_CASES, []),
+]
 
 PMM_CONFIGS = [
     (0b00, 0, "pmm00"),

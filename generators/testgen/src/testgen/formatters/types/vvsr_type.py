@@ -7,6 +7,7 @@
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
+    copy_mask_reg,
     handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
@@ -92,7 +93,7 @@ def format_vvsr_like_type(
                     "# vd = v0, and the operation will be masked, so we cannot load a value for vd here. Instead, because this is",
                     "# a length suite test we will make a copy of the mask, so that when the operation later overwrites it, it can",
                     "# still be retrieved",
-                    f"vmand.mm v{mask_copy_reg}, v0, v0",
+                    *copy_mask_reg(test_data, mask_copy_reg, 0),
                 ]
             )
             load_vd = False

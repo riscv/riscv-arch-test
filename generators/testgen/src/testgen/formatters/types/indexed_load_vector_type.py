@@ -10,6 +10,7 @@ from testgen.asm.vector_helpers import (
     VectorLoad,
     get_lmul_flag,
     handle_parameter_exclusions,
+    index_fixup_lines,
     load_test_vtype,
     load_vec_regs,
     prep_mask_v,
@@ -159,12 +160,8 @@ def format_vlxseg_like_type(
             setup.append(f"vsetivli x0, {params.vl}, e{index_eew}, m{get_lmul_flag(index_emul)}, tu, mu")
         # Construct a factor that masks off the correct bits to align load to the SEW
         sew_alignment_factor = -params.sew // 8
-        setup.extend(
-            [
-                f"vremu.vx v{params.vs2}, v{params.vs2}, x{params.temp_reg}",
-                f"vand.vi v{params.vs2}, v{params.vs2}, {sew_alignment_factor}",
-            ]
-        )
+        fixup_eew = params.sew if params.vs2_val_pointer == "vs2_edge_random_within_2vlmax_ls" else index_eew
+        setup.extend(index_fixup_lines(test_data, params.vs2, fixup_eew, params.temp_reg, and_imm=sew_alignment_factor))
 
     setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer})")
     setup.append(load_test_vtype(params, random_vl_reg))

@@ -1608,9 +1608,11 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
   global immedgesv, NaNBox_tests, test, xlen, extension
 
   xlen = xlen_arg
-  extension = extension_arg
+  output_suite = extension_arg
+  extension = extension_arg.removesuffix(common.SCALAR_CHECK_SUFFIX)
+  common.setScalarCheck(extension != extension_arg)
 
-  seed(common.myhash(f"{xlen}-{extension}"))
+  seed(common.myhash(f"{xlen}-{extension}"))  # same seed and test data as the base suite
 
   testplans = readTestplans()
   if extension not in testplans:
@@ -1619,7 +1621,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
   setExtension(extension)
   setXlen(xlen)
 
-  pathname = f"{ARCH_VERIF}/tests/rv{xlen}i/{extension}"
+  pathname = f"{ARCH_VERIF}/tests/rv{xlen}i/{output_suite}"
 
   redgesv = [0, 1, 2, 2**xlen-1, 2**xlen-2, 2**(xlen-1), 2**(xlen-1)+1, 2**(xlen-1)-1, 2**(xlen-1)-2]
   if (xlen == 32):
@@ -1642,7 +1644,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
 
   os.makedirs(pathname, exist_ok=True)  # noqa: PTH103
 
-  sew = _detect_sew(pathname)
+  sew = _detect_sew(f"{ARCH_VERIF}/tests/rv{xlen}i/{extension}")
 
   instructions = list(testplans[extension].keys())
   applicable_instructions = list(testplans[extension].keys())
@@ -1661,7 +1663,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
     else:
       immedgesv = [0, 1, 2, 14, 15, -1, -2, -15, -16]
 
-    basename = extension + "-" + test
+    basename = output_suite + "-" + test
     fname = pathname + "/" + basename + ".S"
     tempfname = pathname + "/" + basename + "_temp.S"
 
@@ -1745,6 +1747,12 @@ def _list_tasks(include_set: set[str], exclude_set: set[str]) -> list[tuple[int,
     extensions = [e for e in extensions if e in include_set]
   if exclude_set:
     extensions = [e for e in extensions if e not in exclude_set]
+  # Scalar self-checking variants of Vf suites are only generated when requested explicitly
+  extensions += sorted(
+    e for e in include_set
+    if e.endswith(common.SCALAR_CHECK_SUFFIX) and e.removesuffix(common.SCALAR_CHECK_SUFFIX) in testplans
+    and e.startswith("Vf") and e not in exclude_set
+  )
   for xlen in (32, 64):
     for extension in sorted(extensions):
       tasks.append((xlen, extension))

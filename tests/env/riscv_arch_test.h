@@ -23,6 +23,9 @@
 #endif
 #ifdef RVTEST_VECTOR
   #include "rvtest_macros_vector.h"
+  #ifdef RVTEST_VEC_SCALAR_CHECK
+    #include "rvtest_vector_scalar_check.h"
+  #endif
 #endif
 #ifdef RVTEST_HYPERVISOR
   #include "rvtest_macros_hypervisor.h"

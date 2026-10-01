@@ -32,6 +32,8 @@ class TestConfig:
         march_extensions: Optional list of extensions to use for building the march string.
                           If None, march is built from required_extensions.
         extra_params: Optional list of extra parameter requirements for the test.
+        vector_scalar_check: Vector tests check results with scalar code and only use vset{i}vl{i},
+                             vle<eew>.v, and vse<eew>.v outside the instruction under test.
     """
 
     xlen: int
@@ -43,6 +45,7 @@ class TestConfig:
     forbidden_extensions: list[str] | None = None
     march_extensions: list[str] | None = None
     extra_params: list[str] | None = None
+    vector_scalar_check: bool = False
 
     @property
     def xlen_format_str(self) -> str:

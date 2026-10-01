@@ -30,7 +30,7 @@ from rich.progress import (
 
 from testgen.constants import E_EXTENSION_TESTS
 from testgen.generate import generate_priv_test, generate_unpriv_extension_tests
-from testgen.io.testplans import get_extensions
+from testgen.io.testplans import get_extensions, get_vector_scalar_check_extensions
 from testgen.priv import get_priv_test_suites
 
 # CLI interface setup
@@ -87,6 +87,8 @@ def generate_all_tests(
 
     # Get available extensions
     available_unpriv_extensions = get_extensions(testplan_dir)
+    # Scalar self-checking vector suites are only generated when requested explicitly
+    scalar_check_extensions = get_vector_scalar_check_extensions(testplan_dir)
     available_priv_extensions = get_priv_test_suites()
     unpriv_ext_list: list[str] = []
     priv_ext_list: list[str] = []
@@ -97,7 +99,7 @@ def generate_all_tests(
     else:
         for ext in extensions.split(","):
             ext = ext.strip()
-            if ext in available_unpriv_extensions:
+            if ext in available_unpriv_extensions or ext in scalar_check_extensions:
                 unpriv_ext_list.append(ext)
             elif ext in available_priv_extensions:
                 priv_ext_list.append(ext)

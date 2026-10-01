@@ -12,6 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zalrsc', 'Sm']
 # params:
 #   NUM_PMP_ENTRIES: '>0'
+#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv${XLEN}i_zicsr_zifencei_zalrsc
 ##### END_TEST_CONFIG #####
 

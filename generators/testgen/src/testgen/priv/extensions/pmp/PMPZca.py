@@ -323,7 +323,7 @@ def make_pmpzca_napot(test_data: TestData) -> list[TestChunk]:
     "PMPZca",
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zca", "Sm"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
 )
 def make_pmpzca_legal(test_data: TestData) -> list[TestChunk]:
     return [_make_legal_chunk(test_data)]
@@ -347,7 +347,7 @@ def make_pmpzca_tor(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zcb", "Sm"],
     march_extensions=["Zca", "Zcb"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
 )
 def make_pmpzca_zcb(test_data: TestData) -> list[TestChunk]:
     return [_make_zc_chunk(test_data, "zcb")]
@@ -358,7 +358,7 @@ def make_pmpzca_zcb(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zcd", "Sm"],
     march_extensions=["Zca", "Zcd"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
+    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
 )
 def make_pmpzca_zcd(test_data: TestData) -> list[TestChunk]:
     return [_make_zc_chunk(test_data, "zcd")]
@@ -369,7 +369,7 @@ def make_pmpzca_zcd(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Zcf", "Sm"],
     march_extensions=["Zca", "Zcf"],
-    params=["MXLEN: 32", "NUM_PMP_ENTRIES: '>0'"],
+    params=["MXLEN: 32", "NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
 )
 def make_pmpzca_zcf(test_data: TestData) -> list[TestChunk]:
     return [_make_zc_chunk(test_data, "zcf")]

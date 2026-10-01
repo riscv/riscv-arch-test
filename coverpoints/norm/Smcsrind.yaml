@@ -2,18 +2,6 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
-  - name: csr_access
-    coverpoint: [""]
-
-  - name: select_value_separate_address_space
-    coverpoint: [""]
-
-  - name: select_value_unrelated
-    coverpoint: [""]
-
-  - name: csrs_alias
-    coverpoint: [""]
-
   - name: miselect_op
     coverpoint: [""]
 

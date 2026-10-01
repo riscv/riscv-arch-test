@@ -6,7 +6,14 @@
 // This is instantiated after test code near the end of RVTEST_CODE_END in test_setup.h
 .macro RVTEST_FAILURE_CODE
     # Log failure. DEFAULT_LINK_REG (x5) contains return address of jal from the failure and DEFAULT_TEMP_REG (x4) is a vacant temporary register
+    # The canary check reaches this entry with jalr through DEFAULT_DATA_REG (x3), which sets ELP when
+    # xLPE=1 (Zicfilp), so it starts with a 4-byte-aligned lpad 0. A jal arrives with ELP clear, where it is a no-op.
+    .option push
+    .option norvc
+    .p2align 2
     failedtest_x5_x4:
+        auipc x0, 0                                 # lpad 0
+    .option pop
         la DEFAULT_TEMP_REG, begin_failure_scratch
         SREG DEFAULT_LINK_REG, 40(DEFAULT_TEMP_REG) # store return address
         SREG x1, 8(DEFAULT_TEMP_REG)                # save x1 early (used for failure_type)

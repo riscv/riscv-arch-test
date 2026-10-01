@@ -329,8 +329,8 @@
 
     RVTEST_INIT_REGS // Put deterministic values in each register
 
-    LA (T1, rvtest_code_begin)
-    jr T1                         // Jump back to the start of the test
+    LA (T2, rvtest_code_begin)
+    jr T2                         // Jump back to the start of the test; x7 does not set ELP (Zicfilp)
 
   rvmodel_io_write_str:
     // a0 = string pointer; T1-T3 (x6-x8) are scratch. Clobbers ra.

@@ -278,7 +278,7 @@ normative_rule_definitions:
   - name: sspush_c-sspush_instr
     coverpoint:
       [
-        "{ZicfissU_cg}/{cp_sspush,cp_ss_page_crossing,cp_ss_call_return}",
+        "{ZicfissU_cg}/{cp_sspush,cp_ss_page_crossing}",
         "{ZicfissS_cg}/{cp_sspush_s}",
       ]
   # The csr:ssp[] is decremented by insn:sspush[] and insn:c.sspush[] only if the store to

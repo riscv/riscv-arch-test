@@ -565,16 +565,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     cp_mcsrwalk_masked :        cross priv_mode_m, mcsrname_masked, csrop, walking_ones {
         ignore_bins mstatus_not_walked = binsof(mcsrname_masked.mstatus) &&
             binsof(walking_ones) intersect {0, 2, 4, 6, [25:30], [32:37], 40, [43:62]};
-        // SDT, MDT, DTE and CDE are not walked until the Sail reference model implements Ssdbltrp,
-        // Smdbltrp and Smcdeleg; until then a DUT that implements them would mismatch.
-        ignore_bins mstatus_dbltrp_not_walked = binsof(mcsrname_masked.mstatus) &&
-            binsof(walking_ones) intersect {24, 42};
         `ifdef SM1P12P0_OR_LATER_SUPPORTED
             ignore_bins menvcfg_not_walked = binsof(mcsrname_masked.menvcfg) &&
                 binsof(walking_ones) intersect {1, [8:31], [34:58]};
-            // Not walked until Sail implements the double-trap and Smcdeleg extensions (see above)
-            ignore_bins menvcfg_dte_cde_not_walked = binsof(mcsrname_masked.menvcfg) &&
-                binsof(walking_ones) intersect {59, 60};
         `endif
         `ifdef MSECCFG_SUPPORTED
             ignore_bins mseccfg_not_walked = binsof(mcsrname_masked.mseccfg) &&
@@ -584,14 +577,8 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             `ifdef SM1P12P0_OR_LATER_SUPPORTED
                 ignore_bins mstatush_not_walked = binsof(mcsrname_masked.mstatush) &&
                     binsof(walking_ones) intersect {[0:5], 8, [11:31]};
-                // Not walked until Sail implements the double-trap and Smcdeleg extensions (see above)
-                ignore_bins mstatush_mdt_not_walked = binsof(mcsrname_masked.mstatush) &&
-                    binsof(walking_ones) intersect {10};
                 ignore_bins menvcfgh_not_walked = binsof(mcsrname_masked.menvcfgh) &&
                     binsof(walking_ones) intersect {[2:26]};
-                // Not walked until Sail implements the double-trap and Smcdeleg extensions (see above)
-                ignore_bins menvcfgh_dte_cde_not_walked = binsof(mcsrname_masked.menvcfgh) &&
-                    binsof(walking_ones) intersect {27, 28};
             `endif
             `ifdef MSECCFG_SUPPORTED
                 ignore_bins mseccfgh_not_walked = binsof(mcsrname_masked.mseccfgh) &&

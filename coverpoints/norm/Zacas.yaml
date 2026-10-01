@@ -3,61 +3,70 @@
 
 normative_rule_definitions:
   - name: Zacas_rv32_amocas-w_op
+    # Representative coverpoints; also the other value and register coverpoints of the covergroup
     coverpoint:
-      [
-        "Zacas_amocas_w_cg/{cp_asm_count, cp_rs1, cp_rs2, cp_rd, cmp_rd_rs1_val_eq, cmp_rd_rs1_val_lsb, cmp_rd_rs1_val_hw}",
-      ]
+      ["Zacas_amocas_w_cg/{cp_rs1_nx0, cp_rs2, cp_rd, cmp_rd_rs1_val_eq}"]
 
   - name: Zacas_rv32_amocas-d_op
+    # Representative coverpoints; also the other value and register coverpoints of the covergroup
+    # (RV32 Zacas_amocas_d_cg, which has the register-pair coverpoints)
     coverpoint:
       [
-        "Zacas_amocas_d_cg/{cp_asm_count, cp_rs1, cp_rs2, cp_rd, cmp_rd_rs1_val_eq, cmp_rd_rs1_val_lsb, cmp_rd_rs1_val_hw, cmp_rd_rs1_val_w, cmp_rd_rs1_pair_partial_val}",
+        "Zacas_amocas_d_cg/{cp_rs2_pair, cp_rd_pair, cmp_rd_rs1_val_eq, cmp_rd_rs1_pair_partial_val}",
       ]
 
   - name: Zacas_rv32_amocas-d_frst_pair_entry_reg_even
     coverpoint: ["Zacas_amocas_d_cg/{cp_rs2_pair, cp_rd_pair}"]
 
   - name: Zacas_rv32_amocas-d_rs2_frst_reg_x0
-    coverpoint: ["Zacas_amocas_d_cg/{cp_rs2}"]
+    coverpoint: ["Zacas_amocas_d_cg/cp_rs2_pair"]
 
   - name: Zacas_rv32_amocas-d_rd_frst_reg_x0
-    coverpoint: ["Zacas_amocas_d_cg/{cp_rd}"]
+    coverpoint: ["Zacas_amocas_d_cg/cp_rd_pair"]
 
   - name: Zacas_rv64_amocas-w_op
+    # Representative coverpoints; also the other value and register coverpoints of the covergroup
     coverpoint:
-      [
-        "Zacas_amocas_w_cg/{cp_asm_count, cp_rs1, cp_rs2, cp_rd, cmp_rd_rs1_val_eq, cmp_rd_rs1_val_lsb, cmp_rd_rs1_val_hw, cmp_rd_sign_ext}",
-      ]
+      ["Zacas_amocas_w_cg/{cp_rs2, cp_rd, cmp_rd_rs1_val_eq, cmp_rd_sign_ext}"]
 
   - name: Zacas_rv64_amocas-d_op
+    # Representative coverpoints; also the other value and register coverpoints of the covergroup
     coverpoint:
-      [
-        "Zacas_amocas_d_cg/{cp_asm_count, cp_rs1, cp_rs2, cp_rd, cmp_rd_rs1_val_eq, cmp_rd_rs1_val_lsb, cmp_rd_rs1_val_hw, cmp_rd_rs1_val_w}",
-      ]
+      ["Zacas_amocas_d_cg/{cp_rs1_nx0, cp_rs2, cp_rd, cmp_rd_rs1_val_eq}"]
 
   - name: Zacas_rv64_amocas-q_op
+    # Representative coverpoints; also the other value and register coverpoints of the covergroup
     coverpoint:
       [
-        "Zacas_amocas_q_cg/{cp_asm_count, cp_rs1, cp_rs2, cp_rd, cmp_rd_rs1_val_eq, cmp_rd_rs1_val_lsb, cmp_rd_rs1_val_hw, cmp_rd_rs1_val_w, cmp_rd_rs1_pair_partial_val}",
+        "Zacas_amocas_q_cg/{cp_rs2_pair, cp_rd_pair, cmp_rd_rs1_val_eq, cmp_rd_rs1_pair_partial_val}",
       ]
 
   - name: Zacas_rv64_amocas-q_frst_pair_entry_reg_even
     coverpoint: ["Zacas_amocas_q_cg/{cp_rs2_pair, cp_rd_pair}"]
 
   - name: Zacas_rv64_amocas-q_rs2_frst_reg_x0
-    coverpoint: ["Zacas_amocas_q_cg/{cp_rs2}"]
+    coverpoint: ["Zacas_amocas_q_cg/cp_rs2_pair"]
 
   - name: Zacas_rv64_amocas-q_rd_frst_reg_x0
-    coverpoint: ["Zacas_amocas_q_cg/{cp_rd}"]
+    coverpoint: ["Zacas_amocas_q_cg/cp_rd_pair"]
 
   - name: Zacas_amocas_rs1_addr_alignment
     coverpoint: ["ExceptionsZaamo_cg/{cp_amo_address_misaligned}"]
 
   - name: Zacas_amocas_mem_op_success_aq_rl
-    coverpoint: [""]
+    coverpoint:
+      [
+        "{Zacas_amocas_w_cg, Zacas_amocas_d_cg, Zacas_amocas_q_cg}/cp_custom_aqrl",
+        "Ordering OUT-OF-SCOPE for single hart",
+      ]
 
   - name: Zacas_amocas_mem_op_fail_aq_rl
-    coverpoint: [""]
+    coverpoint:
+      [
+        "{Zacas_amocas_w_cg, Zacas_amocas_d_cg, Zacas_amocas_q_cg}/cp_custom_aqrl",
+        "Ordering OUT-OF-SCOPE for single hart",
+      ]
 
   - name: Zacas_amocas_w_permission
+    # TODO: amocas with a failing compare to a read-only PMP region or page must raise a store/AMO fault
     coverpoint: [""]

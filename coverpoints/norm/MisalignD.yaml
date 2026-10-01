@@ -1,11 +1,16 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
+  # As described in , the execution environment defines whether misaligned
+  # floating-point loads and stores are handled invisibly or raise a contained or fatal
+  # trap.
   - name: fp_misaligned
     coverpoint: ["{MisalignD_fld_cg,MisalignD_fsd_cg}/{cp_misalign}"]
+  # The insn:fld[] instruction loads a double-precision floating-point value from memory
+  # into floating-point register rd
   - name: fld_op
-    # Floating-point loads and stores use the same base+offset addressing mode as the integer base ISAs, with a base address in register rs1 and a 12-bit signed byte offset. The FLW instruction loads a single-precision floating-point value from memory into floating-point register rd. FSW stores a single-precision value from floating-point register rs2 to memory.
     coverpoint: ["MisalignD_fld_cg/{cp_misalign}"]
+  # insn:fsd[] stores a double-precision value from the floating-point registers to
+  # memory
   - name: fsd_op
-    # Floating-point loads and stores use the same base+offset addressing mode as the integer base ISAs, with a base address in register rs1 and a 12-bit signed byte offset. The FLW instruction loads a single-precision floating-point value from memory into floating-point register rd. FSW stores a single-precision value from floating-point register rs2 to memory.
     coverpoint: ["MisalignD_fsd_cg/{cp_misalign}"]

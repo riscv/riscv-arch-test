@@ -17,6 +17,7 @@ from testgen.priv.extensions.PrivCommon import (
     S_CSR_SENVCFG,
     S_CSRS,
     S_SSTATUS_MASK,
+    SV_GATE,
     addr_csr_tests,
     csr_insufficient_priv_tests,
     csr_ro_write_tests,
@@ -227,6 +228,60 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
         "ebreak                # test ebreak instruction",
     ]
 
+    return lines
+
+
+def _generate_sfence_tvm_tests(test_data: TestData) -> list[str]:
+    """Generate sfence.vma from S-mode under both mstatus.TVM settings (cp_sfence_tvm)."""
+    ######################################
+    covergroup = "Sm_mprivinst_cg"
+    coverpoint = "cp_sfence_tvm"
+    ######################################
+    tvm_reg, medeleg_reg = test_data.int_regs.get_registers(2)
+
+    lines = [
+        # sfence.vma may raise an illegal instruction on a hart that makes satp.MODE read-only zero
+        # (norm:satp-mode_roz_sfence_illegal), so these cases need a supported Sv mode, which in turn
+        # implies S-mode.
+        SV_GATE,
+        comment_banner(
+            coverpoint,
+            "Execute sfence.vma in M-mode and S-mode under both mstatus.TVM settings\n"
+            "TVM restricts S-mode only: TVM=1 raises an illegal instruction there.\n"
+            "M-mode, and S-mode with TVM=0, execute it with no trap.",
+        ),
+        "",
+        "# Setup",
+        f"csrr x{medeleg_reg}, medeleg          # save medeleg",
+        "csrci medeleg, 1 << 2          # illegal instructions trap to M-mode",
+        f"LI(x{tvm_reg}, {1 << 20:#x})          # mstatus.TVM bit",
+    ]
+
+    for tvm in (0, 1):
+        set_or_clear = "csrs" if tvm else "csrc"
+        lines.extend(
+            [
+                "",
+                f"# Testcase: sfence.vma with tvm = {tvm}",
+                f"{set_or_clear} mstatus, x{tvm_reg}          # {'set' if tvm else 'clear'} TVM bit",
+                test_data.add_testcase(f"sfence_vma_m_tvm{tvm}", coverpoint, covergroup),
+                "sfence.vma             # permitted in M-mode whatever TVM says",
+                "RVTEST_TSBI_GOTO_SMODE      # TVM restricts S-mode only",
+                test_data.add_testcase(f"sfence_vma_s_tvm{tvm}", coverpoint, covergroup),
+                "sfence.vma             # test sfence.vma instruction",
+                "RVTEST_TSBI_GOTO_MMODE      # back to M-mode to twiddle mstatus.TVM",
+            ]
+        )
+
+    lines.extend(
+        [
+            "",
+            f"csrc mstatus, x{tvm_reg}          # clear TVM bit",
+            f"csrw medeleg, x{medeleg_reg}          # restore medeleg",
+            f"#endif // {SV_GATE.split(' ', 1)[1]}",
+        ]
+    )
+    test_data.int_regs.return_registers([tvm_reg, medeleg_reg])
     return lines
 
 
@@ -661,7 +716,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     # medelegh (0x312) by number: clang 20 does not accept the CSR name (gcc does).  All bits reserved/custom.
     csr_medelegh = ("0x312", 0x00000000)
     # Read-only CSRs
-    csrmro = [("mvendorid", None), ("mimpid", None), ("marchid", None), ("mhartid", None), ("mconfigptr", None)]
+    csrmro = [("mvendorid", None), ("mimpid", None), ("marchid", None), ("mhartid", None)]
+    csr_mconfigptr = ("mconfigptr", None)
 
     ######################################
     coverpoint = "cp_mcsr_access"
@@ -701,6 +757,9 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("\n// Read-Only CSRs")
     for csr in csrmro:
         tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+    tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
+    tc.code.extend(csr_access_test(test_data, csr_mconfigptr, covergroup, coverpoint))
+    tc.code.append("#endif")
 
     tc.code.extend(
         [
@@ -710,9 +769,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ]
     )
 
-    tc.code.extend(csr_access_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
-
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
+    tc.code.extend(csr_access_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.extend(csr_access_test(test_data, csr_menvcfgh, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("#endif //  SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
@@ -786,8 +844,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ]
     )
 
-    tc.code.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
+    tc.code.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.extend(csr_walk_test(test_data, csr_menvcfgh, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
@@ -1536,6 +1594,7 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.begin_test_chunk("inst")
     tc.code.extend(_generate_priv_inst_tests(test_data))
+    tc.code.extend(_generate_sfence_tvm_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
 
     tc = test_data.begin_test_chunk("xret")

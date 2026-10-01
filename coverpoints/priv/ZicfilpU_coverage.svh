@@ -96,11 +96,11 @@ covergroup ZicfilpU_cg with function sample(ins_t ins);
 
     cp_zicfilp_lpad_zero_label_bypass: cross priv_mode_u, lpe_enabled, lp_branch_prev, lpad_lpl_zero, x7_label;
 
-    cp_zicfilp_lpad_valid_execution: cross priv_mode_u, lpe_enabled, lp_branch_prev, lpad_valid;
+    cp_zicfilp_lpad_valid_execution: cross priv_mode_u, lpe_enabled, lp_branch_prev, lpad_valid, x7_low_bits;
 
     cp_zicfilp_lpad_missing_instruction_exception: cross priv_mode_u, lpe_enabled, lp_branch_prev, not_lpad;
 
-    cp_zicfilp_lpad_label_mismatch: cross priv_mode_u, lpe_enabled, lp_branch_prev, lpad_lpl_nonzero, lpl_match, x7_label {
+    cp_zicfilp_lpad_label_mismatch: cross priv_mode_u, lpe_enabled, lp_branch_prev, lpad_lpl_nonzero, lpl_match, x7_label, x7_low_bits {
         ignore_bins ig_match   = binsof(lpl_match.match);
         ignore_bins ig_x7_zero = binsof(x7_label.label_zero);
     }

@@ -121,10 +121,10 @@
         bins mismatch = {1'b0};
         bins match    = {1'b1};
     }
-    // Only x7[31:12] takes part in the label check. Covering a nonzero x7[11:0] keeps a
-    // DUT that compares the whole register, or x7[31:0] against {LPL,12'b0}, from passing.
+    // Only x7[31:12] takes part in the label check. Crossing a nonzero x7[11:0] into the label
+    // match and mismatch cases keeps a DUT that compares the whole register, or x7[31:0]
+    // against {LPL,12'b0}, from passing.
     x7_low_bits: coverpoint (ins.prev.x_wdata[7][11:0] != 12'h0) {
-        bins zero    = {1'b0};
         bins nonzero = {1'b1};
     }
     // {is LPAD, LPL != 0, LPL == x7[31:12], x7[31:12] == 0}

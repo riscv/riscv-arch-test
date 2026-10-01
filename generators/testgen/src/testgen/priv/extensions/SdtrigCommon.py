@@ -2003,7 +2003,6 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
 
     test_data.int_regs.return_registers([cfg_reg, addr_reg, data_reg, temp_reg])
     lines.extend(_global_ie(mode, False))
-    # return [test_data.end_test_chunk()]
 
     ######################################
     coverpoint = "cp_sdtrig_smode_fields_hardwired"

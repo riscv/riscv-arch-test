@@ -369,6 +369,7 @@ def gen_rvvi_tasks(
     sail_cmd.extend(
         [
             "--trace",
+            "--trace-ptw",
             "--trace-output",
             str(sail_trace),
             "--config",

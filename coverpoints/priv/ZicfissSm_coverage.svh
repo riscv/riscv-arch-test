@@ -90,11 +90,18 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     }
     // pmp0cfg R is bit 0, W is bit 1. Shadow stack instructions require read-write.
     // R=0 with W=1 is a reserved combination, so it cannot be configured.
-    pmp0_rw: coverpoint ins.current.csr[CSR_PMPCFG0][1:0] {
-        bins no_perm    = {2'b00};
-        bins read_only  = {2'b01};
-        bins read_write = {2'b11};
-    }
+    // The PMP test needs two usable entries: entry 0 for the SS page, entry 1 for the rest.
+    `ifdef UDB_NUM_USABLE_PMP_ENTRIES
+    `ifndef UDB_NUM_USABLE_PMP_ENTRIES_0
+    `ifndef UDB_NUM_USABLE_PMP_ENTRIES_1
+        pmp0_rw: coverpoint ins.current.csr[CSR_PMPCFG0][1:0] {
+            bins no_perm    = {2'b00};
+            bins read_only  = {2'b01};
+            bins read_write = {2'b11};
+        }
+    `endif
+    `endif
+    `endif
     csrops: coverpoint ins.current.insn {
         wildcard bins csrrw  = {CSRRW};
         wildcard bins csrrs  = {CSRRS};
@@ -199,7 +206,13 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     // Shadow stack instructions require PMP read-write permission, including SSPOPCHK
     // which only reads. The denied case also proves the PMP fault outranks the
     // software-check exception a value mismatch would raise.
-    cp_ss_pmp_permissions:         cross priv_mode_s, ss_mem_instr, pmp0_rw;
+    `ifdef UDB_NUM_USABLE_PMP_ENTRIES
+    `ifndef UDB_NUM_USABLE_PMP_ENTRIES_0
+    `ifndef UDB_NUM_USABLE_PMP_ENTRIES_1
+        cp_ss_pmp_permissions:         cross priv_mode_s, ss_mem_instr, pmp0_rw;
+    `endif
+    `endif
+    `endif
 
     // Below M-mode with satp.MODE=Bare, every SS memory access raises a store/AMO access fault.
     cp_ss_satp_bare:               cross priv_mode_s_u, ss_mem_instr, ss_active_below_m, satp_bare;

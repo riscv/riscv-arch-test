@@ -17,7 +17,7 @@ parameter_definitions:
         "Same as the mtval parameter, for a software-check exception delegated to S-mode.",
       ]
   - name: REPORT_CAUSE_IN_VSTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
-    coverpoint: ["cp_sspopchk_mismatch"]
+    coverpoint: ["Untested"]
     effect: [
         "Same as the mtval parameter, for a software-check exception taken in VS-mode. No
         current coverpoint drives this: the VS/VU coverpoints exercise ssp CSR gating,

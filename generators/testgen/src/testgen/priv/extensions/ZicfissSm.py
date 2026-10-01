@@ -261,6 +261,7 @@ def _generate_pmp_permissions(test_data: TestData) -> list[str]:
     lines: list[str] = [
         comment_banner(coverpoint, "PMP read-write requirement and fault priority"),
         "#ifdef ZICFISS_VM_SUPPORTED",
+        "#if defined(UDB_NUM_USABLE_PMP_ENTRIES) && UDB_NUM_USABLE_PMP_ENTRIES >= 2  // entry 0: SS page, entry 1: rest",
     ]
 
     # pmp0cfg: A=NAPOT (0x18) plus the R/W bits under test. pmp1cfg = 0x1F allows the rest.
@@ -322,6 +323,7 @@ def _generate_pmp_permissions(test_data: TestData) -> list[str]:
             ]
         )
         test_data.int_regs.return_registers([addr_reg, cfg_reg, save_x1, save_x5])
+    lines.append("#endif  // UDB_NUM_USABLE_PMP_ENTRIES >= 2")
     lines.append("#endif  // ZICFISS_VM_SUPPORTED")
     return lines
 

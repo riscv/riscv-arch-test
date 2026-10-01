@@ -737,7 +737,7 @@ def generate_jalr_tests(prefix: str, test_data: TestData, cg: str, mxr: int = 0)
             [
                 f"LI(x{a}, {hex(upper << 48)})",
                 f"xor x{a}, x{a}, x{base}",
-                f"li x{chk}, 0",
+                f"LI(x{chk}, 0)",
                 test_data.add_testcase(_binname(f"{prefix}_mxr{mxr}", upper, "jalr"), "cp_pmm_jalr", cg),
                 f"jalr ra, 0(x{a})",
                 write_sigupd(chk, test_data),

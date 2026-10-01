@@ -199,7 +199,8 @@ def _generate_envcfg_rdonly0(test_data: TestData) -> list[str]:
             lines.extend(["#ifdef H_SUPPORTED", *body, "#endif"] if csr == "henvcfg" else body)
 
     # Leg B: menvcfg.SSE=1 (still set from leg A); with henvcfg.SSE=0, and =1 as the positive
-    # control, write both values into senvcfg.SSE from VS-mode and read it back.
+    # control, write both values into senvcfg.SSE from VS-mode and read it back. Its coverpoint
+    # is in ZicfissH_cg.
     # With Smstateen, VS-mode reaches senvcfg only when mstateen0.ENVCFG and hstateen0.ENVCFG are set.
     lines.extend(
         [
@@ -232,7 +233,9 @@ def _generate_envcfg_rdonly0(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"LI(x{val_reg}, SENVCFG_SSE)",
-                    test_data.add_testcase(f"senvcfg_sse_{op}_vs_hen{henvcfg_sse}", "cp_envcfg_sse_rdonly0_virt", _CG),
+                    test_data.add_testcase(
+                        f"senvcfg_sse_{op}_vs_hen{henvcfg_sse}", "cp_envcfg_sse_rdonly0_virt", "ZicfissH_cg"
+                    ),
                     f"{op} x{rd_reg}, senvcfg, x{val_reg}",
                     f"csrr x{rd_reg}, senvcfg   # SSE must read 0 when henvcfg.SSE=0 and V=1",
                     write_sigupd(rd_reg, test_data),

@@ -36,9 +36,8 @@ normative_rule_definitions:
   - name: menvcfg_sse_rdonly0
     coverpoint:
       [
-        "{ZicfissSm_cg}/{cp_envcfg_sse_rdonly0_senvcfg}",
+        "{ZicfissSm_cg}/{cp_envcfg_sse_rdonly0_senvcfg,cp_envcfg_sse_rdonly0_henvcfg}",
         "{ZicfissS_cg}/{cp_senvcfg_sse_rdonly0_s}",
-        "henvcfg.SSE: {ZicfissSm_cg}/cp_envcfg_sse_rdonly0_henvcfg, dormant until H_SUPPORTED is enabled for coverage (riscv_arch_test.sv undefines it until Sail supports the hypervisor extension)",
       ]
 
   # The Zicfiss extension adds the SSE field in henvcfg. If the SSE field is set to
@@ -49,7 +48,6 @@ normative_rule_definitions:
     coverpoint:
       [
         "{ZicfissH_cg}/{cp_ssp_csr_gating_vs,cp_ssamoswap_sse_gating_vs,cp_ss_instr_inactive_virt,cp_envcfg_sse_rdonly0_virt}",
-        "senvcfg.SSE read-only zero when V=1: {ZicfissSm_cg}/cp_envcfg_sse_rdonly0_virt, dormant until H_SUPPORTED is enabled for coverage",
       ]
 
   # If the privilege mode is less than M and csr:menvcfg[sse] is 0, an illegal-instruction

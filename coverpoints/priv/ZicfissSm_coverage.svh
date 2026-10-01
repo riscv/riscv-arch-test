@@ -163,10 +163,6 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
             bins reads_zero = {1'b0};
             bins reads_one  = {1'b1};
         }
-        henvcfg_sse: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse") {
-            bins sse_off = {1'b0};
-            bins sse_on  = {1'b1};
-        }
     `endif
 
     // ── Translation-mode building blocks ──────────────────────────────────
@@ -251,8 +247,8 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
             ((binsof(sse_bit_write.set_sse) && binsof(senvcfg_sse_readback.reads_zero)) ||
              (binsof(sse_bit_write.clear_sse) && binsof(senvcfg_sse_readback.reads_one)));
     }
-    // H_SUPPORTED is undefined for coverage until Sail supports the hypervisor extension (see
-    // riscv_arch_test.sv), so these crosses and their stimulus are dormant until then.
+    // The V=1 leg, henvcfg.SSE=0 forcing senvcfg.SSE read-only zero, belongs to
+    // ZicfissH_cg (cp_envcfg_sse_rdonly0_virt).
     `ifdef H_SUPPORTED
         cp_envcfg_sse_rdonly0_henvcfg: cross priv_mode_m, henvcfg_csr, menvcfg_sse, sse_bit_write, henvcfg_sse_readback {
             illegal_bins rdonly0_cannot_read_one =
@@ -262,16 +258,6 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
                 binsof(menvcfg_sse.sse_on) &&
                 ((binsof(sse_bit_write.set_sse) && binsof(henvcfg_sse_readback.reads_zero)) ||
                  (binsof(sse_bit_write.clear_sse) && binsof(henvcfg_sse_readback.reads_one)));
-        }
-        // henvcfg.SSE=0 makes senvcfg.SSE read-only zero when V=1 (menvcfg.SSE=1 here).
-        cp_envcfg_sse_rdonly0_virt: cross priv_mode_vs, senvcfg_csr, henvcfg_sse, sse_bit_write, senvcfg_sse_readback {
-            illegal_bins rdonly0_cannot_read_one =
-                binsof(henvcfg_sse.sse_off) && binsof(senvcfg_sse_readback.reads_one);
-            // With henvcfg.SSE=1 senvcfg.SSE is writable and reads back what was written.
-            ignore_bins writable_reads_back =
-                binsof(henvcfg_sse.sse_on) &&
-                ((binsof(sse_bit_write.set_sse) && binsof(senvcfg_sse_readback.reads_zero)) ||
-                 (binsof(sse_bit_write.clear_sse) && binsof(senvcfg_sse_readback.reads_one)));
         }
     `endif
 

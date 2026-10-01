@@ -113,6 +113,9 @@
 `ifdef F_COVERAGE
   `include "F_coverage.svh"
 `endif
+`ifdef H_COVERAGE
+  `include "H_coverage.svh"
+`endif
 `ifdef HV_COVERAGE
   `include "HV_coverage.svh"
 `endif

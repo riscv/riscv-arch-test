@@ -1,0 +1,114 @@
+# SPDX-License-Identifier: Apache-2.0
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  - name: H_cause
+    coverpoint:
+      - H_cg/cp_hs_mcsr_denied
+      - H_cg/cp_hs_vscause
+      - H_cg/cp_u_hcsr_denied
+  - name: H_cause_virtual_instruction
+    coverpoint:
+      - H_cg/cp_vs_mcsr_denied
+      - H_cg/cp_vu_csr_denied
+  - name: H_csrs_hs_not_vs
+    coverpoint:
+      - H_cg/cp_hs_hcsr_access
+      - H_cg/cp_m_hcsr_access
+  - name: H_illegal_high_half
+    coverpoint:
+      - H_cg/cp_u_high_half
+      - H_cg/cp_vs_high_half
+      - H_cg/cp_vu_high_half
+  - name: H_mtval_nrz
+    coverpoint:
+      - H_cg/cp_m_mtval
+  - name: H_scsrs_nomatch
+    coverpoint:
+      - H_cg/cp_vs_nonreplica
+  - name: H_virtinst_vu_nonhigh_supervisor_allowedhs_tvm0
+    coverpoint:
+      - H_cg/cp_vu_csr_denied
+  - name: H_virtinst_vu_vs_nonhigh_allowedhs_tvm0
+    coverpoint:
+      - H_cg/cp_vu_csr_denied
+  - name: H_vscsrs_acc_m_hs
+    coverpoint:
+      - H_cg/cp_hs_hcsr_access
+      - H_cg/cp_hs_hcsr_walk
+      - H_cg/cp_hs_replica
+      - H_cg/cp_m_hcsr_access
+      - H_cg/cp_m_replica
+      - H_cg/cp_u_hcsr_denied
+  - name: H_vscsrs_acc_u
+    coverpoint:
+      - H_cg/cp_u_hcsr_denied
+  - name: H_vscsrs_sub
+    coverpoint:
+      - H_cg/cp_vs_replica
+  - name: H_vscsrs_v0
+    coverpoint:
+      - H_cg/cp_hs_replica
+      - H_cg/cp_m_replica
+  - name: H_vscsrs_v1
+    coverpoint:
+      - H_cg/cp_vs_replica
+  - name: VSCAUSE_WLRL
+    coverpoint:
+      - H_cg/cp_hs_vscause
+  - name: hedeleg_acc
+    coverpoint:
+      - H_cg/cp_hs_hcsr_walk
+  - name: hgeip_acc
+    coverpoint:
+      - H_cg/cp_hs_hcsr_access
+      - H_cg/cp_m_hcsr_access
+  - name: hideleg_acc
+    coverpoint:
+      - H_cg/cp_hs_hcsr_walk
+  - name: hie_acc
+    coverpoint:
+      - H_cg/cp_hs_hcsr_walk
+  - name: hip_acc
+    coverpoint:
+      - H_cg/cp_hs_hcsr_walk
+  - name: htinst_acc
+    coverpoint:
+      - H_cg/cp_hs_hcsr_walk
+  - name: htval_acc
+    coverpoint:
+      - H_cg/cp_hs_hcsr_walk
+  - name: hvip_acc
+    coverpoint:
+      - H_cg/cp_hs_hcsr_walk
+  - name: mtinst_acc
+    coverpoint:
+      - H_cg/cp_hs_mcsr_denied
+      - H_cg/cp_m_hcsr_access
+      - H_cg/cp_m_hcsr_walk
+      - H_cg/cp_vs_mcsr_denied
+  - name: mtinst_val
+    coverpoint:
+      - H_cg/cp_m_hcsr_walk
+  - name: mtval2_acc
+    coverpoint:
+      - H_cg/cp_hs_mcsr_denied
+      - H_cg/cp_m_hcsr_access
+      - H_cg/cp_m_hcsr_walk
+      - H_cg/cp_vs_mcsr_denied
+  - name: mtval2_val
+    coverpoint:
+      - H_cg/cp_m_hcsr_walk
+  - name: vscause_acc
+    coverpoint:
+      - H_cg/cp_hs_vscause
+  - name: vsstatus_fs_op
+    coverpoint:
+      - H_cg/cp_vs_sd
+  - name: vsstatus_sd_xs_op
+    coverpoint:
+      - H_cg/cp_vs_sd
+  - name: vsstatus_vs_op
+    coverpoint:
+      - H_cg/cp_vs_sd

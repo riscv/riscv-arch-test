@@ -27,10 +27,6 @@
   #define RVTEST_INVISIBLE_TRAP_HANDLER
 #endif
 
-#if defined(RVTEST_INVISIBLE_TRAP_HANDLER) && defined(H_SUPPORTED)
-  #error "Invisible trap emulation does not support traps from VS or VU mode yet."
-#endif
-
 #ifndef RVMODEL_DATA_SECTION
   #error "RVMODEL_DATA_SECTION not defined. Make sure to define it in rvmodel_macros.h."
 #endif

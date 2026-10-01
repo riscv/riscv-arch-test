@@ -3,7 +3,7 @@
 
 normative_rule_definitions:
   - name: Zkt_optional_instr
-    coverpoint: ["Definition, not tested"]
+    coverpoint: ["Definition, checked through UDB"]
 
   - name: Zkt_impl_must_constant_latency
-    coverpoint: ["TODO"]
+    coverpoint: ["Not tested: microarchitectural timing"]

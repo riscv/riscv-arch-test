@@ -49,6 +49,5 @@ that `run_tests.py` sets for each test.
   `0x01FF_FFE0` (pass) or `0x01FF_FFD0` (fail).
 - The CLINT at `0xB400_0000` has no `mtime` register and is beyond the reach of `la`, so
   `RVMODEL_MTIME_ADDRESS`, `RVMODEL_MTIMECMP_ADDRESS` and `RVMODEL_MSIP_ADDRESS` are undefined.
-- `RVMODEL_BOOT` clears `mxstatus.THEADISAEE` and `mxstatus.MAEE`, which reset to 1, enables the
-  caches and branch prediction, and clears `mtimecmp` so that `mip.MTIP` is pending as it is in the
-  reference model.
+- `RVMODEL_BOOT` clears `mxstatus.THEADISAEE` and `mxstatus.MAEE`, which reset to 1, and enables
+  the caches and branch prediction.

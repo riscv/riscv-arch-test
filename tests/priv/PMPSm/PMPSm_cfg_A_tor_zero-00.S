@@ -11,7 +11,7 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'Sm']
 # params:
-#   NUM_PMP_ENTRIES: '>0'
+#   NUM_USABLE_PMP_ENTRIES: '>=8'
 #   PMP_TOR_SUPPORTED: true
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####

@@ -11,7 +11,7 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'Sv39', 'Svadu', 'Sm']
 # params:
-#   NUM_PMP_ENTRIES: '>0'
+#   NUM_USABLE_PMP_ENTRIES: '>=8'
 #   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv${XLEN}i_zicsr_zifencei_svadu
 ##### END_TEST_CONFIG #####

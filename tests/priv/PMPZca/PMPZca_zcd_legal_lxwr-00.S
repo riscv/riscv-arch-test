@@ -11,7 +11,7 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'Zcd', 'Sm', 'D', 'F']
 # params:
-#   NUM_PMP_ENTRIES: '>0'
+#   NUM_USABLE_PMP_ENTRIES: '>=8'
 #   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv${XLEN}ifd_zicsr_zifencei_zca_zcd
 ##### END_TEST_CONFIG #####

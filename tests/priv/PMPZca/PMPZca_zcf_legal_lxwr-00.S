@@ -12,7 +12,7 @@
 # REQUIRED_EXTENSIONS: ['I', 'Zcf', 'Sm', 'F']
 # params:
 #   MXLEN: 32
-#   NUM_PMP_ENTRIES: '>0'
+#   NUM_USABLE_PMP_ENTRIES: '>=8'
 #   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv${XLEN}if_zicsr_zifencei_zca_zcf
 ##### END_TEST_CONFIG #####

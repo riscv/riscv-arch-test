@@ -865,7 +865,7 @@ def _make_all_entries_chunk(test_data: TestData) -> TestChunk:
     "PMPSm",
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Sm"],
-    params=["NUM_PMP_ENTRIES: '>0'"],
+    params=["NUM_USABLE_PMP_ENTRIES: '>=8'", "PMP_NAPOT_SUPPORTED: true"],
 )
 def make_pmpsm_base(test_data: TestData) -> list[TestChunk]:
     return [
@@ -885,7 +885,7 @@ def make_pmpsm_base(test_data: TestData) -> list[TestChunk]:
     "PMPSm",
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Sm"],
-    params=["MXLEN: 64", "NUM_PMP_ENTRIES: '>0'"],
+    params=["MXLEN: 64", "NUM_USABLE_PMP_ENTRIES: '>=8'"],
 )
 def make_pmpsm_rv64(test_data: TestData) -> list[TestChunk]:
     return [
@@ -898,7 +898,7 @@ def make_pmpsm_rv64(test_data: TestData) -> list[TestChunk]:
     "PMPSm",
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Sm"],
-    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NA4_SUPPORTED: true"],
+    params=["NUM_USABLE_PMP_ENTRIES: '>=8'", "PMP_NA4_SUPPORTED: true"],
 )
 def make_pmpsm_na4(test_data: TestData) -> list[TestChunk]:
     return [_make_amode_all_chunk(test_data, "na4"), _make_legal_chunk(test_data, "na4")]
@@ -908,7 +908,7 @@ def make_pmpsm_na4(test_data: TestData) -> list[TestChunk]:
     "PMPSm",
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Sm"],
-    params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
+    params=["NUM_USABLE_PMP_ENTRIES: '>=8'", "PMP_NAPOT_SUPPORTED: true"],
 )
 def make_pmpsm_napot(test_data: TestData) -> list[TestChunk]:
     return [
@@ -925,7 +925,7 @@ def make_pmpsm_napot(test_data: TestData) -> list[TestChunk]:
     "PMPSm",
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Sm"],
-    params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
+    params=["NUM_USABLE_PMP_ENTRIES: '>=8'", "PMP_TOR_SUPPORTED: true"],
 )
 def make_pmpsm_tor(test_data: TestData) -> list[TestChunk]:
     return [

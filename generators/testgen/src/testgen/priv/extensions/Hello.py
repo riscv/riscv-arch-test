@@ -118,36 +118,32 @@ def _modes(test_data: TestData) -> list[str]:
 def _interrupts(test_data: TestData) -> list[str]:
     """The software and external interrupt entry points, and the in-handler clears.
 
-    Guarded on the UDB parameters that say the platform can raise each one, the same
-    way the Interrupts suites are. A macro implemented as a no-op leaves the interrupt
-    pending, so the idle loop never completes.
+    Enables only the interrupt under test: unmasking all of mie would let the
+    reference model take a source the DUT has no hardware for, and the run would
+    diverge on a trap the test never asked for.
     """
     r_idle, reg = test_data.int_regs.get_registers(2)
-    lines = [
-        comment_banner("Hello: interrupts", "Software and external interrupt, taken then cleared"),
-        "# Enable every interrupt source, then unmask globally",
-        f"LI(x{reg}, -1)",
-        f"csrw mie, x{reg}",
-        "csrsi mstatus, 8    # mstatus.MIE = 1",
-    ]
-    for kind, guard in (("MSW", "UDB_MSI_INTR_IMPL"), ("MEXT", "UDB_MEI_INTR_IMPL")):
+    lines = [comment_banner("Hello: interrupts", "Software and external interrupt, taken then cleared")]
+    for kind, guard, bit in (
+        ("MSW", "UDB_MSI_INTR_IMPL", "MIP_MSIP"),
+        ("MEXT", "UDB_MEI_INTR_IMPL", "MIP_MEIP"),
+    ):
         lines.extend(
             [
                 test_data.add_testcase(f"rvtest_set_{kind.lower()}_int", "cp_interrupts", _CG),
                 f"#ifdef {guard}",
+                f"LI(x{reg}, {bit})",
+                f"csrw mie, x{reg}    # enable only this interrupt",
+                "csrsi mstatus, 8    # mstatus.MIE = 1",
                 f"RVTEST_SET_{kind}_INT_M",
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{r_idle})",
                 f"RVTEST_CLR_{kind}_INT_M",
+                "csrci mstatus, 8    # mstatus.MIE = 0",
+                "csrw mie, zero",
                 f"#endif // {guard}",
             ]
         )
-    lines.extend(
-        [
-            "csrci mstatus, 8    # mstatus.MIE = 0",
-            f"LI(x{reg}, 0x17171717)",
-            write_sigupd(reg, test_data),
-        ]
-    )
+    lines.extend([f"LI(x{reg}, 0x17171717)", write_sigupd(reg, test_data)])
     test_data.int_regs.return_registers([r_idle, reg])
     return lines
 
@@ -157,20 +153,21 @@ def _timer(test_data: TestData) -> list[str]:
 
     RVTEST_SET_MTIME_INT_SOON_M arms mtimecmp through those addresses and the
     configured delay, so wrong device addresses show up as an interrupt that never
-    arrives.
+    arrives. Only MTIE is enabled, for the reason in _interrupts.
     """
     r_idle, reg = test_data.int_regs.get_registers(2)
     lines = [
         comment_banner("Hello: timer", "Arm mtimecmp through the model's device addresses"),
         test_data.add_testcase("mtimecmp", "cp_timer", _CG),
         "#ifdef UDB_MTI_INTR_IMPL",
-        f"LI(x{reg}, -1)",
-        f"csrw mie, x{reg}",
+        f"LI(x{reg}, MIP_MTIP)",
+        f"csrw mie, x{reg}    # enable only the timer interrupt",
         "csrsi mstatus, 8    # mstatus.MIE = 1",
         "RVTEST_SET_MTIME_INT_SOON_M",
-        f"RVTEST_IDLE_FOR_INTERRUPT(x{r_idle})",
+        f"RVTEST_IDLE_FOR_TIMER_INTERRUPT(x{r_idle})",
         "RVTEST_CLR_MTIME_INT_M",
         "csrci mstatus, 8    # mstatus.MIE = 0",
+        "csrw mie, zero",
         "#endif // UDB_MTI_INTR_IMPL",
     ]
     test_data.int_regs.return_registers([r_idle, reg])

@@ -15,7 +15,7 @@ from pathlib import Path
 import pyjson5
 
 from act.build_types import COVERAGE_STEP_TIMEOUT_SECONDS, BuildTask, PythonAction, SubprocessAction, SymlinkAction
-from act.config import Config, CoverageSimulator, RefModelType, spike_isa_string
+from act.config import Config, CoverageSimulator, RefModelType, base_test_suite, spike_isa_string
 from act.coverreport import generate_report, merge_summaries
 from act.parse_test_constraints import TestMetadata
 from act.sail_to_rvvi import sailLog2Trace
@@ -461,7 +461,7 @@ def gen_coverage_tasks(
 
         # Coverage collection task
         # Scalar self-checking vector suites (e.g. Vx8-scalarcheck) use the covergroups of their base suite
-        coverage_tag = f"{coverage_group.stem.removesuffix('-scalarcheck').upper()}_COVERAGE"
+        coverage_tag = f"{base_test_suite(coverage_group.stem).upper()}_COVERAGE"
         coverage_define_list = [coverage_tag]
         if verbose:
             coverage_define_list.append("FCOV_VERBOSE")

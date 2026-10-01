@@ -35,6 +35,7 @@ from rich.progress import (
   TextColumn,
   TimeElapsedColumn,
 )
+from testgen.io.testplans import VectorCheck
 from testgen.io.testplans import get_extensions as get_main_testgen_extensions
 
 import vector_testgen_common as common
@@ -1737,7 +1738,9 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
   return f"rv{xlen}/{extension}: {written} test(s)"
 
 
-def _list_tasks(include_set: set[str], exclude_set: set[str]) -> list[tuple[int, str]]:
+def _list_tasks(
+  include_set: set[str], exclude_set: set[str], vector_check: VectorCheck = VectorCheck.VECTOR
+) -> list[tuple[int, str]]:
   """Build the list of (xlen, extension) tasks honoring filters."""
   tasks: list[tuple[int, str]] = []
   testplans = readTestplans()
@@ -1747,11 +1750,13 @@ def _list_tasks(include_set: set[str], exclude_set: set[str]) -> list[tuple[int,
     extensions = [e for e in extensions if e in include_set]
   if exclude_set:
     extensions = [e for e in extensions if e not in exclude_set]
-  # Scalar self-checking variants of Vf suites are only generated when requested explicitly
+  # Scalar self-checking variants of Vf suites are generated with --vector-check scalar or when requested by name
+  if vector_check == VectorCheck.SCALAR:
+    extensions = [re.sub(r"^(Vf\d+)$", rf"\1{common.SCALAR_CHECK_SUFFIX}", e) for e in extensions]
   extensions += sorted(
     e for e in include_set
     if e.endswith(common.SCALAR_CHECK_SUFFIX) and e.removesuffix(common.SCALAR_CHECK_SUFFIX) in testplans
-    and e.startswith("Vf") and e not in exclude_set
+    and e.startswith("Vf") and e not in exclude_set and e not in extensions
   )
   for xlen in (32, 64):
     for extension in sorted(extensions):
@@ -1773,6 +1778,10 @@ def run(
   jobs: Annotated[
     int, typer.Option("--jobs", "-j", help="Parallel worker processes (0 = auto-detect, 1 = serial)")
   ] = 0,
+  vector_check: Annotated[
+    VectorCheck,
+    typer.Option(help="Check vector test results with vector instructions or with scalar code", case_sensitive=False),
+  ] = VectorCheck.VECTOR,
 ) -> None:
   """Generate directed vector tests not handled by the main testgen."""
   include_set = set(filter(None, (s.strip() for s in extensions.split(",")))) if extensions else set()
@@ -1780,7 +1789,7 @@ def run(
 
   worker_count = jobs if jobs > 0 else (os.cpu_count() or 1)
 
-  tasks = _list_tasks(include_set, exclude_set)
+  tasks = _list_tasks(include_set, exclude_set, vector_check)
   if not tasks:
     return
 

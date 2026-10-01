@@ -336,6 +336,7 @@ The following variables can be set on the command line to customize the build (e
 | `EXCLUDE_EXTENSIONS`             | _(see below)_                                   | Comma-separated list of extensions to exclude from test generation. Applied as a negative filter after `EXTENSIONS`.                                                                                                                  |
 | `CERTIFICATE`                    | _(empty)_                                       | Certificate name. Only include tests that apply to the specified certificate. Skips M-mode tests and tests for implemented extensions that are not part of the profile.                                                               |
 | `ENABLE_EXPERIMENTAL_EXTENSIONS` | _(empty)_                                       | Set to `True` to compile tests for unratified extensions. These tests are excluded by default.                                                                                                                                        |
+| `VECTOR_CHECK`                   | `vector`                                        | Set to `scalar` to build the scalar self-checking variants of the `Vx`, `Vls`, and `Vf` tests. See [Scalar Self-Checking Vector Tests](#scalar-self-checking-vector-tests).                                                           |
 | `DEBUG`                          | _(empty)_                                       | Set to `True` to enable debug output (signature objdump, trace files, and trap report). Significantly slows down ELF generation. Mutually exclusive with `FAST`.                                                                      |
 | `VERBOSE`                        | _(empty)_                                       | Set to `True` to enable verbose output (prints all commands). Also implies debug mode and serializes all commands (JOBS=1).                                                                                                           |
 | `FAST`                           | _(empty)_                                       | Set to `True` to skip objdump generation for faster builds. Makes debugging mismatches harder. Mutually exclusive with `DEBUG`.                                                                                                       |
@@ -353,6 +354,22 @@ The ACT framework first compiles signature-generating versions of the tests (wit
 > [!NOTE]
 >
 > To generate the assembly tests and coverpoints without compiling or running them, run `make tests`. This only requires `make` and `mise` to be installed.
+
+#### Scalar Self-Checking Vector Tests
+
+The standard vector tests check each result with vector compare, mask, and permutation instructions. A DUT that implements only part of the vector extension cannot run those checks. For such a DUT, build the scalar self-checking variants instead:
+
+```bash
+make VECTOR_CHECK=scalar
+```
+
+Outside the instruction under test, the scalar self-checking tests only use `vsetvli`, `vsetivli`, `vsetvl`, and unmasked unit-stride `vle<eew>.v` and `vse<eew>.v` with EEW equal to SEW. Each result is stored to memory and checked element by element with scalar code, including the tail and mask-inactive elements and the tail-agnostic and mask-agnostic all-ones cases. Test setup that would need other vector instructions is also done with scalar code. The instructions under test, the testcases, the coverage, and the signature layout are the same as in the standard tests. A failure reports the register, element index and region (active, tail, or mask-inactive), and the expected and actual values.
+
+- `VECTOR_CHECK=scalar` replaces the `Vx`, `Vls`, and `Vf` suites with their `-scalarcheck` variants, such as `Vx32-scalarcheck`. `EXTENSIONS=Vx32` selects `Vx32-scalarcheck` in this mode. Other suites are unaffected.
+- The `Vf` tests come from the standalone vector generator. Generate them with `make vector-tests VECTOR_CHECK=scalar`.
+- A variant can also be selected by name in either mode, for example `EXTENSIONS=Vx32-scalarcheck`.
+- The checks run in scalar loops, so the tests execute about three times as many instructions as the standard tests. Coverage collection takes longer for the same reason.
+- The scalar self-checking tests use SEW=8 to copy mask and byte data, so the DUT must support SEW=8.
 
 ### Running Certification Tests
 

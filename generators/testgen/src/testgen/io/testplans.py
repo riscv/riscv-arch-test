@@ -10,6 +10,7 @@
 
 import csv
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 
 
@@ -26,6 +27,13 @@ def get_extensions(testplan_dir: Path) -> list[str]:
 
 
 VECTOR_SCALAR_CHECK_SUFFIX = "-scalarcheck"
+
+
+class VectorCheck(str, Enum):
+    """How vector tests check results: with vector instructions or with scalar code."""
+
+    VECTOR = "vector"
+    SCALAR = "scalar"
 
 
 def get_vector_scalar_check_extensions(testplan_dir: Path) -> list[str]:

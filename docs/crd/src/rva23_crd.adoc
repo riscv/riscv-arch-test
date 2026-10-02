@@ -60,7 +60,7 @@ run the appropriate https://github.com/riscv/riscv-arch-test[RISC-V ACTs] to hel
 
 The remainder of the document describes requirements for the test environment and for developers.
 
-=== Execution Environment and Test Supervisor Binary Interface (T-SBI)
+== Execution Environment and Test Supervisor Binary Interface (T-SBI)
 
 Application-processor families, including RVA23, purposefully do not include a
 machine-mode (M-mode) profile as there is no
@@ -187,17 +187,13 @@ interrupts are not in the profile and are not tested.
 | MSI | No | No | Machine-mode interrupts are not in the RVA23 profile.
 |===
 
-=== Developer Requirements
+== Developer Requirements
 
 The developer must provide:
 
 * DUT configuration information described in the CTP.
 * Custom trap handler, if any, to handle invisible traps.
 * Implementation-specific boot code, as needed.
-
-=== Parameters
-
-Parameters affecting RVA23 are under development and are discussed in the Certification Test Plan.
 
 == Related Specifications
 

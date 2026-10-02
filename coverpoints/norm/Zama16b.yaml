@@ -76,15 +76,6 @@ normative_rule_definitions:
     # TODO: misaligned loads and stores that cross a 16-byte boundary
     coverpoint: [""]
 
-  # Vector memory accesses are also unaffected, so might execute non-atomically even when contained
-  # within a misaligned atomicity granule.
-  - name: pma_mag_op_vec
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
-
-  # Implicit accesses are similarly unaffected by this PMA.
-  - name: pma_mag_op_implicit
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
-
   # Misaligned loads, stores and AMOs to those regions that do not cross a naturally
   # aligned 16-byte boundary are atomic.
   - name: Zama16b_atomic_ops

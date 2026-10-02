@@ -10,6 +10,9 @@
 
 `define COVER_PMPSM
 `define PMP_NAPOT_PRIORITY_REGION_START ((`PMP_REGION_START & ~(64*`g_napot - 1)) + 64*`g_napot)
+// The priority tests write pmpaddr while the entry is OFF, which reads (and traces) pmpaddr[G-1:0]
+// as 0 at granularity G >= 1, so compare those registers on bits >= G only.
+`define PMP_PMPADDR_GRAINMASK (`PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)
 
 covergroup PMPSm_cg with function sample(
                     ins_t ins,
@@ -900,15 +903,16 @@ covergroup PMPSm_cg with function sample(
   // 7 overlapping NAPOT regions all based at PMP_NAPOT_PRIORITY_REGION_START, with
   // sizes g_napot, 2x, 4x, 8x, 16x, 32x, 64x. The base is aligned to the
   // largest region size so every NAPOT entry is naturally aligned.
-  // pmpaddr[i] = (PMP_NAPOT_PRIORITY_REGION_START >> 2) | ((1<<i) * g_napot/8 - 1)
+  // pmpaddr[i] = (PMP_NAPOT_PRIORITY_REGION_START >> 2) | ((1<<i) * g_napot/8 - 1),
+  // compared on bits >= G because each is written while its entry is OFF.
   napot_priority_regions: coverpoint (
-                   ((pmpaddr[6] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (64*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                   ((pmpaddr[5] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (32*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                   ((pmpaddr[4] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (16*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                   ((pmpaddr[3] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 8*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                   ((pmpaddr[2] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 4*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                   ((pmpaddr[1] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 2*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                   ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 1*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK))
+                   ((pmpaddr[6] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (64*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[5] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (32*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[4] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (16*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[3] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 8*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[2] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 4*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[1] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 2*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[0] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 1*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK))
                    ) {
     bins napot_regions = {1};
   }
@@ -934,11 +938,12 @@ covergroup PMPSm_cg with function sample(
 
   // pmpaddr0 and pmpaddr2 are OFF but set to the access address (PMP_NAPOT_REGION_START >> 2),
   // verifying they are ignored. pmpaddr1 and pmpaddr3 are NAPOT covering PMP_NAPOT_REGION_START.
+  // All four are written while OFF, so they are compared on bits >= G.
   first_four_pmp_entries: coverpoint (
-                    ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK) == ((`PMP_NAPOT_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK)) &&
-                    ((pmpaddr[1] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_REGION_START >> 2) | ((2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                    ((pmpaddr[2] & `PMP_PMPADDR_LOWMASK) == ((`PMP_NAPOT_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK)) &&
-                    ((pmpaddr[3] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_REGION_START >> 2) | ((2**`k)-1)) & `PMP_PMPADDR_LOWMASK))
+                    ((pmpaddr[0] & `PMP_PMPADDR_GRAINMASK) == ((`PMP_NAPOT_REGION_START >> 2) & `PMP_PMPADDR_GRAINMASK)) &&
+                    ((pmpaddr[1] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_REGION_START >> 2) | ((2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                    ((pmpaddr[2] & `PMP_PMPADDR_GRAINMASK) == ((`PMP_NAPOT_REGION_START >> 2) & `PMP_PMPADDR_GRAINMASK)) &&
+                    ((pmpaddr[3] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_REGION_START >> 2) | ((2**`k)-1)) & `PMP_PMPADDR_GRAINMASK))
                     ) {
     bins pmp_entries = {1};
   }

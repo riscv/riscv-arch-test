@@ -15,6 +15,7 @@ from testgen.asm.tsbi import tsbi_call
 from testgen.data.random import random_int
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.registry import add_priv_test_generator
 
 # data
 PERM_XSL = ("exec", "store", "load")
@@ -502,12 +503,12 @@ def _fire_supported_triggers(trig_num: int, mode: str, cfg_reg: int, addr_reg: i
 def _generate_access_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate common trigger-CSR access tests."""
     covergroup = f"Sdtrig{mode}_access_cg"
-    tc = test_data.begin_test_chunk("Access")
-    lines = tc.code
+    chunks: list[TestChunk] = []
 
     ######################################
     coverpoint = "cp_sdtrig_csr_access_common"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append(
         comment_banner(
             coverpoint,
@@ -544,19 +545,20 @@ def _generate_access_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                 lines.append("#endif")
 
     test_data.int_regs.return_registers([type_reg, save_reg, temp_reg])
-    return [test_data.end_test_chunk()]
+    chunks.append(test_data.end_test_chunk())
+    return chunks
 
 
 def _generate_native_triggers_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate native trigger breakpoint-delegation tests."""
     # covergroup = f"Sdtrig{mode}_native_triggers_cg"
-    tc = test_data.begin_test_chunk("NativeTriggers")
-    lines: list[str] = tc.code
+    chunks: list[TestChunk] = []
 
-    lines.append("#ifdef S_SUPPORTED")
     ######################################
     coverpoint = "cp_sdtrig_breakpoint_delegate"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.append("#ifdef S_SUPPORTED")
     lines.append(
         comment_banner(
             coverpoint,
@@ -584,21 +586,20 @@ def _generate_native_triggers_tests(test_data: TestData, mode: str) -> list[Test
     test_data.int_regs.return_registers([r1, r2, addr_reg, medeleg_reg, scr_reg])
 
     lines.append("#endif")
-    return [test_data.end_test_chunk()]
+    chunks.append(test_data.end_test_chunk())
+    return chunks
 
 
 def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate A-extension load/store/AMO matching tests."""
     covergroup = f"Sdtrig{mode}_a_cg"
     seed(reproducible_hash(covergroup))
-    tc = test_data.begin_test_chunk("AExt")
-    lines: list[str] = tc.code
+    chunks: list[TestChunk] = []
 
     # setup registers
     dest_reg, addr_reg, data_reg, temp_reg = test_data.int_regs.get_registers(
         4, exclude_regs=[2], reg_range=list(range(8, 16))
     )
-    lines.extend(_global_ie(mode, True))
 
     # both halves nonzero so the value stays distinct from the tdata2=0 case once LI trims it to XLEN
     dataval = random_int(32, signed=False, nonzero=True) << 32 | random_int(32, signed=False, nonzero=True)
@@ -607,6 +608,8 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_lrsc_addr"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.extend(_global_ie(mode, True))
     lines.append("#ifdef ZALRSC_SUPPORTED")
     lines.append(
         comment_banner(
@@ -659,6 +662,8 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_lrsc_data"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.extend(_global_ie(mode, True))
     lines.append("#ifdef ZALRSC_SUPPORTED")
     lines.append(
         comment_banner(
@@ -719,6 +724,8 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_amo"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.extend(_global_ie(mode, True))
     lines.append("#ifdef ZAAMO_SUPPORTED")
     lines.append(
         comment_banner(
@@ -757,20 +764,21 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
 
     test_data.int_regs.return_registers([dest_reg, addr_reg, data_reg, temp_reg])
 
-    return [test_data.end_test_chunk()]
+    chunks.append(test_data.end_test_chunk())
+    return chunks
 
 
 def _generate_combined_accesses_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate multi-access (vector / cm.push-pop) instruction tests."""
     covergroup = f"Sdtrig{mode}_combined_accesses_cg"
-    tc = test_data.begin_test_chunk("CombinedAccesses")
-    lines: list[str] = tc.code
+    chunks: list[TestChunk] = []
 
     vsews = ("sew8", "sew16", "sew32", "sew64")
 
     ######################################
     coverpoint = "cp_sdtrig_vector_load_store"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append("#ifdef V_SUPPORTED")
     lines.append(
         comment_banner(
@@ -794,6 +802,7 @@ def _generate_combined_accesses_tests(test_data: TestData, mode: str) -> list[Te
     ######################################
     coverpoint = "cp_sdtrig_vector_accesses"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append("#ifdef V_SUPPORTED")
     lines.append(
         comment_banner(
@@ -817,6 +826,7 @@ def _generate_combined_accesses_tests(test_data: TestData, mode: str) -> list[Te
     ######################################
     coverpoint = "cp_sdtrig_cm_pop_push"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append("#ifdef ZCMP_SUPPORTED")
     lines.append(
         comment_banner(
@@ -837,18 +847,19 @@ def _generate_combined_accesses_tests(test_data: TestData, mode: str) -> list[Te
                         )
     lines.append("#endif")
 
-    return [test_data.end_test_chunk()]
+    chunks.append(test_data.end_test_chunk())
+    return chunks
 
 
 def _generate_cache_operations_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate Zicbo* cache-operation matching tests."""
     covergroup = f"Sdtrig{mode}_cache_operations_cg"
-    tc = test_data.begin_test_chunk("CacheOps")
-    lines: list[str] = tc.code
+    chunks: list[TestChunk] = []
 
     ######################################
     coverpoint = "cp_sdtrig_cache_zicbom"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append("#ifdef ZICBOM_SUPPORTED")
     lines.append(
         comment_banner(
@@ -872,6 +883,7 @@ def _generate_cache_operations_tests(test_data: TestData, mode: str) -> list[Tes
     ######################################
     coverpoint = "cp_sdtrig_cache_zicboz"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append("#ifdef ZICBOZ_SUPPORTED")
     lines.append(
         comment_banner(
@@ -893,6 +905,7 @@ def _generate_cache_operations_tests(test_data: TestData, mode: str) -> list[Tes
     ######################################
     coverpoint = "cp_sdtrig_cache_zicbop"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append("#ifdef ZICBOP_SUPPORTED")
     lines.append(
         comment_banner(
@@ -909,18 +922,19 @@ def _generate_cache_operations_tests(test_data: TestData, mode: str) -> list[Tes
         )
     lines.append("#endif")
 
-    return [test_data.end_test_chunk()]
+    chunks.append(test_data.end_test_chunk())
+    return chunks
 
 
 def _generate_address_matches_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate tdata2 address-storage / translation tests."""
     covergroup = f"Sdtrig{mode}_address_matches_cg"
-    tc = test_data.begin_test_chunk("AddressMatches")
-    lines: list[str] = tc.code
+    chunks: list[TestChunk] = []
 
     ######################################
     coverpoint = "cp_sdtrig_tdata2_translate"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append(
         comment_banner(
             coverpoint,
@@ -938,18 +952,19 @@ def _generate_address_matches_tests(test_data: TestData, mode: str) -> list[Test
                     ]
                 )
 
-    return [test_data.end_test_chunk()]
+    chunks.append(test_data.end_test_chunk())
+    return chunks
 
 
 def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate trigger-module register semantics tests."""
     covergroup = f"Sdtrig{mode}_csr_cg"
-    tc = test_data.begin_test_chunk("Csr")
-    lines: list[str] = tc.code
+    chunks: list[TestChunk] = []
 
     ######################################
     coverpoint = "cp_sdtrig_tselect_trigs"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append(
         comment_banner(
             coverpoint,
@@ -966,6 +981,7 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_tdata_write"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append(
         comment_banner(
             coverpoint,
@@ -984,6 +1000,7 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_csr_smode_access"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append(
         comment_banner(
             coverpoint,
@@ -1002,6 +1019,7 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_tdata1_mode_hardwired"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append(
         comment_banner(
             coverpoint,
@@ -1020,6 +1038,7 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_tinfo_read_only"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append(
         comment_banner(
             coverpoint,
@@ -1036,6 +1055,7 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_tcontrol_enable"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append(
         comment_banner(
             coverpoint,
@@ -1054,6 +1074,7 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_tcontrol_mtrap"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append(
         comment_banner(
             coverpoint,
@@ -1073,6 +1094,7 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_tcontrol_mret"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append(
         comment_banner(
             coverpoint,
@@ -1092,6 +1114,7 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_mscontext_alias"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append(
         comment_banner(
             coverpoint,
@@ -1107,6 +1130,7 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_mcontext_smode"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append(
         comment_banner(
             coverpoint,
@@ -1119,25 +1143,26 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
         ]
     )
 
-    return [test_data.end_test_chunk()]
+    chunks.append(test_data.end_test_chunk())
+    return chunks
 
 
 def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate mcontrol6 address/data match trigger tests."""
     covergroup = f"Sdtrig{mode}_mcontrol6_cg"
     seed(reproducible_hash(covergroup))
-    tc = test_data.begin_test_chunk("Mcontrol6")
-    lines: list[str] = tc.code
+    chunks: list[TestChunk] = []
 
     # setup registers
     sp_reg, addr_reg, data_reg, temp_reg = test_data.int_regs.get_registers(
         4, exclude_regs=[2], reg_range=list(range(8, 16))
     )
-    lines.extend(_global_ie(mode, True))
 
     ######################################
     coverpoint = "cp_sdtrig_mcontrol6_priv_mode"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.extend(_global_ie(mode, True))
     lines.append(
         comment_banner(
             coverpoint,
@@ -1169,6 +1194,8 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     ######################################
     coverpoint = "cp_sdtrig_mcontrol6_execute_adr"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.extend(_global_ie(mode, True))
     lines.append(
         comment_banner(
             coverpoint,
@@ -1204,6 +1231,8 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     ######################################
     coverpoint = "cp_sdtrig_mcontrol6_load_store_adr"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.extend(_global_ie(mode, True))
     lines.append(
         comment_banner(
             coverpoint,
@@ -1235,6 +1264,8 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     ######################################
     coverpoint = "cp_sdtrig_mcontrol6_execute_data"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.extend(_global_ie(mode, True))
     lines.append(
         comment_banner(
             coverpoint,
@@ -1263,6 +1294,8 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     ######################################
     coverpoint = "cp_sdtrig_mcontrol6_load_store_data"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.extend(_global_ie(mode, True))
     lines.append(
         comment_banner(
             coverpoint,
@@ -1296,6 +1329,8 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     ######################################
     coverpoint = "cp_sdtrig_mcontrol6_execute_size"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.extend(_global_ie(mode, True))
     lines.append(
         comment_banner(
             coverpoint,
@@ -1339,6 +1374,8 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     ######################################
     coverpoint = "cp_sdtrig_mcontrol6_load_store_size"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.extend(_global_ie(mode, True))
     lines.append(
         comment_banner(
             coverpoint,
@@ -1439,6 +1476,8 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     ######################################
     coverpoint = "cp_sdtrig_mcontrol6_match"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.extend(_global_ie(mode, True))
     lines.append(
         comment_banner(
             coverpoint,
@@ -1496,6 +1535,8 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     ######################################
     coverpoint = "cp_sdtrig_mcontrol6_match_napot"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.extend(_global_ie(mode, True))
     lines.append(
         comment_banner(
             coverpoint,
@@ -1559,6 +1600,8 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     ######################################
     coverpoint = "cp_sdtrig_mcontrol6_match_mask"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.extend(_global_ie(mode, True))
     lines.append(
         comment_banner(
             coverpoint,
@@ -1614,6 +1657,8 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     ######################################
     coverpoint = "cp_sdtrig_mcontrol6_chain_adr"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.extend(_global_ie(mode, True))
     lines.append(
         comment_banner(
             coverpoint,
@@ -1656,25 +1701,26 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
 
     lines.extend(_global_ie(mode, False))
     test_data.int_regs.return_registers([sp_reg, addr_reg, data_reg, temp_reg])
-    return [test_data.end_test_chunk()]
+    chunks.append(test_data.end_test_chunk())
+    return chunks
 
 
 def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate icount instruction-count trigger tests."""
     covergroup = f"Sdtrig{mode}_icount_cg"
     seed(reproducible_hash(covergroup))
-    tc = test_data.begin_test_chunk("Icount")
-    lines: list[str] = tc.code
+    chunks: list[TestChunk] = []
 
     # setup registers
     sp_reg, addr_reg, data_reg, temp_reg = test_data.int_regs.get_registers(
         4, exclude_regs=[2], reg_range=list(range(8, 16))
     )  # exclude a0, a1 because they are used in SBI
-    lines.extend(_global_ie(mode, True))
 
     ######################################
     coverpoint = "cp_sdtrig_icount_hardwired"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.extend(_global_ie(mode, True))
     lines.append(
         comment_banner(
             coverpoint,
@@ -1704,6 +1750,8 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_icount_instr"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.extend(_global_ie(mode, True))
     lines.append(
         comment_banner(
             coverpoint,
@@ -1734,6 +1782,8 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_icount_trap"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.extend(_global_ie(mode, True))
     lines.append(
         comment_banner(
             coverpoint,
@@ -1762,6 +1812,8 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_icount_eq0"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.extend(_global_ie(mode, True))
     lines.append(
         comment_banner(
             coverpoint,
@@ -1789,14 +1841,14 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines.append("#endif // !UDB_ICOUNT_HARDWIRED_1")
 
     test_data.int_regs.return_registers([sp_reg, addr_reg, data_reg, temp_reg])
-    return [test_data.end_test_chunk()]
+    chunks.append(test_data.end_test_chunk())
+    return chunks
 
 
 def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate itrigger interrupt trigger tests."""
     covergroup = f"Sdtrig{mode}_itrigger_cg"
-    tc = test_data.begin_test_chunk("Itrigger")
-    lines: list[str] = tc.code
+    chunks: list[TestChunk] = []
 
     # setup registers
     t1, t2, t3, t4 = test_data.int_regs.get_registers(4, exclude_regs=[2], reg_range=list(range(8, 16)))
@@ -1804,6 +1856,7 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_itrigger"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append(
         comment_banner(
             coverpoint,
@@ -1828,19 +1881,19 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
 
     test_data.int_regs.return_registers([t1, t2, t3, t4])
 
-    return [test_data.end_test_chunk()]
+    chunks.append(test_data.end_test_chunk())
+    return chunks
 
 
 def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate etrigger exception trigger tests."""
     covergroup = f"Sdtrig{mode}_etrigger_cg"
-    tc = test_data.begin_test_chunk("Etrigger")
-    lines: list[str] = tc.code
-    lines.append("#ifdef UDB_ETRIGGER_SUPPORTED")
-
+    chunks: list[TestChunk] = []
     ######################################
     coverpoint = "cp_sdtrig_etrigger"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
+    lines.append("#ifdef UDB_ETRIGGER_SUPPORTED")
     lines.append(
         comment_banner(
             coverpoint,
@@ -1860,14 +1913,14 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                 )
 
     lines.append("#endif")  # endif ETRIGGER_SUPPORTED
-    return [test_data.end_test_chunk()]
+    chunks.append(test_data.end_test_chunk())
+    return chunks
 
 
 def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate textra32/64 (tdata3) context-matching tests."""
     covergroup = f"Sdtrig{mode}_textra_cg"
-    tc = test_data.begin_test_chunk("Textra")
-    lines: list[str] = tc.code
+    chunks: list[TestChunk] = []
 
     trig_type4 = ("icount", "itrigger", "etrigger", "mcontrol6")
     # RV64 spelling; RV32 bins differ (see svh)
@@ -1878,6 +1931,7 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_textra_mcontext"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append(
         comment_banner(
             coverpoint,
@@ -1897,6 +1951,7 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_textra_scontext"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append(
         comment_banner(
             coverpoint,
@@ -1917,6 +1972,7 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_textra_asid"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append(
         comment_banner(
             coverpoint,
@@ -1936,6 +1992,7 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     ######################################
     coverpoint = "cp_sdtrig_smode_fields_hardwired"
     ######################################
+    lines = test_data.new_test_chunk(chunks, coverpoint.removeprefix("cp_sdtrig_")).code
     lines.append(
         comment_banner(
             coverpoint,
@@ -1949,25 +2006,63 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             ]
         )
 
-    return [test_data.end_test_chunk()]
+    chunks.append(test_data.end_test_chunk())
+    return chunks
 
 
-# ── Suite assembly ─────────────────────────────────────────────────────────
+# ── Suite registration ─────────────────────────────────────────────────────
 
 
-def generate_sdtrig_suite(test_data: TestData, mode: str) -> list[TestChunk]:
-    """Assemble the full Sdtrig suite for ``mode`` ("Sm"/"S"/"U") as test chunks."""
-    test_chunks: list[TestChunk] = []
-    test_chunks.extend(_generate_access_tests(test_data, mode))
-    test_chunks.extend(_generate_native_triggers_tests(test_data, mode))
-    test_chunks.extend(_generate_a_tests(test_data, mode))
-    # test_chunks.extend(_generate_combined_accesses_tests(test_data, mode))
-    # test_chunks.extend(_generate_cache_operations_tests(test_data, mode))
-    # test_chunks.extend(_generate_address_matches_tests(test_data, mode))
-    # test_chunks.extend(_generate_csr_tests(test_data, mode))
-    test_chunks.extend(_generate_mcontrol6_tests(test_data, mode))
-    test_chunks.extend(_generate_icount_tests(test_data, mode))
-    test_chunks.extend(_generate_itrigger_tests(test_data, mode))
-    # test_chunks.extend(_generate_etrigger_tests(test_data, mode))
-    # test_chunks.extend(_generate_textra_tests(test_data, mode))
-    return test_chunks
+def register_sdtrig_suite(mode: str, required_extensions: list[str | list[str]], extra_defines: list[str]) -> None:
+    """Register each Sdtrig section for ``mode`` ("Sm"/"S"/"U") as its own generator of suite ``Sdtrig{mode}``."""
+    suite = f"Sdtrig{mode}"
+
+    @add_priv_test_generator(
+        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+    )
+    def make_sdtrig_access(test_data: TestData) -> list[TestChunk]:
+        """Access tests."""
+        return _generate_access_tests(test_data, mode)
+
+    @add_priv_test_generator(
+        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+    )
+    def make_sdtrig_native_triggers(test_data: TestData) -> list[TestChunk]:
+        """native-trigger tests."""
+        return _generate_native_triggers_tests(test_data, mode)
+
+    @add_priv_test_generator(
+        suite,
+        required_extensions=[*required_extensions, ["Zaamo", "Zalrsc"]],
+        march_extensions=[],
+        extra_defines=extra_defines,
+    )
+    def make_sdtrig_a(test_data: TestData) -> list[TestChunk]:
+        """A-extension tests."""
+        return _generate_a_tests(test_data, mode)
+
+    @add_priv_test_generator(
+        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+    )
+    def make_sdtrig_mcontrol6(test_data: TestData) -> list[TestChunk]:
+        """mcontrol6 tests."""
+        return _generate_mcontrol6_tests(test_data, mode)
+
+    @add_priv_test_generator(
+        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+    )
+    def make_sdtrig_icount(test_data: TestData) -> list[TestChunk]:
+        """icount tests."""
+        return _generate_icount_tests(test_data, mode)
+
+    @add_priv_test_generator(
+        suite, required_extensions=required_extensions, march_extensions=[], extra_defines=extra_defines
+    )
+    def make_sdtrig_itrigger(test_data: TestData) -> list[TestChunk]:
+        """itrigger tests."""
+        return _generate_itrigger_tests(test_data, mode)
+
+    # Disabled sections and their extra required extensions:
+    #   _generate_combined_accesses_tests: [["V", "Zcmp"]]
+    #   _generate_cache_operations_tests: [["Zicbom", "Zicbop", "Zicboz"]]
+    #   _generate_address_matches_tests, _generate_csr_tests, _generate_etrigger_tests, _generate_textra_tests

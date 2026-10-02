@@ -77,9 +77,26 @@ def generate_unpriv_extension_tests(
     output_dir.mkdir(parents=True, exist_ok=True)
     generated_files: set[Path] = set()
 
-    ext_components, _ = canonicalize_extensions(testsuite, xlen, E_ext, sew=sew, instr_name=instructions[0].instr_name)
-    flen = get_flen_for_extensions(ext_components)
-    test_config = TestConfig(xlen=xlen, flen=flen, testsuite=testsuite, E_ext=E_ext, sew=sew)
+    # One test configuration per distinct REQUIRED_EXTENSIONS entry; rows with extra extensions get their own
+    # file/covergroup name prefix, header requirements, and FLEN, but stay in this testsuite's directory.
+    test_configs: dict[tuple[str, ...], TestConfig] = {}
+    for instr_data in instructions:
+        extra_extensions = instr_data.required_extensions
+        if extra_extensions in test_configs:
+            continue
+        if extra_extensions and is_vector:
+            raise ValueError(f"{testplan}.csv: REQUIRED_EXTENSIONS is not supported in vector testplans")
+        ext_components, _ = canonicalize_extensions(
+            testsuite, xlen, E_ext, sew=sew, instr_name=instructions[0].instr_name, extra_extensions=extra_extensions
+        )
+        test_configs[extra_extensions] = TestConfig(
+            xlen=xlen,
+            flen=get_flen_for_extensions(ext_components),
+            testsuite=testsuite,
+            E_ext=E_ext,
+            sew=sew,
+            extra_extensions=extra_extensions,
+        )
 
     # Iterate through each instruction in the testsuite; generate separate test files for each
     for instr_data in instructions:
@@ -95,7 +112,7 @@ def generate_unpriv_extension_tests(
                 instr_data.instr_name,
                 instr_data.instr_type,
                 instr_data.coverpoints,
-                test_config,
+                test_configs[instr_data.required_extensions],
                 output_dir,
                 is_vector,
             )

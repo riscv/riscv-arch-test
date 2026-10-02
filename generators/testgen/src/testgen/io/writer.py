@@ -87,7 +87,7 @@ def write_test_file(
 
     # Construct filename and paths
     if instr_name is not None:
-        filename = f"{testsuite}-{instr_name}-{file_idx:02d}.S"
+        filename = f"{test_config.name_prefix}-{instr_name}-{file_idx:02d}.S"
     elif split_name is not None:
         filename = f"{testsuite}_{split_name}-{file_idx:02d}.S"
     else:

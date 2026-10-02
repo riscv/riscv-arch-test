@@ -208,7 +208,7 @@ class TestData:
         self.increment_test_count()
 
         if covergroup is None:
-            covergroup = f"{self.testsuite}_{self.instr_name}_cg"
+            covergroup = f"{self._config.name_prefix}_{self.instr_name}_cg"
 
         # Construct full coverpoint name
         full_name = f"{covergroup}_{coverpoint}_{bin_name}"

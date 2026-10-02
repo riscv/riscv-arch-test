@@ -434,9 +434,6 @@
 `ifdef ZFHMIN_COVERAGE
   `include "Zfhmin_coverage.svh"
 `endif
-`ifdef ZFHMIND_COVERAGE
-  `include "ZfhminD_coverage.svh"
-`endif
 `ifdef ZIC64BZICBOZ_COVERAGE
   `include "Zic64bZicboz_coverage.svh"
 `endif

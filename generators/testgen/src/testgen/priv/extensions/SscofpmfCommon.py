@@ -58,6 +58,24 @@ def _csr_access(instr: str, mode: str) -> str:
     return tsbi_call(_resolve_tsbi_csr(instr))
 
 
+def clear_lcofip(r_tmp: int, priv_mode: str) -> list[str]:
+    """Clear a pending LCOFIP left by an earlier real overflow: through sip when S exists
+    and the suite runs below M, else through mip."""
+    set_bit = f"LI(x{r_tmp}, {hex(1 << 13)})"
+    if priv_mode == "Sm":
+        return [set_bit, f"csrc mip, x{r_tmp}   # clear LCOFIP"]
+    if priv_mode == "S":
+        return [set_bit, f"csrc sip, x{r_tmp}   # clear LCOFIP"]
+    return [
+        set_bit,
+        "#ifdef S_SUPPORTED",
+        _csr_access(f"csrc sip, x{r_tmp}   # clear LCOFIP", priv_mode),
+        "#else",
+        _csr_access(f"csrc mip, x{r_tmp}   # clear LCOFIP", priv_mode),
+        "#endif",
+    ]
+
+
 # Every T-SBI call runs the M-mode handler, and a call from U is delegated through S
 # first, so counting must be inhibited in every mode above the one under test or the
 # counter would also count the round trip instead of just the workload.
@@ -77,6 +95,17 @@ def nonzero_not_all_ones(reg: int, scratch: int) -> list[str]:
         f"seqz x{reg}, x{reg}               # x{reg} = (val was all-1s)",
         f"xori x{reg}, x{reg}, 1            # x{reg} = NOT(val was all-1s)",
         f"and x{reg}, x{reg}, x{scratch}    # x{reg} = nonzero AND not all-1s",
+    ]
+
+
+def counted_since_all_ones(reg: int) -> list[str]:
+    """Reduce x{reg}, a counter read after it was preset to all 1s, to 1 if it counted
+    at least one event (it is no longer all 1s) and 0 if it did not. The count itself
+    is not recorded, since how many events a workload generates is implementation-specific;
+    one or more events always leaves the counter somewhere other than all 1s."""
+    return [
+        f"addi x{reg}, x{reg}, 1            # x{reg} = val + 1 (0 iff val is still all 1s)",
+        f"snez x{reg}, x{reg}               # x{reg} = counted at least one event",
     ]
 
 
@@ -408,6 +437,59 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
                         write_sigupd(r_lcofip, test_data),
                     ]
                 )
+
+    # OF already 1: the overflow must leave OF set and must not request LCOFI
+    # (norm:count_overflow_interrupt). OF is set together with the event code, before
+    # the counter is preset, so an overflow caused by the T-SBI round trip below M
+    # cannot raise LCOFIP either.
+    already_set_coverpoint = "cp_of_already_set"
+    if priv_mode == "U":
+        lcofip_read = [
+            "#ifdef S_SUPPORTED",
+            _csr_access(f"csrr x{r_lcofip}, sip   # sample point -- LCOFIP must stay 0", priv_mode),
+            "#else",
+            _csr_access(f"csrr x{r_lcofip}, mip   # sample point -- LCOFIP must stay 0", priv_mode),
+            "#endif",
+        ]
+    else:
+        lcofip_read = [_csr_access(f"csrr x{r_lcofip}, {lcofip_csr}   # sample point -- LCOFIP must stay 0", priv_mode)]
+    lines.extend(
+        [
+            "",
+            f"# Testcase: mode = {priv_mode}, inhibit pattern = 00000, OF initial = 1",
+            _csr_access("csrw mie, zero   # disable interrupts", priv_mode),
+            "#if __riscv_xlen == 32",
+            f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
+            _csr_access(f"csrw RVMODEL_MHPMEVENT, x{r_val}", priv_mode),
+            f"LI(x{r_hval}, {_EVENT_VAL_HI} | {hex(1 << 31)})   # OF = 1, no inhibits",
+            _csr_access(f"csrw CSR_MHPMEVENT3H, x{r_hval}", priv_mode),
+            "#else",
+            f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | {hex(1 << 63)})   # OF = 1, no inhibits",
+            _csr_access(f"csrw RVMODEL_MHPMEVENT, x{r_val}", priv_mode),
+            "#endif",
+            *write_counter_all_ones(r_temp, priv_mode),
+            *clear_lcofip(r_temp, priv_mode),
+            "",
+            f"LA(x{r_addr}, scratch)",
+            f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_val})",
+            f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})   # wait for RVMODEL_INTERRUPT_LATENCY",
+            "",
+            test_data.add_testcase(
+                f"of_overflow_{priv_mode.lower()}_of_already_set", already_set_coverpoint, covergroup
+            ),
+            *read_event_config_bits(),
+            write_sigupd(r_temp, test_data),
+            _csr_access(
+                f"csrr x{r_temp}, RVMODEL_MHPMCOUNTER   # sample point: did the counter move off all 1s?", priv_mode
+            ),
+            *counted_since_all_ones(r_temp),
+            write_sigupd(r_temp, test_data),
+            *lcofip_read,
+            f"srli x{r_lcofip}, x{r_lcofip}, 13",
+            f"andi x{r_lcofip}, x{r_lcofip}, 1   # isolate LCOFIP",
+            write_sigupd(r_lcofip, test_data),
+        ]
+    )
 
     test_data.int_regs.return_registers([r_val, r_temp, r_lcofip, r_addr, r_bool, r_hval])
 

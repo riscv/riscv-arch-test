@@ -30,9 +30,12 @@
 # - InterruptsH, SstcH, SstcHSm: csrrc/csrrs/csrrw return 0 in the old value for the delegated
 #   read-only vsip.STIP/SEIP bits (csrr reads them correctly):
 #   https://solvnetplus.synopsys.com/s/case/500WQ000029snvFYAQ/csrrccsrrscsrrw-return-0-as-the-old-value-of-vsipstipseip
-# - SmstateenH (TODO: file issue): on RV64 the reserved bit 56 of hstateen0 is writable, like mstateen0.P1P13 above
+# - SmstateenH: on RV64 the reserved bit 56 of hstateen0 is writable, like mstateen0.P1P13 above:
+#   https://solvnetplus.synopsys.com/s/case/500WQ00002AccK6/hstateen0-bit-56-is-writable-on-rv64-but-it-is-reserved-wpri-in-hstateen0-and-must-be-readonly-zero
 # - SsnpmH: HLV/HSV from U-mode with hstatus.SPVP = 0 take their pointer masking from senvcfg.PMM instead of
-#   hstatus.HUPMM, and HLVX applies pointer masking, which it must not. TODO: file issue
+#   hstatus.HUPMM, and HLVX applies pointer masking, which it must not:
+#   https://solvnetplus.synopsys.com/s/case/500WQ00002AdFZtYAN/hlvhsv-from-umode-with-hstatusspvp-0-take-senvcfgpmm-instead-of-hstatushupmm
+#   https://solvnetplus.synopsys.com/s/case/500WQ00002AczdGYAR/hlvx-applies-pointer-masking
 # - ZicfilpSm/ZicfilpS/ZicfilpH: MRET and SRET leave xPELP set instead of clearing it, for both yLPE=0 and
 #   yLPE=1 (first failures mret_to_M_mlpe0_slpe0_ulpe0_pelp_1 and sret_to_S_slpe0_ulpe0_pelp_1).
 #   norm:Zicfilp_pelp_trap_return requires xRET to set xPELP to NO_LP_EXPECTED unconditionally, and

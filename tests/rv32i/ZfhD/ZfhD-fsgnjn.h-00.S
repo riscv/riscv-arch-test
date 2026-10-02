@@ -34,6 +34,7 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 # Testcase cp_NaNBox_D_H (Test NaN-Boxed inputs)
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fd (improperly boxed): f2 = 0x0123456789abcdef
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f6) # load fs1: f6 = 0x7d07
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f12) # load fs2: f12 = 0xfb1f
   fsflagsi 0b00000 # clear all fflags
@@ -48,7 +49,7 @@ ZfhD_fsgnjn_h_cg_cp_NaNBox_D_H_NaNBox:
 
 # Testcase cp_fs1_badNB_D_H (Test source fs1 value = 0xffffffff00000000)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs1: f9 = 0xffffffff00000000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0xd6818ea14a3e49d7
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0xffffffffffff49d7
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xffffffff00000000:
   fsgnjn.h f28, f9, f18 # perform operation
@@ -57,7 +58,7 @@ ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xffffffff00000000:
 
 # Testcase cp_fs1_badNB_D_H (Test source fs1 value = 0xfffffffffffe8000)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f28) # load fs1: f28 = 0xfffffffffffe8000
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs2: f27 = 0x19d70461710159a0
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs2: f27 = 0xffffffffffff59a0
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xfffffffffffe8000:
   fsgnjn.h f5, f28, f27 # perform operation
@@ -66,7 +67,7 @@ ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xfffffffffffe8000:
 
 # Testcase cp_fs1_badNB_D_H (Test source fs1 value = 0x7fffffffffff3c00)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs1: f11 = 0x7fffffffffff3c00
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs2: f27 = 0x4ed3ebb550fe14b5
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs2: f27 = 0xffffffffffff14b5
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0x7fffffffffff3c00:
   fsgnjn.h f6, f11, f27 # perform operation
@@ -75,7 +76,7 @@ ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0x7fffffffffff3c00:
 
 # Testcase cp_fs1_badNB_D_H (Test source fs1 value = 0xfeedbee5beefbc00)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs1: f21 = 0xfeedbee5beefbc00
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0x69ac1fce8812d2d8
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0xffffffffffffd2d8
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xfeedbee5beefbc00:
   fsgnjn.h f8, f21, f18 # perform operation
@@ -84,7 +85,7 @@ ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xfeedbee5beefbc00:
 
 # Testcase cp_fs1_badNB_D_H (Test source fs1 value = 0xffffffefffff0400)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs1: f23 = 0xffffffefffff0400
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs2: f5 = 0x5afdaee73477077f
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs2: f5 = 0xffffffffffff077f
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xffffffefffff0400:
   fsgnjn.h f20, f23, f5 # perform operation
@@ -93,7 +94,7 @@ ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xffffffefffff0400:
 
 # Testcase cp_fs1_badNB_D_H (Test source fs1 value = 0x00000000ffff8400)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f6) # load fs1: f6 = 0x00000000ffff8400
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs2: f11 = 0x4c929849cc961d4d
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs2: f11 = 0xffffffffffff1d4d
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xffff8400:
   fsgnjn.h f31, f6, f11 # perform operation
@@ -102,7 +103,7 @@ ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xffff8400:
 
 # Testcase cp_fs1_badNB_D_H (Test source fs1 value = 0xefffffffffff7bff)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs1: f18 = 0xefffffffffff7bff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs2: f25 = 0x16de40fedf3ca7a6
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fs2: f25 = 0xffffffffffffa7a6
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xefffffffffff7bff:
   fsgnjn.h f19, f18, f25 # perform operation
@@ -111,7 +112,7 @@ ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xefffffffffff7bff:
 
 # Testcase cp_fs1_badNB_D_H (Test source fs1 value = 0xc0dec0dec0defbff)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs1: f9 = 0xc0dec0dec0defbff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs2: f20 = 0xb94f3bd25665d54d
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f20) # load fs2: f20 = 0xffffffffffffd54d
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xc0dec0dec0defbff:
   fsgnjn.h f25, f9, f20 # perform operation
@@ -120,7 +121,7 @@ ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xc0dec0dec0defbff:
 
 # Testcase cp_fs1_badNB_D_H (Test source fs1 value = 0xa83ef1cc4f1a7c00)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs1: f11 = 0xa83ef1cc4f1a7c00
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs2: f10 = 0x45f3f68649815de7
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs2: f10 = 0xffffffffffff5de7
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xa83ef1cc4f1a7c00:
   fsgnjn.h f24, f11, f10 # perform operation
@@ -129,7 +130,7 @@ ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xa83ef1cc4f1a7c00:
 
 # Testcase cp_fs1_badNB_D_H (Test source fs1 value = 0xffffffff0ffffc00)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0xffffffff0ffffc00
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0x4ee330df097387de
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0xffffffffffff87de
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xffffffff0ffffc00:
   fsgnjn.h f5, f27, f18 # perform operation
@@ -138,7 +139,7 @@ ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xffffffff0ffffc00:
 
 # Testcase cp_fs1_badNB_D_H (Test source fs1 value = 0xfffeffffffff7e00)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs1: f14 = 0xfffeffffffff7e00
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0x83433b989d56b1c6
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0xffffffffffffb1c6
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xfffeffffffff7e00:
   fsgnjn.h f24, f14, f15 # perform operation
@@ -147,7 +148,7 @@ ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xfffeffffffff7e00:
 
 # Testcase cp_fs1_badNB_D_H (Test source fs1 value = 0xffffffefffff7fff)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f23) # load fs1: f23 = 0xffffffefffff7fff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs2: f22 = 0x89d85aad068aded6
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs2: f22 = 0xffffffffffffded6
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xffffffefffff7fff:
   fsgnjn.h f14, f23, f22 # perform operation
@@ -156,7 +157,7 @@ ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xffffffefffff7fff:
 
 # Testcase cp_fs1_badNB_D_H (Test source fs1 value = 0xa1b2c3d4e5f67c01)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0xa1b2c3d4e5f67c01
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs2: f19 = 0xa76c5998f074708d
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs2: f19 = 0xffffffffffff708d
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xa1b2c3d4e5f67c01:
   fsgnjn.h f15, f27, f19 # perform operation
@@ -165,7 +166,7 @@ ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xa1b2c3d4e5f67c01:
 
 # Testcase cp_fs1_badNB_D_H (Test source fs1 value = 0xfffffffcffff7dff)
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs1: f21 = 0xfffffffcffff7dff
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0x3e266be63397936d
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f18) # load fs2: f18 = 0xffffffffffff936d
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xfffffffcffff7dff:
   fsgnjn.h f15, f21, f18 # perform operation
@@ -177,7 +178,7 @@ ZfhD_fsgnjn_h_cg_cp_fs1_badNB_D_H_b0xfffffffcffff7dff:
 /////////////////////////////////
 
 # Testcase cp_fs2_badNB_D_H (Test source fs2 value = 0xffffffff00000000)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs1: f8 = 0xa36345b46f1cacfe
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs1: f8 = 0xffffffffffffacfe
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f19) # load fs2: f19 = 0xffffffff00000000
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffffffff00000000:
@@ -186,7 +187,7 @@ ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffffffff00000000:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f31, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffffffff00000000, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffffffff00000000_str)
 
 # Testcase cp_fs2_badNB_D_H (Test source fs2 value = 0xfffffffffffe8000)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0x40ea8cd7bc45d374
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0xffffffffffffd374
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f24) # load fs2: f24 = 0xfffffffffffe8000
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xfffffffffffe8000:
@@ -195,7 +196,7 @@ ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xfffffffffffe8000:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f23, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xfffffffffffe8000, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xfffffffffffe8000_str)
 
 # Testcase cp_fs2_badNB_D_H (Test source fs2 value = 0x7fffffffffff3c00)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0x7a37f2159914280b
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f5) # load fs1: f5 = 0xffffffffffff280b
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x7fffffffffff3c00
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0x7fffffffffff3c00:
@@ -204,7 +205,7 @@ ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0x7fffffffffff3c00:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f1, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0x7fffffffffff3c00, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0x7fffffffffff3c00_str)
 
 # Testcase cp_fs2_badNB_D_H (Test source fs2 value = 0xfeedbee5beefbc00)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs1: f2 = 0x8417f7834742506b
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f2) # load fs1: f2 = 0xffffffffffff506b
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs2: f30 = 0xfeedbee5beefbc00
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xfeedbee5beefbc00:
@@ -213,7 +214,7 @@ ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xfeedbee5beefbc00:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xfeedbee5beefbc00, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xfeedbee5beefbc00_str)
 
 # Testcase cp_fs2_badNB_D_H (Test source fs2 value = 0xffffffefffff0400)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs1: f30 = 0x46fd7ea9e7602f84
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs1: f30 = 0xffffffffffff2f84
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f17) # load fs2: f17 = 0xffffffefffff0400
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffffffefffff0400:
@@ -222,7 +223,7 @@ ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffffffefffff0400:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f19, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffffffefffff0400, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffffffefffff0400_str)
 
 # Testcase cp_fs2_badNB_D_H (Test source fs2 value = 0x00000000ffff8400)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0x36ba911c22b6296e
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f27) # load fs1: f27 = 0xffffffffffff296e
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f21) # load fs2: f21 = 0x00000000ffff8400
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffff8400:
@@ -231,7 +232,7 @@ ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffff8400:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffff8400, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffff8400_str)
 
 # Testcase cp_fs2_badNB_D_H (Test source fs2 value = 0xefffffffffff7bff)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs1: f3 = 0xe6663d6e2b09d2ab
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f3) # load fs1: f3 = 0xffffffffffffd2ab
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0xefffffffffff7bff
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xefffffffffff7bff:
@@ -240,7 +241,7 @@ ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xefffffffffff7bff:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f25, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xefffffffffff7bff, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xefffffffffff7bff_str)
 
 # Testcase cp_fs2_badNB_D_H (Test source fs2 value = 0xc0dec0dec0defbff)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs1: f22 = 0xdbd4c38d2fc73644
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs1: f22 = 0xffffffffffff3644
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs2: f9 = 0xc0dec0dec0defbff
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xc0dec0dec0defbff:
@@ -249,7 +250,7 @@ ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xc0dec0dec0defbff:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xc0dec0dec0defbff, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xc0dec0dec0defbff_str)
 
 # Testcase cp_fs2_badNB_D_H (Test source fs2 value = 0xa83ef1cc4f1a7c00)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs1: f13 = 0x992fc056fa228807
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs1: f13 = 0xffffffffffff8807
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f22) # load fs2: f22 = 0xa83ef1cc4f1a7c00
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xa83ef1cc4f1a7c00:
@@ -258,7 +259,7 @@ ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xa83ef1cc4f1a7c00:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f28, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xa83ef1cc4f1a7c00, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xa83ef1cc4f1a7c00_str)
 
 # Testcase cp_fs2_badNB_D_H (Test source fs2 value = 0xffffffff0ffffc00)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs1: f14 = 0x3e7dea812d11037c
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs1: f14 = 0xffffffffffff037c
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0xffffffff0ffffc00
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffffffff0ffffc00:
@@ -267,7 +268,7 @@ ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffffffff0ffffc00:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f17, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffffffff0ffffc00, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffffffff0ffffc00_str)
 
 # Testcase cp_fs2_badNB_D_H (Test source fs2 value = 0xfffeffffffff7e00)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs1: f12 = 0xea9b46da753ec16f
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs1: f12 = 0xffffffffffffc16f
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0xfffeffffffff7e00
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xfffeffffffff7e00:
@@ -276,7 +277,7 @@ ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xfffeffffffff7e00:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xfffeffffffff7e00, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xfffeffffffff7e00_str)
 
 # Testcase cp_fs2_badNB_D_H (Test source fs2 value = 0xffffffefffff7fff)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs1: f30 = 0x0a74ca6b7d4d7b46
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs1: f30 = 0xffffffffffff7b46
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs2: f10 = 0xffffffefffff7fff
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffffffefffff7fff:
@@ -285,7 +286,7 @@ ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffffffefffff7fff:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f27, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffffffefffff7fff, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xffffffefffff7fff_str)
 
 # Testcase cp_fs2_badNB_D_H (Test source fs2 value = 0xa1b2c3d4e5f67c01)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs1: f11 = 0x65717722b1b267c6
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs1: f11 = 0xffffffffffff67c6
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0xa1b2c3d4e5f67c01
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xa1b2c3d4e5f67c01:
@@ -294,7 +295,7 @@ ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xa1b2c3d4e5f67c01:
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f3, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xa1b2c3d4e5f67c01, ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xa1b2c3d4e5f67c01_str)
 
 # Testcase cp_fs2_badNB_D_H (Test source fs2 value = 0xfffffffcffff7dff)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs1: f30 = 0x93f6001628a5ddac
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f30) # load fs1: f30 = 0xffffffffffffddac
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0xfffffffcffff7dff
   fsflagsi 0b00000 # clear all fflags
 ZfhD_fsgnjn_h_cg_cp_fs2_badNB_D_H_b0xfffffffcffff7dff:
@@ -309,63 +310,64 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test data
+.dword 0x0123456789abcdef
 .dword 0x83c33073387d7d07
 .dword 0xb7075ab9d299fb1f
 .dword 0xffffffff00000000
-.dword 0xd6818ea14a3e49d7
+.dword 0xffffffffffff49d7
 .dword 0xfffffffffffe8000
-.dword 0x19d70461710159a0
+.dword 0xffffffffffff59a0
 .dword 0x7fffffffffff3c00
-.dword 0x4ed3ebb550fe14b5
+.dword 0xffffffffffff14b5
 .dword 0xfeedbee5beefbc00
-.dword 0x69ac1fce8812d2d8
+.dword 0xffffffffffffd2d8
 .dword 0xffffffefffff0400
-.dword 0x5afdaee73477077f
+.dword 0xffffffffffff077f
 .dword 0x00000000ffff8400
-.dword 0x4c929849cc961d4d
+.dword 0xffffffffffff1d4d
 .dword 0xefffffffffff7bff
-.dword 0x16de40fedf3ca7a6
+.dword 0xffffffffffffa7a6
 .dword 0xc0dec0dec0defbff
-.dword 0xb94f3bd25665d54d
+.dword 0xffffffffffffd54d
 .dword 0xa83ef1cc4f1a7c00
-.dword 0x45f3f68649815de7
+.dword 0xffffffffffff5de7
 .dword 0xffffffff0ffffc00
-.dword 0x4ee330df097387de
+.dword 0xffffffffffff87de
 .dword 0xfffeffffffff7e00
-.dword 0x83433b989d56b1c6
+.dword 0xffffffffffffb1c6
 .dword 0xffffffefffff7fff
-.dword 0x89d85aad068aded6
+.dword 0xffffffffffffded6
 .dword 0xa1b2c3d4e5f67c01
-.dword 0xa76c5998f074708d
+.dword 0xffffffffffff708d
 .dword 0xfffffffcffff7dff
-.dword 0x3e266be63397936d
-.dword 0xa36345b46f1cacfe
+.dword 0xffffffffffff936d
+.dword 0xffffffffffffacfe
 .dword 0xffffffff00000000
-.dword 0x40ea8cd7bc45d374
+.dword 0xffffffffffffd374
 .dword 0xfffffffffffe8000
-.dword 0x7a37f2159914280b
+.dword 0xffffffffffff280b
 .dword 0x7fffffffffff3c00
-.dword 0x8417f7834742506b
+.dword 0xffffffffffff506b
 .dword 0xfeedbee5beefbc00
-.dword 0x46fd7ea9e7602f84
+.dword 0xffffffffffff2f84
 .dword 0xffffffefffff0400
-.dword 0x36ba911c22b6296e
+.dword 0xffffffffffff296e
 .dword 0x00000000ffff8400
-.dword 0xe6663d6e2b09d2ab
+.dword 0xffffffffffffd2ab
 .dword 0xefffffffffff7bff
-.dword 0xdbd4c38d2fc73644
+.dword 0xffffffffffff3644
 .dword 0xc0dec0dec0defbff
-.dword 0x992fc056fa228807
+.dword 0xffffffffffff8807
 .dword 0xa83ef1cc4f1a7c00
-.dword 0x3e7dea812d11037c
+.dword 0xffffffffffff037c
 .dword 0xffffffff0ffffc00
-.dword 0xea9b46da753ec16f
+.dword 0xffffffffffffc16f
 .dword 0xfffeffffffff7e00
-.dword 0x0a74ca6b7d4d7b46
+.dword 0xffffffffffff7b46
 .dword 0xffffffefffff7fff
-.dword 0x65717722b1b267c6
+.dword 0xffffffffffff67c6
 .dword 0xa1b2c3d4e5f67c01
-.dword 0x93f6001628a5ddac
+.dword 0xffffffffffffddac
 .dword 0xfffffffcffff7dff
 
 // Testcase strings

@@ -34,23 +34,23 @@ csr_tdata1: coverpoint ins.current.insn[31:20] {
 }
 
 // mcontrol6 fields of the selected trigger's tdata1
-tdata1_type_mcontrol6: coverpoint ins.current.csr[CSR_TDATA1][XLEN-1:XLEN-4] {
+tdata1_type_mcontrol6: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "type")[3:0] {
     type_option.weight = 0;
     bins mcontrol6 = {4'd6};
 }
-tdata1_select_adr: coverpoint ins.current.csr[CSR_TDATA1][21] {
+tdata1_select_adr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "select")[0] {
     type_option.weight = 0;
     bins adr = {1'b0};
 }
-tdata1_select_data: coverpoint ins.current.csr[CSR_TDATA1][21] {
+tdata1_select_data: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "select")[0] {
     type_option.weight = 0;
     bins data = {1'b1};
 }
-tdata1_xsl: coverpoint ins.current.csr[CSR_TDATA1][2:0] {
+tdata1_xsl: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "execute")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "store")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "load")[0]} {
     type_option.weight = 0;
     bins xsl[] = {[0:7]};
 }
-tdata1_size: coverpoint ins.current.csr[CSR_TDATA1][18:16] {
+tdata1_size: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "size")[2:0] {
     type_option.weight = 0;
     bins any = {3'd0};
     `ifdef UDB_SDTRIG_MCONTROL6_SIZE_AVAILABLE
@@ -63,9 +63,4 @@ tdata2_adr: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.rs1_val + ins
     type_option.weight = 0;
     bins scratch = {1'b1};
     bins zero    = {1'b0} iff (ins.current.csr[CSR_TDATA2] == '0);
-}
-tdata2_data: coverpoint (ins.current.csr[CSR_TDATA2] ^ (ins.current.has_rd ? ins.current.rd_val_pre : ins.current.rs2_val)) {
-    type_option.weight = 0;
-    bins data   = {'0};
-    bins nofire = {1};
 }

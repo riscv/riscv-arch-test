@@ -58,7 +58,7 @@ Those requirements are defined normatively in the RVA23 Profiles and are unchang
 NOTE: We encourage those who have implemented other base ISAs or extensions to
 run the appropriate https://github.com/riscv/riscv-arch-test[RISC-V ACTs] to help ensure compliance.
 
-The remainder of the document describes requirements for the test environment and for developers.
+The remainder of the document describes requirements for the execution environment and for developers.
 
 == Execution Environment and Test Supervisor Binary Interface (T-SBI)
 

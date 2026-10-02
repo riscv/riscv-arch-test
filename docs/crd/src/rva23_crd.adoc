@@ -195,6 +195,7 @@ The developer must provide:
 * Custom trap handler, if any, to handle invisible traps.
 * Implementation-specific boot code, as needed.
 
+[appendix]
 == Related Specifications
 
 The following specifications define RVA23, the certification test plan, and how to use the tests.

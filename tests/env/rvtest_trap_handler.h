@@ -130,24 +130,8 @@
 #define DEFAULT_LINK_REG x5                      // link register for test macros (jal return address)
 
 
-#ifndef T1
-  #define T1      x6                             // handler temporary 1
-#endif
-#ifndef T2
-  #define T2      x7                             // handler temporary 2
-#endif
-#ifndef T3
-  #define T3      x8                             // handler temporary 3
-#endif
-#ifndef T4
-  #define T4      x9                             // handler temporary 4
-#endif
-#ifndef T5
-  #define T5      x14                            // handler temporary 5
-#endif
-#ifndef T6
-  #define T6      x15                            // handler temporary 6
-#endif
+// T1..T6 now live in utils.h (included before this file) so the shim can use
+// them without pulling in the whole trap handler.
 
 //==============================================================================
 // SECTION 2: ARCHITECTURE CONSTANTS
@@ -2640,6 +2624,22 @@ excpt_\__MODE__\()hndlr_tbl:
 // reference don't affect .text.rvtest size.
 //==============================================================================
 
+// RVTEST_MODEL_INT_CLR0(_SHIM, _MACRO): interrupt-clear from handler context, for
+// the VS-mode clears, which take no arguments. Normally expands _MACRO inline; in a
+// kit build it calls _SHIM instead so the object stays DUT-free. The _SHIM routines
+// may only touch ra/T2/T5 (T2/T5 are restored by resto_Xrtn) -- a0/a1 are live. ra is
+// spilled to save-area slot 0 around the call, as in the T-SBI CSR_ACCESS dispatch
+// above. The M and S clears reach the DUT through the rvtest_*_int_m / _su entry
+// points instead, which the shim defines in a kit build.
+#ifdef RVMODEL_SHIM_EXTERN
+  #define RVTEST_MODEL_INT_CLR0(_SHIM, _MACRO)                  \
+        SREG    ra, trap_sv_off+0*REGWIDTH(sp)                 ;\
+        call    _SHIM                                          ;\
+        LREG    ra, trap_sv_off+0*REGWIDTH(sp)
+#else
+  #define RVTEST_MODEL_INT_CLR0(_SHIM, _MACRO) _MACRO
+#endif
+
 .pushsection .text.rvmodel, "ax"
 
 // These routines are placed after .data, which can be larger than the jal range
@@ -2747,17 +2747,17 @@ excpt_\__MODE__\()hndlr_tbl:
 #endif
 
 \__MODE__\()clr_Vsw_int:                             // VS-mode software interrupt
-        RVMODEL_CLR_VSW_INT
+        RVTEST_MODEL_INT_CLR0(rvmodel_clr_vsw_int_h, RVMODEL_CLR_VSW_INT)
         la      T2, resto_\__MODE__\()rtn
         jr      T2
 
 \__MODE__\()clr_Vtmr_int:                            // VS-mode timer interrupt
-        RVMODEL_CLR_VTIMER_INT
+        RVTEST_MODEL_INT_CLR0(rvmodel_clr_vtimer_int_h, RVMODEL_CLR_VTIMER_INT)
         la      T2, resto_\__MODE__\()rtn
         jr      T2
 
 \__MODE__\()clr_Vext_int:                            // VS-mode external interrupt: clear + save intID
-        RVMODEL_CLR_VEXT_INT
+        RVTEST_MODEL_INT_CLR0(rvmodel_clr_vext_int_h, RVMODEL_CLR_VEXT_INT)
         la      T2, resto_\__MODE__\()rtn
         jr      T2
 

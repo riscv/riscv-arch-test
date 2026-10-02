@@ -35,6 +35,11 @@
   #define RVTEST_INVISIBLE_TRAP_HANDLER
 #endif
 
+// Implementation macros (halt, IO, interrupt set/clear) come from the shim in a
+// kit build, so skip those checks under RVMODEL_SHIM_EXTERN. Value macros (device
+// addresses, timings) are still required - they come from dut_environment.h.
+#ifndef RVMODEL_SHIM_EXTERN
+
 #ifndef RVMODEL_DATA_SECTION
   #error "RVMODEL_DATA_SECTION not defined. Make sure to define it in rvmodel_macros.h."
 #endif
@@ -52,6 +57,8 @@
 #ifndef RVMODEL_IO_WRITE_STR
   #error "RVMODEL_IO_WRITE_STR not defined. Make sure to define it in rvmodel_macros.h."
 #endif
+
+#endif // RVMODEL_SHIM_EXTERN (implementation checks)
 
 ##### ADDRESSES #####
 // If RVMODEL_ACCESS_FAULT_ADDRESS is not defined, no access faults are tested
@@ -89,7 +96,9 @@
 ##### Machine Interrupts #####
 // UDB_{MEI,MTI,MSI}_INTR_IMPL say which machine interrupts the platform can raise. Each one that
 // is implemented needs a way to raise it, and a platform providing a raise must also provide the
-// matching clear.
+// matching clear. In a kit build the raises and clears come from rvmodel_shim.S, so the checks
+// below are skipped.
+#ifndef RVMODEL_SHIM_EXTERN
 
 #if defined(UDB_MEI_INTR_IMPL) && !defined(RVMODEL_SET_MEXT_INT)
   #error "UDB_MEI_INTR_IMPL is set but RVMODEL_SET_MEXT_INT is not defined. Define it in rvmodel_macros.h."
@@ -153,6 +162,8 @@
     #endif
   #endif
 #endif
+
+#endif // RVMODEL_SHIM_EXTERN (interrupt implementation checks)
 
 ##### Configuration Limitations #####
 #if UDB_NUM_PMP_ENTRIES > 0

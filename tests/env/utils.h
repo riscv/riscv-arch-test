@@ -3,6 +3,27 @@
 # Jordan Carlin jcarlin@hmc.edu November 2025
 # SPDX-License-Identifier: BSD-3-Clause
 
+// Temporary-register convention (moved here from rvtest_trap_handler.h so the
+// shim can use T1..T6 without it). #ifndef lets a test or DUT override one.
+#ifndef T1
+  #define T1      x6                             // handler temporary 1
+#endif
+#ifndef T2
+  #define T2      x7                             // handler temporary 2
+#endif
+#ifndef T3
+  #define T3      x8                             // handler temporary 3
+#endif
+#ifndef T4
+  #define T4      x9                             // handler temporary 4
+#endif
+#ifndef T5
+  #define T5      x14                            // handler temporary 5
+#endif
+#ifndef T6
+  #define T6      x15                            // handler temporary 6
+#endif
+
 // General utility macros
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
@@ -50,7 +71,18 @@
 // I-cache assumed). A DUT that needs a custom mechanism may predefine RVMODEL_FENCEI
 // (e.g. a JAL to a sync routine) and it is used as-is. Must stay a single instruction
 // (or a JAL) so code size is constant.
-#ifdef   RVMODEL_FENCEI
+//
+// Kit builds reject a custom RVMODEL_FENCEI. It expands inside certified code, so
+// a private sync the reference model never ran would break the signature; and it
+// can't move behind a call since a JAL needs a link register and none is free here.
+#if defined(RVMODEL_FENCEI) && defined(RVMODEL_SHIM_EXTERN)
+  #error "RVMODEL_FENCEI is not supported in a certification-kit build. The reference \
+model must execute the same instruction stream as the DUT, so the instruction-stream \
+sync must be the architectural one (fence.i, via Zifencei) or unnecessary (coherent \
+I-cache). Declare Zifencei support in the config instead of supplying a private mechanism."
+#endif
+
+#if defined(RVMODEL_FENCEI) && !defined(RVMODEL_SHIM_EXTERN)
   #define RVTEST_FENCEI RVMODEL_FENCEI
 #else
   #ifdef ZIFENCEI_SUPPORTED

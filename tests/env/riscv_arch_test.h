@@ -10,7 +10,16 @@
   #include "rvtest_experimental.h"
 #endif
 #include "utils.h"
-#include "rvmodel_macros.h"
+// Kit builds never see rvmodel_macros.h (implementations come from the shim,
+// values from dut_environment.h). Normal builds include it as before, and
+// dut_environment.h cross-checks the two.
+// A driver-based (kit) config ships no rvmodel_macros.h at all: implementations
+// come from the shim, values from dut_environment.h, and the reference build gets
+// its model behaviour from sail_macros.h below.
+#if !defined(RVMODEL_SHIM_EXTERN) && __has_include("rvmodel_macros.h")
+  #include "rvmodel_macros.h"
+#endif
+#include "dut_environment.h"
 #ifndef RVTEST_SELFCHECK
   #include "sail_macros.h"
 #endif

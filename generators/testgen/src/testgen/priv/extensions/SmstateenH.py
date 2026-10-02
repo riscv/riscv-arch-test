@@ -11,6 +11,10 @@
 The suite boots to HS-mode and writes mstateen0 through T-SBI.  An mstateen0 bit of 0 makes the matching hstateen0
 bit read-only zero and makes the state it controls illegal to access below M-mode.  When the mstateen0 bit is 1, a
 VS-mode or VU-mode access that hstateen0 or the H extension forbids raises virtual instruction instead.
+
+A VS-mode or VU-mode access to hedelegh (RV32) with mstateen0.P1P13 = 0 may raise either illegal instruction (the
+stateen rule) or virtual instruction (the high-half hypervisor CSR rule, since hedeleg is accessible in HS-mode
+whatever P1P13 is), so the test accepts both.
 """
 
 from itertools import product
@@ -47,11 +51,13 @@ def _gate_tests(
     mbit: tuple[str, str],
     hbit: tuple[str, str] | None,
     csrs: list[str],
+    either_when_off: bool = False,
 ) -> list[str]:
     """Read each CSR in mode for every reachable value of the mstateen0 bit and the matching hstateen0 bit.
 
     The hstateen0 bit is written while the mstateen0 bit is 1, because hstateen0 is read-only zero, and for SE0
-    inaccessible, when it is 0.  Both bits are 1 afterwards, as at boot.
+    inaccessible, when it is 0.  Both bits are 1 afterwards, as at boot.  With either_when_off, a read with the
+    mstateen0 bit 0 may raise either illegal instruction or virtual instruction.
     """
     coverpoint = f"cp_{mode}_mstateen0_{name}"
     states = [(m, h) for m, h in product((0, 1), repeat=2) if h <= m] if hbit else [(0, 0), (1, 0)]
@@ -60,7 +66,8 @@ def _gate_tests(
             coverpoint,
             f"Read {', '.join(csrs)} in {mode.upper()}-mode for each value of mstateen0.{name.upper()}"
             + (f" and hstateen0.{name.upper()}" if hbit else "")
-            + ".\nIllegal instruction when the mstateen0 bit is 0",
+            + ".\nIllegal instruction when the mstateen0 bit is 0"
+            + (" (or virtual instruction)" if either_when_off else ""),
         ),
     ]
     for m, h in states:
@@ -70,7 +77,15 @@ def _gate_tests(
                 *mstateen0_bit(mbit, 1),
                 *(hstateen0_bit(test_data, hbit, h) if hbit else []),
                 *mstateen0_bit(mbit, m),
-                *read_in_mode(test_data, mode, csrs, suffix, coverpoint, _covergroup(mode)),
+                *read_in_mode(
+                    test_data,
+                    mode,
+                    csrs,
+                    suffix,
+                    coverpoint,
+                    _covergroup(mode),
+                    ("CAUSE_ILLEGAL_INSTRUCTION", "CAUSE_VIRTUAL_INSTRUCTION") if either_when_off and not m else None,
+                ),
             ]
         )
     lines.extend([*mstateen0_bit(mbit, 1), *(hstateen0_bit(test_data, hbit, 1) if hbit else [])])
@@ -84,7 +99,7 @@ def _mode_tests(test_data: TestData, mode: str) -> list[str]:
         *_gate_tests(test_data, mode, "envcfg", MSTATEEN0_ENVCFG, HSTATEEN0_ENVCFG, ["senvcfg", "henvcfg", "henvcfgh"]),
     ]
     if mode != "hs":
-        lines.extend(_gate_tests(test_data, mode, "p1p13", MSTATEEN0_P1P13, None, ["hedelegh"]))
+        lines.extend(_gate_tests(test_data, mode, "p1p13", MSTATEEN0_P1P13, None, ["hedelegh"], either_when_off=True))
     return lines
 
 

@@ -443,13 +443,19 @@
 // Arm the 4-byte instruction at _LABEL, for which the spec allows either completing or raising exception
 // _CAUSE. If it raises that exception, the trap handler disarms it and resumes after it without recording a
 // trap, so both outcomes give the same signature; any other trap is recorded as usual.
-// RVTEST_OPTIONAL_TRAP_END disarms it in case it completed. Both macros clobber only their register arguments.
-#define RVTEST_OPTIONAL_TRAP(_R1, _R2, _LABEL, _CAUSE) \
+// RVTEST_OPTIONAL_TRAP2 accepts either of two exceptions, _CAUSE1 or _CAUSE2, in the same way.
+// RVTEST_OPTIONAL_TRAP_END disarms it in case it completed. The macros clobber only their register arguments.
+#define RVTEST_OPTIONAL_TRAP2(_R1, _R2, _LABEL, _CAUSE1, _CAUSE2) \
     LA(_R1, rvtest_optional_trap); \
-    LI(_R2, _CAUSE); \
+    LI(_R2, _CAUSE1); \
     SREG _R2, REGWIDTH(_R1); \
+    LI(_R2, _CAUSE2); \
+    SREG _R2, 2*REGWIDTH(_R1); \
     LA(_R2, _LABEL); \
     SREG _R2, 0(_R1);
+
+#define RVTEST_OPTIONAL_TRAP(_R1, _R2, _LABEL, _CAUSE) \
+    RVTEST_OPTIONAL_TRAP2(_R1, _R2, _LABEL, _CAUSE, _CAUSE)
 
 #define RVTEST_OPTIONAL_TRAP_END(_R1) \
     LA(_R1, rvtest_optional_trap); \

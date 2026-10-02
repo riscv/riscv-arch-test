@@ -40,11 +40,11 @@ RVTEST_BEGIN
   RVTEST_TSBI_CSR_SET(CSR_MSTATEEN0H, MSTATEENH_HSTATEEN)
 #endif
 #if __riscv_xlen == 64
-  LI(x9, HSTATEEN_SSTATEEN)
-  csrc hstateen0, x9
+  LI(x8, HSTATEEN_SSTATEEN)
+  csrc hstateen0, x8
 #else
-  LI(x9, HSTATEENH_SSTATEEN)
-  csrc hstateen0h, x9
+  LI(x8, HSTATEENH_SSTATEEN)
+  csrc hstateen0h, x8
 #endif
 #if __riscv_xlen == 64
   RVTEST_TSBI_CSR_CLEAR(CSR_MSTATEEN0, MSTATEEN_HSTATEEN)
@@ -52,22 +52,22 @@ RVTEST_BEGIN
   RVTEST_TSBI_CSR_CLEAR(CSR_MSTATEEN0H, MSTATEENH_HSTATEEN)
 #endif
   RVTEST_TSBI_GOTO_VUMODE
-  LI(x8, 42)
+  LI(x13, 42)
 SmstateenH_vu_cg_cp_vu_mstateen0_se0_sstateen0_m0_h0:
-  csrr x8, sstateen0
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, SmstateenH_vu_cg_cp_vu_mstateen0_se0_sstateen0_m0_h0, SmstateenH_vu_cg_cp_vu_mstateen0_se0_sstateen0_m0_h0_str)
-  LI(x8, 42)
+  csrr x13, sstateen0
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, SmstateenH_vu_cg_cp_vu_mstateen0_se0_sstateen0_m0_h0, SmstateenH_vu_cg_cp_vu_mstateen0_se0_sstateen0_m0_h0_str)
+  LI(x13, 42)
 SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0_m0_h0:
-  csrr x8, hstateen0
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0_m0_h0, SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0_m0_h0_str)
+  csrr x13, hstateen0
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0_m0_h0, SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0_m0_h0_str)
 #if __riscv_xlen == 32
-  LI(x8, 42)
+  LI(x13, 42)
 SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0h_m0_h0:
-  csrr x8, hstateen0h
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0h_m0_h0, SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0h_m0_h0_str)
+  csrr x13, hstateen0h
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0h_m0_h0, SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0h_m0_h0_str)
 #endif // __riscv_xlen == 32
   RVTEST_TSBI_GOTO_SMODE
 #if __riscv_xlen == 64
@@ -88,22 +88,22 @@ SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0h_m0_h0:
   RVTEST_TSBI_CSR_SET(CSR_MSTATEEN0H, MSTATEENH_HSTATEEN)
 #endif
   RVTEST_TSBI_GOTO_VUMODE
-  LI(x13, 42)
+  LI(x8, 42)
 SmstateenH_vu_cg_cp_vu_mstateen0_se0_sstateen0_m1_h0:
-  csrr x13, sstateen0
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SmstateenH_vu_cg_cp_vu_mstateen0_se0_sstateen0_m1_h0, SmstateenH_vu_cg_cp_vu_mstateen0_se0_sstateen0_m1_h0_str)
-  LI(x13, 42)
+  csrr x8, sstateen0
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, SmstateenH_vu_cg_cp_vu_mstateen0_se0_sstateen0_m1_h0, SmstateenH_vu_cg_cp_vu_mstateen0_se0_sstateen0_m1_h0_str)
+  LI(x8, 42)
 SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0_m1_h0:
-  csrr x13, hstateen0
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0_m1_h0, SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0_m1_h0_str)
+  csrr x8, hstateen0
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0_m1_h0, SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0_m1_h0_str)
 #if __riscv_xlen == 32
-  LI(x13, 42)
+  LI(x8, 42)
 SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0h_m1_h0:
-  csrr x13, hstateen0h
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0h_m1_h0, SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0h_m1_h0_str)
+  csrr x8, hstateen0h
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0h_m1_h0, SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0h_m1_h0_str)
 #endif // __riscv_xlen == 32
   RVTEST_TSBI_GOTO_SMODE
 #if __riscv_xlen == 64
@@ -112,11 +112,11 @@ SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0h_m1_h0:
   RVTEST_TSBI_CSR_SET(CSR_MSTATEEN0H, MSTATEENH_HSTATEEN)
 #endif
 #if __riscv_xlen == 64
-  LI(x8, HSTATEEN_SSTATEEN)
-  csrs hstateen0, x8
+  LI(x13, HSTATEEN_SSTATEEN)
+  csrs hstateen0, x13
 #else
-  LI(x8, HSTATEENH_SSTATEEN)
-  csrs hstateen0h, x8
+  LI(x13, HSTATEENH_SSTATEEN)
+  csrs hstateen0h, x13
 #endif
 #if __riscv_xlen == 64
   RVTEST_TSBI_CSR_SET(CSR_MSTATEEN0, MSTATEEN_HSTATEEN)
@@ -148,11 +148,11 @@ SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0h_m1_h1:
   RVTEST_TSBI_CSR_SET(CSR_MSTATEEN0H, MSTATEENH_HSTATEEN)
 #endif
 #if __riscv_xlen == 64
-  LI(x13, HSTATEEN_SSTATEEN)
-  csrs hstateen0, x13
+  LI(x8, HSTATEEN_SSTATEEN)
+  csrs hstateen0, x8
 #else
-  LI(x13, HSTATEENH_SSTATEEN)
-  csrs hstateen0h, x13
+  LI(x8, HSTATEENH_SSTATEEN)
+  csrs hstateen0h, x8
 #endif
 
 
@@ -167,11 +167,11 @@ SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0h_m1_h1:
   RVTEST_TSBI_CSR_SET(CSR_MSTATEEN0H, MSTATEEN0H_HENVCFG)
 #endif
 #if __riscv_xlen == 64
-  LI(x8, HSTATEEN0_SENVCFG)
-  csrc hstateen0, x8
+  LI(x9, HSTATEEN0_SENVCFG)
+  csrc hstateen0, x9
 #else
-  LI(x8, HSTATEEN0H_SENVCFG)
-  csrc hstateen0h, x8
+  LI(x9, HSTATEEN0H_SENVCFG)
+  csrc hstateen0h, x9
 #endif
 #if __riscv_xlen == 64
   RVTEST_TSBI_CSR_CLEAR(CSR_MSTATEEN0, MSTATEEN0_HENVCFG)
@@ -179,22 +179,22 @@ SmstateenH_vu_cg_cp_vu_mstateen0_se0_hstateen0h_m1_h1:
   RVTEST_TSBI_CSR_CLEAR(CSR_MSTATEEN0H, MSTATEEN0H_HENVCFG)
 #endif
   RVTEST_TSBI_GOTO_VUMODE
-  LI(x9, 42)
+  LI(x6, 42)
 SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_senvcfg_m0_h0:
-  csrr x9, senvcfg
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_senvcfg_m0_h0, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_senvcfg_m0_h0_str)
-  LI(x9, 42)
+  csrr x6, senvcfg
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_senvcfg_m0_h0, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_senvcfg_m0_h0_str)
+  LI(x6, 42)
 SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfg_m0_h0:
-  csrr x9, henvcfg
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfg_m0_h0, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfg_m0_h0_str)
+  csrr x6, henvcfg
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfg_m0_h0, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfg_m0_h0_str)
 #if __riscv_xlen == 32
-  LI(x9, 42)
+  LI(x6, 42)
 SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m0_h0:
-  csrr x9, henvcfgh
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m0_h0, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m0_h0_str)
+  csrr x6, henvcfgh
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m0_h0, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m0_h0_str)
 #endif // __riscv_xlen == 32
   RVTEST_TSBI_GOTO_SMODE
 #if __riscv_xlen == 64
@@ -215,22 +215,22 @@ SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m0_h0:
   RVTEST_TSBI_CSR_SET(CSR_MSTATEEN0H, MSTATEEN0H_HENVCFG)
 #endif
   RVTEST_TSBI_GOTO_VUMODE
-  LI(x6, 42)
+  LI(x9, 42)
 SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_senvcfg_m1_h0:
-  csrr x6, senvcfg
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_senvcfg_m1_h0, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_senvcfg_m1_h0_str)
-  LI(x6, 42)
+  csrr x9, senvcfg
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_senvcfg_m1_h0, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_senvcfg_m1_h0_str)
+  LI(x9, 42)
 SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfg_m1_h0:
-  csrr x6, henvcfg
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfg_m1_h0, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfg_m1_h0_str)
+  csrr x9, henvcfg
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfg_m1_h0, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfg_m1_h0_str)
 #if __riscv_xlen == 32
-  LI(x6, 42)
+  LI(x9, 42)
 SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m1_h0:
-  csrr x6, henvcfgh
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m1_h0, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m1_h0_str)
+  csrr x9, henvcfgh
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m1_h0, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m1_h0_str)
 #endif // __riscv_xlen == 32
   RVTEST_TSBI_GOTO_SMODE
 #if __riscv_xlen == 64
@@ -239,11 +239,11 @@ SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m1_h0:
   RVTEST_TSBI_CSR_SET(CSR_MSTATEEN0H, MSTATEEN0H_HENVCFG)
 #endif
 #if __riscv_xlen == 64
-  LI(x9, HSTATEEN0_SENVCFG)
-  csrs hstateen0, x9
+  LI(x6, HSTATEEN0_SENVCFG)
+  csrs hstateen0, x6
 #else
-  LI(x9, HSTATEEN0H_SENVCFG)
-  csrs hstateen0h, x9
+  LI(x6, HSTATEEN0H_SENVCFG)
+  csrs hstateen0h, x6
 #endif
 #if __riscv_xlen == 64
   RVTEST_TSBI_CSR_SET(CSR_MSTATEEN0, MSTATEEN0_HENVCFG)
@@ -251,22 +251,22 @@ SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m1_h0:
   RVTEST_TSBI_CSR_SET(CSR_MSTATEEN0H, MSTATEEN0H_HENVCFG)
 #endif
   RVTEST_TSBI_GOTO_VUMODE
-  LI(x6, 42)
+  LI(x8, 42)
 SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_senvcfg_m1_h1:
-  csrr x6, senvcfg
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_senvcfg_m1_h1, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_senvcfg_m1_h1_str)
-  LI(x6, 42)
+  csrr x8, senvcfg
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_senvcfg_m1_h1, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_senvcfg_m1_h1_str)
+  LI(x8, 42)
 SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfg_m1_h1:
-  csrr x6, henvcfg
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfg_m1_h1, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfg_m1_h1_str)
+  csrr x8, henvcfg
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfg_m1_h1, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfg_m1_h1_str)
 #if __riscv_xlen == 32
-  LI(x6, 42)
+  LI(x8, 42)
 SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m1_h1:
-  csrr x6, henvcfgh
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m1_h1, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m1_h1_str)
+  csrr x8, henvcfgh
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m1_h1, SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m1_h1_str)
 #endif // __riscv_xlen == 32
   RVTEST_TSBI_GOTO_SMODE
 #if __riscv_xlen == 64
@@ -275,18 +275,18 @@ SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m1_h1:
   RVTEST_TSBI_CSR_SET(CSR_MSTATEEN0H, MSTATEEN0H_HENVCFG)
 #endif
 #if __riscv_xlen == 64
-  LI(x8, HSTATEEN0_SENVCFG)
-  csrs hstateen0, x8
+  LI(x6, HSTATEEN0_SENVCFG)
+  csrs hstateen0, x6
 #else
-  LI(x8, HSTATEEN0H_SENVCFG)
-  csrs hstateen0h, x8
+  LI(x6, HSTATEEN0H_SENVCFG)
+  csrs hstateen0h, x6
 #endif
 
 
 /////////////////////////////////
 // cp_vu_mstateen0_p1p13
 //   Read hedelegh in VU-mode for each value of mstateen0.P1P13.
-//   Illegal instruction when the mstateen0 bit is 0
+//   Illegal instruction when the mstateen0 bit is 0 (or virtual instruction)
 /////////////////////////////////
 #if __riscv_xlen == 64
   RVTEST_TSBI_CSR_SET(CSR_MSTATEEN0, MSTATEEN0_PRIV113)
@@ -300,11 +300,13 @@ SmstateenH_vu_cg_cp_vu_mstateen0_envcfg_henvcfgh_m1_h1:
 #endif
   RVTEST_TSBI_GOTO_VUMODE
 #if __riscv_xlen == 32 && defined(SM1P13P0_OR_LATER_SUPPORTED)
-  LI(x6, 42)
+  RVTEST_OPTIONAL_TRAP2(x9, x13, SmstateenH_vu_cg_cp_vu_mstateen0_p1p13_hedelegh_m0, CAUSE_ILLEGAL_INSTRUCTION, CAUSE_VIRTUAL_INSTRUCTION)
+  LI(x13, 42)
 SmstateenH_vu_cg_cp_vu_mstateen0_p1p13_hedelegh_m0:
-  csrr x6, hedelegh
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, SmstateenH_vu_cg_cp_vu_mstateen0_p1p13_hedelegh_m0, SmstateenH_vu_cg_cp_vu_mstateen0_p1p13_hedelegh_m0_str)
+  csrr x13, hedelegh
+  RVTEST_OPTIONAL_TRAP_END(x9)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, SmstateenH_vu_cg_cp_vu_mstateen0_p1p13_hedelegh_m0, SmstateenH_vu_cg_cp_vu_mstateen0_p1p13_hedelegh_m0_str)
 #endif // __riscv_xlen == 32 && defined(SM1P13P0_OR_LATER_SUPPORTED)
   RVTEST_TSBI_GOTO_SMODE
 #if __riscv_xlen == 64

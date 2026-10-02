@@ -286,7 +286,7 @@ SmstateenH_vs_cg_cp_vs_mstateen0_envcfg_henvcfgh_m1_h1:
 /////////////////////////////////
 // cp_vs_mstateen0_p1p13
 //   Read hedelegh in VS-mode for each value of mstateen0.P1P13.
-//   Illegal instruction when the mstateen0 bit is 0
+//   Illegal instruction when the mstateen0 bit is 0 (or virtual instruction)
 /////////////////////////////////
 #if __riscv_xlen == 64
   RVTEST_TSBI_CSR_SET(CSR_MSTATEEN0, MSTATEEN0_PRIV113)
@@ -300,9 +300,11 @@ SmstateenH_vs_cg_cp_vs_mstateen0_envcfg_henvcfgh_m1_h1:
 #endif
   RVTEST_TSBI_GOTO_VSMODE
 #if __riscv_xlen == 32 && defined(SM1P13P0_OR_LATER_SUPPORTED)
+  RVTEST_OPTIONAL_TRAP2(x15, x9, SmstateenH_vs_cg_cp_vs_mstateen0_p1p13_hedelegh_m0, CAUSE_ILLEGAL_INSTRUCTION, CAUSE_VIRTUAL_INSTRUCTION)
   LI(x9, 42)
 SmstateenH_vs_cg_cp_vs_mstateen0_p1p13_hedelegh_m0:
   csrr x9, hedelegh
+  RVTEST_OPTIONAL_TRAP_END(x15)
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, SmstateenH_vs_cg_cp_vs_mstateen0_p1p13_hedelegh_m0, SmstateenH_vs_cg_cp_vs_mstateen0_p1p13_hedelegh_m0_str)
 #endif // __riscv_xlen == 32 && defined(SM1P13P0_OR_LATER_SUPPORTED)
@@ -319,11 +321,11 @@ SmstateenH_vs_cg_cp_vs_mstateen0_p1p13_hedelegh_m0:
 #endif
   RVTEST_TSBI_GOTO_VSMODE
 #if __riscv_xlen == 32 && defined(SM1P13P0_OR_LATER_SUPPORTED)
-  LI(x14, 42)
+  LI(x9, 42)
 SmstateenH_vs_cg_cp_vs_mstateen0_p1p13_hedelegh_m1:
-  csrr x14, hedelegh
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SmstateenH_vs_cg_cp_vs_mstateen0_p1p13_hedelegh_m1, SmstateenH_vs_cg_cp_vs_mstateen0_p1p13_hedelegh_m1_str)
+  csrr x9, hedelegh
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SmstateenH_vs_cg_cp_vs_mstateen0_p1p13_hedelegh_m1, SmstateenH_vs_cg_cp_vs_mstateen0_p1p13_hedelegh_m1_str)
 #endif // __riscv_xlen == 32 && defined(SM1P13P0_OR_LATER_SUPPORTED)
   RVTEST_TSBI_GOTO_SMODE
 #if __riscv_xlen == 64

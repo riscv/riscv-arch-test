@@ -27,6 +27,19 @@ coverpoints:
     status: To be Done
     coverage: Uncovered
     notes: "feature: Reserved Encoding"
+  - name: |-
+      Svnapot_reserved_ppni_napot_enc_exec_s
+      Svnapot_reserved_ppni_napot_enc_exec_u
+      Svnapot_reserved_ppni_napot_enc_read_s
+      Svnapot_reserved_ppni_napot_enc_read_u
+      Svnapot_reserved_ppni_napot_enc_write_s
+      Svnapot_reserved_ppni_napot_enc_write_u
+    description: |-
+      Set up a superpage leaf PTE (level i >= 1) with N=1 and the 64 KiB encoding pte.ppn[0][3:0] = 1000, at each superpage level.
+      The encoding is only defined for i = 0, so it is reserved here.
+      Store, load, and execute through the page in supervisor and user mode.
+    check: Store/AMO, load, and instruction page faults
+    notes: "feature: Reserved Encoding"
   - name: nap.3
     description: |-
       Set up a page table with a combination of NAPOT and nonNAPOT PTEs.

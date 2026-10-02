@@ -47,3 +47,21 @@ coverpoints:
       if ADUE = 0: store page fault
       If ADUE = 1: PTE.A bit is set after accessing; no page fault occurs
     bins: 2 ADUE * 2 priv modes * (3 Sv39 +4 Sv48 + 5 Sv57) levels
+  - name: |-
+      fault_no_update_exec_s
+      fault_no_update_read_s
+      fault_no_update_write_s
+    goal: No A/D update on a faulting access
+    description: |-
+      With menvcfg.ADUE = 1, in supervisor mode, access leaf PTEs with A=0 and D=0 that must page fault, then read the PTE back.
+      Every page-table walk check for a leaf PTE must pass before the hardware A/D update.
+
+      Test Cases (store, load, and execute each, with sfence.vma before each access):
+       Misaligned superpage at each superpage level.
+       PTE.U=1 with sstatus.SUM=0.
+       Reserved encoding W=1, R=0.
+       RV64: reserved bit 54 set; PBMT=3; N=1 with ppn[3:0]=0000; N=1 with ppn[3:0]=1000 at each superpage level.
+    expectation: Load/store/instruction page fault; the PTE still has A=0 and D=0.
+    bins: |-
+      PTE_fault_reason x Svadu_enabled x access x page fault x mode {S-mode}
+      = 18 bins on RV64, 9 on RV32

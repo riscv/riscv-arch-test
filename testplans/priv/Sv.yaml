@@ -570,6 +570,36 @@ coverpoints:
     id: Sv39_leaf_any_level Sv39_page_sizes Sv48_leaf_any_level Sv48_page_sizes Sv57_leaf_any_level Sv57_page_sizes stval_op_faulting_addr
     rules:
       - "[norm:Sv39_leaf_any_level] [norm:Sv39_page_sizes] [norm:Sv48_leaf_any_level] [norm:Sv48_page_sizes] [norm:Sv57_leaf_any_level] [norm:Sv57_page_sizes] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_rsv_nleaf_read_s
+    goal: Verify any of bits 63:54 set in a non-leaf PTE raises a load page fault on a load from S-mode
+    description: "RV64, S-mode: valid level-0 leaf PTE; in each non-leaf PTE above it, set each of bits 63 (N), 62:61 (PBMT), and 60:54 in turn. These bits are reserved in non-leaf PTEs whether or not Svnapot and Svpbmt are implemented. Load (lw) from the page through va_data. Requires privileged spec 1.12 or later."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_nonleaf_d x PTE_nonleaf_rsv_d x PageType_d x load_page_fault x mode {S-mode}
+      = 50 bins on RV64 (RV64 only)
+    id: Sv39_pte_future_rsv Svpbmt_nonleaf_pte_pbmt_must_be_zero stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_pte_future_rsv] [norm:Svpbmt_nonleaf_pte_pbmt_must_be_zero] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_rsv_nleaf_write_s
+    goal: Verify any of bits 63:54 set in a non-leaf PTE raises a store/AMO page fault on a store from S-mode
+    description: "RV64, S-mode: valid level-0 leaf PTE; in each non-leaf PTE above it, set each of bits 63 (N), 62:61 (PBMT), and 60:54 in turn. These bits are reserved in non-leaf PTEs whether or not Svnapot and Svpbmt are implemented. Store (sw) to the page through va_data. Requires privileged spec 1.12 or later."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_nonleaf_d x PTE_nonleaf_rsv_d x PageType_d x store_page_fault x mode {S-mode}
+      = 50 bins on RV64 (RV64 only)
+    id: Sv39_pte_future_rsv Svpbmt_nonleaf_pte_pbmt_must_be_zero stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_pte_future_rsv] [norm:Svpbmt_nonleaf_pte_pbmt_must_be_zero] [norm:stval_op_faulting_addr]"
+  - name: cp_PTE_rsv_nleaf_exec_s
+    goal: Verify any of bits 63:54 set in a non-leaf PTE raises an instruction page fault on an instruction fetch from S-mode
+    description: "RV64, S-mode: valid level-0 leaf PTE; in each non-leaf PTE above it, set each of bits 63 (N), 62:61 (PBMT), and 60:54 in turn. These bits are reserved in non-leaf PTEs whether or not Svnapot and Svpbmt are implemented. Jump (jalr) into the page through va_data. Requires privileged spec 1.12 or later."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_nonleaf_i x PTE_nonleaf_rsv_i x PageType_i x ins_page_fault x mode {S-mode}
+      = 50 bins on RV64 (RV64 only)
+    id: Sv39_pte_future_rsv Svpbmt_nonleaf_pte_pbmt_must_be_zero stval_op_faulting_addr
+    rules:
+      - "[norm:Sv39_pte_future_rsv] [norm:Svpbmt_nonleaf_pte_pbmt_must_be_zero] [norm:stval_op_faulting_addr]"
   - name: cp_misaligned_exec_s
     goal: Verify a misaligned superpage raises an instruction page fault on an instruction fetch from S-mode
     description: "S-mode: superpage leaf PTE (level 1 and above) with PTE.U=0 whose PPN has non-zero bits below the superpage size, at each superpage level. Jump (jalr) into the page through va_data."

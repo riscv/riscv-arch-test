@@ -14,8 +14,10 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-  addr_in_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
-    bins at_region = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
+  // The legal_lwrx and Zcb/Zcd/Zcf walks place their NAPOT region at PMP_NAPOT_REGION_START, which
+  // is g_napot-aligned, so the 8-byte c.ld/c.sd/c.fld/c.fsd probes are naturally aligned at every grain.
+  addr_in_napot_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
   exec_c_instr: coverpoint ins.current.insn[15:0] {
@@ -205,13 +207,13 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
     bins locked_off_regions = {24'b100001111000011110000111};
   }
 
-  cp_cfg_R: cross priv_mode_m, legal_lxwr, addr_in_region, read_c_instr {
-    ignore_bins ig1 = binsof(addr_in_region.at_region) && binsof(read_c_instr.c_lwsp);
+  cp_cfg_R: cross priv_mode_m, legal_lxwr, addr_in_napot_region, read_c_instr {
+    ignore_bins ig1 = binsof(addr_in_napot_region.at_region) && binsof(read_c_instr.c_lwsp);
     `ifdef UDB_MXLEN_64
-      ignore_bins ig2 = binsof(addr_in_region.at_region) && binsof(read_c_instr.c_ldsp);
+      ignore_bins ig2 = binsof(addr_in_napot_region.at_region) && binsof(read_c_instr.c_ldsp);
     `endif
   }
-  cp_cfg_W: cross priv_mode_m, legal_lxwr, addr_in_region, write_c_instr;
+  cp_cfg_W: cross priv_mode_m, legal_lxwr, addr_in_napot_region, write_c_instr;
 
   cp_misaligned_napot: cross priv_mode_m, cfg_consecutive_napot, pmpaddr_consecutive_napot, addr_in_consecutive_regions_napot, exec_c_instr;
   cp_cret_napot: cross priv_mode_m, napot_setup, napot_region, exec_c_instr, addr_adjacent_to_pmp_boundary_napot;

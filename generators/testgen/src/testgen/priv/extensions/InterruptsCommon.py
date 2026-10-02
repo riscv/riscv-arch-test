@@ -42,6 +42,8 @@ def guard_symbol(int_type: str) -> str:
 
 
 # RVTEST_SET/CLR_<name>_INT_<priv> macro name (tests/env/utils.h) for each interrupt type.
+# M-mode cases emit RVTEST_SET_*_INT_M alongside RVTEST_CLR_*_INT_M so the platform
+# _M hooks (raw csrw, no T-SBI) are used for both raise and claim.
 int_macro = {"MEI": "MEXT", "MTI": "MTIME", "MSI": "MSW", "SEI": "SEXT", "STI": "STIME", "SSI": "SSW"}
 int_macro |= {name: name for name in ["LCOFI", *reg_ints, *sstc_ints]}
 

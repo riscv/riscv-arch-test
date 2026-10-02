@@ -57,9 +57,7 @@ def _content_hash(path: Path) -> str:
 def _action_repr(action: BuildAction) -> str:
     """Stable string identity of an action for hashing."""
     if isinstance(action, SubprocessAction):
-        check = action.check_output
-        check_repr = "" if check is None else "\x00check=" + getattr(check, "__qualname__", repr(check))
-        return "subprocess\x00" + "\x00".join(action.cmd) + "\x00cwd=" + str(action.cwd) + check_repr
+        return "subprocess\x00" + "\x00".join(action.cmd) + "\x00cwd=" + str(action.cwd)
     if isinstance(action, PythonAction):
         fn = action.fn
         qual = getattr(fn, "__qualname__", repr(fn))

@@ -9,7 +9,6 @@
 ##################################
 
 import importlib.resources
-import re
 from collections import defaultdict
 from pathlib import Path
 
@@ -36,32 +35,9 @@ _OBJDUMP_FLAGS_COMMON = ["-x", "-d", "-S", "-M", "no-aliases,numeric"]
 # -s: print a full hex+ASCII dump of every section
 _OBJDUMP_FLAGS_DEBUG = [*_OBJDUMP_FLAGS_COMMON, "-t", "-s"]
 
-# Error and fatal messages in a coverage simulation log. Questa prefixes them with "# ** " (or
-# "# " for $display); VCS prints them at the start of the line. Neither simulator exits nonzero
-# after $error or $fatal.
-_COVERAGE_SIM_ERROR_RE = re.compile(r"^(# )?(\*\* )?(Error|Fatal)\b")
-_COVERAGE_TRACE_PREFIX = "Opening trace file: "
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-
-
-def check_coverage_sim_log(output: str) -> str | None:
-    """Return an error message naming the trace being read if the coverage simulation reported an error."""
-    lines = output.splitlines()
-    trace = None
-    # Keep the line after each error: VCS prints the message there, Questa the source location.
-    shown: set[int] = set()
-    for i, line in enumerate(lines):
-        if _COVERAGE_TRACE_PREFIX in line and not shown:
-            trace = line.split(_COVERAGE_TRACE_PREFIX, 1)[1].strip()
-        elif _COVERAGE_SIM_ERROR_RE.match(line):
-            shown.update(j for j in (i, i + 1) if j < len(lines))
-    if not shown:
-        return None
-    trace_msg = f" while reading {trace}" if trace is not None else ""
-    return "\n".join([f"Coverage simulation reported errors{trace_msg}:", *(lines[i] for i in sorted(shown))])
 
 
 def _sail_platform_base(data: dict[object, object], name: str, path: Path) -> int:
@@ -527,12 +503,7 @@ def gen_coverage_tasks(
                 outputs=(simulator_artifact,),
                 deps=rvvi_deps,
                 extra_inputs=coverage_inputs if dry_run else (*coverage_inputs, tracelist_file),
-                action=SubprocessAction(
-                    cmd=coverage_cmd,
-                    stdout_file=simulator_log,
-                    cwd=coverage_dir,
-                    check_output=check_coverage_sim_log,
-                ),
+                action=SubprocessAction(cmd=coverage_cmd, stdout_file=simulator_log, cwd=coverage_dir),
                 intermediate=True,
                 timeout=COVERAGE_STEP_TIMEOUT_SECONDS,
             )

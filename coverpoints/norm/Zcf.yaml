@@ -1,14 +1,43 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  - name: Zc_fp_regs
-    # Use a representative coverpoint; applies to others too
-    coverpoint: ["Zcf_c_flw_cg/{cp_fd_p}"]
-  - name: c-flw_op
-    coverpoint: ["Zcf_c_flw_cg/{cp_rs1_p, cp_fd_p, cp_imm_mul}"]
+  # insn:c.flwsp[] is an RV32FC-only instruction that loads a single-precision
+  # floating-point value from memory into floating-point register rd. It computes its
+  # effective address by adding the zero-extended offset, scaled by 4, to the stack
+  # pointer, x2. It expands to insn:flw[rd, offset(x2)]. insn:c.flwsp[] uses the
+  # &lt;&lt;rvc-form,CI format&gt;&gt;.
   - name: c-flwsp_op
-    coverpoint: ["Zcf_c_flwsp_cg/{cp_fd, cp_imm_mul_4sp}"]
-  - name: c-fsw_op
-    coverpoint: ["Zcf_c_fsw_cg/{cp_rs1_p, cp_fs2_p, cp_imm_mul}"]
+    coverpoint: ["Zcf_c_flwsp_cg/{cp_fd, cp_imm_mul_4sp, cp_memval_fp_single}"]
+  # insn:c.fswsp[] is an RV32FC-only instruction that stores a single-precision
+  # floating-point value in floating-point register rs2 to memory. It computes an
+  # effective address by adding the zero-extended offset, scaled by 4, to the stack
+  # pointer, x2. It expands to insn:fsw[rs2,offset(x2)].
   - name: c-fswsp_op
     coverpoint: ["Zcf_c_fswsp_cg/{cp_fs2, cp_imm_mul_4sp}"]
+  # Compressed register-based floating-point loads and stores use the CL and CS formats,
+  # respectively, with the eight registers mapping to f8 to f15.
+  - name: Zc_fp_regs
+    coverpoint: ["Zcf_c_flw_cg/cp_fd_p", "Zcf_c_fsw_cg/cp_fs2_p"]
+  # insn:c.flw[] is an RV32FC-only instruction that loads a single-precision
+  # floating-point value from memory into floating-point register rd′. It computes an
+  # effective address by adding the zero-extended offset, scaled by 4, to the base
+  # address in register rs1′. It expands to insn:flw[rd′,offset(rs1′)].
+  - name: c-flw_op
+    coverpoint:
+      ["Zcf_c_flw_cg/{cp_rs1_p, cp_fd_p, cp_imm_mul, cp_memval_fp_single}"]
+  # insn:c.fsw[] is an RV32FC-only instruction that stores a single-precision
+  # floating-point value in floating-point register rs2′ to memory. It computes an
+  # effective address by adding the zero-extended offset, scaled by 4, to the base
+  # address in register rs1′. It expands to insn:fsw[rs2′,offset(rs1′)].
+  - name: c-fsw_op
+    coverpoint: ["Zcf_c_fsw_cg/{cp_rs1_p, cp_fs2_p, cp_imm_mul}"]
+  # If XLEN=32 and the ext:f[] extension is present, the ext:c[] extension additionally
+  # depends upon the extlink:zcf[] extension.
+  - name: C_dep_Zcf
+    coverpoint:
+      ["Not tested: extension dependency checked by the UDB configuration"]
+  # If XLEN=32 and the F extension is present, the ext:zce[] extension additionally
+  # depends upon the extlink:zcf[] extension.
+  - name: Zce_dep_Zcf
+    coverpoint:
+      ["Not tested: extension dependency checked by the UDB configuration"]

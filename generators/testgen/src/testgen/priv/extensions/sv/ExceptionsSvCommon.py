@@ -10,7 +10,7 @@
 
 from dataclasses import dataclass
 
-from testgen.asm.helpers import write_sigupd
+from testgen.asm.helpers import lrsc_retry_loop, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.sv.access import add_rwx_test, mode_switch, virtual_address
@@ -78,7 +78,13 @@ class _Target:
 
 
 def _atomic_access(
-    test_data: TestData, target: _Target, name: str, address: list[str], coverpoints: dict[str, str]
+    test_data: TestData,
+    target: _Target,
+    name: str,
+    address: list[str],
+    coverpoints: dict[str, str],
+    *,
+    faults: bool,
 ) -> list[str]:
     covergroup = f"{target.suite}_cg"
     labels = {
@@ -91,17 +97,17 @@ def _atomic_access(
         lines.extend([f"{labels['amoadd']}:", "amoadd.w a3, a2, (a5)", "nop"])
         results = ((13, labels["amoadd"]),)
     else:
-        lines.extend(
-            [
-                f"{labels['lr']}:",
-                "lr.w a3, (a5)",
-                "nop",
-                *target.setup,
-                f"{labels['sc']}:",
-                "sc.w a4, a2, (a5)",
-                "nop",
-            ]
-        )
+        lr = [f"{labels['lr']}:", "lr.w a3, (a5)", "nop"]
+        sc = [f"{labels['sc']}:", "sc.w a4, a2, (a5)"]
+        if faults:
+            # A trap taken in M-mode changes mstatus.MPP, so set up MPRV again before the SC.
+            lines.extend([*lr, *target.setup, *sc])
+        else:
+            retry_reg = test_data.int_regs.get_register(exclude_regs=[13, 14, 15])  # a3-a5 hold the operands
+            retry_start, retry_end = lrsc_retry_loop(labels["sc"], retry_reg, 14)
+            test_data.int_regs.return_register(retry_reg)
+            lines.extend([*retry_start, *lr, *sc, *retry_end])
+        lines.append("nop")
         results = ((13, labels["lr"]), (14, labels["sc"]))
     if target.mprv:
         lines.extend(["", *MPRV_CLEANUP])
@@ -151,7 +157,8 @@ def _add_access(
             covergroup=f"{target.suite}_cg",
         )
     else:
-        access = _atomic_access(test_data, target, f"test{number}", address, coverpoints)
+        faults = not valid or misaligned or physical_address != "rvtest_data_1"
+        access = _atomic_access(test_data, target, f"test{number}", address, coverpoints, faults=faults)
     return [
         *create_page_mapping(
             sv, virtual_address=va, physical_address=physical_address, leaf_level=level, leaf_flags=permissions

@@ -1,29 +1,72 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  - name: a_aq_rl_bits
-    coverpoint: ["TODO add coverpoint cp_custom_aqrl like Zalrsc"]
+  - name: A_aq_rl_bits
+    coverpoint: ["Zaamo_amoadd_w_cg/cp_custom_aqrl"]
 
   - name: amo_release_consistency
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
-  - name: a_domain_specific_ordering
+  - name: A_domain_specific_ordering
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
-  - name: a_no_aq_rl
+  - name: A_no_aq_rl
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
-  - name: a_acquire_semantics
+  - name: A_acquire_semantics
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
-  - name: a_release_semantics
+  - name: A_release_semantics
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
-  - name: a_seq_cst_semantics
+  - name: A_seq_cst_semantics
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 
+  # The A extension comprises the Zalrsc and Zaamo extensions, which are
+  # defined in the following sections.
+  - name: A_comprises
+    coverpoint: ["Definition, checked through UDB"]
+
+  # Load into rd, operate with rs2, store back; representative: memory and rs2 edge values
+  - name: amo_op
+    coverpoint:
+      [
+        "Zaamo_amoadd_w_cg/{cp_memval_word, cp_rs2_edges}",
+        "Zaamo_amoadd_d_cg/{cp_memval_double, cp_rs2_edges}",
+      ]
+
+  # The operations supported are swap, integer add, bitwise AND, bitwise OR, bitwise XOR, and signed
+  # and unsigned integer maximum and minimum.
+  - name: amo_ops_supported
+    # Crossing memory and rs2 edge values distinguishes the signed and unsigned comparisons.
+    coverpoint:
+      [
+        "{Zaamo_amoswap_w_cg, Zaamo_amoadd_w_cg, Zaamo_amoand_w_cg, Zaamo_amoor_w_cg, Zaamo_amoxor_w_cg}/cp_asm_count",
+        "{Zaamo_amomin_w_cg, Zaamo_amomax_w_cg, Zaamo_amominu_w_cg, Zaamo_amomaxu_w_cg}/cr_memval_rs2_edges_word",
+      ]
+
+  # W-form rd sign extension is exercised by memory words with bit 31 set (cp_memval_word).
+  # On RV64 the rs2 edges include values whose upper word is nonzero and whose low
+  # word is 0x80000000 or 0x7fffffff; a W-form AMO must use only the low word.
   - name: amo_operand_size
-    coverpoint: ["{Zaamo_amoadd_w_cg, Zaamo_amoadd_d_cg}/cp_rs2_edges"]
+    coverpoint:
+      [
+        "Zaamo_amoadd_w_cg/{cp_memval_word, cp_rs2_edges}",
+        "Zaamo_amoadd_d_cg/{cp_memval_double, cp_rs2_edges}",
+      ]
+
+  # The unprivileged Zaamo suite performs only naturally aligned AMOs
+  - name: misaligned_atomicity_granule_size
+    coverpoint:
+      [
+        "OUT-OF-SCOPE: aligned AMOs only; misaligned AMOs are exercised by Zama16b and ExceptionsZaamo",
+      ]
 
   - name: amo_alignment
     coverpoint: ["Zaamo_amoadd_w_cg/cp_align_word"]
+
+  # For each level of support, naturally aligned AMOs of a given width are supported if the underlying
+  # memory region supports reads and writes of that width.
+  - name: pma_amo_sz_support
+    # Representative coverpoints; cp_asm_count of the other Zaamo covergroups
+    coverpoint: ["{Zaamo_amoadd_w_cg, Zaamo_amoadd_d_cg}/cp_asm_count"]

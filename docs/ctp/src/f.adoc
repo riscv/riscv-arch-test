@@ -5,8 +5,6 @@ Supporting floating-point involves enabling at least the F extension.  Other ext
 
 The basic coverpoints are defined in <<t-unprivileged-coverpoints>>. Modified coverpoints for floating-point instructions are defined in <<t-float-modified-coverpoints>>. D and H suffixes apply to double-precision and half-precision floating-point instructions, respectively.
 
-[[t-unprivileged-coverpoints]]
-
 [[t-float-modified-coverpoints]]
 .Floating-Point Modified Coverpoint Definitions
 [cols="2, 1, 4" options=header]
@@ -15,6 +13,9 @@ The basic coverpoints are defined in <<t-unprivileged-coverpoints>>. Modified co
 |cp_frm_{2, 3, 4}|6|Rounding modes for instructions with 2/3/4 arguments
 |cr_fs1_edges_frm|26 * 6|Cross product of fs1 edges and rounding modes
 |cp_csr_fflags_{n, v, vn, von, voun, vdoun}|2-10|Set / preserve fflags bits
+|cp_memval_fp_single|26|Single-precision edge values loaded by fp memory load instructions
+|cp_memval_fp_double|26|Double-precision edge values loaded by fp memory load instructions
+|cp_memval_fp_half|26|Half-precision edge values loaded by fp memory load instructions
 |cr_fs1_fs2_edges_frm|26 * 26 * 6|Cross product of fs1 and fs2 edges and rounding modes
 |cr_fs1_fs2_edges_frm4|26 * 26 * 6|Cross product of fs1 and fs2 edges and rounding modes for fma
 |cr_fs1_fs3_edges_frm4|26 * 26 * 6|Cross product of fs1 and fs3 edges and rounding modes for fma

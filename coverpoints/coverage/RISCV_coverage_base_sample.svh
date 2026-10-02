@@ -118,6 +118,9 @@
     `ifdef COVER_I
         i_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_INTERRUPTSSM
+        interruptssm_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_M
         m_sample(hart, issue, ins);
     `endif
@@ -222,6 +225,12 @@
     `endif
     `ifdef COVER_SSSTRICTV
         ssstrictv_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSTC
+        sstc_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SSTCSM
+        sstcsm_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SSTVALA
         sstvala_sample(hart, issue, ins);

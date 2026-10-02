@@ -346,7 +346,7 @@ def gen_rwx_tor_bot(test_data: TestData, case: str, coverpoint: str, region: str
                     write_sigupd(14, test_data),
                 ]
             )
-    lines.extend(["", "// Execute probes", f"LA(a4, {region})"])
+    lines.extend(["", "// Execute probes", "RVTEST_FENCEI", f"LA(a4, {region})"])
     for resume, (adjustment, location) in enumerate(zip(adjustments, locations, strict=True), 1):
         lines.extend(
             [

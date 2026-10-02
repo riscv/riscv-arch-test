@@ -19,16 +19,15 @@ covergroup Misalign_lh_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
 
-    `ifdef UDB_MXLEN_32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
+    cp_misalign_cross64_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 2-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:62]};
+        bins yes = {[63:63]};
+    }
 
 endgroup
 // ---------------------
@@ -39,16 +38,15 @@ covergroup Misalign_lhu_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
 
-    `ifdef UDB_MXLEN_32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
+    cp_misalign_cross64_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 2-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:62]};
+        bins yes = {[63:63]};
+    }
 
 endgroup
 // ---------------------
@@ -59,16 +57,15 @@ covergroup Misalign_lw_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
 
-    `ifdef UDB_MXLEN_32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
+    cp_misalign_cross64_word : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:60]};
+        bins yes = {[61:63]};
+    }
 
 endgroup
 // ---------------------
@@ -79,16 +76,15 @@ covergroup Misalign_sh_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
 
-    `ifdef UDB_MXLEN_32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
+    cp_misalign_cross64_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 2-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:62]};
+        bins yes = {[63:63]};
+    }
 
 endgroup
 // ---------------------
@@ -99,16 +95,15 @@ covergroup Misalign_sw_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
 
-    `ifdef UDB_MXLEN_32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
+    cp_misalign_cross64_word : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:60]};
+        bins yes = {[61:63]};
+    }
 
 endgroup
 // ---------------------
@@ -120,16 +115,15 @@ covergroup Misalign_ld_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
 
-    `ifdef UDB_MXLEN_32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
+    cp_misalign_cross64_double : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:56]};
+        bins yes = {[57:63]};
+    }
 
 endgroup
 // ---------------------
@@ -140,16 +134,15 @@ covergroup Misalign_lwu_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
 
-    `ifdef UDB_MXLEN_32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
+    cp_misalign_cross64_word : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:60]};
+        bins yes = {[61:63]};
+    }
 
 endgroup
 // ---------------------
@@ -160,16 +153,15 @@ covergroup Misalign_sd_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
 
-    `ifdef UDB_MXLEN_32
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[1:0] iff (ins.trap == 0) {
-            // test all 4 possible offsets of word alignments
-        }
-    `else
-        cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
-            // test all 8 possible offsets of doubleword alignments
-        }
-    `endif
+    cp_misalign_cross64_double : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:56]};
+        bins yes = {[57:63]};
+    }
 
 endgroup
 // ---------------------

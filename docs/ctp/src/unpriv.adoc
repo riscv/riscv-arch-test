@@ -2,7 +2,7 @@
 [appendix]
 == Unprivileged Test Plan
 
-Unprivileged tests exercise every instruction using every applicable source and destination register, and reasonable architectural edge values of sources.  They are intended for certification, not verification. For example, they do not stress pipeline hazards.
+Unprivileged tests exercise every instruction using every applicable source and destination register, and reasonable architectural edge values of sources.  They are intended for certification, not verification. For example, they do not stress interrupts arriving in the midst of multicycle instructions.
 
 The unprivileged test plan is written to be easily reviewed by a human, and to be automatically converted to machine-readable coverpoints and tests.
 It is defined with spreadsheets in comma-separated value (CSV) format.
@@ -33,11 +33,11 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cp_rs1|32|The rs1 register number used in the instruction.
 |cp_rs2|32|The rs2 register number used in the instruction.
 |cp_rd|32|The rd register number used in the instruction.
-|cp_rs1_edges|16|Edge values for rs1 (see <<t-integer-edge-definitions>>).
-|cp_rs2_edges|16|Edge values for rs2 (see <<t-integer-edge-definitions>>).
+|cp_rs1_edges|12 (RV32), 18 (RV64)|Edge values for rs1 (see <<t-integer-edge-definitions>>).
+|cp_rs2_edges|12 (RV32), 18 (RV64)|Edge values for rs2 (see <<t-integer-edge-definitions>>).
 |cp_imm_edges|20|Edge values for 12-bit immediates (see <<t-immediate-edge-definitions>>).
-|cr_rs1_imm_edges|16*20|Cross-product of rs1 and 12-bit immediate edges (see <<t-immediate-edge-definitions>>).
-|cr_rs1_rs2_edges|16*16|Cross-product of rs1 and rs2 edges, used for instructions with two source registers.
+|cr_rs1_imm_edges|12*20 (RV32), 18*20 (RV64)|Cross-product of rs1 and 12-bit immediate edges (see <<t-immediate-edge-definitions>>).
+|cr_rs1_rs2_edges|12*12 (RV32), 18*18 (RV64)|Cross-product of rs1 and rs2 edges, used for instructions with two source registers.
 |cmp_rs1_rs2|32|The rs1 and rs2 registers have the same register number.
 |cmp_rd_rs1|32|The rd register has the same register number as the rs1 register.
 |cmp_rd_rs2|32|The rd register has the same register number as the rs2 register.
@@ -45,13 +45,14 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cp_offset|2|A branch or jalr instruction has a positive and negative offset.
 |cp_uimm|`XLEN`|Exercise all XLEN unsigned immediate values, such as shift amounts.
 |cp_align|≤ 8|Alignment of naturally-aligned sub-doubleword load/store operand within doubleword
+|cp_memval|5|Edge values for integer memory values loaded by load instructions.
 3+^|Coverpoints for Compressed Instructions
-|cp_rs1p|8|The rs1 register number used in compressed instructions supporting x8-x15.
-|cp_rs2p|8|The rs2 register number used in compressed instructions supporting x8-x15.
-|cp_rdp|8|The rd register number used in compressed instructions supporting x8-x15.
-|cp_fdp|8|The fd register number used in compressed floating-point instructions supporting x8-x15.
-|cp_fs2p|8|The fs2 register number used in compressed floating-point instructions supporting x8-x15.
-|cp_imm_mul|8|7-bit immediate that is a multiple of 4 (for word-sized load/store instructions).
+|cp_rs1_p|8|The rs1 register number used in compressed instructions supporting x8-x15.
+|cp_rs2_p|8|The rs2 register number used in compressed instructions supporting x8-x15.
+|cp_rd_p|8|The rd register number used in compressed instructions supporting x8-x15.
+|cp_fd_p|8|The fd register number used in compressed floating-point instructions supporting f8-f15.
+|cp_fs2_p|8|The fs2 register number used in compressed floating-point instructions supporting f8-f15.
+|cp_imm_mul|32|Immediate offset for word-sized compressed loads/stores: multiples of 4 from 0 to 124.
 3+^|Coverpoints for Floating-Point Instructions
 |cp_fs1|32|The fs1 register number used in the instruction.
 |cp_fs2|32|The fs2 register number used in the instruction.
@@ -65,7 +66,7 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cmp_fd_fs3|32|The fd register has the same register number as the fs3 register.
 |cp_frm|5|The floating-point rounding mode used in the instruction: rne, rdn, rup, rtz, rmm, dyn.
 |cp_csr_fflags|10|The instruction sets the {NV, DZ, OF, UF, NX} flags in the fflags CSR.
-|cp_csr_frm|6|Dynamic rounding mode in the frm CSR: rne, rdn, rup, rtz, rmm, illegal
+|cp_csr_frm|5|Dynamic rounding mode in the frm CSR: rne, rdn, rup, rtz, rmm
 |cr_fs1_fs2_edges|26*26|Cross product of edges of fs1 and fs2 registers.
 |cr_fs1_fs3_edges|26*26|Cross product of edges of fs1 and fs3 registers.
 |cp_fclass|10|All 10 fclass classes.
@@ -73,7 +74,7 @@ The coverpoints in <<t-unprivileged-coverpoints>> are used in most of the unpriv
 |cp_fs1_badNB|12|The fs1 register contains an incorrectly-NaN-boxed lower-precision value.
 |cp_fs2_badNB|12|The fs2 register contains an incorrectly-NaN-boxed lower-precision value.
 |cp_fs3_badNB|12|The fs3 register contains an incorrectly-NaN-boxed lower-precision value.
-|cp_fpr_hazard|4|Floating-point register hazard detection: RAW, WAR, WAW, and no hazard.
+|cp_fpr_hazard|4|Floating-point register hazard detection: RAW, WAR, WAW, and no hazard. [TODO: this should be dropped when full hazards are implemented]
 3+^|Miscellaneous Coverpoints
 |cp_bs|4|Byte select field for 32-bit AES instructions
 |cp_rnum|11|Round number for AES instructions
@@ -120,6 +121,8 @@ Notes:
 |Wmaxm1  |n/a|`0000000000000000000000000000000011111111111111111111111111111110`
 |Wmaxp1  |n/a|`0000000000000000000000000000000100000000000000000000000000000000`
 |Wmaxp2  |n/a|`0000000000000000000000000000000100000000000000000000000000000001`
+|W80     |n/a|`0000000000000000000000000000000010000000000000000000000000000000`
+|W7F     |n/a|`0000000000000000000000000000000001111111111111111111111111111111`
 |===
 
 [[t-immediate-edge-definitions]]
@@ -154,40 +157,157 @@ Notes:
 .Floating-Point Edge Case Definitions
 [options=header]
 |===
-|Bin|Half|Float|Double
-|pos0|`0000`|`00000000`|`0000000000000000`
-|neg0|`8000`|`80000000`|`8000000000000000`
-|pos1|`3C00`|`3F800000`|`3FF0000000000000`
-|neg1|`BC00`|`BF800000`|`BFF0000000000000`
-|pos1p5|`3E00`|`3F000000`|`3FE0000000000000`
-|neg1p5|`BE00`|`BF000000`|`BFE0000000000000`
-|pos2|`4000`|`40000000`|`4000000000000000`
-|neg2|`C000`|`C0000000`|`C000000000000000`
-|posminnorm|`0400`|`00800000`|`0010000000000000`
-|negminnorm|`8400`|`80800000`|`8010000000000000`
-|posmaxnorm|`7BFF`|`7F7FFFFF`|`7FEFFFFFFFFFFFFF`
-|negmaxnorm|`FBFF`|`FF7FFFFF`|`FFEFFFFFFFFFFFFF`
-|posmax_subnorm|`03FF`|`007FFFFF`|`000FFFFFFFFFFFFF`
-|negmax_subnorm|`83FF`|`807FFFFF`|`800FFFFFFFFFFFFF`
-|posmid_subnorm|`0200`|`00400000`|`0008000000000000`
-|negmid_subnorm|`8200`|`80400000`|`8008000000000000`
-|posmin_subnorm|`0001`|`00000001`|`0000000000000001`
-|negmin_subnorm|`8001`|`80000001`|`8000000000000001`
-|posinfinity|`7C00`|`7F800000`|`7FF0000000000000`
-|neginfinity|`FC00`|`FF800000`|`FFF0000000000000`
-|posQNaN|`7E00`-`7FFF`|`7FC00000`-`7FFFFFFF`|`7FF8000000000000`-`7FFFFFFFFFFFFFFF`
-|posSNaN|`7C01`-`7DFF`|`7F800001`-`7FBFFFFF`|`7FF0000000000001`-`7FF7FFFFFFFFFFFF`
-|negQNaN|`FE00`-`FFFF`|`FFC00000`-`FFFFFFFF`|`FFF8000000000000`-`FFFFFFFFFFFFFFFF`
-|negSNaN|`FC01`-`FDFF`|`FF800001`-`FFBFFFFF`|`FFF0000000000001`-`FFF7FFFFFFFFFFFF`
-|posrandom|`58B4`|`7ef8654f`|`3FF58B4C00000000`
-|negrandom|`C93A`|`813d9ab0`|`A6E895993737426C`
+|Bin|Half|BF16|Float|Double
+|pos0|`0000`|`0000`|`00000000`|`0000000000000000`
+|neg0|`8000`|`8000`|`80000000`|`8000000000000000`
+|pos1|`3C00`|`3F80`|`3F800000`|`3FF0000000000000`
+|neg1|`BC00`|`BF80`|`BF800000`|`BFF0000000000000`
+|pos2p5|`4100`|`4020`|`40200000`|`4004000000000000`
+|neg2p5|`C100`|`C020`|`C0200000`|`C004000000000000`
+|pos2prec|`6800`|`4380`|`4B800000`|`4340000000000000`
+|neg2prec|`E800`|`C380`|`CB800000`|`C340000000000000`
+|posminnorm|`0400`|`0080`|`00800000`|`0010000000000000`
+|negminnorm|`8400`|`8080`|`80800000`|`8010000000000000`
+|posmaxnorm|`7BFF`|`7F7F`|`7F7FFFFF`|`7FEFFFFFFFFFFFFF`
+|negmaxnorm|`FBFF`|`FF7F`|`FF7FFFFF`|`FFEFFFFFFFFFFFFF`
+|posmax_subnorm|`03FF`|`007F`|`007FFFFF`|`000FFFFFFFFFFFFF`
+|negmax_subnorm|`83FF`|`807F`|`807FFFFF`|`800FFFFFFFFFFFFF`
+|posmid_subnorm|`0200`|`0040`|`00400000`|`0008000000000000`
+|negmid_subnorm|`8200`|`8040`|`80400000`|`8008000000000000`
+|posmin_subnorm|`0001`|`0001`|`00000001`|`0000000000000001`
+|negmin_subnorm|`8001`|`8001`|`80000001`|`8000000000000001`
+|posinfinity|`7C00`|`7F80`|`7F800000`|`7FF0000000000000`
+|neginfinity|`FC00`|`FF80`|`FF800000`|`FFF0000000000000`
+|posQNaN|`7E00`-`7FFF`|`7FC0`-`7FFF`|`7FC00000`-`7FFFFFFF`|`7FF8000000000000`-`7FFFFFFFFFFFFFFF`
+|posSNaN|`7C01`-`7DFF`|`7F81`-`7FBF`|`7F800001`-`7FBFFFFF`|`7FF0000000000001`-`7FF7FFFFFFFFFFFF`
+|negQNaN|`FE00`-`FFFF`|`FFC0`-`FFFF`|`FFC00000`-`FFFFFFFF`|`FFF8000000000000`-`FFFFFFFFFFFFFFFF`
+|negSNaN|`FC01`-`FDFF`|`FF81`-`FFBF`|`FF800001`-`FFBFFFFF`|`FFF0000000000001`-`FFF7FFFFFFFFFFFF`
+|posrandom|`58B4`|`7EF8`|`7EF8654F`|`5A392534A57711AD`
+|negrandom|`C93A`|`813D`|`813D9AB0`|`A6E895993737426C`
 |===
+
+±2.5 and ±2^p^ (p is the format's precision: 11 for half, 8 for BF16, 24 for float, 53 for double) are exact ties for some operations, so they distinguish RMM from RNE. Converting ±2.5 to an integer is a tie between 2 and 3. Adding ±1.0 to ±2^p^ is a tie between 2^p^ and 2^p^+2.
+
 
 
 [NOTE]
 ====
 The register edge cases are selected to include extreme values and their immediate neighbors.  They also include walking 1s and an arbitrary intermediate value.  RV64 adds edge cases near the 32-bit boundary to stress W-type instructions.  Immediate edge cases exercise each bit of the immediate, extreme values, and one random intermediate value.
 ====
+
+==== Hazards
+
+Hazard tests are applied to every unprivileged _Instruction Under Test_ (IUT) that uses a source or destination.
+The hazard receives the source from _Secondary_Producer_Instruction_ (SPI) or sends the destination value to a _Secondary Consumer Instruction_ (SCI).  All relevant
+Read-After-Write (RAW), Write-After-Read (WAR), and Write-After-Write (WAW) hazards are exercised.  They are tested
+with the SI being adjacent to the IUT, and being separated by a small amount.  The SI is selected as a representative
+instruction from each of many categories of instructions to exercise forwarding between different functional units.
+
+The categories of SPI and SCI are given in <<t-secondary-producer-instruction-categories>> and <<t-secondary-consumer-instruction-categories>>, respectively.
+
+[[t-secondary-producer-instruction-categories]]
+.Secondary Producer Instruction Categories
+[options=header]
+|===
+|Category|ALU|Complex|Memory|Control|CSR (Zicsr)|Mult (Zmmul/M)|Float (F)|VectorInt (Zve32x + Zvl64b)|VectorFloat (Zve32f+Zvl64b)
+|Int (rd)|auipc, li|sll, cpop (Zbb), clmul (Zbc), sha256sig0 (Zknh)|lw, amoswap.w (Zaamo)|jal|csrr|mul, div|fcvt.w.s, fmv.x.w, fclass.s, feq.s|vmv.x.s|
+|PC||||jal, jalr, beq|||||
+|FP (fd)|||flw||||fmadd.s, fdiv.s, fli.s (Zfa), fsqrt.d (D), fsqrt.h (Zfh), fsqrt.q (Q)||vmv.f.s
+|Vector (vd)|||vle32.v|||||vadd.vi|vfadd.vf
+|Memory|||sw, amoswap.w (Zaamo), cbo.zero (Zicboz)||||fsw|vse32.v|
+|CSR (rd)|||||||csrr fflags|csrr vcsr|
+|===
+
+[[t-secondary-consumer-instruction-categories]]
+.Secondary Consumer Instruction Categories
+[options=header]
+|===
+|Category|ALU|Complex|Memory|Control|CSR (Zicsr)|Mult (Zmmul/M)|Float (F)|VectorInt (Zve32x + Zvl64b)|VectorFloat (Zve32f+Zvl64b)
+|Int|add (rs1/2), addi (rs1)|srl, sh1add (Zba), binv (Zbs), aes32dsmi (Zknd32), aes64dsm (Zknd32)|sw (rs2), amoswap.w (rs2, Zaamo)|beq (rs1/2)|csrw (rs1)|mul (rs1/2), div (rs1/2)|fcvt.s.w (rs1), fmv.w.x (rs1)|vadd.vx (rs1), vmv.v.x (rs1)|
+|PC|auipc (implicit)|||jal, jalr (implicit)|||||
+|FP|||fsw (fs2)||||fmadd.s (fs1/2/3), fdiv.s (fs1/2), fli.s (fs1), fsqrt.d (fs1, D), fsqrt.h (fs1, Zfh), fsqrt.q (fs1, Q)||vfadd.vf (fs1), vmv.v.f (fs1)
+|Vector|||vse32.v(vs2)|||||vadd.vv (vs1/2), vadd.vi (vs2), vmacc.vv (vs1/2/vd)|vfadd.vv (vs1/2), vfsqrt.v (vs2), vfmacc.vv (vs1/2/vd)
+|Memory|||lw, amoswap.w (Zaamo)||||fsw|vle32.v|
+|CSR|||||||csrw fflags|csrw vcsr|
+|===
+
+The types of hazards exercised are given in <<t-hazard-types>>. Not all IUT have a source or destination, so not all hazard types are exercised for every IUT.
+
+[[t-hazard-types]]
+.Hazard Types
+[options=header]
+|===
+|Type|IUT First|IUT Second
+|RAW|IUT dest -> SCI source|SPI dest -> IUT source
+|WAR|IUT source -> SPI dest|SCI source -> IUT dest
+|WAW|IUT dest -> SPI dest|SPI dest -> IUT dest
+|===
+
+When multiple representative instructions are listed, one is randomly selected from the list for each test. Certain categories and certain instructions in a category (amoswap, fli, fsqrt.d/h/q) only may be selected if the relevant extension is present.  Different source instructions consume one, two, or three sources.  Loads, stores, and atomics always use rs1 as a pointer to a scratch memory location holding a random value. Subword load, store, and atomic IUTs use a random naturally aligned offset in the range [0, 3]. Tests assume mstatus.FS/VS are dirty, if applicable.  Loads and atomics have a memory source operand.  Stores, atomics, and cbo.zero have a memory destination operand.  Vector instructions operate on a vector of 2 32-bit elements.  They are omitted if the vector unit does not support this. Note that li is the pseudo-instruction for addi rd, x0, imm12.
+
+The test cases are as follows:
+
+* If the IUT has {int/pc/fp/vector/memory/CSR} source operand:
+** For each IUT source
+*** For each hazard_type in {RAW, WAR}
+**** For each supported SPI category that can produce the source category (gated by #ifdef EXT_SUPPORTED)
+***** For each delay in (0, random[1,3])
+****** Pick random unused registers for IUT source(s) and destination from X1-x31 (-x15 for E), f0-f31, v0-v31.  Ok to duplicate source registers.
+****** Pick random representative SPI from category, and random unused source registers for SPI.
+****** Initialize IUT and SPI sources to random values
+****** If hazard_type = RAW // SPI dest -> IUT source
+******* SPI dest = random IUT source
+******* Perform SPI
+******* If delay > 0, perform delay dependent instructions
+******* Perform IUT
+******* SIGUPD IUT dest or otherwise test IUT result
+****** If hazard_type = WAR // IUT source -> SPI dest
+******* SPI dest = random IUT source
+******* Perform IUT
+******* If delay > 0, perform delay dependent instructions
+******* Perform SPI
+******* SIGUPD IUT dest or otherwise test IUT result
+******* SIGUPD SPI dest
+
+* If the IUT has {int/pc/fp/vector/memory/CSR} destination operand:
+** For each hazard_type in {RAW, WAR}
+*** For each supported SCI category that can read the source category (gated by #ifdef EXT_SUPPORTED)
+**** For each delay in (0, random[1,3])
+***** Pick random unused registers for IUT source(s) and destination from X1-x15, f0-f31, v0-v31.  Ok to duplicate source registers.
+***** Pick random representative SCI from category, and random unused source registers for SCI.
+***** Initialize IUT and SCI sources to random values
+***** If hazard_type = RAW // IUT dest -> SCI source
+****** random SCI source = IUT dest
+****** Perform IUT
+****** If delay > 0, perform delay dependent instructions
+****** Perform SCI
+****** SIGUPD SI dest or otherwise test SI result
+***** If hazard_type = WAR // SCI source -> IUT dest
+****** random SCI source = IUT dest
+****** Perform SCI
+****** If delay > 0, perform delay dependent instructions
+****** Perform IUT
+****** SIGUPD IUT dest or otherwise test IUT result
+****** SIGUPD SCI dest
+** For hazard_type = WAW
+**** For each supported SPI category that can produce the source category (gated by #ifdef EXT_SUPPORTED)
+***** For each delay in (0, random[1,3])
+****** Pick random unused registers for IUT source(s) and destination from X1-x31 (-x15 for E), f0-f31, v0-v31.  Ok to duplicate source registers.
+****** Pick random representative SPI from category, and random unused source registers for SPI.
+****** Initialize IUT and SPI sources to random values
+****** SPI dest = IUT dest
+****** Perform SPI // SPI dest -> IUT dest
+****** If delay > 0, perform delay dependent instructions
+****** Perform IUT
+****** SIGUPD IUT dest or otherwise test IUT result
+****** Perform IUT // IUT dest -> SPI dest
+****** If delay > 0, perform delay dependent instructions
+****** Perform SPI
+****** SIGUPD SPI dest or otherwise test SPI result
+
+Hazard coverpoints are named cp_hazard_{hazard_type}_{IUT source/dest}_{to/from}_{SI category}_{delay}. IUT source/dest is one of {rs1, rs2, rd, fs1, fs2, fs3, fd, vs1, vs2, vd, memr, memw, csrr, csrw, pc}.
+
+The number of hazard bins for a typical R-type integer IUT is ((2 sources) * (2 hazard types) + (1 destination) * (4 hazard types)) * (8 categories) * (2 delays) = 128 bins.
 
 include::i.adoc[]
 include::m.adoc[]

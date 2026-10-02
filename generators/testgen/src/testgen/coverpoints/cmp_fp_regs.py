@@ -7,12 +7,11 @@
 
 """Compare floating register coverpoint generators (cmp_fd_fs1, cmp_fd_fs2, cmp_fs1_fs2, cmp_fd_fs1_fs2)."""
 
-from testgen.asm.helpers import return_test_regs
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
-from testgen.formatters.params import generate_random_params
+from testgen.instructions.params import generate_random_params
 
 
 @add_coverpoint_generator("cmp_fd_fs1")
@@ -35,7 +34,7 @@ def make_cmp_fd_fs1(instr_name: str, instr_type: str, coverpoint: str, test_data
         desc = f"{coverpoint} (Test fd = fs1 = f{reg})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
         test_chunks.append(tc)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
     return test_chunks
 
@@ -60,7 +59,7 @@ def make_cmp_fd_fs2(instr_name: str, instr_type: str, coverpoint: str, test_data
         desc = f"{coverpoint} (Test fd = fs2 = f{reg})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
         test_chunks.append(tc)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
     return test_chunks
 
@@ -85,7 +84,7 @@ def make_cmp_fd_fs3(instr_name: str, instr_type: str, coverpoint: str, test_data
         desc = f"{coverpoint} (Test fd = fs3 = f{reg})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
         test_chunks.append(tc)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
     return test_chunks
 
@@ -110,7 +109,7 @@ def make_cmp_fs1_fs2(instr_name: str, instr_type: str, coverpoint: str, test_dat
         desc = f"{coverpoint} (Test fs1 = fs2 = f{reg})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
         test_chunks.append(tc)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
     return test_chunks
 
@@ -135,6 +134,6 @@ def make_cmp_fd_fs1_fs2(instr_name: str, instr_type: str, coverpoint: str, test_
         desc = f"{coverpoint} (Test fd = fs1 = fs2 = f{reg})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{reg}", coverpoint)
         test_chunks.append(tc)
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
     return test_chunks

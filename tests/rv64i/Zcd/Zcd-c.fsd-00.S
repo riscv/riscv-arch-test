@@ -15,8 +15,7 @@
 # MARCH: rv64ifd_zicsr_zifencei_zcd
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "Zcd-c.fsd-00.S"
+// Define the size of the signature region
 #define SIGUPD_COUNT 154
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
@@ -43,18 +42,9 @@ Zcd_c_fsd_cg_cp_rs1_p_b8:
   c.fsd f11, 64(x8) # perform store
   addi x8, x8, 64 # restore base address
   addi x8, x8, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x11, -SIG_STRIDE(x8) # load stored value for checking
   # Check if x11 contains the expected result. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x8, x5, x4, x11, Zcd_c_fsd_cg_cp_rs1_p_b8, Zcd_c_fsd_cg_cp_rs1_p_b8_str)
-#else
-  c.fsd f11, 0(x8) # repeat store so it is available for checking
-  addi x8, x8, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x8, x5, x4, Zcd_c_fsd_cg_cp_rs1_p_b8, Zcd_c_fsd_cg_cp_rs1_p_b8_str)
 
@@ -67,18 +57,9 @@ Zcd_c_fsd_cg_cp_rs1_p_b9:
   c.fsd f13, 168(x9) # perform store
   addi x9, x9, 168 # restore base address
   addi x9, x9, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x14, -SIG_STRIDE(x9) # load stored value for checking
   # Check if x14 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x14, Zcd_c_fsd_cg_cp_rs1_p_b9, Zcd_c_fsd_cg_cp_rs1_p_b9_str)
-#else
-  c.fsd f13, 0(x9) # repeat store so it is available for checking
-  addi x9, x9, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x5, x4, Zcd_c_fsd_cg_cp_rs1_p_b9, Zcd_c_fsd_cg_cp_rs1_p_b9_str)
 
@@ -91,18 +72,9 @@ Zcd_c_fsd_cg_cp_rs1_p_b10:
   c.fsd f14, 208(x10) # perform store
   addi x10, x10, 208 # restore base address
   addi x10, x10, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x11, -SIG_STRIDE(x10) # load stored value for checking
   # Check if x11 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x11, Zcd_c_fsd_cg_cp_rs1_p_b10, Zcd_c_fsd_cg_cp_rs1_p_b10_str)
-#else
-  c.fsd f14, 0(x10) # repeat store so it is available for checking
-  addi x10, x10, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x10, x5, x4, Zcd_c_fsd_cg_cp_rs1_p_b10, Zcd_c_fsd_cg_cp_rs1_p_b10_str)
 
@@ -115,18 +87,9 @@ Zcd_c_fsd_cg_cp_rs1_p_b11:
   c.fsd f10, 248(x11) # perform store
   addi x11, x11, 248 # restore base address
   addi x11, x11, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x14, -SIG_STRIDE(x11) # load stored value for checking
   # Check if x14 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x14, Zcd_c_fsd_cg_cp_rs1_p_b11, Zcd_c_fsd_cg_cp_rs1_p_b11_str)
-#else
-  c.fsd f10, 0(x11) # repeat store so it is available for checking
-  addi x11, x11, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x11, x5, x4, Zcd_c_fsd_cg_cp_rs1_p_b11, Zcd_c_fsd_cg_cp_rs1_p_b11_str)
 
@@ -139,18 +102,9 @@ Zcd_c_fsd_cg_cp_rs1_p_b12:
   c.fsd f11, 248(x12) # perform store
   addi x12, x12, 248 # restore base address
   addi x12, x12, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x9, -SIG_STRIDE(x12) # load stored value for checking
   # Check if x9 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x12, x5, x4, x9, Zcd_c_fsd_cg_cp_rs1_p_b12, Zcd_c_fsd_cg_cp_rs1_p_b12_str)
-#else
-  c.fsd f11, 0(x12) # repeat store so it is available for checking
-  addi x12, x12, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x12, x5, x4, Zcd_c_fsd_cg_cp_rs1_p_b12, Zcd_c_fsd_cg_cp_rs1_p_b12_str)
 
@@ -163,18 +117,9 @@ Zcd_c_fsd_cg_cp_rs1_p_b13:
   c.fsd f11, 232(x13) # perform store
   addi x13, x13, 232 # restore base address
   addi x13, x13, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x9, -SIG_STRIDE(x13) # load stored value for checking
   # Check if x9 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x13, x5, x4, x9, Zcd_c_fsd_cg_cp_rs1_p_b13, Zcd_c_fsd_cg_cp_rs1_p_b13_str)
-#else
-  c.fsd f11, 0(x13) # repeat store so it is available for checking
-  addi x13, x13, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x13, x5, x4, Zcd_c_fsd_cg_cp_rs1_p_b13, Zcd_c_fsd_cg_cp_rs1_p_b13_str)
 
@@ -187,18 +132,9 @@ Zcd_c_fsd_cg_cp_rs1_p_b14:
   c.fsd f14, 232(x14) # perform store
   addi x14, x14, 232 # restore base address
   addi x14, x14, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x11, -SIG_STRIDE(x14) # load stored value for checking
   # Check if x11 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x14, x5, x4, x11, Zcd_c_fsd_cg_cp_rs1_p_b14, Zcd_c_fsd_cg_cp_rs1_p_b14_str)
-#else
-  c.fsd f14, 0(x14) # repeat store so it is available for checking
-  addi x14, x14, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x14, x5, x4, Zcd_c_fsd_cg_cp_rs1_p_b14, Zcd_c_fsd_cg_cp_rs1_p_b14_str)
 
@@ -211,18 +147,9 @@ Zcd_c_fsd_cg_cp_rs1_p_b15:
   c.fsd f13, 216(x15) # perform store
   addi x15, x15, 216 # restore base address
   addi x15, x15, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x13, -SIG_STRIDE(x15) # load stored value for checking
   # Check if x13 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x13, Zcd_c_fsd_cg_cp_rs1_p_b15, Zcd_c_fsd_cg_cp_rs1_p_b15_str)
-#else
-  c.fsd f13, 0(x15) # repeat store so it is available for checking
-  addi x15, x15, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x15, x5, x4, Zcd_c_fsd_cg_cp_rs1_p_b15, Zcd_c_fsd_cg_cp_rs1_p_b15_str)
 
@@ -239,18 +166,9 @@ Zcd_c_fsd_cg_cp_fs2_p_b8:
   c.fsd f8, 72(x12) # perform store
   addi x12, x12, 72 # restore base address
   addi x12, x12, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x14, -SIG_STRIDE(x12) # load stored value for checking
   # Check if x14 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x12, x5, x4, x14, Zcd_c_fsd_cg_cp_fs2_p_b8, Zcd_c_fsd_cg_cp_fs2_p_b8_str)
-#else
-  c.fsd f8, 0(x12) # repeat store so it is available for checking
-  addi x12, x12, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x12, x5, x4, Zcd_c_fsd_cg_cp_fs2_p_b8, Zcd_c_fsd_cg_cp_fs2_p_b8_str)
 
@@ -263,18 +181,9 @@ Zcd_c_fsd_cg_cp_fs2_p_b9:
   c.fsd f9, 16(x15) # perform store
   addi x15, x15, 16 # restore base address
   addi x15, x15, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x13, -SIG_STRIDE(x15) # load stored value for checking
   # Check if x13 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x13, Zcd_c_fsd_cg_cp_fs2_p_b9, Zcd_c_fsd_cg_cp_fs2_p_b9_str)
-#else
-  c.fsd f9, 0(x15) # repeat store so it is available for checking
-  addi x15, x15, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x15, x5, x4, Zcd_c_fsd_cg_cp_fs2_p_b9, Zcd_c_fsd_cg_cp_fs2_p_b9_str)
 
@@ -287,18 +196,9 @@ Zcd_c_fsd_cg_cp_fs2_p_b10:
   c.fsd f10, 88(x10) # perform store
   addi x10, x10, 88 # restore base address
   addi x10, x10, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x9, -SIG_STRIDE(x10) # load stored value for checking
   # Check if x9 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x9, Zcd_c_fsd_cg_cp_fs2_p_b10, Zcd_c_fsd_cg_cp_fs2_p_b10_str)
-#else
-  c.fsd f10, 0(x10) # repeat store so it is available for checking
-  addi x10, x10, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x10, x5, x4, Zcd_c_fsd_cg_cp_fs2_p_b10, Zcd_c_fsd_cg_cp_fs2_p_b10_str)
 
@@ -311,18 +211,9 @@ Zcd_c_fsd_cg_cp_fs2_p_b11:
   c.fsd f11, 136(x8) # perform store
   addi x8, x8, 136 # restore base address
   addi x8, x8, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x11, -SIG_STRIDE(x8) # load stored value for checking
   # Check if x11 contains the expected result. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x8, x5, x4, x11, Zcd_c_fsd_cg_cp_fs2_p_b11, Zcd_c_fsd_cg_cp_fs2_p_b11_str)
-#else
-  c.fsd f11, 0(x8) # repeat store so it is available for checking
-  addi x8, x8, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x8, x5, x4, Zcd_c_fsd_cg_cp_fs2_p_b11, Zcd_c_fsd_cg_cp_fs2_p_b11_str)
 
@@ -335,18 +226,9 @@ Zcd_c_fsd_cg_cp_fs2_p_b12:
   c.fsd f12, 208(x14) # perform store
   addi x14, x14, 208 # restore base address
   addi x14, x14, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x9, -SIG_STRIDE(x14) # load stored value for checking
   # Check if x9 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x14, x5, x4, x9, Zcd_c_fsd_cg_cp_fs2_p_b12, Zcd_c_fsd_cg_cp_fs2_p_b12_str)
-#else
-  c.fsd f12, 0(x14) # repeat store so it is available for checking
-  addi x14, x14, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x14, x5, x4, Zcd_c_fsd_cg_cp_fs2_p_b12, Zcd_c_fsd_cg_cp_fs2_p_b12_str)
 
@@ -359,18 +241,9 @@ Zcd_c_fsd_cg_cp_fs2_p_b13:
   c.fsd f13, 16(x11) # perform store
   addi x11, x11, 16 # restore base address
   addi x11, x11, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x10, -SIG_STRIDE(x11) # load stored value for checking
   # Check if x10 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x10, Zcd_c_fsd_cg_cp_fs2_p_b13, Zcd_c_fsd_cg_cp_fs2_p_b13_str)
-#else
-  c.fsd f13, 0(x11) # repeat store so it is available for checking
-  addi x11, x11, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x11, x5, x4, Zcd_c_fsd_cg_cp_fs2_p_b13, Zcd_c_fsd_cg_cp_fs2_p_b13_str)
 
@@ -383,18 +256,9 @@ Zcd_c_fsd_cg_cp_fs2_p_b14:
   c.fsd f14, 184(x15) # perform store
   addi x15, x15, 184 # restore base address
   addi x15, x15, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x9, -SIG_STRIDE(x15) # load stored value for checking
   # Check if x9 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x9, Zcd_c_fsd_cg_cp_fs2_p_b14, Zcd_c_fsd_cg_cp_fs2_p_b14_str)
-#else
-  c.fsd f14, 0(x15) # repeat store so it is available for checking
-  addi x15, x15, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x15, x5, x4, Zcd_c_fsd_cg_cp_fs2_p_b14, Zcd_c_fsd_cg_cp_fs2_p_b14_str)
 
@@ -407,18 +271,9 @@ Zcd_c_fsd_cg_cp_fs2_p_b15:
   c.fsd f15, 104(x10) # perform store
   addi x10, x10, 104 # restore base address
   addi x10, x10, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x9, -SIG_STRIDE(x10) # load stored value for checking
   # Check if x9 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x9, Zcd_c_fsd_cg_cp_fs2_p_b15, Zcd_c_fsd_cg_cp_fs2_p_b15_str)
-#else
-  c.fsd f15, 0(x10) # repeat store so it is available for checking
-  addi x10, x10, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x10, x5, x4, Zcd_c_fsd_cg_cp_fs2_p_b15, Zcd_c_fsd_cg_cp_fs2_p_b15_str)
 
@@ -435,18 +290,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x0:
   c.fsd f13, 0(x14) # perform store
   addi x14, x14, 0 # restore base address
   addi x14, x14, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x11, -SIG_STRIDE(x14) # load stored value for checking
   # Check if x11 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x14, x5, x4, x11, Zcd_c_fsd_cg_cp_imm_mul_8_b0x0, Zcd_c_fsd_cg_cp_imm_mul_8_b0x0_str)
-#else
-  c.fsd f13, 0(x14) # repeat store so it is available for checking
-  addi x14, x14, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x14, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x0, Zcd_c_fsd_cg_cp_imm_mul_8_b0x0_str)
 
@@ -459,18 +305,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x8:
   c.fsd f9, 8(x13) # perform store
   addi x13, x13, 8 # restore base address
   addi x13, x13, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x10, -SIG_STRIDE(x13) # load stored value for checking
   # Check if x10 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x13, x5, x4, x10, Zcd_c_fsd_cg_cp_imm_mul_8_b0x8, Zcd_c_fsd_cg_cp_imm_mul_8_b0x8_str)
-#else
-  c.fsd f9, 0(x13) # repeat store so it is available for checking
-  addi x13, x13, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x13, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x8, Zcd_c_fsd_cg_cp_imm_mul_8_b0x8_str)
 
@@ -483,18 +320,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x10:
   c.fsd f14, 16(x10) # perform store
   addi x10, x10, 16 # restore base address
   addi x10, x10, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x11, -SIG_STRIDE(x10) # load stored value for checking
   # Check if x11 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x11, Zcd_c_fsd_cg_cp_imm_mul_8_b0x10, Zcd_c_fsd_cg_cp_imm_mul_8_b0x10_str)
-#else
-  c.fsd f14, 0(x10) # repeat store so it is available for checking
-  addi x10, x10, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x10, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x10, Zcd_c_fsd_cg_cp_imm_mul_8_b0x10_str)
 
@@ -507,18 +335,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x18:
   c.fsd f10, 24(x12) # perform store
   addi x12, x12, 24 # restore base address
   addi x12, x12, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x13, -SIG_STRIDE(x12) # load stored value for checking
   # Check if x13 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x12, x5, x4, x13, Zcd_c_fsd_cg_cp_imm_mul_8_b0x18, Zcd_c_fsd_cg_cp_imm_mul_8_b0x18_str)
-#else
-  c.fsd f10, 0(x12) # repeat store so it is available for checking
-  addi x12, x12, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x12, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x18, Zcd_c_fsd_cg_cp_imm_mul_8_b0x18_str)
 
@@ -531,18 +350,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x20:
   c.fsd f8, 32(x8) # perform store
   addi x8, x8, 32 # restore base address
   addi x8, x8, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x11, -SIG_STRIDE(x8) # load stored value for checking
   # Check if x11 contains the expected result. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x8, x5, x4, x11, Zcd_c_fsd_cg_cp_imm_mul_8_b0x20, Zcd_c_fsd_cg_cp_imm_mul_8_b0x20_str)
-#else
-  c.fsd f8, 0(x8) # repeat store so it is available for checking
-  addi x8, x8, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x8, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x20, Zcd_c_fsd_cg_cp_imm_mul_8_b0x20_str)
 
@@ -555,18 +365,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x28:
   c.fsd f8, 40(x10) # perform store
   addi x10, x10, 40 # restore base address
   addi x10, x10, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x12, -SIG_STRIDE(x10) # load stored value for checking
   # Check if x12 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x12, Zcd_c_fsd_cg_cp_imm_mul_8_b0x28, Zcd_c_fsd_cg_cp_imm_mul_8_b0x28_str)
-#else
-  c.fsd f8, 0(x10) # repeat store so it is available for checking
-  addi x10, x10, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x10, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x28, Zcd_c_fsd_cg_cp_imm_mul_8_b0x28_str)
 
@@ -579,18 +380,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x30:
   c.fsd f10, 48(x15) # perform store
   addi x15, x15, 48 # restore base address
   addi x15, x15, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x13, -SIG_STRIDE(x15) # load stored value for checking
   # Check if x13 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x13, Zcd_c_fsd_cg_cp_imm_mul_8_b0x30, Zcd_c_fsd_cg_cp_imm_mul_8_b0x30_str)
-#else
-  c.fsd f10, 0(x15) # repeat store so it is available for checking
-  addi x15, x15, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x15, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x30, Zcd_c_fsd_cg_cp_imm_mul_8_b0x30_str)
 
@@ -603,18 +395,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x38:
   c.fsd f12, 56(x13) # perform store
   addi x13, x13, 56 # restore base address
   addi x13, x13, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x14, -SIG_STRIDE(x13) # load stored value for checking
   # Check if x14 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x13, x5, x4, x14, Zcd_c_fsd_cg_cp_imm_mul_8_b0x38, Zcd_c_fsd_cg_cp_imm_mul_8_b0x38_str)
-#else
-  c.fsd f12, 0(x13) # repeat store so it is available for checking
-  addi x13, x13, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x13, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x38, Zcd_c_fsd_cg_cp_imm_mul_8_b0x38_str)
 
@@ -627,18 +410,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x40:
   c.fsd f13, 64(x10) # perform store
   addi x10, x10, 64 # restore base address
   addi x10, x10, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x14, -SIG_STRIDE(x10) # load stored value for checking
   # Check if x14 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x14, Zcd_c_fsd_cg_cp_imm_mul_8_b0x40, Zcd_c_fsd_cg_cp_imm_mul_8_b0x40_str)
-#else
-  c.fsd f13, 0(x10) # repeat store so it is available for checking
-  addi x10, x10, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x10, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x40, Zcd_c_fsd_cg_cp_imm_mul_8_b0x40_str)
 
@@ -651,18 +425,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x48:
   c.fsd f14, 72(x15) # perform store
   addi x15, x15, 72 # restore base address
   addi x15, x15, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x13, -SIG_STRIDE(x15) # load stored value for checking
   # Check if x13 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x13, Zcd_c_fsd_cg_cp_imm_mul_8_b0x48, Zcd_c_fsd_cg_cp_imm_mul_8_b0x48_str)
-#else
-  c.fsd f14, 0(x15) # repeat store so it is available for checking
-  addi x15, x15, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x15, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x48, Zcd_c_fsd_cg_cp_imm_mul_8_b0x48_str)
 
@@ -675,18 +440,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x50:
   c.fsd f11, 80(x8) # perform store
   addi x8, x8, 80 # restore base address
   addi x8, x8, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x9, -SIG_STRIDE(x8) # load stored value for checking
   # Check if x9 contains the expected result. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x8, x5, x4, x9, Zcd_c_fsd_cg_cp_imm_mul_8_b0x50, Zcd_c_fsd_cg_cp_imm_mul_8_b0x50_str)
-#else
-  c.fsd f11, 0(x8) # repeat store so it is available for checking
-  addi x8, x8, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x8, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x50, Zcd_c_fsd_cg_cp_imm_mul_8_b0x50_str)
 
@@ -699,18 +455,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x58:
   c.fsd f12, 88(x14) # perform store
   addi x14, x14, 88 # restore base address
   addi x14, x14, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x11, -SIG_STRIDE(x14) # load stored value for checking
   # Check if x11 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x14, x5, x4, x11, Zcd_c_fsd_cg_cp_imm_mul_8_b0x58, Zcd_c_fsd_cg_cp_imm_mul_8_b0x58_str)
-#else
-  c.fsd f12, 0(x14) # repeat store so it is available for checking
-  addi x14, x14, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x14, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x58, Zcd_c_fsd_cg_cp_imm_mul_8_b0x58_str)
 
@@ -723,18 +470,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x60:
   c.fsd f12, 96(x8) # perform store
   addi x8, x8, 96 # restore base address
   addi x8, x8, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x11, -SIG_STRIDE(x8) # load stored value for checking
   # Check if x11 contains the expected result. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x8, x5, x4, x11, Zcd_c_fsd_cg_cp_imm_mul_8_b0x60, Zcd_c_fsd_cg_cp_imm_mul_8_b0x60_str)
-#else
-  c.fsd f12, 0(x8) # repeat store so it is available for checking
-  addi x8, x8, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x8, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x60, Zcd_c_fsd_cg_cp_imm_mul_8_b0x60_str)
 
@@ -747,18 +485,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x68:
   c.fsd f8, 104(x15) # perform store
   addi x15, x15, 104 # restore base address
   addi x15, x15, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x11, -SIG_STRIDE(x15) # load stored value for checking
   # Check if x11 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x11, Zcd_c_fsd_cg_cp_imm_mul_8_b0x68, Zcd_c_fsd_cg_cp_imm_mul_8_b0x68_str)
-#else
-  c.fsd f8, 0(x15) # repeat store so it is available for checking
-  addi x15, x15, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x15, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x68, Zcd_c_fsd_cg_cp_imm_mul_8_b0x68_str)
 
@@ -771,18 +500,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x70:
   c.fsd f15, 112(x9) # perform store
   addi x9, x9, 112 # restore base address
   addi x9, x9, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x8, -SIG_STRIDE(x9) # load stored value for checking
   # Check if x8 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x8, Zcd_c_fsd_cg_cp_imm_mul_8_b0x70, Zcd_c_fsd_cg_cp_imm_mul_8_b0x70_str)
-#else
-  c.fsd f15, 0(x9) # repeat store so it is available for checking
-  addi x9, x9, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x70, Zcd_c_fsd_cg_cp_imm_mul_8_b0x70_str)
 
@@ -795,18 +515,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x78:
   c.fsd f11, 120(x10) # perform store
   addi x10, x10, 120 # restore base address
   addi x10, x10, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x15, -SIG_STRIDE(x10) # load stored value for checking
   # Check if x15 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x15, Zcd_c_fsd_cg_cp_imm_mul_8_b0x78, Zcd_c_fsd_cg_cp_imm_mul_8_b0x78_str)
-#else
-  c.fsd f11, 0(x10) # repeat store so it is available for checking
-  addi x10, x10, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x10, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x78, Zcd_c_fsd_cg_cp_imm_mul_8_b0x78_str)
 
@@ -819,18 +530,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x80:
   c.fsd f10, 128(x15) # perform store
   addi x15, x15, 128 # restore base address
   addi x15, x15, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x11, -SIG_STRIDE(x15) # load stored value for checking
   # Check if x11 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x11, Zcd_c_fsd_cg_cp_imm_mul_8_b0x80, Zcd_c_fsd_cg_cp_imm_mul_8_b0x80_str)
-#else
-  c.fsd f10, 0(x15) # repeat store so it is available for checking
-  addi x15, x15, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x15, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x80, Zcd_c_fsd_cg_cp_imm_mul_8_b0x80_str)
 
@@ -843,18 +545,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x88:
   c.fsd f14, 136(x14) # perform store
   addi x14, x14, 136 # restore base address
   addi x14, x14, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x9, -SIG_STRIDE(x14) # load stored value for checking
   # Check if x9 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x14, x5, x4, x9, Zcd_c_fsd_cg_cp_imm_mul_8_b0x88, Zcd_c_fsd_cg_cp_imm_mul_8_b0x88_str)
-#else
-  c.fsd f14, 0(x14) # repeat store so it is available for checking
-  addi x14, x14, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x14, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x88, Zcd_c_fsd_cg_cp_imm_mul_8_b0x88_str)
 
@@ -867,18 +560,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x90:
   c.fsd f10, 144(x8) # perform store
   addi x8, x8, 144 # restore base address
   addi x8, x8, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x9, -SIG_STRIDE(x8) # load stored value for checking
   # Check if x9 contains the expected result. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x8, x5, x4, x9, Zcd_c_fsd_cg_cp_imm_mul_8_b0x90, Zcd_c_fsd_cg_cp_imm_mul_8_b0x90_str)
-#else
-  c.fsd f10, 0(x8) # repeat store so it is available for checking
-  addi x8, x8, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x8, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x90, Zcd_c_fsd_cg_cp_imm_mul_8_b0x90_str)
 
@@ -891,18 +575,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x98:
   c.fsd f13, 152(x11) # perform store
   addi x11, x11, 152 # restore base address
   addi x11, x11, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x9, -SIG_STRIDE(x11) # load stored value for checking
   # Check if x9 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x9, Zcd_c_fsd_cg_cp_imm_mul_8_b0x98, Zcd_c_fsd_cg_cp_imm_mul_8_b0x98_str)
-#else
-  c.fsd f13, 0(x11) # repeat store so it is available for checking
-  addi x11, x11, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x11, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0x98, Zcd_c_fsd_cg_cp_imm_mul_8_b0x98_str)
 
@@ -915,18 +590,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xa0:
   c.fsd f11, 160(x13) # perform store
   addi x13, x13, 160 # restore base address
   addi x13, x13, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x9, -SIG_STRIDE(x13) # load stored value for checking
   # Check if x9 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x13, x5, x4, x9, Zcd_c_fsd_cg_cp_imm_mul_8_b0xa0, Zcd_c_fsd_cg_cp_imm_mul_8_b0xa0_str)
-#else
-  c.fsd f11, 0(x13) # repeat store so it is available for checking
-  addi x13, x13, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x13, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0xa0, Zcd_c_fsd_cg_cp_imm_mul_8_b0xa0_str)
 
@@ -939,18 +605,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xa8:
   c.fsd f11, 168(x12) # perform store
   addi x12, x12, 168 # restore base address
   addi x12, x12, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x15, -SIG_STRIDE(x12) # load stored value for checking
   # Check if x15 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x12, x5, x4, x15, Zcd_c_fsd_cg_cp_imm_mul_8_b0xa8, Zcd_c_fsd_cg_cp_imm_mul_8_b0xa8_str)
-#else
-  c.fsd f11, 0(x12) # repeat store so it is available for checking
-  addi x12, x12, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x12, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0xa8, Zcd_c_fsd_cg_cp_imm_mul_8_b0xa8_str)
 
@@ -963,18 +620,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xb0:
   c.fsd f15, 176(x9) # perform store
   addi x9, x9, 176 # restore base address
   addi x9, x9, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x15, -SIG_STRIDE(x9) # load stored value for checking
   # Check if x15 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x15, Zcd_c_fsd_cg_cp_imm_mul_8_b0xb0, Zcd_c_fsd_cg_cp_imm_mul_8_b0xb0_str)
-#else
-  c.fsd f15, 0(x9) # repeat store so it is available for checking
-  addi x9, x9, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0xb0, Zcd_c_fsd_cg_cp_imm_mul_8_b0xb0_str)
 
@@ -987,18 +635,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xb8:
   c.fsd f15, 184(x12) # perform store
   addi x12, x12, 184 # restore base address
   addi x12, x12, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x8, -SIG_STRIDE(x12) # load stored value for checking
   # Check if x8 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x12, x5, x4, x8, Zcd_c_fsd_cg_cp_imm_mul_8_b0xb8, Zcd_c_fsd_cg_cp_imm_mul_8_b0xb8_str)
-#else
-  c.fsd f15, 0(x12) # repeat store so it is available for checking
-  addi x12, x12, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x12, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0xb8, Zcd_c_fsd_cg_cp_imm_mul_8_b0xb8_str)
 
@@ -1011,18 +650,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xc0:
   c.fsd f12, 192(x8) # perform store
   addi x8, x8, 192 # restore base address
   addi x8, x8, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x10, -SIG_STRIDE(x8) # load stored value for checking
   # Check if x10 contains the expected result. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x8, x5, x4, x10, Zcd_c_fsd_cg_cp_imm_mul_8_b0xc0, Zcd_c_fsd_cg_cp_imm_mul_8_b0xc0_str)
-#else
-  c.fsd f12, 0(x8) # repeat store so it is available for checking
-  addi x8, x8, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x8, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0xc0, Zcd_c_fsd_cg_cp_imm_mul_8_b0xc0_str)
 
@@ -1035,18 +665,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xc8:
   c.fsd f11, 200(x12) # perform store
   addi x12, x12, 200 # restore base address
   addi x12, x12, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x9, -SIG_STRIDE(x12) # load stored value for checking
   # Check if x9 contains the expected result. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x12, x5, x4, x9, Zcd_c_fsd_cg_cp_imm_mul_8_b0xc8, Zcd_c_fsd_cg_cp_imm_mul_8_b0xc8_str)
-#else
-  c.fsd f11, 0(x12) # repeat store so it is available for checking
-  addi x12, x12, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x12 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x12, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0xc8, Zcd_c_fsd_cg_cp_imm_mul_8_b0xc8_str)
 
@@ -1059,18 +680,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xd0:
   c.fsd f12, 208(x10) # perform store
   addi x10, x10, 208 # restore base address
   addi x10, x10, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x9, -SIG_STRIDE(x10) # load stored value for checking
   # Check if x9 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x9, Zcd_c_fsd_cg_cp_imm_mul_8_b0xd0, Zcd_c_fsd_cg_cp_imm_mul_8_b0xd0_str)
-#else
-  c.fsd f12, 0(x10) # repeat store so it is available for checking
-  addi x10, x10, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x10, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0xd0, Zcd_c_fsd_cg_cp_imm_mul_8_b0xd0_str)
 
@@ -1083,18 +695,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xd8:
   c.fsd f14, 216(x13) # perform store
   addi x13, x13, 216 # restore base address
   addi x13, x13, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x12, -SIG_STRIDE(x13) # load stored value for checking
   # Check if x12 contains the expected result. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x13, x5, x4, x12, Zcd_c_fsd_cg_cp_imm_mul_8_b0xd8, Zcd_c_fsd_cg_cp_imm_mul_8_b0xd8_str)
-#else
-  c.fsd f14, 0(x13) # repeat store so it is available for checking
-  addi x13, x13, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x13 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x13, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0xd8, Zcd_c_fsd_cg_cp_imm_mul_8_b0xd8_str)
 
@@ -1107,18 +710,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xe0:
   c.fsd f13, 224(x9) # perform store
   addi x9, x9, 224 # restore base address
   addi x9, x9, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x8, -SIG_STRIDE(x9) # load stored value for checking
   # Check if x8 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x9, x5, x4, x8, Zcd_c_fsd_cg_cp_imm_mul_8_b0xe0, Zcd_c_fsd_cg_cp_imm_mul_8_b0xe0_str)
-#else
-  c.fsd f13, 0(x9) # repeat store so it is available for checking
-  addi x9, x9, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x9, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0xe0, Zcd_c_fsd_cg_cp_imm_mul_8_b0xe0_str)
 
@@ -1131,18 +725,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xe8:
   c.fsd f9, 232(x11) # perform store
   addi x11, x11, 232 # restore base address
   addi x11, x11, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x8, -SIG_STRIDE(x11) # load stored value for checking
   # Check if x8 contains the expected result. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x11, x5, x4, x8, Zcd_c_fsd_cg_cp_imm_mul_8_b0xe8, Zcd_c_fsd_cg_cp_imm_mul_8_b0xe8_str)
-#else
-  c.fsd f9, 0(x11) # repeat store so it is available for checking
-  addi x11, x11, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x11 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x11, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0xe8, Zcd_c_fsd_cg_cp_imm_mul_8_b0xe8_str)
 
@@ -1155,18 +740,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xf0:
   c.fsd f12, 240(x15) # perform store
   addi x15, x15, 240 # restore base address
   addi x15, x15, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x8, -SIG_STRIDE(x15) # load stored value for checking
   # Check if x8 contains the expected result. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x15, x5, x4, x8, Zcd_c_fsd_cg_cp_imm_mul_8_b0xf0, Zcd_c_fsd_cg_cp_imm_mul_8_b0xf0_str)
-#else
-  c.fsd f12, 0(x15) # repeat store so it is available for checking
-  addi x15, x15, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x15 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x15, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0xf0, Zcd_c_fsd_cg_cp_imm_mul_8_b0xf0_str)
 
@@ -1179,18 +755,9 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xf8:
   c.fsd f11, 248(x8) # perform store
   addi x8, x8, 248 # restore base address
   addi x8, x8, SIG_STRIDE # increment signature pointer
-#ifdef RVTEST_SELFCHECK
   LREG x9, -SIG_STRIDE(x8) # load stored value for checking
   # Check if x9 contains the expected result. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x8, x5, x4, x9, Zcd_c_fsd_cg_cp_imm_mul_8_b0xf8, Zcd_c_fsd_cg_cp_imm_mul_8_b0xf8_str)
-#else
-  c.fsd f11, 0(x8) # repeat store so it is available for checking
-  addi x8, x8, SIG_STRIDE # adjust base address for offset
-  # nops to ensure length matches SELFCHECK
-  nop
-  nop
-  nop
-#endif
   # Check fflags. x8 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD_FFLAGS(x8, x5, x4, Zcd_c_fsd_cg_cp_imm_mul_8_b0xf8, Zcd_c_fsd_cg_cp_imm_mul_8_b0xf8_str)
 

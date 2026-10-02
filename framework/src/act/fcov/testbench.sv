@@ -32,7 +32,8 @@ module testbench;
 
   // Temporary signals for filling RVVI trace interface (file handling, string parsing, etc)
   string  traceFileList, traceFile;
-  integer traceFileListHandler, traceFileHandler, num;
+  integer traceFileListHandler, num;
+  integer traceFileHandler = 0; // 0 = no trace file open yet
   string  line;
   string  key, val;
   string  words[$];
@@ -54,8 +55,6 @@ module testbench;
   logic [(XLEN-1):0] pc_rdata;
   logic [1:0]        mode;
   logic              mode_virt; // hypervisor bit
-  // Interrupts
-  logic m_ext_intr, s_ext_intr, m_timer_intr, m_soft_intr;
   // Virtual Memory
   logic [(XLEN-1):0]     virt_adr_i, virt_adr_d;
   logic [(PA_BITS-1):0]  phys_adr_i, phys_adr_d;
@@ -112,9 +111,9 @@ module testbench;
 
   // Sample an instruction from the trace file on each clock edge
   // Moves through full list of trace files
-  always_ff @(posedge clk) begin
+  always @(posedge clk) begin
     // Open trace file if needed
-    if(traceFileHandler === 'x) begin
+    if(traceFileHandler == 0) begin
       fileNum = 0;
       traceFile = traceFiles[fileNum];
       $display("Opening trace file: %s", traceFile);
@@ -143,7 +142,6 @@ module testbench;
 
     // Reset all signals at the beginning of each iteration
     {valid, insn, trap, debug_mode, pc_rdata, mode, mode_virt,
-    m_ext_intr, s_ext_intr, m_timer_intr, m_soft_intr,
     virt_adr_i, virt_adr_d, phys_adr_i, phys_adr_d,
     pte_i, pte_d, ppn_i, ppn_d, page_type_i, page_type_d,
     read_access, write_access, execute_access,
@@ -169,11 +167,6 @@ module testbench;
           "PC":             num = $sscanf(val, "%h", pc_rdata);
           "MODE":           num = $sscanf(val, "%d", mode);
           "MODE_VIRT":      num = $sscanf(val, "%d", mode_virt);
-          // Interrupts
-          "M_EXT_INTR":     num = $sscanf(val, "%b", m_ext_intr);
-          "S_EXT_INTR":     num = $sscanf(val, "%b", s_ext_intr);
-          "M_TIMER_INTR":   num = $sscanf(val, "%b", m_timer_intr);
-          "M_SOFT_INTR":    num = $sscanf(val, "%b", m_soft_intr);
           // Virtual Memory
           "VIRT_ADR_I":     num = $sscanf(val, "%h", virt_adr_i);
           "VIRT_ADR_D":     num = $sscanf(val, "%h", virt_adr_d);
@@ -239,12 +232,6 @@ module testbench;
   assign rvvi.mode[0][0] = mode;
   assign rvvi.mode_virt[0][0] = mode_virt;
 
-  // Interrupts
-  assign rvvi.m_ext_intr[0][0] = m_ext_intr;
-  assign rvvi.s_ext_intr[0][0] = s_ext_intr;
-  assign rvvi.m_timer_intr[0][0] = m_timer_intr;
-  assign rvvi.m_soft_intr[0][0] = m_soft_intr;
-
   // Virtual Memory
   assign rvvi.virt_adr_i[0][0] = virt_adr_i;
   assign rvvi.virt_adr_d[0][0] = virt_adr_d;
@@ -270,14 +257,21 @@ module testbench;
   assign rvvi.csr_wb[0][0] = csr_wb;
   assign rvvi.csr[0][0] = csr;
 
-  // Takes a string and splits it into individual words that are returned in the provided string queue
+  // Takes a string and splits it into individual words that are returned in the provided string queue.
+  // One pass over the characters: scanning and copying the remainder of the line for every word is
+  // quadratic, and vector trace lines run to hundreds of kilobytes.
   function automatic void splitLine(string line, ref string words[$]);
-    string word;
-    while (line.len() > 0) begin
-      num = $sscanf(line, "%s", word);
-      words.push_back(word);
-      line = line.substr(word.len() + 1, line.len() - 1);
+    int start = -1;
+    for (int i = 0; i < line.len(); i++) begin
+      byte c = line[i];
+      if (c == " " || c == "\n" || c == "\t" || c == "\r") begin
+        if (start >= 0) begin
+          words.push_back(line.substr(start, i-1));
+          start = -1;
+        end
+      end else if (start < 0) start = i;
     end
+    if (start >= 0) words.push_back(line.substr(start, line.len()-1));
   endfunction
 
 endmodule

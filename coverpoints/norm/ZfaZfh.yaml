@@ -1,30 +1,54 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  - name: fleq-h_op
-    # If the Zfh extension is implemented, FLEQ.H and FLTQ.H instructions are analogously defined to operate on half-precision numbers.
+  # When multiple floating-point precisions are supported, then valid values of narrower
+  # n-bit types, n&lt;FLEN, are represented in the lower n bits of an FLEN-bit NaN
+  # value, in a process termed NaN-boxing. The upper bits of a valid NaN-boxed value
+  # must be all 1s. Valid NaN-boxed n-bit values therefore appear as negative quiet NaNs
+  # (qNaNs) when viewed as any wider m-bit value, n &lt; m ≤ FLEN. Any operation that
+  # writes a narrower result to an f register must write all 1s to the uppermost FLEN-n
+  # bits to yield a legal NaN-boxed value.
+  - name: fp_nan_boxing
+    # Representative coverpoints; apply to the other ZfaZfh covergroups too
+    coverpoint:
+      ["{ZfaZfh_fli_h_cg, ZfaZfh_fminm_h_cg, ZfaZfh_fround_h_cg}/cp_NaNBox_S_H"]
+  # Apart from transfer operations described in the previous paragraph, all other
+  # floating-point operations on narrower n-bit operations, n&lt;FLEN, check if the
+  # input operands are correctly NaN-boxed, i.e., all upper FLEN-n bits are 1. If so,
+  # the n least-significant bits of the input are used as the input value, otherwise the
+  # input value is treated as an n-bit canonical NaN.
+  - name: fp_nontransfer_instrs_improper_nan_boxed_input
+    # Representative coverpoints; apply to the other ZfaZfh covergroups too
     coverpoint:
       [
-        "ZfaZfh_fleq_h_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
+        "{ZfaZfh_fleq_h_cg, ZfaZfh_fminm_h_cg}/{cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
       ]
+  # If the ext:zfh[] or ext:zvfh[] extension is implemented, insn:fli.h[] performs the
+  # analogous operation, but loads a half-precision floating-point value into register
+  # rd. Note that entry 1 (corresponding to the minimum positive normal value) has a
+  # numerically different value for half-precision. Furthermore, since 216 is not
+  # representable in half-precision floating-point, entry 29 in the table instead loads
+  # positive infinity—i.e., it is redundant with entry 30. insn:fli.h[] is encoded like
+  # insn:fli.s[], but with fmt=H.
   - name: fli-h_op
-    # If the Zfh or Zvfh extension is implemented, FLI.H performs the analogous operation, but loads a half-precision floating-point value into register rd. Note that entry 1 (corresponding to the minimum positive normal value) has a numerically different value for half-precision. Furthermore, since 216 is not representable in half-precision floating-point, entry 29 in the table instead loads positive infinity—i.e., it is redundant with entry 30. FLI.H is encoded like FLI.S, but with fmt=H.
-    coverpoint: ["ZfaZfh_fli_h_cg/{cp_rs1_fli, cp_fd, cp_NaNBox_S_H}"]
-  - name: fltq-h_op
-    # If the Zfh extension is implemented, FLEQ.H and FLTQ.H instructions are analogously defined to operate on half-precision numbers.
+    coverpoint: ["ZfaZfh_fli_h_cg/{cp_rs1_fli, cp_fd}"]
+  # If the ext:zfh[] extension is implemented, insn:fminm.h[] and insn:fmaxm.h[]
+  # instructions are analogously defined to operate on half-precision numbers.
+  - name: fmaxm-h_fminm-h_op
     coverpoint:
       [
-        "ZfaZfh_fltq_h_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
+        "{ZfaZfh_fminm_h_cg, ZfaZfh_fmaxm_h_cg}/{cr_fs1_fs2_edges_H, cp_csr_fflags_v}",
       ]
-  - name: fmaxm-h_op
-    # If the Zfh extension is implemented, FMINM.H and FMAXM.H instructions are analogously defined to operate on half-precision numbers.
+  # If the ext:zfh[] extension is implemented, insn:fround.h[] and insn:froundnx.h[]
+  # instructions are analogously defined to operate on half-precision numbers. They are
+  # encoded like insn:fcvt.h.s[], but with rs2=4 and 5, respectively,
+  - name: fround-h_froundnx-h_op
+    coverpoint:
+      ["{ZfaZfh_fround_h_cg, ZfaZfh_froundnx_h_cg}/{cp_fs1_edges_H, cp_frm_2}"]
+  # If the ext:zfh[] extension is implemented, insn:fleq.h[] and insn:fltq.h[]
+  # instructions are analogously defined to operate on half-precision numbers.
+  - name: fleq-h_fltq-h_op
     coverpoint:
       [
-        "ZfaZfh_fmaxm_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_csr_fflags_v, cr_fs1_fs2_edges_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-      ]
-  - name: fminm-h_op
-    # If the Zfh extension is implemented, FMINM.H and FMAXM.H instructions are analogously defined to operate on half-precision numbers.
-    coverpoint:
-      [
-        "ZfaZfh_fminm_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_csr_fflags_v, cr_fs1_fs2_edges_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
+        "{ZfaZfh_fleq_h_cg, ZfaZfh_fltq_h_cg}/{cr_fs1_fs2_edges_H, cp_csr_fflags_v}",
       ]

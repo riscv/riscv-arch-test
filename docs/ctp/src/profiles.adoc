@@ -6,13 +6,13 @@ This test plan addresses Phase 0, Phase 1, and Phase 2 RISC-V certification obje
 
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVI20 Profile] (Ratified): Phase 0
 ** RV{32/64}IMAFDC_Zifencei_Zicntr_Zihpm with no Sm machine mode, no PMP.  Zicsr instructions only access counters and floating-point CSRs. Optional support for misaligned loads/stores (MISALIGNED_LDST parameter).  TODO: Update to point to CRD when ready.
-* MC100 Microcontroller Profile (https://riscv.github.io/riscv-arch-test/crd/mc100_crd.html[MC100-32-CRD.pdf]): Phase 1
+* MC100 Microcontroller Profile: Phase 1
 ** RV{32/64}IMZca_Zifencei_Zicsr_Zicntr with machine mode 1.11, counters, exceptions, interrupts, PMP16
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVA22S64 Profile] (Ratified): Phase 1.5, stepping stone to phase 2
 ** Application processor without vector, hypervisor, and other newer extensions
 * https://github.com/riscv/riscv-profiles/blob/main/src/rvb23-profile.adoc#rvb23s64-profile[RVB23S64 Profile] (Ratified): Phase 1.8, stepping stone to phase 2
 ** RVA23 less vector and hypervisor
-* RVA23 Profile (https://riscv.github.io/riscv-unified-db/pdfs/AC200-CRD.pdf[AC200 CRD]): Phase 2
+* RVA23 Profile (https://riscv.github.io/riscv-arch-test/crd/rva23_crd.html[RVA23 CRD]): Phase 2
 
 Where a CRD is available, it lists the mandatory and optional extensions and IN/OUT-OF_SCOPE parameters.
 TODO: Update links when CRDs are finalized.
@@ -113,7 +113,8 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |InterruptsSm|Machine Interrupts|<<t-InterruptsSm-coverpoints>>||x|x|x|x
 |InterruptsS|Supervisor Interrupts|<<t-InterruptsS-coverpoints>>|||x|x|x
 |InterruptsU|User Interrupts|<<t-InterruptsU-coverpoints>>|||x|x|x
-|InterruptsSstc|Supervisor Timer Compare|<<t-InterruptsSstc-coverpoints>>|||x|x|x
+|SstcSm|Machine Supervisor Timer Compare|<<t-SstcSm-coverpoints>>|||x|x|x
+|Sstc|Supervisor Timer Compare|<<t-Sstc-coverpoints>>|||x|x|x
 |ZicntrS|Supervisor Counters|<<t-ZicntrS-coverpoints>>|||x|x|x
 |ZicntrU|User Counters|<<t-ZicntrU-coverpoints>>|||x|x|x
 |Zihpm|Hardware Performance Monitors|<<t-Zihpm-coverpoints>>|o|x|x|x|x

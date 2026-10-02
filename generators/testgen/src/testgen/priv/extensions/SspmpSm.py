@@ -9,19 +9,13 @@
 
 """SPMP privileged extension test generator."""
 
-import sys
 from collections.abc import Callable
-from pathlib import Path
-from random import seed
 
 from testgen.asm.csr import gen_csr_read_sigupd
-from testgen.asm.helpers import comment_banner, reproducible_hash, write_sigupd
-from testgen.asm.sections import generate_test_data_section, generate_test_string_section
-from testgen.constants import INDENT, indent_asm
-from testgen.data.config import TestConfig
+from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.io.templates import insert_footer_template, insert_header_template
 from testgen.priv.registry import add_priv_test_generator
 
 # SPMP CSR addresses used via indirect access
@@ -70,7 +64,7 @@ def _spmp_select(entry: int, reg: int) -> list[str]:
     """Generate assembly to select an SPMP entry via siselect."""
     return [
         f"LI(x{reg}, 0x{SISELECT_SPMP_BASE + entry:x})  # siselect = SPMP entry {entry}",
-        f"CSRW(siselect, x{reg})",
+        f"csrw siselect, x{reg} ; nop",
     ]
 
 
@@ -78,7 +72,7 @@ def _spmp_write_cfg(reg: int, cfg_val: int) -> list[str]:
     """Generate assembly to write spmpcfg via sireg2."""
     return [
         f"LI(x{reg}, 0x{cfg_val:x})  # spmpcfg value",
-        f"CSRW(0x152, x{reg})  # write sireg2 (spmpcfg)",
+        f"csrw 0x152, x{reg} ; nop  # write sireg2 (spmpcfg)",
         "nop",
     ]
 
@@ -87,7 +81,7 @@ def _spmp_write_addr(reg: int, addr_val: int) -> list[str]:
     """Generate assembly to write spmpaddr via sireg."""
     return [
         f"LI(x{reg}, 0x{addr_val:x})  # spmpaddr value",
-        f"CSRW(0x151, x{reg})  # write sireg (spmpaddr)",
+        f"csrw 0x151, x{reg} ; nop  # write sireg (spmpaddr)",
         "nop",
     ]
 
@@ -152,21 +146,21 @@ def _spmp_preamble(test_data: TestData) -> list[str]:
             "PMP entries, then install a lowest-priority resident rule for the test code.",
         ),
         "RVTEST_GOTO_MMODE",
-        "CSRW(CSR_MPMPDELEG, zero)  # pmpnum = 0 -> delegate all writable entries",
+        "csrw CSR_MPMPDELEG, zero ; nop  # pmpnum = 0 -> delegate all writable entries",
         "nop",
         f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + BASELINE_ENTRY:x})",
-        f"CSRW(miselect, x{sel_reg})  # select resident SPMP entry {BASELINE_ENTRY}",
+        f"csrw miselect, x{sel_reg} ; nop  # select resident SPMP entry {BASELINE_ENTRY}",
         f"LI(x{val_reg}, -1)  # maximal NAPOT region",
-        f"CSRW(mireg, x{val_reg})",
+        f"csrw mireg, x{val_reg} ; nop",
         f"LI(x{val_reg}, 0x{BASELINE_CFG:x})  # shared S:RWX / U:X resident rule",
-        f"CSRW(mireg2, x{val_reg})",
+        f"csrw mireg2, x{val_reg} ; nop",
         "nop",
     ]
     lines.extend(
         [
             "#ifdef SSPMPEN_SUPPORTED",
             f"LI(x{val_reg}, -1)",
-            f"CSRW(CSR_SPMPEN, x{val_reg})  # activate all delegated entries",
+            f"csrw CSR_SPMPEN, x{val_reg} ; nop  # activate all delegated entries",
             "nop",
             "#endif",
         ]
@@ -208,9 +202,9 @@ def _generate_spmp_csr_indirect_access_tests(test_data: TestData) -> list[str]:
         # Save original values
         lines.extend(
             [
-                f"CSRR(x{save_addr_reg}, 0x151)  # save spmpaddr[{entry}]",
+                f"csrr x{save_addr_reg}, 0x151 ; nop  # save spmpaddr[{entry}]",
                 "nop",
-                f"CSRR(x{save_cfg_reg}, 0x152)  # save spmpcfg[{entry}]",
+                f"csrr x{save_cfg_reg}, 0x152 ; nop  # save spmpcfg[{entry}]",
                 "nop",
             ]
         )
@@ -262,7 +256,7 @@ def _generate_spmp_csr_indirect_access_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"li x{val_reg}, -1  # all ones",
-                f"CSRW(0x151, x{val_reg})",
+                f"csrw 0x151, x{val_reg} ; nop",
                 "nop",
                 test_data.add_testcase(f"entry{entry}_addr_allones", coverpoint, covergroup),
                 _spmp_read_addr_sigupd(check_reg, test_data),
@@ -321,9 +315,9 @@ def _generate_spmp_csr_indirect_access_tests(test_data: TestData) -> list[str]:
         # Restore original values
         lines.extend(
             [
-                f"CSRW(0x151, x{save_addr_reg})  # restore spmpaddr[{entry}]",
+                f"csrw 0x151, x{save_addr_reg} ; nop  # restore spmpaddr[{entry}]",
                 "nop",
-                f"CSRW(0x152, x{save_cfg_reg})  # restore spmpcfg[{entry}]",
+                f"csrw 0x152, x{save_cfg_reg} ; nop  # restore spmpcfg[{entry}]",
                 "nop",
             ]
         )
@@ -401,7 +395,7 @@ def _generate_spmp_lock_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{val_reg}, 0x{(1 << SPMPCFG_W):x})  # try to set W bit",
-            f"CSRS(0x152, x{val_reg})  # csrrs sireg2",
+            f"csrs 0x152, x{val_reg} ; nop  # csrrs sireg2",
             "nop",
             test_data.add_testcase(f"entry{test_entry}_locked_csrrs_cfg", coverpoint, covergroup),
             _spmp_read_cfg_sigupd(check_reg, test_data),
@@ -412,7 +406,7 @@ def _generate_spmp_lock_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{val_reg}, 0x{(1 << SPMPCFG_R):x})  # try to clear R bit",
-            f"CSRC(0x152, x{val_reg})  # csrrc sireg2",
+            f"csrc 0x152, x{val_reg} ; nop  # csrrc sireg2",
             "nop",
             test_data.add_testcase(f"entry{test_entry}_locked_csrrc_cfg", coverpoint, covergroup),
             _spmp_read_cfg_sigupd(check_reg, test_data),
@@ -423,7 +417,7 @@ def _generate_spmp_lock_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{val_reg}, 0x{0xDEAD:x})  # attempt to change locked spmpaddr",
-            f"CSRW(0x151, x{val_reg})  # write sireg (spmpaddr)",
+            f"csrw 0x151, x{val_reg} ; nop  # write sireg (spmpaddr)",
             "nop",
             test_data.add_testcase(f"entry{test_entry}_locked_addr_write", coverpoint, covergroup),
             _spmp_read_addr_sigupd(check_reg, test_data),
@@ -436,7 +430,7 @@ def _generate_spmp_lock_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{val_reg}, 0x{0xBEEF:x})  # attempt to change prev entry's spmpaddr",
-            f"CSRW(0x151, x{val_reg})  # write sireg (spmpaddr[{prev_entry}])",
+            f"csrw 0x151, x{val_reg} ; nop  # write sireg (spmpaddr[{prev_entry}])",
             "nop",
             test_data.add_testcase(f"entry{prev_entry}_locked_tor_prevaddr", coverpoint, covergroup),
             _spmp_read_addr_sigupd(check_reg, test_data),
@@ -451,14 +445,14 @@ def _generate_spmp_lock_tests(test_data: TestData) -> list[str]:
             "# Clear lock bit from M-mode via miselect",
             "RVTEST_GOTO_MMODE",
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + test_entry:x})",
-            f"CSRW(miselect, x{sel_reg})  # miselect = SPMP entry {test_entry}",
+            f"csrw miselect, x{sel_reg} ; nop  # miselect = SPMP entry {test_entry}",
             "nop",
         ]
     )
     lines.extend(
         [
             f"LI(x{val_reg}, 0x{cfg_unlocked:x})  # cfg without L bit",
-            f"CSRW(mireg2, x{val_reg})  # write mireg2 to clear lock",
+            f"csrw mireg2, x{val_reg} ; nop  # write mireg2 to clear lock",
             "nop",
             test_data.add_testcase(f"entry{test_entry}_mmode_unlock", coverpoint, covergroup),
             gen_csr_read_sigupd(check_reg, ("mireg2", None), test_data),
@@ -468,16 +462,16 @@ def _generate_spmp_lock_tests(test_data: TestData) -> list[str]:
     # Clean up: clear the entries
     lines.extend(
         [
-            "CSRW(mireg2, zero)  # clear mireg2",
+            "csrw mireg2, zero ; nop  # clear mireg2",
             "nop",
-            "CSRW(mireg, zero)  # clear mireg",
+            "csrw mireg, zero ; nop  # clear mireg",
             "nop",
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + prev_entry:x})",
-            f"CSRW(miselect, x{sel_reg})",
+            f"csrw miselect, x{sel_reg} ; nop",
             "nop",
-            "CSRW(mireg, zero)",
+            "csrw mireg, zero ; nop",
             "nop",
-            "CSRW(mireg2, zero)",
+            "csrw mireg2, zero ; nop",
             "nop",
             "RVTEST_GOTO_LOWER_MODE Smode",
         ]
@@ -516,7 +510,7 @@ def _generate_spmp_oob_access_tests(test_data: TestData) -> list[str]:
             [
                 f"\n# Out-of-bounds index {oob_expr}",
                 f"LI(x{sel_reg}, {oob_expr})",
-                f"CSRW(siselect, x{sel_reg})",
+                f"csrw siselect, x{sel_reg} ; nop",
                 "nop",
             ]
         )
@@ -541,7 +535,7 @@ def _generate_spmp_oob_access_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"li x{val_reg}, -1",
-                f"CSRW(0x151, x{val_reg})  # write sireg (should be ignored)",
+                f"csrw 0x151, x{val_reg} ; nop  # write sireg (should be ignored)",
                 "nop",
                 test_data.add_testcase(f"oob_{oob_name}_write_addr", write_cp, covergroup),
                 _spmp_read_addr_sigupd(check_reg, test_data),
@@ -591,7 +585,7 @@ def _generate_addr_match_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"srli x{val_reg}, x{addr_reg}, 2",
-            f"CSRW(0x151, x{val_reg})",
+            f"csrw 0x151, x{val_reg} ; nop",
             "nop",
         ]
     )
@@ -619,7 +613,7 @@ def _generate_addr_match_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"srli x{val_reg}, x{addr_reg}, 2",
-            f"CSRW(0x151, x{val_reg})  # TOR lower bound = scratch",
+            f"csrw 0x151, x{val_reg} ; nop  # TOR lower bound = scratch",
             "nop",
         ]
     )
@@ -631,7 +625,7 @@ def _generate_addr_match_tests(test_data: TestData) -> list[str]:
         [
             f"addi x{val_reg}, x{addr_reg}, 8",
             f"srli x{val_reg}, x{val_reg}, 2",
-            f"CSRW(0x151, x{val_reg})  # TOR upper bound = scratch + 8",
+            f"csrw 0x151, x{val_reg} ; nop  # TOR upper bound = scratch + 8",
             "nop",
         ]
     )
@@ -665,7 +659,7 @@ def _generate_addr_match_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"srli x{val_reg}, x{addr_reg}, 2",
-            f"CSRW(0x151, x{val_reg})",
+            f"csrw 0x151, x{val_reg} ; nop",
             "nop",
         ]
     )
@@ -696,7 +690,7 @@ def _generate_addr_match_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"srli x{val_reg}, x{addr_reg}, 2",
-            f"CSRW(0x151, x{val_reg})",
+            f"csrw 0x151, x{val_reg} ; nop",
             "nop",
         ]
     )
@@ -718,7 +712,7 @@ def _generate_addr_match_tests(test_data: TestData) -> list[str]:
             f"srli x{val_reg}, x{addr_reg}, 2",
             f"andi x{val_reg}, x{val_reg}, -1024  # align the encoded base to 4 KiB",
             f"ori x{val_reg}, x{val_reg}, 0x1ff",
-            f"CSRW(0x151, x{val_reg})",
+            f"csrw 0x151, x{val_reg} ; nop",
             "nop",
             _sfence_vma(),
         ]
@@ -768,7 +762,7 @@ def _generate_permission_smode_tests(test_data: TestData) -> list[str]:
             "# Delegate U-mode ecall so RVTEST_GOTO_SMODE can return from each U-mode probe",
             "RVTEST_GOTO_MMODE",
             f"LI(x{val_reg}, 0x100)",
-            f"CSRS(CSR_MEDELEG, x{val_reg})",
+            f"csrs CSR_MEDELEG, x{val_reg} ; nop",
             "RVTEST_GOTO_LOWER_MODE Smode",
             f"LA(x{addr_reg}, {probe_label})",
         ]
@@ -777,7 +771,7 @@ def _generate_permission_smode_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"srli x{check_reg}, x{addr_reg}, 2  # 8-byte NAPOT region",
-            f"CSRW(0x151, x{check_reg})",
+            f"csrw 0x151, x{check_reg} ; nop",
             "nop",
         ]
     )
@@ -906,7 +900,7 @@ def _generate_permission_umode_tests(test_data: TestData) -> list[str]:
             "\n# Delegate U-mode ecall (medeleg bit 8) to S-mode for RVTEST_GOTO_SMODE",
             "RVTEST_GOTO_MMODE",
             f"LI(x{val_reg}, 0x100)  # bit 8: U-mode ecall",
-            f"CSRS(CSR_MEDELEG, x{val_reg})",
+            f"csrs CSR_MEDELEG, x{val_reg} ; nop",
             "nop",
             "RVTEST_GOTO_LOWER_MODE Smode",
         ]
@@ -928,15 +922,15 @@ def _generate_permission_umode_tests(test_data: TestData) -> list[str]:
                 f"\n# === U-mode rule with RWX={rwx_name} ===",
                 "RVTEST_GOTO_MMODE",
                 f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + entry:x})",
-                f"CSRW(miselect, x{sel_reg})",
+                f"csrw miselect, x{sel_reg} ; nop",
                 "nop",
                 f"LA(x{addr_reg}, {probe_label})",
                 f"srli x{addr_reg}, x{addr_reg}, 2  # spmpaddr format",
                 "# No low bits set: 8-byte NAPOT region, excluding trap save areas",
-                f"CSRW(mireg, x{addr_reg})  # spmpaddr via mireg",
+                f"csrw mireg, x{addr_reg} ; nop  # spmpaddr via mireg",
                 "nop",
                 f"LI(x{val_reg}, 0x{cfg_val:x})  # U=1, RWX={rwx_name}",
-                f"CSRW(mireg2, x{val_reg})  # spmpcfg via mireg2",
+                f"csrw mireg2, x{val_reg} ; nop  # spmpcfg via mireg2",
                 "nop",
                 "sfence.vma x0, x0",
                 "RVTEST_GOTO_LOWER_MODE Umode",
@@ -1035,7 +1029,7 @@ def _generate_sum_effect_tests(test_data: TestData) -> list[str]:
             f"LA(x{addr_reg}, {probe_label})",
             f"srli x{addr_reg}, x{addr_reg}, 2  # convert to spmpaddr format",
             "# No low bits set: 8-byte NAPOT region",
-            f"CSRW(0x151, x{addr_reg})  # write spmpaddr via sireg",
+            f"csrw 0x151, x{addr_reg} ; nop  # write spmpaddr via sireg",
             "nop",
         ]
     )
@@ -1046,9 +1040,9 @@ def _generate_sum_effect_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "\n# sstatus.SUM = 0  ->  S-mode denied any access to U-mode region",
-            f"CSRR(x{save_reg}, sstatus)  # save sstatus",
+            f"csrr x{save_reg}, sstatus ; nop  # save sstatus",
             f"LI(x{val_reg}, 0x40000)  # sstatus.SUM bit (bit 18)",
-            f"CSRC(sstatus, x{val_reg})  # clear SUM bit",
+            f"csrc sstatus, x{val_reg} ; nop  # clear SUM bit",
             "",
             "# Expected: load page fault (cause 13); strap handler advances sepc by 4.",
             test_data.add_testcase("sum_0_smode_load_denied", "cp_sum_denied", covergroup),
@@ -1068,7 +1062,7 @@ def _generate_sum_effect_tests(test_data: TestData) -> list[str]:
         [
             "\n# sstatus.SUM = 1  ->  S-mode data access allowed; fetch denied (EnforceNoX)",
             f"LI(x{val_reg}, 0x40000)",
-            f"CSRS(sstatus, x{val_reg})  # set SUM bit",
+            f"csrs sstatus, x{val_reg} ; nop  # set SUM bit",
             "",
             "# Expected: load succeeds, reads the `ret` instruction value.",
             test_data.add_testcase("sum_1_data_allowed_load", coverpoint, covergroup),
@@ -1090,7 +1084,7 @@ def _generate_sum_effect_tests(test_data: TestData) -> list[str]:
             f"jalr x1, 0(x{addr_reg})  # fetch page fault (cause 12); handler returns here",
             "nop",
             "",
-            f"CSRW(sstatus, x{save_reg})  # restore sstatus",
+            f"csrw sstatus, x{save_reg} ; nop  # restore sstatus",
         ]
     )
 
@@ -1134,13 +1128,13 @@ def _generate_mxr_effect_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"srli x{check_reg}, x{addr_reg}, 2  # 8-byte NAPOT encoding",
-            f"CSRW(0x151, x{check_reg})",
+            f"csrw 0x151, x{check_reg} ; nop",
             "nop",
         ]
     )
     lines.extend(_spmp_write_cfg(val_reg, cfg_val))
     lines.append(_sfence_vma())
-    lines.append(f"CSRR(x{save_reg}, sstatus)  # save sstatus")
+    lines.append(f"csrr x{save_reg}, sstatus ; nop  # save sstatus")
 
     for mxr_val in (0, 1):
         lines.extend(
@@ -1150,10 +1144,10 @@ def _generate_mxr_effect_tests(test_data: TestData) -> list[str]:
         )
         if mxr_val == 1:
             lines.append(f"LI(x{val_reg}, 0x{1 << 19:x})  # sstatus.MXR bit (bit 19)")
-            lines.append(f"CSRS(sstatus, x{val_reg})  # set MXR bit")
+            lines.append(f"csrs sstatus, x{val_reg} ; nop  # set MXR bit")
         else:
             lines.append(f"LI(x{val_reg}, 0x{1 << 19:x})  # sstatus.MXR bit (bit 19)")
-            lines.append(f"CSRC(sstatus, x{val_reg})  # clear MXR bit")
+            lines.append(f"csrc sstatus, x{val_reg} ; nop  # clear MXR bit")
 
         lines.extend(
             [
@@ -1166,7 +1160,7 @@ def _generate_mxr_effect_tests(test_data: TestData) -> list[str]:
             lines.append(write_sigupd(check_reg, test_data))
 
     # Clean up
-    lines.append(f"CSRW(sstatus, x{save_reg})  # restore sstatus")
+    lines.append(f"csrw sstatus, x{save_reg} ; nop  # restore sstatus")
     lines.extend(_spmp_write_cfg(val_reg, 0))
     lines.extend(_spmp_write_addr(val_reg, 0))
     lines.append(_sfence_vma())
@@ -1202,7 +1196,7 @@ def _generate_shared_rule_tests(test_data: TestData) -> list[str]:
             "# Delegate U-mode ecall so each U-mode probe can return to S-mode",
             "RVTEST_GOTO_MMODE",
             f"LI(x{val_reg}, 0x100)",
-            f"CSRS(CSR_MEDELEG, x{val_reg})",
+            f"csrs CSR_MEDELEG, x{val_reg} ; nop",
             "RVTEST_GOTO_LOWER_MODE Smode",
             f"LA(x{addr_reg}, {probe_label})",
         ]
@@ -1211,7 +1205,7 @@ def _generate_shared_rule_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"srli x{check_reg}, x{addr_reg}, 2  # 8-byte NAPOT region",
-            f"CSRW(0x151, x{check_reg})",
+            f"csrw 0x151, x{check_reg} ; nop",
             "nop",
         ]
     )
@@ -1305,17 +1299,17 @@ def _generate_shared_rule_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "\n# Shared-region S-mode access ignores sstatus.SUM",
-            f"CSRR(x{save_reg}, sstatus)",
+            f"csrr x{save_reg}, sstatus ; nop",
             f"LI(x{val_reg}, 0x{1 << 18:x})  # sstatus.SUM",
-            f"CSRC(sstatus, x{val_reg})",
+            f"csrc sstatus, x{val_reg} ; nop",
             test_data.add_testcase("sum0_shared_load_allowed", "cp_shared_sum_ignored", covergroup),
             f"lw x{check_reg}, 0(x{addr_reg})",
             write_sigupd(check_reg, test_data),
-            f"CSRS(sstatus, x{val_reg})",
+            f"csrs sstatus, x{val_reg} ; nop",
             test_data.add_testcase("sum1_shared_load_allowed", "cp_shared_sum_ignored", covergroup),
             f"lw x{check_reg}, 0(x{addr_reg})",
             write_sigupd(check_reg, test_data),
-            f"CSRW(sstatus, x{save_reg})",
+            f"csrw sstatus, x{save_reg} ; nop",
         ]
     )
 
@@ -1418,29 +1412,29 @@ def _generate_no_match_deny_tests(test_data: TestData) -> list[str]:
             f"LA(x{addr_reg}, scratch)",
             f"srli x{addr_reg}, x{addr_reg}, 2",
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE:x})",
-            f"CSRW(miselect, x{sel_reg})",
-            f"CSRW(mireg, x{addr_reg})  # entry 0 TOR top = scratch",
+            f"csrw miselect, x{sel_reg} ; nop",
+            f"csrw mireg, x{addr_reg} ; nop  # entry 0 TOR top = scratch",
             f"LI(x{val_reg}, 0x{resident_cfg:x})",
-            f"CSRW(mireg2, x{val_reg})",
+            f"csrw mireg2, x{val_reg} ; nop",
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + 1:x})",
-            f"CSRW(miselect, x{sel_reg})",
+            f"csrw miselect, x{sel_reg} ; nop",
             f"addi x{addr_reg}, x{addr_reg}, {264 // 4}",
-            f"CSRW(mireg, x{addr_reg})  # entry 1 boundary = scratch + 264",
-            "CSRW(mireg2, zero)  # entry 1 OFF: leave scratch unmatched",
+            f"csrw mireg, x{addr_reg} ; nop  # entry 1 boundary = scratch + 264",
+            "csrw mireg2, zero ; nop  # entry 1 OFF: leave scratch unmatched",
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + 2:x})",
-            f"CSRW(miselect, x{sel_reg})",
+            f"csrw miselect, x{sel_reg} ; nop",
             f"LI(x{val_reg}, -1)",
-            f"CSRW(mireg, x{val_reg})  # entry 2 TOR top = maximum address",
+            f"csrw mireg, x{val_reg} ; nop  # entry 2 TOR top = maximum address",
             f"LI(x{val_reg}, 0x{resident_cfg:x})",
-            f"CSRW(mireg2, x{val_reg})",
+            f"csrw mireg2, x{val_reg} ; nop",
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + BASELINE_ENTRY:x})",
-            f"CSRW(miselect, x{sel_reg})",
-            "CSRW(mireg2, zero)  # temporarily disable the catch-all entry",
+            f"csrw miselect, x{sel_reg} ; nop",
+            "csrw mireg2, zero ; nop  # temporarily disable the catch-all entry",
             "sfence.vma x0, x0",
             "RVTEST_GOTO_LOWER_MODE Smode",
             "sfence.vma x0, x0",
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + BASELINE_ENTRY:x})",
-            f"CSRW(siselect, x{sel_reg})  # selected resident entry is OFF",
+            f"csrw siselect, x{sel_reg} ; nop  # selected resident entry is OFF",
             test_data.add_testcase("no_match_load_fault", coverpoint, covergroup),
             f"LA(x{addr_reg}, scratch)",
             f"lw x{check_reg}, 0(x{addr_reg})  # no matching entry: load page fault",
@@ -1453,20 +1447,20 @@ def _generate_no_match_deny_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + BASELINE_ENTRY:x})",
-            f"CSRW(miselect, x{sel_reg})",
+            f"csrw miselect, x{sel_reg} ; nop",
             f"LI(x{val_reg}, -1)",
-            f"CSRW(mireg, x{val_reg})",
+            f"csrw mireg, x{val_reg} ; nop",
             f"LI(x{val_reg}, 0x{BASELINE_CFG:x})",
-            f"CSRW(mireg2, x{val_reg})",
+            f"csrw mireg2, x{val_reg} ; nop",
         ]
     )
     for entry in range(3):
         lines.extend(
             [
                 f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + entry:x})",
-                f"CSRW(miselect, x{sel_reg})",
-                "CSRW(mireg2, zero)",
-                "CSRW(mireg, zero)",
+                f"csrw miselect, x{sel_reg} ; nop",
+                "csrw mireg2, zero ; nop",
+                "csrw mireg, zero ; nop",
             ]
         )
     lines.extend(["sfence.vma x0, x0", "RVTEST_GOTO_LOWER_MODE Smode"])
@@ -1506,7 +1500,7 @@ def _generate_priority_match_tests(test_data: TestData) -> list[str]:
     lines.extend(_spmp_select(0, sel_reg))
     lines.extend(
         [
-            f"CSRW(0x151, x{addr_reg})",
+            f"csrw 0x151, x{addr_reg} ; nop",
             "nop",
         ]
     )
@@ -1517,7 +1511,7 @@ def _generate_priority_match_tests(test_data: TestData) -> list[str]:
     lines.extend(_spmp_select(1, sel_reg))
     lines.extend(
         [
-            f"CSRW(0x151, x{addr_reg})",
+            f"csrw 0x151, x{addr_reg} ; nop",
             "nop",
         ]
     )
@@ -1587,7 +1581,7 @@ def _generate_match_all_bytes_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"srli x{val_reg}, x{addr_reg}, 2",
-            f"CSRW(0x151, x{val_reg})",
+            f"csrw 0x151, x{val_reg} ; nop",
             "nop",
         ]
     )
@@ -1620,12 +1614,11 @@ def _generate_exception_priority_tests(test_data: TestData) -> list[str]:
     (
         sel_reg,
         val_reg,
-        check_reg,
         addr_reg,
         save_pmpcfg_reg,
         save_pmpaddr0_reg,
         save_pmpaddr1_reg,
-    ) = test_data.int_regs.get_registers(7, exclude_regs=[0])
+    ) = test_data.int_regs.get_registers(6, exclude_regs=[0])
 
     lines = [
         comment_banner(
@@ -1636,67 +1629,67 @@ def _generate_exception_priority_tests(test_data: TestData) -> list[str]:
         ),
         "RVTEST_GOTO_MMODE",
         f"LI(x{val_reg}, 3)",
-        f"CSRW(CSR_MPMPDELEG, x{val_reg})  # PMP[0..2], remaining entries delegated to SPMP",
+        f"csrw CSR_MPMPDELEG, x{val_reg} ; nop  # PMP[0..2], remaining entries delegated to SPMP",
         "nop",
         f"LA(x{addr_reg}, scratch)",
-        f"CSRR(x{save_pmpcfg_reg}, pmpcfg0)",
-        f"CSRR(x{save_pmpaddr0_reg}, pmpaddr0)",
-        f"CSRR(x{save_pmpaddr1_reg}, pmpaddr1)",
-        f"CSRR(x{check_reg}, pmpaddr2)",
+        f"csrr x{save_pmpcfg_reg}, pmpcfg0 ; nop",
+        f"csrr x{save_pmpaddr0_reg}, pmpaddr0 ; nop",
+        f"csrr x{save_pmpaddr1_reg}, pmpaddr1 ; nop",
+        f"csrr x{val_reg}, pmpaddr2 ; nop",
         "#if __riscv_xlen == 64",
-        f"sd x{check_reg}, 16(x{addr_reg})  # save pmpaddr2 outside the denied 8-byte region",
+        f"sd x{val_reg}, 16(x{addr_reg})  # save pmpaddr2 outside the denied 8-byte region",
         "#else",
-        f"sw x{check_reg}, 16(x{addr_reg})",
+        f"sw x{val_reg}, 16(x{addr_reg})",
         "#endif",
-        f"srli x{check_reg}, x{addr_reg}, 2",
-        f"CSRW(pmpaddr0, x{check_reg})  # PMP TOR allow below scratch",
-        f"addi x{check_reg}, x{check_reg}, 2",
-        f"CSRW(pmpaddr1, x{check_reg})  # OFF boundary at scratch + 8",
-        f"LI(x{check_reg}, -1)",
-        f"CSRW(pmpaddr2, x{check_reg})  # PMP TOR allow above the hole",
+        f"srli x{val_reg}, x{addr_reg}, 2",
+        f"csrw pmpaddr0, x{val_reg} ; nop  # PMP TOR allow below scratch",
+        f"addi x{val_reg}, x{val_reg}, 2",
+        f"csrw pmpaddr1, x{val_reg} ; nop  # OFF boundary at scratch + 8",
+        f"LI(x{val_reg}, -1)",
+        f"csrw pmpaddr2, x{val_reg} ; nop  # PMP TOR allow above the hole",
         f"LI(x{val_reg}, 0x000f000f)  # PMP0/PMP2 TOR RWX; PMP1 OFF",
-        f"CSRW(pmpcfg0, x{val_reg})",
+        f"csrw pmpcfg0, x{val_reg} ; nop",
         "nop",
         f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE:x})",
-        f"CSRW(miselect, x{sel_reg})",
-        f"srli x{check_reg}, x{addr_reg}, 2",
-        f"CSRW(mireg, x{check_reg})",
+        f"csrw miselect, x{sel_reg} ; nop",
+        f"srli x{val_reg}, x{addr_reg}, 2",
+        f"csrw mireg, x{val_reg} ; nop",
         f"LI(x{val_reg}, 0x{(A_NAPOT << SPMPCFG_A_LO) | (1 << SPMPCFG_U):x})  # SPMP deny rule",
-        f"CSRW(mireg2, x{val_reg})",
+        f"csrw mireg2, x{val_reg} ; nop",
         f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE:x} + UDB_NUM_PMP_ENTRIES - 3 - 1)",
-        f"CSRW(miselect, x{sel_reg})",
+        f"csrw miselect, x{sel_reg} ; nop",
         f"LI(x{val_reg}, -1)",
-        f"CSRW(mireg, x{val_reg})",
+        f"csrw mireg, x{val_reg} ; nop",
         f"LI(x{val_reg}, 0x{BASELINE_CFG:x})",
-        f"CSRW(mireg2, x{val_reg})",
+        f"csrw mireg2, x{val_reg} ; nop",
         "sfence.vma x0, x0",
         "RVTEST_GOTO_LOWER_MODE Smode",
         f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE:x})",
-        f"CSRW(siselect, x{sel_reg})",
+        f"csrw siselect, x{sel_reg} ; nop",
         _sfence_vma(),
         test_data.add_testcase("spmp_fault_precedes_pmp_fault", coverpoint, covergroup),
-        f"lw x{check_reg}, 0(x{addr_reg})",
+        f"lw x{val_reg}, 0(x{addr_reg})",
         "nop  # trap handler resumes here after load page fault",
         "RVTEST_GOTO_MMODE",
         f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE:x})",
-        f"CSRW(miselect, x{sel_reg})",
-        "CSRW(mireg2, zero)",
-        "CSRW(mireg, zero)",
+        f"csrw miselect, x{sel_reg} ; nop",
+        "csrw mireg2, zero ; nop",
+        "csrw mireg, zero ; nop",
         f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE:x} + UDB_NUM_PMP_ENTRIES - 3 - 1)",
-        f"CSRW(miselect, x{sel_reg})",
-        "CSRW(mireg2, zero)  # clear temporary pmpnum=3 resident rule",
-        "CSRW(mireg, zero)",
-        "CSRW(pmpcfg0, zero)  # disable the temporary PMP rules before restoring",
-        f"CSRW(pmpaddr0, x{save_pmpaddr0_reg})",
-        f"CSRW(pmpaddr1, x{save_pmpaddr1_reg})",
+        f"csrw miselect, x{sel_reg} ; nop",
+        "csrw mireg2, zero ; nop  # clear temporary pmpnum=3 resident rule",
+        "csrw mireg, zero ; nop",
+        "csrw pmpcfg0, zero ; nop  # disable the temporary PMP rules before restoring",
+        f"csrw pmpaddr0, x{save_pmpaddr0_reg} ; nop",
+        f"csrw pmpaddr1, x{save_pmpaddr1_reg} ; nop",
         "#if __riscv_xlen == 64",
-        f"ld x{check_reg}, 16(x{addr_reg})",
+        f"ld x{val_reg}, 16(x{addr_reg})",
         "#else",
-        f"lw x{check_reg}, 16(x{addr_reg})",
+        f"lw x{val_reg}, 16(x{addr_reg})",
         "#endif",
-        f"CSRW(pmpaddr2, x{check_reg})",
-        f"CSRW(pmpcfg0, x{save_pmpcfg_reg})",
-        "CSRW(CSR_MPMPDELEG, zero)",
+        f"csrw pmpaddr2, x{val_reg} ; nop",
+        f"csrw pmpcfg0, x{save_pmpcfg_reg} ; nop",
+        "csrw CSR_MPMPDELEG, zero ; nop",
         "nop",
         "sfence.vma x0, x0",
         "RVTEST_GOTO_LOWER_MODE Smode",
@@ -1706,7 +1699,6 @@ def _generate_exception_priority_tests(test_data: TestData) -> list[str]:
         [
             sel_reg,
             val_reg,
-            check_reg,
             addr_reg,
             save_pmpcfg_reg,
             save_pmpaddr0_reg,
@@ -1740,7 +1732,7 @@ def _generate_mmode_bypass_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE:x})",
-            f"CSRW(miselect, x{sel_reg})  # miselect = SPMP entry 0",
+            f"csrw miselect, x{sel_reg} ; nop  # miselect = SPMP entry 0",
             "nop",
         ]
     )
@@ -1749,7 +1741,7 @@ def _generate_mmode_bypass_tests(test_data: TestData) -> list[str]:
         [
             f"LA(x{addr_reg}, scratch)",
             f"srli x{val_reg}, x{addr_reg}, 2  # 8-byte NAPOT region",
-            f"CSRW(mireg, x{val_reg})  # write spmpaddr via mireg",
+            f"csrw mireg, x{val_reg} ; nop  # write spmpaddr via mireg",
             "nop",
         ]
     )
@@ -1757,7 +1749,7 @@ def _generate_mmode_bypass_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{val_reg}, 0x{cfg_deny:x})",
-            f"CSRW(mireg2, x{val_reg})  # write spmpcfg via mireg2",
+            f"csrw mireg2, x{val_reg} ; nop  # write spmpcfg via mireg2",
             "nop",
             "sfence.vma x0, x0",
         ]
@@ -1776,9 +1768,9 @@ def _generate_mmode_bypass_tests(test_data: TestData) -> list[str]:
     # Clean up
     lines.extend(
         [
-            "CSRW(mireg2, zero)  # clear spmpcfg",
+            "csrw mireg2, zero ; nop  # clear spmpcfg",
             "nop",
-            "CSRW(mireg, zero)  # clear spmpaddr",
+            "csrw mireg, zero ; nop  # clear spmpaddr",
             "nop",
             "sfence.vma x0, x0",
             "RVTEST_GOTO_LOWER_MODE Smode",
@@ -1813,7 +1805,7 @@ def _generate_mmode_indirect_access_tests(test_data: TestData) -> list[str]:
             [
                 f"\n# M-mode access to SPMP entry {entry}",
                 f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + entry:x})",
-                f"CSRW(miselect, x{sel_reg})  # miselect = SPMP entry {entry}",
+                f"csrw miselect, x{sel_reg} ; nop  # miselect = SPMP entry {entry}",
                 "nop",
             ]
         )
@@ -1823,7 +1815,7 @@ def _generate_mmode_indirect_access_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"LI(x{val_reg}, 0x{addr_val >> 2:x})",
-                f"CSRW(mireg, x{val_reg})  # write spmpaddr via mireg",
+                f"csrw mireg, x{val_reg} ; nop  # write spmpaddr via mireg",
                 "nop",
                 test_data.add_testcase(f"mmode_entry{entry}_addr", coverpoint, covergroup),
                 gen_csr_read_sigupd(check_reg, ("mireg", None), test_data),
@@ -1835,7 +1827,7 @@ def _generate_mmode_indirect_access_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"LI(x{val_reg}, 0x{cfg_val:x})",
-                f"CSRW(mireg2, x{val_reg})  # write spmpcfg via mireg2",
+                f"csrw mireg2, x{val_reg} ; nop  # write spmpcfg via mireg2",
                 "nop",
                 test_data.add_testcase(f"mmode_entry{entry}_cfg", coverpoint, covergroup),
                 gen_csr_read_sigupd(check_reg, ("mireg2", None), test_data),
@@ -1845,9 +1837,9 @@ def _generate_mmode_indirect_access_tests(test_data: TestData) -> list[str]:
         # Clean up
         lines.extend(
             [
-                "CSRW(mireg2, zero)",
+                "csrw mireg2, zero ; nop",
                 "nop",
-                "CSRW(mireg, zero)",
+                "csrw mireg, zero ; nop",
                 "nop",
             ]
         )
@@ -1893,13 +1885,13 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "\n# pmpnum = 0 (delegate all PMP entries as SPMP)",
-            f"CSRW({mpmpdeleg_csr}, zero)",
+            f"csrw {mpmpdeleg_csr}, zero ; nop",
             "nop",
             test_data.add_testcase("zero_all_delegated", coverpoint_field, covergroup),
             gen_csr_read_sigupd(check_reg, (mpmpdeleg_csr, None), test_data),
             "RVTEST_GOTO_LOWER_MODE Smode",
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + BASELINE_ENTRY:x})",
-            f"CSRW(siselect, x{sel_reg})",
+            f"csrw siselect, x{sel_reg} ; nop",
             test_data.add_testcase("zero_and_delegating", "cp_mpmpdeleg_pmpnum_zero", covergroup),
             gen_csr_read_sigupd(check_reg, ("0x151", None), test_data),
             "RVTEST_GOTO_MMODE",
@@ -1921,7 +1913,7 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
             [
                 f"\n# partial pmpnum: {pmpnum_expr}",
                 f"LI(x{val_reg}, {pmpnum_expr})",
-                f"CSRW({mpmpdeleg_csr}, x{val_reg})",
+                f"csrw {mpmpdeleg_csr}, x{val_reg} ; nop",
                 "nop",
                 test_data.add_testcase(f"partial_pmpnum_{pmpnum_name}", coverpoint_field, covergroup),
                 gen_csr_read_sigupd(check_reg, (mpmpdeleg_csr, None), test_data),
@@ -1934,13 +1926,13 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
         [
             "\n# Request pmpnum = 64 (clamps to writable count; no SPMP delegation)",
             f"LI(x{val_reg}, 64)",
-            f"CSRW({mpmpdeleg_csr}, x{val_reg})",
+            f"csrw {mpmpdeleg_csr}, x{val_reg} ; nop",
             "nop",
             test_data.add_testcase("max_none_delegated", coverpoint_field, covergroup),
             gen_csr_read_sigupd(check_reg, (mpmpdeleg_csr, None), test_data),
             "RVTEST_GOTO_LOWER_MODE Smode",
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE:x})",
-            f"CSRW(siselect, x{sel_reg})",
+            f"csrw siselect, x{sel_reg} ; nop",
             test_data.add_testcase("max_no_deleg_reads_zero", "cp_mpmpdeleg_no_delegation", covergroup),
             gen_csr_read_sigupd(check_reg, ("0x151", None), test_data),
             "RVTEST_GOTO_MMODE",
@@ -1952,7 +1944,7 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
         [
             "\n# pmpnum = 100 (should clamp to number of writable entries)",
             f"LI(x{val_reg}, 100)",
-            f"CSRW({mpmpdeleg_csr}, x{val_reg})",
+            f"csrw {mpmpdeleg_csr}, x{val_reg} ; nop",
             "nop",
             test_data.add_testcase("clamp_pmpnum_100", coverpoint_field, covergroup),
             gen_csr_read_sigupd(check_reg, (mpmpdeleg_csr, None), test_data),
@@ -1968,34 +1960,34 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
                 "then raise pmpnum to 1. The locked SPMP entry must not block M-mode;\n"
                 "the former highest selector becomes OOB and its state moves to the new highest index.",
             ),
-            f"CSRW({mpmpdeleg_csr}, zero)",
+            f"csrw {mpmpdeleg_csr}, zero ; nop",
             "nop",
             f"LI(x{sel_reg}, 0x100 + UDB_NUM_PMP_ENTRIES - 1)",
-            f"CSRW(miselect, x{sel_reg})  # highest SPMP index while pmpnum=0",
+            f"csrw miselect, x{sel_reg} ; nop  # highest SPMP index while pmpnum=0",
             f"LI(x{val_reg}, 0x12345)",
-            f"CSRW(mireg, x{val_reg})  # recognizable state in the highest writable entry",
-            "CSRW(mireg2, zero)  # keep the high entry inactive",
+            f"csrw mireg, x{val_reg} ; nop  # recognizable state in the highest writable entry",
+            "csrw mireg2, zero ; nop  # keep the high entry inactive",
             f"LI(x{sel_reg}, 0x100)",
-            f"CSRW(miselect, x{sel_reg})  # SPMP[0]",
+            f"csrw miselect, x{sel_reg} ; nop  # SPMP[0]",
             f"LI(x{val_reg}, 0x{1 << SPMPCFG_L:x})  # L=1, A=OFF",
-            f"CSRW(mireg2, x{val_reg})",
+            f"csrw mireg2, x{val_reg} ; nop",
             "nop",
             test_data.add_testcase("locked_spmp0_pmpnum_increment", "cp_mpmpdeleg_locked_spmp_override", covergroup),
             f"LI(x{val_reg}, 1)",
-            f"CSRW({mpmpdeleg_csr}, x{val_reg})  # must override locked SPMP[0]",
+            f"csrw {mpmpdeleg_csr}, x{val_reg} ; nop  # must override locked SPMP[0]",
             "nop",
             gen_csr_read_sigupd(check_reg, (mpmpdeleg_csr, None), test_data),
             f"LI(x{sel_reg}, 0x100 + UDB_NUM_PMP_ENTRIES - 1)",
-            f"CSRW(miselect, x{sel_reg})  # now one past the SPMP range",
+            f"csrw miselect, x{sel_reg} ; nop  # now one past the SPMP range",
             test_data.add_testcase("reconfig_former_highest_read_zero", "cp_mpmpdeleg_oob_access", covergroup),
             gen_csr_read_sigupd(check_reg, ("mireg", None), test_data),
             f"LI(x{val_reg}, -1)",
-            f"CSRW(mireg, x{val_reg})",
+            f"csrw mireg, x{val_reg} ; nop",
             "nop",
             test_data.add_testcase("reconfig_former_highest_write_ignored", "cp_mpmpdeleg_oob_access", covergroup),
             gen_csr_read_sigupd(check_reg, ("mireg", None), test_data),
             f"LI(x{sel_reg}, 0x100 + UDB_NUM_PMP_ENTRIES - 2)",
-            f"CSRW(miselect, x{sel_reg})  # highest valid SPMP index after reconfiguration",
+            f"csrw miselect, x{sel_reg} ; nop  # highest valid SPMP index after reconfiguration",
             test_data.add_testcase(
                 "reconfig_new_highest_inherits_state", "cp_mpmpdeleg_reconfig_high_entries", covergroup
             ),
@@ -2016,11 +2008,11 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
             ),
             "",
             f"LI(x{val_reg}, 8)",
-            f"CSRW({mpmpdeleg_csr}, x{val_reg})",
+            f"csrw {mpmpdeleg_csr}, x{val_reg} ; nop",
             "nop",
             "# Lock PMP[7]",
             f"LI(x{sel_reg}, -1)",
-            f"CSRW(pmpaddr7, x{sel_reg})  # deterministic maximal NAPOT region",
+            f"csrw pmpaddr7, x{sel_reg} ; nop  # deterministic maximal NAPOT region",
             f"LI(x{val_reg}, 0x{0x80 | (A_NAPOT << 3) | RWX_RWX:x})  # L=1, A=NAPOT, RWX",
         ]
     )
@@ -2030,7 +2022,7 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "#if __riscv_xlen == 64",
-            f"CSRR(x{check_reg}, pmpcfg0)",
+            f"csrr x{check_reg}, pmpcfg0 ; nop",
             "nop",
             f"li x{sel_reg}, 0xFF",
             f"slli x{sel_reg}, x{sel_reg}, 56  # mask for byte 7 (entry 7)",
@@ -2038,10 +2030,10 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
             f"and x{check_reg}, x{check_reg}, x{sel_reg}  # clear byte 7",
             f"slli x{val_reg}, x{val_reg}, 56  # shift cfg to byte 7",
             f"or x{check_reg}, x{check_reg}, x{val_reg}",
-            f"CSRW(pmpcfg0, x{check_reg})",
+            f"csrw pmpcfg0, x{check_reg} ; nop",
             "nop",
             "#else",
-            f"CSRR(x{check_reg}, pmpcfg1)",
+            f"csrr x{check_reg}, pmpcfg1 ; nop",
             "nop",
             f"li x{sel_reg}, 0xFF",
             f"slli x{sel_reg}, x{sel_reg}, 24  # mask for byte 3 (entry 7)",
@@ -2049,7 +2041,7 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
             f"and x{check_reg}, x{check_reg}, x{sel_reg}  # clear byte 3",
             f"slli x{val_reg}, x{val_reg}, 24  # shift cfg to byte 3",
             f"or x{check_reg}, x{check_reg}, x{val_reg}",
-            f"CSRW(pmpcfg1, x{check_reg})",
+            f"csrw pmpcfg1, x{check_reg} ; nop",
             "nop",
             "#endif",
         ]
@@ -2061,7 +2053,7 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"\nLI(x{val_reg}, 8)",
-            f"CSRW({mpmpdeleg_csr}, x{val_reg})",
+            f"csrw {mpmpdeleg_csr}, x{val_reg} ; nop",
             "nop",
         ]
     )
@@ -2072,7 +2064,7 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"\nLI(x{val_reg}, 64)",
-            f"CSRW({mpmpdeleg_csr}, x{val_reg})",
+            f"csrw {mpmpdeleg_csr}, x{val_reg} ; nop",
             "nop",
             test_data.add_testcase("locked_pmpnum_max_ok", coverpoint, covergroup),
             gen_csr_read_sigupd(check_reg, (mpmpdeleg_csr, None), test_data),
@@ -2083,7 +2075,7 @@ def _generate_mpmpdeleg_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"\nLI(x{val_reg}, 4)",
-            f"CSRW({mpmpdeleg_csr}, x{val_reg})",
+            f"csrw {mpmpdeleg_csr}, x{val_reg} ; nop",
             "nop",
             test_data.add_testcase("locked_pmpnum_4_rejected", coverpoint, covergroup),
             gen_csr_read_sigupd(check_reg, (mpmpdeleg_csr, None), test_data),
@@ -2137,7 +2129,7 @@ def _generate_sfence_ordering_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"srli x{val_reg}, x{addr_reg}, 2",
-                f"CSRW(0x151, x{val_reg})",
+                f"csrw 0x151, x{val_reg} ; nop",
                 "nop",
             ]
         )
@@ -2148,7 +2140,7 @@ def _generate_sfence_ordering_tests(test_data: TestData) -> list[str]:
 
         # Repeat the cfg write without an intervening nop so the trace can
         # directly associate the preceding indirect write with SFENCE.VMA.
-        lines.append(f"CSRW(0x152, x{val_reg})")
+        lines.append(f"csrw 0x152, x{val_reg} ; nop")
 
         # Issue the fence immediately after the indirect write, then label the
         # governed load so the coverpoint observes SFENCE.VMA as its predecessor.
@@ -2200,7 +2192,7 @@ def _generate_satp_bare_spmp_tests(test_data: TestData) -> list[str]:
         [
             f"LA(x{addr_reg}, scratch)",
             f"srli x{val_reg}, x{addr_reg}, 2",
-            f"CSRW(0x151, x{val_reg})",
+            f"csrw 0x151, x{val_reg} ; nop",
             "nop",
         ]
     )
@@ -2256,7 +2248,7 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
             f"LA(x{addr_reg}, {probe_label})",
             f"srli x{addr_reg}, x{addr_reg}, 2  # convert to spmpaddr format",
             "# No low bits set: 8-byte NAPOT region",
-            f"CSRW(0x151, x{addr_reg})  # write spmpaddr via sireg",
+            f"csrw 0x151, x{addr_reg} ; nop  # write spmpaddr via sireg",
             "nop",
         ]
     )
@@ -2308,7 +2300,7 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
             "fence.i",
             "RVTEST_GOTO_MMODE",
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + entry:x})",
-            f"CSRW(miselect, x{sel_reg})",
+            f"csrw miselect, x{sel_reg} ; nop",
             "nop",
         ]
     )
@@ -2318,7 +2310,7 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{val_reg}, 0x{cfg_deny:x})",
-            f"CSRW(mireg2, x{val_reg})",
+            f"csrw mireg2, x{val_reg} ; nop",
             "nop",
             "sfence.vma x0, x0",
             "RVTEST_GOTO_LOWER_MODE Smode",
@@ -2370,11 +2362,11 @@ def _generate_spmp_fault_tests(test_data: TestData) -> list[str]:
             "",
             "RVTEST_GOTO_MMODE",
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + entry:x})",
-            f"CSRW(miselect, x{sel_reg})",
+            f"csrw miselect, x{sel_reg} ; nop",
             "nop",
-            "CSRW(mireg2, zero)",
+            "csrw mireg2, zero ; nop",
             "nop",
-            "CSRW(mireg, zero)",
+            "csrw mireg, zero ; nop",
             "nop",
             "sfence.vma x0, x0",
             "RVTEST_GOTO_LOWER_MODE Smode",
@@ -2409,7 +2401,7 @@ def _generate_spmp_entry_tor_entry0_tests(test_data: TestData) -> list[str]:
             f"LA(x{addr_reg}, scratch)",
             f"addi x{val_reg}, x{addr_reg}, 8",
             f"srli x{val_reg}, x{val_reg}, 2",
-            f"CSRW(0x151, x{val_reg})  # TOR top = scratch + 8; lower bound is zero",
+            f"csrw 0x151, x{val_reg} ; nop  # TOR top = scratch + 8; lower bound is zero",
             "nop",
         ]
     )
@@ -2467,10 +2459,10 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     # Save current spmpen (S-mode CSR, accessible from S-mode)
     lines.extend(
         [
-            f"CSRR(x{save_reg}, CSR_SPMPEN)  # save spmpen",
+            f"csrr x{save_reg}, CSR_SPMPEN ; nop  # save spmpen",
             "nop",
             "#if __riscv_xlen == 32",
-            f"CSRR(x{save_high_reg}, CSR_SPMPENH)  # save upper 32 bits",
+            f"csrr x{save_high_reg}, CSR_SPMPENH ; nop  # save upper 32 bits",
             "nop",
             "#endif",
         ]
@@ -2481,14 +2473,14 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     # writes. With the 64-entry max configs this retains the 16/48 split.
     lines.extend(
         [
-            f"CSRR(x{addr_reg}, CSR_MPMPDELEG)  # save pmpnum",
+            f"csrr x{addr_reg}, CSR_MPMPDELEG ; nop  # save pmpnum",
             f"LI(x{val_reg}, UDB_NUM_PMP_ENTRIES / 4)",
-            f"CSRW(CSR_MPMPDELEG, x{val_reg})",
+            f"csrw CSR_MPMPDELEG, x{val_reg} ; nop",
             "nop",
             f"LI(x{val_reg}, -1)",
-            f"CSRW(CSR_SPMPEN, x{val_reg})",
+            f"csrw CSR_SPMPEN, x{val_reg} ; nop",
             "#if __riscv_xlen == 32",
-            f"CSRW(CSR_SPMPENH, x{val_reg})",
+            f"csrw CSR_SPMPENH, x{val_reg} ; nop",
             "#endif",
             "nop",
             test_data.add_testcase("spmpen_upper_bits_ignored", "cp_spmpen_upper_bits_ignored", covergroup),
@@ -2497,10 +2489,10 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
             test_data.add_testcase("spmpenh_upper_bits_ignored", "cp_spmpen_upper_bits_ignored", covergroup),
             gen_csr_read_sigupd(check_reg, ("CSR_SPMPENH", None), test_data),
             "#endif",
-            f"CSRW(CSR_MPMPDELEG, x{addr_reg})  # restore pmpnum",
-            f"CSRW(CSR_SPMPEN, x{save_reg})",
+            f"csrw CSR_MPMPDELEG, x{addr_reg} ; nop  # restore pmpnum",
+            f"csrw CSR_SPMPEN, x{save_reg} ; nop",
             "#if __riscv_xlen == 32",
-            f"CSRW(CSR_SPMPENH, x{save_high_reg})",
+            f"csrw CSR_SPMPENH, x{save_high_reg} ; nop",
             "#endif",
             "nop",
         ]
@@ -2511,7 +2503,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
         [
             "\n# Write all-ones to spmpen, read back (WARL register)",
             f"LI(x{val_reg}, -1)  # all ones",
-            f"CSRW(CSR_SPMPEN, x{val_reg})",
+            f"csrw CSR_SPMPEN, x{val_reg} ; nop",
             "nop",
             test_data.add_testcase("spmpen_write_allones", coverpoint, covergroup),
             gen_csr_read_sigupd(check_reg, ("CSR_SPMPEN", None), test_data),
@@ -2522,7 +2514,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "\n# Write zero to spmpen (disable all entries)",
-            "CSRW(CSR_SPMPEN, zero)",
+            "csrw CSR_SPMPEN, zero ; nop",
             "nop",
             test_data.add_testcase("spmpen_write_zero", coverpoint, covergroup),
             gen_csr_read_sigupd(check_reg, ("CSR_SPMPEN", None), test_data),
@@ -2536,7 +2528,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
             [
                 f"\n# Enable only entry {bit}",
                 f"LI(x{val_reg}, {mask})",
-                f"CSRW(CSR_SPMPEN, x{val_reg})",
+                f"csrw CSR_SPMPEN, x{val_reg} ; nop",
                 "nop",
                 test_data.add_testcase(f"spmpen_bit{bit}", coverpoint, covergroup),
                 gen_csr_read_sigupd(check_reg, ("CSR_SPMPEN", None), test_data),
@@ -2548,17 +2540,17 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
             "#if __riscv_xlen == 32",
             "\n# Probe the RV32 alias for spmpen[63:32]",
             f"LI(x{val_reg}, -1)",
-            f"CSRW(CSR_SPMPENH, x{val_reg})",
+            f"csrw CSR_SPMPENH, x{val_reg} ; nop",
             "nop",
             test_data.add_testcase("spmpenh_write_allones", "cp_spmpenh_readwrite", covergroup),
             gen_csr_read_sigupd(check_reg, ("CSR_SPMPENH", None), test_data),
-            "CSRW(CSR_SPMPENH, zero)",
+            "csrw CSR_SPMPENH, zero ; nop",
             "nop",
             test_data.add_testcase("spmpenh_write_zero", "cp_spmpenh_readwrite", covergroup),
             gen_csr_read_sigupd(check_reg, ("CSR_SPMPENH", None), test_data),
-            f"CSRW(CSR_SPMPENH, x{save_high_reg})  # restore upper 32 bits",
+            f"csrw CSR_SPMPENH, x{save_high_reg} ; nop  # restore upper 32 bits",
             "#endif",
-            f"CSRW(CSR_SPMPEN, x{save_reg})  # restore resident entry before returning to S-mode",
+            f"csrw CSR_SPMPEN, x{save_reg} ; nop  # restore resident entry before returning to S-mode",
             "nop",
             "sfence.vma x0, x0",
             "RVTEST_GOTO_LOWER_MODE Smode",
@@ -2597,7 +2589,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
             f"LI(x{val_reg}, 0x2468ACE0)",
             f"sw x{val_reg}, 0(x{addr_reg})",
             f"srli x{check_reg}, x{addr_reg}, 2",
-            f"CSRW(0x151, x{check_reg})",
+            f"csrw 0x151, x{check_reg} ; nop",
             "nop",
         ]
     )
@@ -2612,7 +2604,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
         [
             "\n# spmpen=0x80: disable entry 0 and keep resident entry 7 enabled",
             f"LI(x{val_reg}, 0x{resident_mask:x})",
-            f"CSRW(CSR_SPMPEN, x{val_reg})",
+            f"csrw CSR_SPMPEN, x{val_reg} ; nop",
             "nop",
             "sfence.vma x0, x0",
             test_data.add_testcase("spmpen_entry0_disabled", coverpoint, covergroup),
@@ -2628,7 +2620,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
         [
             "\n# spmpen=0x81: enable entry 0 and keep resident entry 7 enabled",
             f"LI(x{val_reg}, 0x{resident_mask | 1:x})",
-            f"CSRW(CSR_SPMPEN, x{val_reg})",
+            f"csrw CSR_SPMPEN, x{val_reg} ; nop",
             "nop",
             "sfence.vma x0, x0",
             test_data.add_testcase("spmpen_entry0_enabled", coverpoint, covergroup),
@@ -2643,10 +2635,10 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "\n# Set A=OFF (disable), spmpen[0]=1 -> entry still inactive",
-            "CSRW(0x152, zero)  # spmpcfg.A=OFF via sireg2",
+            "csrw 0x152, zero ; nop  # spmpcfg.A=OFF via sireg2",
             "nop",
             f"LI(x{val_reg}, 0x{resident_mask | 1:x})",
-            f"CSRW(CSR_SPMPEN, x{val_reg})",
+            f"csrw CSR_SPMPEN, x{val_reg} ; nop",
             "nop",
             "sfence.vma x0, x0",
             test_data.add_testcase("spmpen_aoff_no_activate", coverpoint, covergroup),
@@ -2680,7 +2672,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
             "",
             # Select entry 1 via M-mode indirect access
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + lock_entry:x})",
-            f"CSRW(miselect, x{sel_reg})  # miselect = SPMP entry {lock_entry}",
+            f"csrw miselect, x{sel_reg} ; nop  # miselect = SPMP entry {lock_entry}",
             "nop",
         ]
     )
@@ -2690,7 +2682,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
         [
             "\n# Pre-set spmpen[1] = 1 before locking",
             f"LI(x{val_reg}, 0x{1 << lock_entry:x})",
-            f"CSRS(CSR_SPMPEN, x{val_reg})",
+            f"csrs CSR_SPMPEN, x{val_reg} ; nop",
             "nop",
         ]
     )
@@ -2700,7 +2692,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             f"LI(x{val_reg}, 0x{cfg_locked:x})  # L=1, R, NAPOT, U",
-            f"CSRW(mireg2, x{val_reg})",
+            f"csrw mireg2, x{val_reg} ; nop",
             "nop",
         ]
     )
@@ -2710,7 +2702,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
         [
             "\n# Try to clear spmpen[1] (locked, should be rejected -> stays 1)",
             f"LI(x{val_reg}, 0x{1 << lock_entry:x})",
-            f"CSRC(CSR_SPMPEN, x{val_reg})",
+            f"csrc CSR_SPMPEN, x{val_reg} ; nop",
             "nop",
             test_data.add_testcase("locked_csrrc_attempt", coverpoint, covergroup),
             gen_csr_read_sigupd(check_reg, ("CSR_SPMPEN", None), test_data),
@@ -2731,13 +2723,13 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
         [
             "\n# Clean up: clear locked entry config",
             f"LI(x{sel_reg}, 0x{SISELECT_SPMP_BASE + lock_entry:x})",
-            f"CSRW(miselect, x{sel_reg})",
+            f"csrw miselect, x{sel_reg} ; nop",
             "nop",
-            "CSRW(mireg2, zero)  # M-mode indirect access clears L and deactivates the entry",
+            "csrw mireg2, zero ; nop  # M-mode indirect access clears L and deactivates the entry",
             "nop",
-            "CSRW(mireg, zero)",
+            "csrw mireg, zero ; nop",
             "nop",
-            f"CSRW(CSR_SPMPEN, x{save_reg})  # restore spmpen",
+            f"csrw CSR_SPMPEN, x{save_reg} ; nop  # restore spmpen",
             "nop",
             "sfence.vma x0, x0",
             "RVTEST_GOTO_LOWER_MODE Smode",
@@ -2757,7 +2749,7 @@ def _generate_spmpen_tests(test_data: TestData) -> list[str]:
     "Sspmp",
     # The combined test exercises Sspmpen (spmpen CSR) via _generate_spmpen_tests,
     # and this suite explicitly exercises the Smpmpdeleg resource-sharing profile.
-    required_extensions=["Sm", "S", "Zicsr", "Smcsrind", "Sscsrind", "Sspmp", "Sspmpen", "Smpmpdeleg"],
+    required_extensions=["Sm", "S", "Zicsr", "Zifencei", "Smcsrind", "Sscsrind", "Sspmp", "Sspmpen", "Smpmpdeleg"],
     march_extensions=["Zicsr", "Zifencei"],
     params=["NUM_PMP_ENTRIES: '>=8'", "PMP_GRANULARITY: 2"],
 )
@@ -2802,110 +2794,72 @@ def make_sspmp(test_data: TestData) -> list[TestChunk]:
 
 
 # ---------------------------------------------------------------------------
-# Standalone Sspmp test generation (separate files, no "-00" suffix)
-# Run: uv run python generators/testgen/src/testgen/priv/extensions/SspmpSm.py tests
+# Individual Sspmp tests registered alongside the combined test.
+# The standard CLI generates and retains every named split in one pass.
 # ---------------------------------------------------------------------------
 
-_SIGUPD_MARGIN = 10
-
-# (filename_stem, generator_function, extra_required_extensions) for each sub-test.
+# (split_name, generator_function, extra_required_extensions) for each sub-test.
 # Every test explicitly uses Smpmpdeleg to allocate the shared PMP/SPMP resource.
 # Sspmpen remains optional and is declared only by tests that access spmpen.
 _SSPMP_SUB_TESTS: list[tuple[str, Callable[[TestData], list[str]], list[str]]] = [
-    ("SspmpSmCsrAccess", _generate_spmp_csr_indirect_access_tests, []),
-    ("SspmpSmLock", _generate_spmp_lock_tests, []),
-    ("SspmpSmOobAccess", _generate_spmp_oob_access_tests, []),
-    ("SspmpSmAddrMatch", _generate_addr_match_tests, []),
-    ("SspmpSmTorEntry0", _generate_spmp_entry_tor_entry0_tests, []),
-    ("SspmpSmPriority", _generate_priority_match_tests, []),
-    ("SspmpSmMatchAllBytes", _generate_match_all_bytes_tests, []),
-    ("SspmpSmPermSmode", _generate_permission_smode_tests, []),
-    ("SspmpSmPermUmode", _generate_permission_umode_tests, []),
-    ("SspmpSmSum", _generate_sum_effect_tests, []),
-    ("SspmpSmMxr", _generate_mxr_effect_tests, []),
-    ("SspmpSmShared", _generate_shared_rule_tests, []),
-    ("SspmpSmReserved", _generate_reserved_encoding_tests, []),
-    ("SspmpSmNoMatch", _generate_no_match_deny_tests, []),
-    ("SspmpSmFault", _generate_spmp_fault_tests, []),
-    ("SspmpSmExceptionPriority", _generate_exception_priority_tests, []),
-    ("SspmpSmMmodeBypass", _generate_mmode_bypass_tests, []),
-    ("SspmpSmMmodeAccess", _generate_mmode_indirect_access_tests, []),
-    ("SspmpSmMpmpdeleg", _generate_mpmpdeleg_tests, []),
-    ("SspmpSmSpmpen", _generate_spmpen_tests, ["Sspmpen"]),
-    ("SspmpSmSfence", _generate_sfence_ordering_tests, []),
-    ("SspmpSmSatpBare", _generate_satp_bare_spmp_tests, []),
+    ("SmCsrAccess", _generate_spmp_csr_indirect_access_tests, []),
+    ("SmLock", _generate_spmp_lock_tests, []),
+    ("SmOobAccess", _generate_spmp_oob_access_tests, []),
+    ("SmAddrMatch", _generate_addr_match_tests, []),
+    ("SmTorEntry0", _generate_spmp_entry_tor_entry0_tests, []),
+    ("SmPriority", _generate_priority_match_tests, []),
+    ("SmMatchAllBytes", _generate_match_all_bytes_tests, []),
+    ("SmPermSmode", _generate_permission_smode_tests, ["Zifencei"]),
+    ("SmPermUmode", _generate_permission_umode_tests, ["Zifencei"]),
+    ("SmSum", _generate_sum_effect_tests, ["Zifencei"]),
+    ("SmMxr", _generate_mxr_effect_tests, []),
+    ("SmShared", _generate_shared_rule_tests, ["Zifencei"]),
+    ("SmReserved", _generate_reserved_encoding_tests, []),
+    ("SmNoMatch", _generate_no_match_deny_tests, []),
+    ("SmFault", _generate_spmp_fault_tests, ["Zifencei"]),
+    ("SmExceptionPriority", _generate_exception_priority_tests, []),
+    ("SmMmodeBypass", _generate_mmode_bypass_tests, []),
+    ("SmMmodeAccess", _generate_mmode_indirect_access_tests, []),
+    ("SmMpmpdeleg", _generate_mpmpdeleg_tests, []),
+    ("SmSpmpen", _generate_spmpen_tests, ["Sspmpen"]),
+    ("SmSfence", _generate_sfence_ordering_tests, []),
+    ("SmSatpBare", _generate_satp_bare_spmp_tests, []),
 ]
 
 
-def _generate_single_test(
-    name: str,
+def _register_sspmp_subtest(
+    split_name: str,
     generator_fn: Callable[[TestData], list[str]],
-    output_dir: Path,
-    extra_required_extensions: list[str] | None = None,
+    extra_required_extensions: list[str],
 ) -> None:
-    """Generate a single Sspmp sub-test .S file."""
-    required_exts = ["Sm", "S", "Zicsr", "Smcsrind", "Sscsrind", "Sspmp", "Smpmpdeleg"]
-    if extra_required_extensions:
-        required_exts = required_exts + list(extra_required_extensions)
-    test_config = TestConfig(
-        xlen=0,
-        flen=64,
-        testsuite=name,
-        E_ext=False,
-        required_extensions=required_exts,
-        # Zifencei is needed by SspmpSmSum / SspmpSmPermUmode which use fence.i
-        # to sync the icache after writing the jalr target for fetch-fault tests.
-        # It is harmless for sub-tests that do not issue fence.i.
+    """Register a named split with its own requirements and deterministic seed."""
+
+    def generate_subtest(test_data: TestData) -> list[TestChunk]:
+        tc = test_data.begin_test_chunk()
+        tc.split_name = split_name
+        tc.code.extend(_spmp_preamble(test_data))
+        tc.code.extend(generator_fn(test_data))
+        return [test_data.end_test_chunk()]
+
+    # The framework seeds each registry entry from the generator's name.
+    generate_subtest.__name__ = f"make_sspmp_{split_name}"
+    add_priv_test_generator(
+        "Sspmp",
+        extra_defines=["#define RVTEST_PRIV_TEST"],
+        required_extensions=[
+            "Sm",
+            "S",
+            "Zicsr",
+            "Smcsrind",
+            "Sscsrind",
+            "Sspmp",
+            "Smpmpdeleg",
+            *extra_required_extensions,
+        ],
         march_extensions=["Zicsr", "Zifencei"],
-        extra_params=["NUM_PMP_ENTRIES: '>=8'", "PMP_GRANULARITY: 2"],
-    )
-
-    test_data = TestData(test_config)
-    tc = test_data.begin_test_chunk()
-    test_data.int_regs.consume_registers([1])
-    seed(reproducible_hash(name))
-
-    # Every standalone test exercises the Smpmpdeleg sharing profile and needs
-    # a resident entry before it returns to S-mode.
-    body_lines = _spmp_preamble(test_data) + generator_fn(test_data)
-
-    test_data.int_regs.return_register(1)
-    tc.code.extend(body_lines)
-    tc = test_data.end_test_chunk()
-
-    # Assemble the .S file
-    filename = f"{name}.S"
-    sigupd_count = _SIGUPD_MARGIN + tc.sigupd_count
-
-    test_file_relative = Path("Sspmp") / filename
-    extra_defines = ["#define RVTEST_PRIV_TEST"]
-    header = insert_header_template(test_config, test_file_relative, sigupd_count, extra_defines)
-
-    body = "\n".join(indent_asm(line) for line in "\n".join(tc.code).split("\n"))
-
-    test_data_section = generate_test_data_section(list(tc.data_values), test_config.xlen, test_config.flen)
-    test_string_section = generate_test_string_section(list(tc.data_strings))
-    footer = insert_footer_template(test_data_section, test_string_section)
-
-    test_string = f"{header}\n{body}\n{footer}"
-    test_file = output_dir / filename
-    if not test_file.exists() or test_file.read_text() != test_string:
-        test_file.write_text(test_string)
-
-    test_data.destroy()
+        params=["NUM_PMP_ENTRIES: '>=8'", "PMP_GRANULARITY: 2"],
+    )(generate_subtest)
 
 
-def generate_sspmp_tests(output_dir: Path) -> None:
-    """Generate all Sspmp sub-tests as individual .S files under *output_dir*/priv/Sspmp/."""
-    sspmp_dir = output_dir / "priv" / "Sspmp"
-    sspmp_dir.mkdir(parents=True, exist_ok=True)
-    for name, gen_fn, extra_exts in _SSPMP_SUB_TESTS:
-        _generate_single_test(name, gen_fn, sspmp_dir, extra_exts)
-    print(f"Generated {len(_SSPMP_SUB_TESTS)} Sspmp test files in {sspmp_dir}")
-
-
-# Run: uv run python generators/testgen/src/testgen/priv/extensions/SspmpSm.py tests
-# This will generate separate .S files for each Sspmp sub-test under tests/priv/Sspmp/.
-if __name__ == "__main__":
-    output = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("tests")
-    generate_sspmp_tests(output)
+for _split_name, _generator_fn, _extra_required_extensions in _SSPMP_SUB_TESTS:
+    _register_sspmp_subtest(_split_name, _generator_fn, _extra_required_extensions)

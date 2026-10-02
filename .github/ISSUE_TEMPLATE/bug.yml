@@ -1,0 +1,57 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: Apache-2.0
+
+name: Bug report
+description: Report a problem with tests or supporting code.
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: dropdown
+    id: affected-area
+    attributes:
+      label: Affected area
+      description: Select the area most directly related to the problem.
+      options:
+        - "Tests — Test generation or individual test files"
+        - "Test Environment — Trap handler, boot code, signature checking, etc."
+        - "Test Framework — Test selection or compilation"
+        - "Coverpoints — Coverage model or coverage generation"
+        - "Other — A problem not listed above"
+    validations:
+      required: true
+  - type: input
+    id: commit
+    attributes:
+      label: Commit
+      description: Provide the commit SHA or tag used when you saw the problem.
+      placeholder: "e.g., 41f149ef7"
+    validations:
+      required: true
+  - type: input
+    id: test-or-extension
+    attributes:
+      label: Affected test or extension
+      description: Name a test, test suite, extension, or component if applicable.
+      placeholder: "e.g., Zicsr-csrrw-00 or Zicsr"
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Include the command and relevant DUT details. Attach relevant configuration files, logs, ELFs, or traces.
+      placeholder: |
+        1. Run ...
+        2. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true

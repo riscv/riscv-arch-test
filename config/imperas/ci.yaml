@@ -3,5 +3,17 @@
 # CI configuration for Imperas simulator
 # Imperas is proprietary and cannot run in public CI.
 
+# These exclusions don't affect CI because it doesn't run, but they help tracking incomplete features
+# - SsstrictSm/S/U: on the vector configs, Imperas does not enforce the vector register-group
+#   overlap constraints, so it executes reserved widening encodings such as
+#   vwmaccu.vv v14, v9, v15, v0.t instead of raising an illegal instruction:
+#   https://solvnetplus.synopsys.com/s/case/500WQ0000230O4P/imperas-treats-vwmaccuvv-v14-v9-v15-v0t-as-legal
+#   SsstrictSm additionally trips on hcontext (0x6a8) on rv64-max, which Imperas implements
+#   and Sail does not. The rv32 configs pass SsstrictS/U entirely, and rv32gck passes all three.
+# - Smstateen: Sail does not implement all state yet to match; also, Imperas lets mstateen0.P1P13
+#   be written on RV64: https://solvnetplus.synopsys.com/s/case/500WQ0000289tyxYAA/mstateen0p1p13-should-be-readonly-zero-on-rv64
+# - ExceptionsVx: https://solvnetplus.synopsys.com/s/case/500WQ000023l1CPYAY/vmvnrrv-does-not-raise-an-illegalinstruction-exception-when-vtypevill-1
+# - Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
+#
 ci_enabled: false
-exclude_extensions: ""
+exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU"

@@ -10,7 +10,7 @@ from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
 
-lr_config = InstructionTypeConfig(required_params={"rd", "rs1", "temp_val", "temp_reg"})
+lr_config = InstructionTypeConfig(required_params={"rd", "rs1", "temp_val"})
 
 
 @add_instruction_formatter("LR", lr_config)

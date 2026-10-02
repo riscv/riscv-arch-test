@@ -15,9 +15,8 @@
 # MARCH: rv64i_zicsr_zifencei_zalrsc
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "Zalrsc-sc.w-00.S"
-#define SIGUPD_COUNT 557
+// Define the size of the signature region
+#define SIGUPD_COUNT 561
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -715,8 +714,8 @@ Zalrsc_sc_w_cg_cp_rs2_b3_success:
   # Check if x17 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x24, x5, x4, x17, Zalrsc_sc_w_cg_cp_rs2_b3, Zalrsc_sc_w_cg_cp_rs2_b3_str)
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x4)
   RVTEST_TESTDATA_LOAD_INT(x30, x4) # load rs2: x4 = 0x1193ef9bb12f3747
   LA(x31, scratch) # rs1 = base address
@@ -729,12 +728,12 @@ Zalrsc_sc_w_cg_cp_rs2_b4:
   addi x6, x6, -1 # decrement retry count
   bnez x6, Zalrsc_sc_w_cg_cp_rs2_b4_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_b4_success:
-  # Check if x29 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x29, Zalrsc_sc_w_cg_cp_rs2_b4, Zalrsc_sc_w_cg_cp_rs2_b4_str)
+  # Check if x29 contains the expected result. x24 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x24, x14, x13, x29, Zalrsc_sc_w_cg_cp_rs2_b4, Zalrsc_sc_w_cg_cp_rs2_b4_str)
   LA(x31, scratch) # reload base address
   LREG x6, 0(x31) # load stored value
-  # Check if x6 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x6, Zalrsc_sc_w_cg_cp_rs2_b4, Zalrsc_sc_w_cg_cp_rs2_b4_str)
+  # Check if x6 contains the expected result. x24 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x24, x14, x13, x6, Zalrsc_sc_w_cg_cp_rs2_b4, Zalrsc_sc_w_cg_cp_rs2_b4_str)
 
 # Testcase cp_rs2 (Test source rs2 = x5)
   RVTEST_TESTDATA_LOAD_INT(x30, x5) # load rs2: x5 = 0x0e9dc67167678b49
@@ -748,12 +747,12 @@ Zalrsc_sc_w_cg_cp_rs2_b5:
   addi x3, x3, -1 # decrement retry count
   bnez x3, Zalrsc_sc_w_cg_cp_rs2_b5_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_b5_success:
-  # Check if x26 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x26, Zalrsc_sc_w_cg_cp_rs2_b5, Zalrsc_sc_w_cg_cp_rs2_b5_str)
+  # Check if x26 contains the expected result. x24 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x24, x14, x13, x26, Zalrsc_sc_w_cg_cp_rs2_b5, Zalrsc_sc_w_cg_cp_rs2_b5_str)
   LA(x31, scratch) # reload base address
   LREG x3, 0(x31) # load stored value
-  # Check if x3 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x3, Zalrsc_sc_w_cg_cp_rs2_b5, Zalrsc_sc_w_cg_cp_rs2_b5_str)
+  # Check if x3 contains the expected result. x24 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x24, x14, x13, x3, Zalrsc_sc_w_cg_cp_rs2_b5, Zalrsc_sc_w_cg_cp_rs2_b5_str)
 
 # Testcase cp_rs2 (Test source rs2 = x6)
   RVTEST_TESTDATA_LOAD_INT(x30, x6) # load rs2: x6 = 0x116fbcae95fbd935
@@ -767,31 +766,31 @@ Zalrsc_sc_w_cg_cp_rs2_b6:
   addi x23, x23, -1 # decrement retry count
   bnez x23, Zalrsc_sc_w_cg_cp_rs2_b6_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_b6_success:
-  # Check if x28 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x28, Zalrsc_sc_w_cg_cp_rs2_b6, Zalrsc_sc_w_cg_cp_rs2_b6_str)
+  # Check if x28 contains the expected result. x24 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x24, x14, x13, x28, Zalrsc_sc_w_cg_cp_rs2_b6, Zalrsc_sc_w_cg_cp_rs2_b6_str)
   LA(x19, scratch) # reload base address
   LREG x23, 0(x19) # load stored value
-  # Check if x23 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x23, Zalrsc_sc_w_cg_cp_rs2_b6, Zalrsc_sc_w_cg_cp_rs2_b6_str)
+  # Check if x23 contains the expected result. x24 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x24, x14, x13, x23, Zalrsc_sc_w_cg_cp_rs2_b6, Zalrsc_sc_w_cg_cp_rs2_b6_str)
 
 # Testcase cp_rs2 (Test source rs2 = x7)
   RVTEST_TESTDATA_LOAD_INT(x30, x7) # load rs2: x7 = 0x96d8ac657e0837b6
-  LA(x14, scratch) # rs1 = base address
+  LA(x12, scratch) # rs1 = base address
   LI(x17, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_b7_retry:
-  lr.w x0, (x14) # establish reservation
+  lr.w x0, (x12) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_b7:
-  sc.w x20, x7, (x14) # perform operation
+  sc.w x20, x7, (x12) # perform operation
   beqz x20, Zalrsc_sc_w_cg_cp_rs2_b7_success # SC succeeded, skip retry
   addi x17, x17, -1 # decrement retry count
   bnez x17, Zalrsc_sc_w_cg_cp_rs2_b7_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_b7_success:
-  # Check if x20 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x20, Zalrsc_sc_w_cg_cp_rs2_b7, Zalrsc_sc_w_cg_cp_rs2_b7_str)
-  LA(x14, scratch) # reload base address
-  LREG x17, 0(x14) # load stored value
-  # Check if x17 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x17, Zalrsc_sc_w_cg_cp_rs2_b7, Zalrsc_sc_w_cg_cp_rs2_b7_str)
+  # Check if x20 contains the expected result. x24 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x24, x14, x13, x20, Zalrsc_sc_w_cg_cp_rs2_b7, Zalrsc_sc_w_cg_cp_rs2_b7_str)
+  LA(x12, scratch) # reload base address
+  LREG x17, 0(x12) # load stored value
+  # Check if x17 contains the expected result. x24 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x24, x14, x13, x17, Zalrsc_sc_w_cg_cp_rs2_b7, Zalrsc_sc_w_cg_cp_rs2_b7_str)
 
 # Testcase cp_rs2 (Test source rs2 = x8)
   RVTEST_TESTDATA_LOAD_INT(x30, x8) # load rs2: x8 = 0x408725c546074da3
@@ -805,12 +804,12 @@ Zalrsc_sc_w_cg_cp_rs2_b8:
   addi x11, x11, -1 # decrement retry count
   bnez x11, Zalrsc_sc_w_cg_cp_rs2_b8_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_b8_success:
-  # Check if x15 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x15, Zalrsc_sc_w_cg_cp_rs2_b8, Zalrsc_sc_w_cg_cp_rs2_b8_str)
+  # Check if x15 contains the expected result. x24 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x24, x14, x13, x15, Zalrsc_sc_w_cg_cp_rs2_b8, Zalrsc_sc_w_cg_cp_rs2_b8_str)
   LA(x19, scratch) # reload base address
   LREG x11, 0(x19) # load stored value
-  # Check if x11 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x11, Zalrsc_sc_w_cg_cp_rs2_b8, Zalrsc_sc_w_cg_cp_rs2_b8_str)
+  # Check if x11 contains the expected result. x24 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x24, x14, x13, x11, Zalrsc_sc_w_cg_cp_rs2_b8, Zalrsc_sc_w_cg_cp_rs2_b8_str)
 
 # Testcase cp_rs2 (Test source rs2 = x9)
   RVTEST_TESTDATA_LOAD_INT(x30, x9) # load rs2: x9 = 0xe3dd0f8af8065d0d
@@ -824,12 +823,12 @@ Zalrsc_sc_w_cg_cp_rs2_b9:
   addi x28, x28, -1 # decrement retry count
   bnez x28, Zalrsc_sc_w_cg_cp_rs2_b9_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_b9_success:
-  # Check if x7 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x7, Zalrsc_sc_w_cg_cp_rs2_b9, Zalrsc_sc_w_cg_cp_rs2_b9_str)
+  # Check if x7 contains the expected result. x24 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x24, x14, x13, x7, Zalrsc_sc_w_cg_cp_rs2_b9, Zalrsc_sc_w_cg_cp_rs2_b9_str)
   LA(x25, scratch) # reload base address
   LREG x28, 0(x25) # load stored value
-  # Check if x28 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x28, Zalrsc_sc_w_cg_cp_rs2_b9, Zalrsc_sc_w_cg_cp_rs2_b9_str)
+  # Check if x28 contains the expected result. x24 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x24, x14, x13, x28, Zalrsc_sc_w_cg_cp_rs2_b9, Zalrsc_sc_w_cg_cp_rs2_b9_str)
 
 # Testcase cp_rs2 (Test source rs2 = x10)
   RVTEST_TESTDATA_LOAD_INT(x30, x10) # load rs2: x10 = 0xa5272acd2d95b75d
@@ -843,12 +842,12 @@ Zalrsc_sc_w_cg_cp_rs2_b10:
   addi x28, x28, -1 # decrement retry count
   bnez x28, Zalrsc_sc_w_cg_cp_rs2_b10_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_b10_success:
-  # Check if x26 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x26, Zalrsc_sc_w_cg_cp_rs2_b10, Zalrsc_sc_w_cg_cp_rs2_b10_str)
+  # Check if x26 contains the expected result. x24 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x24, x14, x13, x26, Zalrsc_sc_w_cg_cp_rs2_b10, Zalrsc_sc_w_cg_cp_rs2_b10_str)
   LA(x1, scratch) # reload base address
   LREG x28, 0(x1) # load stored value
-  # Check if x28 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x28, Zalrsc_sc_w_cg_cp_rs2_b10, Zalrsc_sc_w_cg_cp_rs2_b10_str)
+  # Check if x28 contains the expected result. x24 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x24, x14, x13, x28, Zalrsc_sc_w_cg_cp_rs2_b10, Zalrsc_sc_w_cg_cp_rs2_b10_str)
 
 # Testcase cp_rs2 (Test source rs2 = x11)
   RVTEST_TESTDATA_LOAD_INT(x30, x11) # load rs2: x11 = 0xd50d125ffbf2f936
@@ -862,1426 +861,1464 @@ Zalrsc_sc_w_cg_cp_rs2_b11:
   addi x7, x7, -1 # decrement retry count
   bnez x7, Zalrsc_sc_w_cg_cp_rs2_b11_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_b11_success:
-  # Check if x9 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x9, Zalrsc_sc_w_cg_cp_rs2_b11, Zalrsc_sc_w_cg_cp_rs2_b11_str)
+  # Check if x9 contains the expected result. x24 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x24, x14, x13, x9, Zalrsc_sc_w_cg_cp_rs2_b11, Zalrsc_sc_w_cg_cp_rs2_b11_str)
   LA(x15, scratch) # reload base address
   LREG x7, 0(x15) # load stored value
-  # Check if x7 contains the expected result. x24 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x24, x13, x12, x7, Zalrsc_sc_w_cg_cp_rs2_b11, Zalrsc_sc_w_cg_cp_rs2_b11_str)
+  # Check if x7 contains the expected result. x24 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x24, x14, x13, x7, Zalrsc_sc_w_cg_cp_rs2_b11, Zalrsc_sc_w_cg_cp_rs2_b11_str)
 
-  mv x7, x12 # switch temp register to avoid conflict with test
-  mv x8, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x30, x12) # load rs2: x12 = 0x4032cb25fe8d05eb
-  LA(x27, scratch) # rs1 = base address
-  LI(x9, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x30, x12) # load rs2: x12 = 0x104b2ad9ea871046
+  LA(x6, scratch) # rs1 = base address
+  LI(x18, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_b12_retry:
-  lr.w x0, (x27) # establish reservation
+  lr.w x0, (x6) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_b12:
-  sc.w x6, x12, (x27) # perform operation
-  beqz x6, Zalrsc_sc_w_cg_cp_rs2_b12_success # SC succeeded, skip retry
-  addi x9, x9, -1 # decrement retry count
-  bnez x9, Zalrsc_sc_w_cg_cp_rs2_b12_retry # retry LR/SC if not exhausted
+  sc.w x15, x12, (x6) # perform operation
+  beqz x15, Zalrsc_sc_w_cg_cp_rs2_b12_success # SC succeeded, skip retry
+  addi x18, x18, -1 # decrement retry count
+  bnez x18, Zalrsc_sc_w_cg_cp_rs2_b12_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_b12_success:
-  # Check if x6 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x6, Zalrsc_sc_w_cg_cp_rs2_b12, Zalrsc_sc_w_cg_cp_rs2_b12_str)
-  LA(x27, scratch) # reload base address
-  LREG x9, 0(x27) # load stored value
-  # Check if x9 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x9, Zalrsc_sc_w_cg_cp_rs2_b12, Zalrsc_sc_w_cg_cp_rs2_b12_str)
+  # Check if x15 contains the expected result. x24 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x24, x14, x13, x15, Zalrsc_sc_w_cg_cp_rs2_b12, Zalrsc_sc_w_cg_cp_rs2_b12_str)
+  LA(x6, scratch) # reload base address
+  LREG x18, 0(x6) # load stored value
+  # Check if x18 contains the expected result. x24 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x24, x14, x13, x18, Zalrsc_sc_w_cg_cp_rs2_b12, Zalrsc_sc_w_cg_cp_rs2_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x30, x13) # load rs2: x13 = 0x99ce18d5cf3a3174
-  LA(x27, scratch) # rs1 = base address
-  LI(x25, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rs2_b13_retry:
-  lr.w x0, (x27) # establish reservation
-Zalrsc_sc_w_cg_cp_rs2_b13:
-  sc.w x19, x13, (x27) # perform operation
-  beqz x19, Zalrsc_sc_w_cg_cp_rs2_b13_success # SC succeeded, skip retry
-  addi x25, x25, -1 # decrement retry count
-  bnez x25, Zalrsc_sc_w_cg_cp_rs2_b13_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rs2_b13_success:
-  # Check if x19 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x19, Zalrsc_sc_w_cg_cp_rs2_b13, Zalrsc_sc_w_cg_cp_rs2_b13_str)
-  LA(x27, scratch) # reload base address
-  LREG x25, 0(x27) # load stored value
-  # Check if x25 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x25, Zalrsc_sc_w_cg_cp_rs2_b13, Zalrsc_sc_w_cg_cp_rs2_b13_str)
-
-# Testcase cp_rs2 (Test source rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x30, x14) # load rs2: x14 = 0x48c54cdf00fe5f01
-  LA(x21, scratch) # rs1 = base address
-  LI(x9, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rs2_b14_retry:
-  lr.w x0, (x21) # establish reservation
-Zalrsc_sc_w_cg_cp_rs2_b14:
-  sc.w x13, x14, (x21) # perform operation
-  beqz x13, Zalrsc_sc_w_cg_cp_rs2_b14_success # SC succeeded, skip retry
-  addi x9, x9, -1 # decrement retry count
-  bnez x9, Zalrsc_sc_w_cg_cp_rs2_b14_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rs2_b14_success:
-  # Check if x13 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x13, Zalrsc_sc_w_cg_cp_rs2_b14, Zalrsc_sc_w_cg_cp_rs2_b14_str)
-  LA(x21, scratch) # reload base address
-  LREG x9, 0(x21) # load stored value
-  # Check if x9 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x9, Zalrsc_sc_w_cg_cp_rs2_b14, Zalrsc_sc_w_cg_cp_rs2_b14_str)
-
-# Testcase cp_rs2 (Test source rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x30, x15) # load rs2: x15 = 0xa175141410167a2a
-  LA(x20, scratch) # rs1 = base address
-  LI(x22, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rs2_b15_retry:
-  lr.w x0, (x20) # establish reservation
-Zalrsc_sc_w_cg_cp_rs2_b15:
-  sc.w x14, x15, (x20) # perform operation
-  beqz x14, Zalrsc_sc_w_cg_cp_rs2_b15_success # SC succeeded, skip retry
-  addi x22, x22, -1 # decrement retry count
-  bnez x22, Zalrsc_sc_w_cg_cp_rs2_b15_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rs2_b15_success:
-  # Check if x14 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x14, Zalrsc_sc_w_cg_cp_rs2_b15, Zalrsc_sc_w_cg_cp_rs2_b15_str)
-  LA(x20, scratch) # reload base address
-  LREG x22, 0(x20) # load stored value
-  # Check if x22 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x22, Zalrsc_sc_w_cg_cp_rs2_b15, Zalrsc_sc_w_cg_cp_rs2_b15_str)
-
-# Testcase cp_rs2 (Test source rs2 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x30, x16) # load rs2: x16 = 0xfd1dcf3ddc62a079
-  LA(x5, scratch) # rs1 = base address
-  LI(x27, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rs2_b16_retry:
-  lr.w x0, (x5) # establish reservation
-Zalrsc_sc_w_cg_cp_rs2_b16:
-  sc.w x11, x16, (x5) # perform operation
-  beqz x11, Zalrsc_sc_w_cg_cp_rs2_b16_success # SC succeeded, skip retry
-  addi x27, x27, -1 # decrement retry count
-  bnez x27, Zalrsc_sc_w_cg_cp_rs2_b16_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rs2_b16_success:
-  # Check if x11 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x11, Zalrsc_sc_w_cg_cp_rs2_b16, Zalrsc_sc_w_cg_cp_rs2_b16_str)
-  LA(x5, scratch) # reload base address
-  LREG x27, 0(x5) # load stored value
-  # Check if x27 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x27, Zalrsc_sc_w_cg_cp_rs2_b16, Zalrsc_sc_w_cg_cp_rs2_b16_str)
-
-# Testcase cp_rs2 (Test source rs2 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x30, x17) # load rs2: x17 = 0x0ed7354d693873a7
-  LA(x18, scratch) # rs1 = base address
-  LI(x5, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rs2_b17_retry:
-  lr.w x0, (x18) # establish reservation
-Zalrsc_sc_w_cg_cp_rs2_b17:
-  sc.w x14, x17, (x18) # perform operation
-  beqz x14, Zalrsc_sc_w_cg_cp_rs2_b17_success # SC succeeded, skip retry
-  addi x5, x5, -1 # decrement retry count
-  bnez x5, Zalrsc_sc_w_cg_cp_rs2_b17_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rs2_b17_success:
-  # Check if x14 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x14, Zalrsc_sc_w_cg_cp_rs2_b17, Zalrsc_sc_w_cg_cp_rs2_b17_str)
-  LA(x18, scratch) # reload base address
-  LREG x5, 0(x18) # load stored value
-  # Check if x5 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x5, Zalrsc_sc_w_cg_cp_rs2_b17, Zalrsc_sc_w_cg_cp_rs2_b17_str)
-
-# Testcase cp_rs2 (Test source rs2 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x30, x18) # load rs2: x18 = 0xd349471622e5f3bd
-  LA(x12, scratch) # rs1 = base address
-  LI(x28, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rs2_b18_retry:
-  lr.w x0, (x12) # establish reservation
-Zalrsc_sc_w_cg_cp_rs2_b18:
-  sc.w x4, x18, (x12) # perform operation
-  beqz x4, Zalrsc_sc_w_cg_cp_rs2_b18_success # SC succeeded, skip retry
-  addi x28, x28, -1 # decrement retry count
-  bnez x28, Zalrsc_sc_w_cg_cp_rs2_b18_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rs2_b18_success:
-  # Check if x4 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x4, Zalrsc_sc_w_cg_cp_rs2_b18, Zalrsc_sc_w_cg_cp_rs2_b18_str)
-  LA(x12, scratch) # reload base address
-  LREG x28, 0(x12) # load stored value
-  # Check if x28 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x28, Zalrsc_sc_w_cg_cp_rs2_b18, Zalrsc_sc_w_cg_cp_rs2_b18_str)
-
-# Testcase cp_rs2 (Test source rs2 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x30, x19) # load rs2: x19 = 0x8e5dfe56d5a8a279
-  LA(x16, scratch) # rs1 = base address
-  LI(x23, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rs2_b19_retry:
-  lr.w x0, (x16) # establish reservation
-Zalrsc_sc_w_cg_cp_rs2_b19:
-  sc.w x21, x19, (x16) # perform operation
-  beqz x21, Zalrsc_sc_w_cg_cp_rs2_b19_success # SC succeeded, skip retry
-  addi x23, x23, -1 # decrement retry count
-  bnez x23, Zalrsc_sc_w_cg_cp_rs2_b19_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rs2_b19_success:
-  # Check if x21 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x21, Zalrsc_sc_w_cg_cp_rs2_b19, Zalrsc_sc_w_cg_cp_rs2_b19_str)
-  LA(x16, scratch) # reload base address
-  LREG x23, 0(x16) # load stored value
-  # Check if x23 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x23, Zalrsc_sc_w_cg_cp_rs2_b19, Zalrsc_sc_w_cg_cp_rs2_b19_str)
-
-# Testcase cp_rs2 (Test source rs2 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x30, x20) # load rs2: x20 = 0x41d44cc4567bf100
-  LA(x11, scratch) # rs1 = base address
-  LI(x9, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rs2_b20_retry:
-  lr.w x0, (x11) # establish reservation
-Zalrsc_sc_w_cg_cp_rs2_b20:
-  sc.w x27, x20, (x11) # perform operation
-  beqz x27, Zalrsc_sc_w_cg_cp_rs2_b20_success # SC succeeded, skip retry
-  addi x9, x9, -1 # decrement retry count
-  bnez x9, Zalrsc_sc_w_cg_cp_rs2_b20_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rs2_b20_success:
-  # Check if x27 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x27, Zalrsc_sc_w_cg_cp_rs2_b20, Zalrsc_sc_w_cg_cp_rs2_b20_str)
-  LA(x11, scratch) # reload base address
-  LREG x9, 0(x11) # load stored value
-  # Check if x9 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x9, Zalrsc_sc_w_cg_cp_rs2_b20, Zalrsc_sc_w_cg_cp_rs2_b20_str)
-
-# Testcase cp_rs2 (Test source rs2 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x30, x21) # load rs2: x21 = 0x9b6fdb1a0be4ea67
-  LA(x9, scratch) # rs1 = base address
-  LI(x1, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rs2_b21_retry:
-  lr.w x0, (x9) # establish reservation
-Zalrsc_sc_w_cg_cp_rs2_b21:
-  sc.w x20, x21, (x9) # perform operation
-  beqz x20, Zalrsc_sc_w_cg_cp_rs2_b21_success # SC succeeded, skip retry
-  addi x1, x1, -1 # decrement retry count
-  bnez x1, Zalrsc_sc_w_cg_cp_rs2_b21_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rs2_b21_success:
-  # Check if x20 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x20, Zalrsc_sc_w_cg_cp_rs2_b21, Zalrsc_sc_w_cg_cp_rs2_b21_str)
-  LA(x9, scratch) # reload base address
-  LREG x1, 0(x9) # load stored value
-  # Check if x1 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x1, Zalrsc_sc_w_cg_cp_rs2_b21, Zalrsc_sc_w_cg_cp_rs2_b21_str)
-
-# Testcase cp_rs2 (Test source rs2 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x30, x22) # load rs2: x22 = 0x96d5d0f61c1d8cf6
-  LA(x14, scratch) # rs1 = base address
-  LI(x17, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rs2_b22_retry:
-  lr.w x0, (x14) # establish reservation
-Zalrsc_sc_w_cg_cp_rs2_b22:
-  sc.w x1, x22, (x14) # perform operation
-  beqz x1, Zalrsc_sc_w_cg_cp_rs2_b22_success # SC succeeded, skip retry
-  addi x17, x17, -1 # decrement retry count
-  bnez x17, Zalrsc_sc_w_cg_cp_rs2_b22_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rs2_b22_success:
-  # Check if x1 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x1, Zalrsc_sc_w_cg_cp_rs2_b22, Zalrsc_sc_w_cg_cp_rs2_b22_str)
-  LA(x14, scratch) # reload base address
-  LREG x17, 0(x14) # load stored value
-  # Check if x17 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x17, Zalrsc_sc_w_cg_cp_rs2_b22, Zalrsc_sc_w_cg_cp_rs2_b22_str)
-
-# Testcase cp_rs2 (Test source rs2 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x30, x23) # load rs2: x23 = 0x6eb2018dfbf1fb3c
-  LA(x15, scratch) # rs1 = base address
-  LI(x28, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rs2_b23_retry:
-  lr.w x0, (x15) # establish reservation
-Zalrsc_sc_w_cg_cp_rs2_b23:
-  sc.w x5, x23, (x15) # perform operation
-  beqz x5, Zalrsc_sc_w_cg_cp_rs2_b23_success # SC succeeded, skip retry
-  addi x28, x28, -1 # decrement retry count
-  bnez x28, Zalrsc_sc_w_cg_cp_rs2_b23_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rs2_b23_success:
-  # Check if x5 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x5, Zalrsc_sc_w_cg_cp_rs2_b23, Zalrsc_sc_w_cg_cp_rs2_b23_str)
-  LA(x15, scratch) # reload base address
-  LREG x28, 0(x15) # load stored value
-  # Check if x28 contains the expected result. x24 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x24, x8, x7, x28, Zalrsc_sc_w_cg_cp_rs2_b23, Zalrsc_sc_w_cg_cp_rs2_b23_str)
-
-  mv x22, x24 # switch signature pointer register to avoid conflict with test
-# Testcase cp_rs2 (Test source rs2 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x30, x24) # load rs2: x24 = 0xd5ad855e9073eb7f
-  LA(x18, scratch) # rs1 = base address
-  LI(x4, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rs2_b24_retry:
-  lr.w x0, (x18) # establish reservation
-Zalrsc_sc_w_cg_cp_rs2_b24:
-  sc.w x29, x24, (x18) # perform operation
-  beqz x29, Zalrsc_sc_w_cg_cp_rs2_b24_success # SC succeeded, skip retry
-  addi x4, x4, -1 # decrement retry count
-  bnez x4, Zalrsc_sc_w_cg_cp_rs2_b24_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rs2_b24_success:
-  # Check if x29 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x29, Zalrsc_sc_w_cg_cp_rs2_b24, Zalrsc_sc_w_cg_cp_rs2_b24_str)
-  LA(x18, scratch) # reload base address
-  LREG x4, 0(x18) # load stored value
-  # Check if x4 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x4, Zalrsc_sc_w_cg_cp_rs2_b24, Zalrsc_sc_w_cg_cp_rs2_b24_str)
-
-# Testcase cp_rs2 (Test source rs2 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x30, x25) # load rs2: x25 = 0xd474d40149504d85
+  RVTEST_TESTDATA_LOAD_INT(x30, x13) # load rs2: x13 = 0xa2a6cf79c032cb25
   LA(x3, scratch) # rs1 = base address
   LI(x19, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rs2_b25_retry:
+Zalrsc_sc_w_cg_cp_rs2_b13_retry:
   lr.w x0, (x3) # establish reservation
-Zalrsc_sc_w_cg_cp_rs2_b25:
-  sc.w x1, x25, (x3) # perform operation
-  beqz x1, Zalrsc_sc_w_cg_cp_rs2_b25_success # SC succeeded, skip retry
+Zalrsc_sc_w_cg_cp_rs2_b13:
+  sc.w x7, x13, (x3) # perform operation
+  beqz x7, Zalrsc_sc_w_cg_cp_rs2_b13_success # SC succeeded, skip retry
   addi x19, x19, -1 # decrement retry count
-  bnez x19, Zalrsc_sc_w_cg_cp_rs2_b25_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rs2_b25_success:
-  # Check if x1 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x1, Zalrsc_sc_w_cg_cp_rs2_b25, Zalrsc_sc_w_cg_cp_rs2_b25_str)
+  bnez x19, Zalrsc_sc_w_cg_cp_rs2_b13_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rs2_b13_success:
+  # Check if x7 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x7, Zalrsc_sc_w_cg_cp_rs2_b13, Zalrsc_sc_w_cg_cp_rs2_b13_str)
   LA(x3, scratch) # reload base address
   LREG x19, 0(x3) # load stored value
-  # Check if x19 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x19, Zalrsc_sc_w_cg_cp_rs2_b25, Zalrsc_sc_w_cg_cp_rs2_b25_str)
+  # Check if x19 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x19, Zalrsc_sc_w_cg_cp_rs2_b13, Zalrsc_sc_w_cg_cp_rs2_b13_str)
+
+# Testcase cp_rs2 (Test source rs2 = x14)
+  RVTEST_TESTDATA_LOAD_INT(x30, x14) # load rs2: x14 = 0x4f3a3174b6bde3a2
+  LA(x18, scratch) # rs1 = base address
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rs2_b14_retry:
+  lr.w x0, (x18) # establish reservation
+Zalrsc_sc_w_cg_cp_rs2_b14:
+  sc.w x31, x14, (x18) # perform operation
+  beqz x31, Zalrsc_sc_w_cg_cp_rs2_b14_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, Zalrsc_sc_w_cg_cp_rs2_b14_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rs2_b14_success:
+  # Check if x31 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x31, Zalrsc_sc_w_cg_cp_rs2_b14, Zalrsc_sc_w_cg_cp_rs2_b14_str)
+  LA(x18, scratch) # reload base address
+  LREG x6, 0(x18) # load stored value
+  # Check if x6 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x6, Zalrsc_sc_w_cg_cp_rs2_b14, Zalrsc_sc_w_cg_cp_rs2_b14_str)
+
+# Testcase cp_rs2 (Test source rs2 = x15)
+  RVTEST_TESTDATA_LOAD_INT(x30, x15) # load rs2: x15 = 0xa890d2ffe9b08ecb
+  LA(x10, scratch) # rs1 = base address
+  LI(x23, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rs2_b15_retry:
+  lr.w x0, (x10) # establish reservation
+Zalrsc_sc_w_cg_cp_rs2_b15:
+  sc.w x31, x15, (x10) # perform operation
+  beqz x31, Zalrsc_sc_w_cg_cp_rs2_b15_success # SC succeeded, skip retry
+  addi x23, x23, -1 # decrement retry count
+  bnez x23, Zalrsc_sc_w_cg_cp_rs2_b15_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rs2_b15_success:
+  # Check if x31 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x31, Zalrsc_sc_w_cg_cp_rs2_b15, Zalrsc_sc_w_cg_cp_rs2_b15_str)
+  LA(x10, scratch) # reload base address
+  LREG x23, 0(x10) # load stored value
+  # Check if x23 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x23, Zalrsc_sc_w_cg_cp_rs2_b15, Zalrsc_sc_w_cg_cp_rs2_b15_str)
+
+# Testcase cp_rs2 (Test source rs2 = x16)
+  RVTEST_TESTDATA_LOAD_INT(x30, x16) # load rs2: x16 = 0x8b57e119b92816d8
+  LA(x23, scratch) # rs1 = base address
+  LI(x22, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rs2_b16_retry:
+  lr.w x0, (x23) # establish reservation
+Zalrsc_sc_w_cg_cp_rs2_b16:
+  sc.w x7, x16, (x23) # perform operation
+  beqz x7, Zalrsc_sc_w_cg_cp_rs2_b16_success # SC succeeded, skip retry
+  addi x22, x22, -1 # decrement retry count
+  bnez x22, Zalrsc_sc_w_cg_cp_rs2_b16_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rs2_b16_success:
+  # Check if x7 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x7, Zalrsc_sc_w_cg_cp_rs2_b16, Zalrsc_sc_w_cg_cp_rs2_b16_str)
+  LA(x23, scratch) # reload base address
+  LREG x22, 0(x23) # load stored value
+  # Check if x22 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x22, Zalrsc_sc_w_cg_cp_rs2_b16, Zalrsc_sc_w_cg_cp_rs2_b16_str)
+
+# Testcase cp_rs2 (Test source rs2 = x17)
+  RVTEST_TESTDATA_LOAD_INT(x30, x17) # load rs2: x17 = 0xc942205c798d6825
+  LA(x7, scratch) # rs1 = base address
+  LI(x22, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rs2_b17_retry:
+  lr.w x0, (x7) # establish reservation
+Zalrsc_sc_w_cg_cp_rs2_b17:
+  sc.w x18, x17, (x7) # perform operation
+  beqz x18, Zalrsc_sc_w_cg_cp_rs2_b17_success # SC succeeded, skip retry
+  addi x22, x22, -1 # decrement retry count
+  bnez x22, Zalrsc_sc_w_cg_cp_rs2_b17_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rs2_b17_success:
+  # Check if x18 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x18, Zalrsc_sc_w_cg_cp_rs2_b17, Zalrsc_sc_w_cg_cp_rs2_b17_str)
+  LA(x7, scratch) # reload base address
+  LREG x22, 0(x7) # load stored value
+  # Check if x22 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x22, Zalrsc_sc_w_cg_cp_rs2_b17, Zalrsc_sc_w_cg_cp_rs2_b17_str)
+
+# Testcase cp_rs2 (Test source rs2 = x18)
+  RVTEST_TESTDATA_LOAD_INT(x30, x18) # load rs2: x18 = 0xf76c5c19638f1cca
+  LA(x2, scratch) # rs1 = base address
+  LI(x23, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rs2_b18_retry:
+  lr.w x0, (x2) # establish reservation
+Zalrsc_sc_w_cg_cp_rs2_b18:
+  sc.w x17, x18, (x2) # perform operation
+  beqz x17, Zalrsc_sc_w_cg_cp_rs2_b18_success # SC succeeded, skip retry
+  addi x23, x23, -1 # decrement retry count
+  bnez x23, Zalrsc_sc_w_cg_cp_rs2_b18_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rs2_b18_success:
+  # Check if x17 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x17, Zalrsc_sc_w_cg_cp_rs2_b18, Zalrsc_sc_w_cg_cp_rs2_b18_str)
+  LA(x2, scratch) # reload base address
+  LREG x23, 0(x2) # load stored value
+  # Check if x23 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x23, Zalrsc_sc_w_cg_cp_rs2_b18, Zalrsc_sc_w_cg_cp_rs2_b18_str)
+
+# Testcase cp_rs2 (Test source rs2 = x19)
+  RVTEST_TESTDATA_LOAD_INT(x30, x19) # load rs2: x19 = 0xca5f15262138a8e7
+  LA(x9, scratch) # rs1 = base address
+  LI(x16, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rs2_b19_retry:
+  lr.w x0, (x9) # establish reservation
+Zalrsc_sc_w_cg_cp_rs2_b19:
+  sc.w x1, x19, (x9) # perform operation
+  beqz x1, Zalrsc_sc_w_cg_cp_rs2_b19_success # SC succeeded, skip retry
+  addi x16, x16, -1 # decrement retry count
+  bnez x16, Zalrsc_sc_w_cg_cp_rs2_b19_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rs2_b19_success:
+  # Check if x1 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x1, Zalrsc_sc_w_cg_cp_rs2_b19, Zalrsc_sc_w_cg_cp_rs2_b19_str)
+  LA(x9, scratch) # reload base address
+  LREG x16, 0(x9) # load stored value
+  # Check if x16 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x16, Zalrsc_sc_w_cg_cp_rs2_b19, Zalrsc_sc_w_cg_cp_rs2_b19_str)
+
+# Testcase cp_rs2 (Test source rs2 = x20)
+  RVTEST_TESTDATA_LOAD_INT(x30, x20) # load rs2: x20 = 0x024b23e8c45aa4bb
+  LA(x26, scratch) # rs1 = base address
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rs2_b20_retry:
+  lr.w x0, (x26) # establish reservation
+Zalrsc_sc_w_cg_cp_rs2_b20:
+  sc.w x22, x20, (x26) # perform operation
+  beqz x22, Zalrsc_sc_w_cg_cp_rs2_b20_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, Zalrsc_sc_w_cg_cp_rs2_b20_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rs2_b20_success:
+  # Check if x22 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x22, Zalrsc_sc_w_cg_cp_rs2_b20, Zalrsc_sc_w_cg_cp_rs2_b20_str)
+  LA(x26, scratch) # reload base address
+  LREG x6, 0(x26) # load stored value
+  # Check if x6 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x6, Zalrsc_sc_w_cg_cp_rs2_b20, Zalrsc_sc_w_cg_cp_rs2_b20_str)
+
+# Testcase cp_rs2 (Test source rs2 = x21)
+  RVTEST_TESTDATA_LOAD_INT(x30, x21) # load rs2: x21 = 0x8e5dfe56d5a8a279
+  LA(x23, scratch) # rs1 = base address
+  LI(x22, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rs2_b21_retry:
+  lr.w x0, (x23) # establish reservation
+Zalrsc_sc_w_cg_cp_rs2_b21:
+  sc.w x7, x21, (x23) # perform operation
+  beqz x7, Zalrsc_sc_w_cg_cp_rs2_b21_success # SC succeeded, skip retry
+  addi x22, x22, -1 # decrement retry count
+  bnez x22, Zalrsc_sc_w_cg_cp_rs2_b21_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rs2_b21_success:
+  # Check if x7 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x7, Zalrsc_sc_w_cg_cp_rs2_b21, Zalrsc_sc_w_cg_cp_rs2_b21_str)
+  LA(x23, scratch) # reload base address
+  LREG x22, 0(x23) # load stored value
+  # Check if x22 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x22, Zalrsc_sc_w_cg_cp_rs2_b21, Zalrsc_sc_w_cg_cp_rs2_b21_str)
+
+# Testcase cp_rs2 (Test source rs2 = x22)
+  RVTEST_TESTDATA_LOAD_INT(x30, x22) # load rs2: x22 = 0x41d44cc4567bf100
+  LA(x11, scratch) # rs1 = base address
+  LI(x9, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rs2_b22_retry:
+  lr.w x0, (x11) # establish reservation
+Zalrsc_sc_w_cg_cp_rs2_b22:
+  sc.w x27, x22, (x11) # perform operation
+  beqz x27, Zalrsc_sc_w_cg_cp_rs2_b22_success # SC succeeded, skip retry
+  addi x9, x9, -1 # decrement retry count
+  bnez x9, Zalrsc_sc_w_cg_cp_rs2_b22_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rs2_b22_success:
+  # Check if x27 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x27, Zalrsc_sc_w_cg_cp_rs2_b22, Zalrsc_sc_w_cg_cp_rs2_b22_str)
+  LA(x11, scratch) # reload base address
+  LREG x9, 0(x11) # load stored value
+  # Check if x9 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x9, Zalrsc_sc_w_cg_cp_rs2_b22, Zalrsc_sc_w_cg_cp_rs2_b22_str)
+
+# Testcase cp_rs2 (Test source rs2 = x23)
+  RVTEST_TESTDATA_LOAD_INT(x30, x23) # load rs2: x23 = 0x9b6fdb1a0be4ea67
+  LA(x9, scratch) # rs1 = base address
+  LI(x1, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rs2_b23_retry:
+  lr.w x0, (x9) # establish reservation
+Zalrsc_sc_w_cg_cp_rs2_b23:
+  sc.w x20, x23, (x9) # perform operation
+  beqz x20, Zalrsc_sc_w_cg_cp_rs2_b23_success # SC succeeded, skip retry
+  addi x1, x1, -1 # decrement retry count
+  bnez x1, Zalrsc_sc_w_cg_cp_rs2_b23_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rs2_b23_success:
+  # Check if x20 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x20, Zalrsc_sc_w_cg_cp_rs2_b23, Zalrsc_sc_w_cg_cp_rs2_b23_str)
+  LA(x9, scratch) # reload base address
+  LREG x1, 0(x9) # load stored value
+  # Check if x1 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x24, x5, x4, x1, Zalrsc_sc_w_cg_cp_rs2_b23, Zalrsc_sc_w_cg_cp_rs2_b23_str)
+
+  mv x2, x24 # switch signature pointer register to avoid conflict with test
+# Testcase cp_rs2 (Test source rs2 = x24)
+  RVTEST_TESTDATA_LOAD_INT(x30, x24) # load rs2: x24 = 0x00d2a6aa0d79ad90
+  LA(x27, scratch) # rs1 = base address
+  LI(x7, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rs2_b24_retry:
+  lr.w x0, (x27) # establish reservation
+Zalrsc_sc_w_cg_cp_rs2_b24:
+  sc.w x14, x24, (x27) # perform operation
+  beqz x14, Zalrsc_sc_w_cg_cp_rs2_b24_success # SC succeeded, skip retry
+  addi x7, x7, -1 # decrement retry count
+  bnez x7, Zalrsc_sc_w_cg_cp_rs2_b24_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rs2_b24_success:
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zalrsc_sc_w_cg_cp_rs2_b24, Zalrsc_sc_w_cg_cp_rs2_b24_str)
+  LA(x27, scratch) # reload base address
+  LREG x7, 0(x27) # load stored value
+  # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x7, Zalrsc_sc_w_cg_cp_rs2_b24, Zalrsc_sc_w_cg_cp_rs2_b24_str)
+
+# Testcase cp_rs2 (Test source rs2 = x25)
+  RVTEST_TESTDATA_LOAD_INT(x30, x25) # load rs2: x25 = 0xac4219a950e15d5d
+  LA(x6, scratch) # rs1 = base address
+  LI(x10, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rs2_b25_retry:
+  lr.w x0, (x6) # establish reservation
+Zalrsc_sc_w_cg_cp_rs2_b25:
+  sc.w x14, x25, (x6) # perform operation
+  beqz x14, Zalrsc_sc_w_cg_cp_rs2_b25_success # SC succeeded, skip retry
+  addi x10, x10, -1 # decrement retry count
+  bnez x10, Zalrsc_sc_w_cg_cp_rs2_b25_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rs2_b25_success:
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Zalrsc_sc_w_cg_cp_rs2_b25, Zalrsc_sc_w_cg_cp_rs2_b25_str)
+  LA(x6, scratch) # reload base address
+  LREG x10, 0(x6) # load stored value
+  # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x10, Zalrsc_sc_w_cg_cp_rs2_b25, Zalrsc_sc_w_cg_cp_rs2_b25_str)
 
 # Testcase cp_rs2 (Test source rs2 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x30, x26) # load rs2: x26 = 0x50af798881f36837
-  LA(x20, scratch) # rs1 = base address
-  LI(x25, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x30, x26) # load rs2: x26 = 0xf41dd17555ad855e
+  LA(x19, scratch) # rs1 = base address
+  LI(x31, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_b26_retry:
-  lr.w x0, (x20) # establish reservation
+  lr.w x0, (x19) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_b26:
-  sc.w x5, x26, (x20) # perform operation
-  beqz x5, Zalrsc_sc_w_cg_cp_rs2_b26_success # SC succeeded, skip retry
-  addi x25, x25, -1 # decrement retry count
-  bnez x25, Zalrsc_sc_w_cg_cp_rs2_b26_retry # retry LR/SC if not exhausted
+  sc.w x16, x26, (x19) # perform operation
+  beqz x16, Zalrsc_sc_w_cg_cp_rs2_b26_success # SC succeeded, skip retry
+  addi x31, x31, -1 # decrement retry count
+  bnez x31, Zalrsc_sc_w_cg_cp_rs2_b26_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_b26_success:
-  # Check if x5 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x5, Zalrsc_sc_w_cg_cp_rs2_b26, Zalrsc_sc_w_cg_cp_rs2_b26_str)
-  LA(x20, scratch) # reload base address
-  LREG x25, 0(x20) # load stored value
-  # Check if x25 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x25, Zalrsc_sc_w_cg_cp_rs2_b26, Zalrsc_sc_w_cg_cp_rs2_b26_str)
+  # Check if x16 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x16, Zalrsc_sc_w_cg_cp_rs2_b26, Zalrsc_sc_w_cg_cp_rs2_b26_str)
+  LA(x19, scratch) # reload base address
+  LREG x31, 0(x19) # load stored value
+  # Check if x31 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x31, Zalrsc_sc_w_cg_cp_rs2_b26, Zalrsc_sc_w_cg_cp_rs2_b26_str)
 
 # Testcase cp_rs2 (Test source rs2 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x30, x27) # load rs2: x27 = 0xc4edde22c26b4b99
-  LA(x15, scratch) # rs1 = base address
-  LI(x26, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x30, x27) # load rs2: x27 = 0xeaceb295794126b8
+  LA(x14, scratch) # rs1 = base address
+  LI(x24, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_b27_retry:
-  lr.w x0, (x15) # establish reservation
+  lr.w x0, (x14) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_b27:
-  sc.w x4, x27, (x15) # perform operation
-  beqz x4, Zalrsc_sc_w_cg_cp_rs2_b27_success # SC succeeded, skip retry
-  addi x26, x26, -1 # decrement retry count
-  bnez x26, Zalrsc_sc_w_cg_cp_rs2_b27_retry # retry LR/SC if not exhausted
+  sc.w x12, x27, (x14) # perform operation
+  beqz x12, Zalrsc_sc_w_cg_cp_rs2_b27_success # SC succeeded, skip retry
+  addi x24, x24, -1 # decrement retry count
+  bnez x24, Zalrsc_sc_w_cg_cp_rs2_b27_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_b27_success:
-  # Check if x4 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x4, Zalrsc_sc_w_cg_cp_rs2_b27, Zalrsc_sc_w_cg_cp_rs2_b27_str)
-  LA(x15, scratch) # reload base address
-  LREG x26, 0(x15) # load stored value
-  # Check if x26 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x26, Zalrsc_sc_w_cg_cp_rs2_b27, Zalrsc_sc_w_cg_cp_rs2_b27_str)
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, Zalrsc_sc_w_cg_cp_rs2_b27, Zalrsc_sc_w_cg_cp_rs2_b27_str)
+  LA(x14, scratch) # reload base address
+  LREG x24, 0(x14) # load stored value
+  # Check if x24 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x24, Zalrsc_sc_w_cg_cp_rs2_b27, Zalrsc_sc_w_cg_cp_rs2_b27_str)
 
 # Testcase cp_rs2 (Test source rs2 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x30, x28) # load rs2: x28 = 0x559f87f469a8e608
-  LA(x19, scratch) # rs1 = base address
-  LI(x23, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x30, x28) # load rs2: x28 = 0x50af798881f36837
+  LA(x21, scratch) # rs1 = base address
+  LI(x24, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_b28_retry:
-  lr.w x0, (x19) # establish reservation
+  lr.w x0, (x21) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_b28:
-  sc.w x11, x28, (x19) # perform operation
-  beqz x11, Zalrsc_sc_w_cg_cp_rs2_b28_success # SC succeeded, skip retry
-  addi x23, x23, -1 # decrement retry count
-  bnez x23, Zalrsc_sc_w_cg_cp_rs2_b28_retry # retry LR/SC if not exhausted
+  sc.w x8, x28, (x21) # perform operation
+  beqz x8, Zalrsc_sc_w_cg_cp_rs2_b28_success # SC succeeded, skip retry
+  addi x24, x24, -1 # decrement retry count
+  bnez x24, Zalrsc_sc_w_cg_cp_rs2_b28_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_b28_success:
-  # Check if x11 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x11, Zalrsc_sc_w_cg_cp_rs2_b28, Zalrsc_sc_w_cg_cp_rs2_b28_str)
-  LA(x19, scratch) # reload base address
-  LREG x23, 0(x19) # load stored value
-  # Check if x23 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x23, Zalrsc_sc_w_cg_cp_rs2_b28, Zalrsc_sc_w_cg_cp_rs2_b28_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Zalrsc_sc_w_cg_cp_rs2_b28, Zalrsc_sc_w_cg_cp_rs2_b28_str)
+  LA(x21, scratch) # reload base address
+  LREG x24, 0(x21) # load stored value
+  # Check if x24 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x24, Zalrsc_sc_w_cg_cp_rs2_b28, Zalrsc_sc_w_cg_cp_rs2_b28_str)
 
 # Testcase cp_rs2 (Test source rs2 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x30, x29) # load rs2: x29 = 0x68d657df1470b649
-  LA(x31, scratch) # rs1 = base address
-  LI(x23, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rs2_b29_retry:
-  lr.w x0, (x31) # establish reservation
-Zalrsc_sc_w_cg_cp_rs2_b29:
-  sc.w x25, x29, (x31) # perform operation
-  beqz x25, Zalrsc_sc_w_cg_cp_rs2_b29_success # SC succeeded, skip retry
-  addi x23, x23, -1 # decrement retry count
-  bnez x23, Zalrsc_sc_w_cg_cp_rs2_b29_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rs2_b29_success:
-  # Check if x25 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x25, Zalrsc_sc_w_cg_cp_rs2_b29, Zalrsc_sc_w_cg_cp_rs2_b29_str)
-  LA(x31, scratch) # reload base address
-  LREG x23, 0(x31) # load stored value
-  # Check if x23 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x23, Zalrsc_sc_w_cg_cp_rs2_b29, Zalrsc_sc_w_cg_cp_rs2_b29_str)
-
-  mv x26, x30 # switch data pointer register to avoid conflict with test
-# Testcase cp_rs2 (Test source rs2 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x26, x30) # load rs2: x30 = 0x8337568243f78a96
+  RVTEST_TESTDATA_LOAD_INT(x30, x29) # load rs2: x29 = 0xc4edde22c26b4b99
   LA(x16, scratch) # rs1 = base address
-  LI(x23, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rs2_b30_retry:
+  LI(x25, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rs2_b29_retry:
   lr.w x0, (x16) # establish reservation
-Zalrsc_sc_w_cg_cp_rs2_b30:
-  sc.w x14, x30, (x16) # perform operation
-  beqz x14, Zalrsc_sc_w_cg_cp_rs2_b30_success # SC succeeded, skip retry
-  addi x23, x23, -1 # decrement retry count
-  bnez x23, Zalrsc_sc_w_cg_cp_rs2_b30_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rs2_b30_success:
-  # Check if x14 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x14, Zalrsc_sc_w_cg_cp_rs2_b30, Zalrsc_sc_w_cg_cp_rs2_b30_str)
+Zalrsc_sc_w_cg_cp_rs2_b29:
+  sc.w x7, x29, (x16) # perform operation
+  beqz x7, Zalrsc_sc_w_cg_cp_rs2_b29_success # SC succeeded, skip retry
+  addi x25, x25, -1 # decrement retry count
+  bnez x25, Zalrsc_sc_w_cg_cp_rs2_b29_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rs2_b29_success:
+  # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x7, Zalrsc_sc_w_cg_cp_rs2_b29, Zalrsc_sc_w_cg_cp_rs2_b29_str)
   LA(x16, scratch) # reload base address
-  LREG x23, 0(x16) # load stored value
-  # Check if x23 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x23, Zalrsc_sc_w_cg_cp_rs2_b30, Zalrsc_sc_w_cg_cp_rs2_b30_str)
+  LREG x25, 0(x16) # load stored value
+  # Check if x25 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x25, Zalrsc_sc_w_cg_cp_rs2_b29, Zalrsc_sc_w_cg_cp_rs2_b29_str)
+
+  mv x17, x30 # switch data pointer register to avoid conflict with test
+# Testcase cp_rs2 (Test source rs2 = x30)
+  RVTEST_TESTDATA_LOAD_INT(x17, x30) # load rs2: x30 = 0x1f4d58dbb9c661ad
+  LA(x15, scratch) # rs1 = base address
+  LI(x3, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rs2_b30_retry:
+  lr.w x0, (x15) # establish reservation
+Zalrsc_sc_w_cg_cp_rs2_b30:
+  sc.w x20, x30, (x15) # perform operation
+  beqz x20, Zalrsc_sc_w_cg_cp_rs2_b30_success # SC succeeded, skip retry
+  addi x3, x3, -1 # decrement retry count
+  bnez x3, Zalrsc_sc_w_cg_cp_rs2_b30_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rs2_b30_success:
+  # Check if x20 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x20, Zalrsc_sc_w_cg_cp_rs2_b30, Zalrsc_sc_w_cg_cp_rs2_b30_str)
+  LA(x15, scratch) # reload base address
+  LREG x3, 0(x15) # load stored value
+  # Check if x3 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x3, Zalrsc_sc_w_cg_cp_rs2_b30, Zalrsc_sc_w_cg_cp_rs2_b30_str)
 
 # Testcase cp_rs2 (Test source rs2 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x26, x31) # load rs2: x31 = 0x4331a0659a42e03e
-  LA(x24, scratch) # rs1 = base address
-  LI(x6, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x17, x31) # load rs2: x31 = 0x3877395920942b62
+  LA(x23, scratch) # rs1 = base address
+  LI(x7, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_b31_retry:
-  lr.w x0, (x24) # establish reservation
+  lr.w x0, (x23) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_b31:
-  sc.w x25, x31, (x24) # perform operation
-  beqz x25, Zalrsc_sc_w_cg_cp_rs2_b31_success # SC succeeded, skip retry
-  addi x6, x6, -1 # decrement retry count
-  bnez x6, Zalrsc_sc_w_cg_cp_rs2_b31_retry # retry LR/SC if not exhausted
+  sc.w x15, x31, (x23) # perform operation
+  beqz x15, Zalrsc_sc_w_cg_cp_rs2_b31_success # SC succeeded, skip retry
+  addi x7, x7, -1 # decrement retry count
+  bnez x7, Zalrsc_sc_w_cg_cp_rs2_b31_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_b31_success:
-  # Check if x25 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x25, Zalrsc_sc_w_cg_cp_rs2_b31, Zalrsc_sc_w_cg_cp_rs2_b31_str)
-  LA(x24, scratch) # reload base address
-  LREG x6, 0(x24) # load stored value
-  # Check if x6 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x6, Zalrsc_sc_w_cg_cp_rs2_b31, Zalrsc_sc_w_cg_cp_rs2_b31_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zalrsc_sc_w_cg_cp_rs2_b31, Zalrsc_sc_w_cg_cp_rs2_b31_str)
+  LA(x23, scratch) # reload base address
+  LREG x7, 0(x23) # load stored value
+  # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x7, Zalrsc_sc_w_cg_cp_rs2_b31, Zalrsc_sc_w_cg_cp_rs2_b31_str)
 
 /////////////////////////////////
 // cp_rd
 /////////////////////////////////
 
 # Testcase cp_rd (Test destination rd = x0)
-  RVTEST_TESTDATA_LOAD_INT(x26, x5) # load rs2: x5 = 0xc4853f7d8b490366
-  LA(x16, scratch) # rs1 = base address
+  RVTEST_TESTDATA_LOAD_INT(x17, x8) # load rs2: x8 = 0xc4853f7d8b490366
+  LA(x18, scratch) # rs1 = base address
   LI(x23, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b0_retry:
-  lr.w x0, (x16) # establish reservation
+  lr.w x0, (x18) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b0:
-  sc.w x0, x5, (x16) # perform operation
+  sc.w x0, x8, (x18) # perform operation
   beqz x0, Zalrsc_sc_w_cg_cp_rd_b0_success # SC succeeded, skip retry
   addi x23, x23, -1 # decrement retry count
   bnez x23, Zalrsc_sc_w_cg_cp_rd_b0_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b0_success:
-  # Check if x0 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x0, Zalrsc_sc_w_cg_cp_rd_b0, Zalrsc_sc_w_cg_cp_rd_b0_str)
-  LA(x16, scratch) # reload base address
-  LREG x23, 0(x16) # load stored value
-  # Check if x23 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x23, Zalrsc_sc_w_cg_cp_rd_b0, Zalrsc_sc_w_cg_cp_rd_b0_str)
+  # Check if x0 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x0, Zalrsc_sc_w_cg_cp_rd_b0, Zalrsc_sc_w_cg_cp_rd_b0_str)
+  LA(x18, scratch) # reload base address
+  LREG x23, 0(x18) # load stored value
+  # Check if x23 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x23, Zalrsc_sc_w_cg_cp_rd_b0, Zalrsc_sc_w_cg_cp_rd_b0_str)
 
 # Testcase cp_rd (Test destination rd = x1)
-  RVTEST_TESTDATA_LOAD_INT(x26, x21) # load rs2: x21 = 0xb8c5ff01a3bd275a
-  LA(x16, scratch) # rs1 = base address
-  LI(x4, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x17, x23) # load rs2: x23 = 0xb8c5ff01a3bd275a
+  LA(x18, scratch) # rs1 = base address
+  LI(x6, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b1_retry:
-  lr.w x0, (x16) # establish reservation
+  lr.w x0, (x18) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b1:
-  sc.w x1, x21, (x16) # perform operation
+  sc.w x1, x23, (x18) # perform operation
   beqz x1, Zalrsc_sc_w_cg_cp_rd_b1_success # SC succeeded, skip retry
-  addi x4, x4, -1 # decrement retry count
-  bnez x4, Zalrsc_sc_w_cg_cp_rd_b1_retry # retry LR/SC if not exhausted
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, Zalrsc_sc_w_cg_cp_rd_b1_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b1_success:
-  # Check if x1 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x1, Zalrsc_sc_w_cg_cp_rd_b1, Zalrsc_sc_w_cg_cp_rd_b1_str)
-  LA(x16, scratch) # reload base address
-  LREG x4, 0(x16) # load stored value
-  # Check if x4 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x4, Zalrsc_sc_w_cg_cp_rd_b1, Zalrsc_sc_w_cg_cp_rd_b1_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zalrsc_sc_w_cg_cp_rd_b1, Zalrsc_sc_w_cg_cp_rd_b1_str)
+  LA(x18, scratch) # reload base address
+  LREG x6, 0(x18) # load stored value
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Zalrsc_sc_w_cg_cp_rd_b1, Zalrsc_sc_w_cg_cp_rd_b1_str)
 
+  mv x9, x2 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x2)
-  RVTEST_TESTDATA_LOAD_INT(x26, x28) # load rs2: x28 = 0xa427d44ad2555291
-  LA(x4, scratch) # rs1 = base address
-  LI(x12, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x17, x7) # load rs2: x7 = 0x7a486d547e0415ea
+  LA(x27, scratch) # rs1 = base address
+  LI(x18, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b2_retry:
-  lr.w x0, (x4) # establish reservation
+  lr.w x0, (x27) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b2:
-  sc.w x2, x28, (x4) # perform operation
+  sc.w x2, x7, (x27) # perform operation
   beqz x2, Zalrsc_sc_w_cg_cp_rd_b2_success # SC succeeded, skip retry
-  addi x12, x12, -1 # decrement retry count
-  bnez x12, Zalrsc_sc_w_cg_cp_rd_b2_retry # retry LR/SC if not exhausted
+  addi x18, x18, -1 # decrement retry count
+  bnez x18, Zalrsc_sc_w_cg_cp_rd_b2_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b2_success:
-  # Check if x2 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x2, Zalrsc_sc_w_cg_cp_rd_b2, Zalrsc_sc_w_cg_cp_rd_b2_str)
-  LA(x4, scratch) # reload base address
-  LREG x12, 0(x4) # load stored value
-  # Check if x12 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x12, Zalrsc_sc_w_cg_cp_rd_b2, Zalrsc_sc_w_cg_cp_rd_b2_str)
+  # Check if x2 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x2, Zalrsc_sc_w_cg_cp_rd_b2, Zalrsc_sc_w_cg_cp_rd_b2_str)
+  LA(x27, scratch) # reload base address
+  LREG x18, 0(x27) # load stored value
+  # Check if x18 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x18, Zalrsc_sc_w_cg_cp_rd_b2, Zalrsc_sc_w_cg_cp_rd_b2_str)
 
 # Testcase cp_rd (Test destination rd = x3)
-  RVTEST_TESTDATA_LOAD_INT(x26, x18) # load rs2: x18 = 0x70498171770732a9
-  LA(x21, scratch) # rs1 = base address
-  LI(x11, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x17, x11) # load rs2: x11 = 0x58d1657e86732d9e
+  LA(x25, scratch) # rs1 = base address
+  LI(x29, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b3_retry:
-  lr.w x0, (x21) # establish reservation
+  lr.w x0, (x25) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b3:
-  sc.w x3, x18, (x21) # perform operation
+  sc.w x3, x11, (x25) # perform operation
   beqz x3, Zalrsc_sc_w_cg_cp_rd_b3_success # SC succeeded, skip retry
-  addi x11, x11, -1 # decrement retry count
-  bnez x11, Zalrsc_sc_w_cg_cp_rd_b3_retry # retry LR/SC if not exhausted
+  addi x29, x29, -1 # decrement retry count
+  bnez x29, Zalrsc_sc_w_cg_cp_rd_b3_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b3_success:
-  # Check if x3 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x3, Zalrsc_sc_w_cg_cp_rd_b3, Zalrsc_sc_w_cg_cp_rd_b3_str)
-  LA(x21, scratch) # reload base address
-  LREG x11, 0(x21) # load stored value
-  # Check if x11 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x11, Zalrsc_sc_w_cg_cp_rd_b3, Zalrsc_sc_w_cg_cp_rd_b3_str)
+  # Check if x3 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x3, Zalrsc_sc_w_cg_cp_rd_b3, Zalrsc_sc_w_cg_cp_rd_b3_str)
+  LA(x25, scratch) # reload base address
+  LREG x29, 0(x25) # load stored value
+  # Check if x29 contains the expected result. x9 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x9, x5, x4, x29, Zalrsc_sc_w_cg_cp_rd_b3, Zalrsc_sc_w_cg_cp_rd_b3_str)
 
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x4)
-  RVTEST_TESTDATA_LOAD_INT(x26, x1) # load rs2: x1 = 0x231fdc4a1f690799
-  LA(x13, scratch) # rs1 = base address
-  LI(x18, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x17, x18) # load rs2: x18 = 0xd8450e365142d44f
+  LA(x25, scratch) # rs1 = base address
+  LI(x15, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b4_retry:
-  lr.w x0, (x13) # establish reservation
+  lr.w x0, (x25) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b4:
-  sc.w x4, x1, (x13) # perform operation
+  sc.w x4, x18, (x25) # perform operation
   beqz x4, Zalrsc_sc_w_cg_cp_rd_b4_success # SC succeeded, skip retry
-  addi x18, x18, -1 # decrement retry count
-  bnez x18, Zalrsc_sc_w_cg_cp_rd_b4_retry # retry LR/SC if not exhausted
+  addi x15, x15, -1 # decrement retry count
+  bnez x15, Zalrsc_sc_w_cg_cp_rd_b4_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b4_success:
-  # Check if x4 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x4, Zalrsc_sc_w_cg_cp_rd_b4, Zalrsc_sc_w_cg_cp_rd_b4_str)
-  LA(x13, scratch) # reload base address
-  LREG x18, 0(x13) # load stored value
-  # Check if x18 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x18, Zalrsc_sc_w_cg_cp_rd_b4, Zalrsc_sc_w_cg_cp_rd_b4_str)
+  # Check if x4 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x4, Zalrsc_sc_w_cg_cp_rd_b4, Zalrsc_sc_w_cg_cp_rd_b4_str)
+  LA(x25, scratch) # reload base address
+  LREG x15, 0(x25) # load stored value
+  # Check if x15 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x15, Zalrsc_sc_w_cg_cp_rd_b4, Zalrsc_sc_w_cg_cp_rd_b4_str)
 
 # Testcase cp_rd (Test destination rd = x5)
-  RVTEST_TESTDATA_LOAD_INT(x26, x15) # load rs2: x15 = 0xea0d0a50a0c2351f
-  LA(x30, scratch) # rs1 = base address
-  LI(x17, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x17, x20) # load rs2: x20 = 0xf1021867e75ff97b
+  LA(x15, scratch) # rs1 = base address
+  LI(x7, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b5_retry:
-  lr.w x0, (x30) # establish reservation
+  lr.w x0, (x15) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b5:
-  sc.w x5, x15, (x30) # perform operation
+  sc.w x5, x20, (x15) # perform operation
   beqz x5, Zalrsc_sc_w_cg_cp_rd_b5_success # SC succeeded, skip retry
-  addi x17, x17, -1 # decrement retry count
-  bnez x17, Zalrsc_sc_w_cg_cp_rd_b5_retry # retry LR/SC if not exhausted
+  addi x7, x7, -1 # decrement retry count
+  bnez x7, Zalrsc_sc_w_cg_cp_rd_b5_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b5_success:
-  # Check if x5 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x5, Zalrsc_sc_w_cg_cp_rd_b5, Zalrsc_sc_w_cg_cp_rd_b5_str)
-  LA(x30, scratch) # reload base address
-  LREG x17, 0(x30) # load stored value
-  # Check if x17 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x17, Zalrsc_sc_w_cg_cp_rd_b5, Zalrsc_sc_w_cg_cp_rd_b5_str)
+  # Check if x5 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x5, Zalrsc_sc_w_cg_cp_rd_b5, Zalrsc_sc_w_cg_cp_rd_b5_str)
+  LA(x15, scratch) # reload base address
+  LREG x7, 0(x15) # load stored value
+  # Check if x7 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x7, Zalrsc_sc_w_cg_cp_rd_b5, Zalrsc_sc_w_cg_cp_rd_b5_str)
 
 # Testcase cp_rd (Test destination rd = x6)
-  RVTEST_TESTDATA_LOAD_INT(x26, x20) # load rs2: x20 = 0x8722898b5f7592e0
-  LA(x11, scratch) # rs1 = base address
-  LI(x17, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rd_b6_retry:
-  lr.w x0, (x11) # establish reservation
-Zalrsc_sc_w_cg_cp_rd_b6:
-  sc.w x6, x20, (x11) # perform operation
-  beqz x6, Zalrsc_sc_w_cg_cp_rd_b6_success # SC succeeded, skip retry
-  addi x17, x17, -1 # decrement retry count
-  bnez x17, Zalrsc_sc_w_cg_cp_rd_b6_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rd_b6_success:
-  # Check if x6 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x6, Zalrsc_sc_w_cg_cp_rd_b6, Zalrsc_sc_w_cg_cp_rd_b6_str)
-  LA(x11, scratch) # reload base address
-  LREG x17, 0(x11) # load stored value
-  # Check if x17 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x22, x8, x7, x17, Zalrsc_sc_w_cg_cp_rd_b6, Zalrsc_sc_w_cg_cp_rd_b6_str)
-
-  mv x12, x7 # switch temp register to avoid conflict with test
-  mv x13, x8 # switch link pointer register to avoid conflict with test
-# Testcase cp_rd (Test destination rd = x7)
-  RVTEST_TESTDATA_LOAD_INT(x26, x25) # load rs2: x25 = 0x085550e11af148ea
+  RVTEST_TESTDATA_LOAD_INT(x17, x27) # load rs2: x27 = 0xca9b65da2571ea95
   LA(x4, scratch) # rs1 = base address
-  LI(x27, 100) # retry counter for constrained LR/SC loop
+  LI(x26, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rd_b6_retry:
+  lr.w x0, (x4) # establish reservation
+Zalrsc_sc_w_cg_cp_rd_b6:
+  sc.w x6, x27, (x4) # perform operation
+  beqz x6, Zalrsc_sc_w_cg_cp_rd_b6_success # SC succeeded, skip retry
+  addi x26, x26, -1 # decrement retry count
+  bnez x26, Zalrsc_sc_w_cg_cp_rd_b6_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rd_b6_success:
+  # Check if x6 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x6, Zalrsc_sc_w_cg_cp_rd_b6, Zalrsc_sc_w_cg_cp_rd_b6_str)
+  LA(x4, scratch) # reload base address
+  LREG x26, 0(x4) # load stored value
+  # Check if x26 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x26, Zalrsc_sc_w_cg_cp_rd_b6, Zalrsc_sc_w_cg_cp_rd_b6_str)
+
+# Testcase cp_rd (Test destination rd = x7)
+  RVTEST_TESTDATA_LOAD_INT(x17, x31) # load rs2: x31 = 0xba6603c1d484f515
+  LA(x4, scratch) # rs1 = base address
+  LI(x29, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b7_retry:
   lr.w x0, (x4) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b7:
-  sc.w x7, x25, (x4) # perform operation
+  sc.w x7, x31, (x4) # perform operation
   beqz x7, Zalrsc_sc_w_cg_cp_rd_b7_success # SC succeeded, skip retry
-  addi x27, x27, -1 # decrement retry count
-  bnez x27, Zalrsc_sc_w_cg_cp_rd_b7_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rd_b7_success:
-  # Check if x7 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x7, Zalrsc_sc_w_cg_cp_rd_b7, Zalrsc_sc_w_cg_cp_rd_b7_str)
-  LA(x4, scratch) # reload base address
-  LREG x27, 0(x4) # load stored value
-  # Check if x27 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x27, Zalrsc_sc_w_cg_cp_rd_b7, Zalrsc_sc_w_cg_cp_rd_b7_str)
-
-# Testcase cp_rd (Test destination rd = x8)
-  RVTEST_TESTDATA_LOAD_INT(x26, x27) # load rs2: x27 = 0xca9b65da2571ea95
-  LA(x4, scratch) # rs1 = base address
-  LI(x25, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rd_b8_retry:
-  lr.w x0, (x4) # establish reservation
-Zalrsc_sc_w_cg_cp_rd_b8:
-  sc.w x8, x27, (x4) # perform operation
-  beqz x8, Zalrsc_sc_w_cg_cp_rd_b8_success # SC succeeded, skip retry
-  addi x25, x25, -1 # decrement retry count
-  bnez x25, Zalrsc_sc_w_cg_cp_rd_b8_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rd_b8_success:
-  # Check if x8 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x8, Zalrsc_sc_w_cg_cp_rd_b8, Zalrsc_sc_w_cg_cp_rd_b8_str)
-  LA(x4, scratch) # reload base address
-  LREG x25, 0(x4) # load stored value
-  # Check if x25 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x25, Zalrsc_sc_w_cg_cp_rd_b8, Zalrsc_sc_w_cg_cp_rd_b8_str)
-
-# Testcase cp_rd (Test destination rd = x9)
-  RVTEST_TESTDATA_LOAD_INT(x26, x31) # load rs2: x31 = 0xba6603c1d484f515
-  LA(x4, scratch) # rs1 = base address
-  LI(x29, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rd_b9_retry:
-  lr.w x0, (x4) # establish reservation
-Zalrsc_sc_w_cg_cp_rd_b9:
-  sc.w x9, x31, (x4) # perform operation
-  beqz x9, Zalrsc_sc_w_cg_cp_rd_b9_success # SC succeeded, skip retry
   addi x29, x29, -1 # decrement retry count
-  bnez x29, Zalrsc_sc_w_cg_cp_rd_b9_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rd_b9_success:
-  # Check if x9 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x9, Zalrsc_sc_w_cg_cp_rd_b9, Zalrsc_sc_w_cg_cp_rd_b9_str)
+  bnez x29, Zalrsc_sc_w_cg_cp_rd_b7_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rd_b7_success:
+  # Check if x7 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x7, Zalrsc_sc_w_cg_cp_rd_b7, Zalrsc_sc_w_cg_cp_rd_b7_str)
   LA(x4, scratch) # reload base address
   LREG x29, 0(x4) # load stored value
-  # Check if x29 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x29, Zalrsc_sc_w_cg_cp_rd_b9, Zalrsc_sc_w_cg_cp_rd_b9_str)
+  # Check if x29 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x29, Zalrsc_sc_w_cg_cp_rd_b7, Zalrsc_sc_w_cg_cp_rd_b7_str)
+
+# Testcase cp_rd (Test destination rd = x8)
+  RVTEST_TESTDATA_LOAD_INT(x17, x15) # load rs2: x15 = 0x34f94209e7688e1f
+  LA(x16, scratch) # rs1 = base address
+  LI(x31, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rd_b8_retry:
+  lr.w x0, (x16) # establish reservation
+Zalrsc_sc_w_cg_cp_rd_b8:
+  sc.w x8, x15, (x16) # perform operation
+  beqz x8, Zalrsc_sc_w_cg_cp_rd_b8_success # SC succeeded, skip retry
+  addi x31, x31, -1 # decrement retry count
+  bnez x31, Zalrsc_sc_w_cg_cp_rd_b8_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rd_b8_success:
+  # Check if x8 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x8, Zalrsc_sc_w_cg_cp_rd_b8, Zalrsc_sc_w_cg_cp_rd_b8_str)
+  LA(x16, scratch) # reload base address
+  LREG x31, 0(x16) # load stored value
+  # Check if x31 contains the expected result. x9 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x9, x14, x13, x31, Zalrsc_sc_w_cg_cp_rd_b8, Zalrsc_sc_w_cg_cp_rd_b8_str)
+
+  mv x12, x9 # switch signature pointer register to avoid conflict with test
+# Testcase cp_rd (Test destination rd = x9)
+  RVTEST_TESTDATA_LOAD_INT(x17, x28) # load rs2: x28 = 0x5359971865cf1860
+  LA(x23, scratch) # rs1 = base address
+  LI(x10, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rd_b9_retry:
+  lr.w x0, (x23) # establish reservation
+Zalrsc_sc_w_cg_cp_rd_b9:
+  sc.w x9, x28, (x23) # perform operation
+  beqz x9, Zalrsc_sc_w_cg_cp_rd_b9_success # SC succeeded, skip retry
+  addi x10, x10, -1 # decrement retry count
+  bnez x10, Zalrsc_sc_w_cg_cp_rd_b9_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rd_b9_success:
+  # Check if x9 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x9, Zalrsc_sc_w_cg_cp_rd_b9, Zalrsc_sc_w_cg_cp_rd_b9_str)
+  LA(x23, scratch) # reload base address
+  LREG x10, 0(x23) # load stored value
+  # Check if x10 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x10, Zalrsc_sc_w_cg_cp_rd_b9, Zalrsc_sc_w_cg_cp_rd_b9_str)
 
 # Testcase cp_rd (Test destination rd = x10)
-  RVTEST_TESTDATA_LOAD_INT(x26, x14) # load rs2: x14 = 0x34f94209e7688e1f
-  LA(x15, scratch) # rs1 = base address
-  LI(x31, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x17, x28) # load rs2: x28 = 0xffd19021ae623f8a
+  LA(x18, scratch) # rs1 = base address
+  LI(x4, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b10_retry:
-  lr.w x0, (x15) # establish reservation
+  lr.w x0, (x18) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b10:
-  sc.w x10, x14, (x15) # perform operation
+  sc.w x10, x28, (x18) # perform operation
   beqz x10, Zalrsc_sc_w_cg_cp_rd_b10_success # SC succeeded, skip retry
-  addi x31, x31, -1 # decrement retry count
-  bnez x31, Zalrsc_sc_w_cg_cp_rd_b10_retry # retry LR/SC if not exhausted
+  addi x4, x4, -1 # decrement retry count
+  bnez x4, Zalrsc_sc_w_cg_cp_rd_b10_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b10_success:
-  # Check if x10 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x10, Zalrsc_sc_w_cg_cp_rd_b10, Zalrsc_sc_w_cg_cp_rd_b10_str)
-  LA(x15, scratch) # reload base address
-  LREG x31, 0(x15) # load stored value
-  # Check if x31 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x31, Zalrsc_sc_w_cg_cp_rd_b10, Zalrsc_sc_w_cg_cp_rd_b10_str)
+  # Check if x10 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x10, Zalrsc_sc_w_cg_cp_rd_b10, Zalrsc_sc_w_cg_cp_rd_b10_str)
+  LA(x18, scratch) # reload base address
+  LREG x4, 0(x18) # load stored value
+  # Check if x4 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x4, Zalrsc_sc_w_cg_cp_rd_b10, Zalrsc_sc_w_cg_cp_rd_b10_str)
 
 # Testcase cp_rd (Test destination rd = x11)
-  RVTEST_TESTDATA_LOAD_INT(x26, x23) # load rs2: x23 = 0xbdc41e8205a60c94
-  LA(x6, scratch) # rs1 = base address
-  LI(x16, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x17, x4) # load rs2: x4 = 0x3fd9152dba53c224
+  LA(x5, scratch) # rs1 = base address
+  LI(x27, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b11_retry:
-  lr.w x0, (x6) # establish reservation
+  lr.w x0, (x5) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b11:
-  sc.w x11, x23, (x6) # perform operation
+  sc.w x11, x4, (x5) # perform operation
   beqz x11, Zalrsc_sc_w_cg_cp_rd_b11_success # SC succeeded, skip retry
-  addi x16, x16, -1 # decrement retry count
-  bnez x16, Zalrsc_sc_w_cg_cp_rd_b11_retry # retry LR/SC if not exhausted
+  addi x27, x27, -1 # decrement retry count
+  bnez x27, Zalrsc_sc_w_cg_cp_rd_b11_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b11_success:
-  # Check if x11 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x11, Zalrsc_sc_w_cg_cp_rd_b11, Zalrsc_sc_w_cg_cp_rd_b11_str)
-  LA(x6, scratch) # reload base address
-  LREG x16, 0(x6) # load stored value
-  # Check if x16 contains the expected result. x22 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x22, x13, x12, x16, Zalrsc_sc_w_cg_cp_rd_b11, Zalrsc_sc_w_cg_cp_rd_b11_str)
+  # Check if x11 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x11, Zalrsc_sc_w_cg_cp_rd_b11, Zalrsc_sc_w_cg_cp_rd_b11_str)
+  LA(x5, scratch) # reload base address
+  LREG x27, 0(x5) # load stored value
+  # Check if x27 contains the expected result. x12 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x12, x14, x13, x27, Zalrsc_sc_w_cg_cp_rd_b11, Zalrsc_sc_w_cg_cp_rd_b11_str)
 
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
+  mv x11, x12 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x12)
-  RVTEST_TESTDATA_LOAD_INT(x26, x17) # load rs2: x17 = 0xc910a3c08dceed68
-  LA(x2, scratch) # rs1 = base address
-  LI(x8, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x17, x8) # load rs2: x8 = 0x688b6a41dbf8f3f6
+  LA(x20, scratch) # rs1 = base address
+  LI(x16, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b12_retry:
-  lr.w x0, (x2) # establish reservation
+  lr.w x0, (x20) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b12:
-  sc.w x12, x17, (x2) # perform operation
+  sc.w x12, x8, (x20) # perform operation
   beqz x12, Zalrsc_sc_w_cg_cp_rd_b12_success # SC succeeded, skip retry
-  addi x8, x8, -1 # decrement retry count
-  bnez x8, Zalrsc_sc_w_cg_cp_rd_b12_retry # retry LR/SC if not exhausted
+  addi x16, x16, -1 # decrement retry count
+  bnez x16, Zalrsc_sc_w_cg_cp_rd_b12_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b12_success:
-  # Check if x12 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x12, Zalrsc_sc_w_cg_cp_rd_b12, Zalrsc_sc_w_cg_cp_rd_b12_str)
-  LA(x2, scratch) # reload base address
-  LREG x8, 0(x2) # load stored value
-  # Check if x8 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x8, Zalrsc_sc_w_cg_cp_rd_b12, Zalrsc_sc_w_cg_cp_rd_b12_str)
+  # Check if x12 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x12, Zalrsc_sc_w_cg_cp_rd_b12, Zalrsc_sc_w_cg_cp_rd_b12_str)
+  LA(x20, scratch) # reload base address
+  LREG x16, 0(x20) # load stored value
+  # Check if x16 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x16, Zalrsc_sc_w_cg_cp_rd_b12, Zalrsc_sc_w_cg_cp_rd_b12_str)
 
+  mv x7, x13 # switch temp register to avoid conflict with test
+  mv x8, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x13)
-  RVTEST_TESTDATA_LOAD_INT(x26, x7) # load rs2: x7 = 0xd2b54ea5fc48f1dd
-  LA(x21, scratch) # rs1 = base address
+  RVTEST_TESTDATA_LOAD_INT(x17, x28) # load rs2: x28 = 0xd1afddf203726cb2
+  LA(x10, scratch) # rs1 = base address
   LI(x23, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b13_retry:
-  lr.w x0, (x21) # establish reservation
+  lr.w x0, (x10) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b13:
-  sc.w x13, x7, (x21) # perform operation
+  sc.w x13, x28, (x10) # perform operation
   beqz x13, Zalrsc_sc_w_cg_cp_rd_b13_success # SC succeeded, skip retry
   addi x23, x23, -1 # decrement retry count
   bnez x23, Zalrsc_sc_w_cg_cp_rd_b13_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b13_success:
-  # Check if x13 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x13, Zalrsc_sc_w_cg_cp_rd_b13, Zalrsc_sc_w_cg_cp_rd_b13_str)
-  LA(x21, scratch) # reload base address
-  LREG x23, 0(x21) # load stored value
-  # Check if x23 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x23, Zalrsc_sc_w_cg_cp_rd_b13, Zalrsc_sc_w_cg_cp_rd_b13_str)
+  # Check if x13 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x13, Zalrsc_sc_w_cg_cp_rd_b13, Zalrsc_sc_w_cg_cp_rd_b13_str)
+  LA(x10, scratch) # reload base address
+  LREG x23, 0(x10) # load stored value
+  # Check if x23 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x23, Zalrsc_sc_w_cg_cp_rd_b13, Zalrsc_sc_w_cg_cp_rd_b13_str)
 
 # Testcase cp_rd (Test destination rd = x14)
-  RVTEST_TESTDATA_LOAD_INT(x26, x10) # load rs2: x10 = 0xd9b3fa334a938089
-  LA(x23, scratch) # rs1 = base address
-  LI(x28, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rd_b14_retry:
-  lr.w x0, (x23) # establish reservation
-Zalrsc_sc_w_cg_cp_rd_b14:
-  sc.w x14, x10, (x23) # perform operation
-  beqz x14, Zalrsc_sc_w_cg_cp_rd_b14_success # SC succeeded, skip retry
-  addi x28, x28, -1 # decrement retry count
-  bnez x28, Zalrsc_sc_w_cg_cp_rd_b14_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rd_b14_success:
-  # Check if x14 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x14, Zalrsc_sc_w_cg_cp_rd_b14, Zalrsc_sc_w_cg_cp_rd_b14_str)
-  LA(x23, scratch) # reload base address
-  LREG x28, 0(x23) # load stored value
-  # Check if x28 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x28, Zalrsc_sc_w_cg_cp_rd_b14, Zalrsc_sc_w_cg_cp_rd_b14_str)
-
-# Testcase cp_rd (Test destination rd = x15)
-  RVTEST_TESTDATA_LOAD_INT(x26, x10) # load rs2: x10 = 0xd1afddf203726cb2
-  LA(x17, scratch) # rs1 = base address
-  LI(x23, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rd_b15_retry:
-  lr.w x0, (x17) # establish reservation
-Zalrsc_sc_w_cg_cp_rd_b15:
-  sc.w x15, x10, (x17) # perform operation
-  beqz x15, Zalrsc_sc_w_cg_cp_rd_b15_success # SC succeeded, skip retry
-  addi x23, x23, -1 # decrement retry count
-  bnez x23, Zalrsc_sc_w_cg_cp_rd_b15_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rd_b15_success:
-  # Check if x15 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x15, Zalrsc_sc_w_cg_cp_rd_b15, Zalrsc_sc_w_cg_cp_rd_b15_str)
-  LA(x17, scratch) # reload base address
-  LREG x23, 0(x17) # load stored value
-  # Check if x23 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x23, Zalrsc_sc_w_cg_cp_rd_b15, Zalrsc_sc_w_cg_cp_rd_b15_str)
-
-# Testcase cp_rd (Test destination rd = x16)
-  RVTEST_TESTDATA_LOAD_INT(x26, x17) # load rs2: x17 = 0xe082d1722373d869
+  RVTEST_TESTDATA_LOAD_INT(x17, x19) # load rs2: x19 = 0xe082d1722373d869
   LA(x2, scratch) # rs1 = base address
   LI(x3, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cp_rd_b16_retry:
+Zalrsc_sc_w_cg_cp_rd_b14_retry:
   lr.w x0, (x2) # establish reservation
-Zalrsc_sc_w_cg_cp_rd_b16:
-  sc.w x16, x17, (x2) # perform operation
-  beqz x16, Zalrsc_sc_w_cg_cp_rd_b16_success # SC succeeded, skip retry
+Zalrsc_sc_w_cg_cp_rd_b14:
+  sc.w x14, x19, (x2) # perform operation
+  beqz x14, Zalrsc_sc_w_cg_cp_rd_b14_success # SC succeeded, skip retry
   addi x3, x3, -1 # decrement retry count
-  bnez x3, Zalrsc_sc_w_cg_cp_rd_b16_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cp_rd_b16_success:
-  # Check if x16 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x16, Zalrsc_sc_w_cg_cp_rd_b16, Zalrsc_sc_w_cg_cp_rd_b16_str)
+  bnez x3, Zalrsc_sc_w_cg_cp_rd_b14_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rd_b14_success:
+  # Check if x14 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x14, Zalrsc_sc_w_cg_cp_rd_b14, Zalrsc_sc_w_cg_cp_rd_b14_str)
   LA(x2, scratch) # reload base address
   LREG x3, 0(x2) # load stored value
-  # Check if x3 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x3, Zalrsc_sc_w_cg_cp_rd_b16, Zalrsc_sc_w_cg_cp_rd_b16_str)
+  # Check if x3 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x3, Zalrsc_sc_w_cg_cp_rd_b14, Zalrsc_sc_w_cg_cp_rd_b14_str)
 
-# Testcase cp_rd (Test destination rd = x17)
-  RVTEST_TESTDATA_LOAD_INT(x26, x15) # load rs2: x15 = 0xe8dc98d87c46b189
+# Testcase cp_rd (Test destination rd = x15)
+  RVTEST_TESTDATA_LOAD_INT(x17, x18) # load rs2: x18 = 0xe8dc98d87c46b189
+  LA(x4, scratch) # rs1 = base address
+  LI(x16, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rd_b15_retry:
+  lr.w x0, (x4) # establish reservation
+Zalrsc_sc_w_cg_cp_rd_b15:
+  sc.w x15, x18, (x4) # perform operation
+  beqz x15, Zalrsc_sc_w_cg_cp_rd_b15_success # SC succeeded, skip retry
+  addi x16, x16, -1 # decrement retry count
+  bnez x16, Zalrsc_sc_w_cg_cp_rd_b15_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rd_b15_success:
+  # Check if x15 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x15, Zalrsc_sc_w_cg_cp_rd_b15, Zalrsc_sc_w_cg_cp_rd_b15_str)
+  LA(x4, scratch) # reload base address
+  LREG x16, 0(x4) # load stored value
+  # Check if x16 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x16, Zalrsc_sc_w_cg_cp_rd_b15, Zalrsc_sc_w_cg_cp_rd_b15_str)
+
+# Testcase cp_rd (Test destination rd = x16)
+  RVTEST_TESTDATA_LOAD_INT(x17, x15) # load rs2: x15 = 0x9186f2260e601a24
   LA(x6, scratch) # rs1 = base address
+  LI(x30, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rd_b16_retry:
+  lr.w x0, (x6) # establish reservation
+Zalrsc_sc_w_cg_cp_rd_b16:
+  sc.w x16, x15, (x6) # perform operation
+  beqz x16, Zalrsc_sc_w_cg_cp_rd_b16_success # SC succeeded, skip retry
+  addi x30, x30, -1 # decrement retry count
+  bnez x30, Zalrsc_sc_w_cg_cp_rd_b16_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rd_b16_success:
+  # Check if x16 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x16, Zalrsc_sc_w_cg_cp_rd_b16, Zalrsc_sc_w_cg_cp_rd_b16_str)
+  LA(x6, scratch) # reload base address
+  LREG x30, 0(x6) # load stored value
+  # Check if x30 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x30, Zalrsc_sc_w_cg_cp_rd_b16, Zalrsc_sc_w_cg_cp_rd_b16_str)
+
+  mv x10, x17 # switch data pointer register to avoid conflict with test
+# Testcase cp_rd (Test destination rd = x17)
+  RVTEST_TESTDATA_LOAD_INT(x10, x0) # load rs2: x0 = 0x893a732ec761107a
+  LA(x30, scratch) # rs1 = base address
   LI(x14, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b17_retry:
-  lr.w x0, (x6) # establish reservation
+  lr.w x0, (x30) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b17:
-  sc.w x17, x15, (x6) # perform operation
+  sc.w x17, x0, (x30) # perform operation
   beqz x17, Zalrsc_sc_w_cg_cp_rd_b17_success # SC succeeded, skip retry
   addi x14, x14, -1 # decrement retry count
   bnez x14, Zalrsc_sc_w_cg_cp_rd_b17_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b17_success:
-  # Check if x17 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x17, Zalrsc_sc_w_cg_cp_rd_b17, Zalrsc_sc_w_cg_cp_rd_b17_str)
-  LA(x6, scratch) # reload base address
-  LREG x14, 0(x6) # load stored value
-  # Check if x14 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x14, Zalrsc_sc_w_cg_cp_rd_b17, Zalrsc_sc_w_cg_cp_rd_b17_str)
+  # Check if x17 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x17, Zalrsc_sc_w_cg_cp_rd_b17, Zalrsc_sc_w_cg_cp_rd_b17_str)
+  LA(x30, scratch) # reload base address
+  LREG x14, 0(x30) # load stored value
+  # Check if x14 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x14, Zalrsc_sc_w_cg_cp_rd_b17, Zalrsc_sc_w_cg_cp_rd_b17_str)
 
 # Testcase cp_rd (Test destination rd = x18)
-  RVTEST_TESTDATA_LOAD_INT(x26, x14) # load rs2: x14 = 0x9186f2260e601a24
-  LA(x8, scratch) # rs1 = base address
-  LI(x30, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x28) # load rs2: x28 = 0xfd1f193510570854
+  LA(x5, scratch) # rs1 = base address
+  LI(x13, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b18_retry:
-  lr.w x0, (x8) # establish reservation
+  lr.w x0, (x5) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b18:
-  sc.w x18, x14, (x8) # perform operation
+  sc.w x18, x28, (x5) # perform operation
   beqz x18, Zalrsc_sc_w_cg_cp_rd_b18_success # SC succeeded, skip retry
-  addi x30, x30, -1 # decrement retry count
-  bnez x30, Zalrsc_sc_w_cg_cp_rd_b18_retry # retry LR/SC if not exhausted
+  addi x13, x13, -1 # decrement retry count
+  bnez x13, Zalrsc_sc_w_cg_cp_rd_b18_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b18_success:
-  # Check if x18 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x18, Zalrsc_sc_w_cg_cp_rd_b18, Zalrsc_sc_w_cg_cp_rd_b18_str)
-  LA(x8, scratch) # reload base address
-  LREG x30, 0(x8) # load stored value
-  # Check if x30 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x30, Zalrsc_sc_w_cg_cp_rd_b18, Zalrsc_sc_w_cg_cp_rd_b18_str)
+  # Check if x18 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x18, Zalrsc_sc_w_cg_cp_rd_b18, Zalrsc_sc_w_cg_cp_rd_b18_str)
+  LA(x5, scratch) # reload base address
+  LREG x13, 0(x5) # load stored value
+  # Check if x13 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x13, Zalrsc_sc_w_cg_cp_rd_b18, Zalrsc_sc_w_cg_cp_rd_b18_str)
 
 # Testcase cp_rd (Test destination rd = x19)
-  RVTEST_TESTDATA_LOAD_INT(x26, x31) # load rs2: x31 = 0x10c6b0ff00d1a363
-  LA(x7, scratch) # rs1 = base address
-  LI(x3, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x27) # load rs2: x27 = 0xc926c64e61bc0f84
+  LA(x26, scratch) # rs1 = base address
+  LI(x28, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b19_retry:
-  lr.w x0, (x7) # establish reservation
+  lr.w x0, (x26) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b19:
-  sc.w x19, x31, (x7) # perform operation
+  sc.w x19, x27, (x26) # perform operation
   beqz x19, Zalrsc_sc_w_cg_cp_rd_b19_success # SC succeeded, skip retry
-  addi x3, x3, -1 # decrement retry count
-  bnez x3, Zalrsc_sc_w_cg_cp_rd_b19_retry # retry LR/SC if not exhausted
+  addi x28, x28, -1 # decrement retry count
+  bnez x28, Zalrsc_sc_w_cg_cp_rd_b19_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b19_success:
-  # Check if x19 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x19, Zalrsc_sc_w_cg_cp_rd_b19, Zalrsc_sc_w_cg_cp_rd_b19_str)
-  LA(x7, scratch) # reload base address
-  LREG x3, 0(x7) # load stored value
-  # Check if x3 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x3, Zalrsc_sc_w_cg_cp_rd_b19, Zalrsc_sc_w_cg_cp_rd_b19_str)
+  # Check if x19 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x19, Zalrsc_sc_w_cg_cp_rd_b19, Zalrsc_sc_w_cg_cp_rd_b19_str)
+  LA(x26, scratch) # reload base address
+  LREG x28, 0(x26) # load stored value
+  # Check if x28 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x28, Zalrsc_sc_w_cg_cp_rd_b19, Zalrsc_sc_w_cg_cp_rd_b19_str)
 
 # Testcase cp_rd (Test destination rd = x20)
-  RVTEST_TESTDATA_LOAD_INT(x26, x23) # load rs2: x23 = 0xaa53aa8ca6eb40a0
-  LA(x2, scratch) # rs1 = base address
-  LI(x9, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x22) # load rs2: x22 = 0xe28529d629934352
+  LA(x15, scratch) # rs1 = base address
+  LI(x5, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b20_retry:
-  lr.w x0, (x2) # establish reservation
+  lr.w x0, (x15) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b20:
-  sc.w x20, x23, (x2) # perform operation
+  sc.w x20, x22, (x15) # perform operation
   beqz x20, Zalrsc_sc_w_cg_cp_rd_b20_success # SC succeeded, skip retry
-  addi x9, x9, -1 # decrement retry count
-  bnez x9, Zalrsc_sc_w_cg_cp_rd_b20_retry # retry LR/SC if not exhausted
+  addi x5, x5, -1 # decrement retry count
+  bnez x5, Zalrsc_sc_w_cg_cp_rd_b20_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b20_success:
-  # Check if x20 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x20, Zalrsc_sc_w_cg_cp_rd_b20, Zalrsc_sc_w_cg_cp_rd_b20_str)
-  LA(x2, scratch) # reload base address
-  LREG x9, 0(x2) # load stored value
-  # Check if x9 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x9, Zalrsc_sc_w_cg_cp_rd_b20, Zalrsc_sc_w_cg_cp_rd_b20_str)
+  # Check if x20 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x20, Zalrsc_sc_w_cg_cp_rd_b20, Zalrsc_sc_w_cg_cp_rd_b20_str)
+  LA(x15, scratch) # reload base address
+  LREG x5, 0(x15) # load stored value
+  # Check if x5 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x5, Zalrsc_sc_w_cg_cp_rd_b20, Zalrsc_sc_w_cg_cp_rd_b20_str)
 
 # Testcase cp_rd (Test destination rd = x21)
-  RVTEST_TESTDATA_LOAD_INT(x26, x29) # load rs2: x29 = 0xdbe95e393103b093
-  LA(x13, scratch) # rs1 = base address
-  LI(x1, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x13) # load rs2: x13 = 0x548031692233d652
+  LA(x4, scratch) # rs1 = base address
+  LI(x19, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b21_retry:
-  lr.w x0, (x13) # establish reservation
+  lr.w x0, (x4) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b21:
-  sc.w x21, x29, (x13) # perform operation
+  sc.w x21, x13, (x4) # perform operation
   beqz x21, Zalrsc_sc_w_cg_cp_rd_b21_success # SC succeeded, skip retry
-  addi x1, x1, -1 # decrement retry count
-  bnez x1, Zalrsc_sc_w_cg_cp_rd_b21_retry # retry LR/SC if not exhausted
+  addi x19, x19, -1 # decrement retry count
+  bnez x19, Zalrsc_sc_w_cg_cp_rd_b21_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b21_success:
-  # Check if x21 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x21, Zalrsc_sc_w_cg_cp_rd_b21, Zalrsc_sc_w_cg_cp_rd_b21_str)
-  LA(x13, scratch) # reload base address
-  LREG x1, 0(x13) # load stored value
-  # Check if x1 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x22, x5, x4, x1, Zalrsc_sc_w_cg_cp_rd_b21, Zalrsc_sc_w_cg_cp_rd_b21_str)
+  # Check if x21 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x21, Zalrsc_sc_w_cg_cp_rd_b21, Zalrsc_sc_w_cg_cp_rd_b21_str)
+  LA(x4, scratch) # reload base address
+  LREG x19, 0(x4) # load stored value
+  # Check if x19 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x19, Zalrsc_sc_w_cg_cp_rd_b21, Zalrsc_sc_w_cg_cp_rd_b21_str)
 
-  mv x20, x22 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x22)
-  RVTEST_TESTDATA_LOAD_INT(x26, x24) # load rs2: x24 = 0x924f29a88537af88
-  LA(x23, scratch) # rs1 = base address
-  LI(x29, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x28) # load rs2: x28 = 0xfddf6376d129fd98
+  LA(x29, scratch) # rs1 = base address
+  LI(x4, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b22_retry:
-  lr.w x0, (x23) # establish reservation
+  lr.w x0, (x29) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b22:
-  sc.w x22, x24, (x23) # perform operation
+  sc.w x22, x28, (x29) # perform operation
   beqz x22, Zalrsc_sc_w_cg_cp_rd_b22_success # SC succeeded, skip retry
-  addi x29, x29, -1 # decrement retry count
-  bnez x29, Zalrsc_sc_w_cg_cp_rd_b22_retry # retry LR/SC if not exhausted
+  addi x4, x4, -1 # decrement retry count
+  bnez x4, Zalrsc_sc_w_cg_cp_rd_b22_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b22_success:
-  # Check if x22 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x22, Zalrsc_sc_w_cg_cp_rd_b22, Zalrsc_sc_w_cg_cp_rd_b22_str)
-  LA(x23, scratch) # reload base address
-  LREG x29, 0(x23) # load stored value
-  # Check if x29 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x29, Zalrsc_sc_w_cg_cp_rd_b22, Zalrsc_sc_w_cg_cp_rd_b22_str)
+  # Check if x22 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x22, Zalrsc_sc_w_cg_cp_rd_b22, Zalrsc_sc_w_cg_cp_rd_b22_str)
+  LA(x29, scratch) # reload base address
+  LREG x4, 0(x29) # load stored value
+  # Check if x4 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x4, Zalrsc_sc_w_cg_cp_rd_b22, Zalrsc_sc_w_cg_cp_rd_b22_str)
 
 # Testcase cp_rd (Test destination rd = x23)
-  RVTEST_TESTDATA_LOAD_INT(x26, x13) # load rs2: x13 = 0x52100b2721a22dee
-  LA(x3, scratch) # rs1 = base address
-  LI(x9, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x26) # load rs2: x26 = 0xc6ba81e149253559
+  LA(x17, scratch) # rs1 = base address
+  LI(x19, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b23_retry:
-  lr.w x0, (x3) # establish reservation
+  lr.w x0, (x17) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b23:
-  sc.w x23, x13, (x3) # perform operation
+  sc.w x23, x26, (x17) # perform operation
   beqz x23, Zalrsc_sc_w_cg_cp_rd_b23_success # SC succeeded, skip retry
-  addi x9, x9, -1 # decrement retry count
-  bnez x9, Zalrsc_sc_w_cg_cp_rd_b23_retry # retry LR/SC if not exhausted
+  addi x19, x19, -1 # decrement retry count
+  bnez x19, Zalrsc_sc_w_cg_cp_rd_b23_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b23_success:
-  # Check if x23 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x23, Zalrsc_sc_w_cg_cp_rd_b23, Zalrsc_sc_w_cg_cp_rd_b23_str)
-  LA(x3, scratch) # reload base address
-  LREG x9, 0(x3) # load stored value
-  # Check if x9 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x9, Zalrsc_sc_w_cg_cp_rd_b23, Zalrsc_sc_w_cg_cp_rd_b23_str)
+  # Check if x23 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x23, Zalrsc_sc_w_cg_cp_rd_b23, Zalrsc_sc_w_cg_cp_rd_b23_str)
+  LA(x17, scratch) # reload base address
+  LREG x19, 0(x17) # load stored value
+  # Check if x19 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x19, Zalrsc_sc_w_cg_cp_rd_b23, Zalrsc_sc_w_cg_cp_rd_b23_str)
 
 # Testcase cp_rd (Test destination rd = x24)
-  RVTEST_TESTDATA_LOAD_INT(x26, x30) # load rs2: x30 = 0xc215925d7ddf6376
-  LA(x15, scratch) # rs1 = base address
-  LI(x27, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x5) # load rs2: x5 = 0x43ea0a8b3faad388
+  LA(x12, scratch) # rs1 = base address
+  LI(x20, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b24_retry:
-  lr.w x0, (x15) # establish reservation
+  lr.w x0, (x12) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b24:
-  sc.w x24, x30, (x15) # perform operation
+  sc.w x24, x5, (x12) # perform operation
   beqz x24, Zalrsc_sc_w_cg_cp_rd_b24_success # SC succeeded, skip retry
-  addi x27, x27, -1 # decrement retry count
-  bnez x27, Zalrsc_sc_w_cg_cp_rd_b24_retry # retry LR/SC if not exhausted
+  addi x20, x20, -1 # decrement retry count
+  bnez x20, Zalrsc_sc_w_cg_cp_rd_b24_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b24_success:
-  # Check if x24 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x24, Zalrsc_sc_w_cg_cp_rd_b24, Zalrsc_sc_w_cg_cp_rd_b24_str)
-  LA(x15, scratch) # reload base address
-  LREG x27, 0(x15) # load stored value
-  # Check if x27 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x27, Zalrsc_sc_w_cg_cp_rd_b24, Zalrsc_sc_w_cg_cp_rd_b24_str)
+  # Check if x24 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x24, Zalrsc_sc_w_cg_cp_rd_b24, Zalrsc_sc_w_cg_cp_rd_b24_str)
+  LA(x12, scratch) # reload base address
+  LREG x20, 0(x12) # load stored value
+  # Check if x20 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x20, Zalrsc_sc_w_cg_cp_rd_b24, Zalrsc_sc_w_cg_cp_rd_b24_str)
 
 # Testcase cp_rd (Test destination rd = x25)
-  RVTEST_TESTDATA_LOAD_INT(x26, x11) # load rs2: x11 = 0xa324a06d63cfa6dc
+  RVTEST_TESTDATA_LOAD_INT(x10, x3) # load rs2: x3 = 0xa4d1ef4f4342938f
   LA(x23, scratch) # rs1 = base address
   LI(x18, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b25_retry:
   lr.w x0, (x23) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b25:
-  sc.w x25, x11, (x23) # perform operation
+  sc.w x25, x3, (x23) # perform operation
   beqz x25, Zalrsc_sc_w_cg_cp_rd_b25_success # SC succeeded, skip retry
   addi x18, x18, -1 # decrement retry count
   bnez x18, Zalrsc_sc_w_cg_cp_rd_b25_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b25_success:
-  # Check if x25 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x25, Zalrsc_sc_w_cg_cp_rd_b25, Zalrsc_sc_w_cg_cp_rd_b25_str)
+  # Check if x25 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x25, Zalrsc_sc_w_cg_cp_rd_b25, Zalrsc_sc_w_cg_cp_rd_b25_str)
   LA(x23, scratch) # reload base address
   LREG x18, 0(x23) # load stored value
-  # Check if x18 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x18, Zalrsc_sc_w_cg_cp_rd_b25, Zalrsc_sc_w_cg_cp_rd_b25_str)
+  # Check if x18 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x18, Zalrsc_sc_w_cg_cp_rd_b25, Zalrsc_sc_w_cg_cp_rd_b25_str)
 
-  mv x25, x26 # switch data pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x26)
-  RVTEST_TESTDATA_LOAD_INT(x25, x23) # load rs2: x23 = 0x5c2aa599db258269
-  LA(x3, scratch) # rs1 = base address
-  LI(x9, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x28) # load rs2: x28 = 0xfee2af9ec24794f4
+  LA(x23, scratch) # rs1 = base address
+  LI(x3, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b26_retry:
-  lr.w x0, (x3) # establish reservation
+  lr.w x0, (x23) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b26:
-  sc.w x26, x23, (x3) # perform operation
+  sc.w x26, x28, (x23) # perform operation
   beqz x26, Zalrsc_sc_w_cg_cp_rd_b26_success # SC succeeded, skip retry
-  addi x9, x9, -1 # decrement retry count
-  bnez x9, Zalrsc_sc_w_cg_cp_rd_b26_retry # retry LR/SC if not exhausted
+  addi x3, x3, -1 # decrement retry count
+  bnez x3, Zalrsc_sc_w_cg_cp_rd_b26_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b26_success:
-  # Check if x26 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x26, Zalrsc_sc_w_cg_cp_rd_b26, Zalrsc_sc_w_cg_cp_rd_b26_str)
-  LA(x3, scratch) # reload base address
-  LREG x9, 0(x3) # load stored value
-  # Check if x9 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x9, Zalrsc_sc_w_cg_cp_rd_b26, Zalrsc_sc_w_cg_cp_rd_b26_str)
+  # Check if x26 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x26, Zalrsc_sc_w_cg_cp_rd_b26, Zalrsc_sc_w_cg_cp_rd_b26_str)
+  LA(x23, scratch) # reload base address
+  LREG x3, 0(x23) # load stored value
+  # Check if x3 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x3, Zalrsc_sc_w_cg_cp_rd_b26, Zalrsc_sc_w_cg_cp_rd_b26_str)
 
 # Testcase cp_rd (Test destination rd = x27)
-  RVTEST_TESTDATA_LOAD_INT(x25, x7) # load rs2: x7 = 0x242d0fc4bdef6d11
-  LA(x3, scratch) # rs1 = base address
-  LI(x11, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x30) # load rs2: x30 = 0xca4d15fa10a5122f
+  LA(x29, scratch) # rs1 = base address
+  LI(x5, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b27_retry:
-  lr.w x0, (x3) # establish reservation
+  lr.w x0, (x29) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b27:
-  sc.w x27, x7, (x3) # perform operation
+  sc.w x27, x30, (x29) # perform operation
   beqz x27, Zalrsc_sc_w_cg_cp_rd_b27_success # SC succeeded, skip retry
-  addi x11, x11, -1 # decrement retry count
-  bnez x11, Zalrsc_sc_w_cg_cp_rd_b27_retry # retry LR/SC if not exhausted
+  addi x5, x5, -1 # decrement retry count
+  bnez x5, Zalrsc_sc_w_cg_cp_rd_b27_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b27_success:
-  # Check if x27 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x27, Zalrsc_sc_w_cg_cp_rd_b27, Zalrsc_sc_w_cg_cp_rd_b27_str)
-  LA(x3, scratch) # reload base address
-  LREG x11, 0(x3) # load stored value
-  # Check if x11 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x11, Zalrsc_sc_w_cg_cp_rd_b27, Zalrsc_sc_w_cg_cp_rd_b27_str)
+  # Check if x27 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x27, Zalrsc_sc_w_cg_cp_rd_b27, Zalrsc_sc_w_cg_cp_rd_b27_str)
+  LA(x29, scratch) # reload base address
+  LREG x5, 0(x29) # load stored value
+  # Check if x5 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x5, Zalrsc_sc_w_cg_cp_rd_b27, Zalrsc_sc_w_cg_cp_rd_b27_str)
 
 # Testcase cp_rd (Test destination rd = x28)
-  RVTEST_TESTDATA_LOAD_INT(x25, x23) # load rs2: x23 = 0x8c02cce6c5510f69
-  LA(x1, scratch) # rs1 = base address
-  LI(x11, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs2: x4 = 0xd215e809f2962327
+  LA(x5, scratch) # rs1 = base address
+  LI(x6, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b28_retry:
-  lr.w x0, (x1) # establish reservation
+  lr.w x0, (x5) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b28:
-  sc.w x28, x23, (x1) # perform operation
+  sc.w x28, x4, (x5) # perform operation
   beqz x28, Zalrsc_sc_w_cg_cp_rd_b28_success # SC succeeded, skip retry
-  addi x11, x11, -1 # decrement retry count
-  bnez x11, Zalrsc_sc_w_cg_cp_rd_b28_retry # retry LR/SC if not exhausted
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, Zalrsc_sc_w_cg_cp_rd_b28_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b28_success:
-  # Check if x28 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x28, Zalrsc_sc_w_cg_cp_rd_b28, Zalrsc_sc_w_cg_cp_rd_b28_str)
-  LA(x1, scratch) # reload base address
-  LREG x11, 0(x1) # load stored value
-  # Check if x11 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x11, Zalrsc_sc_w_cg_cp_rd_b28, Zalrsc_sc_w_cg_cp_rd_b28_str)
+  # Check if x28 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x28, Zalrsc_sc_w_cg_cp_rd_b28, Zalrsc_sc_w_cg_cp_rd_b28_str)
+  LA(x5, scratch) # reload base address
+  LREG x6, 0(x5) # load stored value
+  # Check if x6 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x6, Zalrsc_sc_w_cg_cp_rd_b28, Zalrsc_sc_w_cg_cp_rd_b28_str)
 
 # Testcase cp_rd (Test destination rd = x29)
-  RVTEST_TESTDATA_LOAD_INT(x25, x3) # load rs2: x3 = 0x3d1c37a2b2d057ac
-  LA(x7, scratch) # rs1 = base address
-  LI(x11, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x28) # load rs2: x28 = 0x76471a5d78de1281
+  LA(x14, scratch) # rs1 = base address
+  LI(x22, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b29_retry:
-  lr.w x0, (x7) # establish reservation
+  lr.w x0, (x14) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b29:
-  sc.w x29, x3, (x7) # perform operation
+  sc.w x29, x28, (x14) # perform operation
   beqz x29, Zalrsc_sc_w_cg_cp_rd_b29_success # SC succeeded, skip retry
-  addi x11, x11, -1 # decrement retry count
-  bnez x11, Zalrsc_sc_w_cg_cp_rd_b29_retry # retry LR/SC if not exhausted
+  addi x22, x22, -1 # decrement retry count
+  bnez x22, Zalrsc_sc_w_cg_cp_rd_b29_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b29_success:
-  # Check if x29 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x29, Zalrsc_sc_w_cg_cp_rd_b29, Zalrsc_sc_w_cg_cp_rd_b29_str)
-  LA(x7, scratch) # reload base address
-  LREG x11, 0(x7) # load stored value
-  # Check if x11 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x11, Zalrsc_sc_w_cg_cp_rd_b29, Zalrsc_sc_w_cg_cp_rd_b29_str)
+  # Check if x29 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x29, Zalrsc_sc_w_cg_cp_rd_b29, Zalrsc_sc_w_cg_cp_rd_b29_str)
+  LA(x14, scratch) # reload base address
+  LREG x22, 0(x14) # load stored value
+  # Check if x22 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x22, Zalrsc_sc_w_cg_cp_rd_b29, Zalrsc_sc_w_cg_cp_rd_b29_str)
 
 # Testcase cp_rd (Test destination rd = x30)
-  RVTEST_TESTDATA_LOAD_INT(x25, x18) # load rs2: x18 = 0xfcdb636c14065af3
-  LA(x12, scratch) # rs1 = base address
-  LI(x31, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x21) # load rs2: x21 = 0xb0f61a36d9879cc3
+  LA(x26, scratch) # rs1 = base address
+  LI(x15, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b30_retry:
-  lr.w x0, (x12) # establish reservation
+  lr.w x0, (x26) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b30:
-  sc.w x30, x18, (x12) # perform operation
+  sc.w x30, x21, (x26) # perform operation
   beqz x30, Zalrsc_sc_w_cg_cp_rd_b30_success # SC succeeded, skip retry
-  addi x31, x31, -1 # decrement retry count
-  bnez x31, Zalrsc_sc_w_cg_cp_rd_b30_retry # retry LR/SC if not exhausted
+  addi x15, x15, -1 # decrement retry count
+  bnez x15, Zalrsc_sc_w_cg_cp_rd_b30_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b30_success:
-  # Check if x30 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x30, Zalrsc_sc_w_cg_cp_rd_b30, Zalrsc_sc_w_cg_cp_rd_b30_str)
-  LA(x12, scratch) # reload base address
-  LREG x31, 0(x12) # load stored value
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zalrsc_sc_w_cg_cp_rd_b30, Zalrsc_sc_w_cg_cp_rd_b30_str)
+  # Check if x30 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x30, Zalrsc_sc_w_cg_cp_rd_b30, Zalrsc_sc_w_cg_cp_rd_b30_str)
+  LA(x26, scratch) # reload base address
+  LREG x15, 0(x26) # load stored value
+  # Check if x15 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x15, Zalrsc_sc_w_cg_cp_rd_b30, Zalrsc_sc_w_cg_cp_rd_b30_str)
 
 # Testcase cp_rd (Test destination rd = x31)
-  RVTEST_TESTDATA_LOAD_INT(x25, x28) # load rs2: x28 = 0x76471a5d78de1281
-  LA(x12, scratch) # rs1 = base address
-  LI(x21, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x1) # load rs2: x1 = 0x66b3630bcb263106
+  LA(x29, scratch) # rs1 = base address
+  LI(x22, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rd_b31_retry:
-  lr.w x0, (x12) # establish reservation
+  lr.w x0, (x29) # establish reservation
 Zalrsc_sc_w_cg_cp_rd_b31:
-  sc.w x31, x28, (x12) # perform operation
+  sc.w x31, x1, (x29) # perform operation
   beqz x31, Zalrsc_sc_w_cg_cp_rd_b31_success # SC succeeded, skip retry
-  addi x21, x21, -1 # decrement retry count
-  bnez x21, Zalrsc_sc_w_cg_cp_rd_b31_retry # retry LR/SC if not exhausted
+  addi x22, x22, -1 # decrement retry count
+  bnez x22, Zalrsc_sc_w_cg_cp_rd_b31_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rd_b31_success:
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zalrsc_sc_w_cg_cp_rd_b31, Zalrsc_sc_w_cg_cp_rd_b31_str)
-  LA(x12, scratch) # reload base address
-  LREG x21, 0(x12) # load stored value
-  # Check if x21 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x21, Zalrsc_sc_w_cg_cp_rd_b31, Zalrsc_sc_w_cg_cp_rd_b31_str)
+  # Check if x31 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x31, Zalrsc_sc_w_cg_cp_rd_b31, Zalrsc_sc_w_cg_cp_rd_b31_str)
+  LA(x29, scratch) # reload base address
+  LREG x22, 0(x29) # load stored value
+  # Check if x22 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x22, Zalrsc_sc_w_cg_cp_rd_b31, Zalrsc_sc_w_cg_cp_rd_b31_str)
 
 /////////////////////////////////
 // cp_rs2_edges
 /////////////////////////////////
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x25, x28) # load rs2: x28 = 0x0000000000000000
-  LA(x17, scratch) # rs1 = base address
-  LI(x15, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x28) # load rs2: x28 = 0x0000000000000000
+  LA(x19, scratch) # rs1 = base address
+  LI(x17, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_edges_0x0_retry:
-  lr.w x0, (x17) # establish reservation
+  lr.w x0, (x19) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_edges_0x0:
-  sc.w x14, x28, (x17) # perform operation
-  beqz x14, Zalrsc_sc_w_cg_cp_rs2_edges_0x0_success # SC succeeded, skip retry
-  addi x15, x15, -1 # decrement retry count
-  bnez x15, Zalrsc_sc_w_cg_cp_rs2_edges_0x0_retry # retry LR/SC if not exhausted
+  sc.w x16, x28, (x19) # perform operation
+  beqz x16, Zalrsc_sc_w_cg_cp_rs2_edges_0x0_success # SC succeeded, skip retry
+  addi x17, x17, -1 # decrement retry count
+  bnez x17, Zalrsc_sc_w_cg_cp_rs2_edges_0x0_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_edges_0x0_success:
-  # Check if x14 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x14, Zalrsc_sc_w_cg_cp_rs2_edges_0x0, Zalrsc_sc_w_cg_cp_rs2_edges_0x0_str)
-  LA(x17, scratch) # reload base address
-  LREG x15, 0(x17) # load stored value
-  # Check if x15 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x15, Zalrsc_sc_w_cg_cp_rs2_edges_0x0, Zalrsc_sc_w_cg_cp_rs2_edges_0x0_str)
+  # Check if x16 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x16, Zalrsc_sc_w_cg_cp_rs2_edges_0x0, Zalrsc_sc_w_cg_cp_rs2_edges_0x0_str)
+  LA(x19, scratch) # reload base address
+  LREG x17, 0(x19) # load stored value
+  # Check if x17 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x17, Zalrsc_sc_w_cg_cp_rs2_edges_0x0, Zalrsc_sc_w_cg_cp_rs2_edges_0x0_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x25, x30) # load rs2: x30 = 0x0000000000000001
+  RVTEST_TESTDATA_LOAD_INT(x10, x30) # load rs2: x30 = 0x0000000000000001
   LA(x31, scratch) # rs1 = base address
-  LI(x6, 100) # retry counter for constrained LR/SC loop
+  LI(x4, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_edges_0x1_retry:
   lr.w x0, (x31) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_edges_0x1:
-  sc.w x23, x30, (x31) # perform operation
-  beqz x23, Zalrsc_sc_w_cg_cp_rs2_edges_0x1_success # SC succeeded, skip retry
-  addi x6, x6, -1 # decrement retry count
-  bnez x6, Zalrsc_sc_w_cg_cp_rs2_edges_0x1_retry # retry LR/SC if not exhausted
+  sc.w x24, x30, (x31) # perform operation
+  beqz x24, Zalrsc_sc_w_cg_cp_rs2_edges_0x1_success # SC succeeded, skip retry
+  addi x4, x4, -1 # decrement retry count
+  bnez x4, Zalrsc_sc_w_cg_cp_rs2_edges_0x1_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_edges_0x1_success:
-  # Check if x23 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x23, Zalrsc_sc_w_cg_cp_rs2_edges_0x1, Zalrsc_sc_w_cg_cp_rs2_edges_0x1_str)
+  # Check if x24 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x24, Zalrsc_sc_w_cg_cp_rs2_edges_0x1, Zalrsc_sc_w_cg_cp_rs2_edges_0x1_str)
   LA(x31, scratch) # reload base address
-  LREG x6, 0(x31) # load stored value
-  # Check if x6 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x6, Zalrsc_sc_w_cg_cp_rs2_edges_0x1, Zalrsc_sc_w_cg_cp_rs2_edges_0x1_str)
+  LREG x4, 0(x31) # load stored value
+  # Check if x4 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x4, Zalrsc_sc_w_cg_cp_rs2_edges_0x1, Zalrsc_sc_w_cg_cp_rs2_edges_0x1_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000000000002)
-  RVTEST_TESTDATA_LOAD_INT(x25, x8) # load rs2: x8 = 0x0000000000000002
-  LA(x21, scratch) # rs1 = base address
-  LI(x6, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x6) # load rs2: x6 = 0x0000000000000002
+  LA(x22, scratch) # rs1 = base address
+  LI(x4, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_edges_0x2_retry:
-  lr.w x0, (x21) # establish reservation
+  lr.w x0, (x22) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_edges_0x2:
-  sc.w x30, x8, (x21) # perform operation
+  sc.w x30, x6, (x22) # perform operation
   beqz x30, Zalrsc_sc_w_cg_cp_rs2_edges_0x2_success # SC succeeded, skip retry
-  addi x6, x6, -1 # decrement retry count
-  bnez x6, Zalrsc_sc_w_cg_cp_rs2_edges_0x2_retry # retry LR/SC if not exhausted
+  addi x4, x4, -1 # decrement retry count
+  bnez x4, Zalrsc_sc_w_cg_cp_rs2_edges_0x2_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_edges_0x2_success:
-  # Check if x30 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x30, Zalrsc_sc_w_cg_cp_rs2_edges_0x2, Zalrsc_sc_w_cg_cp_rs2_edges_0x2_str)
-  LA(x21, scratch) # reload base address
-  LREG x6, 0(x21) # load stored value
-  # Check if x6 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x6, Zalrsc_sc_w_cg_cp_rs2_edges_0x2, Zalrsc_sc_w_cg_cp_rs2_edges_0x2_str)
+  # Check if x30 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x30, Zalrsc_sc_w_cg_cp_rs2_edges_0x2, Zalrsc_sc_w_cg_cp_rs2_edges_0x2_str)
+  LA(x22, scratch) # reload base address
+  LREG x4, 0(x22) # load stored value
+  # Check if x4 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x4, Zalrsc_sc_w_cg_cp_rs2_edges_0x2, Zalrsc_sc_w_cg_cp_rs2_edges_0x2_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x8000000000000000)
-  RVTEST_TESTDATA_LOAD_INT(x25, x11) # load rs2: x11 = 0x8000000000000000
-  LA(x8, scratch) # rs1 = base address
-  LI(x10, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x13) # load rs2: x13 = 0x8000000000000000
+  LA(x6, scratch) # rs1 = base address
+  LI(x12, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000000_retry:
-  lr.w x0, (x8) # establish reservation
+  lr.w x0, (x6) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000000:
-  sc.w x18, x11, (x8) # perform operation
-  beqz x18, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000000_success # SC succeeded, skip retry
-  addi x10, x10, -1 # decrement retry count
-  bnez x10, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000000_retry # retry LR/SC if not exhausted
+  sc.w x20, x13, (x6) # perform operation
+  beqz x20, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000000_success # SC succeeded, skip retry
+  addi x12, x12, -1 # decrement retry count
+  bnez x12, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000000_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000000_success:
-  # Check if x18 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x18, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000000, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000000_str)
-  LA(x8, scratch) # reload base address
-  LREG x10, 0(x8) # load stored value
-  # Check if x10 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x10, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000000, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000000_str)
+  # Check if x20 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x20, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000000, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000000_str)
+  LA(x6, scratch) # reload base address
+  LREG x12, 0(x6) # load stored value
+  # Check if x12 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x12, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000000, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000000_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x8000000000000001)
-  RVTEST_TESTDATA_LOAD_INT(x25, x6) # load rs2: x6 = 0x8000000000000001
-  LA(x12, scratch) # rs1 = base address
-  LI(x14, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs2: x4 = 0x8000000000000001
+  LA(x14, scratch) # rs1 = base address
+  LI(x16, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000001_retry:
-  lr.w x0, (x12) # establish reservation
+  lr.w x0, (x14) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000001:
-  sc.w x24, x6, (x12) # perform operation
-  beqz x24, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000001_success # SC succeeded, skip retry
-  addi x14, x14, -1 # decrement retry count
-  bnez x14, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000001_retry # retry LR/SC if not exhausted
+  sc.w x25, x4, (x14) # perform operation
+  beqz x25, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000001_success # SC succeeded, skip retry
+  addi x16, x16, -1 # decrement retry count
+  bnez x16, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000001_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000001_success:
-  # Check if x24 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x24, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000001, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000001_str)
-  LA(x12, scratch) # reload base address
-  LREG x14, 0(x12) # load stored value
-  # Check if x14 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x14, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000001, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000001_str)
+  # Check if x25 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x25, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000001, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000001_str)
+  LA(x14, scratch) # reload base address
+  LREG x16, 0(x14) # load stored value
+  # Check if x16 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x16, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000001, Zalrsc_sc_w_cg_cp_rs2_edges_0x8000000000000001_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x7fffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x25, x18) # load rs2: x18 = 0x7fffffffffffffff
+  RVTEST_TESTDATA_LOAD_INT(x10, x20) # load rs2: x20 = 0x7fffffffffffffff
   LA(x3, scratch) # rs1 = base address
-  LI(x16, 100) # retry counter for constrained LR/SC loop
+  LI(x18, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffffffffffff_retry:
   lr.w x0, (x3) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffffffffffff:
-  sc.w x14, x18, (x3) # perform operation
-  beqz x14, Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffffffffffff_success # SC succeeded, skip retry
-  addi x16, x16, -1 # decrement retry count
-  bnez x16, Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffffffffffff_retry # retry LR/SC if not exhausted
+  sc.w x16, x20, (x3) # perform operation
+  beqz x16, Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffffffffffff_success # SC succeeded, skip retry
+  addi x18, x18, -1 # decrement retry count
+  bnez x18, Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffffffffffff_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffffffffffff_success:
-  # Check if x14 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x14, Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffffffffffff, Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffffffffffff_str)
+  # Check if x16 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x16, Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffffffffffff, Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffffffffffff_str)
   LA(x3, scratch) # reload base address
-  LREG x16, 0(x3) # load stored value
-  # Check if x16 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x16, Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffffffffffff, Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffffffffffff_str)
+  LREG x18, 0(x3) # load stored value
+  # Check if x18 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x18, Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffffffffffff, Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffffffffffff_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x7ffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x25, x9) # load rs2: x9 = 0x7ffffffffffffffe
-  LA(x24, scratch) # rs1 = base address
-  LI(x21, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load rs2: x9 = 0x7ffffffffffffffe
+  LA(x25, scratch) # rs1 = base address
+  LI(x22, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_edges_0x7ffffffffffffffe_retry:
-  lr.w x0, (x24) # establish reservation
+  lr.w x0, (x25) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_edges_0x7ffffffffffffffe:
-  sc.w x12, x9, (x24) # perform operation
-  beqz x12, Zalrsc_sc_w_cg_cp_rs2_edges_0x7ffffffffffffffe_success # SC succeeded, skip retry
-  addi x21, x21, -1 # decrement retry count
-  bnez x21, Zalrsc_sc_w_cg_cp_rs2_edges_0x7ffffffffffffffe_retry # retry LR/SC if not exhausted
+  sc.w x14, x9, (x25) # perform operation
+  beqz x14, Zalrsc_sc_w_cg_cp_rs2_edges_0x7ffffffffffffffe_success # SC succeeded, skip retry
+  addi x22, x22, -1 # decrement retry count
+  bnez x22, Zalrsc_sc_w_cg_cp_rs2_edges_0x7ffffffffffffffe_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_edges_0x7ffffffffffffffe_success:
-  # Check if x12 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x12, Zalrsc_sc_w_cg_cp_rs2_edges_0x7ffffffffffffffe, Zalrsc_sc_w_cg_cp_rs2_edges_0x7ffffffffffffffe_str)
-  LA(x24, scratch) # reload base address
-  LREG x21, 0(x24) # load stored value
-  # Check if x21 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x21, Zalrsc_sc_w_cg_cp_rs2_edges_0x7ffffffffffffffe, Zalrsc_sc_w_cg_cp_rs2_edges_0x7ffffffffffffffe_str)
+  # Check if x14 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x14, Zalrsc_sc_w_cg_cp_rs2_edges_0x7ffffffffffffffe, Zalrsc_sc_w_cg_cp_rs2_edges_0x7ffffffffffffffe_str)
+  LA(x25, scratch) # reload base address
+  LREG x22, 0(x25) # load stored value
+  # Check if x22 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x22, Zalrsc_sc_w_cg_cp_rs2_edges_0x7ffffffffffffffe, Zalrsc_sc_w_cg_cp_rs2_edges_0x7ffffffffffffffe_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xffffffffffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x25, x17) # load rs2: x17 = 0xffffffffffffffff
-  LA(x8, scratch) # rs1 = base address
+  RVTEST_TESTDATA_LOAD_INT(x10, x19) # load rs2: x19 = 0xffffffffffffffff
+  LA(x6, scratch) # rs1 = base address
   LI(x28, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffffffffffff_retry:
-  lr.w x0, (x8) # establish reservation
+  lr.w x0, (x6) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffffffffffff:
-  sc.w x1, x17, (x8) # perform operation
+  sc.w x1, x19, (x6) # perform operation
   beqz x1, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffffffffffff_success # SC succeeded, skip retry
   addi x28, x28, -1 # decrement retry count
   bnez x28, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffffffffffff_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffffffffffff_success:
-  # Check if x1 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x1, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffffffffffff, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffffffffffff_str)
-  LA(x8, scratch) # reload base address
-  LREG x28, 0(x8) # load stored value
-  # Check if x28 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x28, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffffffffffff, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffffffffffff_str)
+  # Check if x1 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x1, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffffffffffff, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffffffffffff_str)
+  LA(x6, scratch) # reload base address
+  LREG x28, 0(x6) # load stored value
+  # Check if x28 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x28, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffffffffffff, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffffffffffff_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xfffffffffffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x25, x31) # load rs2: x31 = 0xfffffffffffffffe
+  RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs2: x31 = 0xfffffffffffffffe
   LA(x1, scratch) # rs1 = base address
-  LI(x12, 100) # retry counter for constrained LR/SC loop
+  LI(x14, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffffffffffe_retry:
   lr.w x0, (x1) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffffffffffe:
   sc.w x3, x31, (x1) # perform operation
   beqz x3, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffffffffffe_success # SC succeeded, skip retry
-  addi x12, x12, -1 # decrement retry count
-  bnez x12, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffffffffffe_retry # retry LR/SC if not exhausted
+  addi x14, x14, -1 # decrement retry count
+  bnez x14, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffffffffffe_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffffffffffe_success:
-  # Check if x3 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x3, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffffffffffe, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffffffffffe_str)
+  # Check if x3 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x3, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffffffffffe, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffffffffffe_str)
   LA(x1, scratch) # reload base address
-  LREG x12, 0(x1) # load stored value
-  # Check if x12 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x12, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffffffffffe, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffffffffffe_str)
+  LREG x14, 0(x1) # load stored value
+  # Check if x14 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x14, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffffffffffe, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffffffffffe_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x5bbc887763ae86f2)
-  RVTEST_TESTDATA_LOAD_INT(x25, x3) # load rs2: x3 = 0x5bbc887763ae86f2
+  RVTEST_TESTDATA_LOAD_INT(x10, x3) # load rs2: x3 = 0x5bbc887763ae86f2
   LA(x27, scratch) # rs1 = base address
-  LI(x14, 100) # retry counter for constrained LR/SC loop
+  LI(x16, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_edges_0x5bbc887763ae86f2_retry:
   lr.w x0, (x27) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_edges_0x5bbc887763ae86f2:
-  sc.w x22, x3, (x27) # perform operation
-  beqz x22, Zalrsc_sc_w_cg_cp_rs2_edges_0x5bbc887763ae86f2_success # SC succeeded, skip retry
-  addi x14, x14, -1 # decrement retry count
-  bnez x14, Zalrsc_sc_w_cg_cp_rs2_edges_0x5bbc887763ae86f2_retry # retry LR/SC if not exhausted
+  sc.w x23, x3, (x27) # perform operation
+  beqz x23, Zalrsc_sc_w_cg_cp_rs2_edges_0x5bbc887763ae86f2_success # SC succeeded, skip retry
+  addi x16, x16, -1 # decrement retry count
+  bnez x16, Zalrsc_sc_w_cg_cp_rs2_edges_0x5bbc887763ae86f2_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_edges_0x5bbc887763ae86f2_success:
-  # Check if x22 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x22, Zalrsc_sc_w_cg_cp_rs2_edges_0x5bbc887763ae86f2, Zalrsc_sc_w_cg_cp_rs2_edges_0x5bbc887763ae86f2_str)
+  # Check if x23 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x23, Zalrsc_sc_w_cg_cp_rs2_edges_0x5bbc887763ae86f2, Zalrsc_sc_w_cg_cp_rs2_edges_0x5bbc887763ae86f2_str)
   LA(x27, scratch) # reload base address
-  LREG x14, 0(x27) # load stored value
-  # Check if x14 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x14, Zalrsc_sc_w_cg_cp_rs2_edges_0x5bbc887763ae86f2, Zalrsc_sc_w_cg_cp_rs2_edges_0x5bbc887763ae86f2_str)
+  LREG x16, 0(x27) # load stored value
+  # Check if x16 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x16, Zalrsc_sc_w_cg_cp_rs2_edges_0x5bbc887763ae86f2, Zalrsc_sc_w_cg_cp_rs2_edges_0x5bbc887763ae86f2_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xaaaaaaaaaaaaaaaa)
-  RVTEST_TESTDATA_LOAD_INT(x25, x29) # load rs2: x29 = 0xaaaaaaaaaaaaaaaa
-  LA(x12, scratch) # rs1 = base address
-  LI(x11, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x29) # load rs2: x29 = 0xaaaaaaaaaaaaaaaa
+  LA(x14, scratch) # rs1 = base address
+  LI(x13, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa_retry:
-  lr.w x0, (x12) # establish reservation
+  lr.w x0, (x14) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa:
-  sc.w x8, x29, (x12) # perform operation
-  beqz x8, Zalrsc_sc_w_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa_success # SC succeeded, skip retry
-  addi x11, x11, -1 # decrement retry count
-  bnez x11, Zalrsc_sc_w_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa_retry # retry LR/SC if not exhausted
+  sc.w x6, x29, (x14) # perform operation
+  beqz x6, Zalrsc_sc_w_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa_success # SC succeeded, skip retry
+  addi x13, x13, -1 # decrement retry count
+  bnez x13, Zalrsc_sc_w_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa_success:
-  # Check if x8 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x8, Zalrsc_sc_w_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa, Zalrsc_sc_w_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa_str)
-  LA(x12, scratch) # reload base address
-  LREG x11, 0(x12) # load stored value
-  # Check if x11 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x11, Zalrsc_sc_w_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa, Zalrsc_sc_w_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa_str)
+  # Check if x6 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x6, Zalrsc_sc_w_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa, Zalrsc_sc_w_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa_str)
+  LA(x14, scratch) # reload base address
+  LREG x13, 0(x14) # load stored value
+  # Check if x13 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x13, Zalrsc_sc_w_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa, Zalrsc_sc_w_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x5555555555555555)
-  RVTEST_TESTDATA_LOAD_INT(x25, x6) # load rs2: x6 = 0x5555555555555555
-  LA(x8, scratch) # rs1 = base address
+  RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs2: x4 = 0x5555555555555555
+  LA(x6, scratch) # rs1 = base address
   LI(x9, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_edges_0x5555555555555555_retry:
-  lr.w x0, (x8) # establish reservation
+  lr.w x0, (x6) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_edges_0x5555555555555555:
-  sc.w x23, x6, (x8) # perform operation
-  beqz x23, Zalrsc_sc_w_cg_cp_rs2_edges_0x5555555555555555_success # SC succeeded, skip retry
+  sc.w x24, x4, (x6) # perform operation
+  beqz x24, Zalrsc_sc_w_cg_cp_rs2_edges_0x5555555555555555_success # SC succeeded, skip retry
   addi x9, x9, -1 # decrement retry count
   bnez x9, Zalrsc_sc_w_cg_cp_rs2_edges_0x5555555555555555_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_edges_0x5555555555555555_success:
-  # Check if x23 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x23, Zalrsc_sc_w_cg_cp_rs2_edges_0x5555555555555555, Zalrsc_sc_w_cg_cp_rs2_edges_0x5555555555555555_str)
-  LA(x8, scratch) # reload base address
-  LREG x9, 0(x8) # load stored value
-  # Check if x9 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x9, Zalrsc_sc_w_cg_cp_rs2_edges_0x5555555555555555, Zalrsc_sc_w_cg_cp_rs2_edges_0x5555555555555555_str)
+  # Check if x24 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x24, Zalrsc_sc_w_cg_cp_rs2_edges_0x5555555555555555, Zalrsc_sc_w_cg_cp_rs2_edges_0x5555555555555555_str)
+  LA(x6, scratch) # reload base address
+  LREG x9, 0(x6) # load stored value
+  # Check if x9 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x9, Zalrsc_sc_w_cg_cp_rs2_edges_0x5555555555555555, Zalrsc_sc_w_cg_cp_rs2_edges_0x5555555555555555_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x00000000ffffffff)
-  RVTEST_TESTDATA_LOAD_INT(x25, x18) # load rs2: x18 = 0x00000000ffffffff
-  LA(x12, scratch) # rs1 = base address
-  LI(x19, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x20) # load rs2: x20 = 0x00000000ffffffff
+  LA(x14, scratch) # rs1 = base address
+  LI(x21, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffff_retry:
-  lr.w x0, (x12) # establish reservation
+  lr.w x0, (x14) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffff:
-  sc.w x11, x18, (x12) # perform operation
-  beqz x11, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffff_success # SC succeeded, skip retry
-  addi x19, x19, -1 # decrement retry count
-  bnez x19, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffff_retry # retry LR/SC if not exhausted
+  sc.w x13, x20, (x14) # perform operation
+  beqz x13, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffff_success # SC succeeded, skip retry
+  addi x21, x21, -1 # decrement retry count
+  bnez x21, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffff_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffff_success:
-  # Check if x11 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x11, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffff, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffff_str)
-  LA(x12, scratch) # reload base address
-  LREG x19, 0(x12) # load stored value
-  # Check if x19 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x19, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffff, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffff_str)
+  # Check if x13 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x13, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffff, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffff_str)
+  LA(x14, scratch) # reload base address
+  LREG x21, 0(x14) # load stored value
+  # Check if x21 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x21, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffff, Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffff_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x00000000fffffffe)
-  RVTEST_TESTDATA_LOAD_INT(x25, x19) # load rs2: x19 = 0x00000000fffffffe
-  LA(x10, scratch) # rs1 = base address
-  LI(x23, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x21) # load rs2: x21 = 0x00000000fffffffe
+  LA(x12, scratch) # rs1 = base address
+  LI(x24, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffe_retry:
-  lr.w x0, (x10) # establish reservation
+  lr.w x0, (x12) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffe:
-  sc.w x30, x19, (x10) # perform operation
+  sc.w x30, x21, (x12) # perform operation
   beqz x30, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffe_success # SC succeeded, skip retry
-  addi x23, x23, -1 # decrement retry count
-  bnez x23, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffe_retry # retry LR/SC if not exhausted
+  addi x24, x24, -1 # decrement retry count
+  bnez x24, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffe_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffe_success:
-  # Check if x30 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x30, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffe, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffe_str)
-  LA(x10, scratch) # reload base address
-  LREG x23, 0(x10) # load stored value
-  # Check if x23 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x23, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffe, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffe_str)
+  # Check if x30 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x30, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffe, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffe_str)
+  LA(x12, scratch) # reload base address
+  LREG x24, 0(x12) # load stored value
+  # Check if x24 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x24, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffe, Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffe_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000100000000)
-  RVTEST_TESTDATA_LOAD_INT(x25, x27) # load rs2: x27 = 0x0000000100000000
-  LA(x8, scratch) # rs1 = base address
-  LI(x23, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x10, x27) # load rs2: x27 = 0x0000000100000000
+  LA(x6, scratch) # rs1 = base address
+  LI(x24, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_edges_0x100000000_retry:
-  lr.w x0, (x8) # establish reservation
+  lr.w x0, (x6) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_edges_0x100000000:
-  sc.w x17, x27, (x8) # perform operation
-  beqz x17, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000000_success # SC succeeded, skip retry
-  addi x23, x23, -1 # decrement retry count
-  bnez x23, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000000_retry # retry LR/SC if not exhausted
+  sc.w x19, x27, (x6) # perform operation
+  beqz x19, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000000_success # SC succeeded, skip retry
+  addi x24, x24, -1 # decrement retry count
+  bnez x24, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000000_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_edges_0x100000000_success:
-  # Check if x17 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x17, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000000, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000000_str)
-  LA(x8, scratch) # reload base address
-  LREG x23, 0(x8) # load stored value
-  # Check if x23 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x23, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000000, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000000_str)
+  # Check if x19 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x19, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000000, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000000_str)
+  LA(x6, scratch) # reload base address
+  LREG x24, 0(x6) # load stored value
+  # Check if x24 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x24, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000000, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000000_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000100000001)
-  RVTEST_TESTDATA_LOAD_INT(x25, x9) # load rs2: x9 = 0x0000000100000001
-  LA(x13, scratch) # rs1 = base address
+  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load rs2: x9 = 0x0000000100000001
+  LA(x15, scratch) # rs1 = base address
   LI(x1, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_rs2_edges_0x100000001_retry:
-  lr.w x0, (x13) # establish reservation
+  lr.w x0, (x15) # establish reservation
 Zalrsc_sc_w_cg_cp_rs2_edges_0x100000001:
-  sc.w x10, x9, (x13) # perform operation
-  beqz x10, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000001_success # SC succeeded, skip retry
+  sc.w x12, x9, (x15) # perform operation
+  beqz x12, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000001_success # SC succeeded, skip retry
   addi x1, x1, -1 # decrement retry count
   bnez x1, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000001_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_rs2_edges_0x100000001_success:
-  # Check if x10 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x10, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000001, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000001_str)
-  LA(x13, scratch) # reload base address
-  LREG x1, 0(x13) # load stored value
-  # Check if x1 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x1, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000001, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000001_str)
+  # Check if x12 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x12, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000001, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000001_str)
+  LA(x15, scratch) # reload base address
+  LREG x1, 0(x15) # load stored value
+  # Check if x1 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x1, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000001, Zalrsc_sc_w_cg_cp_rs2_edges_0x100000001_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x10, x3) # load rs2: x3 = 0x0000000080000000
+  LA(x24, scratch) # rs1 = base address
+  LI(x19, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rs2_edges_0x80000000_retry:
+  lr.w x0, (x24) # establish reservation
+Zalrsc_sc_w_cg_cp_rs2_edges_0x80000000:
+  sc.w x4, x3, (x24) # perform operation
+  beqz x4, Zalrsc_sc_w_cg_cp_rs2_edges_0x80000000_success # SC succeeded, skip retry
+  addi x19, x19, -1 # decrement retry count
+  bnez x19, Zalrsc_sc_w_cg_cp_rs2_edges_0x80000000_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rs2_edges_0x80000000_success:
+  # Check if x4 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x4, Zalrsc_sc_w_cg_cp_rs2_edges_0x80000000, Zalrsc_sc_w_cg_cp_rs2_edges_0x80000000_str)
+  LA(x24, scratch) # reload base address
+  LREG x19, 0(x24) # load stored value
+  # Check if x19 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x19, Zalrsc_sc_w_cg_cp_rs2_edges_0x80000000, Zalrsc_sc_w_cg_cp_rs2_edges_0x80000000_str)
+
+# Testcase cp_rs2_edges (Test source rs2 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs2: x4 = 0x000000007fffffff
+  LA(x20, scratch) # rs1 = base address
+  LI(x18, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffff_retry:
+  lr.w x0, (x20) # establish reservation
+Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffff:
+  sc.w x22, x4, (x20) # perform operation
+  beqz x22, Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffff_success # SC succeeded, skip retry
+  addi x18, x18, -1 # decrement retry count
+  bnez x18, Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffff_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffff_success:
+  # Check if x22 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x22, Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffff, Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffff_str)
+  LA(x20, scratch) # reload base address
+  LREG x18, 0(x20) # load stored value
+  # Check if x18 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x18, Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffff, Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffff_str)
 
 /////////////////////////////////
 // cmp_rs1_rs2_nx0
 /////////////////////////////////
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x25, x1) # load rs2: x1 = 0xf16b3a17eac63f33
+  RVTEST_TESTDATA_LOAD_INT(x10, x1) # load rs2: x1 = 0xf16b3a17eac63f33
   LA(x1, scratch) # rs1 = base address
   LI(x27, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b1_retry:
   lr.w x0, (x1) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b1:
-  sc.w x11, x1, (x1) # perform operation
-  beqz x11, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b1_success # SC succeeded, skip retry
+  sc.w x13, x1, (x1) # perform operation
+  beqz x13, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b1_success # SC succeeded, skip retry
   addi x27, x27, -1 # decrement retry count
   bnez x27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b1_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b1_success:
-  # Check if x11 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x11, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b1, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b1_str)
+  # Check if x13 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x13, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b1, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b1_str)
   LA(x1, scratch) # reload base address
   LREG x27, 0(x1) # load stored value
-  # Check if x27 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b1, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b1_str)
+  # Check if x27 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b1, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b1_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x25, x2) # load rs2: x2 = 0xbaf32bc8dc990846
+  RVTEST_TESTDATA_LOAD_INT(x10, x2) # load rs2: x2 = 0xbaf32bc8dc990846
   LA(x2, scratch) # rs1 = base address
-  LI(x12, 100) # retry counter for constrained LR/SC loop
+  LI(x14, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b2_retry:
   lr.w x0, (x2) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b2:
-  sc.w x8, x2, (x2) # perform operation
-  beqz x8, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b2_success # SC succeeded, skip retry
-  addi x12, x12, -1 # decrement retry count
-  bnez x12, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b2_retry # retry LR/SC if not exhausted
+  sc.w x6, x2, (x2) # perform operation
+  beqz x6, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b2_success # SC succeeded, skip retry
+  addi x14, x14, -1 # decrement retry count
+  bnez x14, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b2_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b2_success:
-  # Check if x8 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x8, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b2, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b2_str)
+  # Check if x6 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x6, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b2, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b2_str)
   LA(x2, scratch) # reload base address
-  LREG x12, 0(x2) # load stored value
-  # Check if x12 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x12, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b2, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b2_str)
+  LREG x14, 0(x2) # load stored value
+  # Check if x14 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x14, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b2, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b2_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x25, x3) # load rs2: x3 = 0xc50c4bf8fa8955ad
+  RVTEST_TESTDATA_LOAD_INT(x10, x3) # load rs2: x3 = 0xc50c4bf8fa8955ad
   LA(x3, scratch) # rs1 = base address
-  LI(x19, 100) # retry counter for constrained LR/SC loop
+  LI(x21, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b3_retry:
   lr.w x0, (x3) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b3:
   sc.w x27, x3, (x3) # perform operation
   beqz x27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b3_success # SC succeeded, skip retry
-  addi x19, x19, -1 # decrement retry count
-  bnez x19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b3_retry # retry LR/SC if not exhausted
+  addi x21, x21, -1 # decrement retry count
+  bnez x21, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b3_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b3_success:
-  # Check if x27 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b3, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b3_str)
+  # Check if x27 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b3, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b3_str)
   LA(x3, scratch) # reload base address
-  LREG x19, 0(x3) # load stored value
-  # Check if x19 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b3, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b3_str)
+  LREG x21, 0(x3) # load stored value
+  # Check if x21 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x21, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b3, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b3_str)
 
-  mv x7, x4 # switch temp register to avoid conflict with test
-  mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x25, x4) # load rs2: x4 = 0xcc0e3c212625375c
+  RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs2: x4 = 0xcc0e3c212625375c
   LA(x4, scratch) # rs1 = base address
-  LI(x17, 100) # retry counter for constrained LR/SC loop
+  LI(x19, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b4_retry:
   lr.w x0, (x4) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b4:
-  sc.w x23, x4, (x4) # perform operation
-  beqz x23, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b4_success # SC succeeded, skip retry
-  addi x17, x17, -1 # decrement retry count
-  bnez x17, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b4_retry # retry LR/SC if not exhausted
+  sc.w x28, x4, (x4) # perform operation
+  beqz x28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b4_success # SC succeeded, skip retry
+  addi x19, x19, -1 # decrement retry count
+  bnez x19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b4_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b4_success:
-  # Check if x23 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x23, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b4, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b4_str)
+  # Check if x28 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b4, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b4_str)
   LA(x4, scratch) # reload base address
-  LREG x17, 0(x4) # load stored value
-  # Check if x17 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x17, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b4, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b4_str)
+  LREG x19, 0(x4) # load stored value
+  # Check if x19 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b4, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b4_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x25, x5) # load rs2: x5 = 0x70787e56d2d9f092
+  RVTEST_TESTDATA_LOAD_INT(x10, x5) # load rs2: x5 = 0x70787e56d2d9f092
   LA(x5, scratch) # rs1 = base address
-  LI(x14, 100) # retry counter for constrained LR/SC loop
+  LI(x16, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b5_retry:
   lr.w x0, (x5) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b5:
   sc.w x29, x5, (x5) # perform operation
   beqz x29, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b5_success # SC succeeded, skip retry
-  addi x14, x14, -1 # decrement retry count
-  bnez x14, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b5_retry # retry LR/SC if not exhausted
+  addi x16, x16, -1 # decrement retry count
+  bnez x16, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b5_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b5_success:
-  # Check if x29 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x29, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b5, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b5_str)
+  # Check if x29 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x29, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b5, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b5_str)
   LA(x5, scratch) # reload base address
-  LREG x14, 0(x5) # load stored value
-  # Check if x14 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x14, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b5, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b5_str)
+  LREG x16, 0(x5) # load stored value
+  # Check if x16 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x16, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b5, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b5_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x25, x6) # load rs2: x6 = 0xfb6f79a8724fb747
+  RVTEST_TESTDATA_LOAD_INT(x10, x6) # load rs2: x6 = 0xfb6f79a8724fb747
   LA(x6, scratch) # rs1 = base address
   LI(x27, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b6_retry:
@@ -2292,36 +2329,36 @@ Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b6:
   addi x27, x27, -1 # decrement retry count
   bnez x27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b6_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b6_success:
-  # Check if x1 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x1, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b6, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b6_str)
+  # Check if x1 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x1, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b6, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b6_str)
   LA(x6, scratch) # reload base address
   LREG x27, 0(x6) # load stored value
-  # Check if x27 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b6, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b6_str)
+  # Check if x27 contains the expected result. x11 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x11, x8, x7, x27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b6, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b6_str)
 
-  mv x12, x7 # switch temp register to avoid conflict with test
-  mv x13, x8 # switch link pointer register to avoid conflict with test
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x25, x7) # load rs2: x7 = 0x2f49a971a038198c
+  RVTEST_TESTDATA_LOAD_INT(x10, x7) # load rs2: x7 = 0x2f49a971a038198c
   LA(x7, scratch) # rs1 = base address
-  LI(x19, 100) # retry counter for constrained LR/SC loop
+  LI(x21, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b7_retry:
   lr.w x0, (x7) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b7:
   sc.w x30, x7, (x7) # perform operation
   beqz x30, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b7_success # SC succeeded, skip retry
-  addi x19, x19, -1 # decrement retry count
-  bnez x19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b7_retry # retry LR/SC if not exhausted
+  addi x21, x21, -1 # decrement retry count
+  bnez x21, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b7_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b7_success:
-  # Check if x30 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x30, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b7, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b7_str)
+  # Check if x30 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x30, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b7, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b7_str)
   LA(x7, scratch) # reload base address
-  LREG x19, 0(x7) # load stored value
-  # Check if x19 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b7, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b7_str)
+  LREG x21, 0(x7) # load stored value
+  # Check if x21 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x21, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b7, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b7_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x25, x8) # load rs2: x8 = 0x69af963b053b37aa
+  RVTEST_TESTDATA_LOAD_INT(x10, x8) # load rs2: x8 = 0x69af963b053b37aa
   LA(x8, scratch) # rs1 = base address
   LI(x31, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b8_retry:
@@ -2332,1062 +2369,1124 @@ Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b8:
   addi x31, x31, -1 # decrement retry count
   bnez x31, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b8_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b8_success:
-  # Check if x30 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x30, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b8, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b8_str)
+  # Check if x30 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x30, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b8, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b8_str)
   LA(x8, scratch) # reload base address
   LREG x31, 0(x8) # load stored value
-  # Check if x31 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x31, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b8, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b8_str)
+  # Check if x31 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x31, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b8, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b8_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x25, x9) # load rs2: x9 = 0xc000fe1c223781cc
+  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load rs2: x9 = 0xc000fe1c223781cc
   LA(x9, scratch) # rs1 = base address
-  LI(x10, 100) # retry counter for constrained LR/SC loop
+  LI(x12, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b9_retry:
   lr.w x0, (x9) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b9:
   sc.w x3, x9, (x9) # perform operation
   beqz x3, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b9_success # SC succeeded, skip retry
-  addi x10, x10, -1 # decrement retry count
-  bnez x10, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b9_retry # retry LR/SC if not exhausted
+  addi x12, x12, -1 # decrement retry count
+  bnez x12, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b9_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b9_success:
-  # Check if x3 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x3, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b9, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b9_str)
+  # Check if x3 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x3, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b9, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b9_str)
   LA(x9, scratch) # reload base address
-  LREG x10, 0(x9) # load stored value
-  # Check if x10 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x10, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b9, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b9_str)
+  LREG x12, 0(x9) # load stored value
+  # Check if x12 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x12, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b9, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b9_str)
 
+  mv x1, x10 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x25, x10) # load rs2: x10 = 0xc3aea326ea9e0a11
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs2: x10 = 0xfb105f99f93d9509
   LA(x10, scratch) # rs1 = base address
-  LI(x27, 100) # retry counter for constrained LR/SC loop
+  LI(x6, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b10_retry:
   lr.w x0, (x10) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b10:
-  sc.w x0, x10, (x10) # perform operation
-  beqz x0, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b10_success # SC succeeded, skip retry
-  addi x27, x27, -1 # decrement retry count
-  bnez x27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b10_retry # retry LR/SC if not exhausted
+  sc.w x2, x10, (x10) # perform operation
+  beqz x2, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b10_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b10_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b10_success:
-  # Check if x0 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x0, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b10, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b10_str)
+  # Check if x2 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x2, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b10, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b10_str)
   LA(x10, scratch) # reload base address
-  LREG x27, 0(x10) # load stored value
-  # Check if x27 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b10, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b10_str)
+  LREG x6, 0(x10) # load stored value
+  # Check if x6 contains the expected result. x11 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x11, x14, x13, x6, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b10, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b10_str)
 
+  mv x29, x11 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x25, x11) # load rs2: x11 = 0xd970b3f8bb270215
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs2: x11 = 0x67d6cf3d796185ca
   LA(x11, scratch) # rs1 = base address
-  LI(x28, 100) # retry counter for constrained LR/SC loop
+  LI(x17, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b11_retry:
   lr.w x0, (x11) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b11:
-  sc.w x3, x11, (x11) # perform operation
-  beqz x3, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b11_success # SC succeeded, skip retry
-  addi x28, x28, -1 # decrement retry count
-  bnez x28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b11_retry # retry LR/SC if not exhausted
+  sc.w x19, x11, (x11) # perform operation
+  beqz x19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b11_success # SC succeeded, skip retry
+  addi x17, x17, -1 # decrement retry count
+  bnez x17, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b11_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b11_success:
-  # Check if x3 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x3, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b11, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b11_str)
+  # Check if x19 contains the expected result. x29 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x29, x14, x13, x19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b11, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b11_str)
   LA(x11, scratch) # reload base address
-  LREG x28, 0(x11) # load stored value
-  # Check if x28 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b11, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b11_str)
+  LREG x17, 0(x11) # load stored value
+  # Check if x17 contains the expected result. x29 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x29, x14, x13, x17, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b11, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b11_str)
 
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x25, x12) # load rs2: x12 = 0xc7a70a9304d5aefc
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs2: x12 = 0xf6ff266b25e3ec45
   LA(x12, scratch) # rs1 = base address
-  LI(x29, 100) # retry counter for constrained LR/SC loop
+  LI(x11, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b12_retry:
   lr.w x0, (x12) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b12:
-  sc.w x17, x12, (x12) # perform operation
-  beqz x17, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b12_success # SC succeeded, skip retry
-  addi x29, x29, -1 # decrement retry count
-  bnez x29, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b12_retry # retry LR/SC if not exhausted
+  sc.w x16, x12, (x12) # perform operation
+  beqz x16, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b12_success # SC succeeded, skip retry
+  addi x11, x11, -1 # decrement retry count
+  bnez x11, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b12_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b12_success:
-  # Check if x17 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x17, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b12, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b12_str)
+  # Check if x16 contains the expected result. x29 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x29, x14, x13, x16, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b12, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b12_str)
   LA(x12, scratch) # reload base address
-  LREG x29, 0(x12) # load stored value
-  # Check if x29 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x29, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b12, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b12_str)
+  LREG x11, 0(x12) # load stored value
+  # Check if x11 contains the expected result. x29 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x29, x14, x13, x11, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b12, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x25, x13) # load rs2: x13 = 0x661bf409679ce471
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs2: x13 = 0xb8e75cb4e61bf409
   LA(x13, scratch) # rs1 = base address
-  LI(x15, 100) # retry counter for constrained LR/SC loop
+  LI(x23, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b13_retry:
   lr.w x0, (x13) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b13:
-  sc.w x9, x13, (x13) # perform operation
-  beqz x9, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b13_success # SC succeeded, skip retry
-  addi x15, x15, -1 # decrement retry count
-  bnez x15, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b13_retry # retry LR/SC if not exhausted
+  sc.w x16, x13, (x13) # perform operation
+  beqz x16, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b13_success # SC succeeded, skip retry
+  addi x23, x23, -1 # decrement retry count
+  bnez x23, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b13_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b13_success:
-  # Check if x9 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x9, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b13, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b13_str)
+  # Check if x16 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x16, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b13, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b13_str)
   LA(x13, scratch) # reload base address
-  LREG x15, 0(x13) # load stored value
-  # Check if x15 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x15, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b13, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b13_str)
+  LREG x23, 0(x13) # load stored value
+  # Check if x23 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x23, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b13, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b13_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x25, x14) # load rs2: x14 = 0x9e2fd0b749b5692c
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0x9e2fd0b749b5692c
   LA(x14, scratch) # rs1 = base address
-  LI(x10, 100) # retry counter for constrained LR/SC loop
+  LI(x11, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b14_retry:
   lr.w x0, (x14) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b14:
-  sc.w x12, x14, (x14) # perform operation
-  beqz x12, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b14_success # SC succeeded, skip retry
-  addi x10, x10, -1 # decrement retry count
-  bnez x10, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b14_retry # retry LR/SC if not exhausted
+  sc.w x30, x14, (x14) # perform operation
+  beqz x30, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b14_success # SC succeeded, skip retry
+  addi x11, x11, -1 # decrement retry count
+  bnez x11, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b14_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b14_success:
-  # Check if x12 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x12, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b14, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b14_str)
+  # Check if x30 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x30, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b14, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b14_str)
   LA(x14, scratch) # reload base address
-  LREG x10, 0(x14) # load stored value
-  # Check if x10 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x10, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b14, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b14_str)
+  LREG x11, 0(x14) # load stored value
+  # Check if x11 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x11, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b14, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b14_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x25, x15) # load rs2: x15 = 0x5c2f8826358107ba
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0x5c2f8826358107ba
   LA(x15, scratch) # rs1 = base address
-  LI(x17, 100) # retry counter for constrained LR/SC loop
+  LI(x18, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b15_retry:
   lr.w x0, (x15) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b15:
-  sc.w x19, x15, (x15) # perform operation
-  beqz x19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b15_success # SC succeeded, skip retry
-  addi x17, x17, -1 # decrement retry count
-  bnez x17, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b15_retry # retry LR/SC if not exhausted
+  sc.w x20, x15, (x15) # perform operation
+  beqz x20, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b15_success # SC succeeded, skip retry
+  addi x18, x18, -1 # decrement retry count
+  bnez x18, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b15_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b15_success:
-  # Check if x19 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b15, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b15_str)
+  # Check if x20 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x20, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b15, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b15_str)
   LA(x15, scratch) # reload base address
-  LREG x17, 0(x15) # load stored value
-  # Check if x17 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x17, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b15, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b15_str)
+  LREG x18, 0(x15) # load stored value
+  # Check if x18 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x18, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b15, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b15_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x25, x16) # load rs2: x16 = 0xac94d5743a38e6d8
+  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load rs2: x16 = 0xac94d5743a38e6d8
   LA(x16, scratch) # rs1 = base address
   LI(x31, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b16_retry:
   lr.w x0, (x16) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b16:
-  sc.w x3, x16, (x16) # perform operation
-  beqz x3, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b16_success # SC succeeded, skip retry
+  sc.w x6, x16, (x16) # perform operation
+  beqz x6, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b16_success # SC succeeded, skip retry
   addi x31, x31, -1 # decrement retry count
   bnez x31, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b16_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b16_success:
-  # Check if x3 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x3, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b16, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b16_str)
+  # Check if x6 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x6, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b16, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b16_str)
   LA(x16, scratch) # reload base address
   LREG x31, 0(x16) # load stored value
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b16, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b16_str)
+  # Check if x31 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x31, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b16, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b16_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x25, x17) # load rs2: x17 = 0x1edd36215c2152f8
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs2: x17 = 0x1edd36215c2152f8
   LA(x17, scratch) # rs1 = base address
-  LI(x1, 100) # retry counter for constrained LR/SC loop
+  LI(x3, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b17_retry:
   lr.w x0, (x17) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b17:
-  sc.w x7, x17, (x17) # perform operation
-  beqz x7, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b17_success # SC succeeded, skip retry
-  addi x1, x1, -1 # decrement retry count
-  bnez x1, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b17_retry # retry LR/SC if not exhausted
+  sc.w x8, x17, (x17) # perform operation
+  beqz x8, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b17_success # SC succeeded, skip retry
+  addi x3, x3, -1 # decrement retry count
+  bnez x3, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b17_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b17_success:
-  # Check if x7 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x7, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b17, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b17_str)
+  # Check if x8 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x8, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b17, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b17_str)
   LA(x17, scratch) # reload base address
-  LREG x1, 0(x17) # load stored value
-  # Check if x1 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x1, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b17, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b17_str)
+  LREG x3, 0(x17) # load stored value
+  # Check if x3 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x3, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b17, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b17_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x25, x18) # load rs2: x18 = 0xb582d12cb0bd38a1
+  RVTEST_TESTDATA_LOAD_INT(x1, x18) # load rs2: x18 = 0xb582d12cb0bd38a1
   LA(x18, scratch) # rs1 = base address
-  LI(x8, 100) # retry counter for constrained LR/SC loop
+  LI(x9, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b18_retry:
   lr.w x0, (x18) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b18:
   sc.w x23, x18, (x18) # perform operation
   beqz x23, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b18_success # SC succeeded, skip retry
-  addi x8, x8, -1 # decrement retry count
-  bnez x8, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b18_retry # retry LR/SC if not exhausted
+  addi x9, x9, -1 # decrement retry count
+  bnez x9, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b18_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b18_success:
-  # Check if x23 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x23, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b18, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b18_str)
+  # Check if x23 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x23, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b18, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b18_str)
   LA(x18, scratch) # reload base address
-  LREG x8, 0(x18) # load stored value
-  # Check if x8 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x8, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b18, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b18_str)
+  LREG x9, 0(x18) # load stored value
+  # Check if x9 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x9, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b18, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b18_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x25, x19) # load rs2: x19 = 0xc2fa654ea0c780f1
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load rs2: x19 = 0xc2fa654ea0c780f1
   LA(x19, scratch) # rs1 = base address
-  LI(x3, 100) # retry counter for constrained LR/SC loop
+  LI(x6, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b19_retry:
   lr.w x0, (x19) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b19:
   sc.w x31, x19, (x19) # perform operation
   beqz x31, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b19_success # SC succeeded, skip retry
-  addi x3, x3, -1 # decrement retry count
-  bnez x3, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b19_retry # retry LR/SC if not exhausted
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b19_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b19_success:
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b19_str)
+  # Check if x31 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x31, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b19_str)
   LA(x19, scratch) # reload base address
-  LREG x3, 0(x19) # load stored value
-  # Check if x3 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x3, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b19_str)
+  LREG x6, 0(x19) # load stored value
+  # Check if x6 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x6, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b19_str)
 
-  mv x24, x20 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x25, x20) # load rs2: x20 = 0x7ea2ffa228f30bac
+  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs2: x20 = 0x864f25f7d88fe5c1
   LA(x20, scratch) # rs1 = base address
-  LI(x26, 100) # retry counter for constrained LR/SC loop
+  LI(x11, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b20_retry:
   lr.w x0, (x20) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b20:
-  sc.w x0, x20, (x20) # perform operation
-  beqz x0, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b20_success # SC succeeded, skip retry
-  addi x26, x26, -1 # decrement retry count
-  bnez x26, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b20_retry # retry LR/SC if not exhausted
+  sc.w x19, x20, (x20) # perform operation
+  beqz x19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b20_success # SC succeeded, skip retry
+  addi x11, x11, -1 # decrement retry count
+  bnez x11, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b20_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b20_success:
-  # Check if x0 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x0, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b20, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b20_str)
+  # Check if x19 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b20, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b20_str)
   LA(x20, scratch) # reload base address
-  LREG x26, 0(x20) # load stored value
-  # Check if x26 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x26, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b20, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b20_str)
+  LREG x11, 0(x20) # load stored value
+  # Check if x11 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x11, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b20, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b20_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x25, x21) # load rs2: x21 = 0xb1d8ee7c97c28439
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs2: x21 = 0x3b57d017e6922f07
   LA(x21, scratch) # rs1 = base address
-  LI(x11, 100) # retry counter for constrained LR/SC loop
+  LI(x22, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b21_retry:
   lr.w x0, (x21) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b21:
-  sc.w x28, x21, (x21) # perform operation
-  beqz x28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b21_success # SC succeeded, skip retry
-  addi x11, x11, -1 # decrement retry count
-  bnez x11, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b21_retry # retry LR/SC if not exhausted
+  sc.w x26, x21, (x21) # perform operation
+  beqz x26, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b21_success # SC succeeded, skip retry
+  addi x22, x22, -1 # decrement retry count
+  bnez x22, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b21_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b21_success:
-  # Check if x28 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b21, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b21_str)
+  # Check if x26 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x26, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b21, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b21_str)
   LA(x21, scratch) # reload base address
-  LREG x11, 0(x21) # load stored value
-  # Check if x11 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x11, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b21, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b21_str)
+  LREG x22, 0(x21) # load stored value
+  # Check if x22 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x22, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b21, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b21_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x25, x22) # load rs2: x22 = 0x080d85fcc0cd5d26
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs2: x22 = 0x080d85fcc0cd5d26
   LA(x22, scratch) # rs1 = base address
-  LI(x29, 100) # retry counter for constrained LR/SC loop
+  LI(x28, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b22_retry:
   lr.w x0, (x22) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b22:
   sc.w x30, x22, (x22) # perform operation
   beqz x30, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b22_success # SC succeeded, skip retry
-  addi x29, x29, -1 # decrement retry count
-  bnez x29, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b22_retry # retry LR/SC if not exhausted
+  addi x28, x28, -1 # decrement retry count
+  bnez x28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b22_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b22_success:
-  # Check if x30 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x30, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b22, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b22_str)
+  # Check if x30 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x30, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b22, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b22_str)
   LA(x22, scratch) # reload base address
-  LREG x29, 0(x22) # load stored value
-  # Check if x29 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x29, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b22, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b22_str)
+  LREG x28, 0(x22) # load stored value
+  # Check if x28 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b22, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b22_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x25, x23) # load rs2: x23 = 0x893bf996e1a65136
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs2: x23 = 0x893bf996e1a65136
   LA(x23, scratch) # rs1 = base address
-  LI(x20, 100) # retry counter for constrained LR/SC loop
+  LI(x21, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b23_retry:
   lr.w x0, (x23) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b23:
-  sc.w x7, x23, (x23) # perform operation
-  beqz x7, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b23_success # SC succeeded, skip retry
-  addi x20, x20, -1 # decrement retry count
-  bnez x20, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b23_retry # retry LR/SC if not exhausted
+  sc.w x8, x23, (x23) # perform operation
+  beqz x8, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b23_success # SC succeeded, skip retry
+  addi x21, x21, -1 # decrement retry count
+  bnez x21, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b23_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b23_success:
-  # Check if x7 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x7, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b23, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b23_str)
+  # Check if x8 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x8, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b23, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b23_str)
   LA(x23, scratch) # reload base address
-  LREG x20, 0(x23) # load stored value
-  # Check if x20 contains the expected result. x24 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x24, x5, x4, x20, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b23, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b23_str)
+  LREG x21, 0(x23) # load stored value
+  # Check if x21 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x21, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b23, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b23_str)
 
-  mv x14, x24 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x25, x24) # load rs2: x24 = 0xda27285932b410bf
+  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs2: x24 = 0xb2b410bf80260bcc
   LA(x24, scratch) # rs1 = base address
-  LI(x22, 100) # retry counter for constrained LR/SC loop
+  LI(x14, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b24_retry:
   lr.w x0, (x24) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b24:
   sc.w x10, x24, (x24) # perform operation
   beqz x10, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b24_success # SC succeeded, skip retry
-  addi x22, x22, -1 # decrement retry count
-  bnez x22, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b24_retry # retry LR/SC if not exhausted
+  addi x14, x14, -1 # decrement retry count
+  bnez x14, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b24_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b24_success:
-  # Check if x10 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x10, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b24, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b24_str)
+  # Check if x10 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x10, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b24, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b24_str)
   LA(x24, scratch) # reload base address
-  LREG x22, 0(x24) # load stored value
-  # Check if x22 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x22, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b24, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b24_str)
+  LREG x14, 0(x24) # load stored value
+  # Check if x14 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x14, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b24, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b24_str)
 
-  mv x20, x25 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x20, x25) # load rs2: x25 = 0x7b9a559e39318eee
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs2: x25 = 0x960c1bdc3257724e
   LA(x25, scratch) # rs1 = base address
-  LI(x27, 100) # retry counter for constrained LR/SC loop
+  LI(x9, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b25_retry:
   lr.w x0, (x25) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b25:
-  sc.w x31, x25, (x25) # perform operation
-  beqz x31, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b25_success # SC succeeded, skip retry
-  addi x27, x27, -1 # decrement retry count
-  bnez x27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b25_retry # retry LR/SC if not exhausted
+  sc.w x19, x25, (x25) # perform operation
+  beqz x19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b25_success # SC succeeded, skip retry
+  addi x9, x9, -1 # decrement retry count
+  bnez x9, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b25_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b25_success:
-  # Check if x31 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x31, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b25, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b25_str)
+  # Check if x19 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b25, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b25_str)
   LA(x25, scratch) # reload base address
-  LREG x27, 0(x25) # load stored value
-  # Check if x27 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b25, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b25_str)
+  LREG x9, 0(x25) # load stored value
+  # Check if x9 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x9, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b25, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b25_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x20, x26) # load rs2: x26 = 0x1fc93326c7b0c770
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs2: x26 = 0x7e69e687dd0711aa
   LA(x26, scratch) # rs1 = base address
-  LI(x28, 100) # retry counter for constrained LR/SC loop
+  LI(x13, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b26_retry:
   lr.w x0, (x26) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b26:
-  sc.w x23, x26, (x26) # perform operation
-  beqz x23, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b26_success # SC succeeded, skip retry
-  addi x28, x28, -1 # decrement retry count
-  bnez x28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b26_retry # retry LR/SC if not exhausted
+  sc.w x10, x26, (x26) # perform operation
+  beqz x10, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b26_success # SC succeeded, skip retry
+  addi x13, x13, -1 # decrement retry count
+  bnez x13, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b26_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b26_success:
-  # Check if x23 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x23, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b26, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b26_str)
+  # Check if x10 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x10, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b26, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b26_str)
   LA(x26, scratch) # reload base address
-  LREG x28, 0(x26) # load stored value
-  # Check if x28 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b26, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b26_str)
+  LREG x13, 0(x26) # load stored value
+  # Check if x13 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x13, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b26, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b26_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x20, x27) # load rs2: x27 = 0x2a256c9a4e03ad4a
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs2: x27 = 0x1921f6a0e4066741
   LA(x27, scratch) # rs1 = base address
-  LI(x21, 100) # retry counter for constrained LR/SC loop
+  LI(x3, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b27_retry:
   lr.w x0, (x27) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b27:
-  sc.w x24, x27, (x27) # perform operation
-  beqz x24, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b27_success # SC succeeded, skip retry
-  addi x21, x21, -1 # decrement retry count
-  bnez x21, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b27_retry # retry LR/SC if not exhausted
+  sc.w x13, x27, (x27) # perform operation
+  beqz x13, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b27_success # SC succeeded, skip retry
+  addi x3, x3, -1 # decrement retry count
+  bnez x3, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b27_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b27_success:
-  # Check if x24 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x24, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b27_str)
+  # Check if x13 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x13, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b27_str)
   LA(x27, scratch) # reload base address
-  LREG x21, 0(x27) # load stored value
-  # Check if x21 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x21, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b27_str)
+  LREG x3, 0(x27) # load stored value
+  # Check if x3 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x3, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b27_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x20, x28) # load rs2: x28 = 0xed0279575d8b28b7
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs2: x28 = 0xc4444c25eb6e840a
   LA(x28, scratch) # rs1 = base address
-  LI(x15, 100) # retry counter for constrained LR/SC loop
+  LI(x17, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b28_retry:
   lr.w x0, (x28) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b28:
   sc.w x25, x28, (x28) # perform operation
   beqz x25, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b28_success # SC succeeded, skip retry
-  addi x15, x15, -1 # decrement retry count
-  bnez x15, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b28_retry # retry LR/SC if not exhausted
+  addi x17, x17, -1 # decrement retry count
+  bnez x17, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b28_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b28_success:
-  # Check if x25 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x25, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b28_str)
+  # Check if x25 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x25, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b28_str)
   LA(x28, scratch) # reload base address
-  LREG x15, 0(x28) # load stored value
-  # Check if x15 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x15, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b28_str)
+  LREG x17, 0(x28) # load stored value
+  # Check if x17 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x17, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b28_str)
 
+  mv x2, x29 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x20, x29) # load rs2: x29 = 0x80d4f71d9e88a295
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs2: x29 = 0xed0279575d8b28b7
   LA(x29, scratch) # rs1 = base address
-  LI(x8, 100) # retry counter for constrained LR/SC loop
+  LI(x15, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b29_retry:
   lr.w x0, (x29) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b29:
-  sc.w x28, x29, (x29) # perform operation
-  beqz x28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b29_success # SC succeeded, skip retry
-  addi x8, x8, -1 # decrement retry count
-  bnez x8, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b29_retry # retry LR/SC if not exhausted
+  sc.w x25, x29, (x29) # perform operation
+  beqz x25, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b29_success # SC succeeded, skip retry
+  addi x15, x15, -1 # decrement retry count
+  bnez x15, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b29_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b29_success:
-  # Check if x28 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b29, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b29_str)
+  # Check if x25 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x25, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b29, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b29_str)
   LA(x29, scratch) # reload base address
-  LREG x8, 0(x29) # load stored value
-  # Check if x8 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x8, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b29, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b29_str)
+  LREG x15, 0(x29) # load stored value
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b29, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b29_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x20, x30) # load rs2: x30 = 0x53f9394d5b2532d9
+  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs2: x30 = 0x80d4f71d9e88a295
   LA(x30, scratch) # rs1 = base address
-  LI(x28, 100) # retry counter for constrained LR/SC loop
+  LI(x9, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b30_retry:
   lr.w x0, (x30) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b30:
-  sc.w x8, x30, (x30) # perform operation
-  beqz x8, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b30_success # SC succeeded, skip retry
-  addi x28, x28, -1 # decrement retry count
-  bnez x28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b30_retry # retry LR/SC if not exhausted
+  sc.w x28, x30, (x30) # perform operation
+  beqz x28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b30_success # SC succeeded, skip retry
+  addi x9, x9, -1 # decrement retry count
+  bnez x9, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b30_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b30_success:
-  # Check if x8 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x8, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b30, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b30_str)
+  # Check if x28 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b30, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b30_str)
   LA(x30, scratch) # reload base address
-  LREG x28, 0(x30) # load stored value
-  # Check if x28 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x28, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b30, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b30_str)
+  LREG x9, 0(x30) # load stored value
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b30, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b30_str)
 
 # Testcase cmp_rs1_rs2_nx0 (Test rs1 = rs2 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x20, x31) # load rs2: x31 = 0x35f95789658bcf80
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs2: x31 = 0x53f9394d5b2532d9
   LA(x31, scratch) # rs1 = base address
   LI(x27, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b31_retry:
   lr.w x0, (x31) # establish reservation
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b31:
-  sc.w x19, x31, (x31) # perform operation
-  beqz x19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b31_success # SC succeeded, skip retry
+  sc.w x10, x31, (x31) # perform operation
+  beqz x10, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b31_success # SC succeeded, skip retry
   addi x27, x27, -1 # decrement retry count
   bnez x27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b31_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b31_success:
-  # Check if x19 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x19, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b31, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b31_str)
+  # Check if x10 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x10, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b31, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b31_str)
   LA(x31, scratch) # reload base address
   LREG x27, 0(x31) # load stored value
-  # Check if x27 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b31, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b31_str)
+  # Check if x27 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x27, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b31, Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b31_str)
 
 /////////////////////////////////
 // cmp_rd_rs1_nx0
 /////////////////////////////////
 
+  mv x12, x1 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x20, x8) # load rs2: x8 = 0xfab9dbdf39c47741
+  RVTEST_TESTDATA_LOAD_INT(x12, x11) # load rs2: x11 = 0x602f95a939a99634
   LA(x1, scratch) # rs1 = base address
-  LI(x3, 100) # retry counter for constrained LR/SC loop
+  mv x7, x1 # save x1, which a failed SC overwrites
+  LI(x19, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b1_retry:
+  mv x1, x7 # restore x1 before the LR
   lr.w x0, (x1) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b1:
-  sc.w x1, x8, (x1) # perform operation
+  sc.w x1, x11, (x1) # perform operation
   beqz x1, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b1_success # SC succeeded, skip retry
-  addi x3, x3, -1 # decrement retry count
-  bnez x3, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b1_retry # retry LR/SC if not exhausted
+  addi x19, x19, -1 # decrement retry count
+  bnez x19, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b1_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b1_success:
-  # Check if x1 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x1, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b1, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b1_str)
+  # Check if x1 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x1, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b1, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b1_str)
   LA(x1, scratch) # reload base address
-  LREG x3, 0(x1) # load stored value
-  # Check if x3 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x3, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b1, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b1_str)
+  LREG x19, 0(x1) # load stored value
+  # Check if x19 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x19, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b1, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b1_str)
 
+  mv x31, x2 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x20, x15) # load rs2: x15 = 0xb81112479d78f494
+  RVTEST_TESTDATA_LOAD_INT(x12, x15) # load rs2: x15 = 0xfe8b143a39495d1d
   LA(x2, scratch) # rs1 = base address
-  LI(x28, 100) # retry counter for constrained LR/SC loop
+  mv x27, x2 # save x2, which a failed SC overwrites
+  LI(x1, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b2_retry:
+  mv x2, x27 # restore x2 before the LR
   lr.w x0, (x2) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b2:
   sc.w x2, x15, (x2) # perform operation
   beqz x2, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b2_success # SC succeeded, skip retry
-  addi x28, x28, -1 # decrement retry count
-  bnez x28, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b2_retry # retry LR/SC if not exhausted
+  addi x1, x1, -1 # decrement retry count
+  bnez x1, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b2_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b2_success:
-  # Check if x2 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x2, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b2, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b2_str)
+  # Check if x2 contains the expected result. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x31, x5, x4, x2, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b2, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b2_str)
   LA(x2, scratch) # reload base address
-  LREG x28, 0(x2) # load stored value
-  # Check if x28 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x28, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b2, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b2_str)
+  LREG x1, 0(x2) # load stored value
+  # Check if x1 contains the expected result. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x31, x5, x4, x1, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b2, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b2_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x20, x2) # load rs2: x2 = 0xde1dcec7b73c23e5
+  RVTEST_TESTDATA_LOAD_INT(x12, x27) # load rs2: x27 = 0x3eb6aeaa185778f4
   LA(x3, scratch) # rs1 = base address
-  LI(x22, 100) # retry counter for constrained LR/SC loop
+  mv x18, x3 # save x3, which a failed SC overwrites
+  LI(x26, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b3_retry:
+  mv x3, x18 # restore x3 before the LR
   lr.w x0, (x3) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b3:
-  sc.w x3, x2, (x3) # perform operation
+  sc.w x3, x27, (x3) # perform operation
   beqz x3, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b3_success # SC succeeded, skip retry
-  addi x22, x22, -1 # decrement retry count
-  bnez x22, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b3_retry # retry LR/SC if not exhausted
+  addi x26, x26, -1 # decrement retry count
+  bnez x26, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b3_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b3_success:
-  # Check if x3 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x3, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b3, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b3_str)
+  # Check if x3 contains the expected result. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x31, x5, x4, x3, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b3, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b3_str)
   LA(x3, scratch) # reload base address
-  LREG x22, 0(x3) # load stored value
-  # Check if x22 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x22, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b3, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b3_str)
+  LREG x26, 0(x3) # load stored value
+  # Check if x26 contains the expected result. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x31, x5, x4, x26, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b3, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b3_str)
 
-  mv x7, x4 # switch temp register to avoid conflict with test
-  mv x8, x5 # switch link pointer register to avoid conflict with test
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x20, x25) # load rs2: x25 = 0xdf7030d4f88971c4
+  RVTEST_TESTDATA_LOAD_INT(x12, x5) # load rs2: x5 = 0xf3c2549deb34dcca
   LA(x4, scratch) # rs1 = base address
-  LI(x28, 100) # retry counter for constrained LR/SC loop
+  mv x29, x4 # save x4, which a failed SC overwrites
+  LI(x7, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b4_retry:
+  mv x4, x29 # restore x4 before the LR
   lr.w x0, (x4) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b4:
-  sc.w x4, x25, (x4) # perform operation
+  sc.w x4, x5, (x4) # perform operation
   beqz x4, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b4_success # SC succeeded, skip retry
-  addi x28, x28, -1 # decrement retry count
-  bnez x28, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b4_retry # retry LR/SC if not exhausted
+  addi x7, x7, -1 # decrement retry count
+  bnez x7, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b4_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b4_success:
-  # Check if x4 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x4, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b4, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b4_str)
+  # Check if x4 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x4, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b4, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b4_str)
   LA(x4, scratch) # reload base address
-  LREG x28, 0(x4) # load stored value
-  # Check if x28 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x28, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b4, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b4_str)
+  LREG x7, 0(x4) # load stored value
+  # Check if x7 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x7, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b4, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b4_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x20, x19) # load rs2: x19 = 0x94f0ccafb4e63af4
+  RVTEST_TESTDATA_LOAD_INT(x12, x18) # load rs2: x18 = 0x4bf55103fc32170c
   LA(x5, scratch) # rs1 = base address
-  LI(x4, 100) # retry counter for constrained LR/SC loop
+  mv x6, x5 # save x5, which a failed SC overwrites
+  LI(x9, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b5_retry:
+  mv x5, x6 # restore x5 before the LR
   lr.w x0, (x5) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b5:
-  sc.w x5, x19, (x5) # perform operation
+  sc.w x5, x18, (x5) # perform operation
   beqz x5, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b5_success # SC succeeded, skip retry
-  addi x4, x4, -1 # decrement retry count
-  bnez x4, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b5_retry # retry LR/SC if not exhausted
+  addi x9, x9, -1 # decrement retry count
+  bnez x9, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b5_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b5_success:
-  # Check if x5 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x5, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b5, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b5_str)
+  # Check if x5 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x5, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b5, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b5_str)
   LA(x5, scratch) # reload base address
-  LREG x4, 0(x5) # load stored value
-  # Check if x4 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x4, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b5, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b5_str)
+  LREG x9, 0(x5) # load stored value
+  # Check if x9 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x9, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b5, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b5_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x20, x18) # load rs2: x18 = 0x40273c65372fe2dd
+  RVTEST_TESTDATA_LOAD_INT(x12, x3) # load rs2: x3 = 0x322d1f802f7c542e
   LA(x6, scratch) # rs1 = base address
-  LI(x9, 100) # retry counter for constrained LR/SC loop
+  mv x30, x6 # save x6, which a failed SC overwrites
+  LI(x16, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b6_retry:
+  mv x6, x30 # restore x6 before the LR
   lr.w x0, (x6) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b6:
-  sc.w x6, x18, (x6) # perform operation
+  sc.w x6, x3, (x6) # perform operation
   beqz x6, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b6_success # SC succeeded, skip retry
-  addi x9, x9, -1 # decrement retry count
-  bnez x9, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b6_retry # retry LR/SC if not exhausted
+  addi x16, x16, -1 # decrement retry count
+  bnez x16, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b6_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b6_success:
-  # Check if x6 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x6, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b6, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b6_str)
+  # Check if x6 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x6, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b6, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b6_str)
   LA(x6, scratch) # reload base address
-  LREG x9, 0(x6) # load stored value
-  # Check if x9 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x9, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b6, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b6_str)
+  LREG x16, 0(x6) # load stored value
+  # Check if x16 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x16, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b6, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b6_str)
 
-  mv x4, x7 # switch temp register to avoid conflict with test
-  mv x5, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x20, x6) # load rs2: x6 = 0x0d6cae9e1f0182b3
+  RVTEST_TESTDATA_LOAD_INT(x12, x20) # load rs2: x20 = 0xae60e73c90537c35
   LA(x7, scratch) # rs1 = base address
-  LI(x10, 100) # retry counter for constrained LR/SC loop
+  mv x5, x7 # save x7, which a failed SC overwrites
+  LI(x29, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b7_retry:
+  mv x7, x5 # restore x7 before the LR
   lr.w x0, (x7) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b7:
-  sc.w x7, x6, (x7) # perform operation
+  sc.w x7, x20, (x7) # perform operation
   beqz x7, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b7_success # SC succeeded, skip retry
-  addi x10, x10, -1 # decrement retry count
-  bnez x10, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b7_retry # retry LR/SC if not exhausted
+  addi x29, x29, -1 # decrement retry count
+  bnez x29, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b7_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b7_success:
-  # Check if x7 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x7, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b7, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b7_str)
+  # Check if x7 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x7, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b7, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b7_str)
   LA(x7, scratch) # reload base address
-  LREG x10, 0(x7) # load stored value
-  # Check if x10 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x10, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b7, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b7_str)
+  LREG x29, 0(x7) # load stored value
+  # Check if x29 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x29, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b7, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b7_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x20, x16) # load rs2: x16 = 0x0653adff23c1723b
+  RVTEST_TESTDATA_LOAD_INT(x12, x27) # load rs2: x27 = 0x4f2aac9e56d91f66
   LA(x8, scratch) # rs1 = base address
-  LI(x11, 100) # retry counter for constrained LR/SC loop
+  mv x22, x8 # save x8, which a failed SC overwrites
+  LI(x5, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b8_retry:
+  mv x8, x22 # restore x8 before the LR
   lr.w x0, (x8) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b8:
-  sc.w x8, x16, (x8) # perform operation
+  sc.w x8, x27, (x8) # perform operation
   beqz x8, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b8_success # SC succeeded, skip retry
-  addi x11, x11, -1 # decrement retry count
-  bnez x11, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b8_retry # retry LR/SC if not exhausted
+  addi x5, x5, -1 # decrement retry count
+  bnez x5, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b8_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b8_success:
-  # Check if x8 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x8, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b8, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b8_str)
+  # Check if x8 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x8, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b8, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b8_str)
   LA(x8, scratch) # reload base address
-  LREG x11, 0(x8) # load stored value
-  # Check if x11 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x11, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b8, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b8_str)
+  LREG x5, 0(x8) # load stored value
+  # Check if x5 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x5, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b8, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b8_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x20, x31) # load rs2: x31 = 0x945d9a963a1b2010
+  RVTEST_TESTDATA_LOAD_INT(x12, x11) # load rs2: x11 = 0x0cc2f2be31d973cc
   LA(x9, scratch) # rs1 = base address
-  LI(x1, 100) # retry counter for constrained LR/SC loop
+  mv x17, x9 # save x9, which a failed SC overwrites
+  LI(x19, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b9_retry:
+  mv x9, x17 # restore x9 before the LR
   lr.w x0, (x9) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b9:
-  sc.w x9, x31, (x9) # perform operation
+  sc.w x9, x11, (x9) # perform operation
   beqz x9, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b9_success # SC succeeded, skip retry
-  addi x1, x1, -1 # decrement retry count
-  bnez x1, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b9_retry # retry LR/SC if not exhausted
+  addi x19, x19, -1 # decrement retry count
+  bnez x19, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b9_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b9_success:
-  # Check if x9 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x9, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b9, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b9_str)
+  # Check if x9 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x9, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b9, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b9_str)
   LA(x9, scratch) # reload base address
-  LREG x1, 0(x9) # load stored value
-  # Check if x1 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x1, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b9, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b9_str)
+  LREG x19, 0(x9) # load stored value
+  # Check if x19 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x19, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b9, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b9_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x20, x27) # load rs2: x27 = 0xa6f29cb4d858810d
+  RVTEST_TESTDATA_LOAD_INT(x12, x0) # load rs2: x0 = 0x200acb48d23d54f5
   LA(x10, scratch) # rs1 = base address
-  LI(x29, 100) # retry counter for constrained LR/SC loop
+  mv x26, x10 # save x10, which a failed SC overwrites
+  LI(x28, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b10_retry:
+  mv x10, x26 # restore x10 before the LR
   lr.w x0, (x10) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b10:
-  sc.w x10, x27, (x10) # perform operation
+  sc.w x10, x0, (x10) # perform operation
   beqz x10, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b10_success # SC succeeded, skip retry
-  addi x29, x29, -1 # decrement retry count
-  bnez x29, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b10_retry # retry LR/SC if not exhausted
+  addi x28, x28, -1 # decrement retry count
+  bnez x28, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b10_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b10_success:
-  # Check if x10 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x10, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b10, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b10_str)
+  # Check if x10 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x10, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b10, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b10_str)
   LA(x10, scratch) # reload base address
-  LREG x29, 0(x10) # load stored value
-  # Check if x29 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x29, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b10, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b10_str)
+  LREG x28, 0(x10) # load stored value
+  # Check if x28 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x28, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b10, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b10_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x20, x13) # load rs2: x13 = 0x2f928f24f6b87bd1
+  RVTEST_TESTDATA_LOAD_INT(x12, x19) # load rs2: x19 = 0xf57ef0acf310fa57
   LA(x11, scratch) # rs1 = base address
-  LI(x16, 100) # retry counter for constrained LR/SC loop
+  mv x23, x11 # save x11, which a failed SC overwrites
+  LI(x28, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b11_retry:
+  mv x11, x23 # restore x11 before the LR
   lr.w x0, (x11) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b11:
-  sc.w x11, x13, (x11) # perform operation
+  sc.w x11, x19, (x11) # perform operation
   beqz x11, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b11_success # SC succeeded, skip retry
-  addi x16, x16, -1 # decrement retry count
-  bnez x16, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b11_retry # retry LR/SC if not exhausted
+  addi x28, x28, -1 # decrement retry count
+  bnez x28, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b11_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b11_success:
-  # Check if x11 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x11, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b11, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b11_str)
+  # Check if x11 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x11, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b11, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b11_str)
   LA(x11, scratch) # reload base address
-  LREG x16, 0(x11) # load stored value
-  # Check if x16 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x16, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b11, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b11_str)
+  LREG x28, 0(x11) # load stored value
+  # Check if x28 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x28, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b11, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b11_str)
 
+  mv x3, x12 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x20, x31) # load rs2: x31 = 0x3003a9acb6aae06b
+  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs2: x17 = 0xcf8d4502e7d46c06
   LA(x12, scratch) # rs1 = base address
-  LI(x24, 100) # retry counter for constrained LR/SC loop
+  mv x16, x12 # save x12, which a failed SC overwrites
+  LI(x27, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b12_retry:
+  mv x12, x16 # restore x12 before the LR
   lr.w x0, (x12) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b12:
-  sc.w x12, x31, (x12) # perform operation
+  sc.w x12, x17, (x12) # perform operation
   beqz x12, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b12_success # SC succeeded, skip retry
-  addi x24, x24, -1 # decrement retry count
-  bnez x24, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b12_retry # retry LR/SC if not exhausted
+  addi x27, x27, -1 # decrement retry count
+  bnez x27, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b12_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b12_success:
-  # Check if x12 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x12, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b12, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b12_str)
+  # Check if x12 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x12, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b12, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b12_str)
   LA(x12, scratch) # reload base address
-  LREG x24, 0(x12) # load stored value
-  # Check if x24 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x24, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b12, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b12_str)
+  LREG x27, 0(x12) # load stored value
+  # Check if x27 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x27, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b12, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b12_str)
 
+  mv x7, x13 # switch temp register to avoid conflict with test
+  mv x8, x14 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x20, x31) # load rs2: x31 = 0xb77370bedae547ae
+  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs2: x24 = 0x4377b25b1903b8ba
   LA(x13, scratch) # rs1 = base address
-  LI(x29, 100) # retry counter for constrained LR/SC loop
+  mv x23, x13 # save x13, which a failed SC overwrites
+  LI(x9, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b13_retry:
+  mv x13, x23 # restore x13 before the LR
   lr.w x0, (x13) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b13:
-  sc.w x13, x31, (x13) # perform operation
+  sc.w x13, x24, (x13) # perform operation
   beqz x13, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b13_success # SC succeeded, skip retry
-  addi x29, x29, -1 # decrement retry count
-  bnez x29, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b13_retry # retry LR/SC if not exhausted
+  addi x9, x9, -1 # decrement retry count
+  bnez x9, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b13_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b13_success:
-  # Check if x13 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x13, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b13, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b13_str)
+  # Check if x13 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x13, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b13, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b13_str)
   LA(x13, scratch) # reload base address
-  LREG x29, 0(x13) # load stored value
-  # Check if x29 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x29, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b13, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b13_str)
+  LREG x9, 0(x13) # load stored value
+  # Check if x9 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x9, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b13, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b13_str)
 
-  mv x29, x14 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x20, x23) # load rs2: x23 = 0xc6d32f4519657773
+  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs2: x28 = 0x4254735a5262f38f
   LA(x14, scratch) # rs1 = base address
-  LI(x31, 100) # retry counter for constrained LR/SC loop
+  mv x19, x14 # save x14, which a failed SC overwrites
+  LI(x30, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b14_retry:
+  mv x14, x19 # restore x14 before the LR
   lr.w x0, (x14) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b14:
-  sc.w x14, x23, (x14) # perform operation
+  sc.w x14, x28, (x14) # perform operation
   beqz x14, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b14_success # SC succeeded, skip retry
-  addi x31, x31, -1 # decrement retry count
-  bnez x31, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b14_retry # retry LR/SC if not exhausted
+  addi x30, x30, -1 # decrement retry count
+  bnez x30, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b14_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b14_success:
-  # Check if x14 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x14, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b14, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b14_str)
+  # Check if x14 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x14, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b14, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b14_str)
   LA(x14, scratch) # reload base address
-  LREG x31, 0(x14) # load stored value
-  # Check if x31 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x31, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b14, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b14_str)
+  LREG x30, 0(x14) # load stored value
+  # Check if x30 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x30, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b14, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b14_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x20, x30) # load rs2: x30 = 0x758f2fef3fbe46b1
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs2: x13 = 0x47db9e5b067f0b75
   LA(x15, scratch) # rs1 = base address
-  LI(x26, 100) # retry counter for constrained LR/SC loop
+  mv x26, x15 # save x15, which a failed SC overwrites
+  LI(x9, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b15_retry:
+  mv x15, x26 # restore x15 before the LR
   lr.w x0, (x15) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b15:
-  sc.w x15, x30, (x15) # perform operation
+  sc.w x15, x13, (x15) # perform operation
   beqz x15, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b15_success # SC succeeded, skip retry
-  addi x26, x26, -1 # decrement retry count
-  bnez x26, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b15_retry # retry LR/SC if not exhausted
+  addi x9, x9, -1 # decrement retry count
+  bnez x9, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b15_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b15_success:
-  # Check if x15 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x15, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b15, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b15_str)
+  # Check if x15 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x15, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b15, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b15_str)
   LA(x15, scratch) # reload base address
-  LREG x26, 0(x15) # load stored value
-  # Check if x26 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x26, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b15, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b15_str)
+  LREG x9, 0(x15) # load stored value
+  # Check if x9 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x9, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b15, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b15_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x20, x10) # load rs2: x10 = 0x43c23ed18dca7f19
+  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs2: x29 = 0x0d004cf552ad5f5c
   LA(x16, scratch) # rs1 = base address
-  LI(x8, 100) # retry counter for constrained LR/SC loop
+  mv x5, x16 # save x16, which a failed SC overwrites
+  LI(x21, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b16_retry:
+  mv x16, x5 # restore x16 before the LR
   lr.w x0, (x16) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b16:
-  sc.w x16, x10, (x16) # perform operation
+  sc.w x16, x29, (x16) # perform operation
   beqz x16, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b16_success # SC succeeded, skip retry
-  addi x8, x8, -1 # decrement retry count
-  bnez x8, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b16_retry # retry LR/SC if not exhausted
+  addi x21, x21, -1 # decrement retry count
+  bnez x21, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b16_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b16_success:
-  # Check if x16 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x16, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b16, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b16_str)
+  # Check if x16 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x16, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b16, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b16_str)
   LA(x16, scratch) # reload base address
-  LREG x8, 0(x16) # load stored value
-  # Check if x8 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x8, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b16, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b16_str)
+  LREG x21, 0(x16) # load stored value
+  # Check if x21 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x21, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b16, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b16_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x20, x25) # load rs2: x25 = 0x7cb05cce8a762d2e
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rs2: x6 = 0x7162f4fe341521c0
   LA(x17, scratch) # rs1 = base address
-  LI(x30, 100) # retry counter for constrained LR/SC loop
+  mv x28, x17 # save x17, which a failed SC overwrites
+  LI(x20, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b17_retry:
+  mv x17, x28 # restore x17 before the LR
   lr.w x0, (x17) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b17:
-  sc.w x17, x25, (x17) # perform operation
+  sc.w x17, x6, (x17) # perform operation
   beqz x17, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b17_success # SC succeeded, skip retry
-  addi x30, x30, -1 # decrement retry count
-  bnez x30, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b17_retry # retry LR/SC if not exhausted
+  addi x20, x20, -1 # decrement retry count
+  bnez x20, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b17_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b17_success:
-  # Check if x17 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x17, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b17, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b17_str)
+  # Check if x17 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x17, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b17, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b17_str)
   LA(x17, scratch) # reload base address
-  LREG x30, 0(x17) # load stored value
-  # Check if x30 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x30, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b17, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b17_str)
+  LREG x20, 0(x17) # load stored value
+  # Check if x20 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x20, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b17, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b17_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x20, x12) # load rs2: x12 = 0x47db9e5b067f0b75
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs2: x2 = 0x4372e04dc3f682c5
   LA(x18, scratch) # rs1 = base address
-  LI(x8, 100) # retry counter for constrained LR/SC loop
+  mv x30, x18 # save x18, which a failed SC overwrites
+  LI(x6, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b18_retry:
+  mv x18, x30 # restore x18 before the LR
   lr.w x0, (x18) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b18:
-  sc.w x18, x12, (x18) # perform operation
+  sc.w x18, x2, (x18) # perform operation
   beqz x18, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b18_success # SC succeeded, skip retry
-  addi x8, x8, -1 # decrement retry count
-  bnez x8, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b18_retry # retry LR/SC if not exhausted
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b18_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b18_success:
-  # Check if x18 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x18, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b18, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b18_str)
+  # Check if x18 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x18, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b18, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b18_str)
   LA(x18, scratch) # reload base address
-  LREG x8, 0(x18) # load stored value
-  # Check if x8 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x8, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b18, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b18_str)
+  LREG x6, 0(x18) # load stored value
+  # Check if x6 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x6, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b18, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b18_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x20, x23) # load rs2: x23 = 0x4bd29b54f829c62b
+  RVTEST_TESTDATA_LOAD_INT(x3, x4) # load rs2: x4 = 0x7725cabd2b9303f3
   LA(x19, scratch) # rs1 = base address
-  LI(x24, 100) # retry counter for constrained LR/SC loop
+  mv x30, x19 # save x19, which a failed SC overwrites
+  LI(x21, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b19_retry:
+  mv x19, x30 # restore x19 before the LR
   lr.w x0, (x19) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b19:
-  sc.w x19, x23, (x19) # perform operation
+  sc.w x19, x4, (x19) # perform operation
   beqz x19, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b19_success # SC succeeded, skip retry
-  addi x24, x24, -1 # decrement retry count
-  bnez x24, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b19_retry # retry LR/SC if not exhausted
+  addi x21, x21, -1 # decrement retry count
+  bnez x21, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b19_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b19_success:
-  # Check if x19 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x19, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b19, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b19_str)
+  # Check if x19 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x19, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b19, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b19_str)
   LA(x19, scratch) # reload base address
-  LREG x24, 0(x19) # load stored value
-  # Check if x24 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x24, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b19, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b19_str)
+  LREG x21, 0(x19) # load stored value
+  # Check if x21 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x21, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b19, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b19_str)
 
-  mv x21, x20 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load rs2: x12 = 0x4cf2a5ce289255e8
+  RVTEST_TESTDATA_LOAD_INT(x3, x4) # load rs2: x4 = 0x74353bb9aa01342d
   LA(x20, scratch) # rs1 = base address
-  LI(x24, 100) # retry counter for constrained LR/SC loop
+  mv x24, x20 # save x20, which a failed SC overwrites
+  LI(x23, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b20_retry:
+  mv x20, x24 # restore x20 before the LR
   lr.w x0, (x20) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b20:
-  sc.w x20, x12, (x20) # perform operation
+  sc.w x20, x4, (x20) # perform operation
   beqz x20, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b20_success # SC succeeded, skip retry
-  addi x24, x24, -1 # decrement retry count
-  bnez x24, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b20_retry # retry LR/SC if not exhausted
+  addi x23, x23, -1 # decrement retry count
+  bnez x23, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b20_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b20_success:
-  # Check if x20 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x20, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b20, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b20_str)
+  # Check if x20 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x20, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b20, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b20_str)
   LA(x20, scratch) # reload base address
-  LREG x24, 0(x20) # load stored value
-  # Check if x24 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x24, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b20, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b20_str)
+  LREG x23, 0(x20) # load stored value
+  # Check if x23 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x23, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b20, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b20_str)
 
-  mv x11, x21 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x11, x3) # load rs2: x3 = 0x66c31e4149b659e1
+  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs2: x19 = 0xcd65cf5bab48820c
   LA(x21, scratch) # rs1 = base address
-  LI(x28, 100) # retry counter for constrained LR/SC loop
+  mv x16, x21 # save x21, which a failed SC overwrites
+  LI(x29, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b21_retry:
+  mv x21, x16 # restore x21 before the LR
   lr.w x0, (x21) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b21:
-  sc.w x21, x3, (x21) # perform operation
+  sc.w x21, x19, (x21) # perform operation
   beqz x21, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b21_success # SC succeeded, skip retry
-  addi x28, x28, -1 # decrement retry count
-  bnez x28, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b21_retry # retry LR/SC if not exhausted
+  addi x29, x29, -1 # decrement retry count
+  bnez x29, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b21_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b21_success:
-  # Check if x21 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x21, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b21, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b21_str)
+  # Check if x21 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x21, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b21, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b21_str)
   LA(x21, scratch) # reload base address
-  LREG x28, 0(x21) # load stored value
-  # Check if x28 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x28, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b21, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b21_str)
+  LREG x29, 0(x21) # load stored value
+  # Check if x29 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x29, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b21, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b21_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x11, x3) # load rs2: x3 = 0xf75d859ec372e04d
+  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs2: x21 = 0xb7df5206cabe16cd
   LA(x22, scratch) # rs1 = base address
-  LI(x13, 100) # retry counter for constrained LR/SC loop
+  mv x2, x22 # save x22, which a failed SC overwrites
+  LI(x15, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b22_retry:
+  mv x22, x2 # restore x22 before the LR
   lr.w x0, (x22) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b22:
-  sc.w x22, x3, (x22) # perform operation
+  sc.w x22, x21, (x22) # perform operation
   beqz x22, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b22_success # SC succeeded, skip retry
-  addi x13, x13, -1 # decrement retry count
-  bnez x13, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b22_retry # retry LR/SC if not exhausted
+  addi x15, x15, -1 # decrement retry count
+  bnez x15, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b22_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b22_success:
-  # Check if x22 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x22, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b22, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b22_str)
+  # Check if x22 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x22, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b22, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b22_str)
   LA(x22, scratch) # reload base address
-  LREG x13, 0(x22) # load stored value
-  # Check if x13 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x13, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b22, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b22_str)
+  LREG x15, 0(x22) # load stored value
+  # Check if x15 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x15, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b22, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b22_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x11, x19) # load rs2: x19 = 0x05bfc0abe9ea4792
+  RVTEST_TESTDATA_LOAD_INT(x3, x6) # load rs2: x6 = 0xefabc45a74674616
   LA(x23, scratch) # rs1 = base address
-  LI(x3, 100) # retry counter for constrained LR/SC loop
+  mv x22, x23 # save x23, which a failed SC overwrites
+  LI(x16, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b23_retry:
+  mv x23, x22 # restore x23 before the LR
   lr.w x0, (x23) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b23:
-  sc.w x23, x19, (x23) # perform operation
+  sc.w x23, x6, (x23) # perform operation
   beqz x23, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b23_success # SC succeeded, skip retry
-  addi x3, x3, -1 # decrement retry count
-  bnez x3, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b23_retry # retry LR/SC if not exhausted
+  addi x16, x16, -1 # decrement retry count
+  bnez x16, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b23_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b23_success:
-  # Check if x23 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x23, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b23, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b23_str)
+  # Check if x23 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x23, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b23, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b23_str)
   LA(x23, scratch) # reload base address
-  LREG x3, 0(x23) # load stored value
-  # Check if x3 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x3, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b23, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b23_str)
+  LREG x16, 0(x23) # load stored value
+  # Check if x16 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x16, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b23, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b23_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs2: x8 = 0x1078029ef29df108
+  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs2: x19 = 0x3b33dea5c90fba90
   LA(x24, scratch) # rs1 = base address
-  LI(x16, 100) # retry counter for constrained LR/SC loop
+  mv x14, x24 # save x24, which a failed SC overwrites
+  LI(x30, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b24_retry:
+  mv x24, x14 # restore x24 before the LR
   lr.w x0, (x24) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b24:
-  sc.w x24, x8, (x24) # perform operation
+  sc.w x24, x19, (x24) # perform operation
   beqz x24, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b24_success # SC succeeded, skip retry
-  addi x16, x16, -1 # decrement retry count
-  bnez x16, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b24_retry # retry LR/SC if not exhausted
+  addi x30, x30, -1 # decrement retry count
+  bnez x30, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b24_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b24_success:
-  # Check if x24 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x24, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b24, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b24_str)
+  # Check if x24 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x24, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b24, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b24_str)
   LA(x24, scratch) # reload base address
-  LREG x16, 0(x24) # load stored value
-  # Check if x16 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x16, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b24, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b24_str)
+  LREG x30, 0(x24) # load stored value
+  # Check if x30 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x30, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b24, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b24_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs2: x31 = 0x76204ad37fab4537
+  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load rs2: x27 = 0x0681acfa99ff4866
   LA(x25, scratch) # rs1 = base address
-  LI(x18, 100) # retry counter for constrained LR/SC loop
+  mv x18, x25 # save x25, which a failed SC overwrites
+  LI(x19, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b25_retry:
+  mv x25, x18 # restore x25 before the LR
   lr.w x0, (x25) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b25:
-  sc.w x25, x31, (x25) # perform operation
+  sc.w x25, x27, (x25) # perform operation
   beqz x25, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b25_success # SC succeeded, skip retry
-  addi x18, x18, -1 # decrement retry count
-  bnez x18, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b25_retry # retry LR/SC if not exhausted
+  addi x19, x19, -1 # decrement retry count
+  bnez x19, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b25_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b25_success:
-  # Check if x25 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x25, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b25, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b25_str)
+  # Check if x25 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x25, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b25, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b25_str)
   LA(x25, scratch) # reload base address
-  LREG x18, 0(x25) # load stored value
-  # Check if x18 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x18, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b25, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b25_str)
+  LREG x19, 0(x25) # load stored value
+  # Check if x19 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x19, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b25, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b25_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs2: x10 = 0x592986a19bb8cc2d
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs2: x11 = 0x55dc6061f6534455
   LA(x26, scratch) # rs1 = base address
-  LI(x28, 100) # retry counter for constrained LR/SC loop
+  mv x25, x26 # save x26, which a failed SC overwrites
+  LI(x6, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b26_retry:
+  mv x26, x25 # restore x26 before the LR
   lr.w x0, (x26) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b26:
-  sc.w x26, x10, (x26) # perform operation
+  sc.w x26, x11, (x26) # perform operation
   beqz x26, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b26_success # SC succeeded, skip retry
-  addi x28, x28, -1 # decrement retry count
-  bnez x28, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b26_retry # retry LR/SC if not exhausted
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b26_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b26_success:
-  # Check if x26 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x26, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b26, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b26_str)
+  # Check if x26 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x26, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b26, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b26_str)
   LA(x26, scratch) # reload base address
-  LREG x28, 0(x26) # load stored value
-  # Check if x28 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x28, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b26, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b26_str)
+  LREG x6, 0(x26) # load stored value
+  # Check if x6 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x6, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b26, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b26_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x11, x19) # load rs2: x19 = 0xdc6393ea2c923084
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs2: x26 = 0xfd4c2801057d5ddf
   LA(x27, scratch) # rs1 = base address
-  LI(x23, 100) # retry counter for constrained LR/SC loop
+  mv x22, x27 # save x27, which a failed SC overwrites
+  LI(x21, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b27_retry:
+  mv x27, x22 # restore x27 before the LR
   lr.w x0, (x27) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b27:
-  sc.w x27, x19, (x27) # perform operation
+  sc.w x27, x26, (x27) # perform operation
   beqz x27, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b27_success # SC succeeded, skip retry
-  addi x23, x23, -1 # decrement retry count
-  bnez x23, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b27_retry # retry LR/SC if not exhausted
+  addi x21, x21, -1 # decrement retry count
+  bnez x21, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b27_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b27_success:
-  # Check if x27 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x27, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b27, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b27_str)
+  # Check if x27 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x27, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b27, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b27_str)
   LA(x27, scratch) # reload base address
-  LREG x23, 0(x27) # load stored value
-  # Check if x23 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x23, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b27, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b27_str)
+  LREG x21, 0(x27) # load stored value
+  # Check if x21 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x21, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b27, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b27_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x11, x20) # load rs2: x20 = 0xcd65cf5bab48820c
+  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs2: x30 = 0x72c85252037babd5
   LA(x28, scratch) # rs1 = base address
-  LI(x30, 100) # retry counter for constrained LR/SC loop
+  mv x6, x28 # save x28, which a failed SC overwrites
+  LI(x15, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b28_retry:
+  mv x28, x6 # restore x28 before the LR
   lr.w x0, (x28) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b28:
-  sc.w x28, x20, (x28) # perform operation
+  sc.w x28, x30, (x28) # perform operation
   beqz x28, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b28_success # SC succeeded, skip retry
-  addi x30, x30, -1 # decrement retry count
-  bnez x30, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b28_retry # retry LR/SC if not exhausted
+  addi x15, x15, -1 # decrement retry count
+  bnez x15, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b28_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b28_success:
-  # Check if x28 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x28, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b28, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b28_str)
+  # Check if x28 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x28, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b28, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b28_str)
   LA(x28, scratch) # reload base address
-  LREG x30, 0(x28) # load stored value
-  # Check if x30 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x29, x5, x4, x30, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b28, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b28_str)
+  LREG x15, 0(x28) # load stored value
+  # Check if x15 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x15, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b28, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b28_str)
 
-  mv x20, x29 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x11, x22) # load rs2: x22 = 0xb7df5206cabe16cd
+  RVTEST_TESTDATA_LOAD_INT(x3, x0) # load rs2: x0 = 0x44f4a81441733f96
   LA(x29, scratch) # rs1 = base address
-  LI(x15, 100) # retry counter for constrained LR/SC loop
+  mv x16, x29 # save x29, which a failed SC overwrites
+  LI(x1, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b29_retry:
+  mv x29, x16 # restore x29 before the LR
   lr.w x0, (x29) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b29:
-  sc.w x29, x22, (x29) # perform operation
+  sc.w x29, x0, (x29) # perform operation
   beqz x29, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b29_success # SC succeeded, skip retry
-  addi x15, x15, -1 # decrement retry count
-  bnez x15, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b29_retry # retry LR/SC if not exhausted
+  addi x1, x1, -1 # decrement retry count
+  bnez x1, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b29_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b29_success:
-  # Check if x29 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x29, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b29, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b29_str)
+  # Check if x29 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x29, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b29, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b29_str)
   LA(x29, scratch) # reload base address
-  LREG x15, 0(x29) # load stored value
-  # Check if x15 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x15, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b29, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b29_str)
+  LREG x1, 0(x29) # load stored value
+  # Check if x1 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x1, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b29, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b29_str)
 
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x11, x29) # load rs2: x29 = 0x8971d38ff8aed566
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs2: x9 = 0x5914eee262ca21f8
   LA(x30, scratch) # rs1 = base address
-  LI(x19, 100) # retry counter for constrained LR/SC loop
+  mv x13, x30 # save x30, which a failed SC overwrites
+  LI(x11, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b30_retry:
+  mv x30, x13 # restore x30 before the LR
   lr.w x0, (x30) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b30:
-  sc.w x30, x29, (x30) # perform operation
+  sc.w x30, x9, (x30) # perform operation
   beqz x30, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b30_success # SC succeeded, skip retry
-  addi x19, x19, -1 # decrement retry count
-  bnez x19, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b30_retry # retry LR/SC if not exhausted
+  addi x11, x11, -1 # decrement retry count
+  bnez x11, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b30_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b30_success:
-  # Check if x30 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x30, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b30, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b30_str)
+  # Check if x30 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x30, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b30, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b30_str)
   LA(x30, scratch) # reload base address
-  LREG x19, 0(x30) # load stored value
-  # Check if x19 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x19, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b30, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b30_str)
+  LREG x11, 0(x30) # load stored value
+  # Check if x11 contains the expected result. x31 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x31, x8, x7, x11, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b30, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b30_str)
 
+  mv x22, x31 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_nx0 (Test rd = rs1 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x11, x30) # load rs2: x30 = 0x32b0acf41394df42
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs2: x11 = 0x34181b2a93aad1cc
   LA(x31, scratch) # rs1 = base address
+  mv x12, x31 # save x31, which a failed SC overwrites
   LI(x15, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b31_retry:
+  mv x31, x12 # restore x31 before the LR
   lr.w x0, (x31) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b31:
-  sc.w x31, x30, (x31) # perform operation
+  sc.w x31, x11, (x31) # perform operation
   beqz x31, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b31_success # SC succeeded, skip retry
   addi x15, x15, -1 # decrement retry count
   bnez x15, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b31_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b31_success:
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b31, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b31_str)
+  # Check if x31 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x31, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b31, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b31_str)
   LA(x31, scratch) # reload base address
   LREG x15, 0(x31) # load stored value
-  # Check if x15 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x15, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b31, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b31_str)
+  # Check if x15 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x15, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b31, Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b31_str)
 
 /////////////////////////////////
 // cmp_rd_rs2
 /////////////////////////////////
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x0)
-  RVTEST_TESTDATA_LOAD_INT(x11, x0) # load rs2: x0 = 0x73c98cf667cc2d1f
+  RVTEST_TESTDATA_LOAD_INT(x3, x0) # load rs2: x0 = 0x73c98cf667cc2d1f
   LA(x27, scratch) # rs1 = base address
   LI(x19, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b0_retry:
@@ -3398,609 +3497,672 @@ Zalrsc_sc_w_cg_cmp_rd_rs2_b0:
   addi x19, x19, -1 # decrement retry count
   bnez x19, Zalrsc_sc_w_cg_cmp_rd_rs2_b0_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b0_success:
-  # Check if x0 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x0, Zalrsc_sc_w_cg_cmp_rd_rs2_b0, Zalrsc_sc_w_cg_cmp_rd_rs2_b0_str)
+  # Check if x0 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x0, Zalrsc_sc_w_cg_cmp_rd_rs2_b0, Zalrsc_sc_w_cg_cmp_rd_rs2_b0_str)
   LA(x27, scratch) # reload base address
   LREG x19, 0(x27) # load stored value
-  # Check if x19 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x19, Zalrsc_sc_w_cg_cmp_rd_rs2_b0, Zalrsc_sc_w_cg_cmp_rd_rs2_b0_str)
+  # Check if x19 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x19, Zalrsc_sc_w_cg_cmp_rd_rs2_b0, Zalrsc_sc_w_cg_cmp_rd_rs2_b0_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x1)
-  RVTEST_TESTDATA_LOAD_INT(x11, x1) # load rs2: x1 = 0x5cb83d2d446b3456
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs2: x1 = 0x5cb83d2d446b3456
   LA(x14, scratch) # rs1 = base address
-  LI(x3, 100) # retry counter for constrained LR/SC loop
+  mv x16, x1 # save x1, which a failed SC overwrites
+  LI(x4, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b1_retry:
+  mv x1, x16 # restore x1 before the LR
   lr.w x0, (x14) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b1:
   sc.w x1, x1, (x14) # perform operation
   beqz x1, Zalrsc_sc_w_cg_cmp_rd_rs2_b1_success # SC succeeded, skip retry
-  addi x3, x3, -1 # decrement retry count
-  bnez x3, Zalrsc_sc_w_cg_cmp_rd_rs2_b1_retry # retry LR/SC if not exhausted
+  addi x4, x4, -1 # decrement retry count
+  bnez x4, Zalrsc_sc_w_cg_cmp_rd_rs2_b1_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b1_success:
-  # Check if x1 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x1, Zalrsc_sc_w_cg_cmp_rd_rs2_b1, Zalrsc_sc_w_cg_cmp_rd_rs2_b1_str)
+  # Check if x1 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x1, Zalrsc_sc_w_cg_cmp_rd_rs2_b1, Zalrsc_sc_w_cg_cmp_rd_rs2_b1_str)
   LA(x14, scratch) # reload base address
-  LREG x3, 0(x14) # load stored value
-  # Check if x3 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x3, Zalrsc_sc_w_cg_cmp_rd_rs2_b1, Zalrsc_sc_w_cg_cmp_rd_rs2_b1_str)
+  LREG x4, 0(x14) # load stored value
+  # Check if x4 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x4, Zalrsc_sc_w_cg_cmp_rd_rs2_b1, Zalrsc_sc_w_cg_cmp_rd_rs2_b1_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x11, x2) # load rs2: x2 = 0x75ab8d10eb00c0c7
-  LA(x13, scratch) # rs1 = base address
-  LI(x26, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cmp_rd_rs2_b2_retry:
-  lr.w x0, (x13) # establish reservation
-Zalrsc_sc_w_cg_cmp_rd_rs2_b2:
-  sc.w x2, x2, (x13) # perform operation
-  beqz x2, Zalrsc_sc_w_cg_cmp_rd_rs2_b2_success # SC succeeded, skip retry
-  addi x26, x26, -1 # decrement retry count
-  bnez x26, Zalrsc_sc_w_cg_cmp_rd_rs2_b2_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cmp_rd_rs2_b2_success:
-  # Check if x2 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x2, Zalrsc_sc_w_cg_cmp_rd_rs2_b2, Zalrsc_sc_w_cg_cmp_rd_rs2_b2_str)
-  LA(x13, scratch) # reload base address
-  LREG x26, 0(x13) # load stored value
-  # Check if x26 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x26, Zalrsc_sc_w_cg_cmp_rd_rs2_b2, Zalrsc_sc_w_cg_cmp_rd_rs2_b2_str)
-
-# Testcase cmp_rd_rs2 (Test rd = rs2 = x3)
-  RVTEST_TESTDATA_LOAD_INT(x11, x3) # load rs2: x3 = 0x8b730f565e42bb1c
-  LA(x23, scratch) # rs1 = base address
-  LI(x19, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cmp_rd_rs2_b3_retry:
-  lr.w x0, (x23) # establish reservation
-Zalrsc_sc_w_cg_cmp_rd_rs2_b3:
-  sc.w x3, x3, (x23) # perform operation
-  beqz x3, Zalrsc_sc_w_cg_cmp_rd_rs2_b3_success # SC succeeded, skip retry
-  addi x19, x19, -1 # decrement retry count
-  bnez x19, Zalrsc_sc_w_cg_cmp_rd_rs2_b3_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cmp_rd_rs2_b3_success:
-  # Check if x3 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x3, Zalrsc_sc_w_cg_cmp_rd_rs2_b3, Zalrsc_sc_w_cg_cmp_rd_rs2_b3_str)
-  LA(x23, scratch) # reload base address
-  LREG x19, 0(x23) # load stored value
-  # Check if x19 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x19, Zalrsc_sc_w_cg_cmp_rd_rs2_b3, Zalrsc_sc_w_cg_cmp_rd_rs2_b3_str)
-
-  mv x7, x4 # switch temp register to avoid conflict with test
-  mv x8, x5 # switch link pointer register to avoid conflict with test
-# Testcase cmp_rd_rs2 (Test rd = rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x11, x4) # load rs2: x4 = 0x17e51bfa53c70b12
-  LA(x25, scratch) # rs1 = base address
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs2: x2 = 0x52b4c231efcae46a
+  LA(x12, scratch) # rs1 = base address
+  mv x20, x2 # save x2, which a failed SC overwrites
   LI(x21, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cmp_rd_rs2_b4_retry:
-  lr.w x0, (x25) # establish reservation
-Zalrsc_sc_w_cg_cmp_rd_rs2_b4:
-  sc.w x4, x4, (x25) # perform operation
-  beqz x4, Zalrsc_sc_w_cg_cmp_rd_rs2_b4_success # SC succeeded, skip retry
+Zalrsc_sc_w_cg_cmp_rd_rs2_b2_retry:
+  mv x2, x20 # restore x2 before the LR
+  lr.w x0, (x12) # establish reservation
+Zalrsc_sc_w_cg_cmp_rd_rs2_b2:
+  sc.w x2, x2, (x12) # perform operation
+  beqz x2, Zalrsc_sc_w_cg_cmp_rd_rs2_b2_success # SC succeeded, skip retry
   addi x21, x21, -1 # decrement retry count
-  bnez x21, Zalrsc_sc_w_cg_cmp_rd_rs2_b4_retry # retry LR/SC if not exhausted
+  bnez x21, Zalrsc_sc_w_cg_cmp_rd_rs2_b2_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cmp_rd_rs2_b2_success:
+  # Check if x2 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x2, Zalrsc_sc_w_cg_cmp_rd_rs2_b2, Zalrsc_sc_w_cg_cmp_rd_rs2_b2_str)
+  LA(x12, scratch) # reload base address
+  LREG x21, 0(x12) # load stored value
+  # Check if x21 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x21, Zalrsc_sc_w_cg_cmp_rd_rs2_b2, Zalrsc_sc_w_cg_cmp_rd_rs2_b2_str)
+
+  mv x21, x3 # switch data pointer register to avoid conflict with test
+# Testcase cmp_rd_rs2 (Test rd = rs2 = x3)
+  RVTEST_TESTDATA_LOAD_INT(x21, x3) # load rs2: x3 = 0x655238b34af096dc
+  LA(x6, scratch) # rs1 = base address
+  mv x16, x3 # save x3, which a failed SC overwrites
+  LI(x15, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cmp_rd_rs2_b3_retry:
+  mv x3, x16 # restore x3 before the LR
+  lr.w x0, (x6) # establish reservation
+Zalrsc_sc_w_cg_cmp_rd_rs2_b3:
+  sc.w x3, x3, (x6) # perform operation
+  beqz x3, Zalrsc_sc_w_cg_cmp_rd_rs2_b3_success # SC succeeded, skip retry
+  addi x15, x15, -1 # decrement retry count
+  bnez x15, Zalrsc_sc_w_cg_cmp_rd_rs2_b3_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cmp_rd_rs2_b3_success:
+  # Check if x3 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x3, Zalrsc_sc_w_cg_cmp_rd_rs2_b3, Zalrsc_sc_w_cg_cmp_rd_rs2_b3_str)
+  LA(x6, scratch) # reload base address
+  LREG x15, 0(x6) # load stored value
+  # Check if x15 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x15, Zalrsc_sc_w_cg_cmp_rd_rs2_b3, Zalrsc_sc_w_cg_cmp_rd_rs2_b3_str)
+
+# Testcase cmp_rd_rs2 (Test rd = rs2 = x4)
+  RVTEST_TESTDATA_LOAD_INT(x21, x4) # load rs2: x4 = 0x9f83eca4a6710596
+  LA(x6, scratch) # rs1 = base address
+  mv x12, x4 # save x4, which a failed SC overwrites
+  LI(x16, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cmp_rd_rs2_b4_retry:
+  mv x4, x12 # restore x4 before the LR
+  lr.w x0, (x6) # establish reservation
+Zalrsc_sc_w_cg_cmp_rd_rs2_b4:
+  sc.w x4, x4, (x6) # perform operation
+  beqz x4, Zalrsc_sc_w_cg_cmp_rd_rs2_b4_success # SC succeeded, skip retry
+  addi x16, x16, -1 # decrement retry count
+  bnez x16, Zalrsc_sc_w_cg_cmp_rd_rs2_b4_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b4_success:
-  # Check if x4 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x4, Zalrsc_sc_w_cg_cmp_rd_rs2_b4, Zalrsc_sc_w_cg_cmp_rd_rs2_b4_str)
-  LA(x25, scratch) # reload base address
-  LREG x21, 0(x25) # load stored value
-  # Check if x21 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x21, Zalrsc_sc_w_cg_cmp_rd_rs2_b4, Zalrsc_sc_w_cg_cmp_rd_rs2_b4_str)
+  # Check if x4 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x4, Zalrsc_sc_w_cg_cmp_rd_rs2_b4, Zalrsc_sc_w_cg_cmp_rd_rs2_b4_str)
+  LA(x6, scratch) # reload base address
+  LREG x16, 0(x6) # load stored value
+  # Check if x16 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x16, Zalrsc_sc_w_cg_cmp_rd_rs2_b4, Zalrsc_sc_w_cg_cmp_rd_rs2_b4_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x11, x5) # load rs2: x5 = 0xe770db9fb04a609a
-  LA(x14, scratch) # rs1 = base address
-  LI(x17, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x21, x5) # load rs2: x5 = 0x74ff9d8a6c251952
+  LA(x16, scratch) # rs1 = base address
+  mv x27, x5 # save x5, which a failed SC overwrites
+  LI(x30, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b5_retry:
-  lr.w x0, (x14) # establish reservation
+  mv x5, x27 # restore x5 before the LR
+  lr.w x0, (x16) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b5:
-  sc.w x5, x5, (x14) # perform operation
+  sc.w x5, x5, (x16) # perform operation
   beqz x5, Zalrsc_sc_w_cg_cmp_rd_rs2_b5_success # SC succeeded, skip retry
-  addi x17, x17, -1 # decrement retry count
-  bnez x17, Zalrsc_sc_w_cg_cmp_rd_rs2_b5_retry # retry LR/SC if not exhausted
+  addi x30, x30, -1 # decrement retry count
+  bnez x30, Zalrsc_sc_w_cg_cmp_rd_rs2_b5_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b5_success:
-  # Check if x5 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x5, Zalrsc_sc_w_cg_cmp_rd_rs2_b5, Zalrsc_sc_w_cg_cmp_rd_rs2_b5_str)
-  LA(x14, scratch) # reload base address
-  LREG x17, 0(x14) # load stored value
-  # Check if x17 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x17, Zalrsc_sc_w_cg_cmp_rd_rs2_b5, Zalrsc_sc_w_cg_cmp_rd_rs2_b5_str)
+  # Check if x5 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x5, Zalrsc_sc_w_cg_cmp_rd_rs2_b5, Zalrsc_sc_w_cg_cmp_rd_rs2_b5_str)
+  LA(x16, scratch) # reload base address
+  LREG x30, 0(x16) # load stored value
+  # Check if x30 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x30, Zalrsc_sc_w_cg_cmp_rd_rs2_b5, Zalrsc_sc_w_cg_cmp_rd_rs2_b5_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x11, x6) # load rs2: x6 = 0xeea094899fb7e511
+  RVTEST_TESTDATA_LOAD_INT(x21, x6) # load rs2: x6 = 0x9db46b7b9969dea1
   LA(x18, scratch) # rs1 = base address
-  LI(x1, 100) # retry counter for constrained LR/SC loop
+  mv x27, x6 # save x6, which a failed SC overwrites
+  LI(x17, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b6_retry:
+  mv x6, x27 # restore x6 before the LR
   lr.w x0, (x18) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b6:
   sc.w x6, x6, (x18) # perform operation
   beqz x6, Zalrsc_sc_w_cg_cmp_rd_rs2_b6_success # SC succeeded, skip retry
-  addi x1, x1, -1 # decrement retry count
-  bnez x1, Zalrsc_sc_w_cg_cmp_rd_rs2_b6_retry # retry LR/SC if not exhausted
-Zalrsc_sc_w_cg_cmp_rd_rs2_b6_success:
-  # Check if x6 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x6, Zalrsc_sc_w_cg_cmp_rd_rs2_b6, Zalrsc_sc_w_cg_cmp_rd_rs2_b6_str)
-  LA(x18, scratch) # reload base address
-  LREG x1, 0(x18) # load stored value
-  # Check if x1 contains the expected result. x20 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x20, x8, x7, x1, Zalrsc_sc_w_cg_cmp_rd_rs2_b6, Zalrsc_sc_w_cg_cmp_rd_rs2_b6_str)
-
-  mv x12, x7 # switch temp register to avoid conflict with test
-  mv x13, x8 # switch link pointer register to avoid conflict with test
-# Testcase cmp_rd_rs2 (Test rd = rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x11, x7) # load rs2: x7 = 0x276d1dae3c22ca5b
-  LA(x5, scratch) # rs1 = base address
-  LI(x17, 100) # retry counter for constrained LR/SC loop
-Zalrsc_sc_w_cg_cmp_rd_rs2_b7_retry:
-  lr.w x0, (x5) # establish reservation
-Zalrsc_sc_w_cg_cmp_rd_rs2_b7:
-  sc.w x7, x7, (x5) # perform operation
-  beqz x7, Zalrsc_sc_w_cg_cmp_rd_rs2_b7_success # SC succeeded, skip retry
   addi x17, x17, -1 # decrement retry count
-  bnez x17, Zalrsc_sc_w_cg_cmp_rd_rs2_b7_retry # retry LR/SC if not exhausted
+  bnez x17, Zalrsc_sc_w_cg_cmp_rd_rs2_b6_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cmp_rd_rs2_b6_success:
+  # Check if x6 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x6, Zalrsc_sc_w_cg_cmp_rd_rs2_b6, Zalrsc_sc_w_cg_cmp_rd_rs2_b6_str)
+  LA(x18, scratch) # reload base address
+  LREG x17, 0(x18) # load stored value
+  # Check if x17 contains the expected result. x22 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x22, x8, x7, x17, Zalrsc_sc_w_cg_cmp_rd_rs2_b6, Zalrsc_sc_w_cg_cmp_rd_rs2_b6_str)
+
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
+# Testcase cmp_rd_rs2 (Test rd = rs2 = x7)
+  RVTEST_TESTDATA_LOAD_INT(x21, x7) # load rs2: x7 = 0x85eb59ff9c5f2864
+  LA(x2, scratch) # rs1 = base address
+  mv x11, x7 # save x7, which a failed SC overwrites
+  LI(x8, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cmp_rd_rs2_b7_retry:
+  mv x7, x11 # restore x7 before the LR
+  lr.w x0, (x2) # establish reservation
+Zalrsc_sc_w_cg_cmp_rd_rs2_b7:
+  sc.w x7, x7, (x2) # perform operation
+  beqz x7, Zalrsc_sc_w_cg_cmp_rd_rs2_b7_success # SC succeeded, skip retry
+  addi x8, x8, -1 # decrement retry count
+  bnez x8, Zalrsc_sc_w_cg_cmp_rd_rs2_b7_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b7_success:
-  # Check if x7 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x7, Zalrsc_sc_w_cg_cmp_rd_rs2_b7, Zalrsc_sc_w_cg_cmp_rd_rs2_b7_str)
-  LA(x5, scratch) # reload base address
-  LREG x17, 0(x5) # load stored value
-  # Check if x17 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x17, Zalrsc_sc_w_cg_cmp_rd_rs2_b7, Zalrsc_sc_w_cg_cmp_rd_rs2_b7_str)
+  # Check if x7 contains the expected result. x22 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x22, x14, x13, x7, Zalrsc_sc_w_cg_cmp_rd_rs2_b7, Zalrsc_sc_w_cg_cmp_rd_rs2_b7_str)
+  LA(x2, scratch) # reload base address
+  LREG x8, 0(x2) # load stored value
+  # Check if x8 contains the expected result. x22 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x22, x14, x13, x8, Zalrsc_sc_w_cg_cmp_rd_rs2_b7, Zalrsc_sc_w_cg_cmp_rd_rs2_b7_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs2: x8 = 0x8f135111a1930e69
-  LA(x23, scratch) # rs1 = base address
-  LI(x18, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x21, x8) # load rs2: x8 = 0xd538373e6ce6ccd4
+  LA(x25, scratch) # rs1 = base address
+  mv x28, x8 # save x8, which a failed SC overwrites
+  LI(x6, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b8_retry:
-  lr.w x0, (x23) # establish reservation
+  mv x8, x28 # restore x8 before the LR
+  lr.w x0, (x25) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b8:
-  sc.w x8, x8, (x23) # perform operation
+  sc.w x8, x8, (x25) # perform operation
   beqz x8, Zalrsc_sc_w_cg_cmp_rd_rs2_b8_success # SC succeeded, skip retry
-  addi x18, x18, -1 # decrement retry count
-  bnez x18, Zalrsc_sc_w_cg_cmp_rd_rs2_b8_retry # retry LR/SC if not exhausted
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, Zalrsc_sc_w_cg_cmp_rd_rs2_b8_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b8_success:
-  # Check if x8 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x8, Zalrsc_sc_w_cg_cmp_rd_rs2_b8, Zalrsc_sc_w_cg_cmp_rd_rs2_b8_str)
-  LA(x23, scratch) # reload base address
-  LREG x18, 0(x23) # load stored value
-  # Check if x18 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x18, Zalrsc_sc_w_cg_cmp_rd_rs2_b8, Zalrsc_sc_w_cg_cmp_rd_rs2_b8_str)
+  # Check if x8 contains the expected result. x22 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x22, x14, x13, x8, Zalrsc_sc_w_cg_cmp_rd_rs2_b8, Zalrsc_sc_w_cg_cmp_rd_rs2_b8_str)
+  LA(x25, scratch) # reload base address
+  LREG x6, 0(x25) # load stored value
+  # Check if x6 contains the expected result. x22 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x22, x14, x13, x6, Zalrsc_sc_w_cg_cmp_rd_rs2_b8, Zalrsc_sc_w_cg_cmp_rd_rs2_b8_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x11, x9) # load rs2: x9 = 0xa9b61926ba460211
+  RVTEST_TESTDATA_LOAD_INT(x21, x9) # load rs2: x9 = 0x21930e69943f3541
   LA(x1, scratch) # rs1 = base address
-  LI(x17, 100) # retry counter for constrained LR/SC loop
+  mv x25, x9 # save x9, which a failed SC overwrites
+  LI(x5, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b9_retry:
+  mv x9, x25 # restore x9 before the LR
   lr.w x0, (x1) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b9:
   sc.w x9, x9, (x1) # perform operation
   beqz x9, Zalrsc_sc_w_cg_cmp_rd_rs2_b9_success # SC succeeded, skip retry
-  addi x17, x17, -1 # decrement retry count
-  bnez x17, Zalrsc_sc_w_cg_cmp_rd_rs2_b9_retry # retry LR/SC if not exhausted
+  addi x5, x5, -1 # decrement retry count
+  bnez x5, Zalrsc_sc_w_cg_cmp_rd_rs2_b9_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b9_success:
-  # Check if x9 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x9, Zalrsc_sc_w_cg_cmp_rd_rs2_b9, Zalrsc_sc_w_cg_cmp_rd_rs2_b9_str)
+  # Check if x9 contains the expected result. x22 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x22, x14, x13, x9, Zalrsc_sc_w_cg_cmp_rd_rs2_b9, Zalrsc_sc_w_cg_cmp_rd_rs2_b9_str)
   LA(x1, scratch) # reload base address
-  LREG x17, 0(x1) # load stored value
-  # Check if x17 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x17, Zalrsc_sc_w_cg_cmp_rd_rs2_b9, Zalrsc_sc_w_cg_cmp_rd_rs2_b9_str)
+  LREG x5, 0(x1) # load stored value
+  # Check if x5 contains the expected result. x22 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x22, x14, x13, x5, Zalrsc_sc_w_cg_cmp_rd_rs2_b9, Zalrsc_sc_w_cg_cmp_rd_rs2_b9_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs2: x10 = 0x2b13dfea022a6b93
-  LA(x14, scratch) # rs1 = base address
-  LI(x1, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x21, x10) # load rs2: x10 = 0xb3f53e1482d3422c
+  LA(x11, scratch) # rs1 = base address
+  mv x15, x10 # save x10, which a failed SC overwrites
+  LI(x31, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b10_retry:
-  lr.w x0, (x14) # establish reservation
+  mv x10, x15 # restore x10 before the LR
+  lr.w x0, (x11) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b10:
-  sc.w x10, x10, (x14) # perform operation
+  sc.w x10, x10, (x11) # perform operation
   beqz x10, Zalrsc_sc_w_cg_cmp_rd_rs2_b10_success # SC succeeded, skip retry
-  addi x1, x1, -1 # decrement retry count
-  bnez x1, Zalrsc_sc_w_cg_cmp_rd_rs2_b10_retry # retry LR/SC if not exhausted
+  addi x31, x31, -1 # decrement retry count
+  bnez x31, Zalrsc_sc_w_cg_cmp_rd_rs2_b10_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b10_success:
-  # Check if x10 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x10, Zalrsc_sc_w_cg_cmp_rd_rs2_b10, Zalrsc_sc_w_cg_cmp_rd_rs2_b10_str)
-  LA(x14, scratch) # reload base address
-  LREG x1, 0(x14) # load stored value
-  # Check if x1 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x1, Zalrsc_sc_w_cg_cmp_rd_rs2_b10, Zalrsc_sc_w_cg_cmp_rd_rs2_b10_str)
+  # Check if x10 contains the expected result. x22 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x22, x14, x13, x10, Zalrsc_sc_w_cg_cmp_rd_rs2_b10, Zalrsc_sc_w_cg_cmp_rd_rs2_b10_str)
+  LA(x11, scratch) # reload base address
+  LREG x31, 0(x11) # load stored value
+  # Check if x31 contains the expected result. x22 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x22, x14, x13, x31, Zalrsc_sc_w_cg_cmp_rd_rs2_b10, Zalrsc_sc_w_cg_cmp_rd_rs2_b10_str)
 
-  mv x3, x11 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load rs2: x11 = 0xd6564b528b715f30
-  LA(x24, scratch) # rs1 = base address
-  LI(x4, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x21, x11) # load rs2: x11 = 0x2b13dfea022a6b93
+  LA(x19, scratch) # rs1 = base address
+  mv x4, x11 # save x11, which a failed SC overwrites
+  LI(x1, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b11_retry:
-  lr.w x0, (x24) # establish reservation
+  mv x11, x4 # restore x11 before the LR
+  lr.w x0, (x19) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b11:
-  sc.w x11, x11, (x24) # perform operation
+  sc.w x11, x11, (x19) # perform operation
   beqz x11, Zalrsc_sc_w_cg_cmp_rd_rs2_b11_success # SC succeeded, skip retry
-  addi x4, x4, -1 # decrement retry count
-  bnez x4, Zalrsc_sc_w_cg_cmp_rd_rs2_b11_retry # retry LR/SC if not exhausted
+  addi x1, x1, -1 # decrement retry count
+  bnez x1, Zalrsc_sc_w_cg_cmp_rd_rs2_b11_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b11_success:
-  # Check if x11 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x11, Zalrsc_sc_w_cg_cmp_rd_rs2_b11, Zalrsc_sc_w_cg_cmp_rd_rs2_b11_str)
-  LA(x24, scratch) # reload base address
-  LREG x4, 0(x24) # load stored value
-  # Check if x4 contains the expected result. x20 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x20, x13, x12, x4, Zalrsc_sc_w_cg_cmp_rd_rs2_b11, Zalrsc_sc_w_cg_cmp_rd_rs2_b11_str)
+  # Check if x11 contains the expected result. x22 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x22, x14, x13, x11, Zalrsc_sc_w_cg_cmp_rd_rs2_b11, Zalrsc_sc_w_cg_cmp_rd_rs2_b11_str)
+  LA(x19, scratch) # reload base address
+  LREG x1, 0(x19) # load stored value
+  # Check if x1 contains the expected result. x22 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x22, x14, x13, x1, Zalrsc_sc_w_cg_cmp_rd_rs2_b11, Zalrsc_sc_w_cg_cmp_rd_rs2_b11_str)
 
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load rs2: x12 = 0xc6f08a5256841575
-  LA(x16, scratch) # rs1 = base address
-  LI(x22, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load rs2: x12 = 0xd6564b528b715f30
+  LA(x24, scratch) # rs1 = base address
+  mv x23, x12 # save x12, which a failed SC overwrites
+  LI(x3, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b12_retry:
-  lr.w x0, (x16) # establish reservation
+  mv x12, x23 # restore x12 before the LR
+  lr.w x0, (x24) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b12:
-  sc.w x12, x12, (x16) # perform operation
+  sc.w x12, x12, (x24) # perform operation
   beqz x12, Zalrsc_sc_w_cg_cmp_rd_rs2_b12_success # SC succeeded, skip retry
-  addi x22, x22, -1 # decrement retry count
-  bnez x22, Zalrsc_sc_w_cg_cmp_rd_rs2_b12_retry # retry LR/SC if not exhausted
+  addi x3, x3, -1 # decrement retry count
+  bnez x3, Zalrsc_sc_w_cg_cmp_rd_rs2_b12_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b12_success:
-  # Check if x12 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x12, Zalrsc_sc_w_cg_cmp_rd_rs2_b12, Zalrsc_sc_w_cg_cmp_rd_rs2_b12_str)
-  LA(x16, scratch) # reload base address
-  LREG x22, 0(x16) # load stored value
-  # Check if x22 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x22, Zalrsc_sc_w_cg_cmp_rd_rs2_b12, Zalrsc_sc_w_cg_cmp_rd_rs2_b12_str)
+  # Check if x12 contains the expected result. x22 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x22, x14, x13, x12, Zalrsc_sc_w_cg_cmp_rd_rs2_b12, Zalrsc_sc_w_cg_cmp_rd_rs2_b12_str)
+  LA(x24, scratch) # reload base address
+  LREG x3, 0(x24) # load stored value
+  # Check if x3 contains the expected result. x22 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x22, x14, x13, x3, Zalrsc_sc_w_cg_cmp_rd_rs2_b12, Zalrsc_sc_w_cg_cmp_rd_rs2_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load rs2: x13 = 0xbf7eff29226c9dc6
-  LA(x16, scratch) # rs1 = base address
-  LI(x23, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x21, x13) # load rs2: x13 = 0xc6f08a5256841575
+  LA(x15, scratch) # rs1 = base address
+  mv x1, x13 # save x13, which a failed SC overwrites
+  LI(x20, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b13_retry:
-  lr.w x0, (x16) # establish reservation
+  mv x13, x1 # restore x13 before the LR
+  lr.w x0, (x15) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b13:
-  sc.w x13, x13, (x16) # perform operation
+  sc.w x13, x13, (x15) # perform operation
   beqz x13, Zalrsc_sc_w_cg_cmp_rd_rs2_b13_success # SC succeeded, skip retry
-  addi x23, x23, -1 # decrement retry count
-  bnez x23, Zalrsc_sc_w_cg_cmp_rd_rs2_b13_retry # retry LR/SC if not exhausted
+  addi x20, x20, -1 # decrement retry count
+  bnez x20, Zalrsc_sc_w_cg_cmp_rd_rs2_b13_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b13_success:
-  # Check if x13 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x13, Zalrsc_sc_w_cg_cmp_rd_rs2_b13, Zalrsc_sc_w_cg_cmp_rd_rs2_b13_str)
-  LA(x16, scratch) # reload base address
-  LREG x23, 0(x16) # load stored value
-  # Check if x23 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x23, Zalrsc_sc_w_cg_cmp_rd_rs2_b13, Zalrsc_sc_w_cg_cmp_rd_rs2_b13_str)
+  # Check if x13 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x13, Zalrsc_sc_w_cg_cmp_rd_rs2_b13, Zalrsc_sc_w_cg_cmp_rd_rs2_b13_str)
+  LA(x15, scratch) # reload base address
+  LREG x20, 0(x15) # load stored value
+  # Check if x20 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x20, Zalrsc_sc_w_cg_cmp_rd_rs2_b13, Zalrsc_sc_w_cg_cmp_rd_rs2_b13_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load rs2: x14 = 0x1c4b3c9770a64fcd
-  LA(x15, scratch) # rs1 = base address
-  LI(x1, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x21, x14) # load rs2: x14 = 0x3812a3e8b820cf0a
+  LA(x30, scratch) # rs1 = base address
+  mv x27, x14 # save x14, which a failed SC overwrites
+  LI(x11, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b14_retry:
-  lr.w x0, (x15) # establish reservation
+  mv x14, x27 # restore x14 before the LR
+  lr.w x0, (x30) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b14:
-  sc.w x14, x14, (x15) # perform operation
+  sc.w x14, x14, (x30) # perform operation
   beqz x14, Zalrsc_sc_w_cg_cmp_rd_rs2_b14_success # SC succeeded, skip retry
-  addi x1, x1, -1 # decrement retry count
-  bnez x1, Zalrsc_sc_w_cg_cmp_rd_rs2_b14_retry # retry LR/SC if not exhausted
+  addi x11, x11, -1 # decrement retry count
+  bnez x11, Zalrsc_sc_w_cg_cmp_rd_rs2_b14_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b14_success:
-  # Check if x14 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x14, Zalrsc_sc_w_cg_cmp_rd_rs2_b14, Zalrsc_sc_w_cg_cmp_rd_rs2_b14_str)
-  LA(x15, scratch) # reload base address
-  LREG x1, 0(x15) # load stored value
-  # Check if x1 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x1, Zalrsc_sc_w_cg_cmp_rd_rs2_b14, Zalrsc_sc_w_cg_cmp_rd_rs2_b14_str)
+  # Check if x14 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x14, Zalrsc_sc_w_cg_cmp_rd_rs2_b14, Zalrsc_sc_w_cg_cmp_rd_rs2_b14_str)
+  LA(x30, scratch) # reload base address
+  LREG x11, 0(x30) # load stored value
+  # Check if x11 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x11, Zalrsc_sc_w_cg_cmp_rd_rs2_b14, Zalrsc_sc_w_cg_cmp_rd_rs2_b14_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load rs2: x15 = 0x482f7a6a151726a4
-  LA(x16, scratch) # rs1 = base address
-  LI(x26, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x21, x15) # load rs2: x15 = 0x97682d29ee8d0fd5
+  LA(x30, scratch) # rs1 = base address
+  mv x1, x15 # save x15, which a failed SC overwrites
+  LI(x16, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b15_retry:
-  lr.w x0, (x16) # establish reservation
+  mv x15, x1 # restore x15 before the LR
+  lr.w x0, (x30) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b15:
-  sc.w x15, x15, (x16) # perform operation
+  sc.w x15, x15, (x30) # perform operation
   beqz x15, Zalrsc_sc_w_cg_cmp_rd_rs2_b15_success # SC succeeded, skip retry
-  addi x26, x26, -1 # decrement retry count
-  bnez x26, Zalrsc_sc_w_cg_cmp_rd_rs2_b15_retry # retry LR/SC if not exhausted
+  addi x16, x16, -1 # decrement retry count
+  bnez x16, Zalrsc_sc_w_cg_cmp_rd_rs2_b15_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b15_success:
-  # Check if x15 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x15, Zalrsc_sc_w_cg_cmp_rd_rs2_b15, Zalrsc_sc_w_cg_cmp_rd_rs2_b15_str)
-  LA(x16, scratch) # reload base address
-  LREG x26, 0(x16) # load stored value
-  # Check if x26 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x26, Zalrsc_sc_w_cg_cmp_rd_rs2_b15, Zalrsc_sc_w_cg_cmp_rd_rs2_b15_str)
+  # Check if x15 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x15, Zalrsc_sc_w_cg_cmp_rd_rs2_b15, Zalrsc_sc_w_cg_cmp_rd_rs2_b15_str)
+  LA(x30, scratch) # reload base address
+  LREG x16, 0(x30) # load stored value
+  # Check if x16 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x16, Zalrsc_sc_w_cg_cmp_rd_rs2_b15, Zalrsc_sc_w_cg_cmp_rd_rs2_b15_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x3, x16) # load rs2: x16 = 0x2182ee6825878290
-  LA(x19, scratch) # rs1 = base address
-  LI(x31, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x21, x16) # load rs2: x16 = 0x1587634c256ab998
+  LA(x9, scratch) # rs1 = base address
+  mv x20, x16 # save x16, which a failed SC overwrites
+  LI(x27, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b16_retry:
-  lr.w x0, (x19) # establish reservation
+  mv x16, x20 # restore x16 before the LR
+  lr.w x0, (x9) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b16:
-  sc.w x16, x16, (x19) # perform operation
+  sc.w x16, x16, (x9) # perform operation
   beqz x16, Zalrsc_sc_w_cg_cmp_rd_rs2_b16_success # SC succeeded, skip retry
-  addi x31, x31, -1 # decrement retry count
-  bnez x31, Zalrsc_sc_w_cg_cmp_rd_rs2_b16_retry # retry LR/SC if not exhausted
+  addi x27, x27, -1 # decrement retry count
+  bnez x27, Zalrsc_sc_w_cg_cmp_rd_rs2_b16_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b16_success:
-  # Check if x16 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x16, Zalrsc_sc_w_cg_cmp_rd_rs2_b16, Zalrsc_sc_w_cg_cmp_rd_rs2_b16_str)
-  LA(x19, scratch) # reload base address
-  LREG x31, 0(x19) # load stored value
-  # Check if x31 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x31, Zalrsc_sc_w_cg_cmp_rd_rs2_b16, Zalrsc_sc_w_cg_cmp_rd_rs2_b16_str)
+  # Check if x16 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x16, Zalrsc_sc_w_cg_cmp_rd_rs2_b16, Zalrsc_sc_w_cg_cmp_rd_rs2_b16_str)
+  LA(x9, scratch) # reload base address
+  LREG x27, 0(x9) # load stored value
+  # Check if x27 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x27, Zalrsc_sc_w_cg_cmp_rd_rs2_b16, Zalrsc_sc_w_cg_cmp_rd_rs2_b16_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x3, x17) # load rs2: x17 = 0x39dd769532b39812
-  LA(x13, scratch) # rs1 = base address
-  LI(x16, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x21, x17) # load rs2: x17 = 0xa8af600bbb9e73bd
+  LA(x6, scratch) # rs1 = base address
+  mv x27, x17 # save x17, which a failed SC overwrites
+  LI(x23, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b17_retry:
-  lr.w x0, (x13) # establish reservation
+  mv x17, x27 # restore x17 before the LR
+  lr.w x0, (x6) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b17:
-  sc.w x17, x17, (x13) # perform operation
+  sc.w x17, x17, (x6) # perform operation
   beqz x17, Zalrsc_sc_w_cg_cmp_rd_rs2_b17_success # SC succeeded, skip retry
-  addi x16, x16, -1 # decrement retry count
-  bnez x16, Zalrsc_sc_w_cg_cmp_rd_rs2_b17_retry # retry LR/SC if not exhausted
+  addi x23, x23, -1 # decrement retry count
+  bnez x23, Zalrsc_sc_w_cg_cmp_rd_rs2_b17_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b17_success:
-  # Check if x17 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x17, Zalrsc_sc_w_cg_cmp_rd_rs2_b17, Zalrsc_sc_w_cg_cmp_rd_rs2_b17_str)
-  LA(x13, scratch) # reload base address
-  LREG x16, 0(x13) # load stored value
-  # Check if x16 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x16, Zalrsc_sc_w_cg_cmp_rd_rs2_b17, Zalrsc_sc_w_cg_cmp_rd_rs2_b17_str)
+  # Check if x17 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x17, Zalrsc_sc_w_cg_cmp_rd_rs2_b17, Zalrsc_sc_w_cg_cmp_rd_rs2_b17_str)
+  LA(x6, scratch) # reload base address
+  LREG x23, 0(x6) # load stored value
+  # Check if x23 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x23, Zalrsc_sc_w_cg_cmp_rd_rs2_b17, Zalrsc_sc_w_cg_cmp_rd_rs2_b17_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x3, x18) # load rs2: x18 = 0xc60fac7e38096527
-  LA(x19, scratch) # rs1 = base address
-  LI(x7, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x21, x18) # load rs2: x18 = 0x0cccfcf942b06401
+  LA(x1, scratch) # rs1 = base address
+  mv x6, x18 # save x18, which a failed SC overwrites
+  LI(x3, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b18_retry:
-  lr.w x0, (x19) # establish reservation
+  mv x18, x6 # restore x18 before the LR
+  lr.w x0, (x1) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b18:
-  sc.w x18, x18, (x19) # perform operation
+  sc.w x18, x18, (x1) # perform operation
   beqz x18, Zalrsc_sc_w_cg_cmp_rd_rs2_b18_success # SC succeeded, skip retry
-  addi x7, x7, -1 # decrement retry count
-  bnez x7, Zalrsc_sc_w_cg_cmp_rd_rs2_b18_retry # retry LR/SC if not exhausted
+  addi x3, x3, -1 # decrement retry count
+  bnez x3, Zalrsc_sc_w_cg_cmp_rd_rs2_b18_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b18_success:
-  # Check if x18 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x18, Zalrsc_sc_w_cg_cmp_rd_rs2_b18, Zalrsc_sc_w_cg_cmp_rd_rs2_b18_str)
-  LA(x19, scratch) # reload base address
-  LREG x7, 0(x19) # load stored value
-  # Check if x7 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x7, Zalrsc_sc_w_cg_cmp_rd_rs2_b18, Zalrsc_sc_w_cg_cmp_rd_rs2_b18_str)
+  # Check if x18 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x18, Zalrsc_sc_w_cg_cmp_rd_rs2_b18, Zalrsc_sc_w_cg_cmp_rd_rs2_b18_str)
+  LA(x1, scratch) # reload base address
+  LREG x3, 0(x1) # load stored value
+  # Check if x3 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x3, Zalrsc_sc_w_cg_cmp_rd_rs2_b18, Zalrsc_sc_w_cg_cmp_rd_rs2_b18_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load rs2: x19 = 0x81839657d9c7d32a
-  LA(x17, scratch) # rs1 = base address
-  LI(x12, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x21, x19) # load rs2: x19 = 0xd12aadf87a9a9fce
+  LA(x14, scratch) # rs1 = base address
+  mv x11, x19 # save x19, which a failed SC overwrites
+  LI(x23, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b19_retry:
-  lr.w x0, (x17) # establish reservation
+  mv x19, x11 # restore x19 before the LR
+  lr.w x0, (x14) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b19:
-  sc.w x19, x19, (x17) # perform operation
+  sc.w x19, x19, (x14) # perform operation
   beqz x19, Zalrsc_sc_w_cg_cmp_rd_rs2_b19_success # SC succeeded, skip retry
-  addi x12, x12, -1 # decrement retry count
-  bnez x12, Zalrsc_sc_w_cg_cmp_rd_rs2_b19_retry # retry LR/SC if not exhausted
+  addi x23, x23, -1 # decrement retry count
+  bnez x23, Zalrsc_sc_w_cg_cmp_rd_rs2_b19_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b19_success:
-  # Check if x19 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x19, Zalrsc_sc_w_cg_cmp_rd_rs2_b19, Zalrsc_sc_w_cg_cmp_rd_rs2_b19_str)
-  LA(x17, scratch) # reload base address
-  LREG x12, 0(x17) # load stored value
-  # Check if x12 contains the expected result. x20 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x20, x5, x4, x12, Zalrsc_sc_w_cg_cmp_rd_rs2_b19, Zalrsc_sc_w_cg_cmp_rd_rs2_b19_str)
+  # Check if x19 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x19, Zalrsc_sc_w_cg_cmp_rd_rs2_b19, Zalrsc_sc_w_cg_cmp_rd_rs2_b19_str)
+  LA(x14, scratch) # reload base address
+  LREG x23, 0(x14) # load stored value
+  # Check if x23 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x23, Zalrsc_sc_w_cg_cmp_rd_rs2_b19, Zalrsc_sc_w_cg_cmp_rd_rs2_b19_str)
 
-  mv x14, x20 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x3, x20) # load rs2: x20 = 0x0e92dd9aa974d9c1
-  LA(x6, scratch) # rs1 = base address
-  LI(x10, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x21, x20) # load rs2: x20 = 0x99f7061ece05bc38
+  LA(x2, scratch) # rs1 = base address
+  mv x11, x20 # save x20, which a failed SC overwrites
+  LI(x24, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b20_retry:
-  lr.w x0, (x6) # establish reservation
+  mv x20, x11 # restore x20 before the LR
+  lr.w x0, (x2) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b20:
-  sc.w x20, x20, (x6) # perform operation
+  sc.w x20, x20, (x2) # perform operation
   beqz x20, Zalrsc_sc_w_cg_cmp_rd_rs2_b20_success # SC succeeded, skip retry
-  addi x10, x10, -1 # decrement retry count
-  bnez x10, Zalrsc_sc_w_cg_cmp_rd_rs2_b20_retry # retry LR/SC if not exhausted
+  addi x24, x24, -1 # decrement retry count
+  bnez x24, Zalrsc_sc_w_cg_cmp_rd_rs2_b20_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b20_success:
-  # Check if x20 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x20, Zalrsc_sc_w_cg_cmp_rd_rs2_b20, Zalrsc_sc_w_cg_cmp_rd_rs2_b20_str)
-  LA(x6, scratch) # reload base address
-  LREG x10, 0(x6) # load stored value
-  # Check if x10 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x10, Zalrsc_sc_w_cg_cmp_rd_rs2_b20, Zalrsc_sc_w_cg_cmp_rd_rs2_b20_str)
+  # Check if x20 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x20, Zalrsc_sc_w_cg_cmp_rd_rs2_b20, Zalrsc_sc_w_cg_cmp_rd_rs2_b20_str)
+  LA(x2, scratch) # reload base address
+  LREG x24, 0(x2) # load stored value
+  # Check if x24 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x24, Zalrsc_sc_w_cg_cmp_rd_rs2_b20, Zalrsc_sc_w_cg_cmp_rd_rs2_b20_str)
 
+  mv x23, x21 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load rs2: x21 = 0xe78480ba7f402b49
-  LA(x1, scratch) # rs1 = base address
-  LI(x30, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x23, x21) # load rs2: x21 = 0xa59b9fb413e900d5
+  LA(x8, scratch) # rs1 = base address
+  mv x2, x21 # save x21, which a failed SC overwrites
+  LI(x28, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b21_retry:
-  lr.w x0, (x1) # establish reservation
+  mv x21, x2 # restore x21 before the LR
+  lr.w x0, (x8) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b21:
-  sc.w x21, x21, (x1) # perform operation
+  sc.w x21, x21, (x8) # perform operation
   beqz x21, Zalrsc_sc_w_cg_cmp_rd_rs2_b21_success # SC succeeded, skip retry
-  addi x30, x30, -1 # decrement retry count
-  bnez x30, Zalrsc_sc_w_cg_cmp_rd_rs2_b21_retry # retry LR/SC if not exhausted
+  addi x28, x28, -1 # decrement retry count
+  bnez x28, Zalrsc_sc_w_cg_cmp_rd_rs2_b21_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b21_success:
-  # Check if x21 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x21, Zalrsc_sc_w_cg_cmp_rd_rs2_b21, Zalrsc_sc_w_cg_cmp_rd_rs2_b21_str)
-  LA(x1, scratch) # reload base address
-  LREG x30, 0(x1) # load stored value
-  # Check if x30 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x30, Zalrsc_sc_w_cg_cmp_rd_rs2_b21, Zalrsc_sc_w_cg_cmp_rd_rs2_b21_str)
+  # Check if x21 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x21, Zalrsc_sc_w_cg_cmp_rd_rs2_b21, Zalrsc_sc_w_cg_cmp_rd_rs2_b21_str)
+  LA(x8, scratch) # reload base address
+  LREG x28, 0(x8) # load stored value
+  # Check if x28 contains the expected result. x22 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x22, x5, x4, x28, Zalrsc_sc_w_cg_cmp_rd_rs2_b21, Zalrsc_sc_w_cg_cmp_rd_rs2_b21_str)
 
+  mv x29, x22 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x3, x22) # load rs2: x22 = 0xc92688ec0d58b876
-  LA(x1, scratch) # rs1 = base address
-  LI(x7, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x23, x22) # load rs2: x22 = 0xff402b49d5ad7102
+  LA(x31, scratch) # rs1 = base address
+  mv x12, x22 # save x22, which a failed SC overwrites
+  LI(x6, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b22_retry:
-  lr.w x0, (x1) # establish reservation
+  mv x22, x12 # restore x22 before the LR
+  lr.w x0, (x31) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b22:
-  sc.w x22, x22, (x1) # perform operation
+  sc.w x22, x22, (x31) # perform operation
   beqz x22, Zalrsc_sc_w_cg_cmp_rd_rs2_b22_success # SC succeeded, skip retry
-  addi x7, x7, -1 # decrement retry count
-  bnez x7, Zalrsc_sc_w_cg_cmp_rd_rs2_b22_retry # retry LR/SC if not exhausted
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, Zalrsc_sc_w_cg_cmp_rd_rs2_b22_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b22_success:
-  # Check if x22 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x22, Zalrsc_sc_w_cg_cmp_rd_rs2_b22, Zalrsc_sc_w_cg_cmp_rd_rs2_b22_str)
-  LA(x1, scratch) # reload base address
-  LREG x7, 0(x1) # load stored value
-  # Check if x7 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x7, Zalrsc_sc_w_cg_cmp_rd_rs2_b22, Zalrsc_sc_w_cg_cmp_rd_rs2_b22_str)
+  # Check if x22 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x22, Zalrsc_sc_w_cg_cmp_rd_rs2_b22, Zalrsc_sc_w_cg_cmp_rd_rs2_b22_str)
+  LA(x31, scratch) # reload base address
+  LREG x6, 0(x31) # load stored value
+  # Check if x6 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x6, Zalrsc_sc_w_cg_cmp_rd_rs2_b22, Zalrsc_sc_w_cg_cmp_rd_rs2_b22_str)
 
+  mv x3, x23 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x3, x23) # load rs2: x23 = 0x72d01731e6d8a957
-  LA(x15, scratch) # rs1 = base address
-  LI(x11, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x3, x23) # load rs2: x23 = 0x171d471789d05f66
+  LA(x14, scratch) # rs1 = base address
+  mv x2, x23 # save x23, which a failed SC overwrites
+  LI(x10, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b23_retry:
-  lr.w x0, (x15) # establish reservation
+  mv x23, x2 # restore x23 before the LR
+  lr.w x0, (x14) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b23:
-  sc.w x23, x23, (x15) # perform operation
+  sc.w x23, x23, (x14) # perform operation
   beqz x23, Zalrsc_sc_w_cg_cmp_rd_rs2_b23_success # SC succeeded, skip retry
-  addi x11, x11, -1 # decrement retry count
-  bnez x11, Zalrsc_sc_w_cg_cmp_rd_rs2_b23_retry # retry LR/SC if not exhausted
+  addi x10, x10, -1 # decrement retry count
+  bnez x10, Zalrsc_sc_w_cg_cmp_rd_rs2_b23_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b23_success:
-  # Check if x23 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x23, Zalrsc_sc_w_cg_cmp_rd_rs2_b23, Zalrsc_sc_w_cg_cmp_rd_rs2_b23_str)
-  LA(x15, scratch) # reload base address
-  LREG x11, 0(x15) # load stored value
-  # Check if x11 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x11, Zalrsc_sc_w_cg_cmp_rd_rs2_b23, Zalrsc_sc_w_cg_cmp_rd_rs2_b23_str)
+  # Check if x23 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x23, Zalrsc_sc_w_cg_cmp_rd_rs2_b23, Zalrsc_sc_w_cg_cmp_rd_rs2_b23_str)
+  LA(x14, scratch) # reload base address
+  LREG x10, 0(x14) # load stored value
+  # Check if x10 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x10, Zalrsc_sc_w_cg_cmp_rd_rs2_b23, Zalrsc_sc_w_cg_cmp_rd_rs2_b23_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs2: x24 = 0x0f9b2d0cc3a2697e
-  LA(x7, scratch) # rs1 = base address
-  LI(x25, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x3, x24) # load rs2: x24 = 0x8f2633792d633708
+  LA(x12, scratch) # rs1 = base address
+  mv x30, x24 # save x24, which a failed SC overwrites
+  LI(x18, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b24_retry:
-  lr.w x0, (x7) # establish reservation
+  mv x24, x30 # restore x24 before the LR
+  lr.w x0, (x12) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b24:
-  sc.w x24, x24, (x7) # perform operation
+  sc.w x24, x24, (x12) # perform operation
   beqz x24, Zalrsc_sc_w_cg_cmp_rd_rs2_b24_success # SC succeeded, skip retry
-  addi x25, x25, -1 # decrement retry count
-  bnez x25, Zalrsc_sc_w_cg_cmp_rd_rs2_b24_retry # retry LR/SC if not exhausted
+  addi x18, x18, -1 # decrement retry count
+  bnez x18, Zalrsc_sc_w_cg_cmp_rd_rs2_b24_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b24_success:
-  # Check if x24 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x24, Zalrsc_sc_w_cg_cmp_rd_rs2_b24, Zalrsc_sc_w_cg_cmp_rd_rs2_b24_str)
-  LA(x7, scratch) # reload base address
-  LREG x25, 0(x7) # load stored value
-  # Check if x25 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x25, Zalrsc_sc_w_cg_cmp_rd_rs2_b24, Zalrsc_sc_w_cg_cmp_rd_rs2_b24_str)
+  # Check if x24 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x24, Zalrsc_sc_w_cg_cmp_rd_rs2_b24, Zalrsc_sc_w_cg_cmp_rd_rs2_b24_str)
+  LA(x12, scratch) # reload base address
+  LREG x18, 0(x12) # load stored value
+  # Check if x18 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x18, Zalrsc_sc_w_cg_cmp_rd_rs2_b24, Zalrsc_sc_w_cg_cmp_rd_rs2_b24_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs2: x25 = 0x040cd1ed082bfec3
-  LA(x12, scratch) # rs1 = base address
-  LI(x30, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x3, x25) # load rs2: x25 = 0xdc71b18b170680d1
+  LA(x6, scratch) # rs1 = base address
+  mv x19, x25 # save x25, which a failed SC overwrites
+  LI(x20, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b25_retry:
-  lr.w x0, (x12) # establish reservation
+  mv x25, x19 # restore x25 before the LR
+  lr.w x0, (x6) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b25:
-  sc.w x25, x25, (x12) # perform operation
+  sc.w x25, x25, (x6) # perform operation
   beqz x25, Zalrsc_sc_w_cg_cmp_rd_rs2_b25_success # SC succeeded, skip retry
-  addi x30, x30, -1 # decrement retry count
-  bnez x30, Zalrsc_sc_w_cg_cmp_rd_rs2_b25_retry # retry LR/SC if not exhausted
+  addi x20, x20, -1 # decrement retry count
+  bnez x20, Zalrsc_sc_w_cg_cmp_rd_rs2_b25_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b25_success:
-  # Check if x25 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x25, Zalrsc_sc_w_cg_cmp_rd_rs2_b25, Zalrsc_sc_w_cg_cmp_rd_rs2_b25_str)
-  LA(x12, scratch) # reload base address
-  LREG x30, 0(x12) # load stored value
-  # Check if x30 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x30, Zalrsc_sc_w_cg_cmp_rd_rs2_b25, Zalrsc_sc_w_cg_cmp_rd_rs2_b25_str)
+  # Check if x25 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x25, Zalrsc_sc_w_cg_cmp_rd_rs2_b25, Zalrsc_sc_w_cg_cmp_rd_rs2_b25_str)
+  LA(x6, scratch) # reload base address
+  LREG x20, 0(x6) # load stored value
+  # Check if x20 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x20, Zalrsc_sc_w_cg_cmp_rd_rs2_b25, Zalrsc_sc_w_cg_cmp_rd_rs2_b25_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs2: x26 = 0x5aa31d083ea185a2
-  LA(x15, scratch) # rs1 = base address
-  LI(x18, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs2: x26 = 0xa4e14f3f12913ff3
+  LA(x19, scratch) # rs1 = base address
+  mv x11, x26 # save x26, which a failed SC overwrites
+  LI(x28, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b26_retry:
-  lr.w x0, (x15) # establish reservation
+  mv x26, x11 # restore x26 before the LR
+  lr.w x0, (x19) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b26:
-  sc.w x26, x26, (x15) # perform operation
+  sc.w x26, x26, (x19) # perform operation
   beqz x26, Zalrsc_sc_w_cg_cmp_rd_rs2_b26_success # SC succeeded, skip retry
-  addi x18, x18, -1 # decrement retry count
-  bnez x18, Zalrsc_sc_w_cg_cmp_rd_rs2_b26_retry # retry LR/SC if not exhausted
+  addi x28, x28, -1 # decrement retry count
+  bnez x28, Zalrsc_sc_w_cg_cmp_rd_rs2_b26_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b26_success:
-  # Check if x26 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x26, Zalrsc_sc_w_cg_cmp_rd_rs2_b26, Zalrsc_sc_w_cg_cmp_rd_rs2_b26_str)
-  LA(x15, scratch) # reload base address
-  LREG x18, 0(x15) # load stored value
-  # Check if x18 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x18, Zalrsc_sc_w_cg_cmp_rd_rs2_b26, Zalrsc_sc_w_cg_cmp_rd_rs2_b26_str)
+  # Check if x26 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x26, Zalrsc_sc_w_cg_cmp_rd_rs2_b26, Zalrsc_sc_w_cg_cmp_rd_rs2_b26_str)
+  LA(x19, scratch) # reload base address
+  LREG x28, 0(x19) # load stored value
+  # Check if x28 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x28, Zalrsc_sc_w_cg_cmp_rd_rs2_b26, Zalrsc_sc_w_cg_cmp_rd_rs2_b26_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load rs2: x27 = 0xe59f6802940f002c
-  LA(x26, scratch) # rs1 = base address
-  LI(x28, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x3, x27) # load rs2: x27 = 0x35af095a48d38076
+  LA(x11, scratch) # rs1 = base address
+  mv x12, x27 # save x27, which a failed SC overwrites
+  LI(x13, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b27_retry:
-  lr.w x0, (x26) # establish reservation
+  mv x27, x12 # restore x27 before the LR
+  lr.w x0, (x11) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b27:
-  sc.w x27, x27, (x26) # perform operation
+  sc.w x27, x27, (x11) # perform operation
   beqz x27, Zalrsc_sc_w_cg_cmp_rd_rs2_b27_success # SC succeeded, skip retry
-  addi x28, x28, -1 # decrement retry count
-  bnez x28, Zalrsc_sc_w_cg_cmp_rd_rs2_b27_retry # retry LR/SC if not exhausted
+  addi x13, x13, -1 # decrement retry count
+  bnez x13, Zalrsc_sc_w_cg_cmp_rd_rs2_b27_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b27_success:
-  # Check if x27 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x27, Zalrsc_sc_w_cg_cmp_rd_rs2_b27, Zalrsc_sc_w_cg_cmp_rd_rs2_b27_str)
-  LA(x26, scratch) # reload base address
-  LREG x28, 0(x26) # load stored value
-  # Check if x28 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x28, Zalrsc_sc_w_cg_cmp_rd_rs2_b27, Zalrsc_sc_w_cg_cmp_rd_rs2_b27_str)
+  # Check if x27 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x27, Zalrsc_sc_w_cg_cmp_rd_rs2_b27, Zalrsc_sc_w_cg_cmp_rd_rs2_b27_str)
+  LA(x11, scratch) # reload base address
+  LREG x13, 0(x11) # load stored value
+  # Check if x13 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x13, Zalrsc_sc_w_cg_cmp_rd_rs2_b27, Zalrsc_sc_w_cg_cmp_rd_rs2_b27_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs2: x28 = 0x7d96db489f5b0a9d
-  LA(x8, scratch) # rs1 = base address
-  LI(x16, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x3, x28) # load rs2: x28 = 0xf347d7c85c45d6a5
+  LA(x18, scratch) # rs1 = base address
+  mv x7, x28 # save x28, which a failed SC overwrites
+  LI(x8, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b28_retry:
-  lr.w x0, (x8) # establish reservation
+  mv x28, x7 # restore x28 before the LR
+  lr.w x0, (x18) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b28:
-  sc.w x28, x28, (x8) # perform operation
+  sc.w x28, x28, (x18) # perform operation
   beqz x28, Zalrsc_sc_w_cg_cmp_rd_rs2_b28_success # SC succeeded, skip retry
-  addi x16, x16, -1 # decrement retry count
-  bnez x16, Zalrsc_sc_w_cg_cmp_rd_rs2_b28_retry # retry LR/SC if not exhausted
+  addi x8, x8, -1 # decrement retry count
+  bnez x8, Zalrsc_sc_w_cg_cmp_rd_rs2_b28_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b28_success:
-  # Check if x28 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x28, Zalrsc_sc_w_cg_cmp_rd_rs2_b28, Zalrsc_sc_w_cg_cmp_rd_rs2_b28_str)
-  LA(x8, scratch) # reload base address
-  LREG x16, 0(x8) # load stored value
-  # Check if x16 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x16, Zalrsc_sc_w_cg_cmp_rd_rs2_b28, Zalrsc_sc_w_cg_cmp_rd_rs2_b28_str)
+  # Check if x28 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x28, Zalrsc_sc_w_cg_cmp_rd_rs2_b28, Zalrsc_sc_w_cg_cmp_rd_rs2_b28_str)
+  LA(x18, scratch) # reload base address
+  LREG x8, 0(x18) # load stored value
+  # Check if x8 contains the expected result. x29 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x29, x5, x4, x8, Zalrsc_sc_w_cg_cmp_rd_rs2_b28, Zalrsc_sc_w_cg_cmp_rd_rs2_b28_str)
 
+  mv x28, x29 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs2: x29 = 0x20b55f886973e868
-  LA(x22, scratch) # rs1 = base address
-  LI(x23, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x3, x29) # load rs2: x29 = 0x614f70cf79e4fdb8
+  LA(x16, scratch) # rs1 = base address
+  mv x31, x29 # save x29, which a failed SC overwrites
+  LI(x15, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b29_retry:
-  lr.w x0, (x22) # establish reservation
+  mv x29, x31 # restore x29 before the LR
+  lr.w x0, (x16) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b29:
-  sc.w x29, x29, (x22) # perform operation
+  sc.w x29, x29, (x16) # perform operation
   beqz x29, Zalrsc_sc_w_cg_cmp_rd_rs2_b29_success # SC succeeded, skip retry
-  addi x23, x23, -1 # decrement retry count
-  bnez x23, Zalrsc_sc_w_cg_cmp_rd_rs2_b29_retry # retry LR/SC if not exhausted
+  addi x15, x15, -1 # decrement retry count
+  bnez x15, Zalrsc_sc_w_cg_cmp_rd_rs2_b29_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b29_success:
-  # Check if x29 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x29, Zalrsc_sc_w_cg_cmp_rd_rs2_b29, Zalrsc_sc_w_cg_cmp_rd_rs2_b29_str)
-  LA(x22, scratch) # reload base address
-  LREG x23, 0(x22) # load stored value
-  # Check if x23 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x23, Zalrsc_sc_w_cg_cmp_rd_rs2_b29, Zalrsc_sc_w_cg_cmp_rd_rs2_b29_str)
+  # Check if x29 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x29, Zalrsc_sc_w_cg_cmp_rd_rs2_b29, Zalrsc_sc_w_cg_cmp_rd_rs2_b29_str)
+  LA(x16, scratch) # reload base address
+  LREG x15, 0(x16) # load stored value
+  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x15, Zalrsc_sc_w_cg_cmp_rd_rs2_b29, Zalrsc_sc_w_cg_cmp_rd_rs2_b29_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs2: x30 = 0x1c3de5059fda9b9b
-  LA(x10, scratch) # rs1 = base address
-  LI(x27, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x3, x30) # load rs2: x30 = 0xd2f7184500aa3b01
+  LA(x17, scratch) # rs1 = base address
+  mv x14, x30 # save x30, which a failed SC overwrites
+  LI(x25, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b30_retry:
-  lr.w x0, (x10) # establish reservation
+  mv x30, x14 # restore x30 before the LR
+  lr.w x0, (x17) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b30:
-  sc.w x30, x30, (x10) # perform operation
+  sc.w x30, x30, (x17) # perform operation
   beqz x30, Zalrsc_sc_w_cg_cmp_rd_rs2_b30_success # SC succeeded, skip retry
-  addi x27, x27, -1 # decrement retry count
-  bnez x27, Zalrsc_sc_w_cg_cmp_rd_rs2_b30_retry # retry LR/SC if not exhausted
+  addi x25, x25, -1 # decrement retry count
+  bnez x25, Zalrsc_sc_w_cg_cmp_rd_rs2_b30_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b30_success:
-  # Check if x30 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x30, Zalrsc_sc_w_cg_cmp_rd_rs2_b30, Zalrsc_sc_w_cg_cmp_rd_rs2_b30_str)
-  LA(x10, scratch) # reload base address
-  LREG x27, 0(x10) # load stored value
-  # Check if x27 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x27, Zalrsc_sc_w_cg_cmp_rd_rs2_b30, Zalrsc_sc_w_cg_cmp_rd_rs2_b30_str)
+  # Check if x30 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x30, Zalrsc_sc_w_cg_cmp_rd_rs2_b30, Zalrsc_sc_w_cg_cmp_rd_rs2_b30_str)
+  LA(x17, scratch) # reload base address
+  LREG x25, 0(x17) # load stored value
+  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x25, Zalrsc_sc_w_cg_cmp_rd_rs2_b30, Zalrsc_sc_w_cg_cmp_rd_rs2_b30_str)
 
 # Testcase cmp_rd_rs2 (Test rd = rs2 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs2: x31 = 0xb6b21e1774aa515f
-  LA(x25, scratch) # rs1 = base address
-  LI(x18, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x3, x31) # load rs2: x31 = 0x648dc64724fcaebd
+  LA(x14, scratch) # rs1 = base address
+  mv x22, x31 # save x31, which a failed SC overwrites
+  LI(x11, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs2_b31_retry:
-  lr.w x0, (x25) # establish reservation
+  mv x31, x22 # restore x31 before the LR
+  lr.w x0, (x14) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs2_b31:
-  sc.w x31, x31, (x25) # perform operation
+  sc.w x31, x31, (x14) # perform operation
   beqz x31, Zalrsc_sc_w_cg_cmp_rd_rs2_b31_success # SC succeeded, skip retry
-  addi x18, x18, -1 # decrement retry count
-  bnez x18, Zalrsc_sc_w_cg_cmp_rd_rs2_b31_retry # retry LR/SC if not exhausted
+  addi x11, x11, -1 # decrement retry count
+  bnez x11, Zalrsc_sc_w_cg_cmp_rd_rs2_b31_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs2_b31_success:
-  # Check if x31 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x31, Zalrsc_sc_w_cg_cmp_rd_rs2_b31, Zalrsc_sc_w_cg_cmp_rd_rs2_b31_str)
-  LA(x25, scratch) # reload base address
-  LREG x18, 0(x25) # load stored value
-  # Check if x18 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x18, Zalrsc_sc_w_cg_cmp_rd_rs2_b31, Zalrsc_sc_w_cg_cmp_rd_rs2_b31_str)
+  # Check if x31 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x31, Zalrsc_sc_w_cg_cmp_rd_rs2_b31, Zalrsc_sc_w_cg_cmp_rd_rs2_b31_str)
+  LA(x14, scratch) # reload base address
+  LREG x11, 0(x14) # load stored value
+  # Check if x11 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x11, Zalrsc_sc_w_cg_cmp_rd_rs2_b31, Zalrsc_sc_w_cg_cmp_rd_rs2_b31_str)
 
 /////////////////////////////////
 // cmp_rd_rs1_rs2_nx0
@@ -4009,47 +4171,53 @@ Zalrsc_sc_w_cg_cmp_rd_rs2_b31_success:
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x1)
   RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs2: x1 = 0x93668219d19fdac8
   LA(x1, scratch) # rs1 = base address
-  LI(x24, 100) # retry counter for constrained LR/SC loop
+  mv x24, x1 # save x1, which a failed SC overwrites
+  LI(x23, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b1_retry:
+  mv x1, x24 # restore x1 before the LR
   lr.w x0, (x1) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b1:
   sc.w x1, x1, (x1) # perform operation
   beqz x1, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b1_success # SC succeeded, skip retry
-  addi x24, x24, -1 # decrement retry count
-  bnez x24, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b1_retry # retry LR/SC if not exhausted
+  addi x23, x23, -1 # decrement retry count
+  bnez x23, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b1_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b1_success:
-  # Check if x1 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x1, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b1, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b1_str)
+  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x1, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b1, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b1_str)
   LA(x1, scratch) # reload base address
-  LREG x24, 0(x1) # load stored value
-  # Check if x24 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x24, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b1, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b1_str)
+  LREG x23, 0(x1) # load stored value
+  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x23, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b1, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b1_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x2)
-  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs2: x2 = 0xbbc4910ed6f829bb
+  RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs2: x2 = 0x56f829bb9f125246
   LA(x2, scratch) # rs1 = base address
-  LI(x8, 100) # retry counter for constrained LR/SC loop
+  mv x1, x2 # save x2, which a failed SC overwrites
+  LI(x19, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b2_retry:
+  mv x2, x1 # restore x2 before the LR
   lr.w x0, (x2) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b2:
   sc.w x2, x2, (x2) # perform operation
   beqz x2, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b2_success # SC succeeded, skip retry
-  addi x8, x8, -1 # decrement retry count
-  bnez x8, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b2_retry # retry LR/SC if not exhausted
+  addi x19, x19, -1 # decrement retry count
+  bnez x19, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b2_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b2_success:
-  # Check if x2 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x2, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b2, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b2_str)
+  # Check if x2 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x2, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b2, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b2_str)
   LA(x2, scratch) # reload base address
-  LREG x8, 0(x2) # load stored value
-  # Check if x8 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x8, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b2, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b2_str)
+  LREG x19, 0(x2) # load stored value
+  # Check if x19 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x19, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b2, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b2_str)
 
   mv x10, x3 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x3)
   RVTEST_TESTDATA_LOAD_INT(x10, x3) # load rs2: x3 = 0x9009805baf75b6f1
   LA(x3, scratch) # rs1 = base address
+  mv x26, x3 # save x3, which a failed SC overwrites
   LI(x1, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b3_retry:
+  mv x3, x26 # restore x3 before the LR
   lr.w x0, (x3) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b3:
   sc.w x3, x3, (x3) # perform operation
@@ -4057,309 +4225,342 @@ Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b3:
   addi x1, x1, -1 # decrement retry count
   bnez x1, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b3_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b3_success:
-  # Check if x3 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x3, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b3, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b3_str)
+  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x3, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b3, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b3_str)
   LA(x3, scratch) # reload base address
   LREG x1, 0(x3) # load stored value
-  # Check if x1 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x1, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b3, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b3_str)
+  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x1, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b3, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b3_str)
 
   mv x7, x4 # switch temp register to avoid conflict with test
   mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x4)
   RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs2: x4 = 0x7024036dc9597814
   LA(x4, scratch) # rs1 = base address
-  LI(x27, 100) # retry counter for constrained LR/SC loop
+  mv x12, x4 # save x4, which a failed SC overwrites
+  LI(x26, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b4_retry:
+  mv x4, x12 # restore x4 before the LR
   lr.w x0, (x4) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b4:
   sc.w x4, x4, (x4) # perform operation
   beqz x4, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b4_success # SC succeeded, skip retry
-  addi x27, x27, -1 # decrement retry count
-  bnez x27, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b4_retry # retry LR/SC if not exhausted
+  addi x26, x26, -1 # decrement retry count
+  bnez x26, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b4_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b4_success:
-  # Check if x4 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x4, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b4, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b4_str)
+  # Check if x4 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x4, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b4, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b4_str)
   LA(x4, scratch) # reload base address
-  LREG x27, 0(x4) # load stored value
-  # Check if x27 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x27, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b4, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b4_str)
+  LREG x26, 0(x4) # load stored value
+  # Check if x26 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x26, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b4, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b4_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x5)
-  RVTEST_TESTDATA_LOAD_INT(x10, x5) # load rs2: x5 = 0xe3af6aaa3d23d64e
+  RVTEST_TESTDATA_LOAD_INT(x10, x5) # load rs2: x5 = 0x96459a312fab75f1
   LA(x5, scratch) # rs1 = base address
-  LI(x6, 100) # retry counter for constrained LR/SC loop
+  mv x25, x5 # save x5, which a failed SC overwrites
+  LI(x23, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b5_retry:
+  mv x5, x25 # restore x5 before the LR
   lr.w x0, (x5) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b5:
   sc.w x5, x5, (x5) # perform operation
   beqz x5, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b5_success # SC succeeded, skip retry
-  addi x6, x6, -1 # decrement retry count
-  bnez x6, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b5_retry # retry LR/SC if not exhausted
+  addi x23, x23, -1 # decrement retry count
+  bnez x23, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b5_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b5_success:
-  # Check if x5 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x5, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b5, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b5_str)
+  # Check if x5 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x5, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b5, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b5_str)
   LA(x5, scratch) # reload base address
-  LREG x6, 0(x5) # load stored value
-  # Check if x6 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x6, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b5, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b5_str)
+  LREG x23, 0(x5) # load stored value
+  # Check if x23 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x23, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b5, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b5_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x10, x6) # load rs2: x6 = 0x1e4ce74890fbc5a2
+  RVTEST_TESTDATA_LOAD_INT(x10, x6) # load rs2: x6 = 0xe3377d188bb0e5ed
   LA(x6, scratch) # rs1 = base address
-  LI(x26, 100) # retry counter for constrained LR/SC loop
+  mv x13, x6 # save x6, which a failed SC overwrites
+  LI(x31, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b6_retry:
+  mv x6, x13 # restore x6 before the LR
   lr.w x0, (x6) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b6:
   sc.w x6, x6, (x6) # perform operation
   beqz x6, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b6_success # SC succeeded, skip retry
-  addi x26, x26, -1 # decrement retry count
-  bnez x26, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b6_retry # retry LR/SC if not exhausted
+  addi x31, x31, -1 # decrement retry count
+  bnez x31, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b6_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b6_success:
-  # Check if x6 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x6, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b6, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b6_str)
+  # Check if x6 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x6, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b6, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b6_str)
   LA(x6, scratch) # reload base address
-  LREG x26, 0(x6) # load stored value
-  # Check if x26 contains the expected result. x14 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x14, x8, x7, x26, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b6, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b6_str)
+  LREG x31, 0(x6) # load stored value
+  # Check if x31 contains the expected result. x28 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x28, x8, x7, x31, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b6, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b6_str)
 
-  mv x4, x7 # switch temp register to avoid conflict with test
-  mv x5, x8 # switch link pointer register to avoid conflict with test
+  mv x13, x7 # switch temp register to avoid conflict with test
+  mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x10, x7) # load rs2: x7 = 0x7e29276b374d630b
+  RVTEST_TESTDATA_LOAD_INT(x10, x7) # load rs2: x7 = 0x8467aa1739b8e669
   LA(x7, scratch) # rs1 = base address
-  LI(x30, 100) # retry counter for constrained LR/SC loop
+  mv x16, x7 # save x7, which a failed SC overwrites
+  LI(x19, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b7_retry:
+  mv x7, x16 # restore x7 before the LR
   lr.w x0, (x7) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b7:
   sc.w x7, x7, (x7) # perform operation
   beqz x7, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b7_success # SC succeeded, skip retry
-  addi x30, x30, -1 # decrement retry count
-  bnez x30, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b7_retry # retry LR/SC if not exhausted
+  addi x19, x19, -1 # decrement retry count
+  bnez x19, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b7_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b7_success:
-  # Check if x7 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x7, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b7, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b7_str)
+  # Check if x7 contains the expected result. x28 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x28, x14, x13, x7, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b7, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b7_str)
   LA(x7, scratch) # reload base address
-  LREG x30, 0(x7) # load stored value
-  # Check if x30 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x30, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b7, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b7_str)
+  LREG x19, 0(x7) # load stored value
+  # Check if x19 contains the expected result. x28 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x28, x14, x13, x19, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b7, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b7_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x8)
-  RVTEST_TESTDATA_LOAD_INT(x10, x8) # load rs2: x8 = 0xe0b6227b0467aa17
+  RVTEST_TESTDATA_LOAD_INT(x10, x8) # load rs2: x8 = 0x3f103d982f6ee86e
   LA(x8, scratch) # rs1 = base address
-  LI(x13, 100) # retry counter for constrained LR/SC loop
+  mv x30, x8 # save x8, which a failed SC overwrites
+  LI(x31, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b8_retry:
+  mv x8, x30 # restore x8 before the LR
   lr.w x0, (x8) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b8:
   sc.w x8, x8, (x8) # perform operation
   beqz x8, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b8_success # SC succeeded, skip retry
-  addi x13, x13, -1 # decrement retry count
-  bnez x13, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b8_retry # retry LR/SC if not exhausted
+  addi x31, x31, -1 # decrement retry count
+  bnez x31, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b8_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b8_success:
-  # Check if x8 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x8, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b8, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b8_str)
+  # Check if x8 contains the expected result. x28 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x28, x14, x13, x8, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b8, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b8_str)
   LA(x8, scratch) # reload base address
-  LREG x13, 0(x8) # load stored value
-  # Check if x13 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x13, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b8, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b8_str)
+  LREG x31, 0(x8) # load stored value
+  # Check if x31 contains the expected result. x28 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x28, x14, x13, x31, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b8, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b8_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x9)
-  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load rs2: x9 = 0x3f103d982f6ee86e
+  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load rs2: x9 = 0xf0a8236310a324c5
   LA(x9, scratch) # rs1 = base address
-  LI(x31, 100) # retry counter for constrained LR/SC loop
+  mv x16, x9 # save x9, which a failed SC overwrites
+  LI(x15, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b9_retry:
+  mv x9, x16 # restore x9 before the LR
   lr.w x0, (x9) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b9:
   sc.w x9, x9, (x9) # perform operation
   beqz x9, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b9_success # SC succeeded, skip retry
-  addi x31, x31, -1 # decrement retry count
-  bnez x31, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b9_retry # retry LR/SC if not exhausted
+  addi x15, x15, -1 # decrement retry count
+  bnez x15, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b9_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b9_success:
-  # Check if x9 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x9, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b9, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b9_str)
+  # Check if x9 contains the expected result. x28 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x28, x14, x13, x9, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b9, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b9_str)
   LA(x9, scratch) # reload base address
-  LREG x31, 0(x9) # load stored value
-  # Check if x31 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x31, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b9, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b9_str)
+  LREG x15, 0(x9) # load stored value
+  # Check if x15 contains the expected result. x28 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x28, x14, x13, x15, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b9, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b9_str)
 
-  mv x21, x10 # switch data pointer register to avoid conflict with test
+  mv x20, x10 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x10)
-  RVTEST_TESTDATA_LOAD_INT(x21, x10) # load rs2: x10 = 0x453e86bd0859d0d3
+  RVTEST_TESTDATA_LOAD_INT(x20, x10) # load rs2: x10 = 0x05d0e22df2df4461
   LA(x10, scratch) # rs1 = base address
-  LI(x31, 100) # retry counter for constrained LR/SC loop
+  mv x1, x10 # save x10, which a failed SC overwrites
+  LI(x27, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b10_retry:
+  mv x10, x1 # restore x10 before the LR
   lr.w x0, (x10) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b10:
   sc.w x10, x10, (x10) # perform operation
   beqz x10, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b10_success # SC succeeded, skip retry
-  addi x31, x31, -1 # decrement retry count
-  bnez x31, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b10_retry # retry LR/SC if not exhausted
+  addi x27, x27, -1 # decrement retry count
+  bnez x27, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b10_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b10_success:
-  # Check if x10 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x10, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b10, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b10_str)
+  # Check if x10 contains the expected result. x28 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x28, x14, x13, x10, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b10, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b10_str)
   LA(x10, scratch) # reload base address
-  LREG x31, 0(x10) # load stored value
-  # Check if x31 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x31, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b10, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b10_str)
+  LREG x27, 0(x10) # load stored value
+  # Check if x27 contains the expected result. x28 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x28, x14, x13, x27, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b10, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b10_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x11)
-  RVTEST_TESTDATA_LOAD_INT(x21, x11) # load rs2: x11 = 0xcfca1b0d58a764e4
+  RVTEST_TESTDATA_LOAD_INT(x20, x11) # load rs2: x11 = 0xb7ebadafc1f6efb3
   LA(x11, scratch) # rs1 = base address
-  LI(x31, 100) # retry counter for constrained LR/SC loop
+  mv x21, x11 # save x11, which a failed SC overwrites
+  LI(x30, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b11_retry:
+  mv x11, x21 # restore x11 before the LR
   lr.w x0, (x11) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b11:
   sc.w x11, x11, (x11) # perform operation
   beqz x11, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b11_success # SC succeeded, skip retry
-  addi x31, x31, -1 # decrement retry count
-  bnez x31, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b11_retry # retry LR/SC if not exhausted
+  addi x30, x30, -1 # decrement retry count
+  bnez x30, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b11_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b11_success:
-  # Check if x11 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x11, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b11, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b11_str)
+  # Check if x11 contains the expected result. x28 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x28, x14, x13, x11, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b11, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b11_str)
   LA(x11, scratch) # reload base address
-  LREG x31, 0(x11) # load stored value
-  # Check if x31 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x31, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b11, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b11_str)
+  LREG x30, 0(x11) # load stored value
+  # Check if x30 contains the expected result. x28 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x28, x14, x13, x30, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b11, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b11_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x12)
-  RVTEST_TESTDATA_LOAD_INT(x21, x12) # load rs2: x12 = 0x05d0e22df2df4461
+  RVTEST_TESTDATA_LOAD_INT(x20, x12) # load rs2: x12 = 0x82103ed3d8cbdea1
   LA(x12, scratch) # rs1 = base address
-  LI(x28, 100) # retry counter for constrained LR/SC loop
+  mv x5, x12 # save x12, which a failed SC overwrites
+  LI(x25, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b12_retry:
+  mv x12, x5 # restore x12 before the LR
   lr.w x0, (x12) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b12:
   sc.w x12, x12, (x12) # perform operation
   beqz x12, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b12_success # SC succeeded, skip retry
-  addi x28, x28, -1 # decrement retry count
-  bnez x28, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b12_retry # retry LR/SC if not exhausted
+  addi x25, x25, -1 # decrement retry count
+  bnez x25, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b12_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b12_success:
-  # Check if x12 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x12, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b12, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b12_str)
+  # Check if x12 contains the expected result. x28 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x28, x14, x13, x12, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b12, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b12_str)
   LA(x12, scratch) # reload base address
-  LREG x28, 0(x12) # load stored value
-  # Check if x28 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x28, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b12, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b12_str)
+  LREG x25, 0(x12) # load stored value
+  # Check if x25 contains the expected result. x28 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x28, x14, x13, x25, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b12, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x13)
-  RVTEST_TESTDATA_LOAD_INT(x21, x13) # load rs2: x13 = 0x2b34dad3d4128300
+  RVTEST_TESTDATA_LOAD_INT(x20, x13) # load rs2: x13 = 0x16f2406b16a8589e
   LA(x13, scratch) # rs1 = base address
-  LI(x23, 100) # retry counter for constrained LR/SC loop
+  mv x12, x13 # save x13, which a failed SC overwrites
+  LI(x8, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b13_retry:
+  mv x13, x12 # restore x13 before the LR
   lr.w x0, (x13) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b13:
   sc.w x13, x13, (x13) # perform operation
   beqz x13, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b13_success # SC succeeded, skip retry
-  addi x23, x23, -1 # decrement retry count
-  bnez x23, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b13_retry # retry LR/SC if not exhausted
+  addi x8, x8, -1 # decrement retry count
+  bnez x8, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b13_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b13_success:
-  # Check if x13 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x13, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b13, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b13_str)
+  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x13, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b13, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b13_str)
   LA(x13, scratch) # reload base address
-  LREG x23, 0(x13) # load stored value
-  # Check if x23 contains the expected result. x14 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x14, x5, x4, x23, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b13, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b13_str)
+  LREG x8, 0(x13) # load stored value
+  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x8, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b13, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b13_str)
 
-  mv x28, x14 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x14)
-  RVTEST_TESTDATA_LOAD_INT(x21, x14) # load rs2: x14 = 0x80d5c275b7084e76
+  RVTEST_TESTDATA_LOAD_INT(x20, x14) # load rs2: x14 = 0x5bbb6df6fd2d1b72
   LA(x14, scratch) # rs1 = base address
-  LI(x8, 100) # retry counter for constrained LR/SC loop
+  mv x9, x14 # save x14, which a failed SC overwrites
+  LI(x22, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b14_retry:
+  mv x14, x9 # restore x14 before the LR
   lr.w x0, (x14) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b14:
   sc.w x14, x14, (x14) # perform operation
   beqz x14, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b14_success # SC succeeded, skip retry
-  addi x8, x8, -1 # decrement retry count
-  bnez x8, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b14_retry # retry LR/SC if not exhausted
+  addi x22, x22, -1 # decrement retry count
+  bnez x22, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b14_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b14_success:
   # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x14, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b14, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b14_str)
   LA(x14, scratch) # reload base address
-  LREG x8, 0(x14) # load stored value
-  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x8, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b14, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b14_str)
+  LREG x22, 0(x14) # load stored value
+  # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x22, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b14, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b14_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x15)
-  RVTEST_TESTDATA_LOAD_INT(x21, x15) # load rs2: x15 = 0xa23c6f50331dd4a6
+  RVTEST_TESTDATA_LOAD_INT(x20, x15) # load rs2: x15 = 0x6e5d93cf182d8bb5
   LA(x15, scratch) # rs1 = base address
-  LI(x1, 100) # retry counter for constrained LR/SC loop
+  mv x1, x15 # save x15, which a failed SC overwrites
+  LI(x7, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b15_retry:
+  mv x15, x1 # restore x15 before the LR
   lr.w x0, (x15) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b15:
   sc.w x15, x15, (x15) # perform operation
   beqz x15, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b15_success # SC succeeded, skip retry
-  addi x1, x1, -1 # decrement retry count
-  bnez x1, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b15_retry # retry LR/SC if not exhausted
+  addi x7, x7, -1 # decrement retry count
+  bnez x7, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b15_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b15_success:
   # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x15, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b15, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b15_str)
   LA(x15, scratch) # reload base address
-  LREG x1, 0(x15) # load stored value
-  # Check if x1 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x1, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b15, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b15_str)
+  LREG x7, 0(x15) # load stored value
+  # Check if x7 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x7, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b15, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b15_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x16)
-  RVTEST_TESTDATA_LOAD_INT(x21, x16) # load rs2: x16 = 0x2e8486708c0d7dbf
+  RVTEST_TESTDATA_LOAD_INT(x20, x16) # load rs2: x16 = 0x5031ad06c2b7961d
   LA(x16, scratch) # rs1 = base address
-  LI(x23, 100) # retry counter for constrained LR/SC loop
+  mv x12, x16 # save x16, which a failed SC overwrites
+  LI(x15, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b16_retry:
+  mv x16, x12 # restore x16 before the LR
   lr.w x0, (x16) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b16:
   sc.w x16, x16, (x16) # perform operation
   beqz x16, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b16_success # SC succeeded, skip retry
-  addi x23, x23, -1 # decrement retry count
-  bnez x23, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b16_retry # retry LR/SC if not exhausted
+  addi x15, x15, -1 # decrement retry count
+  bnez x15, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b16_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b16_success:
   # Check if x16 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x16, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b16, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b16_str)
   LA(x16, scratch) # reload base address
-  LREG x23, 0(x16) # load stored value
-  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x23, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b16, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b16_str)
+  LREG x15, 0(x16) # load stored value
+  # Check if x15 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x15, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b16, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b16_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x17)
-  RVTEST_TESTDATA_LOAD_INT(x21, x17) # load rs2: x17 = 0xfa1f4a48c5db678d
+  RVTEST_TESTDATA_LOAD_INT(x20, x17) # load rs2: x17 = 0x44f7f301b45e0bf8
   LA(x17, scratch) # rs1 = base address
-  LI(x6, 100) # retry counter for constrained LR/SC loop
+  mv x26, x17 # save x17, which a failed SC overwrites
+  LI(x21, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b17_retry:
+  mv x17, x26 # restore x17 before the LR
   lr.w x0, (x17) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b17:
   sc.w x17, x17, (x17) # perform operation
   beqz x17, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b17_success # SC succeeded, skip retry
-  addi x6, x6, -1 # decrement retry count
-  bnez x6, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b17_retry # retry LR/SC if not exhausted
+  addi x21, x21, -1 # decrement retry count
+  bnez x21, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b17_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b17_success:
   # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x17, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b17, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b17_str)
   LA(x17, scratch) # reload base address
-  LREG x6, 0(x17) # load stored value
-  # Check if x6 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x6, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b17, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b17_str)
+  LREG x21, 0(x17) # load stored value
+  # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x21, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b17, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b17_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x18)
-  RVTEST_TESTDATA_LOAD_INT(x21, x18) # load rs2: x18 = 0x99f9ab56165a3de8
+  RVTEST_TESTDATA_LOAD_INT(x20, x18) # load rs2: x18 = 0xca22eb18cd153217
   LA(x18, scratch) # rs1 = base address
-  LI(x22, 100) # retry counter for constrained LR/SC loop
+  mv x26, x18 # save x18, which a failed SC overwrites
+  LI(x13, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b18_retry:
+  mv x18, x26 # restore x18 before the LR
   lr.w x0, (x18) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b18:
   sc.w x18, x18, (x18) # perform operation
   beqz x18, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b18_success # SC succeeded, skip retry
-  addi x22, x22, -1 # decrement retry count
-  bnez x22, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b18_retry # retry LR/SC if not exhausted
+  addi x13, x13, -1 # decrement retry count
+  bnez x13, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b18_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b18_success:
   # Check if x18 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x18, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b18, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b18_str)
   LA(x18, scratch) # reload base address
-  LREG x22, 0(x18) # load stored value
-  # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x22, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b18, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b18_str)
+  LREG x13, 0(x18) # load stored value
+  # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x13, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b18, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b18_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x19)
-  RVTEST_TESTDATA_LOAD_INT(x21, x19) # load rs2: x19 = 0x1473a6876c34f7e8
+  RVTEST_TESTDATA_LOAD_INT(x20, x19) # load rs2: x19 = 0xa18a3b657b11a81d
   LA(x19, scratch) # rs1 = base address
+  mv x16, x19 # save x19, which a failed SC overwrites
   LI(x13, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b19_retry:
+  mv x19, x16 # restore x19 before the LR
   lr.w x0, (x19) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b19:
   sc.w x19, x19, (x19) # perform operation
@@ -4374,88 +4575,98 @@ Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b19_success:
   # Check if x13 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x13, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b19, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b19_str)
 
+  mv x11, x20 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x20)
-  RVTEST_TESTDATA_LOAD_INT(x21, x20) # load rs2: x20 = 0x59e40b567a55a1b6
+  RVTEST_TESTDATA_LOAD_INT(x11, x20) # load rs2: x20 = 0xb5e1c6ea209f6c14
   LA(x20, scratch) # rs1 = base address
-  LI(x27, 100) # retry counter for constrained LR/SC loop
+  mv x30, x20 # save x20, which a failed SC overwrites
+  LI(x8, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b20_retry:
+  mv x20, x30 # restore x20 before the LR
   lr.w x0, (x20) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b20:
   sc.w x20, x20, (x20) # perform operation
   beqz x20, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b20_success # SC succeeded, skip retry
-  addi x27, x27, -1 # decrement retry count
-  bnez x27, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b20_retry # retry LR/SC if not exhausted
+  addi x8, x8, -1 # decrement retry count
+  bnez x8, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b20_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b20_success:
   # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x20, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b20, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b20_str)
   LA(x20, scratch) # reload base address
-  LREG x27, 0(x20) # load stored value
-  # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x27, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b20, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b20_str)
+  LREG x8, 0(x20) # load stored value
+  # Check if x8 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x8, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b20, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b20_str)
 
-  mv x16, x21 # switch data pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x21)
-  RVTEST_TESTDATA_LOAD_INT(x16, x21) # load rs2: x21 = 0x4d42f562fd41f450
+  RVTEST_TESTDATA_LOAD_INT(x11, x21) # load rs2: x21 = 0x6207cdbccc6b442a
   LA(x21, scratch) # rs1 = base address
-  LI(x26, 100) # retry counter for constrained LR/SC loop
+  mv x8, x21 # save x21, which a failed SC overwrites
+  LI(x20, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b21_retry:
+  mv x21, x8 # restore x21 before the LR
   lr.w x0, (x21) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b21:
   sc.w x21, x21, (x21) # perform operation
   beqz x21, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b21_success # SC succeeded, skip retry
-  addi x26, x26, -1 # decrement retry count
-  bnez x26, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b21_retry # retry LR/SC if not exhausted
+  addi x20, x20, -1 # decrement retry count
+  bnez x20, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b21_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b21_success:
   # Check if x21 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x21, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b21, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b21_str)
   LA(x21, scratch) # reload base address
-  LREG x26, 0(x21) # load stored value
-  # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x26, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b21, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b21_str)
+  LREG x20, 0(x21) # load stored value
+  # Check if x20 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x20, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b21, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b21_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x22)
-  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs2: x22 = 0x59be3892e87cae6a
+  RVTEST_TESTDATA_LOAD_INT(x11, x22) # load rs2: x22 = 0xde60211852620b75
   LA(x22, scratch) # rs1 = base address
-  LI(x17, 100) # retry counter for constrained LR/SC loop
+  mv x16, x22 # save x22, which a failed SC overwrites
+  LI(x9, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b22_retry:
+  mv x22, x16 # restore x22 before the LR
   lr.w x0, (x22) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b22:
   sc.w x22, x22, (x22) # perform operation
   beqz x22, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b22_success # SC succeeded, skip retry
-  addi x17, x17, -1 # decrement retry count
-  bnez x17, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b22_retry # retry LR/SC if not exhausted
+  addi x9, x9, -1 # decrement retry count
+  bnez x9, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b22_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b22_success:
   # Check if x22 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x22, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b22, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b22_str)
   LA(x22, scratch) # reload base address
-  LREG x17, 0(x22) # load stored value
-  # Check if x17 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x17, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b22, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b22_str)
+  LREG x9, 0(x22) # load stored value
+  # Check if x9 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x9, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b22, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b22_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x23)
-  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load rs2: x23 = 0x90db87e4702db0bf
+  RVTEST_TESTDATA_LOAD_INT(x11, x23) # load rs2: x23 = 0xddf828931bdcb3dc
   LA(x23, scratch) # rs1 = base address
-  LI(x10, 100) # retry counter for constrained LR/SC loop
+  mv x30, x23 # save x23, which a failed SC overwrites
+  LI(x6, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b23_retry:
+  mv x23, x30 # restore x23 before the LR
   lr.w x0, (x23) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b23:
   sc.w x23, x23, (x23) # perform operation
   beqz x23, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b23_success # SC succeeded, skip retry
-  addi x10, x10, -1 # decrement retry count
-  bnez x10, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b23_retry # retry LR/SC if not exhausted
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b23_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b23_success:
   # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x23, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b23, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b23_str)
   LA(x23, scratch) # reload base address
-  LREG x10, 0(x23) # load stored value
-  # Check if x10 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x10, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b23, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b23_str)
+  LREG x6, 0(x23) # load stored value
+  # Check if x6 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x6, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b23, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b23_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x24)
-  RVTEST_TESTDATA_LOAD_INT(x16, x24) # load rs2: x24 = 0xabe5c29625267f3d
+  RVTEST_TESTDATA_LOAD_INT(x11, x24) # load rs2: x24 = 0xc5138e4d175d20d8
   LA(x24, scratch) # rs1 = base address
+  mv x31, x24 # save x24, which a failed SC overwrites
   LI(x29, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b24_retry:
+  mv x24, x31 # restore x24 before the LR
   lr.w x0, (x24) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b24:
   sc.w x24, x24, (x24) # perform operation
@@ -4471,145 +4682,159 @@ Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b24_success:
   RVTEST_SIGUPD(x28, x5, x4, x29, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b24, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b24_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x25)
-  RVTEST_TESTDATA_LOAD_INT(x16, x25) # load rs2: x25 = 0x39ee1a4bdbb1ce52
+  RVTEST_TESTDATA_LOAD_INT(x11, x25) # load rs2: x25 = 0xb961ece17816472a
   LA(x25, scratch) # rs1 = base address
-  LI(x12, 100) # retry counter for constrained LR/SC loop
+  mv x27, x25 # save x25, which a failed SC overwrites
+  LI(x14, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b25_retry:
+  mv x25, x27 # restore x25 before the LR
   lr.w x0, (x25) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b25:
   sc.w x25, x25, (x25) # perform operation
   beqz x25, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b25_success # SC succeeded, skip retry
-  addi x12, x12, -1 # decrement retry count
-  bnez x12, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b25_retry # retry LR/SC if not exhausted
+  addi x14, x14, -1 # decrement retry count
+  bnez x14, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b25_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b25_success:
   # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x25, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b25, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b25_str)
   LA(x25, scratch) # reload base address
-  LREG x12, 0(x25) # load stored value
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b25, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b25_str)
+  LREG x14, 0(x25) # load stored value
+  # Check if x14 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x14, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b25, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b25_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x26)
-  RVTEST_TESTDATA_LOAD_INT(x16, x26) # load rs2: x26 = 0xae1c33a769eb3af8
+  RVTEST_TESTDATA_LOAD_INT(x11, x26) # load rs2: x26 = 0xd8472e3113993a40
   LA(x26, scratch) # rs1 = base address
-  LI(x23, 100) # retry counter for constrained LR/SC loop
+  mv x13, x26 # save x26, which a failed SC overwrites
+  LI(x3, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b26_retry:
+  mv x26, x13 # restore x26 before the LR
   lr.w x0, (x26) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b26:
   sc.w x26, x26, (x26) # perform operation
   beqz x26, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b26_success # SC succeeded, skip retry
-  addi x23, x23, -1 # decrement retry count
-  bnez x23, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b26_retry # retry LR/SC if not exhausted
+  addi x3, x3, -1 # decrement retry count
+  bnez x3, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b26_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b26_success:
   # Check if x26 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x26, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b26, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b26_str)
   LA(x26, scratch) # reload base address
-  LREG x23, 0(x26) # load stored value
-  # Check if x23 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x23, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b26, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b26_str)
+  LREG x3, 0(x26) # load stored value
+  # Check if x3 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x3, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b26, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b26_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x27)
-  RVTEST_TESTDATA_LOAD_INT(x16, x27) # load rs2: x27 = 0x85608df82a512e0a
+  RVTEST_TESTDATA_LOAD_INT(x11, x27) # load rs2: x27 = 0x135e0f0b73f7123d
   LA(x27, scratch) # rs1 = base address
-  LI(x12, 100) # retry counter for constrained LR/SC loop
+  mv x7, x27 # save x27, which a failed SC overwrites
+  LI(x25, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b27_retry:
+  mv x27, x7 # restore x27 before the LR
   lr.w x0, (x27) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b27:
   sc.w x27, x27, (x27) # perform operation
   beqz x27, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b27_success # SC succeeded, skip retry
-  addi x12, x12, -1 # decrement retry count
-  bnez x12, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b27_retry # retry LR/SC if not exhausted
+  addi x25, x25, -1 # decrement retry count
+  bnez x25, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b27_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b27_success:
   # Check if x27 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x28, x5, x4, x27, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b27, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b27_str)
   LA(x27, scratch) # reload base address
-  LREG x12, 0(x27) # load stored value
-  # Check if x12 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x28, x5, x4, x12, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b27, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b27_str)
+  LREG x25, 0(x27) # load stored value
+  # Check if x25 contains the expected result. x28 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x28, x5, x4, x25, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b27, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b27_str)
 
-  mv x21, x28 # switch signature pointer register to avoid conflict with test
+  mv x18, x28 # switch signature pointer register to avoid conflict with test
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x28)
-  RVTEST_TESTDATA_LOAD_INT(x16, x28) # load rs2: x28 = 0xc5138e4d175d20d8
+  RVTEST_TESTDATA_LOAD_INT(x11, x28) # load rs2: x28 = 0x3ed8051e85f25abc
   LA(x28, scratch) # rs1 = base address
-  LI(x29, 100) # retry counter for constrained LR/SC loop
+  mv x1, x28 # save x28, which a failed SC overwrites
+  LI(x3, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b28_retry:
+  mv x28, x1 # restore x28 before the LR
   lr.w x0, (x28) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b28:
   sc.w x28, x28, (x28) # perform operation
   beqz x28, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b28_success # SC succeeded, skip retry
-  addi x29, x29, -1 # decrement retry count
-  bnez x29, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b28_retry # retry LR/SC if not exhausted
+  addi x3, x3, -1 # decrement retry count
+  bnez x3, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b28_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b28_success:
-  # Check if x28 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x28, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b28, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b28_str)
+  # Check if x28 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x28, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b28, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b28_str)
   LA(x28, scratch) # reload base address
-  LREG x29, 0(x28) # load stored value
-  # Check if x29 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x29, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b28, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b28_str)
+  LREG x3, 0(x28) # load stored value
+  # Check if x3 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x3, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b28, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b28_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x29)
-  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load rs2: x29 = 0xe253113ff57ab0d4
+  RVTEST_TESTDATA_LOAD_INT(x11, x29) # load rs2: x29 = 0xa1b9be154b49b5fe
   LA(x29, scratch) # rs1 = base address
-  LI(x28, 100) # retry counter for constrained LR/SC loop
+  mv x1, x29 # save x29, which a failed SC overwrites
+  LI(x30, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b29_retry:
+  mv x29, x1 # restore x29 before the LR
   lr.w x0, (x29) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b29:
   sc.w x29, x29, (x29) # perform operation
   beqz x29, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b29_success # SC succeeded, skip retry
-  addi x28, x28, -1 # decrement retry count
-  bnez x28, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b29_retry # retry LR/SC if not exhausted
+  addi x30, x30, -1 # decrement retry count
+  bnez x30, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b29_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b29_success:
-  # Check if x29 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x29, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b29, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b29_str)
+  # Check if x29 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x29, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b29, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b29_str)
   LA(x29, scratch) # reload base address
-  LREG x28, 0(x29) # load stored value
-  # Check if x28 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x28, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b29, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b29_str)
+  LREG x30, 0(x29) # load stored value
+  # Check if x30 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x30, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b29, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b29_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x30)
-  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load rs2: x30 = 0xd8472e3113993a40
+  RVTEST_TESTDATA_LOAD_INT(x11, x30) # load rs2: x30 = 0x392797440cf866ea
   LA(x30, scratch) # rs1 = base address
-  LI(x3, 100) # retry counter for constrained LR/SC loop
+  mv x17, x30 # save x30, which a failed SC overwrites
+  LI(x19, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b30_retry:
+  mv x30, x17 # restore x30 before the LR
   lr.w x0, (x30) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b30:
   sc.w x30, x30, (x30) # perform operation
   beqz x30, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b30_success # SC succeeded, skip retry
-  addi x3, x3, -1 # decrement retry count
-  bnez x3, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b30_retry # retry LR/SC if not exhausted
+  addi x19, x19, -1 # decrement retry count
+  bnez x19, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b30_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b30_success:
-  # Check if x30 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x30, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b30, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b30_str)
+  # Check if x30 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x30, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b30, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b30_str)
   LA(x30, scratch) # reload base address
-  LREG x3, 0(x30) # load stored value
-  # Check if x3 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x3, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b30, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b30_str)
+  LREG x19, 0(x30) # load stored value
+  # Check if x19 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x19, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b30, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b30_str)
 
 # Testcase cmp_rd_rs1_rs2_nx0 (Test rd = rs1 = rs2 = x31)
-  RVTEST_TESTDATA_LOAD_INT(x16, x31) # load rs2: x31 = 0xb3f3690050211835
+  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs2: x31 = 0x53c9832f67960e80
   LA(x31, scratch) # rs1 = base address
-  LI(x14, 100) # retry counter for constrained LR/SC loop
+  mv x2, x31 # save x31, which a failed SC overwrites
+  LI(x25, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b31_retry:
+  mv x31, x2 # restore x31 before the LR
   lr.w x0, (x31) # establish reservation
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b31:
   sc.w x31, x31, (x31) # perform operation
   beqz x31, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b31_success # SC succeeded, skip retry
-  addi x14, x14, -1 # decrement retry count
-  bnez x14, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b31_retry # retry LR/SC if not exhausted
+  addi x25, x25, -1 # decrement retry count
+  bnez x25, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b31_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b31_success:
-  # Check if x31 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x31, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b31, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b31_str)
+  # Check if x31 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x31, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b31, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b31_str)
   LA(x31, scratch) # reload base address
-  LREG x14, 0(x31) # load stored value
-  # Check if x14 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x14, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b31, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b31_str)
+  LREG x25, 0(x31) # load stored value
+  # Check if x25 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x25, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b31, Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b31_str)
 
 /////////////////////////////////
 // cp_custom_sc
 /////////////////////////////////
 
 # Testcase: cp_custom_aqrl with suffix ''
-  RVTEST_TESTDATA_LOAD_INT(x16, x2) # load rs2: x2 = 0xdd88eb95125f2fe5
+  RVTEST_TESTDATA_LOAD_INT(x11, x2) # load rs2: x2 = 0xdd88eb95125f2fe5
   LA(x3, scratch) # rs1 = base address
   LI(x27, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_custom_aqrl_retry:
@@ -4620,74 +4845,74 @@ Zalrsc_sc_w_cg_cp_custom_aqrl:
   addi x27, x27, -1 # decrement retry count
   bnez x27, Zalrsc_sc_w_cg_cp_custom_aqrl_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_custom_aqrl_success:
-  # Check if x29 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x29, Zalrsc_sc_w_cg_cp_custom_aqrl, Zalrsc_sc_w_cg_cp_custom_aqrl_str)
+  # Check if x29 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x29, Zalrsc_sc_w_cg_cp_custom_aqrl, Zalrsc_sc_w_cg_cp_custom_aqrl_str)
   LA(x3, scratch) # reload base address
   LREG x27, 0(x3) # load stored value
-  # Check if x27 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_aqrl, Zalrsc_sc_w_cg_cp_custom_aqrl_str)
+  # Check if x27 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_aqrl, Zalrsc_sc_w_cg_cp_custom_aqrl_str)
 
 # Testcase: cp_custom_aqrl with suffix '.rl'
-  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load rs2: x23 = 0x383ff64e2faa3c00
-  LA(x20, scratch) # rs1 = base address
+  RVTEST_TESTDATA_LOAD_INT(x11, x23) # load rs2: x23 = 0x383ff64e2faa3c00
+  LA(x21, scratch) # rs1 = base address
   LI(x8, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_custom_aqrl_rl_retry:
-  lr.w x0, (x20) # establish reservation
+  lr.w x0, (x21) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_aqrl_rl:
-  sc.w.rl x22, x23, (x20) # perform operation
+  sc.w.rl x22, x23, (x21) # perform operation
   beqz x22, Zalrsc_sc_w_cg_cp_custom_aqrl_rl_success # SC succeeded, skip retry
   addi x8, x8, -1 # decrement retry count
   bnez x8, Zalrsc_sc_w_cg_cp_custom_aqrl_rl_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_custom_aqrl_rl_success:
-  # Check if x22 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x22, Zalrsc_sc_w_cg_cp_custom_aqrl_rl, Zalrsc_sc_w_cg_cp_custom_aqrl_rl_str)
-  LA(x20, scratch) # reload base address
-  LREG x8, 0(x20) # load stored value
-  # Check if x8 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x8, Zalrsc_sc_w_cg_cp_custom_aqrl_rl, Zalrsc_sc_w_cg_cp_custom_aqrl_rl_str)
+  # Check if x22 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x22, Zalrsc_sc_w_cg_cp_custom_aqrl_rl, Zalrsc_sc_w_cg_cp_custom_aqrl_rl_str)
+  LA(x21, scratch) # reload base address
+  LREG x8, 0(x21) # load stored value
+  # Check if x8 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x8, Zalrsc_sc_w_cg_cp_custom_aqrl_rl, Zalrsc_sc_w_cg_cp_custom_aqrl_rl_str)
 
 # Testcase: cp_custom_aqrl with suffix '.aqrl'
-  RVTEST_TESTDATA_LOAD_INT(x16, x17) # load rs2: x17 = 0xaba1570644e32802
-  LA(x13, scratch) # rs1 = base address
-  LI(x15, 100) # retry counter for constrained LR/SC loop
+  RVTEST_TESTDATA_LOAD_INT(x11, x17) # load rs2: x17 = 0xaba1570644e32802
+  LA(x14, scratch) # rs1 = base address
+  LI(x16, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl_retry:
-  lr.w x0, (x13) # establish reservation
+  lr.w x0, (x14) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl:
-  sc.w.aqrl x31, x17, (x13) # perform operation
+  sc.w.aqrl x31, x17, (x14) # perform operation
   beqz x31, Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl_success # SC succeeded, skip retry
-  addi x15, x15, -1 # decrement retry count
-  bnez x15, Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl_retry # retry LR/SC if not exhausted
+  addi x16, x16, -1 # decrement retry count
+  bnez x16, Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl_success:
-  # Check if x31 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x31, Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl, Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl_str)
-  LA(x13, scratch) # reload base address
-  LREG x15, 0(x13) # load stored value
-  # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x15, Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl, Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl_str)
+  # Check if x31 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x31, Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl, Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl_str)
+  LA(x14, scratch) # reload base address
+  LREG x16, 0(x14) # load stored value
+  # Check if x16 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x16, Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl, Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl_str)
 
 # Testcase: cp_custom_sc_lr with prev lr.w
-  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load rs2: x30 = 0x393804ce8c074f50
+  RVTEST_TESTDATA_LOAD_INT(x11, x30) # load rs2: x30 = 0x393804ce8c074f50
   LA(x26, scratch) # rs1 = base address
-  LI(x14, 100) # retry counter for constrained LR/SC loop
+  LI(x15, 100) # retry counter for constrained LR/SC loop
 Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_retry:
   lr.w x0, (x26) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w:
   sc.w x7, x30, (x26) # perform operation
   beqz x7, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_success # SC succeeded, skip retry
-  addi x14, x14, -1 # decrement retry count
-  bnez x14, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_retry # retry LR/SC if not exhausted
+  addi x15, x15, -1 # decrement retry count
+  bnez x15, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_retry # retry LR/SC if not exhausted
 Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_success:
-  # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_str)
+  # Check if x7 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_str)
   LA(x26, scratch) # reload base address
-  LREG x14, 0(x26) # load stored value
-  # Check if x14 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x14, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_str)
+  LREG x15, 0(x26) # load stored value
+  # Check if x15 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x15, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_str)
 
 # Testcase: cp_custom_sc_lr with prev lr.w first to matching address and then to a different address
 # This test is not described with a coverpoint because it involves three consecutive instructions
 #  Addresses sc_pairs_latest_lr normative rule
-  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load rs2: x30 = 0x393804ce8c074f50
+  RVTEST_TESTDATA_LOAD_INT(x11, x30) # load rs2: x30 = 0x393804ce8c074f50
   LA(x26, scratch) # rs1 = base address
   lr.w x0, (x26) # establish reservation
   addi x26, x26, 256 # change reservation address
@@ -4695,468 +4920,660 @@ Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_success:
   addi x26, x26, -256 # restore reservation address
 Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr:
   sc.w x7, x30, (x26) # perform store conditional
-  # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr_str)
+  # Check if x7 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr_str)
   LA(x26, scratch) # reload base address
-  LREG x14, 0(x26) # load stored value
-  # Check if x14 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x14, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr_str)
+  LREG x15, 0(x26) # load stored value
+  # Check if x15 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x15, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr, Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr_str)
 
 # Testcase: cp_custom_sc_after_sc (should fail because of intervening sc)
-  RVTEST_TESTDATA_LOAD_INT(x16, x8) # load rs2: x8 = 0x48e056d79028a9c8
-  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load temp_reg: x11 = 0x13b1c8bfc2279394
+  RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs2: x8 = 0x48e056d79028a9c8
+  RVTEST_TESTDATA_LOAD_INT(x11, x12) # load temp_reg: x12 = 0x13b1c8bfc2279394
   LA(x31, scratch) # rs1 = base address
+  LI(x30, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_retry:
   lr.w x0, (x31) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true:
-  sc.w x19, x8, (x31) # perform operation
-  sc.w x11, x11, (x31) # perform operation again, should fail
+  sc.w x20, x8, (x31) # perform operation
+  sc.w x12, x12, (x31) # perform operation again, should fail
+  beqz x20, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_success # SC succeeded, skip retry
+  addi x30, x30, -1 # decrement retry count
+  bnez x30, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_success:
   # Check destination of both sc instructions:
-  # Check if x19 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x19, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_str)
-  # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_str)
+  # Check if x20 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x20, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_str)
+  # Check if x12 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_str)
   # Check that stored value is from first sc:
   LA(x31, scratch) # reload base address
-  LREG x11, 0(x31) # load stored value
-  # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_str)
+  LREG x12, 0(x31) # load stored value
+  # Check if x12 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true, Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 8)
-  RVTEST_TESTDATA_LOAD_INT(x16, x3) # load rs2: x3 = 0xe9e30d0730793a60
-  LA(x29, scratch) # rs1 = base address
-  addi x9, x29, 8 # offset rs1 by 8
-  lr.w x0, (x29) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x12) # load rs2: x12 = 0xff54b1f2efb20555
+  LA(x24, scratch) # rs1 = base address
+  addi x3, x24, 8 # offset rs1 by 8
+  LI(x22, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8_retry:
+  lr.w x0, (x24) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8:
-  sc.w x27, x3, (x9) # perform operation
-  # Check if x27 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8_str)
-  LA(x9, scratch) # reload base address
-  LREG x29, 8(x9) # load stored value
-  # Check if x29 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x29, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8_str)
+  sc.w x9, x12, (x3) # perform operation
+  beqz x9, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8_success # SC succeeded, skip retry
+  addi x22, x22, -1 # decrement retry count
+  bnez x22, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8_success:
+  # Check if x9 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x9, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8_str)
+  LA(x3, scratch) # reload base address
+  LREG x24, 8(x3) # load stored value
+  # Check if x24 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 16)
-  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs2: x11 = 0xe18fbd8390d77b31
-  LA(x15, scratch) # rs1 = base address
-  addi x19, x15, 16 # offset rs1 by 16
-  lr.w x0, (x15) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x28) # load rs2: x28 = 0x613a1685f3cbdd48
+  LA(x16, scratch) # rs1 = base address
+  addi x3, x16, 16 # offset rs1 by 16
+  LI(x26, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16_retry:
+  lr.w x0, (x16) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16:
-  sc.w x28, x11, (x19) # perform operation
-  # Check if x28 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x28, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16_str)
-  LA(x19, scratch) # reload base address
-  LREG x15, 16(x19) # load stored value
-  # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x15, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16_str)
+  sc.w x14, x28, (x3) # perform operation
+  beqz x14, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16_success # SC succeeded, skip retry
+  addi x26, x26, -1 # decrement retry count
+  bnez x26, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16_success:
+  # Check if x14 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x14, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16_str)
+  LA(x3, scratch) # reload base address
+  LREG x16, 16(x3) # load stored value
+  # Check if x16 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 24)
-  RVTEST_TESTDATA_LOAD_INT(x16, x25) # load rs2: x25 = 0x75caa5ed7a167753
-  LA(x19, scratch) # rs1 = base address
-  addi x9, x19, 24 # offset rs1 by 24
-  lr.w x0, (x19) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x17) # load rs2: x17 = 0xb797c4677cbe635f
+  LA(x3, scratch) # rs1 = base address
+  addi x12, x3, 24 # offset rs1 by 24
+  LI(x16, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24_retry:
+  lr.w x0, (x3) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24:
-  sc.w x18, x25, (x9) # perform operation
-  # Check if x18 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x18, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24_str)
-  LA(x9, scratch) # reload base address
-  LREG x19, 24(x9) # load stored value
-  # Check if x19 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x19, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24_str)
+  sc.w x20, x17, (x12) # perform operation
+  beqz x20, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24_success # SC succeeded, skip retry
+  addi x16, x16, -1 # decrement retry count
+  bnez x16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24_success:
+  # Check if x20 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x20, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24_str)
+  LA(x12, scratch) # reload base address
+  LREG x3, 24(x12) # load stored value
+  # Check if x3 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 32)
-  RVTEST_TESTDATA_LOAD_INT(x16, x1) # load rs2: x1 = 0xb123d82e3b8c2467
-  LA(x18, scratch) # rs1 = base address
-  addi x19, x18, 32 # offset rs1 by 32
-  lr.w x0, (x18) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x19) # load rs2: x19 = 0x16910c6f8fbe3100
+  LA(x14, scratch) # rs1 = base address
+  addi x13, x14, 32 # offset rs1 by 32
+  LI(x9, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32_retry:
+  lr.w x0, (x14) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32:
-  sc.w x2, x1, (x19) # perform operation
-  # Check if x2 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x2, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32_str)
-  LA(x19, scratch) # reload base address
-  LREG x18, 32(x19) # load stored value
-  # Check if x18 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x18, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32_str)
+  sc.w x8, x19, (x13) # perform operation
+  beqz x8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32_success # SC succeeded, skip retry
+  addi x9, x9, -1 # decrement retry count
+  bnez x9, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32_success:
+  # Check if x8 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32_str)
+  LA(x13, scratch) # reload base address
+  LREG x14, 32(x13) # load stored value
+  # Check if x14 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x14, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 40)
-  RVTEST_TESTDATA_LOAD_INT(x16, x20) # load rs2: x20 = 0xfa75761c08c8963d
-  LA(x6, scratch) # rs1 = base address
-  addi x13, x6, 40 # offset rs1 by 40
-  lr.w x0, (x6) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x25) # load rs2: x25 = 0xfdcbf02157c4a555
+  LA(x22, scratch) # rs1 = base address
+  addi x8, x22, 40 # offset rs1 by 40
+  LI(x3, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40_retry:
+  lr.w x0, (x22) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40:
-  sc.w x24, x20, (x13) # perform operation
-  # Check if x24 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40_str)
-  LA(x13, scratch) # reload base address
-  LREG x6, 40(x13) # load stored value
-  # Check if x6 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x6, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40_str)
+  sc.w x27, x25, (x8) # perform operation
+  beqz x27, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40_success # SC succeeded, skip retry
+  addi x3, x3, -1 # decrement retry count
+  bnez x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40_success:
+  # Check if x27 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40_str)
+  LA(x8, scratch) # reload base address
+  LREG x22, 40(x8) # load stored value
+  # Check if x22 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x22, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 48)
-  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load rs2: x13 = 0x5881d9efb3161e80
-  LA(x11, scratch) # rs1 = base address
-  addi x15, x11, 48 # offset rs1 by 48
-  lr.w x0, (x11) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x8) # load rs2: x8 = 0x189155c027b7f4ee
+  LA(x22, scratch) # rs1 = base address
+  addi x12, x22, 48 # offset rs1 by 48
+  LI(x31, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48_retry:
+  lr.w x0, (x22) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48:
-  sc.w x8, x13, (x15) # perform operation
-  # Check if x8 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48_str)
-  LA(x15, scratch) # reload base address
-  LREG x11, 48(x15) # load stored value
-  # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48_str)
+  sc.w x14, x8, (x12) # perform operation
+  beqz x14, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48_success # SC succeeded, skip retry
+  addi x31, x31, -1 # decrement retry count
+  bnez x31, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48_success:
+  # Check if x14 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x14, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48_str)
+  LA(x12, scratch) # reload base address
+  LREG x22, 48(x12) # load stored value
+  # Check if x22 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x22, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 56)
-  RVTEST_TESTDATA_LOAD_INT(x16, x25) # load rs2: x25 = 0x21c12bcd8160e2cb
-  LA(x1, scratch) # rs1 = base address
-  addi x26, x1, 56 # offset rs1 by 56
-  lr.w x0, (x1) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x19) # load rs2: x19 = 0x2c567b124957be83
+  LA(x21, scratch) # rs1 = base address
+  addi x6, x21, 56 # offset rs1 by 56
+  LI(x22, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56_retry:
+  lr.w x0, (x21) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56:
-  sc.w x22, x25, (x26) # perform operation
-  # Check if x22 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x22, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56_str)
-  LA(x26, scratch) # reload base address
-  LREG x1, 56(x26) # load stored value
-  # Check if x1 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x1, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56_str)
+  sc.w x31, x19, (x6) # perform operation
+  beqz x31, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56_success # SC succeeded, skip retry
+  addi x22, x22, -1 # decrement retry count
+  bnez x22, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56_success:
+  # Check if x31 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x31, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56_str)
+  LA(x6, scratch) # reload base address
+  LREG x21, 56(x6) # load stored value
+  # Check if x21 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x21, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 64)
-  RVTEST_TESTDATA_LOAD_INT(x16, x17) # load rs2: x17 = 0xf0a7d8085e621708
-  LA(x22, scratch) # rs1 = base address
-  addi x19, x22, 64 # offset rs1 by 64
-  lr.w x0, (x22) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x25) # load rs2: x25 = 0x303f1aa6f2a9671e
+  LA(x30, scratch) # rs1 = base address
+  addi x31, x30, 64 # offset rs1 by 64
+  LI(x29, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64_retry:
+  lr.w x0, (x30) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64:
-  sc.w x26, x17, (x19) # perform operation
-  # Check if x26 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x26, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64_str)
-  LA(x19, scratch) # reload base address
-  LREG x22, 64(x19) # load stored value
-  # Check if x22 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x22, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64_str)
+  sc.w x12, x25, (x31) # perform operation
+  beqz x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64_success # SC succeeded, skip retry
+  addi x29, x29, -1 # decrement retry count
+  bnez x29, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64_success:
+  # Check if x12 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64_str)
+  LA(x31, scratch) # reload base address
+  LREG x30, 64(x31) # load stored value
+  # Check if x30 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x30, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 72)
-  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load rs2: x13 = 0x475ffff553aafaab
-  LA(x10, scratch) # rs1 = base address
-  addi x6, x10, 72 # offset rs1 by 72
-  lr.w x0, (x10) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x21) # load rs2: x21 = 0x475ffff553aafaab
+  LA(x9, scratch) # rs1 = base address
+  addi x30, x9, 72 # offset rs1 by 72
+  LI(x27, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72_retry:
+  lr.w x0, (x9) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72:
-  sc.w x27, x13, (x6) # perform operation
-  # Check if x27 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72_str)
-  LA(x6, scratch) # reload base address
-  LREG x10, 72(x6) # load stored value
-  # Check if x10 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x10, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72_str)
+  sc.w x24, x21, (x30) # perform operation
+  beqz x24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72_success # SC succeeded, skip retry
+  addi x27, x27, -1 # decrement retry count
+  bnez x27, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72_success:
+  # Check if x24 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72_str)
+  LA(x30, scratch) # reload base address
+  LREG x9, 72(x30) # load stored value
+  # Check if x9 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x9, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 80)
-  RVTEST_TESTDATA_LOAD_INT(x16, x1) # load rs2: x1 = 0x9784280595410e63
-  LA(x9, scratch) # rs1 = base address
-  addi x7, x9, 80 # offset rs1 by 80
-  lr.w x0, (x9) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x25) # load rs2: x25 = 0x552b04ddf0509901
+  LA(x16, scratch) # rs1 = base address
+  addi x1, x16, 80 # offset rs1 by 80
+  LI(x15, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80_retry:
+  lr.w x0, (x16) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80:
-  sc.w x24, x1, (x7) # perform operation
-  # Check if x24 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80_str)
-  LA(x7, scratch) # reload base address
-  LREG x9, 80(x7) # load stored value
-  # Check if x9 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x9, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80_str)
+  sc.w x7, x25, (x1) # perform operation
+  beqz x7, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80_success # SC succeeded, skip retry
+  addi x15, x15, -1 # decrement retry count
+  bnez x15, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80_success:
+  # Check if x7 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80_str)
+  LA(x1, scratch) # reload base address
+  LREG x16, 80(x1) # load stored value
+  # Check if x16 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 88)
-  RVTEST_TESTDATA_LOAD_INT(x16, x19) # load rs2: x19 = 0xb8ab5c983296c965
-  LA(x18, scratch) # rs1 = base address
-  addi x23, x18, 88 # offset rs1 by 88
-  lr.w x0, (x18) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x9) # load rs2: x9 = 0x04e0f7981caae6ef
+  LA(x30, scratch) # rs1 = base address
+  addi x31, x30, 88 # offset rs1 by 88
+  LI(x19, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88_retry:
+  lr.w x0, (x30) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88:
-  sc.w x25, x19, (x23) # perform operation
-  # Check if x25 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x25, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88_str)
-  LA(x23, scratch) # reload base address
-  LREG x18, 88(x23) # load stored value
-  # Check if x18 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x18, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88_str)
+  sc.w x28, x9, (x31) # perform operation
+  beqz x28, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88_success # SC succeeded, skip retry
+  addi x19, x19, -1 # decrement retry count
+  bnez x19, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88_success:
+  # Check if x28 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x28, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88_str)
+  LA(x31, scratch) # reload base address
+  LREG x30, 88(x31) # load stored value
+  # Check if x30 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x30, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 96)
-  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load rs2: x29 = 0x530e6fa4fb677b72
-  LA(x19, scratch) # rs1 = base address
-  addi x6, x19, 96 # offset rs1 by 96
-  lr.w x0, (x19) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x24) # load rs2: x24 = 0x5f919a03ddfef480
+  LA(x3, scratch) # rs1 = base address
+  addi x23, x3, 96 # offset rs1 by 96
+  LI(x19, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96_retry:
+  lr.w x0, (x3) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96:
-  sc.w x20, x29, (x6) # perform operation
-  # Check if x20 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x20, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96_str)
-  LA(x6, scratch) # reload base address
-  LREG x19, 96(x6) # load stored value
-  # Check if x19 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x19, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96_str)
+  sc.w x16, x24, (x23) # perform operation
+  beqz x16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96_success # SC succeeded, skip retry
+  addi x19, x19, -1 # decrement retry count
+  bnez x19, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96_success:
+  # Check if x16 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96_str)
+  LA(x23, scratch) # reload base address
+  LREG x3, 96(x23) # load stored value
+  # Check if x3 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 104)
-  RVTEST_TESTDATA_LOAD_INT(x16, x18) # load rs2: x18 = 0x6fd5e506936cfc03
-  LA(x3, scratch) # rs1 = base address
-  addi x1, x3, 104 # offset rs1 by 104
-  lr.w x0, (x3) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x1) # load rs2: x1 = 0x6d743e08f77b8f24
+  LA(x27, scratch) # rs1 = base address
+  addi x13, x27, 104 # offset rs1 by 104
+  LI(x22, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104_retry:
+  lr.w x0, (x27) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104:
-  sc.w x2, x18, (x1) # perform operation
-  # Check if x2 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x2, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104_str)
-  LA(x1, scratch) # reload base address
-  LREG x3, 104(x1) # load stored value
-  # Check if x3 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104_str)
+  sc.w x23, x1, (x13) # perform operation
+  beqz x23, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104_success # SC succeeded, skip retry
+  addi x22, x22, -1 # decrement retry count
+  bnez x22, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104_success:
+  # Check if x23 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x23, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104_str)
+  LA(x13, scratch) # reload base address
+  LREG x27, 104(x13) # load stored value
+  # Check if x27 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 112)
-  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load rs2: x30 = 0xa570dccb87b41544
-  LA(x13, scratch) # rs1 = base address
-  addi x31, x13, 112 # offset rs1 by 112
-  lr.w x0, (x13) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x31) # load rs2: x31 = 0x5c16698e974396ce
+  LA(x16, scratch) # rs1 = base address
+  addi x22, x16, 112 # offset rs1 by 112
+  LI(x25, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112_retry:
+  lr.w x0, (x16) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112:
-  sc.w x23, x30, (x31) # perform operation
-  # Check if x23 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x23, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112_str)
-  LA(x31, scratch) # reload base address
-  LREG x13, 112(x31) # load stored value
-  # Check if x13 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x13, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112_str)
+  sc.w x28, x31, (x22) # perform operation
+  beqz x28, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112_success # SC succeeded, skip retry
+  addi x25, x25, -1 # decrement retry count
+  bnez x25, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112_success:
+  # Check if x28 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x28, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112_str)
+  LA(x22, scratch) # reload base address
+  LREG x16, 112(x22) # load stored value
+  # Check if x16 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 120)
-  RVTEST_TESTDATA_LOAD_INT(x16, x25) # load rs2: x25 = 0x8551f448dc16698e
-  LA(x3, scratch) # rs1 = base address
-  addi x23, x3, 120 # offset rs1 by 120
-  lr.w x0, (x3) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x27) # load rs2: x27 = 0x88d19d7135fe817b
+  LA(x25, scratch) # rs1 = base address
+  addi x13, x25, 120 # offset rs1 by 120
+  LI(x3, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120_retry:
+  lr.w x0, (x25) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120:
-  sc.w x1, x25, (x23) # perform operation
-  # Check if x1 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x1, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120_str)
-  LA(x23, scratch) # reload base address
-  LREG x3, 120(x23) # load stored value
-  # Check if x3 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120_str)
+  sc.w x16, x27, (x13) # perform operation
+  beqz x16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120_success # SC succeeded, skip retry
+  addi x3, x3, -1 # decrement retry count
+  bnez x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120_success:
+  # Check if x16 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120_str)
+  LA(x13, scratch) # reload base address
+  LREG x25, 120(x13) # load stored value
+  # Check if x25 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x25, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 128)
-  RVTEST_TESTDATA_LOAD_INT(x16, x1) # load rs2: x1 = 0x148663a4144a8b05
-  LA(x24, scratch) # rs1 = base address
-  addi x26, x24, 128 # offset rs1 by 128
-  lr.w x0, (x24) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x29) # load rs2: x29 = 0x06496af0da2c8abe
+  LA(x7, scratch) # rs1 = base address
+  addi x28, x7, 128 # offset rs1 by 128
+  LI(x31, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128_retry:
+  lr.w x0, (x7) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128:
-  sc.w x12, x1, (x26) # perform operation
-  # Check if x12 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128_str)
-  LA(x26, scratch) # reload base address
-  LREG x24, 128(x26) # load stored value
-  # Check if x24 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128_str)
+  sc.w x12, x29, (x28) # perform operation
+  beqz x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128_success # SC succeeded, skip retry
+  addi x31, x31, -1 # decrement retry count
+  bnez x31, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128_success:
+  # Check if x12 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128_str)
+  LA(x28, scratch) # reload base address
+  LREG x7, 128(x28) # load stored value
+  # Check if x7 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 136)
-  RVTEST_TESTDATA_LOAD_INT(x16, x19) # load rs2: x19 = 0xbd1aa674d9bfdea2
-  LA(x17, scratch) # rs1 = base address
-  addi x2, x17, 136 # offset rs1 by 136
-  lr.w x0, (x17) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x24) # load rs2: x24 = 0x7853fb2fddf501f1
+  LA(x25, scratch) # rs1 = base address
+  addi x10, x25, 136 # offset rs1 by 136
+  LI(x1, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136_retry:
+  lr.w x0, (x25) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136:
-  sc.w x9, x19, (x2) # perform operation
-  # Check if x9 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x9, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136_str)
-  LA(x2, scratch) # reload base address
-  LREG x17, 136(x2) # load stored value
-  # Check if x17 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x17, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136_str)
+  sc.w x6, x24, (x10) # perform operation
+  beqz x6, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136_success # SC succeeded, skip retry
+  addi x1, x1, -1 # decrement retry count
+  bnez x1, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136_success:
+  # Check if x6 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x6, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136_str)
+  LA(x10, scratch) # reload base address
+  LREG x25, 136(x10) # load stored value
+  # Check if x25 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x25, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 144)
-  RVTEST_TESTDATA_LOAD_INT(x16, x29) # load rs2: x29 = 0x06496af0da2c8abe
+  RVTEST_TESTDATA_LOAD_INT(x11, x23) # load rs2: x23 = 0x66fe3c9dda8d07a7
   LA(x7, scratch) # rs1 = base address
-  addi x28, x7, 144 # offset rs1 by 144
+  addi x20, x7, 144 # offset rs1 by 144
+  LI(x2, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144_retry:
   lr.w x0, (x7) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144:
-  sc.w x11, x29, (x28) # perform operation
-  # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144_str)
-  LA(x28, scratch) # reload base address
-  LREG x7, 144(x28) # load stored value
-  # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144_str)
+  sc.w x29, x23, (x20) # perform operation
+  beqz x29, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144_success # SC succeeded, skip retry
+  addi x2, x2, -1 # decrement retry count
+  bnez x2, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144_success:
+  # Check if x29 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x29, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144_str)
+  LA(x20, scratch) # reload base address
+  LREG x7, 144(x20) # load stored value
+  # Check if x7 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 152)
-  RVTEST_TESTDATA_LOAD_INT(x16, x10) # load rs2: x10 = 0xe7a44303feaf4928
-  LA(x23, scratch) # rs1 = base address
-  addi x6, x23, 152 # offset rs1 by 152
-  lr.w x0, (x23) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x28) # load rs2: x28 = 0xff888f3ea57e6cef
+  LA(x20, scratch) # rs1 = base address
+  addi x7, x20, 152 # offset rs1 by 152
+  LI(x13, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152_retry:
+  lr.w x0, (x20) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152:
-  sc.w x27, x10, (x6) # perform operation
-  # Check if x27 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152_str)
-  LA(x6, scratch) # reload base address
-  LREG x23, 152(x6) # load stored value
-  # Check if x23 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x23, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152_str)
+  sc.w x6, x28, (x7) # perform operation
+  beqz x6, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152_success # SC succeeded, skip retry
+  addi x13, x13, -1 # decrement retry count
+  bnez x13, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152_success:
+  # Check if x6 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x6, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152_str)
+  LA(x7, scratch) # reload base address
+  LREG x20, 152(x7) # load stored value
+  # Check if x20 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x20, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 160)
-  RVTEST_TESTDATA_LOAD_INT(x16, x7) # load rs2: x7 = 0xfb20ac09f7054b31
-  LA(x8, scratch) # rs1 = base address
-  addi x30, x8, 160 # offset rs1 by 160
-  lr.w x0, (x8) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs2: x10 = 0x1520b0ef5a1f0e1e
+  LA(x28, scratch) # rs1 = base address
+  addi x6, x28, 160 # offset rs1 by 160
+  LI(x31, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160_retry:
+  lr.w x0, (x28) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160:
-  sc.w x15, x7, (x30) # perform operation
-  # Check if x15 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x15, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160_str)
-  LA(x30, scratch) # reload base address
-  LREG x8, 160(x30) # load stored value
-  # Check if x8 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160_str)
+  sc.w x16, x10, (x6) # perform operation
+  beqz x16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160_success # SC succeeded, skip retry
+  addi x31, x31, -1 # decrement retry count
+  bnez x31, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160_success:
+  # Check if x16 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160_str)
+  LA(x6, scratch) # reload base address
+  LREG x28, 160(x6) # load stored value
+  # Check if x28 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x28, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 168)
-  RVTEST_TESTDATA_LOAD_INT(x16, x23) # load rs2: x23 = 0xa4cc15ffcf651698
-  LA(x11, scratch) # rs1 = base address
-  addi x13, x11, 168 # offset rs1 by 168
-  lr.w x0, (x11) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x29) # load rs2: x29 = 0xa009d1d979f13259
+  LA(x8, scratch) # rs1 = base address
+  addi x16, x8, 168 # offset rs1 by 168
+  LI(x3, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168_retry:
+  lr.w x0, (x8) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168:
-  sc.w x12, x23, (x13) # perform operation
-  # Check if x12 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168_str)
-  LA(x13, scratch) # reload base address
-  LREG x11, 168(x13) # load stored value
-  # Check if x11 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x11, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168_str)
+  sc.w x25, x29, (x16) # perform operation
+  beqz x25, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168_success # SC succeeded, skip retry
+  addi x3, x3, -1 # decrement retry count
+  bnez x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168_success:
+  # Check if x25 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x25, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168_str)
+  LA(x16, scratch) # reload base address
+  LREG x8, 168(x16) # load stored value
+  # Check if x8 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 176)
-  RVTEST_TESTDATA_LOAD_INT(x16, x26) # load rs2: x26 = 0x1ce68c033c862409
-  LA(x17, scratch) # rs1 = base address
-  addi x30, x17, 176 # offset rs1 by 176
-  lr.w x0, (x17) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x19) # load rs2: x19 = 0x09380ecb226c3f52
+  LA(x13, scratch) # rs1 = base address
+  addi x17, x13, 176 # offset rs1 by 176
+  LI(x15, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176_retry:
+  lr.w x0, (x13) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176:
-  sc.w x9, x26, (x30) # perform operation
-  # Check if x9 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x9, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176_str)
-  LA(x30, scratch) # reload base address
-  LREG x17, 176(x30) # load stored value
-  # Check if x17 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x17, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176_str)
+  sc.w x10, x19, (x17) # perform operation
+  beqz x10, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176_success # SC succeeded, skip retry
+  addi x15, x15, -1 # decrement retry count
+  bnez x15, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176_success:
+  # Check if x10 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x10, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176_str)
+  LA(x17, scratch) # reload base address
+  LREG x13, 176(x17) # load stored value
+  # Check if x13 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x13, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 184)
-  RVTEST_TESTDATA_LOAD_INT(x16, x8) # load rs2: x8 = 0xdbb339997d2d6d17
-  LA(x6, scratch) # rs1 = base address
-  addi x10, x6, 184 # offset rs1 by 184
-  lr.w x0, (x6) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x3) # load rs2: x3 = 0xbe94ad0f0ba01ee4
+  LA(x22, scratch) # rs1 = base address
+  addi x20, x22, 184 # offset rs1 by 184
+  LI(x28, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184_retry:
+  lr.w x0, (x22) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184:
-  sc.w x7, x8, (x10) # perform operation
-  # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184_str)
-  LA(x10, scratch) # reload base address
-  LREG x6, 184(x10) # load stored value
-  # Check if x6 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x6, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184_str)
+  sc.w x26, x3, (x20) # perform operation
+  beqz x26, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184_success # SC succeeded, skip retry
+  addi x28, x28, -1 # decrement retry count
+  bnez x28, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184_success:
+  # Check if x26 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x26, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184_str)
+  LA(x20, scratch) # reload base address
+  LREG x22, 184(x20) # load stored value
+  # Check if x22 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x22, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 192)
-  RVTEST_TESTDATA_LOAD_INT(x16, x30) # load rs2: x30 = 0x36a7cf052f2c7021
-  LA(x24, scratch) # rs1 = base address
-  addi x25, x24, 192 # offset rs1 by 192
-  lr.w x0, (x24) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x10) # load rs2: x10 = 0x6ce8bc3e2ae2ade6
+  LA(x3, scratch) # rs1 = base address
+  addi x6, x3, 192 # offset rs1 by 192
+  LI(x30, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192_retry:
+  lr.w x0, (x3) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192:
-  sc.w x20, x30, (x25) # perform operation
-  # Check if x20 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x20, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192_str)
-  LA(x25, scratch) # reload base address
-  LREG x24, 192(x25) # load stored value
-  # Check if x24 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192_str)
+  sc.w x19, x10, (x6) # perform operation
+  beqz x19, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192_success # SC succeeded, skip retry
+  addi x30, x30, -1 # decrement retry count
+  bnez x30, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192_success:
+  # Check if x19 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x19, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192_str)
+  LA(x6, scratch) # reload base address
+  LREG x3, 192(x6) # load stored value
+  # Check if x3 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 200)
-  RVTEST_TESTDATA_LOAD_INT(x16, x13) # load rs2: x13 = 0xfac45266aec5fdac
-  LA(x7, scratch) # rs1 = base address
-  addi x10, x7, 200 # offset rs1 by 200
-  lr.w x0, (x7) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x12) # load rs2: x12 = 0xff8745e517fd7b6e
+  LA(x10, scratch) # rs1 = base address
+  addi x9, x10, 200 # offset rs1 by 200
+  LI(x26, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200_retry:
+  lr.w x0, (x10) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200:
-  sc.w x28, x13, (x10) # perform operation
-  # Check if x28 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x28, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200_str)
-  LA(x10, scratch) # reload base address
-  LREG x7, 200(x10) # load stored value
-  # Check if x7 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x7, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200_str)
+  sc.w x3, x12, (x9) # perform operation
+  beqz x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200_success # SC succeeded, skip retry
+  addi x26, x26, -1 # decrement retry count
+  bnez x26, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200_success:
+  # Check if x3 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200_str)
+  LA(x9, scratch) # reload base address
+  LREG x10, 200(x9) # load stored value
+  # Check if x10 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x10, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 208)
-  RVTEST_TESTDATA_LOAD_INT(x16, x6) # load rs2: x6 = 0x7273d3ef9226aa06
-  LA(x12, scratch) # rs1 = base address
-  addi x23, x12, 208 # offset rs1 by 208
-  lr.w x0, (x12) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x26) # load rs2: x26 = 0x4009fa45520d45b9
+  LA(x17, scratch) # rs1 = base address
+  addi x19, x17, 208 # offset rs1 by 208
+  LI(x23, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208_retry:
+  lr.w x0, (x17) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208:
-  sc.w x27, x6, (x23) # perform operation
-  # Check if x27 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208_str)
-  LA(x23, scratch) # reload base address
-  LREG x12, 208(x23) # load stored value
-  # Check if x12 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208_str)
+  sc.w x16, x26, (x19) # perform operation
+  beqz x16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208_success # SC succeeded, skip retry
+  addi x23, x23, -1 # decrement retry count
+  bnez x23, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208_success:
+  # Check if x16 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x16, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208_str)
+  LA(x19, scratch) # reload base address
+  LREG x17, 208(x19) # load stored value
+  # Check if x17 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x17, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 216)
-  RVTEST_TESTDATA_LOAD_INT(x16, x2) # load rs2: x2 = 0xbea4b89cd7059e23
-  LA(x29, scratch) # rs1 = base address
-  addi x14, x29, 216 # offset rs1 by 216
-  lr.w x0, (x29) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x13) # load rs2: x13 = 0x3b865ffe2ed68aaf
+  LA(x3, scratch) # rs1 = base address
+  addi x20, x3, 216 # offset rs1 by 216
+  LI(x25, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216_retry:
+  lr.w x0, (x3) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216:
-  sc.w x8, x2, (x14) # perform operation
-  # Check if x8 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x8, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216_str)
-  LA(x14, scratch) # reload base address
-  LREG x29, 216(x14) # load stored value
-  # Check if x29 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x29, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216_str)
+  sc.w x30, x13, (x20) # perform operation
+  beqz x30, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216_success # SC succeeded, skip retry
+  addi x25, x25, -1 # decrement retry count
+  bnez x25, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216_success:
+  # Check if x30 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x30, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216_str)
+  LA(x20, scratch) # reload base address
+  LREG x3, 216(x20) # load stored value
+  # Check if x3 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 224)
-  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs2: x22 = 0x4b4d16ea24b21455
-  LA(x25, scratch) # rs1 = base address
-  addi x20, x25, 224 # offset rs1 by 224
-  lr.w x0, (x25) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x17) # load rs2: x17 = 0x049a4cfd382b151e
+  LA(x15, scratch) # rs1 = base address
+  addi x20, x15, 224 # offset rs1 by 224
+  LI(x23, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224_retry:
+  lr.w x0, (x15) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224:
-  sc.w x3, x22, (x20) # perform operation
-  # Check if x3 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224_str)
+  sc.w x27, x17, (x20) # perform operation
+  beqz x27, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224_success # SC succeeded, skip retry
+  addi x23, x23, -1 # decrement retry count
+  bnez x23, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224_success:
+  # Check if x27 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x27, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224_str)
   LA(x20, scratch) # reload base address
-  LREG x25, 224(x20) # load stored value
-  # Check if x25 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x25, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224_str)
+  LREG x15, 224(x20) # load stored value
+  # Check if x15 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x15, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 232)
-  RVTEST_TESTDATA_LOAD_INT(x16, x15) # load rs2: x15 = 0x4b85e3cf799fc088
-  LA(x17, scratch) # rs1 = base address
-  addi x8, x17, 232 # offset rs1 by 232
-  lr.w x0, (x17) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x17) # load rs2: x17 = 0x63e0a4dde60f1d81
+  LA(x12, scratch) # rs1 = base address
+  addi x16, x12, 232 # offset rs1 by 232
+  LI(x26, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232_retry:
+  lr.w x0, (x12) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232:
-  sc.w x14, x15, (x8) # perform operation
-  # Check if x14 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x14, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232_str)
-  LA(x8, scratch) # reload base address
-  LREG x17, 232(x8) # load stored value
-  # Check if x17 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x17, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232_str)
+  sc.w x6, x17, (x16) # perform operation
+  beqz x6, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232_success # SC succeeded, skip retry
+  addi x26, x26, -1 # decrement retry count
+  bnez x26, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232_success:
+  # Check if x6 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x6, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232_str)
+  LA(x16, scratch) # reload base address
+  LREG x12, 232(x16) # load stored value
+  # Check if x12 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x12, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 240)
-  RVTEST_TESTDATA_LOAD_INT(x16, x11) # load rs2: x11 = 0xee7c4e5fe0028532
-  LA(x24, scratch) # rs1 = base address
-  addi x12, x24, 240 # offset rs1 by 240
-  lr.w x0, (x24) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x25) # load rs2: x25 = 0xfb2ab9ba94c22576
+  LA(x14, scratch) # rs1 = base address
+  addi x16, x14, 240 # offset rs1 by 240
+  LI(x29, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240_retry:
+  lr.w x0, (x14) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240:
-  sc.w x2, x11, (x12) # perform operation
-  # Check if x2 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x2, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240_str)
-  LA(x12, scratch) # reload base address
-  LREG x24, 240(x12) # load stored value
-  # Check if x24 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x24, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240_str)
+  sc.w x3, x25, (x16) # perform operation
+  beqz x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240_success # SC succeeded, skip retry
+  addi x29, x29, -1 # decrement retry count
+  bnez x29, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240_success:
+  # Check if x3 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240_str)
+  LA(x16, scratch) # reload base address
+  LREG x14, 240(x16) # load stored value
+  # Check if x14 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x14, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 248)
-  RVTEST_TESTDATA_LOAD_INT(x16, x22) # load rs2: x22 = 0x16902fdaa5d446dc
-  LA(x20, scratch) # rs1 = base address
-  addi x29, x20, 248 # offset rs1 by 248
-  lr.w x0, (x20) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x11, x20) # load rs2: x20 = 0xc9ee713675769a76
+  LA(x1, scratch) # rs1 = base address
+  addi x12, x1, 248 # offset rs1 by 248
+  LI(x3, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248_retry:
+  lr.w x0, (x1) # establish reservation
 Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248:
-  sc.w x23, x22, (x29) # perform operation
-  # Check if x23 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x23, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248_str)
-  LA(x29, scratch) # reload base address
-  LREG x20, 248(x29) # load stored value
-  # Check if x20 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x21, x5, x4, x20, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248_str)
+  sc.w x30, x20, (x12) # perform operation
+  beqz x30, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248_success # SC succeeded, skip retry
+  addi x3, x3, -1 # decrement retry count
+  bnez x3, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248_retry # retry LR/SC if not exhausted
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248_success:
+  # Check if x30 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x30, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248_str)
+  LA(x12, scratch) # reload base address
+  LREG x1, 248(x12) # load stored value
+  # Check if x1 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x18, x5, x4, x1, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248, Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248_str)
 
 
-  mv x2, x21 # restore signature pointer to default register for teardown
+  mv x2, x18 # restore signature pointer to default register for teardown
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -5208,58 +5625,58 @@ RVTEST_DATA_BEGIN
 .dword 0xe3dd0f8af8065d0d
 .dword 0xa5272acd2d95b75d
 .dword 0xd50d125ffbf2f936
-.dword 0x4032cb25fe8d05eb
-.dword 0x99ce18d5cf3a3174
-.dword 0x48c54cdf00fe5f01
-.dword 0xa175141410167a2a
-.dword 0xfd1dcf3ddc62a079
-.dword 0x0ed7354d693873a7
-.dword 0xd349471622e5f3bd
+.dword 0x104b2ad9ea871046
+.dword 0xa2a6cf79c032cb25
+.dword 0x4f3a3174b6bde3a2
+.dword 0xa890d2ffe9b08ecb
+.dword 0x8b57e119b92816d8
+.dword 0xc942205c798d6825
+.dword 0xf76c5c19638f1cca
+.dword 0xca5f15262138a8e7
+.dword 0x024b23e8c45aa4bb
 .dword 0x8e5dfe56d5a8a279
 .dword 0x41d44cc4567bf100
 .dword 0x9b6fdb1a0be4ea67
-.dword 0x96d5d0f61c1d8cf6
-.dword 0x6eb2018dfbf1fb3c
-.dword 0xd5ad855e9073eb7f
-.dword 0xd474d40149504d85
+.dword 0x00d2a6aa0d79ad90
+.dword 0xac4219a950e15d5d
+.dword 0xf41dd17555ad855e
+.dword 0xeaceb295794126b8
 .dword 0x50af798881f36837
 .dword 0xc4edde22c26b4b99
-.dword 0x559f87f469a8e608
-.dword 0x68d657df1470b649
-.dword 0x8337568243f78a96
-.dword 0x4331a0659a42e03e
+.dword 0x1f4d58dbb9c661ad
+.dword 0x3877395920942b62
 .dword 0xc4853f7d8b490366
 .dword 0xb8c5ff01a3bd275a
-.dword 0xa427d44ad2555291
-.dword 0x70498171770732a9
-.dword 0x231fdc4a1f690799
-.dword 0xea0d0a50a0c2351f
-.dword 0x8722898b5f7592e0
-.dword 0x085550e11af148ea
+.dword 0x7a486d547e0415ea
+.dword 0x58d1657e86732d9e
+.dword 0xd8450e365142d44f
+.dword 0xf1021867e75ff97b
 .dword 0xca9b65da2571ea95
 .dword 0xba6603c1d484f515
 .dword 0x34f94209e7688e1f
-.dword 0xbdc41e8205a60c94
-.dword 0xc910a3c08dceed68
-.dword 0xd2b54ea5fc48f1dd
-.dword 0xd9b3fa334a938089
+.dword 0x5359971865cf1860
+.dword 0xffd19021ae623f8a
+.dword 0x3fd9152dba53c224
+.dword 0x688b6a41dbf8f3f6
 .dword 0xd1afddf203726cb2
 .dword 0xe082d1722373d869
 .dword 0xe8dc98d87c46b189
 .dword 0x9186f2260e601a24
-.dword 0x10c6b0ff00d1a363
-.dword 0xaa53aa8ca6eb40a0
-.dword 0xdbe95e393103b093
-.dword 0x924f29a88537af88
-.dword 0x52100b2721a22dee
-.dword 0xc215925d7ddf6376
-.dword 0xa324a06d63cfa6dc
-.dword 0x5c2aa599db258269
-.dword 0x242d0fc4bdef6d11
-.dword 0x8c02cce6c5510f69
-.dword 0x3d1c37a2b2d057ac
-.dword 0xfcdb636c14065af3
+.dword 0x893a732ec761107a
+.dword 0xfd1f193510570854
+.dword 0xc926c64e61bc0f84
+.dword 0xe28529d629934352
+.dword 0x548031692233d652
+.dword 0xfddf6376d129fd98
+.dword 0xc6ba81e149253559
+.dword 0x43ea0a8b3faad388
+.dword 0xa4d1ef4f4342938f
+.dword 0xfee2af9ec24794f4
+.dword 0xca4d15fa10a5122f
+.dword 0xd215e809f2962327
 .dword 0x76471a5d78de1281
+.dword 0xb0f61a36d9879cc3
+.dword 0x66b3630bcb263106
 .dword 0x0000000000000000
 .dword 0x0000000000000001
 .dword 0x0000000000000002
@@ -5276,6 +5693,8 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000fffffffe
 .dword 0x0000000100000000
 .dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
 .dword 0xf16b3a17eac63f33
 .dword 0xbaf32bc8dc990846
 .dword 0xc50c4bf8fa8955ad
@@ -5285,122 +5704,122 @@ RVTEST_DATA_BEGIN
 .dword 0x2f49a971a038198c
 .dword 0x69af963b053b37aa
 .dword 0xc000fe1c223781cc
-.dword 0xc3aea326ea9e0a11
-.dword 0xd970b3f8bb270215
-.dword 0xc7a70a9304d5aefc
-.dword 0x661bf409679ce471
+.dword 0xfb105f99f93d9509
+.dword 0x67d6cf3d796185ca
+.dword 0xf6ff266b25e3ec45
+.dword 0xb8e75cb4e61bf409
 .dword 0x9e2fd0b749b5692c
 .dword 0x5c2f8826358107ba
 .dword 0xac94d5743a38e6d8
 .dword 0x1edd36215c2152f8
 .dword 0xb582d12cb0bd38a1
 .dword 0xc2fa654ea0c780f1
-.dword 0x7ea2ffa228f30bac
-.dword 0xb1d8ee7c97c28439
+.dword 0x864f25f7d88fe5c1
+.dword 0x3b57d017e6922f07
 .dword 0x080d85fcc0cd5d26
 .dword 0x893bf996e1a65136
-.dword 0xda27285932b410bf
-.dword 0x7b9a559e39318eee
-.dword 0x1fc93326c7b0c770
-.dword 0x2a256c9a4e03ad4a
+.dword 0xb2b410bf80260bcc
+.dword 0x960c1bdc3257724e
+.dword 0x7e69e687dd0711aa
+.dword 0x1921f6a0e4066741
+.dword 0xc4444c25eb6e840a
 .dword 0xed0279575d8b28b7
 .dword 0x80d4f71d9e88a295
 .dword 0x53f9394d5b2532d9
-.dword 0x35f95789658bcf80
-.dword 0xfab9dbdf39c47741
-.dword 0xb81112479d78f494
-.dword 0xde1dcec7b73c23e5
-.dword 0xdf7030d4f88971c4
-.dword 0x94f0ccafb4e63af4
-.dword 0x40273c65372fe2dd
-.dword 0x0d6cae9e1f0182b3
-.dword 0x0653adff23c1723b
-.dword 0x945d9a963a1b2010
-.dword 0xa6f29cb4d858810d
-.dword 0x2f928f24f6b87bd1
-.dword 0x3003a9acb6aae06b
-.dword 0xb77370bedae547ae
-.dword 0xc6d32f4519657773
-.dword 0x758f2fef3fbe46b1
-.dword 0x43c23ed18dca7f19
-.dword 0x7cb05cce8a762d2e
+.dword 0x602f95a939a99634
+.dword 0xfe8b143a39495d1d
+.dword 0x3eb6aeaa185778f4
+.dword 0xf3c2549deb34dcca
+.dword 0x4bf55103fc32170c
+.dword 0x322d1f802f7c542e
+.dword 0xae60e73c90537c35
+.dword 0x4f2aac9e56d91f66
+.dword 0x0cc2f2be31d973cc
+.dword 0x200acb48d23d54f5
+.dword 0xf57ef0acf310fa57
+.dword 0xcf8d4502e7d46c06
+.dword 0x4377b25b1903b8ba
+.dword 0x4254735a5262f38f
 .dword 0x47db9e5b067f0b75
-.dword 0x4bd29b54f829c62b
-.dword 0x4cf2a5ce289255e8
-.dword 0x66c31e4149b659e1
-.dword 0xf75d859ec372e04d
-.dword 0x05bfc0abe9ea4792
-.dword 0x1078029ef29df108
-.dword 0x76204ad37fab4537
-.dword 0x592986a19bb8cc2d
-.dword 0xdc6393ea2c923084
+.dword 0x0d004cf552ad5f5c
+.dword 0x7162f4fe341521c0
+.dword 0x4372e04dc3f682c5
+.dword 0x7725cabd2b9303f3
+.dword 0x74353bb9aa01342d
 .dword 0xcd65cf5bab48820c
 .dword 0xb7df5206cabe16cd
-.dword 0x8971d38ff8aed566
-.dword 0x32b0acf41394df42
+.dword 0xefabc45a74674616
+.dword 0x3b33dea5c90fba90
+.dword 0x0681acfa99ff4866
+.dword 0x55dc6061f6534455
+.dword 0xfd4c2801057d5ddf
+.dword 0x72c85252037babd5
+.dword 0x44f4a81441733f96
+.dword 0x5914eee262ca21f8
+.dword 0x34181b2a93aad1cc
 .dword 0x73c98cf667cc2d1f
 .dword 0x5cb83d2d446b3456
-.dword 0x75ab8d10eb00c0c7
-.dword 0x8b730f565e42bb1c
-.dword 0x17e51bfa53c70b12
-.dword 0xe770db9fb04a609a
-.dword 0xeea094899fb7e511
-.dword 0x276d1dae3c22ca5b
-.dword 0x8f135111a1930e69
-.dword 0xa9b61926ba460211
+.dword 0x52b4c231efcae46a
+.dword 0x655238b34af096dc
+.dword 0x9f83eca4a6710596
+.dword 0x74ff9d8a6c251952
+.dword 0x9db46b7b9969dea1
+.dword 0x85eb59ff9c5f2864
+.dword 0xd538373e6ce6ccd4
+.dword 0x21930e69943f3541
+.dword 0xb3f53e1482d3422c
 .dword 0x2b13dfea022a6b93
 .dword 0xd6564b528b715f30
 .dword 0xc6f08a5256841575
-.dword 0xbf7eff29226c9dc6
-.dword 0x1c4b3c9770a64fcd
-.dword 0x482f7a6a151726a4
-.dword 0x2182ee6825878290
-.dword 0x39dd769532b39812
-.dword 0xc60fac7e38096527
-.dword 0x81839657d9c7d32a
-.dword 0x0e92dd9aa974d9c1
-.dword 0xe78480ba7f402b49
-.dword 0xc92688ec0d58b876
-.dword 0x72d01731e6d8a957
-.dword 0x0f9b2d0cc3a2697e
-.dword 0x040cd1ed082bfec3
-.dword 0x5aa31d083ea185a2
-.dword 0xe59f6802940f002c
-.dword 0x7d96db489f5b0a9d
-.dword 0x20b55f886973e868
-.dword 0x1c3de5059fda9b9b
-.dword 0xb6b21e1774aa515f
+.dword 0x3812a3e8b820cf0a
+.dword 0x97682d29ee8d0fd5
+.dword 0x1587634c256ab998
+.dword 0xa8af600bbb9e73bd
+.dword 0x0cccfcf942b06401
+.dword 0xd12aadf87a9a9fce
+.dword 0x99f7061ece05bc38
+.dword 0xa59b9fb413e900d5
+.dword 0xff402b49d5ad7102
+.dword 0x171d471789d05f66
+.dword 0x8f2633792d633708
+.dword 0xdc71b18b170680d1
+.dword 0xa4e14f3f12913ff3
+.dword 0x35af095a48d38076
+.dword 0xf347d7c85c45d6a5
+.dword 0x614f70cf79e4fdb8
+.dword 0xd2f7184500aa3b01
+.dword 0x648dc64724fcaebd
 .dword 0x93668219d19fdac8
-.dword 0xbbc4910ed6f829bb
+.dword 0x56f829bb9f125246
 .dword 0x9009805baf75b6f1
 .dword 0x7024036dc9597814
-.dword 0xe3af6aaa3d23d64e
-.dword 0x1e4ce74890fbc5a2
-.dword 0x7e29276b374d630b
-.dword 0xe0b6227b0467aa17
+.dword 0x96459a312fab75f1
+.dword 0xe3377d188bb0e5ed
+.dword 0x8467aa1739b8e669
 .dword 0x3f103d982f6ee86e
-.dword 0x453e86bd0859d0d3
-.dword 0xcfca1b0d58a764e4
+.dword 0xf0a8236310a324c5
 .dword 0x05d0e22df2df4461
-.dword 0x2b34dad3d4128300
-.dword 0x80d5c275b7084e76
-.dword 0xa23c6f50331dd4a6
-.dword 0x2e8486708c0d7dbf
-.dword 0xfa1f4a48c5db678d
-.dword 0x99f9ab56165a3de8
-.dword 0x1473a6876c34f7e8
-.dword 0x59e40b567a55a1b6
-.dword 0x4d42f562fd41f450
-.dword 0x59be3892e87cae6a
-.dword 0x90db87e4702db0bf
-.dword 0xabe5c29625267f3d
-.dword 0x39ee1a4bdbb1ce52
-.dword 0xae1c33a769eb3af8
-.dword 0x85608df82a512e0a
+.dword 0xb7ebadafc1f6efb3
+.dword 0x82103ed3d8cbdea1
+.dword 0x16f2406b16a8589e
+.dword 0x5bbb6df6fd2d1b72
+.dword 0x6e5d93cf182d8bb5
+.dword 0x5031ad06c2b7961d
+.dword 0x44f7f301b45e0bf8
+.dword 0xca22eb18cd153217
+.dword 0xa18a3b657b11a81d
+.dword 0xb5e1c6ea209f6c14
+.dword 0x6207cdbccc6b442a
+.dword 0xde60211852620b75
+.dword 0xddf828931bdcb3dc
 .dword 0xc5138e4d175d20d8
-.dword 0xe253113ff57ab0d4
+.dword 0xb961ece17816472a
 .dword 0xd8472e3113993a40
-.dword 0xb3f3690050211835
+.dword 0x135e0f0b73f7123d
+.dword 0x3ed8051e85f25abc
+.dword 0xa1b9be154b49b5fe
+.dword 0x392797440cf866ea
+.dword 0x53c9832f67960e80
 .dword 0xdd88eb95125f2fe5
 .dword 0x383ff64e2faa3c00
 .dword 0xaba1570644e32802
@@ -5408,37 +5827,37 @@ RVTEST_DATA_BEGIN
 .dword 0x393804ce8c074f50
 .dword 0x48e056d79028a9c8
 .dword 0x13b1c8bfc2279394
-.dword 0xe9e30d0730793a60
-.dword 0xe18fbd8390d77b31
-.dword 0x75caa5ed7a167753
-.dword 0xb123d82e3b8c2467
-.dword 0xfa75761c08c8963d
-.dword 0x5881d9efb3161e80
-.dword 0x21c12bcd8160e2cb
-.dword 0xf0a7d8085e621708
+.dword 0xff54b1f2efb20555
+.dword 0x613a1685f3cbdd48
+.dword 0xb797c4677cbe635f
+.dword 0x16910c6f8fbe3100
+.dword 0xfdcbf02157c4a555
+.dword 0x189155c027b7f4ee
+.dword 0x2c567b124957be83
+.dword 0x303f1aa6f2a9671e
 .dword 0x475ffff553aafaab
-.dword 0x9784280595410e63
-.dword 0xb8ab5c983296c965
-.dword 0x530e6fa4fb677b72
-.dword 0x6fd5e506936cfc03
-.dword 0xa570dccb87b41544
-.dword 0x8551f448dc16698e
-.dword 0x148663a4144a8b05
-.dword 0xbd1aa674d9bfdea2
+.dword 0x552b04ddf0509901
+.dword 0x04e0f7981caae6ef
+.dword 0x5f919a03ddfef480
+.dword 0x6d743e08f77b8f24
+.dword 0x5c16698e974396ce
+.dword 0x88d19d7135fe817b
 .dword 0x06496af0da2c8abe
-.dword 0xe7a44303feaf4928
-.dword 0xfb20ac09f7054b31
-.dword 0xa4cc15ffcf651698
-.dword 0x1ce68c033c862409
-.dword 0xdbb339997d2d6d17
-.dword 0x36a7cf052f2c7021
-.dword 0xfac45266aec5fdac
-.dword 0x7273d3ef9226aa06
-.dword 0xbea4b89cd7059e23
-.dword 0x4b4d16ea24b21455
-.dword 0x4b85e3cf799fc088
-.dword 0xee7c4e5fe0028532
-.dword 0x16902fdaa5d446dc
+.dword 0x7853fb2fddf501f1
+.dword 0x66fe3c9dda8d07a7
+.dword 0xff888f3ea57e6cef
+.dword 0x1520b0ef5a1f0e1e
+.dword 0xa009d1d979f13259
+.dword 0x09380ecb226c3f52
+.dword 0xbe94ad0f0ba01ee4
+.dword 0x6ce8bc3e2ae2ade6
+.dword 0xff8745e517fd7b6e
+.dword 0x4009fa45520d45b9
+.dword 0x3b865ffe2ed68aaf
+.dword 0x049a4cfd382b151e
+.dword 0x63e0a4dde60f1d81
+.dword 0xfb2ab9ba94c22576
+.dword 0xc9ee713675769a76
 
 // Testcase strings
 Zalrsc_sc_w_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: Zalrsc_sc.w_cg; cp: cp_rs1_nx0; bin: b1\""
@@ -5552,168 +5971,170 @@ Zalrsc_sc_w_cg_cp_rs2_edges_0xffffffff_str: .string "\"test: 108; cg: Zalrsc_sc.
 Zalrsc_sc_w_cg_cp_rs2_edges_0xfffffffe_str: .string "\"test: 109; cg: Zalrsc_sc.w_cg; cp: cp_rs2_edges; bin: 0xfffffffe\""
 Zalrsc_sc_w_cg_cp_rs2_edges_0x100000000_str: .string "\"test: 110; cg: Zalrsc_sc.w_cg; cp: cp_rs2_edges; bin: 0x100000000\""
 Zalrsc_sc_w_cg_cp_rs2_edges_0x100000001_str: .string "\"test: 111; cg: Zalrsc_sc.w_cg; cp: cp_rs2_edges; bin: 0x100000001\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b1_str: .string "\"test: 112; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b1\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b2_str: .string "\"test: 113; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b2\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b3_str: .string "\"test: 114; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b3\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b4_str: .string "\"test: 115; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b4\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b5_str: .string "\"test: 116; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b5\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b6_str: .string "\"test: 117; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b6\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b7_str: .string "\"test: 118; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b7\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b8_str: .string "\"test: 119; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b8\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b9_str: .string "\"test: 120; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b9\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b10_str: .string "\"test: 121; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b10\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b11_str: .string "\"test: 122; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b11\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b12_str: .string "\"test: 123; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b12\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b13_str: .string "\"test: 124; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b13\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b14_str: .string "\"test: 125; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b14\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b15_str: .string "\"test: 126; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b15\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b16_str: .string "\"test: 127; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b16\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b17_str: .string "\"test: 128; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b17\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b18_str: .string "\"test: 129; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b18\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b19_str: .string "\"test: 130; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b19\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b20_str: .string "\"test: 131; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b20\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b21_str: .string "\"test: 132; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b21\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b22_str: .string "\"test: 133; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b22\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b23_str: .string "\"test: 134; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b23\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b24_str: .string "\"test: 135; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b24\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b25_str: .string "\"test: 136; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b25\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b26_str: .string "\"test: 137; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b26\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b27_str: .string "\"test: 138; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b27\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b28_str: .string "\"test: 139; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b28\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b29_str: .string "\"test: 140; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b29\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b30_str: .string "\"test: 141; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b30\""
-Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b31_str: .string "\"test: 142; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b31\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b1_str: .string "\"test: 143; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b1\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b2_str: .string "\"test: 144; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b2\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b3_str: .string "\"test: 145; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b3\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b4_str: .string "\"test: 146; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b4\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b5_str: .string "\"test: 147; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b5\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b6_str: .string "\"test: 148; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b6\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b7_str: .string "\"test: 149; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b7\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b8_str: .string "\"test: 150; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b8\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b9_str: .string "\"test: 151; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b9\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b10_str: .string "\"test: 152; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b10\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b11_str: .string "\"test: 153; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b11\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b12_str: .string "\"test: 154; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b12\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b13_str: .string "\"test: 155; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b13\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b14_str: .string "\"test: 156; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b14\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 157; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b15\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b16_str: .string "\"test: 158; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b16\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b17_str: .string "\"test: 159; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b17\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b18_str: .string "\"test: 160; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b18\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b19_str: .string "\"test: 161; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b19\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b20_str: .string "\"test: 162; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b20\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b21_str: .string "\"test: 163; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b21\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b22_str: .string "\"test: 164; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b22\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b23_str: .string "\"test: 165; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b23\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b24_str: .string "\"test: 166; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b24\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b25_str: .string "\"test: 167; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b25\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b26_str: .string "\"test: 168; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b26\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b27_str: .string "\"test: 169; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b27\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b28_str: .string "\"test: 170; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b28\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b29_str: .string "\"test: 171; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b29\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b30_str: .string "\"test: 172; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b30\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b31_str: .string "\"test: 173; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b31\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b0_str: .string "\"test: 174; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b0\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b1_str: .string "\"test: 175; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b1\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b2_str: .string "\"test: 176; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b2\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b3_str: .string "\"test: 177; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b3\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b4_str: .string "\"test: 178; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b4\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b5_str: .string "\"test: 179; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b5\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b6_str: .string "\"test: 180; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b6\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b7_str: .string "\"test: 181; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b7\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b8_str: .string "\"test: 182; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b8\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b9_str: .string "\"test: 183; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b9\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b10_str: .string "\"test: 184; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b10\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b11_str: .string "\"test: 185; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b11\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b12_str: .string "\"test: 186; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b12\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b13_str: .string "\"test: 187; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b13\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b14_str: .string "\"test: 188; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b14\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b15_str: .string "\"test: 189; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b15\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b16_str: .string "\"test: 190; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b16\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b17_str: .string "\"test: 191; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b17\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b18_str: .string "\"test: 192; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b18\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b19_str: .string "\"test: 193; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b19\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b20_str: .string "\"test: 194; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b20\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b21_str: .string "\"test: 195; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b21\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b22_str: .string "\"test: 196; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b22\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b23_str: .string "\"test: 197; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b23\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b24_str: .string "\"test: 198; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b24\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b25_str: .string "\"test: 199; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b25\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b26_str: .string "\"test: 200; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b26\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b27_str: .string "\"test: 201; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b27\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b28_str: .string "\"test: 202; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b28\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b29_str: .string "\"test: 203; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b29\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b30_str: .string "\"test: 204; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b30\""
-Zalrsc_sc_w_cg_cmp_rd_rs2_b31_str: .string "\"test: 205; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b31\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b1_str: .string "\"test: 206; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b1\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b2_str: .string "\"test: 207; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b2\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b3_str: .string "\"test: 208; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b3\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b4_str: .string "\"test: 209; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b4\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b5_str: .string "\"test: 210; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b5\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b6_str: .string "\"test: 211; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b6\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b7_str: .string "\"test: 212; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b7\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b8_str: .string "\"test: 213; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b8\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b9_str: .string "\"test: 214; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b9\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b10_str: .string "\"test: 215; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b10\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b11_str: .string "\"test: 216; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b11\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b12_str: .string "\"test: 217; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b12\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b13_str: .string "\"test: 218; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b13\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b14_str: .string "\"test: 219; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b14\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b15_str: .string "\"test: 220; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b15\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b16_str: .string "\"test: 221; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b16\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b17_str: .string "\"test: 222; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b17\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b18_str: .string "\"test: 223; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b18\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b19_str: .string "\"test: 224; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b19\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b20_str: .string "\"test: 225; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b20\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b21_str: .string "\"test: 226; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b21\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b22_str: .string "\"test: 227; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b22\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b23_str: .string "\"test: 228; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b23\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b24_str: .string "\"test: 229; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b24\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b25_str: .string "\"test: 230; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b25\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b26_str: .string "\"test: 231; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b26\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b27_str: .string "\"test: 232; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b27\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b28_str: .string "\"test: 233; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b28\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b29_str: .string "\"test: 234; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b29\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b30_str: .string "\"test: 235; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b30\""
-Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b31_str: .string "\"test: 236; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b31\""
-Zalrsc_sc_w_cg_cp_custom_aqrl_str: .string "\"test: 237; cg: Zalrsc_sc.w_cg; cp: cp_custom_aqrl; bin: \""
-Zalrsc_sc_w_cg_cp_custom_aqrl_rl_str: .string "\"test: 238; cg: Zalrsc_sc.w_cg; cp: cp_custom_aqrl; bin: .rl\""
-Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl_str: .string "\"test: 239; cg: Zalrsc_sc.w_cg; cp: cp_custom_aqrl; bin: .aqrl\""
-Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_str: .string "\"test: 240; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_lr; bin: prev_lr_lr.w\""
-Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr_str: .string "\"test: 241; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_lr; bin: prev_lr_lr.w_sc_pairs_latest_lrr\""
-Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_str: .string "\"test: 242; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_sc; bin: true\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8_str: .string "\"test: 243; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_8\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16_str: .string "\"test: 244; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_16\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24_str: .string "\"test: 245; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_24\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32_str: .string "\"test: 246; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_32\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40_str: .string "\"test: 247; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_40\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48_str: .string "\"test: 248; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_48\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56_str: .string "\"test: 249; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_56\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64_str: .string "\"test: 250; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_64\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72_str: .string "\"test: 251; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_72\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80_str: .string "\"test: 252; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_80\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88_str: .string "\"test: 253; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_88\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96_str: .string "\"test: 254; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_96\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104_str: .string "\"test: 255; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_104\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112_str: .string "\"test: 256; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_112\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120_str: .string "\"test: 257; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_120\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128_str: .string "\"test: 258; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_128\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136_str: .string "\"test: 259; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_136\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144_str: .string "\"test: 260; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_144\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152_str: .string "\"test: 261; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_152\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160_str: .string "\"test: 262; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_160\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168_str: .string "\"test: 263; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_168\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176_str: .string "\"test: 264; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_176\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184_str: .string "\"test: 265; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_184\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192_str: .string "\"test: 266; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_192\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200_str: .string "\"test: 267; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_200\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208_str: .string "\"test: 268; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_208\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216_str: .string "\"test: 269; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_216\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224_str: .string "\"test: 270; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_224\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232_str: .string "\"test: 271; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_232\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240_str: .string "\"test: 272; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_240\""
-Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248_str: .string "\"test: 273; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_248\""
+Zalrsc_sc_w_cg_cp_rs2_edges_0x80000000_str: .string "\"test: 112; cg: Zalrsc_sc.w_cg; cp: cp_rs2_edges; bin: 0x80000000\""
+Zalrsc_sc_w_cg_cp_rs2_edges_0x7fffffff_str: .string "\"test: 113; cg: Zalrsc_sc.w_cg; cp: cp_rs2_edges; bin: 0x7fffffff\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b1_str: .string "\"test: 114; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b1\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b2_str: .string "\"test: 115; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b2\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b3_str: .string "\"test: 116; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b3\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b4_str: .string "\"test: 117; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b4\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b5_str: .string "\"test: 118; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b5\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b6_str: .string "\"test: 119; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b6\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b7_str: .string "\"test: 120; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b7\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b8_str: .string "\"test: 121; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b8\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b9_str: .string "\"test: 122; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b9\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b10_str: .string "\"test: 123; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b10\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b11_str: .string "\"test: 124; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b11\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b12_str: .string "\"test: 125; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b12\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b13_str: .string "\"test: 126; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b13\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b14_str: .string "\"test: 127; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b14\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b15_str: .string "\"test: 128; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b15\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b16_str: .string "\"test: 129; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b16\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b17_str: .string "\"test: 130; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b17\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b18_str: .string "\"test: 131; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b18\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b19_str: .string "\"test: 132; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b19\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b20_str: .string "\"test: 133; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b20\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b21_str: .string "\"test: 134; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b21\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b22_str: .string "\"test: 135; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b22\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b23_str: .string "\"test: 136; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b23\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b24_str: .string "\"test: 137; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b24\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b25_str: .string "\"test: 138; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b25\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b26_str: .string "\"test: 139; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b26\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b27_str: .string "\"test: 140; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b27\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b28_str: .string "\"test: 141; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b28\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b29_str: .string "\"test: 142; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b29\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b30_str: .string "\"test: 143; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b30\""
+Zalrsc_sc_w_cg_cmp_rs1_rs2_nx0_b31_str: .string "\"test: 144; cg: Zalrsc_sc.w_cg; cp: cmp_rs1_rs2_nx0; bin: b31\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b1_str: .string "\"test: 145; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b1\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b2_str: .string "\"test: 146; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b2\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b3_str: .string "\"test: 147; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b3\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b4_str: .string "\"test: 148; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b4\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b5_str: .string "\"test: 149; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b5\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b6_str: .string "\"test: 150; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b6\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b7_str: .string "\"test: 151; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b7\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b8_str: .string "\"test: 152; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b8\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b9_str: .string "\"test: 153; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b9\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b10_str: .string "\"test: 154; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b10\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b11_str: .string "\"test: 155; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b11\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b12_str: .string "\"test: 156; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b12\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b13_str: .string "\"test: 157; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b13\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b14_str: .string "\"test: 158; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b14\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b15_str: .string "\"test: 159; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b15\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b16_str: .string "\"test: 160; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b16\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b17_str: .string "\"test: 161; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b17\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b18_str: .string "\"test: 162; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b18\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b19_str: .string "\"test: 163; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b19\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b20_str: .string "\"test: 164; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b20\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b21_str: .string "\"test: 165; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b21\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b22_str: .string "\"test: 166; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b22\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b23_str: .string "\"test: 167; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b23\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b24_str: .string "\"test: 168; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b24\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b25_str: .string "\"test: 169; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b25\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b26_str: .string "\"test: 170; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b26\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b27_str: .string "\"test: 171; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b27\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b28_str: .string "\"test: 172; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b28\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b29_str: .string "\"test: 173; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b29\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b30_str: .string "\"test: 174; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b30\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_nx0_b31_str: .string "\"test: 175; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_nx0; bin: b31\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b0_str: .string "\"test: 176; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b0\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b1_str: .string "\"test: 177; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b1\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b2_str: .string "\"test: 178; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b2\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b3_str: .string "\"test: 179; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b3\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b4_str: .string "\"test: 180; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b4\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b5_str: .string "\"test: 181; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b5\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b6_str: .string "\"test: 182; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b6\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b7_str: .string "\"test: 183; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b7\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b8_str: .string "\"test: 184; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b8\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b9_str: .string "\"test: 185; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b9\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b10_str: .string "\"test: 186; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b10\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b11_str: .string "\"test: 187; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b11\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b12_str: .string "\"test: 188; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b12\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b13_str: .string "\"test: 189; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b13\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b14_str: .string "\"test: 190; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b14\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b15_str: .string "\"test: 191; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b15\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b16_str: .string "\"test: 192; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b16\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b17_str: .string "\"test: 193; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b17\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b18_str: .string "\"test: 194; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b18\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b19_str: .string "\"test: 195; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b19\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b20_str: .string "\"test: 196; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b20\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b21_str: .string "\"test: 197; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b21\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b22_str: .string "\"test: 198; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b22\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b23_str: .string "\"test: 199; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b23\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b24_str: .string "\"test: 200; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b24\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b25_str: .string "\"test: 201; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b25\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b26_str: .string "\"test: 202; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b26\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b27_str: .string "\"test: 203; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b27\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b28_str: .string "\"test: 204; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b28\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b29_str: .string "\"test: 205; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b29\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b30_str: .string "\"test: 206; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b30\""
+Zalrsc_sc_w_cg_cmp_rd_rs2_b31_str: .string "\"test: 207; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs2; bin: b31\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b1_str: .string "\"test: 208; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b1\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b2_str: .string "\"test: 209; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b2\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b3_str: .string "\"test: 210; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b3\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b4_str: .string "\"test: 211; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b4\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b5_str: .string "\"test: 212; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b5\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b6_str: .string "\"test: 213; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b6\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b7_str: .string "\"test: 214; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b7\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b8_str: .string "\"test: 215; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b8\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b9_str: .string "\"test: 216; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b9\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b10_str: .string "\"test: 217; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b10\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b11_str: .string "\"test: 218; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b11\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b12_str: .string "\"test: 219; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b12\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b13_str: .string "\"test: 220; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b13\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b14_str: .string "\"test: 221; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b14\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b15_str: .string "\"test: 222; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b15\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b16_str: .string "\"test: 223; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b16\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b17_str: .string "\"test: 224; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b17\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b18_str: .string "\"test: 225; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b18\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b19_str: .string "\"test: 226; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b19\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b20_str: .string "\"test: 227; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b20\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b21_str: .string "\"test: 228; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b21\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b22_str: .string "\"test: 229; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b22\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b23_str: .string "\"test: 230; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b23\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b24_str: .string "\"test: 231; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b24\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b25_str: .string "\"test: 232; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b25\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b26_str: .string "\"test: 233; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b26\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b27_str: .string "\"test: 234; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b27\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b28_str: .string "\"test: 235; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b28\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b29_str: .string "\"test: 236; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b29\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b30_str: .string "\"test: 237; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b30\""
+Zalrsc_sc_w_cg_cmp_rd_rs1_rs2_nx0_b31_str: .string "\"test: 238; cg: Zalrsc_sc.w_cg; cp: cmp_rd_rs1_rs2_nx0; bin: b31\""
+Zalrsc_sc_w_cg_cp_custom_aqrl_str: .string "\"test: 239; cg: Zalrsc_sc.w_cg; cp: cp_custom_aqrl; bin: \""
+Zalrsc_sc_w_cg_cp_custom_aqrl_rl_str: .string "\"test: 240; cg: Zalrsc_sc.w_cg; cp: cp_custom_aqrl; bin: .rl\""
+Zalrsc_sc_w_cg_cp_custom_aqrl_aqrl_str: .string "\"test: 241; cg: Zalrsc_sc.w_cg; cp: cp_custom_aqrl; bin: .aqrl\""
+Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_str: .string "\"test: 242; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_lr; bin: prev_lr_lr.w\""
+Zalrsc_sc_w_cg_cp_custom_sc_lr_prev_lr_lr_w_sc_pairs_latest_lrr_str: .string "\"test: 243; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_lr; bin: prev_lr_lr.w_sc_pairs_latest_lrr\""
+Zalrsc_sc_w_cg_cp_custom_sc_after_sc_true_str: .string "\"test: 244; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_after_sc; bin: true\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_8_str: .string "\"test: 245; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_8\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_16_str: .string "\"test: 246; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_16\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_24_str: .string "\"test: 247; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_24\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_32_str: .string "\"test: 248; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_32\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_40_str: .string "\"test: 249; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_40\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_48_str: .string "\"test: 250; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_48\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_56_str: .string "\"test: 251; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_56\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_64_str: .string "\"test: 252; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_64\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_72_str: .string "\"test: 253; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_72\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_80_str: .string "\"test: 254; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_80\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_88_str: .string "\"test: 255; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_88\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_96_str: .string "\"test: 256; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_96\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_104_str: .string "\"test: 257; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_104\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_112_str: .string "\"test: 258; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_112\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_120_str: .string "\"test: 259; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_120\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_128_str: .string "\"test: 260; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_128\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_136_str: .string "\"test: 261; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_136\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_144_str: .string "\"test: 262; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_144\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_152_str: .string "\"test: 263; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_152\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_160_str: .string "\"test: 264; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_160\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_168_str: .string "\"test: 265; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_168\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_176_str: .string "\"test: 266; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_176\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_184_str: .string "\"test: 267; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_184\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_192_str: .string "\"test: 268; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_192\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_200_str: .string "\"test: 269; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_200\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_208_str: .string "\"test: 270; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_208\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_216_str: .string "\"test: 271; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_216\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_224_str: .string "\"test: 272; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_224\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_232_str: .string "\"test: 273; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_232\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_240_str: .string "\"test: 274; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_240\""
+Zalrsc_sc_w_cg_cp_custom_sc_addresses_prev_lr_lr_w_address_difference_248_str: .string "\"test: 275; cg: Zalrsc_sc.w_cg; cp: cp_custom_sc_addresses; bin: prev_lr_lr.w & address_difference_248\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -43,16 +43,36 @@
     .option pop
 #endif
 
+// RVTEST_SIGUPD_FAST_TRAP(sigptr, tempreg, sigreg, csr, offset, mismatch)
+// Reads, records, or compares one CSR field without advancing sigptr.
+// Fast trap handlers use fixed offsets for their cause, EPC, and TVAL fields,
+// then advance sigptr once after all three fields. Both compile modes emit two
+// instructions so the signature and self-check ELFs have identical code layout.
+#ifdef RVTEST_SELFCHECK
+  #define RVTEST_SIGUPD_FAST_TRAP(_SIG_PTR, _TMPREG, _R, _CSR, _OFF, _MISMATCH) \
+    csrr _R, _CSR                                                           ;\
+    LREG _TMPREG, _OFF(_SIG_PTR)                                           ;\
+    bne _R, _TMPREG, _MISMATCH
+#else
+  #define RVTEST_SIGUPD_FAST_TRAP(_SIG_PTR, _TMPREG, _R, _CSR, _OFF, _MISMATCH) \
+    csrr _R, _CSR                                                           ;\
+    SREG _R, _OFF(_SIG_PTR)                                                ;\
+    nop
+#endif
+
 // TRAP_SIGUPD(tempreg, sigreg, offset, instptr, strptr)
 // Used to compare/write signatures while handling traps.
 // In Self Check mode, compare reference and DUT signatures and jump to
 // failedtest_trap_x7_x9 in case of a mismatch.
-// In failedtest_trap_x7_x9, x7/T2 is LINK_REG & x9/T4 is TEMP_REG
+// On failure, x6/T1 carries the actual value, DEFAULT_TEMP_REG carries the
+// expected value, x7/T2 is the link register, and x9/T4 is scratch.
 // If not in Self Check mode, just store signatures to the trap signature region
 #ifdef RVTEST_SELFCHECK
   #define TRAP_SIGUPD(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR)    \
     LREG _TMPREG, _OFF*REGWIDTH(T1)                             ;\
     beq  _TMPREG, _R, 2f                                        ;\
+    mv   T1, _R                                                 ;\
+    mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
     jal  T2, failedtest_trap_x7_x9                              ;\
     RVTEST_WORD_PTR _INST_PTR                                   ;\
     RVTEST_WORD_PTR _STR_PTR                                    ;\
@@ -62,6 +82,46 @@
   #define TRAP_SIGUPD(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR)    \
     SREG _R, _OFF*REGWIDTH(T1)                                  ;\
     beq  x0, x0, 2f                                             ;\
+    mv   T1, _R                                                 ;\
+    mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
+    jal  T2, failedtest_trap_x7_x9                              ;\
+    RVTEST_WORD_PTR _INST_PTR                                   ;\
+    RVTEST_WORD_PTR _STR_PTR                                    ;\
+    .word CSR_XEPC                                              ;\
+    2:                                                          ;
+#endif
+
+// TRAP_SIGUPD_ZERO_OK(tempreg, sigreg, offset, instptr, strptr)
+// TRAP_SIGUPD for a field a hart may leave at zero instead of its defined value.
+// xtinst holds either the transformed instruction or zero, at the hart's choice,
+// so neither value can be required: the check passes when the two values match or
+// when either side is zero. Two non-zero values must still match, so a hart that
+// transforms the wrong instruction is caught. Sail writes zero on every trap, so
+// nothing is compared against a Sail reference until sail-riscv#1982 adds the
+// option to write the transformed instruction.
+// Both compile modes emit the same number of instructions so the signature and
+// self-check ELFs have identical code layout.
+#ifdef RVTEST_SELFCHECK
+  #define TRAP_SIGUPD_ZERO_OK(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR) \
+    LREG _TMPREG, _OFF*REGWIDTH(T1)                             ;\
+    beq  _TMPREG, _R, 2f                                        ;\
+    beqz _R, 2f                                                 ;\
+    beqz _TMPREG, 2f                                            ;\
+    mv   T1, _R                                                 ;\
+    mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
+    jal  T2, failedtest_trap_x7_x9                              ;\
+    RVTEST_WORD_PTR _INST_PTR                                   ;\
+    RVTEST_WORD_PTR _STR_PTR                                    ;\
+    .word CSR_XEPC                                              ;\
+    2:                                                          ;
+#else
+  #define TRAP_SIGUPD_ZERO_OK(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR) \
+    SREG _R, _OFF*REGWIDTH(T1)                                  ;\
+    beq  x0, x0, 2f                                             ;\
+    beqz _R, 2f                                                 ;\
+    nop                                                         ;\
+    mv   T1, _R                                                 ;\
+    mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
     jal  T2, failedtest_trap_x7_x9                              ;\
     RVTEST_WORD_PTR _INST_PTR                                   ;\
     RVTEST_WORD_PTR _STR_PTR                                    ;\
@@ -119,8 +179,8 @@
 // On an F-only DUT with TEST_FLEN=64, CONFIG_FLEN is 32 so we take the single-
 // store path. Each slot is still SIG_STRIDE (=TEST_FLEN/8) bytes wide, leaving
 // 4 bytes of unused padding — harmless because the .fill reservation driven by
-// SIGUPD_COUNT is already an upper bound. The scratch load uses FP_LREG so only
-// the CONFIG_FLEN bits actually written by FSREG are read back.
+// SIGUPD_COUNT is already an upper bound. The temporary-memory load uses FP_LREG
+// so only the CONFIG_FLEN bits written by FSREG are read back.
 // See tests/env/utils.h for an explanation of CONFIG_FLEN and TEST_FLEN.
 //
 //  _SIG_PTR - Base register for signature region
@@ -142,7 +202,7 @@
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _INST_PTR, _STR_PTR)  \
       .option push                                           ;\
       .option norvc                                          ;\
-      LA(_LINK_REG, scratch)                                 ;\
+      LA(_LINK_REG, fp_sigupd_temp)                          ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       LREG _LINK_REG, 0(_LINK_REG)                           ;\
       LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
@@ -151,7 +211,7 @@
       RVTEST_WORD_PTR _INST_PTR                              ;\
       RVTEST_WORD_PTR _STR_PTR                               ;\
       1:                                                     ;\
-      LA(_LINK_REG, scratch)                                 ;\
+      LA(_LINK_REG, fp_sigupd_temp)                          ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       LREG _LINK_REG, REGWIDTH(_LINK_REG)                    ;\
       LREG _TEMP_REG, SIG_STRIDE(_SIG_PTR)                   ;\
@@ -167,7 +227,7 @@
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _INST_PTR, _STR_PTR)  \
       .option push                                           ;\
       .option norvc                                          ;\
-      LA(_LINK_REG, scratch)                                 ;\
+      LA(_LINK_REG, fp_sigupd_temp)                          ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       LREG _LINK_REG, 0(_LINK_REG)                           ;\
       SREG _LINK_REG, 0(_SIG_PTR)                            ;\
@@ -176,7 +236,7 @@
       RVTEST_WORD_PTR _INST_PTR                              ;\
       RVTEST_WORD_PTR _STR_PTR                               ;\
       1:                                                     ;\
-      LA(_LINK_REG, scratch)                                 ;\
+      LA(_LINK_REG, fp_sigupd_temp)                          ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       LREG _LINK_REG, REGWIDTH(_LINK_REG)                    ;\
       SREG _LINK_REG, SIG_STRIDE(_SIG_PTR)                   ;\
@@ -194,7 +254,7 @@
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _INST_PTR, _STR_PTR)  \
       .option push                                           ;\
       .option norvc                                          ;\
-      LA(_LINK_REG, scratch)                                 ;\
+      LA(_LINK_REG, fp_sigupd_temp)                          ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       FP_LREG _LINK_REG, 0(_LINK_REG)                        ;\
       LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
@@ -210,7 +270,7 @@
     #define RVTEST_SIGUPD_F(_SIG_PTR, _LINK_REG, _TEMP_REG, _F_TEMP_REG, _FR, _INST_PTR, _STR_PTR)  \
       .option push                                           ;\
       .option norvc                                          ;\
-      LA(_LINK_REG, scratch)                                 ;\
+      LA(_LINK_REG, fp_sigupd_temp)                          ;\
       FSREG _FR, 0(_LINK_REG)                                ;\
       FP_LREG _LINK_REG, 0(_LINK_REG)                        ;\
       SREG _LINK_REG, 0(_SIG_PTR)                            ;\
@@ -328,6 +388,7 @@
         jal _LINK_REG, failedtest_vec_base_##_LINK_REG##_##_TEMP_REG         ;\
         RVTEST_WORD_PTR _INST_PTR                                   ;\
         RVTEST_WORD_PTR _STR_PTR                                    ;\
+        vxor.vv _VREG, _VREG, _VREG    /* Dummy NOP that encodes VR for use in failure code */  ;\
     2:                                                              ;\
         RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)     ;\
         .option pop
@@ -346,6 +407,7 @@
         jal _LINK_REG, failedtest_vec_base_##_LINK_REG##_##_TEMP_REG         ;\
         RVTEST_WORD_PTR _INST_PTR                                   ;\
         RVTEST_WORD_PTR _STR_PTR                                    ;\
+        vxor.vv _VREG, _VREG, _VREG        /* Dummy NOP that encodes VR for use in failure code */ ;\
     2:                                                              ;\
         RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)     ;\
         .option pop
@@ -404,6 +466,7 @@
 //                    if possible.
 //   _VR            - Vector register under test
 //   _VS1           - Vector Source 1
+//   _MASK_REG      - When _VR == v0, we need to store the mask in a different register, so this is where the mask is.
 //   _MASKPROD_FLAG - Immediate flag indicating whether the instruction under test is mask-producing (1) or not (0)
 //   _MASKED_FLAG   - Immediate flag indicating whether the instruction under test is masked (1) or unmasked (0)
 //   _VCOMPRESS_FLAG - Immediate flag indicating whether the instruction under test is vcompress.m (1) or not (0),
@@ -420,7 +483,7 @@
 
 #ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR,  \
-        _VS1, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR) \
+        _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR) \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
@@ -436,15 +499,17 @@
         .else; \
             csrr _TEMP_REG, vl ;\
         .endif ; \
-        /* Set vl = VLMAX for full-register comparison*/                                                            \
-        vsetvli     _LINK_REG, x0, e##_VD_EEW, m##_LMUL, ta, ma ;                                                   \
         /* Load reference from signature and compute mismatch mask */                                               \
         .if (_MASKPROD_FLAG == 1); \
             /* Mask vector comparison: Load reference from signature and compute mismatch mask */                       \
+            /* Set vl = VLMAX for full-register comparison, for masks this means SEW=8, LMUL=8, VL=VLEN*/               \
+            vsetvli     _LINK_REG, x0, e8, m8, ta, ma ;                                                                 \
             vlm.v       _VTMP, 0(_SIG_PTR)       ;   /* Load reference data with vector unit-stride mask load */        \
             vmxor.mm    _MTMP, _VR, _VTMP        ;   /* MTMP[i] = 1 if result != reference for mask registers */        \
         .else; \
             /* Data vector comparison: Load reference from signature and compute mismatch mask */                       \
+            /* Set vl = VLMAX for full-register comparison*/                                                            \
+            vsetvli     _LINK_REG, x0, e ##_VD_EEW, m ##_LMUL, ta, ma ;                                                 \
             vle##_VD_EEW##.v _VTMP, 0(_SIG_PTR)     ;                                                                   \
             vmsne.vv    _MTMP, _VR, _VTMP        ;   /* _MTMP[i] = 1 if result != reference */                          \
         .endif; \
@@ -455,9 +520,11 @@
             LI          (_LINK_REG, (1 << _VD_EEW))         ; \
             bge         _TEMP_REG, _LINK_REG, 4f ; \
         .endif; \
-        vid.v       _VTMP                    ;   /* VTMP[i] = i (element index) */                                  \
-        vmsltu.vx   _MTMP3, _VTMP, _TEMP_REG ;   /* MTMP2[i] = (i < original vl) */                                 \
-        j 5f ; \
+        .if (_MASKPROD_FLAG == 0) ; /* This does not work in the mask producing case because we don't get the right lmul */ \
+            vid.v       _VTMP                    ;   /* VTMP[i] = i (element index) */                                  \
+            vmsltu.vx   _MTMP3, _VTMP, _TEMP_REG ;   /* MTMP2[i] = (i < original vl) */                                 \
+            j 5f ; \
+        .endif ; \
     4: ;\
         /* Calculate the mask by hand:  */ \
         /*   1: Calculate the bits of the mask of the byte between where the zeros and ones meet */ \
@@ -487,11 +554,15 @@
         /* Calculate the number of elements to slide _VTMP up */ \
         srli _TEMP_REG3, _TEMP_REG, 3; /* _TEMP_REG = _TEMP_REG >> 3 (divides by 8) */ \
         vslideup.vx _MTMP3, _VTMP, _TEMP_REG3; /* Slide Up By _TEMP_REG3. rs1 is NOT truncated to SEW bytes for this instruction */ \
-        vsetvli _LINK_REG, x0, e##_VD_EEW, m##_LMUL, ta, ma ; /* Return to the previous vector settings */                                \
+        .if (_MASKPROD_FLAG == 1) ; \
+            vsetvli _LINK_REG, x0, e8, m8, ta, ma; /* Return to the previous vector settings */     \
+        .else ; \
+            vsetvli _LINK_REG, x0, e##_VD_EEW, m##_LMUL, ta, ma ; /* Return to the previous vector settings */                                \
+        .endif ; \
     5: ;\
         .if (_MASKED_FLAG == 1); \
             /* Filter the active element mask, if the operation was masked */ \
-            vmand.mm  _MTMP2, _MTMP3, v0       ;   /* MTMP2 = Active = (i < vl) && v0[i] == 1 */                      \
+            vmand.mm  _MTMP2, _MTMP3, _MASK_REG       ;   /* MTMP2 = Active = (i < vl) && v0[i] == 1 */                      \
         .else ; \
             /* (vmv.v.v would generate an exception because _MTMP3 and _MTMP2 are not necessarily aligned for lmul) */ \
             vmand.mm _MTMP2, _MTMP3, _MTMP3; /* Move the base element mask into _MTMP2 */ \
@@ -505,7 +576,7 @@
         /* Check whether instr is a mask-producing instruction */                                                                      \
         .if (_MASKPROD_FLAG == 1); \
             /* Mask vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
-            vmv.v.v      _MTMP2, _VR              ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
+            vmand.mm     _MTMP2, _VR, _VR        ;    /* MTMP2[i] = (VR[i] == 1), vmv.v.v traps */                  \
             vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = tail && !(VR[i] == 1) → mismatch with all 1s */  \
             /* Check tail elements mismatches */                                                                        \
             vmand.mm    _VTMP, _VTMP, _MTMP      ;   /* VTMP[i] = tail && (vd != sig) → mismatch with signature */      \
@@ -537,14 +608,14 @@
             j 12f; /* If unmasked, no mask inactive → all checks have passed */ \
         .else; \
             /* Build mask inactive mask */                                                                              \
-            vmandn.mm   _VTMP, _MTMP3, v0        ;   /* VTMP = base && (v0 == 0) = inactive */                      \
+            vmandn.mm   _VTMP, _MTMP3, _MASK_REG        ;   /* VTMP = base && (v0 == 0) = inactive */                      \
             /* Extract and check vma policy */                                                                          \
             srli        _LINK_REG, _TEMP_REG2, 7 ;   /* vma = vtype[7] */                                               \
             andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
             beqz        _LINK_REG, 3f            ;   /* If vma==0 (undisturbed), skip agnostic relaxation */            \
             .if (_MASKPROD_FLAG == 1); \
                 /* Mask vector mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                \
-                vmv.v.v      _MTMP2, _VR              ;   /* MTMP2[i] = (VR[i] == 1) */                                      \
+                vmand.mm     _MTMP2, _VR, _VR        ;    /* MTMP2[i] = (VR[i] == 1), vmv.v.v traps */                  \
                 vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = inactive && !(VR[i] == 1) → mismatch with all 1s */  \
             .else; \
                 /* Mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                            \
@@ -576,6 +647,7 @@
         jal         _LINK_REG, failedtest_vec_mask_##_LINK_REG##_##_TEMP_REG ;                                      \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+        vxor.vv     _VR, _VR, _VR            ;  /* Dummy NOP that encodes VR for use in failure code */             \
     10:                                                                                                             \
         /* active region FAIL path */                                                                               \
         vsetvli     _LINK_REG, x0, e##_VD_EEW, m1, ta, ma ;  /* Set LMUL=1 to prevent vmv.v.v trapping */           \
@@ -590,6 +662,7 @@
         jal         _LINK_REG, failedtest_vec_active_##_LINK_REG##_##_TEMP_REG ;                                    \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+        vxor.vv     _VR, _VR, _VR            ;  /* Dummy NOP that encodes VR for use in failure code */             \
     20:                                                                                                             \
         /* tail region FAIL path */                                                                                 \
         vsetvli     _LINK_REG, x0, e##_VD_EEW, m1, ta, ma ;  /* Set LMUL=1 to prevent vmv.v.v trapping */           \
@@ -604,6 +677,7 @@
         jal         _LINK_REG, failedtest_vec_tail_##_LINK_REG##_##_TEMP_REG ;                                      \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+        vxor.vv     _VR, _VR, _VR            ;  /* Dummy NOP that encodes VR for use in failure code */             \
     12:                                                                                                             \
         /* PASS */                                                                                                  \
         RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG3)                                                    ;\
@@ -611,7 +685,7 @@
         .option pop
 #else
     #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR,  \
-        _VS1, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR) \
+        _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR) \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
@@ -627,15 +701,17 @@
         .else; \
             csrr _TEMP_REG, vl ;\
         .endif ; \
-        /* Set vl = VLMAX for full-register comparison*/                                                            \
-        vsetvli     _LINK_REG, x0, e ##_VD_EEW, m ##_LMUL, ta, ma ;                                                 \
         /* Load reference from signature and compute mismatch mask */                                               \
         .if (_MASKPROD_FLAG == 1) ; \
             /* Mask vector comparison: Load reference from signature and compute mismatch mask */                       \
+            /* Set vl = VLMAX for full-register comparison, for masks this means SEW=8, LMUL=8, VL=VLEN*/               \
+            vsetvli     _LINK_REG, x0, e8, m8, ta, ma ;                                                                 \
             vsm.v       _VR, 0(_SIG_PTR)         ;   /* Load reference data with vector unit-stride mask load */        \
             nop                                  ;                                                                      \
         .else; \
             /* Data vector comparison: Load reference from signature and compute mismatch mask */                       \
+            /* Set vl = VLMAX for full-register comparison*/                                                            \
+            vsetvli     _LINK_REG, x0, e ##_VD_EEW, m ##_LMUL, ta, ma ;                                                 \
             vse##_VD_EEW##.v _VR, 0(_SIG_PTR)    ;                                                                   \
             nop                                  ;                                                                      \
         .endif; \
@@ -644,9 +720,11 @@
             LI          (_LINK_REG, (1 << _VD_EEW))         ; \
             bge         _TEMP_REG, _LINK_REG, 4f ; \
         .endif; \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
-        nop                                  ;                                                                      \
+        .if (_MASKPROD_FLAG == 0) ; /* This does not work in the mask producing case because we don't get the right lmul */ \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+            nop                                  ;                                                                      \
+        .endif ; \
     4: /* Comments provided for context into where we are relative to the self-checking macro */ \
         nop                                  ;                                                                      \
         nop                                  ;                                                                      \
@@ -660,7 +738,11 @@
         /* As, v1 = 1, this sets only the first element of vtmp to 1 */ \
         nop                                  ;                                                                      \
         /* Return to a full vector register */ \
-        nop                                  ;                                                                      \
+        .if (_MASKPROD_FLAG == 1) ; \
+            nop ; \
+        .else ; \
+            nop ; \
+        .endif ; \
         /* Set the target to be all ones at the start */ \
         LI(_LINK_REG, 0xff)                                  ;                                                                      \
         nop                                  ;                                                                      \
@@ -753,6 +835,7 @@
         jal         _LINK_REG, failedtest_vec_mask_##_LINK_REG##_##_TEMP_REG ;                                      \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+        vxor.vv     _VR, _VR, _VR            ;  /* Dummy NOP that encodes VR for use in failure code */             \
     10:                                                                                                             \
         /* active region FAIL path */                                                                               \
         nop                                  ;                                                                      \
@@ -767,6 +850,7 @@
         jal         _LINK_REG, failedtest_vec_active_##_LINK_REG##_##_TEMP_REG ;                                    \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+        vxor.vv     _VR, _VR, _VR            ;  /* Dummy NOP that encodes VR for use in failure code */             \
     20:                                                                                                             \
         /* tail region FAIL path */                                                                                 \
         nop                                  ;                                                                      \
@@ -781,6 +865,7 @@
         jal         _LINK_REG, failedtest_vec_tail_##_LINK_REG##_##_TEMP_REG ;                                      \
         RVTEST_WORD_PTR _INST_PTR            ;                                                                      \
         RVTEST_WORD_PTR _STR_PTR             ;                                                                      \
+        vxor.vv     _VR, _VR, _VR            ;  /* Dummy NOP that encodes VR for use in failure code */             \
     12:                                                                                                             \
         /* PASS */                                                                                                  \
         RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG3)                                                    ;\
@@ -789,7 +874,7 @@
 #endif
 
 #ifdef RVTEST_SELFCHECK
-    #define RVTEST_SIGUPD_VLMAX_MASK_PROD(_SIG_PTR, _LINK_REG, _TEMP_REG, _VR, _VD_EEW, _LMUL) \
+    #define RVTEST_SIGUPD_VLMAX_MASK_PROD(_SIG_PTR, _LINK_REG, _TEMP_REG, _VR) \
         .option push                         ;                                                 \
         .option norvc                        ;                                                 \
         nop                                  ;                                                 \
@@ -797,13 +882,53 @@
         RVTEST_SIGUPD_V_ADVANCE_NOP          ;                                                 \
         .option pop
 #else
-    #define RVTEST_SIGUPD_VLMAX_MASK_PROD(_SIG_PTR, _LINK_REG, _TEMP_REG, _VR, _VD_EEW, _LMUL) \
+    #define RVTEST_SIGUPD_VLMAX_MASK_PROD(_SIG_PTR, _LINK_REG, _TEMP_REG, _VR) \
         .option push                                            ;                              \
         .option norvc                                           ;                              \
-        vsetvli     _LINK_REG, x0, e##_VD_EEW, m##_LMUL, ta, ma ;                              \
+        /* Store the whole mask, regardless of vl, the corresponding read uses this setting */   \
+        vsetvli     _LINK_REG, x0, e8, m8, ta, ma               ;                              \
         vsm.v _VR, 0(_SIG_PTR)                                  ;                              \
         RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG) ;                              \
         .option pop
+#endif
+
+// RVTEST_SIGUPD_VXSAT(sigptr, linkreg, tempreg, instptr, strptr)
+// Reads vxsat and compares/stores it to the signature at 0(sigptr).
+// In SELFCHECK mode, compares the value in vxsat with the value in memory
+// at 0(sigptr) and jumps to a failure handler if different.
+// In non-SELFCHECK mode, stores vxsat to memory at 0(sigptr).
+// In both cases, increments sigptr by SIG_STRIDE.
+//  _SIG_PTR - Base register for signature region
+//  _LINK_REG - Link register to use for failure jump
+//  _TEMP_REG - Temporary register to use for loading signature
+//  _INST_PTR - label on instruction being tested (for PC reporting)
+//  _STR_PTR - label to string describing the test
+#ifdef RVTEST_SELFCHECK
+  #define RVTEST_SIGUPD_VXSAT(_SIG_PTR, _LINK_REG, _TEMP_REG, _INST_PTR, _STR_PTR)  \
+    .option push                                           ;\
+    .option norvc                                          ;\
+    csrr _LINK_REG, vxsat                                  ;\
+    LREG _TEMP_REG, 0(_SIG_PTR)                            ;\
+    beq _TEMP_REG, _LINK_REG, 1f                           ;\
+    jal _LINK_REG, failedtest_vxsat_##_LINK_REG##_##_TEMP_REG ;\
+    RVTEST_WORD_PTR _INST_PTR                              ;\
+    RVTEST_WORD_PTR _STR_PTR                               ;\
+    1:                                                     ;\
+    addi _SIG_PTR, _SIG_PTR, SIG_STRIDE                    ;\
+    .option pop
+#else
+  #define RVTEST_SIGUPD_VXSAT(_SIG_PTR, _LINK_REG, _TEMP_REG, _INST_PTR, _STR_PTR)  \
+    .option push                                           ;\
+    .option norvc                                          ;\
+    csrr _LINK_REG, vxsat                                  ;\
+    SREG _LINK_REG, 0(_SIG_PTR)                            ;\
+    beq x0, x0, 1f                                         ;\
+    jal _LINK_REG, failedtest_vxsat_##_LINK_REG##_##_TEMP_REG ;\
+    RVTEST_WORD_PTR _INST_PTR                              ;\
+    RVTEST_WORD_PTR _STR_PTR                               ;\
+    1:                                                     ;\
+    addi _SIG_PTR, _SIG_PTR, SIG_STRIDE                    ;\
+    .option pop
 #endif
 
 // Canary value to indicate bounds of signature region
@@ -827,9 +952,29 @@
       .word TRAP_CANARY_VALUE
 #endif
 
+#if UDB_MXLEN==64
+  #define FINAL_SIG_OFFSET_CANARY_VALUE \
+      0x4B8E2D17A6C0F953
+  #define FINAL_SIG_OFFSET_CANARY \
+      .dword FINAL_SIG_OFFSET_CANARY_VALUE
+  #define FINAL_TRAP_OFFSET_CANARY_VALUE \
+      0x7A110FF5C0DEF00D
+  #define FINAL_TRAP_OFFSET_CANARY \
+      .dword FINAL_TRAP_OFFSET_CANARY_VALUE
+#else
+  #define FINAL_SIG_OFFSET_CANARY_VALUE \
+      0x4B8E2D17
+  #define FINAL_SIG_OFFSET_CANARY \
+      .word FINAL_SIG_OFFSET_CANARY_VALUE
+  #define FINAL_TRAP_OFFSET_CANARY_VALUE \
+      0x7A110FF5
+  #define FINAL_TRAP_OFFSET_CANARY \
+      .word FINAL_TRAP_OFFSET_CANARY_VALUE
+#endif
+
 // Read _CSR into _R and record/check the signature
 #define RVTEST_SIGUPD_CSR_RD(_SIG_PTR, _LINK_REG, _TEMP_REG, _CSR, _R, _INST_PTR, _STR_PTR) \
-    CSRR(_R, _CSR)                                       ;\
+    csrr _R, _CSR                                    ;\
     RVTEST_SIGUPD(_SIG_PTR, _LINK_REG, _TEMP_REG, _R, _INST_PTR, _STR_PTR)
 
 // Abbreviated form with default registers
@@ -839,7 +984,7 @@
 
 // Write _R1 into _CSR, then read back into _R2 and record/check the signature
 #define RVTEST_SIGUPD_CSR_WR(_SIG_PTR, _LINK_REG, _TEMP_REG, _CSR, _R1, _R2, _INST_PTR, _STR_PTR) \
-    CSRW(_CSR, _R1)                                      ;\
+    csrw _CSR, _R1                                      ;\
     RVTEST_SIGUPD_CSR_RD(_SIG_PTR, _LINK_REG, _TEMP_REG, _CSR, _R2, _INST_PTR, _STR_PTR)
 
 // Abbreviated form with default registers, overwrites _R with value read back

@@ -14,7 +14,7 @@ implemented_extensions:
   - { name: H, version: "= 1.0.0" }
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
-  - { name: Q, version: "= 1.0.0" }
+  - { name: Q, version: "= 2.2.0" }
   - { name: S, version: "= 1.13.0" }
   - { name: Sdext, version: "= 1.0.0" }
   - { name: Sdtrig, version: "= 1.0.0" }
@@ -31,11 +31,9 @@ implemented_extensions:
   - { name: Smcntrpmf, version: "= 1.0.0" }
   - { name: Smcsrind, version: "= 1.0.0" }
   - { name: Smctr, version: "= 1.0.0" }
-  - { name: Smdbltrp, version: "= 1.0.0" }
   - { name: Smepmp, version: "= 1.0.0" }
   - { name: Smmpm, version: "= 1.0.0" }
   - { name: Smnpm, version: "= 1.0.0" }
-  - { name: Smpmpdeleg, version: "= 0.9.2" }
   # - { name: Smrnmi, version: "= 1.0.0" } spike does not support Smrnmi
   - { name: Smstateen, version: "= 1.0.0" }
   - { name: Ssaia, version: "= 1.0.0" }
@@ -48,11 +46,10 @@ implemented_extensions:
   - { name: Ssdbltrp, version: "= 1.0.0" }
   - { name: Ssnpm, version: "= 1.0.0" }
   - { name: Sspm, version: "= 1.0.0" }
-  - { name: Sspmp, version: "= 0.9.2" }
-  - { name: Sspmpen, version: "= 0.9.2" }
   - { name: Ssqosid, version: "= 1.0.0" }
   - { name: Ssstateen, version: "= 1.0.0" }
-  - { name: Ssstrict, version: "= 1.0.0" }
+  # - { name: Ssstrict, version: "= 1.0.0" } # Spike does not aim to support Ssstrict as of 8/20/2026
+  # https://github.com/riscv-software-src/riscv-isa-sim/issues/1976#issuecomment-5335375358
   - { name: Sstc, version: "= 1.0.0" }
   - { name: Sstvala, version: "= 1.0.0" }
   - { name: Sstvecd, version: "= 1.0.0" }
@@ -69,7 +66,6 @@ implemented_extensions:
   - { name: Svinval, version: "= 1.0.0" }
   - { name: Svnapot, version: "= 1.0.0" }
   - { name: Svpbmt, version: "= 1.0.0" }
-  - { name: Svrsw60t59b, version: "= 1.0.0" }
   - { name: Svvptc, version: "= 1.0.0" }
   - { name: U, version: "= 1.0.0" }
   - { name: V, version: "= 1.0.0" }
@@ -156,6 +152,7 @@ implemented_extensions:
   - { name: Zvl64b, version: "= 1.0.0" }
   - { name: Zvl128b, version: "= 1.0.0" }
 params:
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
   # A params
   MISALIGNED_AMO: false
   LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
@@ -186,11 +183,15 @@ params:
   # Zicntr params
   TIME_CSR_IMPLEMENTED: true
   # U params
+  WFI_U_MODE: false
   MUTABLE_MISA_U: false
   U_MODE_ENDIANNESS: dynamic
   UXLEN: [64]
   TRAP_ON_ECALL_FROM_U: true
   # S params
+  SEI_INTR_IMPL: true
+  SSI_INTR_IMPL: true
+  STI_INTR_IMPL: true
   MUTABLE_MISA_S: false
   ASID_WIDTH: 16
   S_MODE_ENDIANNESS: dynamic
@@ -245,13 +246,16 @@ params:
       true,
       true,
     ]
-  STVEC_MODE_DIRECT: true
-  STVEC_MODE_VECTORED: true
+  STVEC_MODES: [0, 1]
+  STVEC_BASE_ALIGNMENT_VECTORED: 4
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
-  MSTATUS_TVM_IMPLEMENTED: true
   # Sm params
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  WFI_FINITE: true
   MXLEN: 64
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
@@ -289,8 +293,12 @@ params:
   MTVEC_BASE_ALIGNMENT_DIRECT: 4
   MTVEC_BASE_ALIGNMENT_VECTORED: 4
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
-  NUM_PMP_ENTRIES: 64
+  NUM_PMP_ENTRIES: 16
   PMP_GRANULARITY: 2
+  NUM_USABLE_PMP_ENTRIES: 16
+  PMP_NA4_SUPPORTED: true
+  PMP_NAPOT_SUPPORTED: true
+  PMP_TOR_SUPPORTED: true
   HPM_COUNTER_EN:
     [
       false,
@@ -326,6 +334,35 @@ params:
       true,
       true,
     ]
+  HPM_COUNTER3_WIDTH: 64
+  HPM_COUNTER4_WIDTH: 64
+  HPM_COUNTER5_WIDTH: 64
+  HPM_COUNTER6_WIDTH: 64
+  HPM_COUNTER7_WIDTH: 64
+  HPM_COUNTER8_WIDTH: 64
+  HPM_COUNTER9_WIDTH: 64
+  HPM_COUNTER10_WIDTH: 64
+  HPM_COUNTER11_WIDTH: 64
+  HPM_COUNTER12_WIDTH: 64
+  HPM_COUNTER13_WIDTH: 64
+  HPM_COUNTER14_WIDTH: 64
+  HPM_COUNTER15_WIDTH: 64
+  HPM_COUNTER16_WIDTH: 64
+  HPM_COUNTER17_WIDTH: 64
+  HPM_COUNTER18_WIDTH: 64
+  HPM_COUNTER19_WIDTH: 64
+  HPM_COUNTER20_WIDTH: 64
+  HPM_COUNTER21_WIDTH: 64
+  HPM_COUNTER22_WIDTH: 64
+  HPM_COUNTER23_WIDTH: 64
+  HPM_COUNTER24_WIDTH: 64
+  HPM_COUNTER25_WIDTH: 64
+  HPM_COUNTER26_WIDTH: 64
+  HPM_COUNTER27_WIDTH: 64
+  HPM_COUNTER28_WIDTH: 64
+  HPM_COUNTER29_WIDTH: 64
+  HPM_COUNTER30_WIDTH: 64
+  HPM_COUNTER31_WIDTH: 64
   HPM_EVENTS: [0]
   MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
@@ -427,6 +464,9 @@ params:
   VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR: "additive_identity"
   IMPRECISE_VECTOR_TRAP_SETTABLE: false
   # H params
+  VSEI_INTR_IMPL: false
+  VSSI_INTR_IMPL: false
+  VSTI_INTR_IMPL: true
   MUTABLE_MISA_H: false
   VSXLEN: [64]
   VUXLEN: [64]
@@ -435,8 +475,7 @@ params:
   VU_MODE_ENDIANNESS: little
   GSTAGE_MODE_BARE: true
   VSSTAGE_MODE_BARE: true
-  VSTVEC_MODE_DIRECT: true
-  VSTVEC_MODE_VECTORED: true
+  VSTVEC_MODES: [0, 1]
   HSTATEEN_ENVCFG_TYPE: rw
   IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
   NUM_EXTERNAL_GUEST_INTERRUPTS: 63
@@ -534,7 +573,9 @@ params:
   HSTATEEN_CONTEXT_TYPE: rw
   MCONTEXT_AVAILABLE: true
   # Pointer masking params
-  PMLEN: 17
+  SUPPORTED_PMLEN_SMMPM: [0, 7, 16]
+  SUPPORTED_PMLEN_SMNPM: [0, 7, 16]
+  SUPPORTED_PMLEN_SSNPM: [0, 7, 16]
   # Ssqosid params
   MCID_WIDTH: 12
   RCID_WIDTH: 12
@@ -550,6 +591,7 @@ params:
   MSTATEEN_IMSIC_TYPE: rw
   HSTATEEN_IMSIC_TYPE: rw
   # Smctr params
+  SCTRDEPTH_DEPTH_LEGAL_VALUES: [16, 32, 64, 128, 256]
   MCTRCTL_CORSWAPINH_IMPLEMENTED: true
   MCTRCTL_CUSTOM_IMPLEMENTED: false
   MCTRCTL_DIRCALLINH_IMPLEMENTED: true
@@ -567,3 +609,5 @@ params:
   MCTRCTL_STE_IMPLEMENTED: true
   MCTRCTL_TKBRINH_IMPLEMENTED: true
   MCTRCTL_TRETINH_IMPLEMENTED: true
+  # Zawrs params
+  ZAWRS_NTO_IS_NOP: true

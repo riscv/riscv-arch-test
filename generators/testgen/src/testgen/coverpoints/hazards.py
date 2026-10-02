@@ -11,7 +11,7 @@ from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_instruction
-from testgen.formatters.params import generate_random_params
+from testgen.instructions.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_gpr_hazard", "cp_fpr_hazard")

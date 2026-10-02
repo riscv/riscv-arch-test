@@ -8,12 +8,12 @@
 
 """cp_imm_edges_jal and cp_imm_edges_c_jal coverpoint generators."""
 
-from testgen.asm.helpers import return_test_regs, write_sigupd
+from testgen.asm.helpers import write_sigupd
 from testgen.constants import INDENT
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
-from testgen.formatters.params import generate_random_params
+from testgen.instructions.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_imm_edges_jal", "cp_imm_edges_c_jal")
@@ -146,5 +146,5 @@ def make_cp_imm_edges_jal(instr_name: str, instr_type: str, coverpoint: str, tes
             ]
         )
 
-    return_test_regs(test_data, params)
+    return_testcase_registers(test_data, params)
     return [test_data.end_test_chunk()]

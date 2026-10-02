@@ -6,7 +6,6 @@
 ##################################
 
 from testgen.asm.helpers import load_int_reg, write_sigupd
-from testgen.constants import INDENT
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -43,24 +42,15 @@ def format_csb_type(
 
     sig_reg = test_data.int_regs.sig_reg
 
-    setup.append(f"addi x{sig_reg}, x{sig_reg}, {-params.immval} # adjust base address for offset")
-
+    # Store at offset uimm within the signature slot, then check the whole slot. The rest of the slot keeps
+    # its 0xdeadbeef fill, so a misdecoded offset changes the checked value when the stored data differs
+    # from the fill; cp_uimm tests choose rs2val to guarantee that.
     test = [f"{instr_name} x{params.rs2}, {params.immval}(x{sig_reg}) # perform store"]
     check = [
-        f"addi x{sig_reg}, x{sig_reg}, {params.immval} # restore base address",
         f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # increment signature pointer",
-        "#ifdef RVTEST_SELFCHECK",
         f"LREG x{params.temp_reg}, -SIG_STRIDE(x{sig_reg}) # load stored value for checking",
         write_sigupd(params.temp_reg, test_data),
-        "#else",
-        f"{instr_name} x{params.rs2}, 0(x{sig_reg}) # repeat store so it is available for checking",
-        f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # adjust base address for offset",
-        f"{INDENT}# nops to ensure length matches SELFCHECK",
-        "nop",
-        "nop",
-        "nop",
-        "#endif",
     ]
     assert test_data.test_chunk is not None
-    test_data.test_chunk.sigupd_count += 1
+    test_data.test_chunk.sigupd_count += 1  # Test store writes one extra signature slot
     return (setup, test, check)

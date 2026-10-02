@@ -10,8 +10,6 @@
 
 """Top-level command-line interface for test generation."""
 
-from __future__ import annotations
-
 import os
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
@@ -33,7 +31,7 @@ from rich.progress import (
 from testgen.constants import E_EXTENSION_TESTS
 from testgen.generate import generate_priv_test, generate_unpriv_extension_tests
 from testgen.io.testplans import get_extensions
-from testgen.priv import get_priv_test_extensions
+from testgen.priv import get_priv_test_suites
 
 # CLI interface setup
 testgen_app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]}, add_completion=False)
@@ -48,6 +46,7 @@ class UnprivTask:
     testsuite: str
     testplan_dir: Path
     output_test_dir: Path
+    is_vector: bool
 
 
 @dataclass
@@ -88,7 +87,7 @@ def generate_all_tests(
 
     # Get available extensions
     available_unpriv_extensions = get_extensions(testplan_dir)
-    available_priv_extensions = get_priv_test_extensions()
+    available_priv_extensions = get_priv_test_suites()
     unpriv_ext_list: list[str] = []
     priv_ext_list: list[str] = []
 
@@ -124,7 +123,8 @@ def generate_all_tests(
             for testsuite in sorted(unpriv_ext_list):
                 if E_ext and testsuite not in E_EXTENSION_TESTS:
                     continue
-                tasks.append(UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir))
+                is_vector = testsuite.startswith(("V", "Zv"))
+                tasks.append(UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir, is_vector))
 
     tasks.extend(PrivTask(testsuite, output_test_dir) for testsuite in sorted(priv_ext_list))
 
@@ -164,6 +164,7 @@ def _dispatch_test_gen(task: UnprivTask | PrivTask) -> None:
             testsuite=task.testsuite,
             testplan_dir=task.testplan_dir,
             output_test_dir=task.output_test_dir,
+            is_vector=task.is_vector,
         )
     elif isinstance(task, PrivTask):
         generate_priv_test(

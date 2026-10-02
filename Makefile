@@ -11,10 +11,14 @@ COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/
 
 # EXTENSIONS is a comma-separated list of extensions to generate tests for. Leave blank to generate for all tests.
 # EXCLUDE_EXTENSIONS overrides EXTENSIONS to exclude particular extensions from test generation. Applies as a negative filter after EXTENSIONS.
+# CERTIFICATE limits the selected tests to those relevant to the specified certificate.
+# ENABLE_EXPERIMENTAL_EXTENSIONS enables tests for extensions that are not ratified.
 # Default exclusion reasons:
 #  - Sm: Insufficient WARL configuration options.
 EXTENSIONS  ?=
-EXCLUDE_EXTENSIONS ?= Sm
+EXCLUDE_EXTENSIONS ?= SdtrigSm,SdtrigS,SdtrigU
+CERTIFICATE ?=
+ENABLE_EXPERIMENTAL_EXTENSIONS ?=
 
 # DEBUG, FAST, VERBOSE, and CLEAN_INTERMEDIATES are runtime options for controlling build output. DEBUG is mutually exclusive with FAST and CLEAN_INTERMEDIATES.
 # Set to True to enable, or leave blank to disable.
@@ -128,7 +132,6 @@ help:
 	  'coverage'            'Build with coverage instrumentation for $$(COVERAGE_CONFIG_FILES)' \
 	  'regression'          'Clean, run coverage, then every config with a run_cmd.txt' \
 	  'clean'               'Remove build artifacts (preserves extensions.txt and .validated)' \
-	  'clean-tests'         'Remove generated test sources'
 	@printf '\n\033[1mGenerators:\033[0m\n'
 	@printf '  \033[36m%-20s\033[0m %s\n' \
 	  'testgen'             'Run testgen only' \
@@ -148,6 +151,8 @@ help:
 	  'CONFIG_FILES'        'Configs for the default elfs target' \
 	  'EXTENSIONS'          'Comma-separated extensions to generate (default: all)' \
 	  'EXCLUDE_EXTENSIONS'  'Comma-separated extensions to skip' \
+	  'CERTIFICATE'         'Only select tests for the specified certificate' \
+	  'ENABLE_EXPERIMENTAL_EXTENSIONS' 'Enable tests for unratified extensions' \
 	  'JOBS'                'Parallel build jobs (0 = auto, also honors -j)' \
 	  'DEBUG'               'Emit objdump/trace/trap reports (slower)' \
 	  'FAST'                'Skip objdump for faster ELF builds' \
@@ -159,6 +164,7 @@ help:
 	@printf '  make spike-rv64-max                  # build & run a single config\n'
 	@printf '  make tests EXTENSIONS=I,M            # generate just I and M tests\n'
 	@printf '  make EXCLUDE_EXTENSIONS=ExceptionsSm # skip an extension\n'
+	@printf '  make CERTIFICATE=RVA23               # build RVA23 tests only\n'
 	@printf '  make coverage                        # coverage build\n'
 
 
@@ -172,7 +178,9 @@ elfs: tests
 		--test-dir $(TESTDIR) \
 		--jobs $(JOBS) \
 		$(if $(EXTENSIONS),--extensions $(EXTENSIONS)) \
+		$(if $(CERTIFICATE),--certificate $(CERTIFICATE)) \
 		$(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) \
+		$(if $(ENABLE_EXPERIMENTAL_EXTENSIONS),--enable-experimental-extensions) \
 		$(if $(DEBUG),--debug) \
 		$(if $(FAST),--fast) \
 		$(if $(CLEAN_INTERMEDIATES),--clean-intermediates) \
@@ -221,12 +229,6 @@ tests: covergroupgen testgen
 .PHONY: vector-tests
 vector-tests: covergroupgen vector-testgen
 
-.PHONY: clean-tests
-clean-tests:
-	rm -rf $(SRCDIR64) $(SRCDIR32) $(SRCDIR64E) $(SRCDIR32E)
-	rm -rf $(UNPRIV_COVERPOINTS_DIR) $(COVERAGE_HELPERS_DIR)
-	rm -rf $(STAMP_DIR)
-
 
 
 ########### Coverage ###########
@@ -235,6 +237,8 @@ clean-tests:
 coverage: COVERAGE := True
 coverage: CONFIG_FILES := $(COVERAGE_CONFIG_FILES)
 coverage: elfs
+
+
 
 ########### Regression ###########
 # Clean, run coverage, then run all configs that have a run_cmd.txt, continuing through failures.
@@ -268,6 +272,13 @@ RUN_CMD_FILES := $(shell find config -name run_cmd.txt)
 $(foreach f,$(RUN_CMD_FILES),\
   $(foreach d,$(filter-out config,$(subst /, ,$(patsubst %/run_cmd.txt,%,$(f)))),\
     $(eval _TARGETS_$(d) += $(f))))
+
+# Keep spike-reference comparison configs available as explicit targets, but
+# exclude them from the aggregate `make whisper` target.
+WHISPER_RUN_TARGET_EXCLUDES := \
+  config/whisper/whisper-rv32-max-spike-ref/run_cmd.txt \
+  config/whisper/whisper-rv64-max-spike-ref/run_cmd.txt
+_TARGETS_whisper := $(filter-out $(WHISPER_RUN_TARGET_EXCLUDES),$(_TARGETS_whisper))
 
 # Collect all unique target names
 ALL_RUN_TARGETS := $(sort $(foreach f,$(RUN_CMD_FILES),\

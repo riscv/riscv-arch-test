@@ -32,7 +32,7 @@ for f in "$@"; do
     found=1
     while IFS= read -r line; do
       echo "$f:$line"
-    done <<< "$matches"
+    done <<<"$matches"
   fi
 done
 

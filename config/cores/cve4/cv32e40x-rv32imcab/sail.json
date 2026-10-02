@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Eclipse Foundation
 // SPDX-License-Identifier: Apache-2.0
 {
-  "$schema": "/opt/riscv/share/sail-riscv/sail_riscv_config_schema.json",
+  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.14.1/sail_riscv_config_schema.json",
   "base": {
     "xlen": 32,
     "E": false,
@@ -27,6 +27,10 @@
     // corresponding bit of `mcounteren` is writable, otherwise the
     // bit is read-only zero.
     "mcounteren_writable_bits": {
+      "len": 32,
+      "value": "0x00000008"
+    },
+    "hcounteren_writable_bits": {
       "len": 32,
       "value": "0x00000008"
     },
@@ -64,9 +68,34 @@
         "base_alignment": 2
       }
     },
+    "vstvec": {
+      "direct": {
+        "supported": false
+      },
+      "vectored": {
+        "supported": false,
+        "base_alignment": 2
+      }
+    },
+    "medeleg": {
+      "delegatable_bits": {
+        "len": 64,
+        "value": "0x0000_0000_000c_b3FF"
+      }
+    },
+    "mideleg": {
+      "delegatable_bits": {
+        "len": "xlen",
+        "value": "0x0000_2222"
+      }
+    },
     "xtval_nonzero": {
       // mtval is hardwired to 0 in cv32e40x.
       "illegal_instruction": false,
+      "virtual_instruction": false,
+      "load_guest_page_fault": false,
+      "samo_guest_page_fault": false,
+      "fetch_guest_page_fault": false,
       "software_breakpoint": false,
       "hardware_breakpoint": false,
       "load_address_misaligned": false,
@@ -79,6 +108,7 @@
       "fetch_access_fault": false,
       "fetch_page_fault": false,
       "software_check": false,
+      "hardware_error": true,
       "reserved_exceptions": false
     },
     "reserved_behavior": {
@@ -105,9 +135,13 @@
       // - "ExtContext_Off" allows only {Off}.  This makes the field read-only zero.
       "fs_legal_states": "ExtContext_Off",
       "vs_legal_states": "ExtContext_Off"
-    }
+    },
+    "privileged_isa_version": "Privileged_ISA_1_12"
   },
   "memory": {
+    "physaddr_bits": 32,
+    "asidlen": 9,
+    "vmidlen": 7,
     // cv32e40x has no PMP
     "pmp": {
       "grain": 0,
@@ -126,16 +160,13 @@
         // LR.W/SC.W with non-naturally aligned address raises address misaligned exception
         // (User Manual, Exceptions and Interrupts: exception codes 4/6).
         // Access fault takes priority if the region has no atomic support (PMA).
-        "lrsc": "AlignmentException",
+        "lrsc": { "Some": "AlignmentException" },
         // Misaligned AMO raises store/AMO address misaligned (code 6).
-        "amo": "AlignmentException"
+        "amo": { "Some": "AlignmentException" }
       },
-      "allowed_within_exp": 0,
+      "default_allowed_within_exp": 0,
       "byte_by_byte": false,
       "order_decreasing": false
-    },
-    "translation": {
-      "dirty_update": false
     },
     "dtb_address": {
       "len": 64,
@@ -167,10 +198,13 @@
             "load_store": { "None": null },
             "vector": { "None": null },
             // Misaligned AMO in main memory raises address misaligned (before PMA check).
-            "amo": "AlignmentException"
+            "amo": "AlignmentException",
+            "lrsc": "AccessFault"
           },
           // A_EXT=A: full AMO (amoswap/amoadd/amoand/amoor/amoxor/amomax/amomin)
           "atomic_support": "AMOArithmetic",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
           // LR/SC reservation sets managed externally; non-eventual (conservative).
           "reservability": "RsrvNonEventual",
           "supports_cbo_zero": false,
@@ -204,10 +238,13 @@
             "load_store": { "AccessFault": null },
             "vector": { "None": null },
             // LR/SC or AMO in I/O region raises access fault (PMA atomic attribute not set).
-            "amo": "AccessFault"
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
           },
           // No atomic support in I/O regions.
           "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
           "reservability": "RsrvNone",
           "supports_cbo_zero": false,
           "supports_pte_read": false,
@@ -230,6 +267,13 @@
       "reservation_set_size_exp": 3,
       "require_exact_reservation_addr": false,
       "invalidate_on_same_hart_store": false
+    },
+    "interrupts": {
+      "machine": {
+        "software": { "supported": true },
+        "external": { "supported": true },
+        "timer": { "supported": true }
+      }
     },
     "clint": {
       "supported": true,
@@ -259,7 +303,8 @@
       "supported": true
     },
     "F": {
-      "supported": false
+      "supported": false,
+      "fflags_dirty_policy": "Fflags_Dirty_Precise"
     },
     "D": {
       "supported": false
@@ -286,11 +331,45 @@
       "supported": true
     },
     "S": {
-      "supported": false
+      "supported": false,
+      "interrupts": {
+        "software": { "supported": false },
+        "external": { "supported": false },
+        "timer": { "supported": false }
+      }
     },
     "U": {
       "supported": false
     },
+
+    "H": {
+      "supported": false,
+      "geilen": 31,
+      "guest_page_fault_writes_htval": true,
+      "hgatp_modes": {
+        "Sv32x4": false,
+        "Sv39x4": false,
+        "Sv48x4": false,
+        "Sv57x4": false
+      },
+      "vsatp_modes": {
+        "Sv32": true,
+        "Sv39": false,
+        "Sv48": false,
+        "Sv57": false
+      }
+    },
+
+    "Sha": { "supported": false },
+    "Shcounterenw": { "supported": false },
+    "Shgatpa": { "supported": false },
+    "Shtvala": { "supported": false },
+    "Shvsatpa": { "supported": false },
+    "Shvstvala": { "supported": false },
+    "Shvstvecd": { "supported": false },
+    "Sstvecd": { "supported": false },
+    "Svukte": { "supported": false },
+    "Zilx": { "supported": false },
     "Zibi": {
       "supported": false
     },
@@ -367,6 +446,9 @@
     "Zalrsc": {
       // VERIFIED — A_EXT=A includes LR.W/SC.W
       "supported": true
+    },
+    "Zama16b": {
+      "supported": false
     },
     "Zawrs": {
       "supported": false,

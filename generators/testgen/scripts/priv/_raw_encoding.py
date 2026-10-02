@@ -1,4 +1,4 @@
-"""Raw .4byte encoding helper for SsstrictV reserved-encoding generators.
+"""Raw .insn encoding helper for SsstrictV reserved-encoding generators.
 
 Many SsstrictV coverpoints sample reserved encodings the GAS assembler refuses
 to emit (vd=v0 for vadc, vm=1 for unmasked-only ops, vs2!=v0 for vmv.v.v,
@@ -13,7 +13,7 @@ mew=1 for vector loads/stores, etc.). This module provides:
   - Convenience helpers for the standard fields.
 
 The generators that consume this module emit a normal trap-eligible vsetivli
-plus operand-init prologue, then ``.4byte 0x...`` for the test instruction
+plus operand-init prologue, then ``.insn 4, 0x...`` for the test instruction
 itself, then run the standard SsstrictV epilog via ``writeVecTest``.
 """
 
@@ -123,7 +123,7 @@ def emit_raw_test(instruction: str, cp: str, encoded: int, *,
                   rs2_zero: bool = False,
                   scratch: int = 6,
                   comment: str = "") -> None:
-    """Emit a single .4byte raw-encoding test under trap-eligible state.
+    """Emit a single .insn raw-encoding test under trap-eligible state.
 
     Wrapper around ``writeVecTest`` for SsstrictV reserved-encoding tests
     whose mnemonic/operand combination the assembler refuses.
@@ -139,7 +139,7 @@ def emit_raw_test(instruction: str, cp: str, encoded: int, *,
         rs2_zero: if True, set x2 = 0 so the encoding's rs2=x2 (used by some
             strided-LS reserved tests) is a stride of 0.
         scratch: scratch GPR (must NOT be 0; default 6 is safe).
-        comment: extra comment for the .4byte line.
+        comment: extra comment for the .insn line.
     """
     from ._ssstrictv_helpers import sig_params
 
@@ -154,7 +154,7 @@ def emit_raw_test(instruction: str, cp: str, encoded: int, *,
     # Re-emit vsetivli right before the test so SAMPLE_BEFORE captures vtype.
     emit_vsetivli(scratch, vl=vl, sew=sew, lmul_flag=lmul_flag)
 
-    testline = f".4byte 0x{encoded:08x}  # {instruction} reserved encoding"
+    testline = f".insn 4, 0x{encoded:08x}  # {instruction} reserved encoding"
 
     common.add_testcase_string(cp, instruction)
     # Use vd=0 / sew/lmul=1 for signature emission; the trap (or its absence)

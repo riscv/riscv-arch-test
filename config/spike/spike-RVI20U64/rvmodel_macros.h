@@ -104,7 +104,7 @@
 
 #define RVMODEL_INTERRUPT_LATENCY 10
 
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
+#define RVMODEL_TIMER_INT_SOON_DELAY 1000
 
 // Spike ticks the CLINT timer every 100 instructions (default --insns-per-tick).
 // Define a 100x multiplier to convert between timer tick and processor cycle count.

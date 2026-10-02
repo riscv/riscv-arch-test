@@ -23,7 +23,93 @@ to be writable).
 https://docs.google.com/spreadsheets/d/1A-WXaAMJItmS6xfvJTAbtvhiR0XQ4AMe1oX2GEr21JM/edit?usp=sharing[Google Sheet Testplan]
 ,===
 
+===== Normative Rule Sources
+
+:spmp-v1-source: https://github.com/riscv/riscv-spmp/blob/4ce228207193c55247200110e3d5b6881a17c367/sspmp
+
+The normative mappings use the 49 `norm:` tags in the
+{spmp-v1-source}/header.adoc[ratified SPMP v1.0 specification], with the `norm:` prefix removed.
+The sources are {spmp-v1-source}/spmp_spec.adoc[Sspmp],
+{spmp-v1-source}/spmpswitch.adoc[Sspmpen], and
+{spmp-v1-source}/Resource_Sharing.adoc[Smpmpdeleg].
+
+[NOTE]
+====
+The ISA-manual snapshot used by `make -C docs/ctp normrules` has not yet incorporated
+these SPMP rules. As of 2026-10-02, 48 of the 49 tag names are absent from that index.
+The remaining name, `sfence_vma_ordering`, also exists in the base Supervisor ISA,
+where it describes ordering of stores before implicit memory-management references.
+The SPMP tag instead describes ordering of SPMP CSR writes before subsequent S/U accesses.
+Use the SPMP source above to review this suite's rule text; the generated table and
+mismatch report alone cannot validate the SPMP mappings until the source index and
+this tag collision are resolved.
+====
+
 include::norm/SspmpSm_norm_rules.adoc[]
+
+===== Checks Without Normative Tags
+
+The following former local rule names do not identify `norm:` tags in SPMP v1.0.
+They are recorded here for traceability; their test and coverpoint implementations
+are retained. They are excluded from `coverpoints/norm/SspmpSm.yaml` until the
+specification provides matching tags. A nearby tag must not be used to imply a
+broader requirement, or to turn advisory or reserved behavior into a mandatory check.
+
+[cols="2,3,4",options="header"]
+|===
+|Requirement (legacy traceability name) |Existing coverpoints |Source and tag status
+|`sspmp_includes_sfence_vma`
+|`SspmpSm_csr_cg/cp_sfence_ordering`
+|{spmp-v1-source}/spmp_spec.adoc#L267[sspmp/spmp_spec.adoc:267]. No separately tagged extension-inclusion requirement; SFENCE.VMA ordering is tagged as sfence_vma_ordering. The same coverpoint is already retained there.
+|`num_spmp_entries_param`
+|`SspmpSm_csr_cg/{cp_spmp_indirect_access, cp_spmp_oob_read_zero}`
+|{spmp-v1-source}/spmp_spec.adoc#L41[sspmp/spmp_spec.adoc:41]. The 1 to 64 entry count is specified but has no norm tag. Parameter mapping remains in coverpoints/param/SspmpSm.yaml.
+|`spmpaddr_warl`
+|`SspmpSm_csr_cg/cp_spmpaddr_write`
+|{spmp-v1-source}/spmp_spec.adoc#L57[sspmp/spmp_spec.adoc:57]. WARL address-register semantics are specified but not tagged.
+|`spmpaddr_impl_bits_same`
+|`SspmpSm_csr_cg/cp_spmpaddr_impl_bits_same`
+|{spmp-v1-source}/spmp_spec.adoc#L56[sspmp/spmp_spec.adoc:56]. Equal address width is written with should, not must, and has no norm tag.
+|`spmpcfg_bits_5_6_rsv`
+|`SspmpSm_csr_cg/cp_spmpcfg_reserved_zero`
+|{spmp-v1-source}/spmp_spec.adoc#L82[sspmp/spmp_spec.adoc:82]. Reserved bits 5 and 6 have no tag. This sentence does not itself assert read-zero semantics.
+|`spmpcfg-a_valid`
+|`SspmpSm_addr_cg/{cp_addr_match_off, cp_addr_match_tor, cp_addr_match_na4, cp_addr_match_napot}`
+|{spmp-v1-source}/spmp_spec.adoc#L127[sspmp/spmp_spec.adoc:127]. A non-OFF and TOR range validity are described in an untagged NOTE. The four address-mode tags are not equivalent to this whole requirement.
+|`spmp_checks_lower_priv`
+|`SspmpSm_perm_cg/{cp_smode_rule, cp_umode_rule}`
+|{spmp-v1-source}/spmp_spec.adoc#L12[sspmp/spmp_spec.adoc:12]. Checks below effective M privilege are specified but not tagged.
+|`spmpcfg-rwx_warl`
+|`SspmpSm_perm_cg/{cp_smode_rule, cp_umode_rule, cp_shared_rule, cp_reserved_encoding}`
+|{spmp-v1-source}/spmp_spec.adoc#L161[sspmp/spmp_spec.adoc:161]. WARL RWX semantics are specified but not tagged.
+|`spmp_match_all_bytes`
+|`SspmpSm_addr_cg/cp_spmp_match_all_bytes`
+|{spmp-v1-source}/spmp_spec.adoc#L193[sspmp/spmp_spec.adoc:193]. All-byte matching and failure semantics are specified but not tagged. match_priority only tags first matching entry selection.
+|`spmp_exception_priority`
+|`SspmpSm_perm_cg/cp_spmp_exception_priority`
+|{spmp-v1-source}/spmp_spec.adoc#L9[sspmp/spmp_spec.adoc:9]. SPMP priority above PMP/PMA is specified but not tagged.
+|`spmpen_upper_bits_write_ignored`
+|`SspmpSm_spmpen_cg/cp_spmpen_upper_bits_ignored`
+|{spmp-v1-source}/spmpswitch.adoc#L17[sspmp/spmpswitch.adoc:17]. Writes to upper non-delegated spmpen bits are ignored in the spec, but the requirement is not tagged.
+|`smpmpdeleg_pmp_entries`
+|`SspmpSm_csr_cg/{cp_mpmpdeleg_pmpnum_field, cp_mpmpdeleg_oob_access}`
+|{spmp-v1-source}/Resource_Sharing.adoc#L9[sspmp/Resource_Sharing.adoc:9]. 64 architectural entries with possibly fewer writable entries are specified but not tagged.
+|`mpmpdeleg`
+|`SspmpSm_csr_cg/cp_mpmpdeleg_pmpnum_field`
+|{spmp-v1-source}/Resource_Sharing.adoc#L17[sspmp/Resource_Sharing.adoc:17]. MXLEN CSR width and CSR number 0x316 are specified but not tagged. mpmpdeleg_pmpnum_field tags the field semantics only.
+|`mpmpdeleg-pmpnum_warl_limit`
+|`SspmpSm_csr_cg/cp_mpmpdeleg_pmpnum_field`
+|{spmp-v1-source}/Resource_Sharing.adoc#L21[sspmp/Resource_Sharing.adoc:21]. Out-of-range pmpnum writes clamped to writable PMP count are specified but not tagged.
+|`mpmpdeleg_oob_access`
+|`SspmpSm_csr_cg/cp_mpmpdeleg_oob_access`
+|{spmp-v1-source}/Resource_Sharing.adoc#L45[sspmp/Resource_Sharing.adoc:45]. Partition out-of-range PMP and SPMP RAZ/WI is specified but not tagged; S-mode siselect OOB tags do not cover the full PMP side.
+|`mpmpdeleg-pmpnum_locked_spmp_override`
+|`SspmpSm_csr_cg/cp_mpmpdeleg_locked_spmp_override`
+|{spmp-v1-source}/Resource_Sharing.adoc#L59[sspmp/Resource_Sharing.adoc:59]. M-mode pmpnum updates may override locked SPMP entries, but the requirement is not tagged. Locked-PMP constraint has different semantics.
+|`mpmpdeleg-pmpnum_reconfig_high_entries`
+|`SspmpSm_csr_cg/cp_mpmpdeleg_reconfig_high_entries`
+|{spmp-v1-source}/Resource_Sharing.adoc#L60[sspmp/Resource_Sharing.adoc:60]. Changes to the highest SPMP/spmpen indices are specified but not tagged.
+|===
 
 ===== Sspmp Base CSRs and Matching
 
@@ -67,8 +153,8 @@ These coverpoints exercise the `spmpen` CSR (rv-spmp-spec section 3):
 * Read/write of all bits of `spmpen` (`cp_spmpen_readwrite`).
 * Activation condition: an entry contributes to permission checks iff
   `spmpen[i]` is set *and* `spmpcfg[i].A != OFF` (`cp_spmpen_activation`).
-* When an entry is locked (`spmpcfg[i].L = 1`) the corresponding `spmpen[i]` bit is
-  read-only set; clear attempts must be ignored (`cp_spmpen_locked_readonly`).
+* When an entry is locked (`spmpcfg[i].L = 1`) the corresponding `spmpen[i]` bit
+  retains its current value and becomes read-only (`cp_spmpen_locked_readonly`).
 
 ===== Smpmpdeleg M-Mode Delegation
 
@@ -82,42 +168,52 @@ These coverpoints exercise the `mpmpdeleg` CSR and the M-mode access path
   `pmpnum = NUM_PMP_ENTRIES` (no delegation, all SPMP CSR reads return zero)
   (`cp_mpmpdeleg_pmpnum_field`, `cp_mpmpdeleg_pmpnum_zero`,
   `cp_mpmpdeleg_no_delegation`).
-* Locked-PMP constraint: `pmpnum` cannot be lowered below the lowest locked PMP entry
-  (`cp_mpmpdeleg_locked`).
+* Locked-PMP constraint: `pmpnum` must be greater than every locked PMP entry's index;
+  writes at or below the highest locked index are ignored (`cp_mpmpdeleg_locked`).
 * M-mode memory access bypasses SPMP entirely (`cp_mmode_bypass`).
 * M-mode can clear `spmpcfg.L` via `miselect`/`mireg2` (`cp_spmp_lock_clear_mmode`).
 
 ===== Tests
 
-The combined regression `tests/priv/Sspmp/Sspmp-00.S` exercises every coverpoint in a
-single ELF.  In addition, the SspmpSm generator
-(`generators/testgen/src/testgen/priv/extensions/SspmpSm.py`) emits a set of standalone
-sub-tests, one ELF per coverpoint family, so that scenarios involving locked PMP/SPMP
-entries are not perturbed by earlier sub-tests in the same hart:
+The standard `testgen testplans --extensions Sspmp` command generates the combined
+regression `tests/priv/Sspmp/Sspmp-00.S` and 22 standalone sub-tests through the
+privileged test framework. The standalone files use named splits, one ELF per
+coverpoint family, so that scenarios involving locked PMP/SPMP entries are not
+perturbed by earlier sub-tests in the same hart. Only the combined regression and
+the `SmSpmpen` split require Sspmpen; the other splits test the Smpmpdeleg sharing
+profile without requiring Sspmpen.
+
+Building and executing these tests requires a UDB configuration and reference
+model that implement the SPMP extensions required by each test header. The UDB
+and Sail releases currently pinned by CI do not support SPMP, so the standard
+simulator configurations do not enable this suite. `make tests` still generates
+all SPMP test files, and CI checks their consistency with the generator.
 
 [cols="1, 4" options=header]
 |===
 |Test File|Coverpoints
-|`SspmpSmCsrAccess.S`|Indirect-access path, `spmpaddr`/`spmpcfg` write/readback
-|`SspmpSmAddrMatch.S`|A = OFF / TOR / NA4 / NAPOT, match-irrespective-of-perm-bits
-|`SspmpSmTorEntry0.S`|TOR on entry 0 (implicit lower bound = 0)
-|`SspmpSmPermSmode.S`|S-mode-only rule (SHARED=0, U=0)
-|`SspmpSmPermUmode.S`|U-mode rule (SHARED=0, U=1)
-|`SspmpSmSum.S`|`sstatus.SUM` effects: SUM=0 deny, SUM=1 data allowed, EnforceNoX
-|`SspmpSmMxr.S`|`sstatus.MXR` effect on execute-only regions
-|`SspmpSmShared.S`|Shared-region rule (SHARED=1, U=1)
-|`SspmpSmReserved.S`|Reserved RWX = 010 / 011 encodings
-|`SspmpSmNoMatch.S`|No matching entry => deny in S/U mode
-|`SspmpSmPriority.S`|First-match-wins priority across multiple matching entries
-|`SspmpSmFault.S`|Instruction / load / store page-fault delivery
-|`SspmpSmSatpBare.S`|`satp.MODE = Bare` with Sspmp active
-|`SspmpSmSfence.S`|`SFENCE.VMA x0,x0` ordering after SPMP CSR writes
-|`SspmpSmLock.S`|Lock bit, lock-write-ignored, TOR-prev-addr lock
-|`SspmpSmOobAccess.S`|Out-of-bounds `siselect` read-zero / write-ignored
-|`SspmpSmSpmpen.S`|`spmpen` read/write, activation, locked read-only
-|`SspmpSmMpmpdeleg.S`|`mpmpdeleg.pmpnum` field, delegation boundaries, locked-PMP constraint
-|`SspmpSmMmodeAccess.S`|M-mode access to SPMP via `miselect`, lock clear
-|`SspmpSmMmodeBypass.S`|M-mode memory access bypasses SPMP
+|`Sspmp_SmCsrAccess-00.S`|Indirect-access path, `spmpaddr`/`spmpcfg` write/readback
+|`Sspmp_SmAddrMatch-00.S`|A = OFF / TOR / NA4 / NAPOT, match-irrespective-of-perm-bits
+|`Sspmp_SmTorEntry0-00.S`|TOR on entry 0 (implicit lower bound = 0)
+|`Sspmp_SmPermSmode-00.S`|S-mode-only rule (SHARED=0, U=0)
+|`Sspmp_SmPermUmode-00.S`|U-mode rule (SHARED=0, U=1)
+|`Sspmp_SmSum-00.S`|`sstatus.SUM` effects: SUM=0 deny, SUM=1 data allowed, EnforceNoX
+|`Sspmp_SmMxr-00.S`|`sstatus.MXR` effect on execute-only regions
+|`Sspmp_SmShared-00.S`|Shared-region rule (SHARED=1, U=1)
+|`Sspmp_SmReserved-00.S`|Reserved RWX = 010 / 011 encodings
+|`Sspmp_SmNoMatch-00.S`|No matching entry => deny in S/U mode
+|`Sspmp_SmPriority-00.S`|First-match-wins priority across multiple matching entries
+|`Sspmp_SmMatchAllBytes-00.S`|The winning entry must match every byte of an access
+|`Sspmp_SmFault-00.S`|Instruction / load / store page-fault delivery
+|`Sspmp_SmExceptionPriority-00.S`|SPMP page faults take priority over PMP access faults
+|`Sspmp_SmSatpBare-00.S`|`satp.MODE = Bare` with Sspmp active
+|`Sspmp_SmSfence-00.S`|`SFENCE.VMA x0,x0` ordering after SPMP CSR writes
+|`Sspmp_SmLock-00.S`|Lock bit, lock-write-ignored, TOR-prev-addr lock
+|`Sspmp_SmOobAccess-00.S`|Out-of-bounds `siselect` read-zero / write-ignored
+|`Sspmp_SmSpmpen-00.S`|`spmpen` read/write, activation, locked read-only
+|`Sspmp_SmMpmpdeleg-00.S`|`mpmpdeleg.pmpnum` field, delegation boundaries, locked-PMP constraint
+|`Sspmp_SmMmodeAccess-00.S`|M-mode access to SPMP via `miselect`, lock clear
+|`Sspmp_SmMmodeBypass-00.S`|M-mode memory access bypasses SPMP
 |===
 
 [NOTE]

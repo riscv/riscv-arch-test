@@ -12,6 +12,7 @@ from testgen.formatters.registry import InstructionTypeConfig, add_instruction_f
 
 cis_config = InstructionTypeConfig(
     required_params={"rs1", "rs1val", "immval"},
+    excluded_regs={"rs1": {0}},
     imm_bits="xlen_log2",
     imm_signed=False,
     imm_nonzero=True,

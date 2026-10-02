@@ -7,12 +7,12 @@
 
 """Cross-product register edge value for branches coverpoint generator (cr_rs1_rs2_edges_offset)."""
 
-from testgen.asm.helpers import load_int_reg, return_test_regs, write_sigupd
+from testgen.asm.helpers import load_int_reg, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.edges import get_general_edges
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
-from testgen.formatters.params import generate_random_params
+from testgen.instructions.params import generate_random_params
 
 
 @add_coverpoint_generator("cr_rs1_rs2_edges_offset")
@@ -51,6 +51,6 @@ def make_cr_rs1_rs2_edges_offset(
                     "",
                 ]
             )
-            return_test_regs(test_data, params)
+            return_testcase_registers(test_data, params)
 
     return [test_data.end_test_chunk()]

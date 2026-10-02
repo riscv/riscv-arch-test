@@ -39,19 +39,21 @@ for an example.
 ### Normative Rule - Coverpoint Mapping
 
 Both privileged and unprivileged suites need a mapping between the normative
-rules and coverpoints. This mapping is a YAML file in `coverpoints/norm`
-containing a list of rule names and the coverpoints that exercise them. There
-should be one YAML for each test suite.
+rules and coverpoints. Each `norm:` tag in the ISA manual is one normative rule,
+named by the tag without the `norm:` prefix (e.g. `norm:mstatus_mie_op` is the rule
+`mstatus_mie_op`). The mapping is a YAML file in `coverpoints/norm` containing a
+list of rule names and the coverpoints that exercise them. There should be one
+YAML for each test suite.
 
 Instead of typing this YAML from scratch, it is easier to make an outline
 from the normative rules already in the `riscv-isa-manual` repo. Make sure
 you have a current copy of `riscv-isa-manual` and have run `make` successfully in that repo
-to build the `normative_rule_defs` subdirectory and `build/norm-rules.json`.
+to build `build/norm-rules.json`.
 Then invoke `generators/ctp/generate_norm_rule_coverpoint_templates.py` to
 create one yaml file per ISA manual chapter in `coverpoints/norm/yaml/chapters`.
 (You may need to edit `riscv_isa_manual_dir` in the Python file to point to
 its location in your tree). Then copy the yaml from the chapter related to the
-test suite up two levels (e.g. `cp coverpoints/norm/yaml/chapters/machine.yaml coverpoints/norm/Sm.yaml`) and edit it.
+test suite up two levels (e.g. `cp coverpoints/norm/yaml/chapters/machine-level-isa-version-1-13.yaml coverpoints/norm/Sm.yaml`) and edit it.
 
 When you run `make` in the `ctp` directory, the YAML file is parsed to build an
 ASCIIDoc file (in `ctp/norm`) with a table of normative rule names, definitions, and associated coverpoints. Include this file in the CTP with
@@ -110,28 +112,46 @@ assembly code in the file.
 The following top-level keys are recognized. No other keys are permitted
 (the parser uses strict validation and will reject unknown keys).
 
-| Key                   | Type            | Required | Description                                                                                                                                          |
-| --------------------- | --------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `REQUIRED_EXTENSIONS` | list of strings | **Yes**  | RISC-V extensions required by this test. The test is only selected for a DUT whose implemented extensions list contains **all** of these extensions. |
-| `MARCH`               | string          | **Yes**  | The `-march` string passed to the compiler. Must match the pattern `rv(32\|64\|${XLEN})(i\|e\|g)...` (e.g., `rv32i_zba`, `rv64ifd_zfh`).             |
-| `params`              | mapping         | No       | A dictionary of parameter constraints that must match the DUT's UDB configuration for the test to be selected.                                       |
+| Key                    | Type                                | Required | Description                                                                                                              |
+| ---------------------- | ----------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `REQUIRED_EXTENSIONS`  | list of strings or lists of strings | **Yes**  | Extensions required by this test. A nested list indicates at least one of the extensions in the sublist must be present. |
+| `FORBIDDEN_EXTENSIONS` | list of strings                     | No       | Extensions that the DUT must NOT implement for the test to be selected.                                                  |
+| `MARCH`                | string                              | **Yes**  | The `-march` string passed to the compiler, such as `rv32i_zba` or `rv64ifd_zfh`.                                        |
+| `MIN_HARTS`            | positive integer                    | No       | Minimum number of harts required by the test. Defaults to `1`.                                                           |
+| `params`               | mapping                             | No       | Parameter constraints that must match the DUT's UDB configuration for the test to be selected.                           |
 
 #### `REQUIRED_EXTENSIONS`
 
-A YAML list of extension name strings. Both quoted and unquoted styles are
-accepted:
+A YAML list of extension name strings or nested lists.
+Both quoted and unquoted strings are accepted:
 
 ```yaml
-# Quoted style (common in generated tests)
-REQUIRED_EXTENSIONS: ["I", "Zba"]
-
-# Unquoted style (common in hand-written tests)
-REQUIRED_EXTENSIONS: [I, S, Zicsr, Sm]
+# All listed extensions are required.
+REQUIRED_EXTENSIONS: [I, Zba]
 ```
 
-During test selection, the framework checks that every extension in this list
-is present in the DUT's implemented extensions (derived from the UDB
-configuration). A test is skipped if any required extension is missing.
+```yaml
+# I and at least one of Sm or U are required.
+REQUIRED_EXTENSIONS:
+  - I
+  - [Sm, U]
+```
+
+Each top-level item is required. A string requires that extension. A nested
+list requires at least one extension in that list. More than one nested list
+can be used. For example, `[I, [Zicboz, Zicbom, Zicbop], [Sm, U]]` means `I AND
+(Zicboz OR Zicbom OR Zicbop) AND (Sm OR U)`.
+
+#### `FORBIDDEN_EXTENSIONS`
+
+An optional YAML list of extensions that the DUT must not implement:
+
+```yaml
+FORBIDDEN_EXTENSIONS: [S]
+```
+
+The framework skips the test if the DUT implements one or more extensions in
+this list.
 
 #### `MARCH`
 
@@ -155,6 +175,17 @@ MARCH: rv${XLEN}i_zicsr
 
 The framework substitutes the actual XLEN value (32 or 64) at compile time
 based on the DUT configuration.
+
+#### `MIN_HARTS`
+
+An optional minimum number of harts required by the test:
+
+```yaml
+MIN_HARTS: 2
+```
+
+The framework selects the test when the DUT configuration's `harts` value is at
+least `MIN_HARTS`. Both values default to `1` when omitted.
 
 #### `params`
 
@@ -262,13 +293,18 @@ Most new extension testplans will be able to reuse existing coverpoints and inst
 
 ### Adding Instructions to the Decoder
 
-Unprivileged instructions are decoded in [`disassemble.svh`](../framework/src/act/fcov/disassemble.svh).
+All instructions are decoded in [`disassemble.svh`](../framework/src/act/fcov/disassemble.svh).
 All new instructions need to be added to the case statement.
 [`disassemble.svh`](../framework/src/act/fcov/disassemble.svh) translates the encoding
 into an instruction mnemonic and instruction arguments. The encodings themselves come
 from the auto-generated [`RISCV_imported_decode_pkg.svh`](../framework/src/act/fcov/coverage/RISCV_imported_decode_pkg.svh) header.
 This header is generated using [riscv-opcodes](https://github.com/riscv/riscv-opcodes)
 and should not be manually modified. <!-- TODO: Update this to use a header generated from UDB -->
+
+Some instructions do not have an unprivileged testplan row. Add these instructions,
+their type, and their supported XLENs to
+[`instruction_formats.csv`](../testplans/coverage/instruction_formats.csv) so the coverage
+generator knows how to parse their operands.
 
 ### Adding New Coverpoints
 
@@ -377,7 +413,7 @@ def make_rd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
         test_chunks.append(tc)
         # Once registers are no longer in use, they need to be marked as available again
         # so that the register allocator knows that they can be reused.
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
     # Return the list of TestChunk objects. The framework will use these to split test chunks
     # across test files (based on num_testcases counts) and combine their data for the final output.
@@ -433,7 +469,7 @@ case statement.
 All instruction sample templates must match the following format:
 
 ```sv
-        "INSTR"     : begin
+        "@INSTR@"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
             ins.add_rs2(2);
@@ -483,11 +519,14 @@ It is also included below with many additional comments added to explain how it 
 # including reg_range, imm_bits, imm_signed, etc.
 r_config = InstructionTypeConfig(required_params={"rd", "rs1", "rs1val", "rs2", "rs2val"})
 
+
 # All instruction formatters use the add_instruction_formatter decorator to specify
 # what instruction type it applies to and what configuration object to use.
 @add_instruction_formatter("R", r_config)
 # Instruction formatters all use the standard signature described above
-def format_r_type(instr_name: str, test_data: TestData, params: InstructionParams) -> tuple[list[str], list[str], list[str]]:
+def format_r_type(
+    instr_name: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
     """Format R-type instruction."""
     # The assert statements are used to satisfy the type checker and help ensure
     # none of the necessary params are left out of the required_params above.
@@ -546,7 +585,7 @@ Each tab should have the following columns:
 - Description: a precise statement of the conditions being checked, suitable for somebody other than the author to turn into coverpoints and tests.
 - Expectation: what will happen (e.g. trap, CSR takes on a value, etc.)
 - Bins: Number of bins, expressed as a product of independent states where possible to help the test writer confirm the intended number of possibilities have been exercised. (e.g. "2 MIE \* 2 TW", where each of these signals has two possibilities, giving 4 bins).
-- Normative Rule: (optional) name of associated normative rule. Not all coverpoints have to be driven by normative rules; some may exercise combinations of features.
+- Normative Rule: (optional) name of associated normative rule (the ISA manual tag name without `norm:`). Not all coverpoints have to be driven by normative rules; some may exercise combinations of features.
 
 ### Adding New Privileged Coverpoints
 
@@ -689,8 +728,6 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
 There are a few important gotchas to keep in mind when writing privileged tests:
 
 - There should be no loops in the assembly code. Loops make debugging difficult and prevent testcases from being uniquely associated with debug strings. Instead, use loops in the Python generator to emit repetitive assembly.
-- The trap handler skips 4 bytes when returning to the test. This means that every instruction that could trap must be followed by a `nop` (or two `c.nop` if compressed instructions are supported). Alternatively, this skipped instruction can be used to change a counter/indicator of some kind to detect if a trap was taken. This is generally not necessary because the total number of traps is always checked at the end of a test.
-- Different implementations may trap on different CSRs, so always assume a CSR access could trap. The `CSRRW`, `CSRRS`, `CSRR`, etc. macros include a `nop` after the CSR access and should always be used in place of raw CSR instructions.
 
 For examples of how to write the individual coverpoint helper functions for privileged test generators, review [`Sm.py`](../generators/testgen/src/testgen/priv/extensions/Sm.py) and [`ExceptionsZc.py`](../generators/testgen/src/testgen/priv/extensions/ExceptionsZc.py). Here are a few additional notes that apply to all privileged test helper functions:
 

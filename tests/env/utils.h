@@ -60,6 +60,13 @@
   #endif
 #endif
 
+// Execute an sfence.vma if supported by the DUT. Primarily used in PMP tests.
+.macro RVTEST_SFENCE_VMA_IF_SUPPORTED
+  #if defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)
+    sfence.vma
+  #endif
+.endm
+
 // FLEN specific macros
 // ============================================================================
 // Tests are written assuming a certain FLEN. For most tests, the test will only
@@ -151,11 +158,10 @@
 #endif
 
 // Integer-width load matching FSREG's store width, zero-extended to UDB_MXLEN.
-// Used to read back an FP value from scratch memory after FSREG stored it.
+// Used to read back an FP value after FSREG stores it.
 // When CONFIG_FLEN < UDB_MXLEN (e.g. F-only on RV64: fsw writes 4 bytes but ld
-// would read 8), using LREG would pull in whatever bytes happened to sit
-// above the stored value. FP_LREG loads exactly the bytes FSREG wrote so
-// the loaded value is deterministic regardless of prior scratch contents.
+// would read 8), using LREG would read bytes beyond the stored value. FP_LREG
+// loads exactly the bytes FSREG writes.
 #if UDB_MXLEN == 64 && CONFIG_FLEN == 32
   #define FP_LREG lwu
 #else
@@ -198,16 +204,44 @@
 #endif
 
 // PMP macros
-#define PMP0_CFG_SHIFT  0
-#define PMP1_CFG_SHIFT  8
-#define PMP2_CFG_SHIFT  16
-#define PMP3_CFG_SHIFT  24
-#define PMP4_CFG_SHIFT  32
-#define PMP5_CFG_SHIFT  40
-#define PMP6_CFG_SHIFT  48
-#define PMP7_CFG_SHIFT  56
-#define NOP              0x13
-#define DOUBLE_NOP       (0x13<<32)+0x13
+#define PMP_CFG_SHIFT(_ENTRY) (((_ENTRY) % (UDB_MXLEN / 8)) * 8)
+#define PMP0_CFG_SHIFT         PMP_CFG_SHIFT(0)
+#define PMP1_CFG_SHIFT         PMP_CFG_SHIFT(1)
+#define PMP2_CFG_SHIFT         PMP_CFG_SHIFT(2)
+#define PMP3_CFG_SHIFT         PMP_CFG_SHIFT(3)
+#define PMP4_CFG_SHIFT         PMP_CFG_SHIFT(4)
+#define PMP5_CFG_SHIFT         PMP_CFG_SHIFT(5)
+#define PMP6_CFG_SHIFT         PMP_CFG_SHIFT(6)
+#define PMP7_CFG_SHIFT         PMP_CFG_SHIFT(7)
+#define PMP8_CFG_SHIFT         PMP_CFG_SHIFT(8)
+#define PMP9_CFG_SHIFT         PMP_CFG_SHIFT(9)
+#define PMP10_CFG_SHIFT        PMP_CFG_SHIFT(10)
+#define PMP11_CFG_SHIFT        PMP_CFG_SHIFT(11)
+#define PMP12_CFG_SHIFT        PMP_CFG_SHIFT(12)
+#define PMP13_CFG_SHIFT        PMP_CFG_SHIFT(13)
+#define PMP14_CFG_SHIFT        PMP_CFG_SHIFT(14)
+#define PMP15_CFG_SHIFT        PMP_CFG_SHIFT(15)
+#define NOP                    0x13
+#define DOUBLE_NOP             (0x13<<32)+0x13
+
+// Determine the appropriate CSR to test based on the supported extensions and set boot mode
+// if necessary. Only unpriv CSR tests need this selection.
+#ifdef RVTEST_USES_TEST_CSR
+  #if defined(F_SUPPORTED)
+    #define RVTEST_TEST_CSR fflags
+  #elif defined(ZVE32X_SUPPORTED)
+    #define RVTEST_TEST_CSR vxsat
+  #elif defined(S_SUPPORTED)
+    #define RVTEST_TEST_CSR sepc
+    #define BOOT_TO_SMODE
+  #elif defined(ZICNTR_SUPPORTED) && defined(U_SUPPORTED)
+    #define RVTEST_TEST_CSR instret
+    #define RVTEST_READ_ONLY_TEST_CSR
+  #else
+    #define RVTEST_TEST_CSR mepc
+    #define BOOT_TO_MMODE
+  #endif
+#endif
 
 // RVTEST_TESTDATA_LOAD_INT(data_ptr, dest_reg) loads an integer value from the
 // test data section into dest_reg and increments the data_ptr pointer by SIG_STRIDE.
@@ -387,46 +421,6 @@
     .option pop     ;\
   .endif
 
-// CSR Macros
-// each access is followed by a nop in case the access causes a trap
-// because the trap return skips the next instruction
-
-#define CSRRW(_R2, _CSR, _R1) \
-    csrrw _R2, _CSR, _R1      ;\
-    nop
-
-#define CSRRS(_R2, _CSR, _R1) \
-    csrrs _R2, _CSR, _R1      ;\
-    nop
-
-#define CSRRC(_R2, _CSR, _R1) \
-    csrrc _R2, _CSR, _R1      ;\
-    nop
-
-#define CSRR(_R2, _CSR) \
-    csrr _R2, _CSR      ;\
-    nop
-
-#define CSRW(_CSR, _R1) \
-    csrw _CSR, _R1      ;\
-    nop
-
-#define CSRS(_CSR, _R1) \
-    csrs _CSR, _R1      ;\
-    nop
-
-#define CSRC(_CSR, _R1) \
-    csrc _CSR, _R1      ;\
-    nop
-
-// Macros for instructions that can trap
-// each instruction is followed by a nop in case the access causes a trap
-// because the trap return skips the next instruction
-
-#define SFENCE_VMA \
-    sfence.vma         ;\
-    nop
-
 // Utility Macros
 
 // Place 1 in msb
@@ -456,29 +450,282 @@
 
 // Using generic RVTEST macros that can be invoked by tests, which then jump to the appropriate RVMODEL macros that implement the interrupt setup for the specific target platform.
 // This allows tests to be portable across different platforms with different interrupt implementations.
-#define RVTEST_SET_MSW_INT \
-  jal rvtest_set_msw_int     /* Trigger machine software interrupt */
 
-#define RVTEST_CLR_MSW_INT \
-  jal rvtest_clr_msw_int     /* Clear machine software interrupt */
+// Flavors to run from machine mode
 
-#define RVTEST_SET_MEXT_INT \
-  jal rvtest_set_mext_int     /* Trigger machine external interrupt */
+#define RVTEST_SET_MTIME_INT_SOON_M \
+  jal rvtest_set_mtime_int_soon_m     /* Trigger machine timer interrupt after a delay */
 
-#define RVTEST_CLR_MEXT_INT \
-  jal rvtest_clr_mext_int     /* Clear machine external interrupt */
+#define RVTEST_SET_MTIME_INT_M \
+  jal rvtest_set_mtime_int_m     /* Trigger machine timer interrupt */
 
-#define RVTEST_SET_SSW_INT \
-  jal rvtest_set_ssw_int     /* Trigger supervisor software interrupt */
+#define RVTEST_CLR_MTIME_INT_M \
+  jal rvtest_clr_mtime_int_m     /* Clear machine timer interrupt */
 
-#define RVTEST_CLR_SSW_INT \
-  jal rvtest_clr_ssw_int     /* Clear supervisor software interrupt */
+#define RVTEST_SET_MSW_INT_M \
+  jal rvtest_set_msw_int_m     /* Trigger machine software interrupt */
 
-#define RVTEST_SET_SEXT_INT \
-  jal rvtest_set_sext_int     /* Trigger supervisor external interrupt */
+#define RVTEST_CLR_MSW_INT_M \
+  jal rvtest_clr_msw_int_m     /* Clear machine software interrupt */
 
-#define RVTEST_CLR_SEXT_INT \
-  jal rvtest_clr_sext_int     /* Clear supervisor external interrupt */
+#define RVTEST_SET_MEXT_INT_M \
+  jal rvtest_set_mext_int_m     /* Trigger machine external interrupt */
+
+#define RVTEST_CLR_MEXT_INT_M \
+  jal rvtest_clr_mext_int_m     /* Clear machine external interrupt */
+
+#define RVTEST_SET_SSTC_INT_SOON_M \
+  jal rvtest_set_sstc_int_soon_m     /* Trigger supervisor timer interrupt with Sstc after a delay */
+
+#define RVTEST_SET_SSTC_INT_M \
+  jal rvtest_set_sstc_int_ms     /* Trigger supervisor timer interrupt with Sstc */
+
+#define RVTEST_CLR_SSTC_INT_M \
+  jal rvtest_clr_sstc_int_m      /* Clear supervisor timer interrupt with Sstc */
+
+#define RVTEST_SET_STIME_INT_M \
+  jal rvtest_set_stime_int_m     /* Trigger supervisor timer interrupt */
+
+#define RVTEST_CLR_STIME_INT_M \
+  jal rvtest_clr_stime_int_m     /* Clear supervisor timer interrupt */
+
+#define RVTEST_SET_SSW_INT_M \
+  jal rvtest_set_ssw_int_m     /* Trigger supervisor software interrupt */
+
+#define RVTEST_CLR_SSW_INT_M \
+  jal rvtest_clr_ssw_int_m     /* Clear supervisor software interrupt */
+
+#define RVTEST_SET_SEXT_INT_M \
+  jal rvtest_set_sext_int_m     /* Trigger supervisor external interrupt */
+
+#define RVTEST_CLR_SEXT_INT_M \
+  jal rvtest_clr_sext_int_m     /* Clear supervisor external interrupt */
+
+// Flavors to run from Supervisor mode
+
+#define RVTEST_SET_MTIME_INT_SOON_S \
+  jal rvtest_set_mtime_int_soon_su     /* Trigger machine timer interrupt after a delay */
+
+#define RVTEST_SET_MTIME_INT_S \
+  jal rvtest_set_mtime_int_su     /* Trigger machine timer interrupt */
+
+#define RVTEST_CLR_MTIME_INT_S \
+  jal rvtest_clr_mtime_int_su     /* Clear machine timer interrupt */
+
+#define RVTEST_SET_MSW_INT_S \
+  jal rvtest_set_msw_int_su     /* Trigger machine software interrupt */
+
+#define RVTEST_CLR_MSW_INT_S \
+  jal rvtest_clr_msw_int_su     /* Clear machine software interrupt */
+
+#define RVTEST_SET_MEXT_INT_S \
+  jal rvtest_set_mext_int_su     /* Trigger machine external interrupt */
+
+#define RVTEST_CLR_MEXT_INT_S \
+  jal rvtest_clr_mext_int_su     /* Clear machine external interrupt */
+
+#define RVTEST_SET_SSTC_INT_SOON_S \
+  jal rvtest_set_sstc_int_soon_s     /* Trigger supervisor timer interrupt with Sstc after a delay */
+
+#define RVTEST_SET_SSTC_INT_S \
+  jal rvtest_set_sstc_int_ms     /* Trigger supervisor timer interrupt with Sstc */
+
+#define RVTEST_CLR_SSTC_INT_S \
+  jal rvtest_clr_sstc_int_s      /* Clear supervisor timer interrupt with Sstc */
+
+#define RVTEST_SET_STIME_INT_S \
+  jal rvtest_set_stime_int_su     /* Trigger supervisor timer interrupt */
+
+#define RVTEST_CLR_STIME_INT_S \
+  jal rvtest_clr_stime_int_su     /* Clear supervisor timer interrupt */
+
+#define RVTEST_SET_SSW_INT_S \
+  jal rvtest_set_ssw_int_su     /* Trigger supervisor software interrupt */
+
+#define RVTEST_CLR_SSW_INT_S \
+  jal rvtest_clr_ssw_int_su     /* Clear supervisor software interrupt */
+
+#define RVTEST_SET_SEXT_INT_S \
+  jal rvtest_set_sext_int_su     /* Trigger supervisor external interrupt */
+
+#define RVTEST_CLR_SEXT_INT_S \
+  jal rvtest_clr_sext_int_su     /* Clear supervisor external interrupt */
+
+// Flavors to run from User mode
+
+#define RVTEST_SET_MTIME_INT_SOON_U \
+  jal rvtest_set_mtime_int_soon_su     /* Trigger machine timer interrupt after a delay */
+
+#define RVTEST_SET_MTIME_INT_U \
+  jal rvtest_set_mtime_int_su     /* Trigger machine timer interrupt */
+
+#define RVTEST_CLR_MTIME_INT_U \
+  jal rvtest_clr_mtime_int_su     /* Clear machine timer interrupt */
+
+#define RVTEST_SET_MSW_INT_U \
+  jal rvtest_set_msw_int_su     /* Trigger machine software interrupt */
+
+#define RVTEST_CLR_MSW_INT_U \
+  jal rvtest_clr_msw_int_su     /* Clear machine software interrupt */
+
+#define RVTEST_SET_MEXT_INT_U \
+  jal rvtest_set_mext_int_su     /* Trigger machine external interrupt */
+
+#define RVTEST_CLR_MEXT_INT_U \
+  jal rvtest_clr_mext_int_su     /* Clear machine external interrupt */
+
+#define RVTEST_SET_SSTC_INT_SOON_U \
+  jal rvtest_set_sstc_int_soon_u     /* Trigger supervisor timer interrupt with Sstc after a delay */
+
+#define RVTEST_SET_SSTC_INT_U \
+  jal rvtest_set_sstc_int_u     /* Trigger supervisor timer interrupt with Sstc */
+
+#define RVTEST_CLR_SSTC_INT_U \
+  jal rvtest_clr_sstc_int_u     /* Clear supervisor timer interrupt with Sstc */
+
+#define RVTEST_SET_STIME_INT_U \
+  jal rvtest_set_stime_int_su     /* Trigger supervisor timer interrupt */
+
+#define RVTEST_CLR_STIME_INT_U \
+  jal rvtest_clr_stime_int_su     /* Clear supervisor timer interrupt */
+
+#define RVTEST_SET_SSW_INT_U \
+  jal rvtest_set_ssw_int_su     /* Trigger supervisor software interrupt */
+
+#define RVTEST_CLR_SSW_INT_U \
+  jal rvtest_clr_ssw_int_su     /* Clear supervisor software interrupt */
+
+#define RVTEST_SET_SEXT_INT_U \
+  jal rvtest_set_sext_int_su     /* Trigger supervisor external interrupt */
+
+#define RVTEST_CLR_SEXT_INT_U \
+  jal rvtest_clr_sext_int_su     /* Clear supervisor external interrupt */
+
+// Interrupts raised by writing a pending bit directly instead of through the platform.
+// M-mode writes mip and sip directly, S-mode writes sip directly and mip through T-SBI,
+// and U-mode writes both through T-SBI.
+
+#define RVTEST_SET_MIP_SEIP_INT_M \
+  li a1, MIP_SEIP; csrs mip, a1     /* Trigger supervisor external interrupt through mip.SEIP */
+
+#define RVTEST_CLR_MIP_SEIP_INT_M \
+  li a1, MIP_SEIP; csrc mip, a1     /* Clear mip.SEIP */
+
+#define RVTEST_SET_MIP_SEIP_INT_S \
+  RVTEST_TSBI_CSR_SET(CSR_MIP, MIP_SEIP)
+
+#define RVTEST_CLR_MIP_SEIP_INT_S \
+  RVTEST_TSBI_CSR_CLEAR(CSR_MIP, MIP_SEIP)
+
+#define RVTEST_SET_MIP_SEIP_INT_U RVTEST_SET_MIP_SEIP_INT_S
+#define RVTEST_CLR_MIP_SEIP_INT_U RVTEST_CLR_MIP_SEIP_INT_S
+
+#define RVTEST_SET_MIP_SSIP_INT_M \
+  csrsi mip, MIP_SSIP               /* Trigger supervisor software interrupt through mip.SSIP */
+
+#define RVTEST_CLR_MIP_SSIP_INT_M \
+  csrci mip, MIP_SSIP               /* Clear mip.SSIP */
+
+#define RVTEST_SET_MIP_SSIP_INT_S \
+  RVTEST_TSBI_CSR_SET(CSR_MIP, MIP_SSIP)
+
+#define RVTEST_CLR_MIP_SSIP_INT_S \
+  RVTEST_TSBI_CSR_CLEAR(CSR_MIP, MIP_SSIP)
+
+#define RVTEST_SET_MIP_SSIP_INT_U RVTEST_SET_MIP_SSIP_INT_S
+#define RVTEST_CLR_MIP_SSIP_INT_U RVTEST_CLR_MIP_SSIP_INT_S
+
+// sip.SSIP only reaches mip when mideleg.SSI is set
+#define RVTEST_SET_SIP_SSIP_INT_M \
+  csrsi sip, MIP_SSIP               /* Trigger supervisor software interrupt through sip.SSIP */
+
+#define RVTEST_CLR_SIP_SSIP_INT_M \
+  csrci sip, MIP_SSIP               /* Clear sip.SSIP */
+
+#define RVTEST_SET_SIP_SSIP_INT_S RVTEST_SET_SIP_SSIP_INT_M
+#define RVTEST_CLR_SIP_SSIP_INT_S RVTEST_CLR_SIP_SSIP_INT_M
+
+#define RVTEST_SET_SIP_SSIP_INT_U \
+  RVTEST_TSBI_CSR_SET(CSR_SIP, MIP_SSIP)
+
+#define RVTEST_CLR_SIP_SSIP_INT_U \
+  RVTEST_TSBI_CSR_CLEAR(CSR_SIP, MIP_SSIP)
+
+// LCOFI has no platform source, so it is always raised through a pending bit.
+// mip.LCOFIP is M-only and works whatever mideleg says.
+#define RVTEST_SET_LCOFI_INT_M \
+  li a1, MIP_LCOFIP; csrs mip, a1   /* Trigger local counter overflow interrupt through mip.LCOFIP */
+
+#define RVTEST_CLR_LCOFI_INT_M \
+  li a1, MIP_LCOFIP; csrc mip, a1   /* Clear mip.LCOFIP */
+
+#define RVTEST_SET_LCOFI_INT_S \
+  RVTEST_TSBI_CSR_SET(CSR_MIP, MIP_LCOFIP)
+
+#define RVTEST_CLR_LCOFI_INT_S \
+  RVTEST_TSBI_CSR_CLEAR(CSR_MIP, MIP_LCOFIP)
+
+#define RVTEST_SET_LCOFI_INT_U RVTEST_SET_LCOFI_INT_S
+#define RVTEST_CLR_LCOFI_INT_U RVTEST_CLR_LCOFI_INT_S
+
+// sip.LCOFIP is writable from S-mode, but like sip.SSIP it only reaches mip when mideleg.LCOFI is set
+#define RVTEST_SET_SIP_LCOFIP_INT_M \
+  li a1, MIP_LCOFIP; csrs sip, a1   /* Trigger local counter overflow interrupt through sip.LCOFIP */
+
+#define RVTEST_CLR_SIP_LCOFIP_INT_M \
+  li a1, MIP_LCOFIP; csrc sip, a1   /* Clear sip.LCOFIP */
+
+#define RVTEST_SET_SIP_LCOFIP_INT_S RVTEST_SET_SIP_LCOFIP_INT_M
+#define RVTEST_CLR_SIP_LCOFIP_INT_S RVTEST_CLR_SIP_LCOFIP_INT_M
+
+#define RVTEST_SET_SIP_LCOFIP_INT_U \
+  RVTEST_TSBI_CSR_SET(CSR_SIP, MIP_LCOFIP)
+
+#define RVTEST_CLR_SIP_LCOFIP_INT_U \
+  RVTEST_TSBI_CSR_CLEAR(CSR_SIP, MIP_LCOFIP)
+
+// Supervisor timer interrupt through stimecmp with menvcfg.STCE = 0 or 1; clearing also
+// restores STCE = 0. menvcfg is M-only, so S and U reach STCE through T-SBI. stimecmp is
+// S-accessible only when STCE = 1, so S writes it directly then and through T-SBI otherwise.
+// U has no stimecmp access either way.
+#if UDB_MXLEN == 64
+  #define RVTEST_CSR_STCE CSR_MENVCFG
+  #define RVTEST_STCE     MENVCFG_STCE
+#else
+  #define RVTEST_CSR_STCE CSR_MENVCFGH
+  #define RVTEST_STCE     MENVCFGH_STCE
+#endif
+
+#define RVTEST_SET_SSTC_STCE0_INT_M \
+  li a1, RVTEST_STCE; csrc RVTEST_CSR_STCE, a1; RVTEST_SET_SSTC_INT_M
+
+#define RVTEST_SET_SSTC_STCE1_INT_M \
+  li a1, RVTEST_STCE; csrs RVTEST_CSR_STCE, a1; RVTEST_SET_SSTC_INT_M
+
+#define RVTEST_CLR_SSTC_STCE0_INT_M \
+  RVTEST_CLR_SSTC_INT_M; li a1, RVTEST_STCE; csrc RVTEST_CSR_STCE, a1
+
+#define RVTEST_CLR_SSTC_STCE1_INT_M RVTEST_CLR_SSTC_STCE0_INT_M
+
+#define RVTEST_SET_SSTC_STCE0_INT_S \
+  RVTEST_TSBI_CSR_CLEAR(RVTEST_CSR_STCE, RVTEST_STCE); RVTEST_SET_SSTC_INT_U
+
+#define RVTEST_SET_SSTC_STCE1_INT_S \
+  RVTEST_TSBI_CSR_SET(RVTEST_CSR_STCE, RVTEST_STCE); RVTEST_SET_SSTC_INT_S
+
+#define RVTEST_CLR_SSTC_STCE0_INT_S \
+  RVTEST_CLR_SSTC_INT_U; RVTEST_TSBI_CSR_CLEAR(RVTEST_CSR_STCE, RVTEST_STCE)
+
+#define RVTEST_CLR_SSTC_STCE1_INT_S \
+  RVTEST_CLR_SSTC_INT_S; RVTEST_TSBI_CSR_CLEAR(RVTEST_CSR_STCE, RVTEST_STCE)
+
+#define RVTEST_SET_SSTC_STCE0_INT_U RVTEST_SET_SSTC_STCE0_INT_S
+#define RVTEST_CLR_SSTC_STCE0_INT_U RVTEST_CLR_SSTC_STCE0_INT_S
+
+#define RVTEST_SET_SSTC_STCE1_INT_U \
+  RVTEST_TSBI_CSR_SET(RVTEST_CSR_STCE, RVTEST_STCE); RVTEST_SET_SSTC_INT_U
+
+#define RVTEST_CLR_SSTC_STCE1_INT_U RVTEST_CLR_SSTC_STCE0_INT_S
 
 
 // V-mode interrupts not yet supported in Sail reference model

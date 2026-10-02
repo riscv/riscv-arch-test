@@ -1,5 +1,5 @@
 {
-  "$schema": "/opt/riscv/share/sail-riscv/sail_riscv_config_schema.json",
+  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.14.1/sail_riscv_config_schema.json",
   "base": {
     "xlen": 32,
     "E": false,
@@ -22,6 +22,10 @@
     // corresponding bit of `mcounteren` is writable, otherwise the
     // bit is read-only zero.
     "mcounteren_writable_bits": {
+      "len": 32,
+      "value": "0x0"
+    },
+    "hcounteren_writable_bits": {
       "len": 32,
       "value": "0x0"
     },
@@ -59,9 +63,34 @@
         "base_alignment": 2
       }
     },
+    "vstvec": {
+      "direct": {
+        "supported": false
+      },
+      "vectored": {
+        "supported": false,
+        "base_alignment": 2
+      }
+    },
+    "medeleg": {
+      "delegatable_bits": {
+        "len": 64,
+        "value": "0x0000_0000_000c_b3FF"
+      }
+    },
+    "mideleg": {
+      "delegatable_bits": {
+        "len": "xlen",
+        "value": "0x0000_2222"
+      }
+    },
     "xtval_nonzero": {
       // mtval hardwired to 0 (User Manual, Control and Status Registers)
       "illegal_instruction": false,
+      "virtual_instruction": false,
+      "load_guest_page_fault": false,
+      "samo_guest_page_fault": false,
+      "fetch_guest_page_fault": false,
       "software_breakpoint": false,
       "hardware_breakpoint": false,
       "load_address_misaligned": false,
@@ -74,6 +103,7 @@
       "fetch_access_fault": false,
       "fetch_page_fault": false,
       "software_check": false,
+      "hardware_error": true,
       "reserved_exceptions": false
     },
     "reserved_behavior": {
@@ -93,9 +123,13 @@
       // - "ExtContext_Off" allows only {Off}.  This makes the field read-only zero.
       "fs_legal_states": "ExtContext_Off",
       "vs_legal_states": "ExtContext_Off"
-    }
+    },
+    "privileged_isa_version": "Privileged_ISA_1_12"
   },
   "memory": {
+    "physaddr_bits": 32,
+    "asidlen": 9,
+    "vmidlen": 7,
     "pmp": {
       "grain": 0,
       // PMP_NUM_REGIONS=16, PMP_GRANULARITY=0 (G=0)
@@ -107,19 +141,15 @@
     },
     "misaligned": {
       // misaligned handled as split bus transactions
-      "supported": true,
       "byte_by_byte": false,
       "order_decreasing": false,
-      "allowed_within_exp": 0,
+      "default_allowed_within_exp": 0,
       "exceptions": {
         "load_store": { "None": null },
         "vector": { "None": null },
-        "lrsc": "AccessFault",
-        "amo": "AccessFault"
+        "lrsc": { "Some": "AccessFault" },
+        "amo": { "Some": "AccessFault" }
       }
-    },
-    "translation": {
-      "dirty_update": false
     },
     "dtb_address": {
       "len": 64,
@@ -141,9 +171,12 @@
           "misaligned_exceptions": {
             "load_store": { "None": null },
             "vector": { "None": null },
-            "amo": "AccessFault"
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
           },
           "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
           "reservability": "RsrvNone",
           "supports_cbo_zero": false,
           "supports_pte_read": false,
@@ -167,9 +200,12 @@
           "misaligned_exceptions": {
             "load_store": { "Some": "AlignmentException" },
             "vector": { "Some": "AlignmentException" },
-            "amo": "AccessFault"
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
           },
           "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
           "reservability": "RsrvNone",
           "supports_cbo_zero": false,
           "supports_pte_read": false,
@@ -193,9 +229,12 @@
           "misaligned_exceptions": {
             "load_store": { "None": null },
             "vector": { "None": null },
-            "amo": "AccessFault"
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
           },
           "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
           "reservability": "RsrvNone",
           "supports_cbo_zero": false,
           "supports_pte_read": false,
@@ -217,6 +256,13 @@
       "reservation_set_size_exp": 3,
       "require_exact_reservation_addr": false,
       "invalidate_on_same_hart_store": false
+    },
+    "interrupts": {
+      "machine": {
+        "software": { "supported": true },
+        "external": { "supported": true },
+        "timer": { "supported": true }
+      }
     },
     "clint": {
       "supported": true,
@@ -241,7 +287,10 @@
   "extensions": {
     "M": { "supported": true },
     "A": { "supported": false },
-    "F": { "supported": false },
+    "F": {
+      "supported": false,
+      "fflags_dirty_policy": "Fflags_Dirty_Precise"
+    },
     "D": { "supported": false },
     "V": {
       "support_level": "Disabled",
@@ -261,8 +310,44 @@
       }
     },
     "B": { "supported": false },
-    "S": { "supported": false },
-    "U": { "supported": true },
+    "S": {
+      "supported": false,
+      "interrupts": {
+        "software": { "supported": false },
+        "external": { "supported": false },
+        "timer": { "supported": false }
+      }
+    },
+    "U": { "supported": false },
+
+    "H": {
+      "supported": false,
+      "geilen": 31,
+      "guest_page_fault_writes_htval": true,
+      "hgatp_modes": {
+        "Sv32x4": false,
+        "Sv39x4": false,
+        "Sv48x4": false,
+        "Sv57x4": false
+      },
+      "vsatp_modes": {
+        "Sv32": true,
+        "Sv39": false,
+        "Sv48": false,
+        "Sv57": false
+      }
+    },
+
+    "Sha": { "supported": false },
+    "Shcounterenw": { "supported": false },
+    "Shgatpa": { "supported": false },
+    "Shtvala": { "supported": false },
+    "Shvsatpa": { "supported": false },
+    "Shvstvala": { "supported": false },
+    "Shvstvecd": { "supported": false },
+    "Sstvecd": { "supported": false },
+    "Svukte": { "supported": false },
+    "Zilx": { "supported": false },
     "Zibi": { "supported": false },
     "Zicbom": { "supported": false },
     "Zicbop": { "supported": false },
@@ -288,6 +373,9 @@
     "Zabha": { "supported": false },
     "Zacas": { "supported": false },
     "Zalrsc": { "supported": false },
+    "Zama16b": {
+      "supported": false
+    },
     "Zawrs": {
       "supported": false,
       "nto": { "is_nop": false },

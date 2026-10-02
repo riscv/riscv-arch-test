@@ -47,18 +47,10 @@ def _add_load_test(
     if is_sp:
         t_lines.append(test_data.add_testcase(f"{op.lower()}_off{offset}", coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(sp)")
-        t_lines.append(f"{INDENT}# Trap handler skips the next 4 bytes; two c.nops provide 4 bytes")
-        t_lines.append("c.nop")
-        t_lines.append("c.nop")
         t_lines.append(f"mv sp, x{base_reg}")  # Restore sp immediately
     else:
         t_lines.append(test_data.add_testcase(f"{op.lower()}_off{offset}", coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(x{addr_reg})")
-        t_lines.append(
-            f"{INDENT}# Load access may throw a trap and the trap handler skips over the next 4 bytes. Two c.nops are used to get 4 bytes of instructions"
-        )
-        t_lines.append("c.nop")
-        t_lines.append("c.nop")
 
     t_lines.append(write_sigupd(sig_reg, test_data, sig_type="float" if is_float else "int"))
 
@@ -81,9 +73,22 @@ def _add_store_test(
     is_sp = op.endswith("sp")
     t_lines = []
 
-    # Initialize store register to a known value before setting up address
+    # Initialize scratch before each store so a missing store changes the signature.
+    t_lines.extend(
+        (
+            f"LA(x{addr_reg}, scratch)",
+            f"LI(x{base_reg}, {0x0C0DE000 | offset:#x})",
+            f"sw x{base_reg}, 0(x{addr_reg})",
+            f"sw x{base_reg}, 4(x{addr_reg})",
+            f"sw x{base_reg}, 8(x{addr_reg})",
+            f"sw x{base_reg}, 12(x{addr_reg})",
+        )
+    )
+
+    # Load the floating-point value from outside the bytes checked below.
     if is_float:
         t_lines.append(f"LA(x{addr_reg}, scratch)")
+        t_lines.append(f"addi x{addr_reg}, x{addr_reg}, 32")
         if "fld" in op or "fsd" in op:
             t_lines.append(f"fld f{fp_reg}, 0(x{addr_reg})")
         else:
@@ -106,17 +111,12 @@ def _add_store_test(
     if is_sp:
         t_lines.append(test_data.add_testcase(f"{op.lower()}_off{offset}", coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(sp)")
-        t_lines.append(f"{INDENT}# Trap handler skips the next 4 bytes; two c.nops provide 4 bytes")
-        t_lines.append("c.nop")
-        t_lines.append("c.nop")
         t_lines.append(f"mv sp, x{base_reg}")  # Restore sp immediately
     else:
         t_lines.append(test_data.add_testcase(f"{op.lower()}_off{offset}", coverpoint, covergroup))
         t_lines.append(f"{op} {reg_str}, 0(x{addr_reg})")
-        t_lines.append("c.nop")
-        t_lines.append("c.nop")
 
-    # Read 16 bytes from scratch as signature to verify the store result
+    # Read scratch back as the signature to verify the store result
     t_lines.append(f"LA(x{addr_reg}, scratch)")
     t_lines.append(f"lw x{check_reg}, 0(x{addr_reg})")
     t_lines.append(write_sigupd(check_reg, test_data))
@@ -407,9 +407,6 @@ def _generate_breakpoint_tests(test_data: TestData) -> list[str]:
         comment_banner(coverpoint, "Breakpoint"),
         test_data.add_testcase("c_ebreak", coverpoint, covergroup),
         "c.ebreak",
-        f"{INDENT}# Breakpoint will throw a trap and the trap handler skips over the next 4 bytes. Two c.nops are used to get 4 bytes of instructions",
-        "c.nop",
-        "c.nop",
     ]
 
     return lines
@@ -425,9 +422,6 @@ def _generate_illegal_instruction_tests(test_data: TestData) -> list[str]:
         ".p2align 2",  # Add alignment
         test_data.add_testcase("illegal0", coverpoint, covergroup),
         ".insn 0x00",  # use two byte for instruction alignment when trapping
-        f"{INDENT}# Illegal instruction will throw a trap and the trap handler skips over the next 4 bytes. Two c.nops are used to get 4 bytes of instructions",
-        "c.nop",
-        "c.nop",
     ]
 
     return lines
@@ -435,8 +429,8 @@ def _generate_illegal_instruction_tests(test_data: TestData) -> list[str]:
 
 @add_priv_test_generator(
     "ExceptionsZc",
-    required_extensions=["Sm", "Zca"],
-    march_extensions=["Zicsr", "Zca", "Zcb", "Zcd", "C", "F", "D"],
+    required_extensions=[["Sm", "U"], "Zca"],
+    march_extensions=["Zca", "Zcb", "Zcd", "C", "F", "D"],
 )
 def make_exceptionszc(test_data: TestData) -> list[TestChunk]:
     """Main entry point for Zc exception test generation."""

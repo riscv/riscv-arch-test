@@ -46,27 +46,27 @@ COMPILE_FILES=(
 
 DEFINE_ARGS=()
 for def in ${COVERAGELIST}; do
-  if [[ -n "${def}" ]]; then
+  if [[ -n ${def} ]]; then
     DEFINE_ARGS+=("+define+${def}")
   fi
 done
 
-pushd "${WKDIR}" > /dev/null
+pushd "${WKDIR}" >/dev/null
 
 # Compile
-if ! vlogan -q -full64 -sverilog "${INC_DIRS[@]}" "${DEFINE_ARGS[@]}" "${COMPILE_FILES[@]}" > vlogan.log 2>&1; then
+if ! vlogan -q -full64 -sverilog "${INC_DIRS[@]}" "${DEFINE_ARGS[@]}" "${COMPILE_FILES[@]}" >vlogan.log 2>&1; then
   echo "ERROR collecting coverage. vlogan failed; see ${WKDIR}/vlogan.log" >&2
   exit 1
 fi
 
 # Elaborate
-if ! vcs -q -full64 -sverilog testbench -o simv > vcs.log 2>&1; then
+if ! vcs -q -full64 -sverilog testbench -o simv >vcs.log 2>&1; then
   echo "ERROR collecting coverage. vcs elaboration failed; see ${WKDIR}/vcs.log" >&2
   exit 1
 fi
 
 # Simulate
-if ! ./simv -vcs_assert off +traceFileList="${TRACEFILELIST}" > simv.log 2>&1; then
+if ! ./simv -vcs_assert off +traceFileList="${TRACEFILELIST}" >simv.log 2>&1; then
   echo "ERROR collecting coverage. simv run failed; see ${WKDIR}/simv.log" >&2
   exit 1
 fi
@@ -78,4 +78,4 @@ else
   exit 1
 fi
 
-popd > /dev/null
+popd >/dev/null

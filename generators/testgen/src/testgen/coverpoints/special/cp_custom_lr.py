@@ -7,12 +7,12 @@
 
 """cp_custom_lr coverpoint generator."""
 
-from testgen.asm.helpers import return_test_regs, to_hex, write_sigupd
+from testgen.asm.helpers import to_hex, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.data.state import TestData
+from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
-from testgen.formatters.params import generate_random_params
+from testgen.instructions.params import generate_random_params
 
 
 @add_coverpoint_generator("cp_custom_lr")
@@ -30,12 +30,7 @@ def make_custom_lr(instr_name: str, instr_type: str, coverpoint: str, test_data:
 
     for suffix in ["", ".aq", ".aqrl"]:
         params = generate_random_params(test_data, instr_type, exclude_regs=[0])
-        assert (
-            params.rs1 is not None
-            and params.rd is not None
-            and params.temp_val is not None
-            and params.temp_reg is not None
-        )
+        assert params.rs1 is not None and params.rd is not None and params.temp_val is not None
 
         # Add value to load data region
         tc.data_values.append(params.temp_val)
@@ -52,7 +47,7 @@ def make_custom_lr(instr_name: str, instr_type: str, coverpoint: str, test_data:
             ]
         )
 
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
     test_chunks.append(test_data.end_test_chunk())
 
@@ -64,6 +59,6 @@ def make_custom_lr(instr_name: str, instr_type: str, coverpoint: str, test_data:
         test_chunks.append(
             format_single_testcase(instr_name, instr_type, test_data, params, desc, f"{edge_val}", "cp_custom_rd_edges")
         )
-        return_test_regs(test_data, params)
+        return_testcase_registers(test_data, params)
 
     return test_chunks

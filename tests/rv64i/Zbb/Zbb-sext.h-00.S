@@ -15,9 +15,8 @@
 # MARCH: rv64i_zicsr_zifencei_zbb
 ##### END_TEST_CONFIG #####
 
-// Define the name of this test file for reporting and the size of the signature region
-#define TEST_FILE "Zbb-sext.h-00.S"
-#define SIGUPD_COUNT 122
+// Define the size of the signature region
+#define SIGUPD_COUNT 124
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -299,78 +298,78 @@ Zbb_sext_h_cg_cp_rd_b3:
   # Check if x3 contains the expected result. x10 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x10, x5, x4, x3, Zbb_sext_h_cg_cp_rd_b3, Zbb_sext_h_cg_cp_rd_b3_str)
 
-  mv x12, x4 # switch temp register to avoid conflict with test
-  mv x13, x5 # switch link pointer register to avoid conflict with test
+  mv x13, x4 # switch temp register to avoid conflict with test
+  mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x4)
   RVTEST_TESTDATA_LOAD_INT(x18, x26) # load rs1: x26 = 0x57dc0e7cc53f54e7
 Zbb_sext_h_cg_cp_rd_b4:
   sext.h x4, x26 # perform operation
-  # Check if x4 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x4, Zbb_sext_h_cg_cp_rd_b4, Zbb_sext_h_cg_cp_rd_b4_str)
+  # Check if x4 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x4, Zbb_sext_h_cg_cp_rd_b4, Zbb_sext_h_cg_cp_rd_b4_str)
 
 # Testcase cp_rd (Test destination rd = x5)
   RVTEST_TESTDATA_LOAD_INT(x18, x24) # load rs1: x24 = 0xa9ccc0b9960d3517
 Zbb_sext_h_cg_cp_rd_b5:
   sext.h x5, x24 # perform operation
-  # Check if x5 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x5, Zbb_sext_h_cg_cp_rd_b5, Zbb_sext_h_cg_cp_rd_b5_str)
+  # Check if x5 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x5, Zbb_sext_h_cg_cp_rd_b5, Zbb_sext_h_cg_cp_rd_b5_str)
 
 # Testcase cp_rd (Test destination rd = x6)
   RVTEST_TESTDATA_LOAD_INT(x18, x2) # load rs1: x2 = 0x6a0c908e0829f9e5
 Zbb_sext_h_cg_cp_rd_b6:
   sext.h x6, x2 # perform operation
-  # Check if x6 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x6, Zbb_sext_h_cg_cp_rd_b6, Zbb_sext_h_cg_cp_rd_b6_str)
+  # Check if x6 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x6, Zbb_sext_h_cg_cp_rd_b6, Zbb_sext_h_cg_cp_rd_b6_str)
 
 # Testcase cp_rd (Test destination rd = x7)
   RVTEST_TESTDATA_LOAD_INT(x18, x19) # load rs1: x19 = 0x3dd71069301efd81
 Zbb_sext_h_cg_cp_rd_b7:
   sext.h x7, x19 # perform operation
-  # Check if x7 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x7, Zbb_sext_h_cg_cp_rd_b7, Zbb_sext_h_cg_cp_rd_b7_str)
+  # Check if x7 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x7, Zbb_sext_h_cg_cp_rd_b7, Zbb_sext_h_cg_cp_rd_b7_str)
 
 # Testcase cp_rd (Test destination rd = x8)
   RVTEST_TESTDATA_LOAD_INT(x18, x6) # load rs1: x6 = 0x15254c8400fbc917
 Zbb_sext_h_cg_cp_rd_b8:
   sext.h x8, x6 # perform operation
-  # Check if x8 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x8, Zbb_sext_h_cg_cp_rd_b8, Zbb_sext_h_cg_cp_rd_b8_str)
+  # Check if x8 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x8, Zbb_sext_h_cg_cp_rd_b8, Zbb_sext_h_cg_cp_rd_b8_str)
 
 # Testcase cp_rd (Test destination rd = x9)
   RVTEST_TESTDATA_LOAD_INT(x18, x24) # load rs1: x24 = 0xea04f0d0788c8058
 Zbb_sext_h_cg_cp_rd_b9:
   sext.h x9, x24 # perform operation
-  # Check if x9 contains the expected result. x10 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x10, x13, x12, x9, Zbb_sext_h_cg_cp_rd_b9, Zbb_sext_h_cg_cp_rd_b9_str)
+  # Check if x9 contains the expected result. x10 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x10, x14, x13, x9, Zbb_sext_h_cg_cp_rd_b9, Zbb_sext_h_cg_cp_rd_b9_str)
 
   mv x31, x10 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x10)
   RVTEST_TESTDATA_LOAD_INT(x18, x8) # load rs1: x8 = 0x2514cf9c27d6c3f3
 Zbb_sext_h_cg_cp_rd_b10:
   sext.h x10, x8 # perform operation
-  # Check if x10 contains the expected result. x31 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x31, x13, x12, x10, Zbb_sext_h_cg_cp_rd_b10, Zbb_sext_h_cg_cp_rd_b10_str)
+  # Check if x10 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x10, Zbb_sext_h_cg_cp_rd_b10, Zbb_sext_h_cg_cp_rd_b10_str)
 
 # Testcase cp_rd (Test destination rd = x11)
-  RVTEST_TESTDATA_LOAD_INT(x18, x14) # load rs1: x14 = 0x555011f616b8e74e
+  RVTEST_TESTDATA_LOAD_INT(x18, x12) # load rs1: x12 = 0x555011f616b8e74e
 Zbb_sext_h_cg_cp_rd_b11:
-  sext.h x11, x14 # perform operation
-  # Check if x11 contains the expected result. x31 is the signature ptr, x13 is the link ptr, x12 is a temp reg.
-  RVTEST_SIGUPD(x31, x13, x12, x11, Zbb_sext_h_cg_cp_rd_b11, Zbb_sext_h_cg_cp_rd_b11_str)
+  sext.h x11, x12 # perform operation
+  # Check if x11 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x11, Zbb_sext_h_cg_cp_rd_b11, Zbb_sext_h_cg_cp_rd_b11_str)
 
-  mv x4, x12 # switch temp register to avoid conflict with test
-  mv x5, x13 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x12)
-  RVTEST_TESTDATA_LOAD_INT(x18, x8) # load rs1: x8 = 0x5f862ba4a1dba89f
+  RVTEST_TESTDATA_LOAD_INT(x18, x29) # load rs1: x29 = 0x52c492dfd4c0faf1
 Zbb_sext_h_cg_cp_rd_b12:
-  sext.h x12, x8 # perform operation
-  # Check if x12 contains the expected result. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x31, x5, x4, x12, Zbb_sext_h_cg_cp_rd_b12, Zbb_sext_h_cg_cp_rd_b12_str)
+  sext.h x12, x29 # perform operation
+  # Check if x12 contains the expected result. x31 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
+  RVTEST_SIGUPD(x31, x14, x13, x12, Zbb_sext_h_cg_cp_rd_b12, Zbb_sext_h_cg_cp_rd_b12_str)
 
+  mv x4, x13 # switch temp register to avoid conflict with test
+  mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rd (Test destination rd = x13)
-  RVTEST_TESTDATA_LOAD_INT(x18, x22) # load rs1: x22 = 0x5620ab6aade297e1
+  RVTEST_TESTDATA_LOAD_INT(x18, x24) # load rs1: x24 = 0x5620ab6aade297e1
 Zbb_sext_h_cg_cp_rd_b13:
-  sext.h x13, x22 # perform operation
+  sext.h x13, x24 # perform operation
   # Check if x13 contains the expected result. x31 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x31, x5, x4, x13, Zbb_sext_h_cg_cp_rd_b13, Zbb_sext_h_cg_cp_rd_b13_str)
 
@@ -617,6 +616,20 @@ Zbb_sext_h_cg_cp_rs1_edges_0x100000001:
   sext.h x16, x3 # perform operation
   # Check if x16 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x6, x5, x4, x16, Zbb_sext_h_cg_cp_rs1_edges_0x100000001, Zbb_sext_h_cg_cp_rs1_edges_0x100000001_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x0000000080000000)
+  RVTEST_TESTDATA_LOAD_INT(x17, x9) # load rs1: x9 = 0x0000000080000000
+Zbb_sext_h_cg_cp_rs1_edges_0x80000000:
+  sext.h x26, x9 # perform operation
+  # Check if x26 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x26, Zbb_sext_h_cg_cp_rs1_edges_0x80000000, Zbb_sext_h_cg_cp_rs1_edges_0x80000000_str)
+
+# Testcase cp_rs1_edges (Test source rs1 value = 0x000000007fffffff)
+  RVTEST_TESTDATA_LOAD_INT(x17, x16) # load rs1: x16 = 0x000000007fffffff
+Zbb_sext_h_cg_cp_rs1_edges_0x7fffffff:
+  sext.h x8, x16 # perform operation
+  # Check if x8 contains the expected result. x6 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x6, x5, x4, x8, Zbb_sext_h_cg_cp_rs1_edges_0x7fffffff, Zbb_sext_h_cg_cp_rs1_edges_0x7fffffff_str)
 
 /////////////////////////////////
 // cmp_rd_rs1
@@ -907,7 +920,7 @@ RVTEST_DATA_BEGIN
 .dword 0xea04f0d0788c8058
 .dword 0x2514cf9c27d6c3f3
 .dword 0x555011f616b8e74e
-.dword 0x5f862ba4a1dba89f
+.dword 0x52c492dfd4c0faf1
 .dword 0x5620ab6aade297e1
 .dword 0x928936df00ccba77
 .dword 0xb5c06e80caec6b24
@@ -943,6 +956,8 @@ RVTEST_DATA_BEGIN
 .dword 0x00000000fffffffe
 .dword 0x0000000100000000
 .dword 0x0000000100000001
+.dword 0x0000000080000000
+.dword 0x000000007fffffff
 .dword 0xf7a1f26e986f91c8
 .dword 0x2f1ca4b3d258a5d5
 .dword 0xd3e012f4ca3978b8
@@ -1057,38 +1072,40 @@ Zbb_sext_h_cg_cp_rs1_edges_0xffffffff_str: .string "\"test: 77; cg: Zbb_sext.h_c
 Zbb_sext_h_cg_cp_rs1_edges_0xfffffffe_str: .string "\"test: 78; cg: Zbb_sext.h_cg; cp: cp_rs1_edges; bin: 0xfffffffe\""
 Zbb_sext_h_cg_cp_rs1_edges_0x100000000_str: .string "\"test: 79; cg: Zbb_sext.h_cg; cp: cp_rs1_edges; bin: 0x100000000\""
 Zbb_sext_h_cg_cp_rs1_edges_0x100000001_str: .string "\"test: 80; cg: Zbb_sext.h_cg; cp: cp_rs1_edges; bin: 0x100000001\""
-Zbb_sext_h_cg_cmp_rd_rs1_b0_str: .string "\"test: 81; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b0\""
-Zbb_sext_h_cg_cmp_rd_rs1_b1_str: .string "\"test: 82; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b1\""
-Zbb_sext_h_cg_cmp_rd_rs1_b2_str: .string "\"test: 83; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b2\""
-Zbb_sext_h_cg_cmp_rd_rs1_b3_str: .string "\"test: 84; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b3\""
-Zbb_sext_h_cg_cmp_rd_rs1_b4_str: .string "\"test: 85; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b4\""
-Zbb_sext_h_cg_cmp_rd_rs1_b5_str: .string "\"test: 86; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b5\""
-Zbb_sext_h_cg_cmp_rd_rs1_b6_str: .string "\"test: 87; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b6\""
-Zbb_sext_h_cg_cmp_rd_rs1_b7_str: .string "\"test: 88; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b7\""
-Zbb_sext_h_cg_cmp_rd_rs1_b8_str: .string "\"test: 89; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b8\""
-Zbb_sext_h_cg_cmp_rd_rs1_b9_str: .string "\"test: 90; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b9\""
-Zbb_sext_h_cg_cmp_rd_rs1_b10_str: .string "\"test: 91; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b10\""
-Zbb_sext_h_cg_cmp_rd_rs1_b11_str: .string "\"test: 92; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b11\""
-Zbb_sext_h_cg_cmp_rd_rs1_b12_str: .string "\"test: 93; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b12\""
-Zbb_sext_h_cg_cmp_rd_rs1_b13_str: .string "\"test: 94; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b13\""
-Zbb_sext_h_cg_cmp_rd_rs1_b14_str: .string "\"test: 95; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b14\""
-Zbb_sext_h_cg_cmp_rd_rs1_b15_str: .string "\"test: 96; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b15\""
-Zbb_sext_h_cg_cmp_rd_rs1_b16_str: .string "\"test: 97; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b16\""
-Zbb_sext_h_cg_cmp_rd_rs1_b17_str: .string "\"test: 98; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b17\""
-Zbb_sext_h_cg_cmp_rd_rs1_b18_str: .string "\"test: 99; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b18\""
-Zbb_sext_h_cg_cmp_rd_rs1_b19_str: .string "\"test: 100; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b19\""
-Zbb_sext_h_cg_cmp_rd_rs1_b20_str: .string "\"test: 101; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b20\""
-Zbb_sext_h_cg_cmp_rd_rs1_b21_str: .string "\"test: 102; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b21\""
-Zbb_sext_h_cg_cmp_rd_rs1_b22_str: .string "\"test: 103; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b22\""
-Zbb_sext_h_cg_cmp_rd_rs1_b23_str: .string "\"test: 104; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b23\""
-Zbb_sext_h_cg_cmp_rd_rs1_b24_str: .string "\"test: 105; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b24\""
-Zbb_sext_h_cg_cmp_rd_rs1_b25_str: .string "\"test: 106; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b25\""
-Zbb_sext_h_cg_cmp_rd_rs1_b26_str: .string "\"test: 107; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b26\""
-Zbb_sext_h_cg_cmp_rd_rs1_b27_str: .string "\"test: 108; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b27\""
-Zbb_sext_h_cg_cmp_rd_rs1_b28_str: .string "\"test: 109; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b28\""
-Zbb_sext_h_cg_cmp_rd_rs1_b29_str: .string "\"test: 110; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b29\""
-Zbb_sext_h_cg_cmp_rd_rs1_b30_str: .string "\"test: 111; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b30\""
-Zbb_sext_h_cg_cmp_rd_rs1_b31_str: .string "\"test: 112; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b31\""
+Zbb_sext_h_cg_cp_rs1_edges_0x80000000_str: .string "\"test: 81; cg: Zbb_sext.h_cg; cp: cp_rs1_edges; bin: 0x80000000\""
+Zbb_sext_h_cg_cp_rs1_edges_0x7fffffff_str: .string "\"test: 82; cg: Zbb_sext.h_cg; cp: cp_rs1_edges; bin: 0x7fffffff\""
+Zbb_sext_h_cg_cmp_rd_rs1_b0_str: .string "\"test: 83; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b0\""
+Zbb_sext_h_cg_cmp_rd_rs1_b1_str: .string "\"test: 84; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b1\""
+Zbb_sext_h_cg_cmp_rd_rs1_b2_str: .string "\"test: 85; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b2\""
+Zbb_sext_h_cg_cmp_rd_rs1_b3_str: .string "\"test: 86; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b3\""
+Zbb_sext_h_cg_cmp_rd_rs1_b4_str: .string "\"test: 87; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b4\""
+Zbb_sext_h_cg_cmp_rd_rs1_b5_str: .string "\"test: 88; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b5\""
+Zbb_sext_h_cg_cmp_rd_rs1_b6_str: .string "\"test: 89; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b6\""
+Zbb_sext_h_cg_cmp_rd_rs1_b7_str: .string "\"test: 90; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b7\""
+Zbb_sext_h_cg_cmp_rd_rs1_b8_str: .string "\"test: 91; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b8\""
+Zbb_sext_h_cg_cmp_rd_rs1_b9_str: .string "\"test: 92; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b9\""
+Zbb_sext_h_cg_cmp_rd_rs1_b10_str: .string "\"test: 93; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b10\""
+Zbb_sext_h_cg_cmp_rd_rs1_b11_str: .string "\"test: 94; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b11\""
+Zbb_sext_h_cg_cmp_rd_rs1_b12_str: .string "\"test: 95; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b12\""
+Zbb_sext_h_cg_cmp_rd_rs1_b13_str: .string "\"test: 96; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b13\""
+Zbb_sext_h_cg_cmp_rd_rs1_b14_str: .string "\"test: 97; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b14\""
+Zbb_sext_h_cg_cmp_rd_rs1_b15_str: .string "\"test: 98; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b15\""
+Zbb_sext_h_cg_cmp_rd_rs1_b16_str: .string "\"test: 99; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b16\""
+Zbb_sext_h_cg_cmp_rd_rs1_b17_str: .string "\"test: 100; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b17\""
+Zbb_sext_h_cg_cmp_rd_rs1_b18_str: .string "\"test: 101; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b18\""
+Zbb_sext_h_cg_cmp_rd_rs1_b19_str: .string "\"test: 102; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b19\""
+Zbb_sext_h_cg_cmp_rd_rs1_b20_str: .string "\"test: 103; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b20\""
+Zbb_sext_h_cg_cmp_rd_rs1_b21_str: .string "\"test: 104; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b21\""
+Zbb_sext_h_cg_cmp_rd_rs1_b22_str: .string "\"test: 105; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b22\""
+Zbb_sext_h_cg_cmp_rd_rs1_b23_str: .string "\"test: 106; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b23\""
+Zbb_sext_h_cg_cmp_rd_rs1_b24_str: .string "\"test: 107; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b24\""
+Zbb_sext_h_cg_cmp_rd_rs1_b25_str: .string "\"test: 108; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b25\""
+Zbb_sext_h_cg_cmp_rd_rs1_b26_str: .string "\"test: 109; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b26\""
+Zbb_sext_h_cg_cmp_rd_rs1_b27_str: .string "\"test: 110; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b27\""
+Zbb_sext_h_cg_cmp_rd_rs1_b28_str: .string "\"test: 111; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b28\""
+Zbb_sext_h_cg_cmp_rd_rs1_b29_str: .string "\"test: 112; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b29\""
+Zbb_sext_h_cg_cmp_rd_rs1_b30_str: .string "\"test: 113; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b30\""
+Zbb_sext_h_cg_cmp_rd_rs1_b31_str: .string "\"test: 114; cg: Zbb_sext.h_cg; cp: cmp_rd_rs1; bin: b31\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

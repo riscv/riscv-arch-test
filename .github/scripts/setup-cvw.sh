@@ -9,5 +9,5 @@ set -euo pipefail
 
 INSTALL_DIR="${1:?Usage: setup-cvw.sh <install-dir>}"
 
-echo "$INSTALL_DIR/cvw/bin" >> "$GITHUB_PATH"
-echo "WALLY=$INSTALL_DIR/cvw" >> "$GITHUB_ENV"
+echo "$INSTALL_DIR/cvw/bin" >>"$GITHUB_PATH"
+echo "WALLY=$INSTALL_DIR/cvw" >>"$GITHUB_ENV"

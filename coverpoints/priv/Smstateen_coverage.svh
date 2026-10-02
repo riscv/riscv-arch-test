@@ -68,14 +68,12 @@ covergroup Smstateen_cg with function sample(ins_t ins);
             bins aia_disabled = {1'b0};
             bins aia_enabled  = {1'b1};
         }
+        // Ssaia state gated by mstateen0.AIA and not by CSRIND or IMSIC
         aia_csrs: coverpoint ins.current.insn[31:20] {
-            `ifdef UDB_MXLEN_64
-                wildcard bins aia_m = {CSR_SIE};
-                wildcard bins aia_s = {CSR_SIP};
-            `endif
+            bins stopi = {CSR_STOPI};
             `ifdef UDB_MXLEN_32
-                bins aia_m = {CSR_SIEH};
-                bins aia_s = {CSR_SIPH};
+                bins sieh = {CSR_SIEH};
+                bins siph = {CSR_SIPH};
             `endif
         }
     `endif
@@ -95,7 +93,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
             `ifdef SSQOSID_SUPPORTED
                 wildcard bins walking1_55  = {64'b????????1???????????????????????????????????????????????????????};
             `endif
-            `ifdef SM1P13_SUPPORTED
+            `ifdef SM1P13P0_OR_LATER_SUPPORTED
                 wildcard bins walking1_56  = {64'b???????1????????????????????????????????????????????????????????};
             `endif
             `ifdef SDTRIG_SUPPORTED
@@ -141,7 +139,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
             `ifdef SSQOSID_SUPPORTED
                 wildcard bins walking1_23 = {32'b????????1???????????????????????};
             `endif
-            `ifdef SM1P13_SUPPORTED
+            `ifdef SM1P13P0_OR_LATER_SUPPORTED
                 wildcard bins walking1_24 = {32'b???????1????????????????????????};
             `endif
             `ifdef SDTRIG_SUPPORTED
@@ -177,7 +175,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 
     // ── Always-present feature coverpoints ───────────────────────────────
     `ifdef ZFINX_SUPPORTED
-        misa_F: coverpoint ins.current.csr[CSR_MISA][5] {
+        misa_F: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "misa", "exts")[5] {
             bins F_set   = {1'b1};
             bins F_clear = {1'b0};
         }
@@ -205,20 +203,24 @@ covergroup Smstateen_cg with function sample(ins_t ins);
             wildcard bins fclass_s = {FCLASS_S};
         }
     `endif
-    `ifdef UDB_MXLEN_64
-        envcfg_state: coverpoint ins.current.csr[CSR_MSTATEEN0][62] {
-                bins envcfg_disabled = {1'b0};
-                bins envcfg_enabled  = {1'b1};
-        }
-    `else
-        envcfg_state: coverpoint ins.current.csr[CSR_MSTATEEN0H][30] {
-                bins envcfg_disabled = {1'b0};
-                bins envcfg_enabled  = {1'b1};
-        }
+
+    // cp_envcfg: Only present when Sm > 1.11 is supported
+    `ifdef SM1P12P0_OR_LATER_SUPPORTED
+      `ifdef UDB_MXLEN_64
+          envcfg_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstateen0", "envcfg")[0] {
+                  bins envcfg_disabled = {1'b0};
+                  bins envcfg_enabled  = {1'b1};
+          }
+      `else
+          envcfg_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstateen0h", "envcfg")[0] {
+                  bins envcfg_disabled = {1'b0};
+                  bins envcfg_enabled  = {1'b1};
+          }
+      `endif
+      senvcfg_csr: coverpoint ins.current.insn[31:20] {
+                  bins senvcfg = {CSR_SENVCFG};
+      }
     `endif
-    senvcfg_csr: coverpoint ins.current.insn[31:20] {
-                bins senvcfg = {CSR_SENVCFG};
-    }
 
     // ── Zcmt-dependent coverpoints (cp_jvt_access) ──────────
 `ifdef ZCMT_SUPPORTED
@@ -243,15 +245,18 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 `endif
 
     // ── Sm1p13 + Hypervisor dependent coverpoints (cp_p1p13) ─────────────
-`ifdef SM1P13_SUPPORTED
+`ifdef SM1P13P0_OR_LATER_SUPPORTED
     p1p13_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_CURRENT, "mstateen0", "p1p13") {
         bins p1p13_disabled = {1'b0};
         bins p1p13_enabled  = {1'b1};
     }
+    // hedelegh is the high half of hedeleg and exists only on RV32.
     `ifdef H_SUPPORTED
+    `ifdef UDB_MXLEN_32
         hedelegh_csr: coverpoint ins.current.insn[31:20] {
             wildcard bins hedelegh = {CSR_HEDELEGH};
         }
+    `endif
     `endif
 `endif
 
@@ -259,7 +264,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 
 `ifdef SSQOSID_SUPPORTED
     `ifdef UDB_MXLEN_64
-        srmcfg_state: coverpoint ins.current.csr[CSR_MSTATEEN0][55] {
+        srmcfg_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstateen0", "srmcfg")[0] {
                 bins srmcfg_disabled = {1'b0};
                 bins srmcfg_enabled  = {1'b1};
         }
@@ -267,7 +272,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
                 wildcard bins srmcfg = {CSR_SRMCFG};
         }
     `else
-        srmcfg_state: coverpoint ins.current.csr[CSR_MSTATEEN0H][23] {
+        srmcfg_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstateen0h", "srmcfg")[0] {
                 bins srmcfg_disabled = {1'b0};
                 bins srmcfg_enabled  = {1'b1};
         }
@@ -290,8 +295,31 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 `endif
 
 
+`ifdef SSSTATEEN_SUPPORTED
+    // Only sstateen0 is gated by mstateen0.SE0 in this suite; sstateen1-3 are
+    // exercised from the Ssstateen suite instead.
+    sstateen0_csr: coverpoint ins.current.insn[31:20] {
+            bins sstateen0 = {CSR_SSTATEEN0};
+    }
+
+    `ifdef UDB_MXLEN_64
+        se0: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstateen0", "se0")[0] {
+                bins se0_disabled = {1'b0};
+                bins se0_enabled  = {1'b1};
+        }
+    `else
+        se0: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstateen0h", "se0")[0] {
+                bins se0_disabled = {1'b0};
+                bins se0_enabled  = {1'b1};
+        }
+    `endif
+`endif
+
     cp_csr_illegal_accesses: cross priv_mode_maybes_u, mstateen_csrs, csrops;
     cp_walking_ones: cross priv_mode_m, mstateen_walk_csrs, csrops, csr_walk;
+`ifdef SSSTATEEN_SUPPORTED
+    cp_mstateen0_se0_controls_sstateen0: cross csrops, priv_mode_s, se0, sstateen0_csr;
+`endif
 
 `ifdef ZFINX_SUPPORTED
     cp_fcsr: cross misa_F, priv_mode_m, mstateen0_fcsr_bit, csrops, fscr_csr {
@@ -309,8 +337,10 @@ covergroup Smstateen_cg with function sample(ins_t ins);
     }
 `endif
 
-    // Row 8: Always present (envcfg always in mstateen0)
-    cp_envcfg: cross csrops, priv_mode_m_maybes_u, senvcfg_csr, envcfg_state;
+    // Row 8: Sm > 1.11 only
+    `ifdef SM1P12P0_OR_LATER_SUPPORTED
+      cp_envcfg: cross csrops, priv_mode_m_maybes_u, senvcfg_csr, envcfg_state;
+    `endif
 
     // Row 7: Zcmt only
 `ifdef ZCMT_SUPPORTED
@@ -323,9 +353,11 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 `endif
 
     // Row 13: Sm1p13 + Hypervisor only
-`ifdef SM1P13_SUPPORTED
+`ifdef SM1P13P0_OR_LATER_SUPPORTED
     `ifdef H_SUPPORTED
+    `ifdef UDB_MXLEN_32
         cp_p1p13: cross csrops, p1p13_state, hedelegh_csr, priv_mode_m_maybes_u;
+    `endif
     `endif
 `endif
 

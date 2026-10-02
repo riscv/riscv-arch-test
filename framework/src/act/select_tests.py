@@ -7,22 +7,17 @@
 # Select tests to run based on UDB config and test list
 ##################################
 
-from __future__ import annotations
-
 import re
 from collections.abc import Sequence
 from pathlib import Path
 
+from act.certificate_tests import get_certificate_test_suites
 from act.config import Config, load_config
-from act.parse_test_constraints import TestMetadata
-from act.parse_udb_config import (
-    get_config_params,
-    get_implemented_extensions,
-    get_ref_model_pmp_params,
-    prepare_dut_outputs,
-)
+from act.parse_test_constraints import ExtensionRequirement, TestMetadata
+from act.parse_udb_config import get_config_params, get_implemented_extensions, prepare_dut_outputs
+from act.toolchain import EXPERIMENTAL_EXTENSIONS
 
-PRIV_EXTENSIONS = {"Sm", "S", "U"}
+PRIV_EXTENSIONS = {"Sm", "S", "U", "H"}
 
 # Type alias
 ConfigParamValue = int | bool | str | list[int | str | bool]
@@ -60,6 +55,33 @@ def _compare_param(test_value: object, config_value: object) -> bool:
     return test_value == config_value
 
 
+def check_test_extensions(
+    required_extensions: frozenset[ExtensionRequirement],
+    forbidden_extensions: frozenset[str],
+    implemented_extensions: set[str],
+) -> bool:
+    """Check required, alternative, and forbidden extension constraints."""
+    if not forbidden_extensions.isdisjoint(implemented_extensions):
+        return False
+
+    return all(
+        requirement in implemented_extensions
+        if isinstance(requirement, str)
+        else not requirement.isdisjoint(implemented_extensions)
+        for requirement in required_extensions
+    )
+
+
+def _requires_extension_from(
+    required_extensions: frozenset[ExtensionRequirement], extensions: frozenset[str] | set[str]
+) -> bool:
+    """Check whether a requirement can only be met with an extension in the given set."""
+    return any(
+        requirement in extensions if isinstance(requirement, str) else requirement.issubset(extensions)
+        for requirement in required_extensions
+    )
+
+
 def check_test_params(test_params: dict[str, int | bool | str], config_params: dict[str, ConfigParamValue]) -> bool:
     """Check if all parameters in test_params match those in config_params."""
     for param, value in test_params.items():
@@ -74,17 +96,30 @@ def select_tests(
     test_dict: dict[str, TestMetadata],
     implemented_extensions: set[str],
     config_params: dict[str, ConfigParamValue],
+    harts: int = 1,
     *,
     include_priv_tests: bool = True,
+    enable_experimental_extensions: bool = False,
 ) -> dict[str, TestMetadata]:
-    """Select tests that match the UDB configuration."""
+    """Select tests that match the DUT configuration."""
     selected_tests: dict[str, TestMetadata] = {}
     for test_name, test_metadata in test_dict.items():
-        # Skip privileged tests if disabled
-        if not include_priv_tests and not test_metadata.required_extensions.isdisjoint(PRIV_EXTENSIONS):
+        if harts < test_metadata.min_harts:
             continue
-        # Check if all required extensions are implemented
-        if test_metadata.required_extensions.issubset(implemented_extensions):
+        # Skip privileged tests if disabled
+        if not include_priv_tests and _requires_extension_from(test_metadata.required_extensions, PRIV_EXTENSIONS):
+            continue
+        # Skip experimental extensions unless enabled
+        if not enable_experimental_extensions and _requires_extension_from(
+            test_metadata.required_extensions, EXPERIMENTAL_EXTENSIONS
+        ):
+            continue
+        # Check if all extensions match
+        if check_test_extensions(
+            test_metadata.required_extensions,
+            test_metadata.forbidden_extensions,
+            implemented_extensions,
+        ):
             # Check if all parameters match
             test_params = test_metadata.params
             if check_test_params(test_params, config_params):
@@ -92,14 +127,26 @@ def select_tests(
     return selected_tests
 
 
+def filter_tests_by_certificate(test_dict: dict[str, TestMetadata], certificate: str) -> dict[str, TestMetadata]:
+    """Select tests in suites that apply to a certificate."""
+    certificate_test_suites = get_certificate_test_suites(certificate)
+    return {
+        test_name: test_metadata
+        for test_name, test_metadata in test_dict.items()
+        if Path(test_name).parent.name in certificate_test_suites
+    }
+
+
 def prepare_configs_and_select_tests(
     config_files: Sequence[Path],
+    certificate: str | None,
     full_test_dict: dict[str, TestMetadata],
     workdir: Path,
     *,
     jobs: int = 1,
     verbose: bool = False,
     validate_tools: bool = True,
+    enable_experimental_extensions: bool = False,
 ) -> list[tuple[Config, dict[str, ConfigParamValue], dict[str, TestMetadata]]]:
     """Load configs, generate their UDB outputs, and select tests for each.
 
@@ -110,6 +157,7 @@ def prepare_configs_and_select_tests(
 
     Args:
         config_files: ACT test config files to load.
+        certificate: Certificate that limits selected tests to its test suites.
         full_test_dict: Candidate tests, usually from ``generate_test_dict``.
         workdir: Directory for generated UDB outputs (one subdir per config).
         jobs: Parallelism for DUT output generation.
@@ -124,9 +172,16 @@ def prepare_configs_and_select_tests(
     results: list[tuple[Config, dict[str, ConfigParamValue], dict[str, TestMetadata]]] = []
     for config in configs:
         implemented_extensions = get_implemented_extensions(workdir / config.name / "extensions.txt")
-        config_params = get_config_params(config.udb_config) | get_ref_model_pmp_params(config.dut_include_dir)
+        config_params = get_config_params(config.udb_config)
         selected_tests = select_tests(
-            full_test_dict, implemented_extensions, config_params, include_priv_tests=config.include_priv_tests
+            full_test_dict,
+            implemented_extensions,
+            config_params,
+            harts=config.harts,
+            include_priv_tests=config.include_priv_tests,
+            enable_experimental_extensions=enable_experimental_extensions,
         )
+        if certificate:
+            selected_tests = filter_tests_by_certificate(selected_tests, certificate)
         results.append((config, config_params, selected_tests))
     return results

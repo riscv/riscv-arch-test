@@ -76,7 +76,7 @@ covergroup SdtrigSm_tcontrol_cg with function sample(ins_t ins);
 
     mte: coverpoint ins.prev.csr[CSR_TCONTROL][3] {
         bins disabled = {1'b0};
-        bins enabled = {1'b1};
+        bins enabled  = {1'b1};
     }
     mpte: coverpoint ins.prev.csr[CSR_TCONTROL][7] {
         bins zero = {1'b0};
@@ -86,19 +86,15 @@ covergroup SdtrigSm_tcontrol_cg with function sample(ins_t ins);
         bins zero = {32'h0};
     }
     mret: coverpoint ins.current.insn {
-        wildcard bins mret = {MRET};
+        bins mret = {MRET};
     }
 
     // main coverpoints
     cp_tcontrol_enable:     cross priv_mode_m, triggernum, mte;             // NTRIG * 2 mte
     cp_tcontrol_mtrap:      cross priv_mode_m, mte, mpte, illegal_insn;     // 2 mte * 2 mpte
     cp_tcontrol_mret:       cross priv_mode_m, mte, mpte, mret;             // 2 mte * 2 mpte
-
 endgroup
 `endif
-
-covergroup SdtrigSm_access_cg with function sample(ins_t ins);
-endgroup
 
 covergroup SdtrigSm_mcontrol6_cg with function sample(ins_t ins);
     option.per_instance = 0;

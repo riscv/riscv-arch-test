@@ -23,6 +23,10 @@ covergroup SscofpmfS_cg with function sample(ins_t ins);
     sip_lcofi_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sip", "lcofip")[0] {
             bins zero = {0};
     }
+    // S-mode clears LCOFIP through sip, so check sip rather than mip here.
+    sip_clear: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sip", "sip") == 0) {
+            bins yes = {1};
+    }
 
     sie_lcofi: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sie", "lcofie")[0] {}
     sstatus_sie_set: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sstatus", "sie")[0] {
@@ -44,9 +48,15 @@ covergroup SscofpmfS_cg with function sample(ins_t ins);
     }
     mip_other_pending_s: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "seip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "stip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "ssip")[0]} {
             bins none = {3'b000};
+            `ifdef UDB_SEI_INTR_IMPL
             bins seip = {3'b100};
+            `endif
+            `ifdef UDB_STI_INTR_IMPL
             bins stip = {3'b010};
+            `endif
+            `ifdef UDB_SSI_INTR_IMPL
             bins ssip = {3'b001};
+            `endif
     }
     mideleg_s_ints: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "lcofip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "seip")[0],
                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "stip")[0],  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "ssip")[0]} {
@@ -110,8 +120,15 @@ covergroup SscofpmfS_cg with function sample(ins_t ins);
     }
 
     cp_sinh_inhibits_smode:    cross priv_mode_s, mhpmevent_xinh_combos, mhpmevent_of_zero;
-    cp_of_set_on_overflow:     cross priv_mode_s, sip_lcofi_one, mie_clear, mhpmevent_of_one, mhpmevent_inhibits_pattern_state;
-    cp_overflow_hw_only:       cross priv_mode_s, mip_clear, mie_clear, mhpmcounter_extreme_state, mhpmevent_all_zero;
+    // The workload runs in S-mode, so with S-mode counting inhibited it cannot overflow the counter
+    // (only a hart counting the T-SBI round trip in M-mode could, and the test must not rely on that).
+    cp_of_set_on_overflow:     cross priv_mode_s, sip_lcofi_one, mie_clear, mhpmevent_of_one, mhpmevent_inhibits_pattern_state {
+        ignore_bins self_inhibited = binsof(mhpmevent_inhibits_pattern_state.sinh_only) ||
+                                     binsof(mhpmevent_inhibits_pattern_state.msu_set);
+    }
+    // An overflow with OF already 1 leaves OF set and does not request LCOFI. The counter can wrap in any mode.
+    cp_of_already_set:         cross mhpmevent_of_was_one, mhpmevent_of_one, mhpmcounter_wraps, sip_lcofi_zero;
+    cp_overflow_hw_only:       cross priv_mode_s, sip_clear, mie_clear, mhpmcounter_extreme_state, mhpmevent_all_zero;
     cp_lcofip_hw_only:         cross priv_mode_s, mhpmevent_of, sip_lcofi_zero;
     cp_scountovf_shadow:       cross priv_mode_s, mcounteren_all_ones_state, of_stimulus_pattern;
     cp_scountovf_mcounteren:   cross priv_mode_s, of_write_pattern, mcounteren_stimulus_pattern_state;

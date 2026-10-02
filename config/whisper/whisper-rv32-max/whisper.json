@@ -135,5 +135,8 @@
     "update_whole_mask": true
   },
 
-  "wfi_timeout": 0
+  "wfi_timeout": 200,
+  "mmode_perf_event_map": {
+    "Load": 11
+  }
 }

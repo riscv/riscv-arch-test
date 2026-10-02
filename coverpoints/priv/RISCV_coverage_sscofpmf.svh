@@ -106,6 +106,25 @@
                 bins one = {1};
         }
     `endif
+    // The instruction on which mhpmcounter3 wraps from all 1s while OF is already 1
+    `ifdef UDB_MXLEN_64
+        mhpmevent_of_was_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mhpmevent3", "mhpmevent3")[63] {
+                bins one = {1};
+        }
+        mhpmcounter_wraps: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mhpmcounter3", "mhpmcounter3") == '1 &
+                                       get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  "mhpmcounter3", "mhpmcounter3") != '1) {
+                bins yes = {1};
+        }
+    `else
+        mhpmevent_of_was_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mhpmevent3h", "mhpmevent3h")[31] {
+                bins one = {1};
+        }
+        // On RV32 the 64-bit counter is split across mhpmcounter3h:mhpmcounter3
+        mhpmcounter_wraps: coverpoint ({get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mhpmcounter3h", "mhpmcounter3h"), get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mhpmcounter3", "mhpmcounter3")} == '1 &
+                                       {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  "mhpmcounter3h", "mhpmcounter3h"), get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER,  "mhpmcounter3", "mhpmcounter3")} != '1) {
+                bins yes = {1};
+        }
+    `endif
     mip_clear: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mip") == 0) {
             bins yes = {1};
     }

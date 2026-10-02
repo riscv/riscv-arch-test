@@ -24,7 +24,9 @@ normative_rule_definitions:
 
   - name: count_overflow_interrupt
     coverpoint:
-      ["{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_of_set_on_overflow}"]
+      [
+        "{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_of_set_on_overflow,cp_of_already_set}",
+      ]
 
   - name: count_overflow_trigger
     # Representative coverpoints; also SscofpmfU_cg/{cp_overflow_hw_only, cp_lcofip_hw_only}

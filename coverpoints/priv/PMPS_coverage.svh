@@ -82,10 +82,9 @@ covergroup PMPS_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
     bins standard_region = {`STANDARD_REGION & `PMP_PMPADDR_LOWMASK};
   }
 
-  // addr_in_region (PMP_REGION_START-based) doesn't apply here: entry0 is configured
-  // via standard_region (pmpaddr0 == STANDARD_REGION, i.e. a NAPOT match at
-  // PMP_NAPOT_REGION_START), so the access under test for cp_mprv_* must target that
-  // same NAPOT-safe address, not the plain PMP_REGION_START other crosses use.
+  // Accesses to a NAPOT region that the tests place at PMP_NAPOT_REGION_START (cp_cfg_X/R/W and
+  // cp_mprv_*). That base is g_napot-aligned, so the 8-byte ld/sd probes are naturally aligned at
+  // every grain; PMP_REGION_START is only 4-byte aligned at PMP_GRANULARITY 2.
   addr_in_napot_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
     bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
   }
@@ -257,9 +256,9 @@ covergroup PMPS_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
 
 //-------------------------------------------------------
 
-  cp_cfg_X: cross priv_mode_s, legal_lxwr, exec_instr, addr_in_region ;
-  cp_cfg_R: cross priv_mode_s, legal_lxwr, read_instr, addr_in_region ;
-  cp_cfg_W: cross priv_mode_s, legal_lxwr, write_instr, addr_in_region ;
+  cp_cfg_X: cross priv_mode_s, legal_lxwr, exec_instr, addr_in_napot_region ;
+  cp_cfg_R: cross priv_mode_s, legal_lxwr, read_instr, addr_in_napot_region ;
+  cp_cfg_W: cross priv_mode_s, legal_lxwr, write_instr, addr_in_napot_region ;
 
   cp_cfg_A_off_jalr: cross priv_mode_s, cfg_A_off, exec_instr, addr_in_region ;
   cp_cfg_A_off_lw: cross priv_mode_s, cfg_A_off, read_instr_lw, addr_in_region ;

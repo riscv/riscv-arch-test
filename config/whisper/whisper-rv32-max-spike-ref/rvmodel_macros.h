@@ -1,1 +1,1 @@
-../whisper-rv64-max-spike-ref/rvmodel_macros.h
+../whisper-rv64-max/rvmodel_macros.h

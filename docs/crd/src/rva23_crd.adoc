@@ -34,15 +34,6 @@ a| * Editorial and technical review.
 
 |===
 
-== Related Specifications
-
-* https://docs.riscv.org/reference/rva23/v1.0/[RVA23 Profile Specification] - Version 1.0
-* https://docs.riscv.org/reference/isa/unpriv/unpriv-index.html[Unprivileged ISA Specification] - Latest version TBD
-* https://docs.riscv.org/reference/isa/priv/priv-index.html[Privileged ISA Specification] - Privileged architecture version 1.13
-* https://github.com/riscv/riscv-arch-test/releases[Certification Test Plan (CTP)] - Latest version TBD
-* https://github.com/riscv/riscv-arch-test[RISC-V ACT Readme] - Latest version TBD
-* Customer Documentation - TBD
-
 == Introduction
 
 This document describes the test requirements for a processor to be eligible for a RVA23 certificate.
@@ -66,6 +57,8 @@ Those requirements are defined normatively in the RVA23 Profiles and are unchang
 
 NOTE: We encourage those who have implemented other base ISAs or extensions to
 run the appropriate https://github.com/riscv/riscv-arch-test[RISC-V ACTs] to help ensure compliance.
+
+The remainder of the document describes requirements for the test environment and for developers.
 
 === Execution Environment and Test Supervisor Binary Interface (T-SBI)
 
@@ -178,7 +171,7 @@ interrupts may be implemented, and must conform to the specification if they are
 interrupts are not in the profile and are not tested.
 
 [options=header]
-[cols="1,5"]
+[cols="1,1,1,5"]
 |===
 | Interrupt | Tested | Mandatory/Optional | Basis
 | SEI | Yes | Optional | "Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented."
@@ -205,3 +198,14 @@ The developer must provide:
 === Parameters
 
 Parameters affecting RVA23 are under development and are discussed in the Certification Test Plan.
+
+== Related Specifications
+
+The following specifications define RVA23, the certification test plan, and how to use the tests.
+
+* https://docs.riscv.org/reference/rva23/v1.0/[RVA23 Profile Specification] - Version 1.0
+* https://docs.riscv.org/reference/isa/unpriv/unpriv-index.html[Unprivileged ISA Specification] - Latest version TBD
+* https://docs.riscv.org/reference/isa/priv/priv-index.html[Privileged ISA Specification] - Privileged architecture version 1.13
+* https://github.com/riscv/riscv-arch-test/releases[Certification Test Plan (CTP)] - Latest version TBD
+* https://github.com/riscv/riscv-arch-test[RISC-V ACT Readme] - Latest version TBD
+* Customer Documentation - TBD

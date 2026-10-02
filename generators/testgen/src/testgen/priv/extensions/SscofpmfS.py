@@ -121,19 +121,22 @@ def _generate_lcofip_priority_s_tests(test_data: TestData) -> list[str]:
         f"csrsi sstatus, {hex(SIE_BIT)}   # sstatus.SIE = 1",
     ]
 
-    other_interrupts = [
-        "seip",
-        "stip",
-        "ssip",
-        "none",
-    ]
+    # Each competing interrupt is raised only where the platform implements it
+    other_interrupts = {
+        "seip": "UDB_SEI_INTR_IMPL",
+        "stip": "UDB_STI_INTR_IMPL",
+        "ssip": "UDB_SSI_INTR_IMPL",
+        "none": None,
+    }
 
-    for other_int in other_interrupts:
+    for other_int, guard in other_interrupts.items():
         binname = f"lcofip_priority_s_{other_int}"
 
+        lines.append("")
+        if guard:
+            lines.append(f"#ifdef {guard}")
         lines.extend(
             [
-                "",
                 f"# Testcase: competing interrupt = {other_int}",
                 "# RVMODEL_MHPMEVENT/RVMODEL_MHPMCOUNTER writes go via T-SBI from S-mode, per spec",
                 *prime_counter_overflow(r_val, r_temp2, r_temp, r_addr, "S"),
@@ -186,6 +189,8 @@ def _generate_lcofip_priority_s_tests(test_data: TestData) -> list[str]:
                 "csrw sie, zero   # disable all before next iteration",
             ]
         )
+        if guard:
+            lines.append("#endif")
 
     lines.extend(
         [

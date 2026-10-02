@@ -126,16 +126,19 @@ def _generate_lcofip_priority_sm_tests(test_data: TestData) -> list[str]:
         "",
     ]
 
-    other_interrupts = [
-        "meip",
-        "mtip",
-        "msip",
-        "none",
-    ]
+    # Each competing interrupt is raised only where the platform implements it
+    other_interrupts = {
+        "meip": "UDB_MEI_INTR_IMPL",
+        "mtip": "UDB_MTI_INTR_IMPL",
+        "msip": "UDB_MSI_INTR_IMPL",
+        "none": None,
+    }
 
-    for other_int in other_interrupts:
+    for other_int, guard in other_interrupts.items():
         binname = f"lcofip_priority_{other_int}"
 
+        if guard:
+            lines.append(f"#ifdef {guard}")
         lines.extend(
             [
                 f"# Testcase: competing interrupt = {other_int}",
@@ -196,9 +199,11 @@ def _generate_lcofip_priority_sm_tests(test_data: TestData) -> list[str]:
             [
                 "csrw mip, zero   # clear LCOFIP for next iteration",
                 "csrw mie, zero",
-                "",
             ]
         )
+        if guard:
+            lines.append("#endif")
+        lines.append("")
 
     lines.extend(
         [

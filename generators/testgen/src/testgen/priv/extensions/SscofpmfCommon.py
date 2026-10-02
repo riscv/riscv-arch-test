@@ -64,6 +64,9 @@ def _csr_access(instr: str, mode: str) -> str:
 _HIGHER_MODE_INHIBITS = {"Sm": 0, "S": 1 << 62, "U": (1 << 62) | (1 << 61)}
 _HIGHER_MODE_INHIBITS_32 = {mode: bits >> 32 for mode, bits in _HIGHER_MODE_INHIBITS.items()}
 
+# On RV32, mhpmevent3h[23:0] holds RVMODEL_MHPMEVENT_VAL[55:32].
+_EVENT_VAL_HI = "((RVMODEL_MHPMEVENT_VAL >> 32) & 0xFFFFFF)"
+
 
 def nonzero_not_all_ones(reg: int, scratch: int) -> list[str]:
     """Reduce x{reg} in place to a 0/1 "nonzero and not all-1s" boolean; raw hpmcounter
@@ -118,7 +121,7 @@ def _generate_xinh_inhibits_tests(test_data: TestData, priv_mode: str) -> list[s
                 f"{indent}#if __riscv_xlen == 32",
                 f"{indent}LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
                 f"{indent}{_csr_access(f'csrw RVMODEL_MHPMEVENT, x{r_val}', priv_mode)}",
-                f"{indent}LI(x{r_val}, {hex(higher_inhibits_32 | (inh_val << inh_bit_pos_32))})",
+                f"{indent}LI(x{r_val}, {_EVENT_VAL_HI} | {hex(higher_inhibits_32 | (inh_val << inh_bit_pos_32))})",
                 f"{indent}{_csr_access(f'csrw CSR_MHPMEVENT3H, x{r_val}', priv_mode)}",
                 f"{indent}#else",
                 f"{indent}LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | {hex(higher_inhibits | (inh_val << inh_bit_pos))})",
@@ -144,7 +147,8 @@ def _generate_xinh_inhibits_tests(test_data: TestData, priv_mode: str) -> list[s
             f"{indent}LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
             f"{indent}{_csr_access(f'csrw RVMODEL_MHPMEVENT, x{r_val}', priv_mode)}",
             f"{indent}#if __riscv_xlen == 32",
-            f"{indent}{_csr_access('csrw CSR_MHPMEVENT3H, zero', priv_mode)}",
+            f"{indent}LI(x{r_val}, {_EVENT_VAL_HI})",
+            f"{indent}{_csr_access(f'csrw CSR_MHPMEVENT3H, x{r_val}', priv_mode)}",
             f"{indent}#endif",
             "",
         ]
@@ -158,7 +162,7 @@ def _generate_xinh_inhibits_tests(test_data: TestData, priv_mode: str) -> list[s
             [
                 f"{indent}LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
                 f"{indent}{_csr_access(f'csrw RVMODEL_MHPMEVENT, x{r_val}', priv_mode)}",
-                f"{indent}LI(x{r_hval}, {combo} << 26)",  # 58-32 = 26
+                f"{indent}LI(x{r_hval}, {_EVENT_VAL_HI} | ({combo} << 26))",  # 58-32 = 26
                 f"{indent}{_csr_access(f'csrw CSR_MHPMEVENT3H, x{r_hval}', priv_mode)}",
                 f"{indent}{_csr_access('csrw RVMODEL_MHPMCOUNTER, zero', priv_mode)}",
                 "",
@@ -218,7 +222,7 @@ def write_event_pattern(r_val: int, r_hval: int, inhibit_pattern: int, priv_mode
         "#if __riscv_xlen == 32",
         f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
         _csr_access(f"csrw RVMODEL_MHPMEVENT, x{r_val}", priv_mode),
-        f"LI(x{r_hval}, {inhibit_pattern} << 26)   # 58-32 = 26",
+        f"LI(x{r_hval}, {_EVENT_VAL_HI} | ({inhibit_pattern} << 26))   # 58-32 = 26",
         _csr_access(f"csrw CSR_MHPMEVENT3H, x{r_hval}", priv_mode),
         "#else",
         f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | ({inhibit_pattern} << 58))   # OF starts at 0",
@@ -537,15 +541,39 @@ def _generate_lcofip_hw_only_tests(test_data: TestData, priv_mode: str) -> list[
     return lines
 
 
+_GOTO_MODE = {"S": "RVTEST_TSBI_GOTO_SMODE", "U": "RVTEST_TSBI_GOTO_UMODE"}
+
+
+def write_of_pattern(r_of_bit: int, pattern_name: str, of_bit_fn: Callable[[int], int], mode: str) -> list[str]:
+    """Set or clear OF in mhpmevent3..31 per of_bit_fn(counter - 3). Below M, switch to M once
+    and write the CSRs directly instead of making one T-SBI call per CSR."""
+
+    def writes(csr_suffix: str, of_bit: int, desc: str) -> list[str]:
+        lines = [f"LI(x{r_of_bit}, {hex(of_bit)})   # OF bit ({desc})"]
+        for i in range(29):
+            op, action = ("csrs", "set") if of_bit_fn(i) else ("csrc", "clear")
+            lines.append(f"{op} CSR_MHPMEVENT{i + 3}{csr_suffix}, x{r_of_bit}   # {action} OF")
+        return lines
+
+    return [
+        f"# --- Write OF pattern: {pattern_name} across mhpmevent3..31 ---",
+        *([] if mode == "Sm" else ["RVTEST_TSBI_GOTO_MMODE"]),
+        "#if __riscv_xlen == 32",
+        *writes("H", 1 << 31, "bit 31 of mhpmeventh, RV32"),
+        "#else",
+        *writes("", 1 << 63, "bit 63 of mhpmevent, RV64"),
+        "#endif",
+        *([] if mode == "Sm" else [_GOTO_MODE[mode]]),
+        "",
+    ]
+
+
 def _generate_scountovf_mcounteren_tests(test_data: TestData, mode: str) -> list[str]:
     """cp_scountovf_mcounteren: scountovf masked by mcounteren."""
     ######################################
     covergroup = "Sscofpmf_cg"
     coverpoint = "cp_scountovf_mcounteren"
     ######################################
-
-    MHPMEVENTH_CSRS = [f"CSR_MHPMEVENT{n}H" for n in range(3, 32)]  # RV32: 29 registers
-    MHPMEVENT_CSRS = [f"CSR_MHPMEVENT{n}" for n in range(3, 32)]  # RV64: 29 registers
 
     lines = [
         comment_banner(
@@ -567,32 +595,7 @@ def _generate_scountovf_mcounteren_tests(test_data: TestData, mode: str) -> list
 
     for of_name, of_bit_fn in of_patterns.items():
         r_of_bit = test_data.int_regs.get_register(exclude_regs=[0, 31])
-
-        lines.append(f"{indent}#if __riscv_xlen == 32")
-        lines.append(f"{indent}LI(x{r_of_bit}, {1 << 31})   # OF bit (bit 31 of mhpmeventh, RV32)")
-        lines.append(f"{indent}# --- Write OF pattern: {of_name} across mhpmeventh3..31 (RV32) ---")
-        for i, csr_name in enumerate(MHPMEVENTH_CSRS):
-            op = "csrs" if of_bit_fn(i) else "csrc"
-            lines.append(
-                f"{indent}"
-                + _csr_access(
-                    f"{op} {csr_name}, x{r_of_bit}   # {'set' if of_bit_fn(i) else 'clear'} OF bit -- {csr_name}", mode
-                )
-            )
-        lines.append(f"{indent}#else")
-        lines.append(f"{indent}LI(x{r_of_bit}, {1 << 63})   # OF bit (bit 63 of mhpmevent, RV64)")
-        lines.append(f"{indent}# --- Write OF pattern: {of_name} across mhpmevent3..31 (RV64) ---")
-        for i, csr_name in enumerate(MHPMEVENT_CSRS):
-            op = "csrs" if of_bit_fn(i) else "csrc"
-            lines.append(
-                f"{indent}"
-                + _csr_access(
-                    f"{op} {csr_name}, x{r_of_bit}   # {'set' if of_bit_fn(i) else 'clear'} OF bit -- {csr_name}", mode
-                )
-            )
-        lines.append(f"{indent}#endif")
-        lines.append("")
-
+        lines.extend(write_of_pattern(r_of_bit, of_name, of_bit_fn, mode))
         test_data.int_regs.return_registers([r_of_bit])
 
         walk_coverpoint = f"{coverpoint}_{of_name}_{mode.lower()}"
@@ -710,9 +713,6 @@ def _generate_scountovf_shadow_tests(test_data: TestData, priv_mode: str) -> lis
     coverpoint = "cp_scountovf_shadow"
     ######################################
 
-    MHPMEVENTH_CSRS = [f"CSR_MHPMEVENT{n}H" for n in range(3, 32)]  # RV32: 29 registers
-    MHPMEVENT_CSRS = [f"CSR_MHPMEVENT{n}" for n in range(3, 32)]  # RV64: 29 registers
-
     indent = ""
 
     lines = [
@@ -737,28 +737,7 @@ def _generate_scountovf_shadow_tests(test_data: TestData, priv_mode: str) -> lis
 
     def emit_pattern(pattern_name: str, of_bit_fn: Callable[[int], int]) -> None:
         r_of_bit, r_scountovf = test_data.int_regs.get_registers(2, exclude_regs=[0, 31])
-
-        lines.append(f"{indent}#if __riscv_xlen == 32")
-        lines.append(f"{indent}LI(x{r_of_bit}, {1 << 31})   # OF bit (bit 31 of mhpmeventh, RV32)")
-        lines.append(f"{indent}# --- Write OF pattern: {pattern_name} across mhpmeventh3..31 (RV32) ---")
-        for i, csr_name in enumerate(MHPMEVENTH_CSRS):
-            set_bit = of_bit_fn(i)
-            op = "csrs" if set_bit else "csrc"
-            action = "set" if set_bit else "clear"
-            instr = f"{op} {csr_name}, x{r_of_bit}   # {action} OF bit -- {csr_name}"
-            lines.append(f"{indent}{_csr_access(instr, priv_mode)}")
-        lines.append(f"{indent}#else")
-        lines.append(f"{indent}LI(x{r_of_bit}, {1 << 63})   # OF bit (bit 63 of mhpmevent, RV64)")
-        lines.append(f"{indent}# --- Write OF pattern: {pattern_name} across mhpmevent3..31 (RV64) ---")
-        for i, csr_name in enumerate(MHPMEVENT_CSRS):
-            set_bit = of_bit_fn(i)
-            op = "csrs" if set_bit else "csrc"
-            action = "set" if set_bit else "clear"
-            instr = f"{op} {csr_name}, x{r_of_bit}   # {action} OF bit -- {csr_name}"
-            lines.append(f"{indent}{_csr_access(instr, priv_mode)}")
-        lines.append(f"{indent}#endif")
-        lines.append("")
-
+        lines.extend(write_of_pattern(r_of_bit, pattern_name, of_bit_fn, priv_mode))
         test_data.int_regs.return_registers([r_of_bit])
 
         binname = f"scountovf_shadow_{priv_mode.lower()}_{pattern_name}"

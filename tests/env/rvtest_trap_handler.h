@@ -2132,6 +2132,47 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x7AA) // mscontext
         TSBI_CSR_INSTR_TABLE(0x5A8) // scontext
         TSBI_CSR_INSTR_TABLE(0x6A8) // hcontext
+#ifdef H_SUPPORTED
+        // Hypervisor and VS-mode CSRs
+        TSBI_CSR_INSTR_TABLE(0x600) // hstatus
+        TSBI_CSR_INSTR_TABLE(0x602) // hedeleg
+        TSBI_CSR_INSTR_TABLE(0x603) // hideleg
+        TSBI_CSR_INSTR_TABLE(0x604) // hie
+        TSBI_CSR_INSTR_TABLE(0x605) // htimedelta
+        TSBI_CSR_INSTR_TABLE(0x606) // hcounteren
+        TSBI_CSR_INSTR_TABLE(0x607) // hgeie
+        TSBI_CSR_INSTR_TABLE(0x608) // hvien
+        TSBI_CSR_INSTR_TABLE(0x609) // hvictl
+        TSBI_CSR_INSTR_TABLE(0x60A) // henvcfg
+        TSBI_CSR_INSTR_TABLE(0x60C) // hstateen0
+        TSBI_CSR_INSTR_TABLE(0x643) // htval
+        TSBI_CSR_INSTR_TABLE(0x644) // hip
+        TSBI_CSR_INSTR_TABLE(0x645) // hvip
+        TSBI_CSR_INSTR_TABLE(0x646) // hviprio1
+        TSBI_CSR_INSTR_TABLE(0x647) // hviprio2
+        TSBI_CSR_INSTR_TABLE(0x64A) // htinst
+        TSBI_CSR_INSTR_TABLE(0xE12) // hgeip
+        TSBI_CSR_INSTR_TABLE(0x680) // hgatp
+        TSBI_CSR_INSTR_TABLE(0x200) // vsstatus
+        TSBI_CSR_INSTR_TABLE(0x204) // vsie
+        TSBI_CSR_INSTR_TABLE(0x205) // vstvec
+        TSBI_CSR_INSTR_TABLE(0x240) // vsscratch
+        TSBI_CSR_INSTR_TABLE(0x241) // vsepc
+        TSBI_CSR_INSTR_TABLE(0x242) // vscause
+        TSBI_CSR_INSTR_TABLE(0x243) // vstval
+        TSBI_CSR_INSTR_TABLE(0x244) // vsip
+        TSBI_CSR_INSTR_TABLE(0x280) // vsatp
+  #if (UDB_MXLEN==32)
+        TSBI_CSR_INSTR_TABLE(0x612) // hedelegh
+        TSBI_CSR_INSTR_TABLE(0x615) // htimedeltah
+        TSBI_CSR_INSTR_TABLE(0x618) // hvienh
+        TSBI_CSR_INSTR_TABLE(0x61A) // henvcfgh
+        TSBI_CSR_INSTR_TABLE(0x61C) // hstateen0h
+        TSBI_CSR_INSTR_TABLE(0x655) // hviph
+        TSBI_CSR_INSTR_TABLE(0x656) // hviprio1h
+        TSBI_CSR_INSTR_TABLE(0x657) // hviprio2h
+  #endif
+#endif // H_SUPPORTED
         TSBI_CSR_INSTR_TABLE(0xB03) // mhpmcounter3
         TSBI_CSR_INSTR_TABLE(0xDA0) // scountovf
         // Sscofpmf performance-monitoring CSRs
@@ -2636,14 +2677,10 @@ clrint_\__MODE__\()tbl:
   #endif
 #endif
 
- .set causeidx, 0xC
- .rept NUM_SPECD_INTCAUSES-0xC
-   .if causeidx == 13
-        .dword  \__MODE__\()clr_Lcofi_int             // cause 13: LCOFI (Sscofpmf) -> real clear routine
-   .else
-        .dword  1                                    // other reserved causes: default return
-   .endif
-   .set causeidx, causeidx+1
+        .dword  1                                    // cause 12: SGEI -> default return
+        .dword  \__MODE__\()clr_Lcof_int             // cause 13: local counter overflow interrupt
+ .rept NUM_SPECD_INTCAUSES-0xE
+        .dword  1                                    // causes 14..23: reserved -> default return
  .endr
  .rept UDB_MXLEN-NUM_SPECD_INTCAUSES
         .dword  0                       // impossible, quit test by jumping to  epilogs
@@ -2770,16 +2807,6 @@ excpt_\__MODE__\()hndlr_tbl:
         jr      T2
 
 #endif
-\__MODE__\()clr_Lcofi_int:                           // Local counter-overflow interrupt (Sscofpmf), cause 13
-        .ifc \__MODE__ , M
-            li T2, (1<<13)
-            csrc mip, T2                              // M-mode: mip is accessible directly
-        .else
-            li T2, (1<<13)
-            csrc sip, T2                               // S/H/V-mode: must clear via sip (mip is M-only)
-        .endif
-        la      T2, resto_\__MODE__\()rtn
-        jr      T2
 
 \__MODE__\()clr_Vsw_int:                             // VS-mode software interrupt
         RVMODEL_CLR_VSW_INT
@@ -2796,7 +2823,9 @@ excpt_\__MODE__\()hndlr_tbl:
         la      T2, resto_\__MODE__\()rtn
         jr      T2
 
-\__MODE__\()clr_Lcof_int:                            // local counter overflow interrupt: xIP.LCOFIP already cleared
+\__MODE__\()clr_Lcof_int:                            // local counter overflow interrupt
+        li      T2, MIP_LCOFIP
+        csrc    CSR_XIP, T2                           // xIP.LCOFIP is writable in mip and sip
         la      T2, resto_\__MODE__\()rtn
         jr      T2
 

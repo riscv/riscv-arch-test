@@ -105,9 +105,15 @@ covergroup SscofpmfSm_cg with function sample(ins_t ins);
     }
     mip_other_pending: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "meip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "msip")[0]} {
             bins none = {3'b000};
+            `ifdef UDB_MEI_INTR_IMPL
             bins meip = {3'b100};
+            `endif
+            `ifdef UDB_MTI_INTR_IMPL
             bins mtip = {3'b010};
+            `endif
+            `ifdef UDB_MSI_INTR_IMPL
             bins msip = {3'b001};
+            `endif
     }
 
     cp_minh_inhibits_mmode:    cross priv_mode_m, mhpmevent_xinh_combos, mhpmevent_of_zero;

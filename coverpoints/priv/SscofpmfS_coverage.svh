@@ -44,9 +44,15 @@ covergroup SscofpmfS_cg with function sample(ins_t ins);
     }
     mip_other_pending_s: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "seip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "stip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "ssip")[0]} {
             bins none = {3'b000};
+            `ifdef UDB_SEI_INTR_IMPL
             bins seip = {3'b100};
+            `endif
+            `ifdef UDB_STI_INTR_IMPL
             bins stip = {3'b010};
+            `endif
+            `ifdef UDB_SSI_INTR_IMPL
             bins ssip = {3'b001};
+            `endif
     }
     mideleg_s_ints: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "lcofip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "seip")[0],
                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "stip")[0],  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "ssip")[0]} {

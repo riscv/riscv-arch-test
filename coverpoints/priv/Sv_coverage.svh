@@ -231,8 +231,10 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
                 bins bit_56 = {10'h004};
                 bins bit_57 = {10'h008};
                 bins bit_58 = {10'h010};
+            `ifndef SVRSW60T59B_SUPPORTED
                 bins bit_59 = {10'h020};
                 bins bit_60 = {10'h040};
+            `endif
                 bins bit_61 = {10'h080};
                 bins bit_62 = {10'h100};
                 bins bit_63 = {10'h200};
@@ -246,8 +248,10 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
                 bins bit_56 = {10'h004};
                 bins bit_57 = {10'h008};
                 bins bit_58 = {10'h010};
+            `ifndef SVRSW60T59B_SUPPORTED
                 bins bit_59 = {10'h020};
                 bins bit_60 = {10'h040};
+            `endif
                 bins bit_61 = {10'h080};
                 bins bit_62 = {10'h100};
                 bins bit_63 = {10'h200};

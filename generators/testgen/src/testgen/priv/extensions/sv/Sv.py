@@ -373,7 +373,8 @@ def _t_nleaf_pte_dau(test_data: TestData, test_chunks: list[TestChunk], sv: SvMo
 def _t_nleaf_pte_reserved(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     """Walk a 1 through bits 63:54 of each non-leaf PTE.
 
-    N, PBMT, and bits 60:54 are all reserved in non-leaf PTEs whether or not Svnapot and Svpbmt are implemented.
+    N, PBMT, and bits 58:54 are all reserved in non-leaf PTEs whether or not Svnapot and Svpbmt are implemented.
+    Bits 60:59 are reserved only when Svrsw60t59b is not implemented; otherwise they are ignored in all PTEs.
     """
     if sv.name == "sv32":
         return
@@ -388,8 +389,10 @@ def _t_nleaf_pte_reserved(test_data: TestData, test_chunks: list[TestChunk], sv:
     for table_level in range(sv.levels - 1, 0, -1):
         for bit in range(54, 64):
             number += 1
+            svrsw = bit in (59, 60)
             chunk.code.extend(
                 [
+                    *(["#ifndef SVRSW60T59B_SUPPORTED"] if svrsw else []),
                     *level_header(sv, 0),
                     (
                         f"// Test case {number}: Non-leaf bit {bit} set at level {table_level}"
@@ -404,6 +407,7 @@ def _t_nleaf_pte_reserved(test_data: TestData, test_chunks: list[TestChunk], sv:
                     "sfence.vma",
                     "",
                     *emit_access(test_data, sv, 0, "rwx", f"test{number}", "va_data", "Smode"),
+                    *(["#endif"] if svrsw else []),
                     "",
                 ]
             )

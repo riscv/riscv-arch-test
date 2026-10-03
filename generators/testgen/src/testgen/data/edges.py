@@ -453,8 +453,10 @@ class CONVERSION_EDGES:
     I (any integer width) and R (an integral value in the source format, for fround).
     ``rounded`` values convert differently in different rounding modes and are tested in each
     static rounding mode. ``exact`` values convert exactly and are tested once.
-    W values are 32-bit patterns; they are sign-extended on RV64.
+    W values are 32-bit patterns; the keys in ``sign_extended`` are sign-extended on RV64.
     """
+
+    sign_extended: ClassVar[frozenset[str]] = frozenset({"W_S", "W_D", "W_H"})
 
     rounded: ClassVar[dict[str, tuple[int, ...]]] = {
         # Float to integer. With the +-2.5 edges, each pair of rounding modes gives a different

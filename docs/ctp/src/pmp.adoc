@@ -1,7 +1,17 @@
 
 === PMP
 
+Every PMP suite needs Sm and at least one PMP entry (`NUM_PMP_ENTRIES` > 0).
+The tests boot to M-mode to program the PMP and make the highest usable entry a locked background entry with full permissions, so accesses that match no lower entry succeed.
+Tests for an address-matching mode run only when its UDB parameter (`PMP_NA4_SUPPORTED`, `PMP_NAPOT_SUPPORTED` or `PMP_TOR_SUPPORTED`) is true, and region sizes follow `PMP_GRANULARITY`.
+PMP combined with virtual memory is tested by the SvPMP, SvPMPZicbo and SvaduPMP suites in the virtual-memory section.
+The testplan also describes a PMPV suite for vector loads and stores, which is not implemented yet.
+Normative rules that no test covers yet are listed as TODO in the tables below.
+
 ==== PMPSm
+
+Machine-mode tests of the pmpcfg and pmpaddr CSRs (WARL fields, locking, grain), each address-matching mode in every entry, entry priority, and enforcement of locked entries on M-mode accesses.
+The 64-entry coverpoints need `NUM_PMP_ENTRIES` = 64.
 
 [[t-PMPSm-coverpoints]]
 .PMPSm Coverpoints
@@ -15,6 +25,10 @@ include::norm/PMPSm_norm_rules.adoc[]
 
 ==== PMPS
 
+PMP enforcement on S-mode accesses, which does not depend on the L bit, and on M-mode loads and stores with `mstatus.MPRV`=1 and MPP=S.
+Also checks that the PMP CSRs trap when accessed from S-mode.
+Runs when S is implemented.
+
 [[t-PMPS-coverpoints]]
 .PMPS Coverpoints
 
@@ -22,8 +36,14 @@ include::norm/PMPSm_norm_rules.adoc[]
 https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1908943019#gid=1908943019[Google Sheet Testplan]
 ,===
 
+include::norm/PMPS_norm_rules.adoc[]
+
 
 ==== PMPU
+
+PMP enforcement on U-mode accesses, which does not depend on the L bit, and on M-mode loads and stores with `mstatus.MPRV`=1 and MPP=U.
+Also checks that the PMP CSRs trap when accessed from U-mode.
+Runs when U is implemented.
 
 [[t-PMPU-coverpoints]]
 .PMPU Coverpoints
@@ -36,6 +56,9 @@ include::norm/PMPU_norm_rules.adoc[]
 
 ==== PMPF
 
+Floating-point loads and stores against locked entries, from M-mode.
+Runs when F is implemented.
+
 [[t-PMPF-coverpoints]]
 .PMPF Coverpoints
 
@@ -43,8 +66,13 @@ include::norm/PMPU_norm_rules.adoc[]
 https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1472001893#gid=1472001893[Google Sheet Testplan]
 ,===
 
+include::norm/PMPF_norm_rules.adoc[]
+
 
 ==== PMPZca
+
+Compressed loads and stores against locked entries, and 32-bit and 16-bit instruction fetches at PMP region boundaries, from M-mode.
+Runs when Zca is implemented; Zcb, Zcf and Zcd add their loads and stores.
 
 [[t-PMPZca-coverpoints]]
 .PMPZca Coverpoints
@@ -53,9 +81,13 @@ https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZO
 https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1336315481#gid=1336315481[Google Sheet Testplan]
 ,===
 
+include::norm/PMPZca_norm_rules.adoc[]
 
 
 ==== PMPZicbo
+
+Cache-block zero, management and prefetch instructions against locked entries, from M-mode.
+The cbo tests run when Zicbom and Zicboz are implemented, and the prefetch tests when Zicbop is implemented.
 
 [[t-PMPZicbo-coverpoints]]
 .PMPZicbo Coverpoints
@@ -67,6 +99,9 @@ include::norm/PMPZicbo_norm_rules.adoc[]
 
 ==== PMPZaamo
 
+Every AMO against locked entries, from M-mode; an AMO needs both R and W.
+Runs when Zaamo is implemented.
+
 [[t-PMPZaamo-coverpoints]]
 .PMPZaamo Coverpoints
 
@@ -74,8 +109,13 @@ include::norm/PMPZicbo_norm_rules.adoc[]
 https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=343093009#gid=343093009[Google Sheet Testplan]
 ,===
 
+include::norm/PMPZaamo_norm_rules.adoc[]
+
 
 ==== PMPZalrsc
+
+LR and SC against locked entries, from M-mode.
+Runs when Zalrsc is implemented.
 
 [[t-PMPZalrsc-coverpoints]]
 .PMPZalrsc Coverpoints
@@ -83,3 +123,5 @@ https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZO
 ,===
 https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=613653829#gid=613653829[Google Sheet Testplan]
 ,===
+
+include::norm/PMPZalrsc_norm_rules.adoc[]

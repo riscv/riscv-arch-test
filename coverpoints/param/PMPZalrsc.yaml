@@ -1,0 +1,18 @@
+# Parameter mappings
+
+parameter_definitions:
+  - name: NUM_PMP_ENTRIES
+    coverpoint: ["all coverpoints"]
+    effect:
+      [
+        "The suite runs only when NUM_PMP_ENTRIES > 0. The highest usable entry is the background entry",
+      ]
+  - name: PMP_GRANULARITY
+    coverpoint: ["all coverpoints"]
+    effect:
+      [
+        "Sets the grain g = 2^(G+2) and so the size and placement of every region under test",
+      ]
+  - name: MXLEN
+    coverpoint: ["cp_cfg_RW"]
+    effect: ["lr.d and sc.d bins exist only on RV64"]

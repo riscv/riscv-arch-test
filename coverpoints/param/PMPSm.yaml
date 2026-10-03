@@ -1,0 +1,45 @@
+# Parameter mappings
+
+parameter_definitions:
+  - name: NUM_PMP_ENTRIES
+    coverpoint: ["all coverpoints", "cp_pmp64_{write, read}"]
+    effect:
+      [
+        "The suite runs only when NUM_PMP_ENTRIES > 0. The highest usable entry is the background entry",
+        "cp_pmp64_* exist only with 64 entries",
+      ]
+  - name: PMP_GRANULARITY
+    coverpoint: ["all coverpoints", "cp_grain_*", "cp_cfg_A_all_{even, odd}"]
+    effect:
+      [
+        "Sets the grain g = 2^(G+2) and so the size and placement of every region under test",
+        "cp_grain_* exist only when G >= 1 (PMP_GRANULARITY > 2)",
+        "NA4 is not selectable when G >= 1",
+      ]
+  - name: PMP_NA4_SUPPORTED
+    coverpoint:
+      ["cp_cfg_A_NA4_all, cp_cfg_A_na4_{x, r, w}, cp_cfg_A_all_{even, odd}"]
+    effect:
+      [
+        "NA4 coverpoints and tests exist only when true",
+        "Readback of A = NA4 in cp_cfg_A_all_*",
+      ]
+  - name: PMP_NAPOT_SUPPORTED
+    coverpoint:
+      ["cp_cfg_{X, R, W}, cp_cfg_A_napot_*, cp_priority_*, cp_pmp64_*"]
+    effect:
+      [
+        "NAPOT test file runs only when true; the background entry uses TOR when false",
+      ]
+  - name: PMP_TOR_SUPPORTED
+    coverpoint: ["cp_cfg_A_tor*, cp_grain_*_to_TOR, cp_cfg_L_modify"]
+    effect: ["TOR coverpoints, bins and tests exist only when true"]
+  - name: MXLEN
+    coverpoint:
+      [
+        "cp_pmpaddr_upper_zero, cp_pmpcfg_walk*, cp_pmpcfg_zero, cp_cfg_A_all_odd",
+      ]
+    effect:
+      [
+        "RV64: cp_pmpaddr_upper_zero and the even pmpcfg CSRs only. RV32: the odd pmpcfg CSRs",
+      ]

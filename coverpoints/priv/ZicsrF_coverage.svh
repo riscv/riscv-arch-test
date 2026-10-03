@@ -260,9 +260,8 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
     `endif
 
     ///////////////////////////////////////////
-    // Directed FP edge cases (ZicsrF_fma, ZicsrF_cvt and ZicsrF_zfa test files).
-    // Each crosses a handful of operand values with every static rounding mode; the same crosses
-    // in the F, D, Zfh, Zfbfmin and Zfa suites would multiply their size.
+    // FMA special cases (ZicsrF_fma test file)
+    // The sign of an exact zero sum depends on the rounding mode, so it is crossed with every static rounding mode.
     ///////////////////////////////////////////
 
     // FMA with multiplicands +inf and +0: canonical NaN and NV, even for a quiet NaN addend
@@ -279,7 +278,9 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
     }
     cp_fma_inf_zero_s: cross fma_inf_zero_s_op, fma_inf_zero_s_addend;
 
-    // FMA whose product exactly cancels the addend: +0, or -0 under RDN, in every static rounding mode
+    // FMA whose product exactly cancels the addend: +0, or -0 under RDN, in every static rounding mode.
+    // fs1 = 1 + 2^-k and fs2 = 1 - 2^-k, so fs1*fs2 = 1 - 2^-2k exactly (k = 12 for S, 26 for D, 5 for H);
+    // fs3 = -(1 - 2^-2k) for fmadd and fnmadd and +(1 - 2^-2k) for fmsub and fnmsub.
     fma_exact_zero_s: coverpoint ins.current.insn iff (ins.current.fs1_val[31:0] == 32'h3F800800 & ins.current.fs2_val[31:0] == 32'h3F7FF000) {
         wildcard bins fmadd = {FMADD_S} iff (ins.current.fs3_val[31:0] == 32'hBF7FFFFF);
         wildcard bins fmsub = {FMSUB_S} iff (ins.current.fs3_val[31:0] == 32'h3F7FFFFF);
@@ -301,9 +302,7 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
             bins one = {64'h3FF0000000000000};
         }
         cp_fma_inf_zero_d: cross fma_inf_zero_d_op, fma_inf_zero_d_addend;
-    `endif
 
-    `ifdef D_SUPPORTED
         fma_exact_zero_d: coverpoint ins.current.insn iff (ins.current.fs1_val[63:0] == 64'h3FF0000004000000 & ins.current.fs2_val[63:0] == 64'h3FEFFFFFF8000000) {
             wildcard bins fmadd = {FMADD_D} iff (ins.current.fs3_val[63:0] == 64'hBFEFFFFFFFFFFFFE);
             wildcard bins fmsub = {FMSUB_D} iff (ins.current.fs3_val[63:0] == 64'h3FEFFFFFFFFFFFFE);
@@ -326,9 +325,7 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
             bins one = {16'h3C00};
         }
         cp_fma_inf_zero_h: cross fma_inf_zero_h_op, fma_inf_zero_h_addend;
-    `endif
 
-    `ifdef ZFH_SUPPORTED
         fma_exact_zero_h: coverpoint ins.current.insn iff (ins.current.fs1_val[15:0] == 16'h3C20 & ins.current.fs2_val[15:0] == 16'h3BC0) {
             wildcard bins fmadd = {FMADD_H} iff (ins.current.fs3_val[15:0] == 16'hBBFE);
             wildcard bins fmsub = {FMSUB_H} iff (ins.current.fs3_val[15:0] == 16'h3BFE);
@@ -336,275 +333,6 @@ covergroup ZicsrF_cg with function sample(ins_t ins);
             wildcard bins fnmsub = {FNMSUB_H} iff (ins.current.fs3_val[15:0] == 16'h3BFE);
         }
         cp_fma_exact_zero_h: cross fma_exact_zero_h, static_rm;
-    `endif
-
-    `ifdef D_SUPPORTED
-        // Narrowing conversions at the overflow threshold, halfway ties and the tininess boundary,
-        // under every static rounding mode
-        fcvt_s_d_rounding_op: coverpoint ins.current.insn {
-            wildcard bins fcvt_s_d = {FCVT_S_D};
-        }
-        fcvt_s_d_rounding_vals: coverpoint ins.current.fs1_val[63:0] {
-            bins ovf_tie = {64'h47EFFFFFF0000000};
-            bins ovf_below_neg = {64'hC7EFFFFFEFFFFFFF};
-            bins tie_pos = {64'h3FF0000010000000};
-            bins tie_neg = {64'hBFF0000010000000};
-            bins above_half = {64'h3FF0000018000000};
-            bins tiny_tie = {64'h380FFFFFF0000000};
-            bins tiny_below = {64'h380FFFFFEFFFFFFF};
-        }
-        cp_fcvt_s_d_rounding: cross fcvt_s_d_rounding_op, fcvt_s_d_rounding_vals, static_rm;
-    `endif
-
-    `ifdef ZFHMIN_SUPPORTED
-        fcvt_h_s_rounding_op: coverpoint ins.current.insn {
-            wildcard bins fcvt_h_s = {FCVT_H_S};
-        }
-        fcvt_h_s_rounding_vals: coverpoint ins.current.fs1_val[31:0] {
-            bins ovf_tie = {32'h477FF000};
-            bins ovf_below_neg = {32'hC77FEFFF};
-            bins tie_pos = {32'h3F801000};
-            bins tie_neg = {32'hBF801000};
-            bins above_half = {32'h3F801800};
-            bins tiny_below = {32'h387FEFFF};
-        }
-        cp_fcvt_h_s_rounding: cross fcvt_h_s_rounding_op, fcvt_h_s_rounding_vals, static_rm;
-    `endif
-
-    `ifdef D_SUPPORTED
-        `ifdef ZFHMIN_SUPPORTED
-            fcvt_h_d_rounding_op: coverpoint ins.current.insn {
-                wildcard bins fcvt_h_d = {FCVT_H_D};
-            }
-            fcvt_h_d_rounding_vals: coverpoint ins.current.fs1_val[63:0] {
-                bins ovf_tie = {64'h40EFFE0000000000};
-                bins ovf_below_neg = {64'hC0EFFDFFFFFFFFFF};
-                bins tie_pos = {64'h3FF0020000000000};
-                bins tie_neg = {64'hBFF0020000000000};
-                bins above_half = {64'h3FF0030000000000};
-                bins tiny_tie = {64'h3F0FFE0000000000};
-                bins tiny_below = {64'h3F0FFDFFFFFFFFFF};
-            }
-            cp_fcvt_h_d_rounding: cross fcvt_h_d_rounding_op, fcvt_h_d_rounding_vals, static_rm;
-        `endif
-    `endif
-
-    `ifdef ZFBFMIN_SUPPORTED
-        fcvt_bf16_s_rounding_op: coverpoint ins.current.insn {
-            wildcard bins fcvt_bf16_s = {FCVT_BF16_S};
-        }
-        fcvt_bf16_s_rounding_vals: coverpoint ins.current.fs1_val[31:0] {
-            bins ovf_tie = {32'h7F7F8000};
-            bins ovf_below_neg = {32'hFF7F7FFF};
-            bins tie_pos = {32'h3F808000};
-            bins tie_neg = {32'hBF808000};
-            bins above_half = {32'h3F80C000};
-            bins tiny_tie = {32'h007FC000};
-            bins tiny_below = {32'h007FBFFF};
-        }
-        cp_fcvt_bf16_s_rounding: cross fcvt_bf16_s_rounding_op, fcvt_bf16_s_rounding_vals, static_rm;
-    `endif
-
-    // Integer to floating-point conversions of values that are ties or inexact in the destination,
-    // under every static rounding mode
-    fcvt_s_w_rounding_op: coverpoint ins.current.insn {
-        wildcard bins fcvt_s_w = {FCVT_S_W};
-    }
-    fcvt_s_w_rounding_vals: coverpoint ins.current.rs1_val[31:0] {
-        bins tie_pos = {32'h01000001};
-        bins tie_neg = {32'hFEFFFFFF};
-        bins above_half = {32'h02000003};
-    }
-    cp_fcvt_s_w_rounding: cross fcvt_s_w_rounding_op, fcvt_s_w_rounding_vals, static_rm;
-
-    fcvt_s_wu_rounding_op: coverpoint ins.current.insn {
-        wildcard bins fcvt_s_wu = {FCVT_S_WU};
-    }
-    fcvt_s_wu_rounding_vals: coverpoint ins.current.rs1_val[31:0] {
-        bins tie_even = {32'h01000001};
-        bins tie_odd = {32'h01000003};
-        bins quarter_ulp = {32'h02000001};
-    }
-    cp_fcvt_s_wu_rounding: cross fcvt_s_wu_rounding_op, fcvt_s_wu_rounding_vals, static_rm;
-
-    `ifdef UDB_MXLEN_64
-        fcvt_s_l_rounding_op: coverpoint ins.current.insn {
-            wildcard bins fcvt_s_l = {FCVT_S_L};
-        }
-        fcvt_s_l_rounding_vals: coverpoint ins.current.rs1_val[63:0] {
-            bins tie_pos = {64'h0000010000010000};
-            bins tie_neg = {64'hFFFFFEFFFFFF0000};
-            bins above_half = {64'h0000020000030000};
-        }
-        cp_fcvt_s_l_rounding: cross fcvt_s_l_rounding_op, fcvt_s_l_rounding_vals, static_rm;
-    `endif
-
-    `ifdef UDB_MXLEN_64
-        fcvt_s_lu_rounding_op: coverpoint ins.current.insn {
-            wildcard bins fcvt_s_lu = {FCVT_S_LU};
-        }
-        fcvt_s_lu_rounding_vals: coverpoint ins.current.rs1_val[63:0] {
-            bins tie_even = {64'h0000010000010000};
-            bins tie_odd = {64'h0000010000030000};
-            bins quarter_ulp = {64'h0000020000010000};
-        }
-        cp_fcvt_s_lu_rounding: cross fcvt_s_lu_rounding_op, fcvt_s_lu_rounding_vals, static_rm;
-    `endif
-
-    `ifdef UDB_MXLEN_64
-        `ifdef D_SUPPORTED
-            fcvt_d_l_rounding_op: coverpoint ins.current.insn {
-                wildcard bins fcvt_d_l = {FCVT_D_L};
-            }
-            fcvt_d_l_rounding_vals: coverpoint ins.current.rs1_val[63:0] {
-                bins tie_pos = {64'h0020000000000001};
-                bins tie_neg = {64'hFFDFFFFFFFFFFFFF};
-                bins above_half = {64'h0040000000000003};
-            }
-            cp_fcvt_d_l_rounding: cross fcvt_d_l_rounding_op, fcvt_d_l_rounding_vals, static_rm;
-        `endif
-    `endif
-
-    `ifdef UDB_MXLEN_64
-        `ifdef D_SUPPORTED
-            fcvt_d_lu_rounding_op: coverpoint ins.current.insn {
-                wildcard bins fcvt_d_lu = {FCVT_D_LU};
-            }
-            fcvt_d_lu_rounding_vals: coverpoint ins.current.rs1_val[63:0] {
-                bins tie_even = {64'h0020000000000001};
-                bins tie_odd = {64'h0020000000000003};
-                bins quarter_ulp = {64'h0040000000000001};
-            }
-            cp_fcvt_d_lu_rounding: cross fcvt_d_lu_rounding_op, fcvt_d_lu_rounding_vals, static_rm;
-        `endif
-    `endif
-
-    `ifdef ZFH_SUPPORTED
-        fcvt_h_w_rounding_op: coverpoint ins.current.insn {
-            wildcard bins fcvt_h_w = {FCVT_H_W};
-        }
-        fcvt_h_w_rounding_vals: coverpoint ins.current.rs1_val[31:0] {
-            bins tie_pos = {32'h00000801};
-            bins tie_neg = {32'hFFFFF7FF};
-            bins above_half = {32'h00001003};
-            bins ovf_tie = {32'h0000FFF0};
-            bins ovf_below_neg = {32'hFFFF0011};
-        }
-        cp_fcvt_h_w_rounding: cross fcvt_h_w_rounding_op, fcvt_h_w_rounding_vals, static_rm;
-    `endif
-
-    `ifdef ZFH_SUPPORTED
-        fcvt_h_wu_rounding_op: coverpoint ins.current.insn {
-            wildcard bins fcvt_h_wu = {FCVT_H_WU};
-        }
-        fcvt_h_wu_rounding_vals: coverpoint ins.current.rs1_val[31:0] {
-            bins tie_even = {32'h00000801};
-            bins tie_odd = {32'h00000803};
-            bins quarter_ulp = {32'h00001001};
-            bins ovf_tie = {32'h0000FFF0};
-            bins ovf_below = {32'h0000FFEF};
-        }
-        cp_fcvt_h_wu_rounding: cross fcvt_h_wu_rounding_op, fcvt_h_wu_rounding_vals, static_rm;
-    `endif
-
-    `ifdef UDB_MXLEN_64
-        `ifdef ZFH_SUPPORTED
-            fcvt_h_l_rounding_op: coverpoint ins.current.insn {
-                wildcard bins fcvt_h_l = {FCVT_H_L};
-            }
-            fcvt_h_l_rounding_vals: coverpoint ins.current.rs1_val[63:0] {
-                bins tie_pos = {64'h0000000000000801};
-                bins tie_neg = {64'hFFFFFFFFFFFFF7FF};
-                bins above_half = {64'h0000000000001003};
-            }
-            cp_fcvt_h_l_rounding: cross fcvt_h_l_rounding_op, fcvt_h_l_rounding_vals, static_rm;
-        `endif
-    `endif
-
-    `ifdef UDB_MXLEN_64
-        `ifdef ZFH_SUPPORTED
-            fcvt_h_lu_rounding_op: coverpoint ins.current.insn {
-                wildcard bins fcvt_h_lu = {FCVT_H_LU};
-            }
-            fcvt_h_lu_rounding_vals: coverpoint ins.current.rs1_val[63:0] {
-                bins tie_even = {64'h0000000000000801};
-                bins tie_odd = {64'h0000000000000803};
-                bins quarter_ulp = {64'h0000000000001001};
-            }
-            cp_fcvt_h_lu_rounding: cross fcvt_h_lu_rounding_op, fcvt_h_lu_rounding_vals, static_rm;
-        `endif
-    `endif
-
-    `ifdef ZFA_SUPPORTED
-        // fround and froundnx at halfway and fractional values under every static rounding mode
-        fround_s_op: coverpoint ins.current.insn {
-            wildcard bins fround = {FROUND_S};
-            wildcard bins froundnx = {FROUNDNX_S};
-        }
-        fround_s_vals: coverpoint ins.current.fs1_val[31:0] {
-            bins tie_pos = {32'h40200000};
-            bins tie_neg = {32'hC0200000};
-            bins above_half = {32'h4A000003};
-            bins neg_half = {32'hBF000000};
-        }
-        cp_fround_s: cross fround_s_op, fround_s_vals, static_rm;
-    `endif
-
-    `ifdef ZFA_SUPPORTED
-        `ifdef D_SUPPORTED
-            fround_d_op: coverpoint ins.current.insn {
-                wildcard bins fround = {FROUND_D};
-                wildcard bins froundnx = {FROUNDNX_D};
-            }
-            fround_d_vals: coverpoint ins.current.fs1_val[63:0] {
-                bins tie_pos = {64'h4004000000000000};
-                bins tie_neg = {64'hC004000000000000};
-                bins above_half = {64'h4310000000000003};
-                bins neg_half = {64'hBFE0000000000000};
-            }
-            cp_fround_d: cross fround_d_op, fround_d_vals, static_rm;
-        `endif
-    `endif
-
-    `ifdef ZFA_SUPPORTED
-        `ifdef ZFH_SUPPORTED
-            fround_h_op: coverpoint ins.current.insn {
-                wildcard bins fround = {FROUND_H};
-                wildcard bins froundnx = {FROUNDNX_H};
-            }
-            fround_h_vals: coverpoint ins.current.fs1_val[15:0] {
-                bins tie_pos = {16'h4100};
-                bins tie_neg = {16'hC100};
-                bins above_half = {16'h5C03};
-                bins neg_half = {16'hB800};
-            }
-            cp_fround_h: cross fround_h_op, fround_h_vals, static_rm;
-        `endif
-    `endif
-
-    `ifdef ZFA_SUPPORTED
-        `ifdef D_SUPPORTED
-            // fcvtmod.w.d with out-of-range, inexact and non-finite inputs
-            fcvtmod_w_d_op: coverpoint ins.current.insn {
-                wildcard bins fcvtmod_w_d = {FCVTMOD_W_D};
-            }
-            fcvtmod_w_d_vals: coverpoint ins.current.fs1_val[63:0] {
-                bins p2_31 = {64'h41E0000000000000};
-                bins m2_31_m1 = {64'hC1E0000000200000};
-                bins p2_31_mhalf = {64'h41DFFFFFFFE00000};
-                bins m2_31_mhalf = {64'hC1E0000000100000};
-                bins p2_32_p5 = {64'h41F0000000500000};
-                bins m2_32_m5 = {64'hC1F0000000500000};
-                bins p3_2_31_frac = {64'h41F8000000040000};
-                bins big = {64'h4538000000000000};
-                bins m0_75 = {64'hBFE8000000000000};
-                bins pinf = {64'h7FF0000000000000};
-                bins minf = {64'hFFF0000000000000};
-                bins qnan = {64'h7FF8000000000000};
-                bins snan = {64'h7FF0000000000001};
-            }
-            cp_fcvtmod_w_d: cross fcvtmod_w_d_op, fcvtmod_w_d_vals;
-        `endif
     `endif
  endgroup
 

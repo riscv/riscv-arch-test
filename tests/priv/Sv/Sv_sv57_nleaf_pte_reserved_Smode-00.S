@@ -262,11 +262,10 @@ Sv_cp_sv57_nleaf_pte_reserved_Smode_test5_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_nleaf_pte_reserved_Smode_test5_exec, Sv_cp_sv57_nleaf_pte_reserved_Smode_test5_exec_str)
 
-#ifndef SVRSW60T59B_SUPPORTED
 
 // 4KB page at level 0
 
-// Test case 6: Non-leaf bit 59 set at level 4 | Test in S-Mode | expected = RWX fault
+// Test case 6: Non-leaf bit 59 set at level 4 | Test in S-Mode | expected = RWX fault unless Svrsw60t59b
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, ((1 << 59) | PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -302,13 +301,11 @@ Sv_cp_sv57_nleaf_pte_reserved_Smode_test6_exec:
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv57_nleaf_pte_reserved_Smode_test6_load, Sv_cp_sv57_nleaf_pte_reserved_Smode_test6_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_nleaf_pte_reserved_Smode_test6_exec, Sv_cp_sv57_nleaf_pte_reserved_Smode_test6_exec_str)
-#endif
 
-#ifndef SVRSW60T59B_SUPPORTED
 
 // 4KB page at level 0
 
-// Test case 7: Non-leaf bit 60 set at level 4 | Test in S-Mode | expected = RWX fault
+// Test case 7: Non-leaf bit 60 set at level 4 | Test in S-Mode | expected = RWX fault unless Svrsw60t59b
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, ((1 << 60) | PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -344,7 +341,6 @@ Sv_cp_sv57_nleaf_pte_reserved_Smode_test7_exec:
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv57_nleaf_pte_reserved_Smode_test7_load, Sv_cp_sv57_nleaf_pte_reserved_Smode_test7_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_nleaf_pte_reserved_Smode_test7_exec, Sv_cp_sv57_nleaf_pte_reserved_Smode_test7_exec_str)
-#endif
 
 
 // 4KB page at level 0
@@ -666,11 +662,10 @@ Sv_cp_sv57_nleaf_pte_reserved_Smode_test15_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_nleaf_pte_reserved_Smode_test15_exec, Sv_cp_sv57_nleaf_pte_reserved_Smode_test15_exec_str)
 
-#ifndef SVRSW60T59B_SUPPORTED
 
 // 4KB page at level 0
 
-// Test case 16: Non-leaf bit 59 set at level 3 | Test in S-Mode | expected = RWX fault
+// Test case 16: Non-leaf bit 59 set at level 3 | Test in S-Mode | expected = RWX fault unless Svrsw60t59b
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, ((1 << 59) | PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -706,13 +701,11 @@ Sv_cp_sv57_nleaf_pte_reserved_Smode_test16_exec:
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv57_nleaf_pte_reserved_Smode_test16_load, Sv_cp_sv57_nleaf_pte_reserved_Smode_test16_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_nleaf_pte_reserved_Smode_test16_exec, Sv_cp_sv57_nleaf_pte_reserved_Smode_test16_exec_str)
-#endif
 
-#ifndef SVRSW60T59B_SUPPORTED
 
 // 4KB page at level 0
 
-// Test case 17: Non-leaf bit 60 set at level 3 | Test in S-Mode | expected = RWX fault
+// Test case 17: Non-leaf bit 60 set at level 3 | Test in S-Mode | expected = RWX fault unless Svrsw60t59b
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, ((1 << 60) | PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -748,7 +741,6 @@ Sv_cp_sv57_nleaf_pte_reserved_Smode_test17_exec:
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv57_nleaf_pte_reserved_Smode_test17_load, Sv_cp_sv57_nleaf_pte_reserved_Smode_test17_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_nleaf_pte_reserved_Smode_test17_exec, Sv_cp_sv57_nleaf_pte_reserved_Smode_test17_exec_str)
-#endif
 
 
 // 4KB page at level 0
@@ -1070,11 +1062,10 @@ Sv_cp_sv57_nleaf_pte_reserved_Smode_test25_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_nleaf_pte_reserved_Smode_test25_exec, Sv_cp_sv57_nleaf_pte_reserved_Smode_test25_exec_str)
 
-#ifndef SVRSW60T59B_SUPPORTED
 
 // 4KB page at level 0
 
-// Test case 26: Non-leaf bit 59 set at level 2 | Test in S-Mode | expected = RWX fault
+// Test case 26: Non-leaf bit 59 set at level 2 | Test in S-Mode | expected = RWX fault unless Svrsw60t59b
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, ((1 << 59) | PTE_V), va_data, LEVEL2)
@@ -1110,13 +1101,11 @@ Sv_cp_sv57_nleaf_pte_reserved_Smode_test26_exec:
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv57_nleaf_pte_reserved_Smode_test26_load, Sv_cp_sv57_nleaf_pte_reserved_Smode_test26_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_nleaf_pte_reserved_Smode_test26_exec, Sv_cp_sv57_nleaf_pte_reserved_Smode_test26_exec_str)
-#endif
 
-#ifndef SVRSW60T59B_SUPPORTED
 
 // 4KB page at level 0
 
-// Test case 27: Non-leaf bit 60 set at level 2 | Test in S-Mode | expected = RWX fault
+// Test case 27: Non-leaf bit 60 set at level 2 | Test in S-Mode | expected = RWX fault unless Svrsw60t59b
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, ((1 << 60) | PTE_V), va_data, LEVEL2)
@@ -1152,7 +1141,6 @@ Sv_cp_sv57_nleaf_pte_reserved_Smode_test27_exec:
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv57_nleaf_pte_reserved_Smode_test27_load, Sv_cp_sv57_nleaf_pte_reserved_Smode_test27_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_nleaf_pte_reserved_Smode_test27_exec, Sv_cp_sv57_nleaf_pte_reserved_Smode_test27_exec_str)
-#endif
 
 
 // 4KB page at level 0
@@ -1474,11 +1462,10 @@ Sv_cp_sv57_nleaf_pte_reserved_Smode_test35_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_nleaf_pte_reserved_Smode_test35_exec, Sv_cp_sv57_nleaf_pte_reserved_Smode_test35_exec_str)
 
-#ifndef SVRSW60T59B_SUPPORTED
 
 // 4KB page at level 0
 
-// Test case 36: Non-leaf bit 59 set at level 1 | Test in S-Mode | expected = RWX fault
+// Test case 36: Non-leaf bit 59 set at level 1 | Test in S-Mode | expected = RWX fault unless Svrsw60t59b
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -1514,13 +1501,11 @@ Sv_cp_sv57_nleaf_pte_reserved_Smode_test36_exec:
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv57_nleaf_pte_reserved_Smode_test36_load, Sv_cp_sv57_nleaf_pte_reserved_Smode_test36_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_nleaf_pte_reserved_Smode_test36_exec, Sv_cp_sv57_nleaf_pte_reserved_Smode_test36_exec_str)
-#endif
 
-#ifndef SVRSW60T59B_SUPPORTED
 
 // 4KB page at level 0
 
-// Test case 37: Non-leaf bit 60 set at level 1 | Test in S-Mode | expected = RWX fault
+// Test case 37: Non-leaf bit 60 set at level 1 | Test in S-Mode | expected = RWX fault unless Svrsw60t59b
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -1556,7 +1541,6 @@ Sv_cp_sv57_nleaf_pte_reserved_Smode_test37_exec:
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv57_nleaf_pte_reserved_Smode_test37_load, Sv_cp_sv57_nleaf_pte_reserved_Smode_test37_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv57_nleaf_pte_reserved_Smode_test37_exec, Sv_cp_sv57_nleaf_pte_reserved_Smode_test37_exec_str)
-#endif
 
 
 // 4KB page at level 0

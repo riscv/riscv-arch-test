@@ -231,10 +231,8 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
                 bins bit_56 = {10'h004};
                 bins bit_57 = {10'h008};
                 bins bit_58 = {10'h010};
-            `ifndef SVRSW60T59B_SUPPORTED
                 bins bit_59 = {10'h020};
                 bins bit_60 = {10'h040};
-            `endif
                 bins bit_61 = {10'h080};
                 bins bit_62 = {10'h100};
                 bins bit_63 = {10'h200};
@@ -248,10 +246,8 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
                 bins bit_56 = {10'h004};
                 bins bit_57 = {10'h008};
                 bins bit_58 = {10'h010};
-            `ifndef SVRSW60T59B_SUPPORTED
                 bins bit_59 = {10'h020};
                 bins bit_60 = {10'h040};
-            `endif
                 bins bit_61 = {10'h080};
                 bins bit_62 = {10'h100};
                 bins bit_63 = {10'h200};
@@ -596,14 +592,29 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
         cp_PTE_rsv_nleaf_read_s: cross PTE_nonleaf_d, PTE_nonleaf_rsv_d, PageType_d, load_page_fault, priv_mode_s {
             `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
             `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
+            // With Svrsw60t59b, bits 60:59 are ignored and the access does not fault
+            `ifdef SVRSW60T59B_SUPPORTED
+                ignore_bins ig3 = binsof(PTE_nonleaf_rsv_d.bit_59);
+                ignore_bins ig4 = binsof(PTE_nonleaf_rsv_d.bit_60);
+            `endif
         }
         cp_PTE_rsv_nleaf_write_s: cross PTE_nonleaf_d, PTE_nonleaf_rsv_d, PageType_d, store_page_fault, priv_mode_s {
             `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
             `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
+            // With Svrsw60t59b, bits 60:59 are ignored and the access does not fault
+            `ifdef SVRSW60T59B_SUPPORTED
+                ignore_bins ig3 = binsof(PTE_nonleaf_rsv_d.bit_59);
+                ignore_bins ig4 = binsof(PTE_nonleaf_rsv_d.bit_60);
+            `endif
         }
         cp_PTE_rsv_nleaf_exec_s: cross PTE_nonleaf_i, PTE_nonleaf_rsv_i, PageType_i, ins_page_fault, priv_mode_s {
             `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_i.sv48_kilo); `endif
             `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_i.sv39_kilo); `endif
+            // With Svrsw60t59b, bits 60:59 are ignored and the access does not fault
+            `ifdef SVRSW60T59B_SUPPORTED
+                ignore_bins ig3 = binsof(PTE_nonleaf_rsv_i.bit_59);
+                ignore_bins ig4 = binsof(PTE_nonleaf_rsv_i.bit_60);
+            `endif
         }
     `endif
 

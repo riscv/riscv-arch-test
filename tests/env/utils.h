@@ -60,7 +60,7 @@
   #endif
 #endif
 
-// Execute an sfence.vma if supported by the DUT. Primarily used in PMP tests.
+// Execute an sfence.vma if supported by the DUT.
 .macro RVTEST_SFENCE_VMA_IF_SUPPORTED
   #if defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)
     sfence.vma

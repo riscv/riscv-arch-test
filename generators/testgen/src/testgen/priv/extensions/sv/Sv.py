@@ -16,7 +16,7 @@ from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.sv.access import add_rwx_test
-from testgen.priv.extensions.sv.assembly import VA_ONES_DATA, VA_ZEROS_DATA
+from testgen.priv.extensions.sv.assembly import VA_ONES_DATA
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
     SV32,
@@ -738,7 +738,7 @@ def _t_page_perm_topics(test_data: TestData, test_chunks: list[TestChunk], sv: S
     test_chunks.append(test_data.end_test_chunk())
 
 
-def _add_va_extreme_test(
+def add_va_extreme_test(
     test_data: TestData,
     chunk: TestChunk,
     sv: SvMode,
@@ -769,25 +769,22 @@ def _add_va_extreme_test(
     )
 
 
-def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
+def va_extreme_sig_init(sv: SvMode) -> str:
+    return f"LI(a2, {'0x800' if sv.xlen == 32 else '0x12'}) // Test signature initialization"
+
+
+def _t_va_all_ones(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     all_ones = "0x" + "f" * (sv.xlen // 4)
     all_ones_code = all_ones[:-1] + "c"
-    all_zeros = "0x" + "0" * (sv.xlen // 4)
-    sig_init = (
-        "  LI( a2, 0x800)              // Test signature initialization"
-        if sv.xlen == 32
-        else "  li a2, 0x12                 // Test signature initialization"
-    )
-
     chunk = begin_sv_test(
         test_data,
         sv,
         "Smode",
         f"{sv.name}_VA_all_ones_Smode",
-        sig_init=sig_init,
+        sig_init=va_extreme_sig_init(sv),
         va_defs=(("va_data_rw", all_ones), ("va_data_x", all_ones_code)),
     )
-    _add_va_extreme_test(
+    add_va_extreme_test(
         test_data,
         chunk,
         sv,
@@ -797,7 +794,7 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
         permissions=PteFlags(execute=False),
         style="rw_byte",
     )
-    _add_va_extreme_test(
+    add_va_extreme_test(
         test_data,
         chunk,
         sv,
@@ -808,46 +805,6 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
         style="x_only",
     )
     chunk.raw_data.extend(sv_data(sv, (0,), data_region_body=VA_ONES_DATA))
-    chunk.trap_sigupd_count = 10
-    test_chunks.append(test_data.end_test_chunk())
-
-    chunk = begin_sv_test(
-        test_data,
-        sv,
-        "Smode",
-        f"{sv.name}_VA_all_zeros_Smode",
-        sig_init=sig_init,
-        va_defs=(("va_data", all_zeros),),
-        setup_asm=(
-            "// Mapping VA 0 can replace the boot identity map of an image linked at a low address,",
-            "// so M-mode writes the page tables and signature, and S-mode runs only the accesses,",
-            "// fetching through va_rvtest_code_begin.",
-            "RVTEST_TSBI_GOTO_MMODE",
-        ),
-    )
-    _add_va_extreme_test(
-        test_data,
-        chunk,
-        sv,
-        number=1,
-        va="va_data",
-        physical_label="rvtest_data_1_l0_rw",
-        permissions=PteFlags(execute=False),
-        style="rw_word" if sv.name in ("sv32", "sv39") else "rw_byte",
-        driver_mode="Mmode",
-    )
-    _add_va_extreme_test(
-        test_data,
-        chunk,
-        sv,
-        number=2,
-        va="va_data",
-        physical_label="rvtest_data_1_l0_x",
-        permissions=PteFlags(read=False, write=False),
-        style="x_only",
-        driver_mode="Mmode",
-    )
-    chunk.raw_data.extend(sv_data(sv, (0,), data_region_body=VA_ZEROS_DATA))
     chunk.trap_sigupd_count = 10
     test_chunks.append(test_data.end_test_chunk())
 
@@ -946,7 +903,7 @@ def _make_sv(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     _t_svpbmt_disabled(test_data, test_chunks, sv)
     _t_svnapot_not_supported(test_data, test_chunks, sv)
     _t_page_perm_topics(test_data, test_chunks, sv)
-    _t_va_all(test_data, test_chunks, sv)
+    _t_va_all_ones(test_data, test_chunks, sv)
     _t_satp_access(test_data, test_chunks, sv)
     return test_chunks
 

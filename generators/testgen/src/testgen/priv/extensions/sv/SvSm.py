@@ -1,7 +1,7 @@
 ##################################
 # priv/extensions/sv/SvSm.py
 #
-# SvSm suite: virtual-memory behavior that needs M-mode (MPRV, TVM, SBE, M-mode satp access).
+# SvSm suite: virtual-memory behavior that needs M-mode (MPRV, TVM, SBE, M-mode satp access, VA 0).
 # umer@riscv.org September 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
@@ -11,6 +11,7 @@
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
+from testgen.priv.extensions.sv.assembly import VA_ZEROS_DATA
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
     SV32,
@@ -25,12 +26,14 @@ from testgen.priv.extensions.sv.page_tables import (
 )
 from testgen.priv.extensions.sv.Sv import (
     SATP_FIELDS,
+    add_va_extreme_test,
     change_pte_to_be,
     emit_access,
     level_header,
     satp_access_ops,
     satp_csr_read,
     satp_mode_value,
+    va_extreme_sig_init,
 )
 from testgen.priv.registry import add_priv_test_generator
 
@@ -172,11 +175,43 @@ def _t_satp_access(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
     test_chunks.append(test_data.end_test_chunk())
 
 
+def _t_va_all_zeros(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
+    # Mapping VA 0 can replace the boot identity map of an image linked at a low address, so M-mode
+    # drives the test and S-mode runs only the accesses, fetching through va_rvtest_code_begin.
+    chunk = begin_sv_test(
+        test_data,
+        sv,
+        "Smode",
+        f"{sv.name}_VA_all_zeros_Smode",
+        sig_init=va_extreme_sig_init(sv),
+        va_defs=(("va_data", "0x" + "0" * (sv.xlen // 4)),),
+    )
+    for number, style, physical_label, permissions in (
+        (1, "rw_word" if sv.name in ("sv32", "sv39") else "rw_byte", "rvtest_data_1_l0_rw", PteFlags(execute=False)),
+        (2, "x_only", "rvtest_data_1_l0_x", PteFlags(read=False, write=False)),
+    ):
+        add_va_extreme_test(
+            test_data,
+            chunk,
+            sv,
+            number=number,
+            va="va_data",
+            physical_label=physical_label,
+            permissions=permissions,
+            style=style,
+            driver_mode="Mmode",
+        )
+    chunk.raw_data.extend(sv_data(sv, (0,), data_region_body=VA_ZEROS_DATA))
+    chunk.trap_sigupd_count = 10
+    test_chunks.append(test_data.end_test_chunk())
+
+
 def _make_svsm(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     _t_mstatus_mprv(test_data, test_chunks, sv)
     _t_upage_mprv(test_data, test_chunks, sv)
     _t_satp_access(test_data, test_chunks, sv)
+    _t_va_all_zeros(test_data, test_chunks, sv)
     return test_chunks
 
 

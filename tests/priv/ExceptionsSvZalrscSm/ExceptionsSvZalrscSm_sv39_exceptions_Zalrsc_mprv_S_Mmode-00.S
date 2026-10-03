@@ -19,7 +19,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
-#define TRAP_SIGUPD_COUNT 1210
+#define TRAP_SIGUPD_COUNT 202
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -79,17 +79,17 @@ main:
   csrs mstatus, t0
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_misaligned_priority_m_test1_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_misaligned_priority_m_test1_lr:
   lr.w a3, (a5)
   nop
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
 ExceptionsSvZalrscSm_cg_cp_misaligned_priority_m_test1_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_misaligned_priority_m_test1_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_misaligned_priority_m_test1_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_misaligned_priority_m_test1_sc_success:
   nop
 
   LI(t0, MSTATUS_MPRV)
@@ -401,17 +401,17 @@ ExceptionsSvZalrscSm_cg_cp_misaligned_priority_m_test8_sc:
   csrs mstatus, t0
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test9_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test9_lr:
   lr.w a3, (a5)
   nop
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test9_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test9_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test9_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test9_sc_success:
   nop
 
   LI(t0, MSTATUS_MPRV)
@@ -479,17 +479,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_m_test10_sc:
   csrs mstatus, t0
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test11_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test11_lr:
   lr.w a3, (a5)
   nop
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test11_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test11_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test11_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test11_sc_success:
   nop
 
   LI(t0, MSTATUS_MPRV)
@@ -557,17 +557,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_m_test12_sc:
   csrs mstatus, t0
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test13_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test13_lr:
   lr.w a3, (a5)
   nop
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test13_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test13_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test13_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test13_sc_success:
   nop
 
   LI(t0, MSTATUS_MPRV)
@@ -635,17 +635,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_m_test14_sc:
   csrs mstatus, t0
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test15_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test15_lr:
   lr.w a3, (a5)
   nop
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test15_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test15_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test15_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test15_sc_success:
   nop
 
   LI(t0, MSTATUS_MPRV)
@@ -713,17 +713,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_m_test16_sc:
   csrs mstatus, t0
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test17_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test17_lr:
   lr.w a3, (a5)
   nop
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test17_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test17_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test17_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test17_sc_success:
   nop
 
   LI(t0, MSTATUS_MPRV)
@@ -791,17 +791,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_m_test18_sc:
   csrs mstatus, t0
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test19_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test19_lr:
   lr.w a3, (a5)
   nop
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test19_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test19_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test19_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test19_sc_success:
   nop
 
   LI(t0, MSTATUS_MPRV)
@@ -869,17 +869,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_m_test20_sc:
   csrs mstatus, t0
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test21_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test21_lr:
   lr.w a3, (a5)
   nop
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test21_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test21_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test21_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test21_sc_success:
   nop
 
   LI(t0, MSTATUS_MPRV)
@@ -947,17 +947,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_m_test22_sc:
   csrs mstatus, t0
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test23_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test23_lr:
   lr.w a3, (a5)
   nop
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test23_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test23_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test23_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test23_sc_success:
   nop
 
   LI(t0, MSTATUS_MPRV)
@@ -1025,17 +1025,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_m_test24_sc:
   csrs mstatus, t0
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test25_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test25_lr:
   lr.w a3, (a5)
   nop
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test25_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test25_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test25_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test25_sc_success:
   nop
 
   LI(t0, MSTATUS_MPRV)
@@ -1103,17 +1103,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_m_test26_sc:
   csrs mstatus, t0
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test27_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test27_lr:
   lr.w a3, (a5)
   nop
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test27_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test27_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test27_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test27_sc_success:
   nop
 
   LI(t0, MSTATUS_MPRV)
@@ -1181,17 +1181,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_m_test28_sc:
   csrs mstatus, t0
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test29_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test29_lr:
   lr.w a3, (a5)
   nop
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test29_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test29_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test29_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test29_sc_success:
   nop
 
   LI(t0, MSTATUS_MPRV)
@@ -1259,17 +1259,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_m_test30_sc:
   csrs mstatus, t0
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test31_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test31_lr:
   lr.w a3, (a5)
   nop
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test31_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test31_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test31_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test31_sc_success:
   nop
 
   LI(t0, MSTATUS_MPRV)
@@ -1337,17 +1337,17 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_m_test32_sc:
   csrs mstatus, t0
   addi a2, a2, 1
 
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test33_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test33_lr:
   lr.w a3, (a5)
   nop
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
 ExceptionsSvZalrscSm_cg_cp_medeleg_m_test33_sc:
   sc.w a4, a2, (a5)
+  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test33_sc_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_m_test33_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrscSm_cg_cp_medeleg_m_test33_sc_success:
   nop
 
   LI(t0, MSTATUS_MPRV)

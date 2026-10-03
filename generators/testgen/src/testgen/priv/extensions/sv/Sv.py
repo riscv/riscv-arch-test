@@ -252,7 +252,7 @@ def _t_global_pte(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode)
                 ]
             )
         chunk.raw_data.extend(sv_data(sv))
-        chunk.trap_sigupd_count = 10
+        chunk.trap_sigupd_count = 3
         test_chunks.append(test_data.end_test_chunk())
 
 
@@ -475,7 +475,7 @@ def _t_pte_rsw(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) ->
                     ]
                 )
         chunk.raw_data.extend(sv_data(sv))
-        chunk.trap_sigupd_count = 10
+        chunk.trap_sigupd_count = 3
         test_chunks.append(test_data.end_test_chunk())
 
 
@@ -807,7 +807,7 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
         style="x_only",
     )
     chunk.raw_data.extend(sv_data(sv, (0,), data_region_body=VA_ONES_DATA))
-    chunk.trap_sigupd_count = 10
+    chunk.trap_sigupd_count = 3
     test_chunks.append(test_data.end_test_chunk())
 
     chunk = begin_sv_test(
@@ -841,7 +841,7 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
         style="x_only",
     )
     chunk.raw_data.extend(sv_data(sv, (0,), data_region_body=VA_ZEROS_DATA))
-    chunk.trap_sigupd_count = 10
+    chunk.trap_sigupd_count = 3
     test_chunks.append(test_data.end_test_chunk())
 
 
@@ -920,7 +920,7 @@ def _t_satp_access(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
     for bit in range(asid_bits):
         chunk.code.extend(["li a2, 1", f"slli a2, a2, {asid_shift + bit}", "or a0, a1, a2", "csrw satp, a0"])
         chunk.code.extend(satp_csr_read(test_data, f"asid_walk_{bit}"))
-    chunk.trap_sigupd_count = 30 if sv.name in ("sv32", "sv39") else 10
+    chunk.trap_sigupd_count = 8 if sv.name in ("sv32", "sv39") else 3
     test_chunks.append(test_data.end_test_chunk())
 
 

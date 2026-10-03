@@ -69,6 +69,12 @@ include::{testplansdir}/priv/ExceptionsZicboU.adoc[]
 
 include::norm/ExceptionsZicboU_norm_rules.adoc[]
 
+==== ExceptionsZicboSm Machine-Mode CBO Exceptions
+
+include::{testplansdir}/priv/ExceptionsZicboSm.adoc[]
+
+include::norm/ExceptionsZicboSm_norm_rules.adoc[]
+
 ==== ExceptionsSv Virtual Memory Exceptions
 
 include::{testplansdir}/priv/ExceptionsSv.adoc[]
@@ -77,11 +83,7 @@ include::norm/ExceptionsSv_norm_rules.adoc[]
 
 ==== ExceptionsSvSm Virtual Memory Exceptions with M-mode State
 
-[[t-ExceptionsSvSm-coverpoints]]
-.ExceptionsSvSm Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=136053911#gid=136053911[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/ExceptionsSvSm.adoc[]
 
 include::norm/ExceptionsSvSm_norm_rules.adoc[]
 
@@ -93,11 +95,7 @@ include::norm/ExceptionsSvZalrsc_norm_rules.adoc[]
 
 ==== ExceptionsSvZalrscSm Virtual Memory LR/SC Exceptions with M-mode State
 
-[[t-ExceptionsSvZalrscSm-coverpoints]]
-.ExceptionsSvZalrscSm Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=684920534#gid=684920534[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/ExceptionsSvZalrscSm.adoc[]
 
 // include::norm/ExceptionsSvZalrscSm_norm_rules.adoc[]
 
@@ -109,10 +107,6 @@ include::norm/ExceptionsSvZaamo_norm_rules.adoc[]
 
 ==== ExceptionsSvZaamoSm Virtual Memory AMO Exceptions with M-mode State
 
-[[t-ExceptionsSvZaamoSm-coverpoints]]
-.ExceptionsSvZaamoSm Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=572779753#gid=572779753[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/ExceptionsSvZaamoSm.adoc[]
 
 // include::norm/ExceptionsSvZaamoSm_norm_rules.adoc[]

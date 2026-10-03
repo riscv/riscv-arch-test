@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SsstrictSm
+source: https://docs.google.com/spreadsheets/d/1qJsCYdDPaSxNE1R56jsAUyoAiu4OhMlwwAvGysgx790/edit?gid=1987812700#gid=1987812700
+description: |
+  The following CSR accesses and instructions should be exercised in machine mode.  All inherently require Zicsr.
+coverpoints:
+  - name: cp_csrr
+    goal: CSR Accesses
+    description: "Read all 4096 CSRs in M-mode (CSRR with rd≠x0). Skips: PMP regs 0x3A0-0x3EF, debug-only 0x7B0-0x7BF, and custom CSRs (0x7C0-0x7FF, 0xBC0-0xBFF, 0xFC0-0xFFF)."
+    expectation: Legal CSRs return a value; non-existent/inaccessible CSRs raise illegal-instruction exception.
+    bins: One bin per CSR address 0x000–0xFBF (excluding skips)
+    notes: csrr instruction, save value
+  - name: cp_csrw_corners
+    goal: CSR Accesses
+    description: Write all-zeros then all-ones to every CSR in M-mode. Skips PMP regs (0x3A0-0x3EF) to avoid corrupting PMP configuration and custom CSRs.
+    expectation: Write to legal CSRs succeeds; write to read-only or non-existent CSRs raises illegal-instruction.
+    bins: "Two bins per CSR: write 0x000...0 and write 0xFFF...F"
+    notes: csrw instruction
+  - name: cp_csrcs
+    goal: CSR Accesses
+    description: Set all bits (CSRRS with rs1=all-ones) then clear all bits (CSRRC with rs1=all-ones) for every CSR in M-mode. Skips PMP and custom CSRs.
+    expectation: Same as cp_csrw_corners — legal writes succeed, illegal CSRs trap.
+    bins: "Two bins per CSR: CSRRS all-ones, CSRRC all-ones"
+    notes: csrc -1
+  - name: cp_illegal_instruction
+    goal: Illegal Uncompressed Instructions
+    description: "Exhaustively test reserved and illegal 32-bit instruction encodings across all major opcodes and sub-fields: reserved opcodes (op7/15/21/23/26/29/31), reserved funct3 in LOAD/STORE/BRANCH/JALR, reserved funct7 in R-type/FP, reserved immediate fields (IWshift imm[5]=1, aes64ks1i rnum), reserved FP fmt/rs2 combos, reserved SYSTEM encodings, reserved FENCE fm/rs1/rd fields, and reserved vector vset encodings."
+    expectation: Each reserved encoding raises an illegal-instruction exception. Legal encodings of unimplemented extensions may also trap.
+    bins: One bin per distinct template×exhaustive-bit combination from illegalinstrtests.py. Templates use R=random, E=exhaustive, 0/1=fixed bits.
+  - name: cp_illegal_compressed_instruction
+    goal: Illegal Compressed Instructions
+    description: Exhaustively test all 2^14 encodings in each 16-bit quadrant (quadrant 00 = bits[1:0]=00, quadrant 01, quadrant 10), covering reserved encodings in Zca/Zcb/Zcd/Zcf/Zcmt/Zcmp.
+    expectation: Each reserved compressed encoding raises illegal-instruction. Legal encodings succeed or cause addressable exceptions for memory ops.
+    bins: |-
+      ~16384 per quadrant minus excluded branches/jumps/memory ops tested separately.
+      Final sanity-check instructions for excluded memory encodings: c.fld, c.fsd, c.lw, c.sw, c.lbu, c.lhu, c.lh, c.sb, c.sh, c.lwsp, c.swsp, c.fldsp, c.fsdsp, c.jalr-rs1=0 (illegal), c.jr-rs1=0 (illegal).
+  - name: cp_upperreg
+    goal: Instructions using x16-x31
+    description: "For each register x16–x31 as rd, rs1, or rs2, execute: ADD rd,rs1,rs2 / ADDI rd,rs1,0 / ADDI rd,rs1,-1 / MUL rd,rs1,rs2 (integer). Also: FADD.S fd,fs1,fs2 / FMV.X.W rd,fs1 / FMV.W.X fd,rs1 (float). Sweeps all 16 upper register positions in each operand slot."
+    expectation: "If RV32E/RV64E is active (misa.E=1): all x16-x31 accesses raise illegal-instruction. If standard I base: all succeed. F registers f0-f31 always succeed if F supported."
+    bins: |-
+      16 bins × {rd, rs1, rs2} × {add, addi×2, mul} = 192 integer bins
+      16 bins × {rd, rs1, rs2} × {fadd.s, fmv.x.w, fmv.w.x} = 144 float bins
+    notes: All f registers should succeed if F is supported.  x16-31 should trap if E base extension is used.
+  - name: cp_misa_ext_disable
+    goal: Extension bits
+    description: |-
+      For each MUTABLE_MISA_* parameter (A, B, C, D, F, H, I, M, Q, V, S, U): disable the misa bit, execute a representative instruction from that extension, then re-enable.
+      A: amoadd.w / B: sb.set+sh3add+clmul+bext / C: c.addi / D: fadd.d / F: fadd.s / H: hfence.vvma / I: addi x16,x16,0 / M: mul / Q: fadd.q / V: vadd.vv / S: enter S-mode / U: enter U-mode
+    expectation: Each instruction raises illegal-instruction with the misa bit cleared. Zbc is NOT controlled by B bit (clmul should still work when B=0). Entering S/U mode with S/U bit cleared should trap.
+    bins: |-
+      One bin per {extension × instruction-sample}
+      B-extension sub-bins: Zba (sh3add), Zbb (andn), Zbc (clmul — no trap), Zbs (bext)
+    notes: Should throw illegal instruction.  For B, run instruction from each of Zba, Zbb, Zbc, Zbs (Zbc should be unaffected). For I, run an instruction that uses x16-x31.
+  - name: cp_amocas_odd
+    goal: Zacas instructions with odd register IDs
+    description: "For each of AMOCAS.W, AMOCAS.D, AMOCAS.Q: attempt odd rd and odd rs2 register IDs (register pairs must be even-aligned). AMOCAS.D odd regs trap on RV32; AMOCAS.Q odd regs trap on both RV32/RV64."
+    expectation: AMOCAS.D/Q with odd rd or rs2 raises illegal-instruction exception.
+    bins: Odd rd bins × {.w, .d, .q} + Odd rs2 bins × {.w, .d, .q}
+    notes: d should trap for RV32 and q for both
+  - name: cp_reserved_frm
+    goal: Reserved FP rounding modes
+    description: Execute a floating-point instruction (FADD.S) with each rounding mode 0–7 written explicitly to FRM. Rounding modes 5 and 6 are reserved; mode 7 (DYN) with FRM=5/6/7 should raise invalid-operation exception (NV flag set).
+    expectation: "FRM=0-4: legal, no exception. FRM=5,6: reserved — DUT may raise illegal-instruction or invalid FP exception. FRM=7 with dynamic FRM=5/6/7: raises invalid FP exception."
+    bins: "8 bins: FRM ∈ {0,1,2,3,4,5,6,7} with FADD.S using rounding mode 7 (DYN)"
+  - heading: "*** add vector Ssstrict instruction tests for all SEW to SsstrictV"

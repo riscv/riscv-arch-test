@@ -144,7 +144,7 @@ include::norm/Zama16b_norm_rules.adoc[]
 
 Located here because it is part of RVA23 and can function without the rest of the https://docs.riscv.org/reference/debug-trace-ras/debug/_attachments/riscv-debug-specification.pdf[Debug Specification].  See <<Debug>> for non-RVA23 debug extensions.
 The suite is divided into SdtrigSm, SdtrigS, and SdtrigU suites that are essentially identical, but are run on different privilege levels and thus produce different results for coverpoints such as reading debug registers or triggering in certain modes.
-Only SdtrigSm is listed here but the others are the same and also cover the same normative rules.
+SdtrigSm is listed in full; the SdtrigS and SdtrigU plans below list only how they differ, and they cover the same normative rules.
 
 include::{testplansdir}/priv/SdtrigSm.adoc[]
 
@@ -167,3 +167,11 @@ implementation-specific external triggers.
 are not tested because they are not part of RVA23.
 
 `mcontrol` has been replaced by `mcontrol6`.  It is deprecated and not tested.  `mscontext` is only for backward compatibility with Sdtrig 0.13 and is not tested.
+
+===== SdtrigS
+
+include::{testplansdir}/priv/SdtrigS.adoc[]
+
+===== SdtrigU
+
+include::{testplansdir}/priv/SdtrigU.adoc[]

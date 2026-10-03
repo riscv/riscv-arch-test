@@ -14,6 +14,8 @@ Vector instructions introduce complex register constraints and are tested separa
 
 RISC-V does not have a ratified equivalent of Ssstrict for machine mode, but this optional test suite checks the behavior of unimplemented instructions and CSRs from machine mode.  It runs the same tests as <<t-SsstrictS-coverpoints,SsstrictS>> but from machine mode.
 
+include::{testplansdir}/priv/SsstrictSm.adoc[]
+
 include::norm/SsstrictSm_norm_rules.adoc[]
 
 ==== SsstrictS
@@ -28,3 +30,5 @@ include::norm/SsstrictS_norm_rules.adoc[]
 ==== SsstrictU
 
 Same as <<t-SsstrictS-coverpoints,SsstrictS>>, but runs from user mode and includes attempts to access supervisor CSRs that should be inaccessible from user mode.
+
+include::{testplansdir}/priv/SsstrictU.adoc[]

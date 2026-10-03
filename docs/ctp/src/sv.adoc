@@ -36,11 +36,7 @@ include::norm/Svbare_norm_rules.adoc[]
 
 ==== SvbareSm Virtual Memory Off with MPRV
 
-[[t-SvbareSm-coverpoints]]
-.SvbareSm Coverpoints
-,===
-See the SvbareSm sheet of the Sv testplan.
-,===
+include::{testplansdir}/priv/SvbareSm.adoc[]
 
 include::norm/SvbareSm_norm_rules.adoc[]
 
@@ -77,11 +73,7 @@ include::norm/Svinval_norm_rules.adoc[]
 
 Runs the Svinval instructions in M, S and U mode with `mstatus.TVM=1`.
 
-[[t-SvinvalSm-coverpoints]]
-.SvinvalSm Coverpoints
-,===
-See the SvinvalSm sheet of the Sv testplan.
-,===
+include::{testplansdir}/priv/SvinvalSm.adoc[]
 
 include::norm/SvinvalSm_norm_rules.adoc[]
 

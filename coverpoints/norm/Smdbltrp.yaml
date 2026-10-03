@@ -2,12 +2,14 @@ normative_rule_definitions:
   # When the csr::[mdt] bit is set to 1 by an explicit CSR write, the csr::[mie] (Machine
   # Interrupt Enable) bit is cleared to 0.
   - name: mstatus_mie_clr_by_mdt
-    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk_masked/mstatus"]
+    # TODO: the Sm mstatus walk keeps MDT at 0 until Sail implements Smdbltrp (Sm.py), so no test sets MDT.
+    coverpoint: [""]
 
   # For RV64, this clearing occurs regardless of the value written, if any, to the
   # csr::[mie] bit by the same write.
   - name: mstatus_mie_clr_by_mdt_rv64
-    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk_masked/mstatus"]
+    # TODO: the Sm mstatus walk keeps MDT at 0 until Sail implements Smdbltrp (Sm.py), so no test sets MDT.
+    coverpoint: [""]
 
   # The MIE bit can only be set to 1 by an explicit CSR write if the MDT bit is
   # already 0
@@ -41,7 +43,7 @@ normative_rule_definitions:
   - name: sstatus_sdt_clr_mret_sret
     coverpoint: [""]
 
-  # Additionally, if it is VU, then csr:vsstatus[sdt] is also set to 0.
+  # Additionally, if it is VU, then vsstatus.SDT is also set to 0.
   - name: vsstatus_sdt_clr_mret_sret
     coverpoint: [""]
 

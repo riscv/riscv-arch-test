@@ -68,8 +68,8 @@ covergroup S_scause_cg with function sample(ins_t ins);
             bins b_23_store_guest_page_fault = {23};
             bins b_31_24_custom[] = {[24:31]}; // scause must be able to hold 0-31
         `endif
-        //bins b_47_32_reserved = {[32:47]};
-        //bins b_63_48_custom = {[48:63]};
+        //bins b_47_32_reserved = {[47:32]};
+        //bins b_63_48_custom = {[63:48]};
     }
     scause_interrupt_values: coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
         // values are WLRL. Exclude reserved and custom fields unless SS1P12 or higher is supported

@@ -37,9 +37,9 @@ parameter_definitions:
   - name: MXLEN
     coverpoint:
       [
-        "cp_pmpaddr_upper_zero, cp_pmpcfg_walk*, cp_pmpcfg_zero, cp_cfg_A_all_odd",
+        "cp_pmpaddr_upper_zero, cp_pmpcfg_walk*, cp_pmpcfg_zero, cp_pmpcfg_odd_rv64, cp_cfg_A_all_odd",
       ]
     effect:
       [
-        "RV64: cp_pmpaddr_upper_zero and the even pmpcfg CSRs only. RV32: the odd pmpcfg CSRs",
+        "RV64: cp_pmpaddr_upper_zero, the even pmpcfg CSRs, and the odd pmpcfg CSRs as illegal. RV32: the odd pmpcfg CSRs as legal",
       ]

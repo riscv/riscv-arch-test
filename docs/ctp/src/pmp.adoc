@@ -6,11 +6,11 @@ The tests boot to M-mode to program the PMP and make the highest usable entry a 
 Tests for an address-matching mode run only when its UDB parameter (`PMP_NA4_SUPPORTED`, `PMP_NAPOT_SUPPORTED` or `PMP_TOR_SUPPORTED`) is true, and region sizes follow `PMP_GRANULARITY`.
 PMP combined with virtual memory is tested by the SvPMP, SvPMPZicbo and SvaduPMP suites in the virtual-memory section.
 The testplan also describes a PMPV suite for vector loads and stores, which is not implemented yet.
-Normative rules that no test covers yet are listed as TODO in the tables below.
+Loads and stores that cross a PMP region boundary are not tested: a hart may split such an access into memory operations that are checked separately.
 
 ==== PMPSm
 
-Machine-mode tests of the pmpcfg and pmpaddr CSRs (WARL fields, locking, grain), each address-matching mode in every entry, entry priority, and enforcement of locked entries on M-mode accesses.
+Machine-mode tests of the pmpcfg and pmpaddr CSRs (WARL fields, locking, grain, and the illegal odd pmpcfg CSRs on RV64), each address-matching mode in every entry, entry priority, and enforcement of locked entries on M-mode accesses.
 The 64-entry coverpoints need `NUM_PMP_ENTRIES` = 64.
 
 [[t-PMPSm-coverpoints]]
@@ -26,7 +26,7 @@ include::norm/PMPSm_norm_rules.adoc[]
 ==== PMPS
 
 PMP enforcement on S-mode accesses, which does not depend on the L bit, and on M-mode loads and stores with `mstatus.MPRV`=1 and MPP=S.
-Also checks that the PMP CSRs trap when accessed from S-mode.
+Also checks that the PMP CSRs trap when accessed from S-mode, and that an S-mode access matching no PMP entry faults.
 Runs when S is implemented.
 
 [[t-PMPS-coverpoints]]
@@ -42,7 +42,7 @@ include::norm/PMPS_norm_rules.adoc[]
 ==== PMPU
 
 PMP enforcement on U-mode accesses, which does not depend on the L bit, and on M-mode loads and stores with `mstatus.MPRV`=1 and MPP=U.
-Also checks that the PMP CSRs trap when accessed from U-mode.
+Also checks that the PMP CSRs trap when accessed from U-mode, and that an U-mode access matching no PMP entry faults.
 Runs when U is implemented.
 
 [[t-PMPU-coverpoints]]

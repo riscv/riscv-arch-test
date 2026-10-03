@@ -53,7 +53,7 @@ normative_rule_definitions:
   # configurations for the 64 PMP entries, as shown in &lt;&lt;pmpcfg-rv64&gt;&gt;.
   - name: pmp_cfg_rv64_layout
     # Representative coverpoints; also cp_cfg_A_all_{even, odd}, cp_cfg_A_tor_all{0..6, 9..14},
-    # cp_pmpcfg_walk_odd, cp_pmpcfg_zero, cp_pmp64_write
+    # cp_pmpcfg_walk_odd, cp_pmpcfg_zero, cp_pmpcfg_odd_rv64, cp_pmp64_write
     # entries 7/8 straddle pmpcfg0/pmpcfg2 on RV64
     coverpoint:
       [
@@ -63,10 +63,7 @@ normative_rule_definitions:
   # For RV64, the odd-numbered configuration registers, pmpcfg1, pmpcfg3, …, pmpcfg15,
   # are illegal.
   - name: pmp_cfg_rv64_illegal
-    coverpoint:
-      [
-        "TODO: cp_pmpcfg_odd_rv64: RV64 csrr/csrw of each odd pmpcfg CSR raises an illegal-instruction exception",
-      ]
+    coverpoint: ["PMPSm_cg/cp_pmpcfg_odd_rv64"]
 
   # The PMP address registers are CSRs named pmpaddr0-pmpaddr63.
   - name: pmp_addr_registers
@@ -256,18 +253,6 @@ normative_rule_definitions:
     # cp_cfg_rW00_all, cp_cfg_rW10_all, cp_cfg_rW11_all, cp_cfg_L_access_{exec, read, write}
     coverpoint: ["PMPSm_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_cfg_X0_all}"]
 
-  # On some implementations, misaligned loads, stores, and instruction fetches may be
-  # decomposed into multiple memory operations, some of which may succeed before an
-  # access-fault exception occurs, as described in the RVWMO specification. PMP checking
-  # is performed on each memory operation independently.
-  - name: pmp_misaligned_access_behavior
-    coverpoint:
-      [
-        "TODO: cp_misaligned_napot, cp_misaligned_na4, cp_misaligned_tor: misaligned loads/stores straddling a NAPOT, NA4 or TOR region boundary",
-        "TODO: cp_misaligned_off: misaligned loads/stores across an OFF entry's region",
-        "TODO: cp_misaligned_na4_wrap, cp_misaligned_tor_wrap: misaligned ld/sd wrapping a 4-byte NA4 or TOR region (RV64, G = 0)",
-      ]
-
   # PMP entries are statically prioritized. The lowest-numbered PMP entry that matches
   # any byte of a memory operation determines whether that operation succeeds or fails.
   - name: pmp_entry_priority
@@ -276,18 +261,6 @@ normative_rule_definitions:
     coverpoint:
       [
         "PMPSm_cg/{cp_priority_lw, cp_priority_sw, cp_priority_jalr, cp_priority_off_lw}",
-      ]
-
-  # The matching PMP entry must match all bytes of a memory operation, or the operation
-  # fails, irrespective of the L, R, W, and X bits.
-  - name: pmp_full_match_required
-    coverpoint:
-      [
-        "TODO: cp_na4_boundary: aligned ld/sd half covered by an NA4 entry (RV64, G = 0)",
-        "TODO: cp_tor_boundary: aligned ld/sd half covered by a 4-byte TOR entry (RV64, G = 0)",
-        "TODO: cp_tor_doubleregionfail: aligned ld/sd split across two 4-byte TOR entries (RV64, G = 0)",
-        "TODO: cp_misaligned_napot, cp_misaligned_na4, cp_misaligned_tor: misaligned loads/stores straddling a NAPOT, NA4 or TOR region boundary",
-        "TODO: cp_misaligned_na4_wrap, cp_misaligned_tor_wrap: misaligned ld/sd wrapping a 4-byte NA4 or TOR region (RV64, G = 0)",
       ]
 
   # If a PMP entry matches all bytes of a memory operation, then the L, R, W, and X bits

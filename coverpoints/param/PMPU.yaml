@@ -20,7 +20,7 @@ parameter_definitions:
     coverpoint: ["cp_cfg_A_napot_{jalr, lw, sw}"]
     effect: ["NAPOT test file runs only when true"]
   - name: PMP_TOR_SUPPORTED
-    coverpoint: ["cp_cfg_A_tor_{jalr, lw, sw}"]
+    coverpoint: ["cp_cfg_A_tor_{jalr, lw, sw}, cp_none_{jalr, lw, sw}"]
     effect: ["TOR coverpoints and tests exist only when true"]
   - name: MXLEN
     coverpoint: ["cp_cfg_R, cp_cfg_W"]

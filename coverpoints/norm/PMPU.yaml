@@ -8,7 +8,7 @@ normative_rule_definitions:
   # S or U.
   - name: pmp_check_priv_modes
     # Representative coverpoints; also cp_cfg_A_off_{lw, sw}, cp_cfg_A_napot_{jalr, lw, sw},
-    # cp_cfg_A_na4_{jalr, lw, sw}, cp_cfg_A_tor_{jalr, lw, sw}, cp_mprv_{jalr, lw, sw}
+    # cp_cfg_A_na4_{jalr, lw, sw}, cp_cfg_A_tor_{jalr, lw, sw}, cp_mprv_{jalr, lw, sw}, cp_none_{jalr, lw, sw}
     coverpoint: ["PMPU_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_cfg_A_off_jalr}"]
 
   # PMP CSRs are only accessible to M-mode.
@@ -78,8 +78,11 @@ normative_rule_definitions:
   # entry 0's A field is set to TOR, zero is used for the lower bound, and so it matches
   # any address y&lt;pmpaddr~0~.
   - name: pmp_a_field_tor
+    # Representative coverpoints; also cp_none_{lw, sw}
     coverpoint:
-      ["PMPU_cg/{cp_cfg_A_tor_jalr, cp_cfg_A_tor_lw, cp_cfg_A_tor_sw}"]
+      [
+        "PMPU_cg/{cp_cfg_A_tor_jalr, cp_cfg_A_tor_lw, cp_cfg_A_tor_sw, cp_none_jalr}",
+      ]
 
   # In addition to locking the PMP entry, the L bit indicates whether the R/W/X
   # permissions are additionally enforced on M-mode accesses. When the L bit is set,
@@ -104,12 +107,10 @@ normative_rule_definitions:
   # PMP entry matches an S-mode or U-mode memory operation, the operation fails if at
   # least one PMP entry is implemented and succeeds otherwise.
   - name: pmp_no_entry_match
-    coverpoint:
-      [
-        "TODO: cp_none: jalr, lw and sw from U-mode to an address that no PMP entry matches",
-      ]
+    coverpoint: ["PMPU_cg/{cp_none_jalr, cp_none_lw, cp_none_sw}"]
 
   # Failed memory operations generate an instruction, load, or store access-fault
   # exception.
   - name: pmp_access_fault_exception
-    coverpoint: ["PMPU_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W}"]
+    # Representative coverpoints; also cp_none_{lw, sw}
+    coverpoint: ["PMPU_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_none_jalr}"]

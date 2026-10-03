@@ -90,7 +90,8 @@ def _make_cfg_xwr_chunk(test_data: TestData, mode: Mode, *, locked: bool) -> Tes
         f"L = {int(locked)}, each legal XWR.",
     )
     chunk.code.extend(lxwr_walk_body(test_data, cases, "napot", gen_rwx_all, "cp_cfg_RW", lower_mode=mode.letter))
-    chunk.raw_data.extend(REGION_BLOBS["off"])
+    # The NAPOT pad keeps the region 8-byte aligned at every grain, so ld and sd stay naturally aligned.
+    chunk.raw_data.extend(REGION_BLOBS["napot_pad"])
     return test_data.end_test_chunk()
 
 

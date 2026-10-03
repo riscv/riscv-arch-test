@@ -348,7 +348,11 @@
 
     #ifdef RVTEST_VECTOR
         # We need to ensure that VS is set in mstatus here, as VS off is an exceptions test
+        LA(x6, failedtest_vs_on)           # already set by failedtest_epilog_x7_x9
+        lw x6, 0(x6)
+        bnez x6, failedtest_vs_ready
         RVTEST_TSBI_CSR_SET(CSR_MSTATUS, 0x600)
+    failedtest_vs_ready:
         la x6, vecreg_scratch              # vecreg_scratch base address
         vs1r.v v0, (x6)
         addi x6, x6, VLEN_BYTES            # increment by one vector's bytes
@@ -2126,6 +2130,8 @@
         .fill 1, 4, 0xbaaaaaad
     failing_mask_vec:                            # value of failing mask vector register
         .fill VLEN_WORDS, 4, 0xbaaaaaad
+    failedtest_vs_on:                            # nonzero once mstatus.VS is on for the failure code
+        .fill 1, 4, 0
     vecreg_scratch:                              # space to save full vector register contents
         .fill VECREG_REGION_WORDS, 4, 0xfeedf00dbaaaaaad
 #endif // RVTEST_VECTOR

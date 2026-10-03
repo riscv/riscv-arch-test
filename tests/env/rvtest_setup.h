@@ -188,7 +188,7 @@
       SREG    T1, 0(T3)               // Save reference trap signature byte count
       beq     x0, x0, check_abort_test
     #endif
-      jal     T2, failedtest_trap_x7_x9
+      jal     T2, failedtest_epilog_x7_x9
       RVTEST_WORD_PTR check_trap_sig_offset
       RVTEST_WORD_PTR trap_sig_offset_mismatch
     #endif
@@ -196,7 +196,7 @@
     check_abort_test:
       LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
       bne     T4, T5, exit_cleanup
-      jal     T2, failedtest_trap_x7_x9
+      jal     T2, failedtest_epilog_x7_x9
       RVTEST_WORD_PTR abort_test
       RVTEST_WORD_PTR abortstr
       .word   CSR_MEPC
@@ -224,6 +224,19 @@
     LREG a0, 0(a0)
     call rvmodel_io_write_str
     call rvmodel_halt_fail
+
+  #ifdef STANDARD_SM_SUPPORTED
+    // Failure entry for the checks above. The trap handlers are gone by now, so the failure
+    // code cannot turn on mstatus.VS with a T-SBI call; turn it on here in M-mode instead.
+    failedtest_epilog_x7_x9:
+    #ifdef RVTEST_VECTOR
+      LI(     T4, MSTATUS_VS)
+      csrs    CSR_MSTATUS, T4
+      LA(     T3, failedtest_vs_on)
+      sw      T4, 0(T3)
+    #endif
+      j       failedtest_trap_x7_x9
+  #endif
 
   // Terminate the test with a failure message indicating the trap signature overflowed
   trap_sig_overflow:

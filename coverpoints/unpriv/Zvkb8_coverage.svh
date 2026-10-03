@@ -1640,33 +1640,33 @@ function void zvkb8_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 0 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
-        "vandn.vv"     : begin
-            Zvkb8_vandn_vv_cg.sample(ins);
-        end
-        "vandn.vx"     : begin
-            Zvkb8_vandn_vx_cg.sample(ins);
-        end
-        "vbrev8.v"     : begin
-            Zvkb8_vbrev8_v_cg.sample(ins);
-        end
-        "vrev8.v"     : begin
-            Zvkb8_vrev8_v_cg.sample(ins);
-        end
-        "vrol.vv"     : begin
-            Zvkb8_vrol_vv_cg.sample(ins);
-        end
-        "vrol.vx"     : begin
-            Zvkb8_vrol_vx_cg.sample(ins);
-        end
-        "vror.vi"     : begin
-            Zvkb8_vror_vi_cg.sample(ins);
-        end
-        "vror.vv"     : begin
-            Zvkb8_vror_vv_cg.sample(ins);
-        end
-        "vror.vx"     : begin
-            Zvkb8_vror_vx_cg.sample(ins);
-        end
+            "vandn.vv"     : begin
+                Zvkb8_vandn_vv_cg.sample(ins);
+            end
+            "vandn.vx"     : begin
+                Zvkb8_vandn_vx_cg.sample(ins);
+            end
+            "vbrev8.v"     : begin
+                Zvkb8_vbrev8_v_cg.sample(ins);
+            end
+            "vrev8.v"     : begin
+                Zvkb8_vrev8_v_cg.sample(ins);
+            end
+            "vrol.vv"     : begin
+                Zvkb8_vrol_vv_cg.sample(ins);
+            end
+            "vrol.vx"     : begin
+                Zvkb8_vrol_vx_cg.sample(ins);
+            end
+            "vror.vi"     : begin
+                Zvkb8_vror_vi_cg.sample(ins);
+            end
+            "vror.vv"     : begin
+                Zvkb8_vror_vv_cg.sample(ins);
+            end
+            "vror.vx"     : begin
+                Zvkb8_vror_vx_cg.sample(ins);
+            end
             default: ; // a case needs at least one item, and some configurations select none
         endcase
     end

@@ -7,7 +7,7 @@
 
 """cp_custom_sc coverpoint generator."""
 
-from testgen.asm.helpers import load_int_reg, write_sigupd
+from testgen.asm.helpers import load_int_reg, lrsc_retry_loop, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
@@ -155,6 +155,12 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
         canary_reg = test_data.int_regs.get_register(
             exclude_regs=[0, params.rd, params.rs1, params.rs2, params.temp_reg]
         )
+        label_line = test_data.add_testcase(
+            f"prev_lr_{lr_insn} & address_difference_{addr_diff}", "cp_custom_sc_addresses"
+        )
+        # The sc may succeed when the reservation set is large enough to include its address
+        retry_reg = test_data.int_regs.get_register(exclude_regs=[0])
+        retry_start, retry_end = lrsc_retry_loop(test_data.current_testcase_label, retry_reg, params.rd)
         tc.code.extend(
             [
                 f"# Testcase: cp_custom_sc_addresses (address difference of {addr_diff})",
@@ -162,9 +168,11 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
                 f"LA(x{params.temp_reg}, scratch) # rs1 = base address",
                 f"addi x{params.rs1}, x{params.temp_reg}, {addr_diff} # offset rs1 by {addr_diff}",
                 *sc_canary(params.temp_reg, params.rs2, canary_reg, addr_diff),
+                *retry_start,
                 f"{lr_insn} x0, (x{params.temp_reg}) # establish reservation",
-                test_data.add_testcase(f"prev_lr_{lr_insn} & address_difference_{addr_diff}", "cp_custom_sc_addresses"),
+                label_line,
                 f"{instr_name} x{params.rd}, x{params.rs2}, (x{params.rs1}) # perform operation",
+                *retry_end,
                 write_sigupd(params.rd, test_data),
                 f"LA(x{params.rs1}, scratch) # reload base address",
                 f"LREG x{params.temp_reg}, {addr_diff}(x{params.rs1}) # load stored value",
@@ -173,6 +181,7 @@ def make_custom_sc(instr_name: str, instr_type: str, coverpoint: str, test_data:
             ]
         )
         test_data.int_regs.return_register(canary_reg)
+        test_data.int_regs.return_register(retry_reg)
         return_testcase_registers(test_data, params)
 
     return [test_data.end_test_chunk()]

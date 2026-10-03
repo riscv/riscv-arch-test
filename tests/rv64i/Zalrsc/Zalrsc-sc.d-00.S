@@ -5446,9 +5446,15 @@ Zalrsc_sc_d_cg_cp_custom_sc_after_sc_true:
   addi x27, x17, 8 # offset rs1 by 8
   xori x30, x19, -1 # canary = ~rs2, so the SC changes every bit it writes
   SREG x30, 8(x17) # fill SC target with canary
+  LI(x22, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_8_retry:
   lr.d x0, (x17) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_8:
   sc.d x15, x19, (x27) # perform operation
+  beqz x15, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_8_success # SC succeeded, skip retry
+  addi x22, x22, -1 # decrement retry count
+  bnez x22, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_8_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_8_success:
   # Check if x15 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x21, x8, x7, x15, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_8, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_8_str)
   LA(x27, scratch) # reload base address
@@ -5457,484 +5463,664 @@ Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_8:
   RVTEST_SIGUPD(x21, x8, x7, x17, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_8, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_8_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 16)
-  RVTEST_TESTDATA_LOAD_INT(x9, x25) # load rs2: x25 = 0x3f9d109fe65b6a65
-  LA(x22, scratch) # rs1 = base address
-  addi x5, x22, 16 # offset rs1 by 16
-  xori x3, x25, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x3, 16(x22) # fill SC target with canary
-  lr.d x0, (x22) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x9, x30) # load rs2: x30 = 0x3a08bef214bce20b
+  LA(x31, scratch) # rs1 = base address
+  addi x24, x31, 16 # offset rs1 by 16
+  xori x6, x30, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x6, 16(x31) # fill SC target with canary
+  LI(x1, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_16_retry:
+  lr.d x0, (x31) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_16:
-  sc.d x18, x25, (x5) # perform operation
-  # Check if x18 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x18, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_16, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_16_str)
-  LA(x5, scratch) # reload base address
-  LREG x22, 16(x5) # load stored value
-  # Check if x22 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x22, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_16, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_16_str)
+  sc.d x5, x30, (x24) # perform operation
+  beqz x5, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_16_success # SC succeeded, skip retry
+  addi x1, x1, -1 # decrement retry count
+  bnez x1, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_16_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_16_success:
+  # Check if x5 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x5, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_16, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_16_str)
+  LA(x24, scratch) # reload base address
+  LREG x31, 16(x24) # load stored value
+  # Check if x31 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x31, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_16, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_16_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 24)
-  RVTEST_TESTDATA_LOAD_INT(x9, x16) # load rs2: x16 = 0xd2f1babe59e0ecab
-  LA(x28, scratch) # rs1 = base address
-  addi x1, x28, 24 # offset rs1 by 24
-  xori x13, x16, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x13, 24(x28) # fill SC target with canary
-  lr.d x0, (x28) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x9, x15) # load rs2: x15 = 0x68c3c1efac622aed
+  LA(x6, scratch) # rs1 = base address
+  addi x16, x6, 24 # offset rs1 by 24
+  xori x24, x15, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x24, 24(x6) # fill SC target with canary
+  LI(x19, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_24_retry:
+  lr.d x0, (x6) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_24:
-  sc.d x5, x16, (x1) # perform operation
-  # Check if x5 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x5, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_24, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_24_str)
-  LA(x1, scratch) # reload base address
-  LREG x28, 24(x1) # load stored value
-  # Check if x28 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x28, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_24, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_24_str)
+  sc.d x14, x15, (x16) # perform operation
+  beqz x14, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_24_success # SC succeeded, skip retry
+  addi x19, x19, -1 # decrement retry count
+  bnez x19, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_24_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_24_success:
+  # Check if x14 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x14, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_24, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_24_str)
+  LA(x16, scratch) # reload base address
+  LREG x6, 24(x16) # load stored value
+  # Check if x6 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x6, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_24, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_24_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 32)
-  RVTEST_TESTDATA_LOAD_INT(x9, x15) # load rs2: x15 = 0xe5f6d9905b33db74
-  LA(x4, scratch) # rs1 = base address
-  addi x20, x4, 32 # offset rs1 by 32
-  xori x13, x15, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x13, 32(x4) # fill SC target with canary
-  lr.d x0, (x4) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x9, x3) # load rs2: x3 = 0x47e6f37014cab53b
+  LA(x6, scratch) # rs1 = base address
+  addi x17, x6, 32 # offset rs1 by 32
+  xori x12, x3, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x12, 32(x6) # fill SC target with canary
+  LI(x10, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_32_retry:
+  lr.d x0, (x6) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_32:
-  sc.d x17, x15, (x20) # perform operation
-  # Check if x17 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x17, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_32, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_32_str)
-  LA(x20, scratch) # reload base address
-  LREG x4, 32(x20) # load stored value
-  # Check if x4 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x4, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_32, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_32_str)
+  sc.d x15, x3, (x17) # perform operation
+  beqz x15, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_32_success # SC succeeded, skip retry
+  addi x10, x10, -1 # decrement retry count
+  bnez x10, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_32_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_32_success:
+  # Check if x15 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x15, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_32, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_32_str)
+  LA(x17, scratch) # reload base address
+  LREG x6, 32(x17) # load stored value
+  # Check if x6 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x6, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_32, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_32_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 40)
-  RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs2: x10 = 0xe14d20f423a4ed7d
-  LA(x26, scratch) # rs1 = base address
-  addi x19, x26, 40 # offset rs1 by 40
-  xori x2, x10, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x2, 40(x26) # fill SC target with canary
-  lr.d x0, (x26) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x9, x24) # load rs2: x24 = 0xe93d7f282185be91
+  LA(x3, scratch) # rs1 = base address
+  addi x20, x3, 40 # offset rs1 by 40
+  xori x12, x24, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x12, 40(x3) # fill SC target with canary
+  LI(x19, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_40_retry:
+  lr.d x0, (x3) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_40:
-  sc.d x18, x10, (x19) # perform operation
-  # Check if x18 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x18, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_40, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_40_str)
-  LA(x19, scratch) # reload base address
-  LREG x26, 40(x19) # load stored value
-  # Check if x26 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x26, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_40, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_40_str)
+  sc.d x16, x24, (x20) # perform operation
+  beqz x16, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_40_success # SC succeeded, skip retry
+  addi x19, x19, -1 # decrement retry count
+  bnez x19, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_40_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_40_success:
+  # Check if x16 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x16, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_40, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_40_str)
+  LA(x20, scratch) # reload base address
+  LREG x3, 40(x20) # load stored value
+  # Check if x3 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x3, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_40, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_40_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 48)
-  RVTEST_TESTDATA_LOAD_INT(x9, x24) # load rs2: x24 = 0x0243b8821d4856f9
-  LA(x12, scratch) # rs1 = base address
-  addi x16, x12, 48 # offset rs1 by 48
-  xori x19, x24, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x19, 48(x12) # fill SC target with canary
-  lr.d x0, (x12) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x9, x23) # load rs2: x23 = 0xef67328a057d2032
+  LA(x22, scratch) # rs1 = base address
+  addi x18, x22, 48 # offset rs1 by 48
+  xori x11, x23, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x11, 48(x22) # fill SC target with canary
+  LI(x6, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_48_retry:
+  lr.d x0, (x22) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_48:
-  sc.d x25, x24, (x16) # perform operation
-  # Check if x25 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x25, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_48, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_48_str)
-  LA(x16, scratch) # reload base address
-  LREG x12, 48(x16) # load stored value
-  # Check if x12 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x12, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_48, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_48_str)
+  sc.d x10, x23, (x18) # perform operation
+  beqz x10, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_48_success # SC succeeded, skip retry
+  addi x6, x6, -1 # decrement retry count
+  bnez x6, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_48_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_48_success:
+  # Check if x10 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x10, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_48, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_48_str)
+  LA(x18, scratch) # reload base address
+  LREG x22, 48(x18) # load stored value
+  # Check if x22 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x22, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_48, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_48_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 56)
-  RVTEST_TESTDATA_LOAD_INT(x9, x25) # load rs2: x25 = 0xef67328a057d2032
-  LA(x22, scratch) # rs1 = base address
-  addi x3, x22, 56 # offset rs1 by 56
-  xori x11, x25, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x11, 56(x22) # fill SC target with canary
-  lr.d x0, (x22) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x9, x16) # load rs2: x16 = 0xc4c4f2cb782a9771
+  LA(x5, scratch) # rs1 = base address
+  addi x4, x5, 56 # offset rs1 by 56
+  xori x10, x16, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x10, 56(x5) # fill SC target with canary
+  LI(x12, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_56_retry:
+  lr.d x0, (x5) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_56:
-  sc.d x20, x25, (x3) # perform operation
-  # Check if x20 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x20, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_56, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_56_str)
-  LA(x3, scratch) # reload base address
-  LREG x22, 56(x3) # load stored value
-  # Check if x22 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x22, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_56, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_56_str)
+  sc.d x27, x16, (x4) # perform operation
+  beqz x27, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_56_success # SC succeeded, skip retry
+  addi x12, x12, -1 # decrement retry count
+  bnez x12, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_56_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_56_success:
+  # Check if x27 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x27, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_56, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_56_str)
+  LA(x4, scratch) # reload base address
+  LREG x5, 56(x4) # load stored value
+  # Check if x5 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x5, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_56, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_56_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 64)
-  RVTEST_TESTDATA_LOAD_INT(x9, x4) # load rs2: x4 = 0xd82110cdf0357bf0
-  LA(x15, scratch) # rs1 = base address
-  addi x28, x15, 64 # offset rs1 by 64
-  xori x14, x4, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x14, 64(x15) # fill SC target with canary
-  lr.d x0, (x15) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x9, x28) # load rs2: x28 = 0xdc51443a27a07e3e
+  LA(x20, scratch) # rs1 = base address
+  addi x5, x20, 64 # offset rs1 by 64
+  xori x15, x28, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x15, 64(x20) # fill SC target with canary
+  LI(x31, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_64_retry:
+  lr.d x0, (x20) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_64:
-  sc.d x6, x4, (x28) # perform operation
-  # Check if x6 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x6, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_64, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_64_str)
-  LA(x28, scratch) # reload base address
-  LREG x15, 64(x28) # load stored value
-  # Check if x15 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x15, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_64, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_64_str)
+  sc.d x13, x28, (x5) # perform operation
+  beqz x13, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_64_success # SC succeeded, skip retry
+  addi x31, x31, -1 # decrement retry count
+  bnez x31, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_64_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_64_success:
+  # Check if x13 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x13, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_64, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_64_str)
+  LA(x5, scratch) # reload base address
+  LREG x20, 64(x5) # load stored value
+  # Check if x20 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x20, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_64, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_64_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 72)
-  RVTEST_TESTDATA_LOAD_INT(x9, x30) # load rs2: x30 = 0xc923759b2c7b1816
-  LA(x29, scratch) # rs1 = base address
-  addi x5, x29, 72 # offset rs1 by 72
-  xori x19, x30, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x19, 72(x29) # fill SC target with canary
-  lr.d x0, (x29) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x9, x26) # load rs2: x26 = 0x5fd7c72e833e0ab6
+  LA(x17, scratch) # rs1 = base address
+  addi x20, x17, 72 # offset rs1 by 72
+  xori x25, x26, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x25, 72(x17) # fill SC target with canary
+  LI(x27, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_72_retry:
+  lr.d x0, (x17) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_72:
-  sc.d x12, x30, (x5) # perform operation
-  # Check if x12 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x12, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_72, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_72_str)
-  LA(x5, scratch) # reload base address
-  LREG x29, 72(x5) # load stored value
-  # Check if x29 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x29, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_72, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_72_str)
+  sc.d x11, x26, (x20) # perform operation
+  beqz x11, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_72_success # SC succeeded, skip retry
+  addi x27, x27, -1 # decrement retry count
+  bnez x27, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_72_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_72_success:
+  # Check if x11 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x11, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_72, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_72_str)
+  LA(x20, scratch) # reload base address
+  LREG x17, 72(x20) # load stored value
+  # Check if x17 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x17, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_72, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_72_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 80)
-  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs2: x6 = 0x2b4965ea4c076aaa
-  LA(x23, scratch) # rs1 = base address
-  addi x27, x23, 80 # offset rs1 by 80
-  xori x24, x6, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x24, 80(x23) # fill SC target with canary
-  lr.d x0, (x23) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x9, x20) # load rs2: x20 = 0x253f7fe09e260fb2
+  LA(x18, scratch) # rs1 = base address
+  addi x12, x18, 80 # offset rs1 by 80
+  xori x24, x20, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x24, 80(x18) # fill SC target with canary
+  LI(x28, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_80_retry:
+  lr.d x0, (x18) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_80:
-  sc.d x5, x6, (x27) # perform operation
-  # Check if x5 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x5, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_80, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_80_str)
-  LA(x27, scratch) # reload base address
-  LREG x23, 80(x27) # load stored value
-  # Check if x23 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x23, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_80, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_80_str)
+  sc.d x16, x20, (x12) # perform operation
+  beqz x16, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_80_success # SC succeeded, skip retry
+  addi x28, x28, -1 # decrement retry count
+  bnez x28, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_80_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_80_success:
+  # Check if x16 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x16, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_80, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_80_str)
+  LA(x12, scratch) # reload base address
+  LREG x18, 80(x12) # load stored value
+  # Check if x18 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x18, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_80, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_80_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 88)
-  RVTEST_TESTDATA_LOAD_INT(x9, x24) # load rs2: x24 = 0x5fd7c72e833e0ab6
-  LA(x17, scratch) # rs1 = base address
-  addi x13, x17, 88 # offset rs1 by 88
-  xori x26, x24, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x26, 88(x17) # fill SC target with canary
-  lr.d x0, (x17) # establish reservation
-Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88:
-  sc.d x23, x24, (x13) # perform operation
-  # Check if x23 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x23, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88_str)
-  LA(x13, scratch) # reload base address
-  LREG x17, 88(x13) # load stored value
-  # Check if x17 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x17, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 96)
-  RVTEST_TESTDATA_LOAD_INT(x9, x12) # load rs2: x12 = 0x476708317273c9e1
-  LA(x28, scratch) # rs1 = base address
-  addi x16, x28, 96 # offset rs1 by 96
-  xori x14, x12, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x14, 96(x28) # fill SC target with canary
-  lr.d x0, (x28) # establish reservation
-Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96:
-  sc.d x22, x12, (x16) # perform operation
-  # Check if x22 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x22, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96_str)
-  LA(x16, scratch) # reload base address
-  LREG x28, 96(x16) # load stored value
-  # Check if x28 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x28, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 104)
-  RVTEST_TESTDATA_LOAD_INT(x9, x14) # load rs2: x14 = 0x414e7c4ae8d8351f
-  LA(x13, scratch) # rs1 = base address
-  addi x30, x13, 104 # offset rs1 by 104
-  xori x26, x14, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x26, 104(x13) # fill SC target with canary
-  lr.d x0, (x13) # establish reservation
-Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104:
-  sc.d x15, x14, (x30) # perform operation
-  # Check if x15 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x15, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104_str)
-  LA(x30, scratch) # reload base address
-  LREG x13, 104(x30) # load stored value
-  # Check if x13 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x13, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 112)
   RVTEST_TESTDATA_LOAD_INT(x9, x14) # load rs2: x14 = 0x26cfc7d0c39ec0ac
   LA(x3, scratch) # rs1 = base address
-  addi x18, x3, 112 # offset rs1 by 112
+  addi x18, x3, 88 # offset rs1 by 88
   xori x10, x14, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x10, 112(x3) # fill SC target with canary
+  SREG x10, 88(x3) # fill SC target with canary
+  LI(x17, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88_retry:
   lr.d x0, (x3) # establish reservation
-Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112:
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88:
   sc.d x26, x14, (x18) # perform operation
+  beqz x26, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88_success # SC succeeded, skip retry
+  addi x17, x17, -1 # decrement retry count
+  bnez x17, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88_success:
   # Check if x26 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x26, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112_str)
+  RVTEST_SIGUPD(x21, x8, x7, x26, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88_str)
   LA(x18, scratch) # reload base address
-  LREG x3, 112(x18) # load stored value
+  LREG x3, 88(x18) # load stored value
   # Check if x3 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x3, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112_str)
+  RVTEST_SIGUPD(x21, x8, x7, x3, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_88_str)
+
+# Testcase: cp_custom_sc_addresses (address difference of 96)
+  RVTEST_TESTDATA_LOAD_INT(x9, x31) # load rs2: x31 = 0x1d7bb5417657ca15
+  LA(x12, scratch) # rs1 = base address
+  addi x17, x12, 96 # offset rs1 by 96
+  xori x4, x31, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x4, 96(x12) # fill SC target with canary
+  LI(x26, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96_retry:
+  lr.d x0, (x12) # establish reservation
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96:
+  sc.d x16, x31, (x17) # perform operation
+  beqz x16, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96_success # SC succeeded, skip retry
+  addi x26, x26, -1 # decrement retry count
+  bnez x26, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96_success:
+  # Check if x16 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x16, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96_str)
+  LA(x17, scratch) # reload base address
+  LREG x12, 96(x17) # load stored value
+  # Check if x12 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x12, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_96_str)
+
+# Testcase: cp_custom_sc_addresses (address difference of 104)
+  RVTEST_TESTDATA_LOAD_INT(x9, x28) # load rs2: x28 = 0x5090968383d5905c
+  LA(x12, scratch) # rs1 = base address
+  addi x17, x12, 104 # offset rs1 by 104
+  xori x24, x28, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x24, 104(x12) # fill SC target with canary
+  LI(x22, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104_retry:
+  lr.d x0, (x12) # establish reservation
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104:
+  sc.d x6, x28, (x17) # perform operation
+  beqz x6, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104_success # SC succeeded, skip retry
+  addi x22, x22, -1 # decrement retry count
+  bnez x22, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104_success:
+  # Check if x6 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x6, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104_str)
+  LA(x17, scratch) # reload base address
+  LREG x12, 104(x17) # load stored value
+  # Check if x12 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x12, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_104_str)
+
+# Testcase: cp_custom_sc_addresses (address difference of 112)
+  RVTEST_TESTDATA_LOAD_INT(x9, x23) # load rs2: x23 = 0x621a8705bcb7377b
+  LA(x18, scratch) # rs1 = base address
+  addi x16, x18, 112 # offset rs1 by 112
+  xori x20, x23, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x20, 112(x18) # fill SC target with canary
+  LI(x15, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112_retry:
+  lr.d x0, (x18) # establish reservation
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112:
+  sc.d x29, x23, (x16) # perform operation
+  beqz x29, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112_success # SC succeeded, skip retry
+  addi x15, x15, -1 # decrement retry count
+  bnez x15, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112_success:
+  # Check if x29 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x29, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112_str)
+  LA(x16, scratch) # reload base address
+  LREG x18, 112(x16) # load stored value
+  # Check if x18 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x18, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_112_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 120)
-  RVTEST_TESTDATA_LOAD_INT(x9, x18) # load rs2: x18 = 0xd86fb449e9e32ec8
+  RVTEST_TESTDATA_LOAD_INT(x9, x29) # load rs2: x29 = 0xaa9e70a55ecd7ad4
   LA(x4, scratch) # rs1 = base address
-  addi x17, x4, 120 # offset rs1 by 120
-  xori x29, x18, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x29, 120(x4) # fill SC target with canary
+  addi x2, x4, 120 # offset rs1 by 120
+  xori x23, x29, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x23, 120(x4) # fill SC target with canary
+  LI(x27, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_120_retry:
   lr.d x0, (x4) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_120:
-  sc.d x14, x18, (x17) # perform operation
+  sc.d x14, x29, (x2) # perform operation
+  beqz x14, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_120_success # SC succeeded, skip retry
+  addi x27, x27, -1 # decrement retry count
+  bnez x27, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_120_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_120_success:
   # Check if x14 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x21, x8, x7, x14, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_120, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_120_str)
-  LA(x17, scratch) # reload base address
-  LREG x4, 120(x17) # load stored value
+  LA(x2, scratch) # reload base address
+  LREG x4, 120(x2) # load stored value
   # Check if x4 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
   RVTEST_SIGUPD(x21, x8, x7, x4, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_120, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_120_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 128)
-  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs2: x5 = 0x5090968383d5905c
-  LA(x12, scratch) # rs1 = base address
-  addi x25, x12, 128 # offset rs1 by 128
-  xori x24, x5, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x24, 128(x12) # fill SC target with canary
-  lr.d x0, (x12) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x9, x17) # load rs2: x17 = 0x931c269c70964c90
+  LA(x6, scratch) # rs1 = base address
+  addi x13, x6, 128 # offset rs1 by 128
+  xori x16, x17, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x16, 128(x6) # fill SC target with canary
+  LI(x30, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_128_retry:
+  lr.d x0, (x6) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_128:
-  sc.d x18, x5, (x25) # perform operation
-  # Check if x18 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x18, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_128, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_128_str)
-  LA(x25, scratch) # reload base address
-  LREG x12, 128(x25) # load stored value
-  # Check if x12 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x12, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_128, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_128_str)
+  sc.d x22, x17, (x13) # perform operation
+  beqz x22, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_128_success # SC succeeded, skip retry
+  addi x30, x30, -1 # decrement retry count
+  bnez x30, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_128_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_128_success:
+  # Check if x22 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x22, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_128, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_128_str)
+  LA(x13, scratch) # reload base address
+  LREG x6, 128(x13) # load stored value
+  # Check if x6 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x6, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_128, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_128_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 136)
-  RVTEST_TESTDATA_LOAD_INT(x9, x16) # load rs2: x16 = 0xe65324d168231097
-  LA(x27, scratch) # rs1 = base address
-  addi x30, x27, 136 # offset rs1 by 136
-  xori x14, x16, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x14, 136(x27) # fill SC target with canary
-  lr.d x0, (x27) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x9, x29) # load rs2: x29 = 0x3b3aa6945da8753a
+  LA(x11, scratch) # rs1 = base address
+  addi x1, x11, 136 # offset rs1 by 136
+  xori x23, x29, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x23, 136(x11) # fill SC target with canary
+  LI(x19, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_136_retry:
+  lr.d x0, (x11) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_136:
-  sc.d x18, x16, (x30) # perform operation
-  # Check if x18 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x18, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_136, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_136_str)
-  LA(x30, scratch) # reload base address
-  LREG x27, 136(x30) # load stored value
-  # Check if x27 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x27, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_136, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_136_str)
+  sc.d x28, x29, (x1) # perform operation
+  beqz x28, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_136_success # SC succeeded, skip retry
+  addi x19, x19, -1 # decrement retry count
+  bnez x19, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_136_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_136_success:
+  # Check if x28 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x28, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_136, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_136_str)
+  LA(x1, scratch) # reload base address
+  LREG x11, 136(x1) # load stored value
+  # Check if x11 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x11, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_136, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_136_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 144)
-  RVTEST_TESTDATA_LOAD_INT(x9, x15) # load rs2: x15 = 0x586ebb97e51f08ec
-  LA(x10, scratch) # rs1 = base address
-  addi x28, x10, 144 # offset rs1 by 144
-  xori x20, x15, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x20, 144(x10) # fill SC target with canary
-  lr.d x0, (x10) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x9, x1) # load rs2: x1 = 0xc88f407cbc96d32b
+  LA(x11, scratch) # rs1 = base address
+  addi x3, x11, 144 # offset rs1 by 144
+  xori x10, x1, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x10, 144(x11) # fill SC target with canary
+  LI(x23, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_144_retry:
+  lr.d x0, (x11) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_144:
-  sc.d x2, x15, (x28) # perform operation
-  # Check if x2 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x2, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_144, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_144_str)
-  LA(x28, scratch) # reload base address
-  LREG x10, 144(x28) # load stored value
-  # Check if x10 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x10, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_144, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_144_str)
+  sc.d x29, x1, (x3) # perform operation
+  beqz x29, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_144_success # SC succeeded, skip retry
+  addi x23, x23, -1 # decrement retry count
+  bnez x23, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_144_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_144_success:
+  # Check if x29 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x29, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_144, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_144_str)
+  LA(x3, scratch) # reload base address
+  LREG x11, 144(x3) # load stored value
+  # Check if x11 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x11, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_144, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_144_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 152)
-  RVTEST_TESTDATA_LOAD_INT(x9, x23) # load rs2: x23 = 0xe39c24bc4f3e12c6
-  LA(x25, scratch) # rs1 = base address
-  addi x24, x25, 152 # offset rs1 by 152
-  xori x5, x23, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x5, 152(x25) # fill SC target with canary
-  lr.d x0, (x25) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x9, x27) # load rs2: x27 = 0xa8eed2bdca2160dc
+  LA(x18, scratch) # rs1 = base address
+  addi x29, x18, 152 # offset rs1 by 152
+  xori x26, x27, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x26, 152(x18) # fill SC target with canary
+  LI(x13, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_152_retry:
+  lr.d x0, (x18) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_152:
-  sc.d x19, x23, (x24) # perform operation
-  # Check if x19 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x19, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_152, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_152_str)
-  LA(x24, scratch) # reload base address
-  LREG x25, 152(x24) # load stored value
-  # Check if x25 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x25, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_152, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_152_str)
+  sc.d x31, x27, (x29) # perform operation
+  beqz x31, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_152_success # SC succeeded, skip retry
+  addi x13, x13, -1 # decrement retry count
+  bnez x13, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_152_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_152_success:
+  # Check if x31 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x31, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_152, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_152_str)
+  LA(x29, scratch) # reload base address
+  LREG x18, 152(x29) # load stored value
+  # Check if x18 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x18, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_152, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_152_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 160)
-  RVTEST_TESTDATA_LOAD_INT(x9, x27) # load rs2: x27 = 0x44f1a634f5f0e33f
-  LA(x28, scratch) # rs1 = base address
-  addi x5, x28, 160 # offset rs1 by 160
-  xori x10, x27, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x10, 160(x28) # fill SC target with canary
-  lr.d x0, (x28) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs2: x5 = 0xba6b157907e28ded
+  LA(x1, scratch) # rs1 = base address
+  addi x20, x1, 160 # offset rs1 by 160
+  xori x23, x5, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x23, 160(x1) # fill SC target with canary
+  LI(x10, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_160_retry:
+  lr.d x0, (x1) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_160:
-  sc.d x30, x27, (x5) # perform operation
-  # Check if x30 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x30, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_160, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_160_str)
-  LA(x5, scratch) # reload base address
-  LREG x28, 160(x5) # load stored value
-  # Check if x28 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x28, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_160, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_160_str)
+  sc.d x12, x5, (x20) # perform operation
+  beqz x12, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_160_success # SC succeeded, skip retry
+  addi x10, x10, -1 # decrement retry count
+  bnez x10, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_160_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_160_success:
+  # Check if x12 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x12, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_160, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_160_str)
+  LA(x20, scratch) # reload base address
+  LREG x1, 160(x20) # load stored value
+  # Check if x1 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x1, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_160, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_160_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 168)
-  RVTEST_TESTDATA_LOAD_INT(x9, x29) # load rs2: x29 = 0x2588feb99c09a0f1
-  LA(x24, scratch) # rs1 = base address
-  addi x15, x24, 168 # offset rs1 by 168
-  xori x6, x29, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x6, 168(x24) # fill SC target with canary
-  lr.d x0, (x24) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x9, x25) # load rs2: x25 = 0xa6219d071f168638
+  LA(x3, scratch) # rs1 = base address
+  addi x14, x3, 168 # offset rs1 by 168
+  xori x10, x25, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x10, 168(x3) # fill SC target with canary
+  LI(x23, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_168_retry:
+  lr.d x0, (x3) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_168:
-  sc.d x12, x29, (x15) # perform operation
-  # Check if x12 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x12, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_168, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_168_str)
-  LA(x15, scratch) # reload base address
-  LREG x24, 168(x15) # load stored value
-  # Check if x24 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x24, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_168, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_168_str)
+  sc.d x20, x25, (x14) # perform operation
+  beqz x20, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_168_success # SC succeeded, skip retry
+  addi x23, x23, -1 # decrement retry count
+  bnez x23, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_168_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_168_success:
+  # Check if x20 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x20, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_168, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_168_str)
+  LA(x14, scratch) # reload base address
+  LREG x3, 168(x14) # load stored value
+  # Check if x3 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x3, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_168, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_168_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 176)
-  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs2: x6 = 0x3748f59cd184b6fc
-  LA(x25, scratch) # rs1 = base address
-  addi x29, x25, 176 # offset rs1 by 176
-  xori x5, x6, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x5, 176(x25) # fill SC target with canary
-  lr.d x0, (x25) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x9, x11) # load rs2: x11 = 0x731d8d2c90816484
+  LA(x12, scratch) # rs1 = base address
+  addi x15, x12, 176 # offset rs1 by 176
+  xori x17, x11, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x17, 176(x12) # fill SC target with canary
+  LI(x18, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_176_retry:
+  lr.d x0, (x12) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_176:
-  sc.d x26, x6, (x29) # perform operation
-  # Check if x26 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x26, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_176, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_176_str)
-  LA(x29, scratch) # reload base address
-  LREG x25, 176(x29) # load stored value
-  # Check if x25 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x25, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_176, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_176_str)
+  sc.d x28, x11, (x15) # perform operation
+  beqz x28, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_176_success # SC succeeded, skip retry
+  addi x18, x18, -1 # decrement retry count
+  bnez x18, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_176_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_176_success:
+  # Check if x28 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x28, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_176, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_176_str)
+  LA(x15, scratch) # reload base address
+  LREG x12, 176(x15) # load stored value
+  # Check if x12 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x12, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_176, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_176_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 184)
-  RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs2: x6 = 0x379255e2cba58749
-  LA(x3, scratch) # rs1 = base address
-  addi x18, x3, 184 # offset rs1 by 184
-  xori x15, x6, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x15, 184(x3) # fill SC target with canary
-  lr.d x0, (x3) # establish reservation
-Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184:
-  sc.d x1, x6, (x18) # perform operation
-  # Check if x1 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x1, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184_str)
-  LA(x18, scratch) # reload base address
-  LREG x3, 184(x18) # load stored value
-  # Check if x3 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x3, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 192)
-  RVTEST_TESTDATA_LOAD_INT(x9, x25) # load rs2: x25 = 0x4f1f67baa3c65525
-  LA(x6, scratch) # rs1 = base address
-  addi x18, x6, 192 # offset rs1 by 192
-  xori x5, x25, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x5, 192(x6) # fill SC target with canary
-  lr.d x0, (x6) # establish reservation
-Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192:
-  sc.d x17, x25, (x18) # perform operation
-  # Check if x17 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x17, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192_str)
-  LA(x18, scratch) # reload base address
-  LREG x6, 192(x18) # load stored value
-  # Check if x6 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x6, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 200)
-  RVTEST_TESTDATA_LOAD_INT(x9, x10) # load rs2: x10 = 0x0053075a25b38227
-  LA(x27, scratch) # rs1 = base address
-  addi x12, x27, 200 # offset rs1 by 200
-  xori x3, x10, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x3, 200(x27) # fill SC target with canary
-  lr.d x0, (x27) # establish reservation
-Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200:
-  sc.d x1, x10, (x12) # perform operation
-  # Check if x1 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x1, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200_str)
-  LA(x12, scratch) # reload base address
-  LREG x27, 200(x12) # load stored value
-  # Check if x27 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x27, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 208)
-  RVTEST_TESTDATA_LOAD_INT(x9, x27) # load rs2: x27 = 0x35c5c4888e9a9511
-  LA(x11, scratch) # rs1 = base address
-  addi x31, x11, 208 # offset rs1 by 208
-  xori x13, x27, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x13, 208(x11) # fill SC target with canary
-  lr.d x0, (x11) # establish reservation
-Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208:
-  sc.d x5, x27, (x31) # perform operation
-  # Check if x5 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x5, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208_str)
-  LA(x31, scratch) # reload base address
-  LREG x11, 208(x31) # load stored value
-  # Check if x11 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x11, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 216)
-  RVTEST_TESTDATA_LOAD_INT(x9, x13) # load rs2: x13 = 0xa048d40cf31d8d2c
-  LA(x27, scratch) # rs1 = base address
-  addi x29, x27, 216 # offset rs1 by 216
-  xori x16, x13, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x16, 216(x27) # fill SC target with canary
-  lr.d x0, (x27) # establish reservation
-Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216:
-  sc.d x4, x13, (x29) # perform operation
-  # Check if x4 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x4, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216_str)
-  LA(x29, scratch) # reload base address
-  LREG x27, 216(x29) # load stored value
-  # Check if x27 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x27, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216_str)
-
-# Testcase: cp_custom_sc_addresses (address difference of 224)
   RVTEST_TESTDATA_LOAD_INT(x9, x1) # load rs2: x1 = 0xef748325d2e02c9f
   LA(x28, scratch) # rs1 = base address
-  addi x2, x28, 224 # offset rs1 by 224
+  addi x2, x28, 184 # offset rs1 by 184
   xori x5, x1, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x5, 224(x28) # fill SC target with canary
+  SREG x5, 184(x28) # fill SC target with canary
+  LI(x13, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184_retry:
   lr.d x0, (x28) # establish reservation
-Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224:
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184:
   sc.d x23, x1, (x2) # perform operation
+  beqz x23, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184_success # SC succeeded, skip retry
+  addi x13, x13, -1 # decrement retry count
+  bnez x13, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184_success:
   # Check if x23 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x23, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224_str)
+  RVTEST_SIGUPD(x21, x8, x7, x23, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184_str)
   LA(x2, scratch) # reload base address
-  LREG x28, 224(x2) # load stored value
+  LREG x28, 184(x2) # load stored value
   # Check if x28 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x28, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224_str)
+  RVTEST_SIGUPD(x21, x8, x7, x28, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_184_str)
+
+# Testcase: cp_custom_sc_addresses (address difference of 192)
+  RVTEST_TESTDATA_LOAD_INT(x9, x18) # load rs2: x18 = 0xb3731e165410cfb4
+  LA(x24, scratch) # rs1 = base address
+  addi x15, x24, 192 # offset rs1 by 192
+  xori x13, x18, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x13, 192(x24) # fill SC target with canary
+  LI(x1, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192_retry:
+  lr.d x0, (x24) # establish reservation
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192:
+  sc.d x27, x18, (x15) # perform operation
+  beqz x27, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192_success # SC succeeded, skip retry
+  addi x1, x1, -1 # decrement retry count
+  bnez x1, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192_success:
+  # Check if x27 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x27, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192_str)
+  LA(x15, scratch) # reload base address
+  LREG x24, 192(x15) # load stored value
+  # Check if x24 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x24, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_192_str)
+
+# Testcase: cp_custom_sc_addresses (address difference of 200)
+  RVTEST_TESTDATA_LOAD_INT(x9, x27) # load rs2: x27 = 0x4cbfa565c1d362db
+  LA(x16, scratch) # rs1 = base address
+  addi x30, x16, 200 # offset rs1 by 200
+  xori x3, x27, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x3, 200(x16) # fill SC target with canary
+  LI(x4, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200_retry:
+  lr.d x0, (x16) # establish reservation
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200:
+  sc.d x20, x27, (x30) # perform operation
+  beqz x20, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200_success # SC succeeded, skip retry
+  addi x4, x4, -1 # decrement retry count
+  bnez x4, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200_success:
+  # Check if x20 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x20, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200_str)
+  LA(x30, scratch) # reload base address
+  LREG x16, 200(x30) # load stored value
+  # Check if x16 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x16, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_200_str)
+
+# Testcase: cp_custom_sc_addresses (address difference of 208)
+  RVTEST_TESTDATA_LOAD_INT(x9, x25) # load rs2: x25 = 0x83076f60e3a8c822
+  LA(x15, scratch) # rs1 = base address
+  addi x18, x15, 208 # offset rs1 by 208
+  xori x1, x25, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x1, 208(x15) # fill SC target with canary
+  LI(x24, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208_retry:
+  lr.d x0, (x15) # establish reservation
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208:
+  sc.d x10, x25, (x18) # perform operation
+  beqz x10, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208_success # SC succeeded, skip retry
+  addi x24, x24, -1 # decrement retry count
+  bnez x24, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208_success:
+  # Check if x10 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x10, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208_str)
+  LA(x18, scratch) # reload base address
+  LREG x15, 208(x18) # load stored value
+  # Check if x15 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x15, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_208_str)
+
+# Testcase: cp_custom_sc_addresses (address difference of 216)
+  RVTEST_TESTDATA_LOAD_INT(x9, x16) # load rs2: x16 = 0x055982c94e5753d2
+  LA(x17, scratch) # rs1 = base address
+  addi x18, x17, 216 # offset rs1 by 216
+  xori x13, x16, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x13, 216(x17) # fill SC target with canary
+  LI(x15, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216_retry:
+  lr.d x0, (x17) # establish reservation
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216:
+  sc.d x24, x16, (x18) # perform operation
+  beqz x24, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216_success # SC succeeded, skip retry
+  addi x15, x15, -1 # decrement retry count
+  bnez x15, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216_success:
+  # Check if x24 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x24, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216_str)
+  LA(x18, scratch) # reload base address
+  LREG x17, 216(x18) # load stored value
+  # Check if x17 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x17, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_216_str)
+
+# Testcase: cp_custom_sc_addresses (address difference of 224)
+  RVTEST_TESTDATA_LOAD_INT(x9, x16) # load rs2: x16 = 0xa0090faee1c6bdf5
+  LA(x12, scratch) # rs1 = base address
+  addi x29, x12, 224 # offset rs1 by 224
+  xori x26, x16, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x26, 224(x12) # fill SC target with canary
+  LI(x23, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224_retry:
+  lr.d x0, (x12) # establish reservation
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224:
+  sc.d x14, x16, (x29) # perform operation
+  beqz x14, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224_success # SC succeeded, skip retry
+  addi x23, x23, -1 # decrement retry count
+  bnez x23, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224_success:
+  # Check if x14 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x14, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224_str)
+  LA(x29, scratch) # reload base address
+  LREG x12, 224(x29) # load stored value
+  # Check if x12 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x12, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_224_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 232)
-  RVTEST_TESTDATA_LOAD_INT(x9, x16) # load rs2: x16 = 0x1f6375296bd0e072
-  LA(x25, scratch) # rs1 = base address
-  addi x28, x25, 232 # offset rs1 by 232
-  xori x23, x16, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x23, 232(x25) # fill SC target with canary
-  lr.d x0, (x25) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs2: x5 = 0x0f531d14d21ab970
+  LA(x1, scratch) # rs1 = base address
+  addi x18, x1, 232 # offset rs1 by 232
+  xori x25, x5, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x25, 232(x1) # fill SC target with canary
+  LI(x24, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_232_retry:
+  lr.d x0, (x1) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_232:
-  sc.d x10, x16, (x28) # perform operation
-  # Check if x10 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x10, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_232, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_232_str)
-  LA(x28, scratch) # reload base address
-  LREG x25, 232(x28) # load stored value
-  # Check if x25 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x25, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_232, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_232_str)
+  sc.d x12, x5, (x18) # perform operation
+  beqz x12, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_232_success # SC succeeded, skip retry
+  addi x24, x24, -1 # decrement retry count
+  bnez x24, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_232_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_232_success:
+  # Check if x12 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x12, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_232, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_232_str)
+  LA(x18, scratch) # reload base address
+  LREG x1, 232(x18) # load stored value
+  # Check if x1 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x1, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_232, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_232_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 240)
-  RVTEST_TESTDATA_LOAD_INT(x9, x30) # load rs2: x30 = 0x871781897405b60b
-  LA(x14, scratch) # rs1 = base address
-  addi x17, x14, 240 # offset rs1 by 240
-  xori x19, x30, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x19, 240(x14) # fill SC target with canary
-  lr.d x0, (x14) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x9, x19) # load rs2: x19 = 0xbdadd53b0daa951e
+  LA(x22, scratch) # rs1 = base address
+  addi x14, x22, 240 # offset rs1 by 240
+  xori x26, x19, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x26, 240(x22) # fill SC target with canary
+  LI(x17, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_240_retry:
+  lr.d x0, (x22) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_240:
-  sc.d x25, x30, (x17) # perform operation
-  # Check if x25 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x25, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_240, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_240_str)
-  LA(x17, scratch) # reload base address
-  LREG x14, 240(x17) # load stored value
-  # Check if x14 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x14, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_240, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_240_str)
+  sc.d x2, x19, (x14) # perform operation
+  beqz x2, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_240_success # SC succeeded, skip retry
+  addi x17, x17, -1 # decrement retry count
+  bnez x17, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_240_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_240_success:
+  # Check if x2 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x2, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_240, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_240_str)
+  LA(x14, scratch) # reload base address
+  LREG x22, 240(x14) # load stored value
+  # Check if x22 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x22, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_240, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_240_str)
 
 # Testcase: cp_custom_sc_addresses (address difference of 248)
-  RVTEST_TESTDATA_LOAD_INT(x9, x16) # load rs2: x16 = 0x63a8c822e55cc643
-  LA(x22, scratch) # rs1 = base address
-  addi x3, x22, 248 # offset rs1 by 248
-  xori x14, x16, -1 # canary = ~rs2, so the SC changes every bit it writes
-  SREG x14, 248(x22) # fill SC target with canary
-  lr.d x0, (x22) # establish reservation
+  RVTEST_TESTDATA_LOAD_INT(x9, x27) # load rs2: x27 = 0xc23ae39af7357258
+  LA(x11, scratch) # rs1 = base address
+  addi x10, x11, 248 # offset rs1 by 248
+  xori x12, x27, -1 # canary = ~rs2, so the SC changes every bit it writes
+  SREG x12, 248(x11) # fill SC target with canary
+  LI(x28, 100) # retry counter for constrained LR/SC loop
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_248_retry:
+  lr.d x0, (x11) # establish reservation
 Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_248:
-  sc.d x23, x16, (x3) # perform operation
-  # Check if x23 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x23, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_248, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_248_str)
-  LA(x3, scratch) # reload base address
-  LREG x22, 248(x3) # load stored value
-  # Check if x22 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
-  RVTEST_SIGUPD(x21, x8, x7, x22, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_248, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_248_str)
+  sc.d x14, x27, (x10) # perform operation
+  beqz x14, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_248_success # SC succeeded, skip retry
+  addi x28, x28, -1 # decrement retry count
+  bnez x28, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_248_retry # retry LR/SC if not exhausted
+Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_248_success:
+  # Check if x14 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x14, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_248, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_248_str)
+  LA(x10, scratch) # reload base address
+  LREG x11, 248(x10) # load stored value
+  # Check if x11 contains the expected result. x21 is the signature ptr, x8 is the link ptr, x7 is a temp reg.
+  RVTEST_SIGUPD(x21, x8, x7, x11, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_248, Zalrsc_sc_d_cg_cp_custom_sc_addresses_prev_lr_lr_d_address_difference_248_str)
 
 
   mv x2, x21 # restore signature pointer to default register for teardown
@@ -6191,36 +6377,36 @@ RVTEST_DATA_BEGIN
 .dword 0x851f9364891b6c85
 .dword 0x916fa9d47b8ae4bf
 .dword 0x8824bbc6c274d9fe
-.dword 0x3f9d109fe65b6a65
-.dword 0xd2f1babe59e0ecab
-.dword 0xe5f6d9905b33db74
-.dword 0xe14d20f423a4ed7d
-.dword 0x0243b8821d4856f9
+.dword 0x3a08bef214bce20b
+.dword 0x68c3c1efac622aed
+.dword 0x47e6f37014cab53b
+.dword 0xe93d7f282185be91
 .dword 0xef67328a057d2032
-.dword 0xd82110cdf0357bf0
-.dword 0xc923759b2c7b1816
-.dword 0x2b4965ea4c076aaa
+.dword 0xc4c4f2cb782a9771
+.dword 0xdc51443a27a07e3e
 .dword 0x5fd7c72e833e0ab6
-.dword 0x476708317273c9e1
-.dword 0x414e7c4ae8d8351f
+.dword 0x253f7fe09e260fb2
 .dword 0x26cfc7d0c39ec0ac
-.dword 0xd86fb449e9e32ec8
+.dword 0x1d7bb5417657ca15
 .dword 0x5090968383d5905c
-.dword 0xe65324d168231097
-.dword 0x586ebb97e51f08ec
-.dword 0xe39c24bc4f3e12c6
-.dword 0x44f1a634f5f0e33f
-.dword 0x2588feb99c09a0f1
-.dword 0x3748f59cd184b6fc
-.dword 0x379255e2cba58749
-.dword 0x4f1f67baa3c65525
-.dword 0x0053075a25b38227
-.dword 0x35c5c4888e9a9511
-.dword 0xa048d40cf31d8d2c
+.dword 0x621a8705bcb7377b
+.dword 0xaa9e70a55ecd7ad4
+.dword 0x931c269c70964c90
+.dword 0x3b3aa6945da8753a
+.dword 0xc88f407cbc96d32b
+.dword 0xa8eed2bdca2160dc
+.dword 0xba6b157907e28ded
+.dword 0xa6219d071f168638
+.dword 0x731d8d2c90816484
 .dword 0xef748325d2e02c9f
-.dword 0x1f6375296bd0e072
-.dword 0x871781897405b60b
-.dword 0x63a8c822e55cc643
+.dword 0xb3731e165410cfb4
+.dword 0x4cbfa565c1d362db
+.dword 0x83076f60e3a8c822
+.dword 0x055982c94e5753d2
+.dword 0xa0090faee1c6bdf5
+.dword 0x0f531d14d21ab970
+.dword 0xbdadd53b0daa951e
+.dword 0xc23ae39af7357258
 
 // Testcase strings
 Zalrsc_sc_d_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: Zalrsc_sc.d_cg; cp: cp_rs1_nx0; bin: b1\""

@@ -10,6 +10,6 @@
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }

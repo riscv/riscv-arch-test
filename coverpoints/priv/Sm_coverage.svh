@@ -74,9 +74,9 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
             bins b_22_virtual_instruction = {22};
             bins b_23_store_guest_page_fault = {23};
         `endif
-        //bins b_31_24_custom = {[31:24]};
-        //bins b_47_32_reserved = {[47:32]};
-        //bins b_63_48_custom = {[63:48]};
+        //bins b_31_24_custom = {[24:31]};
+        //bins b_47_32_reserved = {[32:47]};
+        //bins b_63_48_custom = {[48:63]};
     }
     mcause_interrupt_values: coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
         // exclude reserved and custom fields

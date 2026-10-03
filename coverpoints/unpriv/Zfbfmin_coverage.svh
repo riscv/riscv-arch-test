@@ -136,8 +136,8 @@ covergroup Zfbfmin_fcvt_s_bf16_cg with function sample(ins_t ins);
         bins negmaxnorm       = {32'hc0de_FBFF};
         bins posinfinity      = {32'h4f1a_7C00};
         bins neginfinity      = {32'h0fff_FC00};
-        bins posQNaN          = {[32'hffef_7E00:32'hfeef_7FFF]};
-        bins posSNaN          = {[32'ha1b2_7C01:32'h4fd7_7DFF]};
+        bins posQNaN          = {32'hffef_7E00, 32'hfeef_7FFF};
+        bins posSNaN          = {32'ha1b2_7C01, 32'h4fd7_7DFF};
     }
 
     cp_fs1_edges_BF16 : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
@@ -299,8 +299,8 @@ covergroup Zfbfmin_fmv_x_h_cg with function sample(ins_t ins);
         bins negmaxnorm       = {32'hc0de_FBFF};
         bins posinfinity      = {32'h4f1a_7C00};
         bins neginfinity      = {32'h0fff_FC00};
-        bins posQNaN          = {[32'hffef_7E00:32'hfeef_7FFF]};
-        bins posSNaN          = {[32'ha1b2_7C01:32'h4fd7_7DFF]};
+        bins posQNaN          = {32'hffef_7E00, 32'hfeef_7FFF};
+        bins posSNaN          = {32'ha1b2_7C01, 32'h4fd7_7DFF};
     }
 
     cp_fs1_edges_H : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
@@ -362,8 +362,8 @@ covergroup Zfbfmin_fsh_cg with function sample(ins_t ins);
         bins negmaxnorm       = {32'hc0de_FBFF};
         bins posinfinity      = {32'h4f1a_7C00};
         bins neginfinity      = {32'h0fff_FC00};
-        bins posQNaN          = {[32'hffef_7E00:32'hfeef_7FFF]};
-        bins posSNaN          = {[32'ha1b2_7C01:32'h4fd7_7DFF]};
+        bins posQNaN          = {32'hffef_7E00, 32'hfeef_7FFF};
+        bins posSNaN          = {32'ha1b2_7C01, 32'h4fd7_7DFF};
     }
 
     cp_fs2_edges_H : coverpoint unsigned'(ins.current.fs2_val[15:0])  iff (ins.trap == 0 )  {
@@ -447,5 +447,6 @@ function void zfbfmin_sample(int hart, int issue, ins_t ins);
         "fsh"     : begin
             Zfbfmin_fsh_cg.sample(ins);
         end
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

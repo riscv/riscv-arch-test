@@ -52,8 +52,8 @@ covergroup ZfhminD_fcvt_d_h_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'hc0dec0dec0de_FBFF};
         bins posinfinity      = {64'ha83ef1cc4f1a_7C00};
         bins neginfinity      = {64'hffffffff0fff_FC00};
-        bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
-        bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
+        bins posQNaN          = {64'hfffeffffffff_7E00, 64'hffffffefffff_7FFF};
+        bins posSNaN          = {64'ha1b2c3d4e5f6_7C01, 64'hfffffffcffff_7DFF};
     }
 
     cp_fs1_edges_H : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
@@ -199,8 +199,8 @@ covergroup ZfhminD_fcvt_s_h_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'hc0dec0dec0de_FBFF};
         bins posinfinity      = {64'ha83ef1cc4f1a_7C00};
         bins neginfinity      = {64'hffffffff0fff_FC00};
-        bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
-        bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
+        bins posQNaN          = {64'hfffeffffffff_7E00, 64'hffffffefffff_7FFF};
+        bins posSNaN          = {64'ha1b2c3d4e5f6_7C01, 64'hfffffffcffff_7DFF};
     }
 
 endgroup
@@ -237,8 +237,8 @@ covergroup ZfhminD_fmv_x_h_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'hc0dec0dec0de_FBFF};
         bins posinfinity      = {64'ha83ef1cc4f1a_7C00};
         bins neginfinity      = {64'hffffffff0fff_FC00};
-        bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
-        bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
+        bins posQNaN          = {64'hfffeffffffff_7E00, 64'hffffffefffff_7FFF};
+        bins posSNaN          = {64'ha1b2c3d4e5f6_7C01, 64'hfffffffcffff_7DFF};
     }
 
 endgroup
@@ -257,8 +257,8 @@ covergroup ZfhminD_fsh_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'hc0dec0dec0de_FBFF};
         bins posinfinity      = {64'ha83ef1cc4f1a_7C00};
         bins neginfinity      = {64'hffffffff0fff_FC00};
-        bins posQNaN          = {[64'hfffeffffffff_7E00:64'hffffffefffff_7FFF]};
-        bins posSNaN          = {[64'ha1b2c3d4e5f6_7C01:64'hfffffffcffff_7DFF]};
+        bins posQNaN          = {64'hfffeffffffff_7E00, 64'hffffffefffff_7FFF};
+        bins posSNaN          = {64'ha1b2c3d4e5f6_7C01, 64'hfffffffcffff_7DFF};
     }
 
 endgroup
@@ -290,5 +290,6 @@ function void zfhmind_sample(int hart, int issue, ins_t ins);
         "fsh"     : begin
             ZfhminD_fsh_cg.sample(ins);
         end
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

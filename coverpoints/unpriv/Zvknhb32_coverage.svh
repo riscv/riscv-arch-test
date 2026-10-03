@@ -1073,6 +1073,7 @@ function void zvknhb32_sample(int hart, int issue, ins_t ins);
         "vsha2ms.vv"     : begin
             Zvknhb32_vsha2ms_vv_cg.sample(ins);
         end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

@@ -8502,7 +8502,7 @@ covergroup Vf32_vfncvt_f_f_w_cg with function sample(ins_t ins);
     }
 
     // Overflow flag set after execution (fflags bit 2 = OF)
-    fflags_of: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0][2] {
+    fflags_of: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[2] {
         bins overflow = {1'b1};
     }
 
@@ -9461,7 +9461,7 @@ covergroup Vf32_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
     }
 
     // Overflow flag set after execution (fflags bit 2 = OF)
-    fflags_of: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0][2] {
+    fflags_of: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[2] {
         bins overflow = {1'b1};
     }
 
@@ -31687,6 +31687,7 @@ function void vf32_sample(int hart, int issue, ins_t ins);
             "vmfne.vv"     : begin
                 Vf32_vmfne_vv_cg.sample(ins);
             end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

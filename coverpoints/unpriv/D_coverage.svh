@@ -150,8 +150,8 @@ covergroup D_fadd_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
@@ -166,8 +166,8 @@ covergroup D_fadd_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -247,8 +247,8 @@ covergroup D_fclass_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -293,8 +293,8 @@ covergroup D_fcvt_d_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs1_edges : coverpoint unsigned'(ins.current.fs1_val[31:0])  iff (ins.trap == 0 )  {
@@ -630,8 +630,8 @@ covergroup D_fcvt_w_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -725,8 +725,8 @@ covergroup D_fcvt_wu_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -879,8 +879,8 @@ covergroup D_fdiv_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
@@ -895,8 +895,8 @@ covergroup D_fdiv_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -1009,8 +1009,8 @@ covergroup D_feq_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
@@ -1025,8 +1025,8 @@ covergroup D_feq_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -1210,8 +1210,8 @@ covergroup D_fle_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
@@ -1226,8 +1226,8 @@ covergroup D_fle_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -1340,8 +1340,8 @@ covergroup D_flt_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
@@ -1356,8 +1356,8 @@ covergroup D_flt_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -1553,8 +1553,8 @@ covergroup D_fmadd_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
@@ -1569,8 +1569,8 @@ covergroup D_fmadd_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs3_badNB_D_S : coverpoint unsigned'(ins.current.fs3_val[63:0])  iff (ins.trap == 0 )  {
@@ -1585,8 +1585,8 @@ covergroup D_fmadd_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -1712,8 +1712,8 @@ covergroup D_fmax_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
@@ -1728,8 +1728,8 @@ covergroup D_fmax_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -1855,8 +1855,8 @@ covergroup D_fmin_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
@@ -1871,8 +1871,8 @@ covergroup D_fmin_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -2059,8 +2059,8 @@ covergroup D_fmsub_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
@@ -2075,8 +2075,8 @@ covergroup D_fmsub_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs3_badNB_D_S : coverpoint unsigned'(ins.current.fs3_val[63:0])  iff (ins.trap == 0 )  {
@@ -2091,8 +2091,8 @@ covergroup D_fmsub_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -2237,8 +2237,8 @@ covergroup D_fmul_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
@@ -2253,8 +2253,8 @@ covergroup D_fmul_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -2282,8 +2282,8 @@ covergroup D_fmv_x_w_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -2470,8 +2470,8 @@ covergroup D_fnmadd_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
@@ -2486,8 +2486,8 @@ covergroup D_fnmadd_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs3_badNB_D_S : coverpoint unsigned'(ins.current.fs3_val[63:0])  iff (ins.trap == 0 )  {
@@ -2502,8 +2502,8 @@ covergroup D_fnmadd_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -2690,8 +2690,8 @@ covergroup D_fnmsub_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
@@ -2706,8 +2706,8 @@ covergroup D_fnmsub_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs3_badNB_D_S : coverpoint unsigned'(ins.current.fs3_val[63:0])  iff (ins.trap == 0 )  {
@@ -2722,8 +2722,8 @@ covergroup D_fnmsub_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -2911,8 +2911,8 @@ covergroup D_fsgnj_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
@@ -2927,8 +2927,8 @@ covergroup D_fsgnj_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -3045,8 +3045,8 @@ covergroup D_fsgnjn_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
@@ -3061,8 +3061,8 @@ covergroup D_fsgnjn_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -3179,8 +3179,8 @@ covergroup D_fsgnjx_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
@@ -3195,8 +3195,8 @@ covergroup D_fsgnjx_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -3295,8 +3295,8 @@ covergroup D_fsqrt_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -3439,8 +3439,8 @@ covergroup D_fsub_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
     cp_fs2_badNB_D_S : coverpoint unsigned'(ins.current.fs2_val[63:0])  iff (ins.trap == 0 )  {
@@ -3455,8 +3455,8 @@ covergroup D_fsub_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -3475,8 +3475,8 @@ covergroup D_fsw_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -3723,8 +3723,8 @@ covergroup D_fcvt_l_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -3818,8 +3818,8 @@ covergroup D_fcvt_lu_s_cg with function sample(ins_t ins);
         bins negmaxnorm       = {64'h7e7e7e7e_ff7fffff};
         bins posinfinity      = {64'h7fffffff_7f800000};
         bins neginfinity      = {64'hfffffffe_ff800000};
-        bins posQNaN          = {[64'hfeedbee5_7fc00000:64'hffc0deff_7fffffff]};
-        bins posSNaN          = {[64'hfeffffff_7f800001:64'hfffffeff_7fbfffff]};
+        bins posQNaN          = {64'hfeedbee5_7fc00000, 64'hffc0deff_7fffffff};
+        bins posSNaN          = {64'hfeffffff_7f800001, 64'hfffffeff_7fbfffff};
     }
 
 endgroup
@@ -4136,5 +4136,6 @@ function void d_sample(int hart, int issue, ins_t ins);
             D_fmv_x_d_cg.sample(ins);
         end
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

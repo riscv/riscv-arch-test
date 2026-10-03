@@ -3653,6 +3653,7 @@ function void zvkned_sample(int hart, int issue, ins_t ins);
         "vaesz.vs"     : begin
             Zvkned_vaesz_vs_cg.sample(ins);
         end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

@@ -831,6 +831,7 @@ function void zvksed_sample(int hart, int issue, ins_t ins);
         "vsm4r.vv"     : begin
             Zvksed_vsm4r_vv_cg.sample(ins);
         end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

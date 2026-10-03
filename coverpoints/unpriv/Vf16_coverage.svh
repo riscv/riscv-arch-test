@@ -8145,7 +8145,7 @@ covergroup Vf16_vfmv_f_s_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -8316,7 +8316,7 @@ covergroup Vf16_vfmv_s_f_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -8442,7 +8442,7 @@ covergroup Vf16_vfmv_v_f_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
     }
 
@@ -8572,27 +8572,21 @@ covergroup Vf16_vfncvt_f_x_w_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
+    `ifdef D_SUPPORTED
+        `ifdef COVER_VFCUSTOM32
+            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
+            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
-            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -8864,27 +8858,21 @@ covergroup Vf16_vfncvt_f_xu_w_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
+    `ifdef D_SUPPORTED
+        `ifdef COVER_VFCUSTOM32
+            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
+            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
-            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -9201,7 +9189,7 @@ covergroup Vf16_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
     }
 
     // Overflow flag set after execution (fflags bit 2 = OF)
-    fflags_of: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0][2] {
+    fflags_of: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[2] {
         bins overflow = {1'b1};
     }
 
@@ -9215,27 +9203,21 @@ covergroup Vf16_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
+    `ifdef D_SUPPORTED
+        `ifdef COVER_VFCUSTOM32
+            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
+            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
-            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -9533,27 +9515,21 @@ covergroup Vf16_vfncvt_rtz_x_f_w_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
+    `ifdef D_SUPPORTED
+        `ifdef COVER_VFCUSTOM32
+            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
+            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
-            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -9851,27 +9827,21 @@ covergroup Vf16_vfncvt_rtz_xu_f_w_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
+    `ifdef D_SUPPORTED
+        `ifdef COVER_VFCUSTOM32
+            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
+            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
-            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -10178,27 +10148,21 @@ covergroup Vf16_vfncvt_x_f_w_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
+    `ifdef D_SUPPORTED
+        `ifdef COVER_VFCUSTOM32
+            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
+            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
-            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -10505,27 +10469,21 @@ covergroup Vf16_vfncvt_xu_f_w_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
+    `ifdef D_SUPPORTED
+        `ifdef COVER_VFCUSTOM32
+            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
+            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
-            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -20124,27 +20082,21 @@ covergroup Vf16_vfwadd_wf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
+    `ifdef D_SUPPORTED
+        `ifdef COVER_VFCUSTOM32
+            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
+            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
-            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -20483,27 +20435,21 @@ covergroup Vf16_vfwadd_wv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
+    `ifdef D_SUPPORTED
+        `ifdef COVER_VFCUSTOM32
+            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
+            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
-            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -27900,27 +27846,21 @@ covergroup Vf16_vfwsub_wf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
+    `ifdef D_SUPPORTED
+        `ifdef COVER_VFCUSTOM32
+            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
+            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
-            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -28259,27 +28199,21 @@ covergroup Vf16_vfwsub_wv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
+    `ifdef D_SUPPORTED
+        `ifdef COVER_VFCUSTOM32
+            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
+            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
 `else
-    `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
-            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////

@@ -53,6 +53,7 @@ def write_test_file(
     file_idx: int = 0,
     extra_defines: list[str] | None = None,
     split_name: str | None = None,
+    vdsew: int = 0,
 ) -> Path:
     """
     Write a single test file and return its path.
@@ -65,6 +66,7 @@ def write_test_file(
         file_idx: File index for the filename suffix (default 00)
         extra_defines: Additional #define statements for the test (e.g., trap handlers)
         split_name: Named-split label for priv tests (mutually exclusive with instr_name)
+        vdsew: EEW of the destination vector register (if applicable, used in calculation of SIG_STRIDE)
     """
     if instr_name is not None and split_name is not None:
         raise ValueError("instr_name and split_name are mutually exclusive (unpriv tests should not use split_name).")
@@ -119,8 +121,11 @@ def write_test_file(
         body += "\n".join(indent_asm(line) for line in "\n".join(tc.code).split("\n"))
 
     # Test footer
-    test_data_section = generate_test_data_section(data_values, test_config.xlen, test_config.flen)
-    test_data_section += generate_vector_data_section(vector_data_labels)
+    test_data_section = generate_test_data_section(data_values, test_config.xlen, test_config.flen, vdsew)
+    vector_data_section = generate_vector_data_section(vector_data_labels)
+    if test_data_section != "" and vector_data_section != "":
+        test_data_section += "\n"
+    test_data_section += vector_data_section
     if raw_data:
         raw_data_lines = "\n".join(raw_data).splitlines()
         test_data_section += "\n" + "\n".join(indent_asm(line) for line in raw_data_lines)

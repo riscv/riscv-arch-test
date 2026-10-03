@@ -70,10 +70,6 @@ normative_rule_definitions:
   - name: sc_intervening_sc_fail
     coverpoint: ["Zalrsc_sc_w_cg/cp_custom_sc_after_sc"]
 
-  # An unsuccessful SC instruction does not give rise to any memory operations.
-  - name: rvwmo_sc_fail_no_memop
-    coverpoint: ["{Zalrsc_sc_w_cg, Zalrsc_sc_d_cg}/cp_custom_sc_after_sc"]
-
   - name: lr_sc_atomicity_axiom
     coverpoint: ["OUT-OF-SCOPE for single hart"]
 

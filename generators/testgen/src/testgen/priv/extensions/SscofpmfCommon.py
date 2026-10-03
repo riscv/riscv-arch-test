@@ -22,6 +22,19 @@ _FIXED_TSBI_ALIASES = {
     "scountovf": "0xda0",
 }
 
+# The S/U suites reach the counter through T-SBI calls encoded at generation time, and
+# the RV32 high halves are named directly, so counter 3 is the only supported choice.
+MACRO_CHECKS = [
+    "#if !defined(RVMODEL_MHPMEVENT) || !defined(RVMODEL_MHPMCOUNTER) || \\",
+    "    !defined(RVMODEL_MHPMEVENT_VAL) || !defined(RVMODEL_MHPMEVENT_CODE)",
+    '  #error "Sscofpmf tests need RVMODEL_MHPMEVENT, RVMODEL_MHPMCOUNTER, RVMODEL_MHPMEVENT_VAL and RVMODEL_MHPMEVENT_CODE in rvmodel_macros.h"',
+    "#endif",
+    "#if (RVMODEL_MHPMEVENT != CSR_MHPMEVENT3) || (RVMODEL_MHPMCOUNTER != CSR_MHPMCOUNTER3)",
+    '  #error "Sscofpmf tests only support counter 3: define RVMODEL_MHPMEVENT as CSR_MHPMEVENT3 and RVMODEL_MHPMCOUNTER as CSR_MHPMCOUNTER3"',
+    "#endif",
+    "",
+]
+
 _MHPMEVENT_RE = re.compile(r"\bCSR_MHPMEVENT(\d+)(H)?\b")
 _MHPMCOUNTER_RE = re.compile(r"\bCSR_MHPMCOUNTER(\d+)(H)?\b")
 
@@ -83,19 +96,7 @@ _HIGHER_MODE_INHIBITS = {"Sm": 0, "S": 1 << 62, "U": (1 << 62) | (1 << 61)}
 _HIGHER_MODE_INHIBITS_32 = {mode: bits >> 32 for mode, bits in _HIGHER_MODE_INHIBITS.items()}
 
 # On RV32, mhpmevent3h[23:0] holds RVMODEL_MHPMEVENT_VAL[55:32].
-_EVENT_VAL_HI = "((RVMODEL_MHPMEVENT_VAL >> 32) & 0xFFFFFF)"
-
-
-def nonzero_not_all_ones(reg: int, scratch: int) -> list[str]:
-    """Reduce x{reg} in place to a 0/1 "nonzero and not all-1s" boolean; raw hpmcounter
-    values aren't reproducible across the signature/self-check build split."""
-    return [
-        f"snez x{scratch}, x{reg}          # x{scratch} = (val != 0)",
-        f"addi x{reg}, x{reg}, 1            # x{reg} = val + 1 (wraps to 0 iff val was all-1s)",
-        f"seqz x{reg}, x{reg}               # x{reg} = (val was all-1s)",
-        f"xori x{reg}, x{reg}, 1            # x{reg} = NOT(val was all-1s)",
-        f"and x{reg}, x{reg}, x{scratch}    # x{reg} = nonzero AND not all-1s",
-    ]
+_EVENT_VAL_HI = "(((RVMODEL_MHPMEVENT_VAL) >> 32) & 0xFFFFFF)"
 
 
 def counted_since_all_ones(reg: int) -> list[str]:
@@ -184,6 +185,22 @@ def _generate_xinh_inhibits_tests(test_data: TestData, priv_mode: str) -> list[s
     )
 
     r_hval = test_data.int_regs.get_register(exclude_regs=[0, 31])
+
+    def combo_counts() -> list[str]:
+        """In M-mode, also run the workload so every combination checks that only MINH
+        decides whether M-mode events count. Below M the counter is reached through a
+        T-SBI round trip that the combinations with MINH=0 would count, so the S and U
+        suites check counting only in the single-bit toggles above."""
+        if priv_mode != "Sm":
+            return []
+        return [
+            f"{indent}LA(x{r_temp}, scratch)",
+            f"{indent}RVMODEL_MHPMEVENT_CODE(x{r_temp}, x{r_hval})",
+            f"{indent}csrr x{r_temp}, RVMODEL_MHPMCOUNTER",
+            f"{indent}snez x{r_temp}, x{r_temp}   # counted iff MINH = 0",
+            f"{indent}{write_sigupd(r_temp, test_data)}",
+        ]
+
     lines.append(f"{indent}#if __riscv_xlen == 32")
     for combo in range(32):
         binname = f"xinh_combo_{combo:05b}_{priv_mode.lower()}_rv32"
@@ -204,6 +221,7 @@ def _generate_xinh_inhibits_tests(test_data: TestData, priv_mode: str) -> list[s
                 f"{indent}and x{r_temp}, x{r_temp}, x{r_hval}",
                 "#endif",
                 f"{indent}{write_sigupd(r_temp, test_data)}",
+                *combo_counts(),
                 "",
             ]
         )
@@ -224,6 +242,7 @@ def _generate_xinh_inhibits_tests(test_data: TestData, priv_mode: str) -> list[s
                 f"{indent}and x{r_temp}, x{r_temp}, x{r_val}",
                 "#endif",
                 f"{indent}{write_sigupd(r_temp, test_data)}",
+                *combo_counts(),
                 "",
             ]
         )
@@ -385,8 +404,8 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
                     test_data.add_testcase(binname, coverpoint, covergroup),
                     *read_event_config_bits(),
                     write_sigupd(r_temp, test_data),
-                    f"csrr x{r_temp}, RVMODEL_MHPMCOUNTER   # sample point for hpmcounter_nonzero/non-all-1s",
-                    *nonzero_not_all_ones(r_temp, r_bool),
+                    f"csrr x{r_temp}, RVMODEL_MHPMCOUNTER   # sample point: did the counter move off all 1s?",
+                    *counted_since_all_ones(r_temp),
                     write_sigupd(r_temp, test_data),
                     "",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})   # wait for RVMODEL_INTERRUPT_LATENCY",
@@ -396,7 +415,7 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
             )
 
         else:
-            mhpmcounter_read = f"csrr x{r_temp}, RVMODEL_MHPMCOUNTER   # sample point for hpmcounter_nonzero/non-all-1s"
+            mhpmcounter_read = f"csrr x{r_temp}, RVMODEL_MHPMCOUNTER   # sample point: did the counter move off all 1s?"
 
             lines.extend(
                 [
@@ -412,7 +431,7 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
                     *read_event_config_bits(),
                     write_sigupd(r_temp, test_data),
                     _csr_access(mhpmcounter_read, priv_mode),
-                    *nonzero_not_all_ones(r_temp, r_bool),
+                    *counted_since_all_ones(r_temp),
                     write_sigupd(r_temp, test_data),
                     "",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})   # wait for RVMODEL_INTERRUPT_LATENCY",
@@ -514,6 +533,11 @@ def _generate_overflow_hw_only_tests(test_data: TestData, priv_mode: str) -> lis
         "",
         _csr_access("csrw mie, zero   # disable interrupts", priv_mode),
         _csr_access("csrw RVMODEL_MHPMEVENT, zero", priv_mode),
+        "#if __riscv_xlen == 32",
+        _csr_access("csrw CSR_MHPMEVENT3H, zero   # clear OF and xINH left by earlier tests", priv_mode),
+        "#endif",
+        # A real overflow in the previous tests leaves LCOFIP pending on a counting hart.
+        *clear_lcofip(r_val, priv_mode),
         "",
     ]
 
@@ -598,6 +622,9 @@ def _generate_lcofip_hw_only_tests(test_data: TestData, priv_mode: str) -> list[
         ),
         "",
         _csr_access("csrw mie, zero   # disable interrupts", priv_mode),
+        # A real overflow earlier leaves LCOFIP pending on a counting hart; clear it so
+        # the readbacks below show whether the software OF write raised it.
+        *clear_lcofip(r_temp, priv_mode),
         "",
         "# Testcase: software-set OF bit directly (no HW increment)",
         *set_of("csrs", "software-set OF bit"),
@@ -849,6 +876,7 @@ def generate_sscofpmf_suite(test_data: TestData, mode: str) -> list[TestChunk]:
     """Assemble the full Sscofpmf suite for ``mode`` ("Sm"/"S"/"U") as a test chunk."""
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
+    tc.code.extend(MACRO_CHECKS)  # this chunk may land in its own file
     tc.code.extend(_generate_xinh_inhibits_tests(test_data, mode))
     tc.code.extend(_generate_of_set_on_overflow_tests(test_data, mode))
     tc.code.extend(_generate_overflow_hw_only_tests(test_data, mode))

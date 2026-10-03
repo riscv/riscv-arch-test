@@ -281,8 +281,9 @@
         // Sv39 gigapage, Sv48 terapage and Sv57 petapage.
         // This allows the S-mode trap handler and save area to be accessed
         // without requiring prior page table entries setup.
-        // The map is written in M-mode before the boot mode switch, so sfence.vma can
+        // The map is written in M-mode before the boot mode switch, so sfence.vma can legally
         // order the stores before the implicit page-table reads of later translations.
+        // The fence is needed even on harts without PMP, where boot does no other sfence.vma.
         LA(T1, rvtest_Sroot_pg_tbl)
         LA(T2, rvtest_data_begin)
         #if __riscv_xlen == 32
@@ -306,9 +307,7 @@
             sd   T4, 0(T3)
           .endr
         #endif
-        #if defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)
-          sfence.vma
-        #endif
+        RVTEST_SFENCE_VMA_IF_SUPPORTED
     #endif
 
     // Boot to the lowest supported privilege mode unless a test requests M-mode or S-mode.

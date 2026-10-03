@@ -137,6 +137,27 @@ def _make_reserved(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                 "",
             ]
         )
+    for level in range(sv.levels - 1, 0, -1):
+        number += 1
+        chunk.code.extend(
+            [
+                f"// PTE.N with the 64 KiB encoding ppn[3:0]=1000 on a level {level} superpage, which is reserved",
+                *create_page_mapping(sv, leaf_level=level, leaf_flags=_permissions(umode)),
+                "sfence.vma",
+                "",
+                *add_rwx_test(
+                    test_data,
+                    sv,
+                    regs,
+                    mode,
+                    "va_data",
+                    level,
+                    f"test{number}",
+                    driver_mode="Smode",
+                ),
+                "",
+            ]
+        )
     chunk.code.append("#endif")
     return _finish_test(test_data, sv, regs, NAPOT_RESERVED_DATA)
 

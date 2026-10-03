@@ -8,7 +8,7 @@ normative_rule_definitions:
   # Furthermore, if the Zkt extension is implemented, this instruction's timing is independent of the
   # data values in rs1 and rs2.
   - name: czero-eqz_inst_ctime
-    coverpoint: ["Untestable: microarchitectural timing"]
+    coverpoint: ["Not tested: microarchitectural timing"]
   - name: czero-nez_op
     # If rs2 contains a nonzero value, this instruction writes the value zero to rd.  Otherwise, this instruction copies the contents of rs1 to rd.
     coverpoint:
@@ -16,4 +16,4 @@ normative_rule_definitions:
   # Furthermore, if the Zkt extension is implemented, this instruction's timing is independent of the
   # data values in rs1 and rs2.
   - name: czero-nez_Zkt_timing
-    coverpoint: ["Untestable: microarchitectural timing"]
+    coverpoint: ["Not tested: microarchitectural timing"]

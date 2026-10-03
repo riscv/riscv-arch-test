@@ -44,7 +44,7 @@ def begin_bare_test(test_data: TestData, regs: SvRegs, split_name: str) -> TestC
         ]
     )
     chunk.raw_data.extend(data_region(regs))
-    chunk.trap_sigupd_count = 10
+    chunk.trap_sigupd_count = 3
     return chunk
 
 

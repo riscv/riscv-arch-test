@@ -327,7 +327,7 @@ def _make_prefetch(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
             ]
         )
     chunk.raw_data.extend(sv_data(sv, regs))
-    chunk.trap_sigupd_count = 10
+    chunk.trap_sigupd_count = 3
     return end_sv_test(test_data, regs)
 
 

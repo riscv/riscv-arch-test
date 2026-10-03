@@ -1,5 +1,7 @@
 # Normative rule to coverpoint mappings
 # Generated from riscv-isa-manual normative rule definitions
+#
+# The empty hstateen* rules and sstateen_vsmode_access_roz need hypervisor tests (TODO).
 
 normative_rule_definitions:
   - name: mstateen_rv64_csrs
@@ -21,7 +23,7 @@ normative_rule_definitions:
     coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_csr_illegal_accesses}"]
 
   - name: stateen_implicit_state_update
-    coverpoint: ["Not testable"]
+    coverpoint: ["Not tested: either behavior is permitted"]
 
   - name: sstateen_user_access_control
     coverpoint: ["Ssstateen_cg/{cp_jvt, cp_fcsr_lower}"]
@@ -90,7 +92,7 @@ normative_rule_definitions:
     coverpoint: ["Ssstateen_cg/cp_walking_ones"]
 
   - name: stateen0_c_op
-    coverpoint: [""]
+    coverpoint: ["Not tested: custom state is non-standard and not certified"]
 
   - name: stateen0_fcsr_op
     coverpoint:

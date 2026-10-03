@@ -19,7 +19,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
-#define TRAP_SIGUPD_COUNT 1210
+#define TRAP_SIGUPD_COUNT 202
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -70,11 +70,17 @@ RVTEST_BEGIN
   add x9, x9, x8
   addi x13, x13, 1
 
+  LI(x8, 100) # retry counter for constrained LR/SC loop
+ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc_retry:
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_lr:
   lr.w x14, (x9)
   nop
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc:
   sc.w x15, x13, (x9)
+  beqz x15, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc_success # SC succeeded, skip retry
+  addi x8, x8, -1 # decrement retry count
+  bnez x8, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc_retry # retry LR/SC if not exhausted
+ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc_success:
   nop
 
 

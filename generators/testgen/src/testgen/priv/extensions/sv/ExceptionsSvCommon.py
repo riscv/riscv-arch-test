@@ -10,7 +10,7 @@
 
 from dataclasses import dataclass
 
-from testgen.asm.helpers import write_sigupd
+from testgen.asm.helpers import lrsc_retry_loop, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.sv.access import add_rwx_test, mode_switch, virtual_address
@@ -77,7 +77,14 @@ class _Target:
 
 
 def _atomic_access(
-    test_data: TestData, regs: SvRegs, target: _Target, name: str, address: list[str], coverpoints: dict[str, str]
+    test_data: TestData,
+    regs: SvRegs,
+    target: _Target,
+    name: str,
+    address: list[str],
+    coverpoints: dict[str, str],
+    *,
+    faults: bool,
 ) -> list[str]:
     covergroup = f"{target.suite}_cg"
     labels = {
@@ -92,17 +99,16 @@ def _atomic_access(
         lines.extend([f"{labels['amoadd']}:", f"amoadd.w {load}, {value}, ({addr})", "nop"])
         results = ((regs.load, labels["amoadd"]),)
     else:
-        lines.extend(
-            [
-                f"{labels['lr']}:",
-                f"lr.w {load}, ({addr})",
-                "nop",
-                *setup,
-                f"{labels['sc']}:",
-                f"sc.w x{regs.result}, {value}, ({addr})",
-                "nop",
-            ]
-        )
+        lr = [f"{labels['lr']}:", f"lr.w {load}, ({addr})", "nop"]
+        sc = [f"{labels['sc']}:", f"sc.w x{regs.result}, {value}, ({addr})"]
+        if faults:
+            # A trap taken in M-mode changes mstatus.MPP, so set up MPRV again before the SC.
+            lines.extend([*lr, *setup, *sc])
+        else:
+            # regs.scratch is free here: the MPRV setup above and the cleanup below only use it as a temporary.
+            retry_start, retry_end = lrsc_retry_loop(labels["sc"], regs.scratch, regs.result)
+            lines.extend([*retry_start, *lr, *sc, *retry_end])
+        lines.append("nop")
         results = ((regs.load, labels["lr"]), (regs.result, labels["sc"]))
     if target.mprv:
         lines.extend(["", *mprv_cleanup(regs.scratch)])
@@ -156,7 +162,8 @@ def _add_access(
             covergroup=f"{target.suite}_cg",
         )
     else:
-        access = _atomic_access(test_data, regs, target, f"test{number}", address, coverpoints)
+        faults = not valid or misaligned or physical_address != "rvtest_data_1"
+        access = _atomic_access(test_data, regs, target, f"test{number}", address, coverpoints, faults=faults)
     return [
         *create_page_mapping(
             sv, virtual_address=va, physical_address=physical_address, leaf_level=level, leaf_flags=permissions

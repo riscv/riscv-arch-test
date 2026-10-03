@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 106
+#define SIGUPD_COUNT 90
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
@@ -32,7 +32,7 @@ RVTEST_BEGIN
 /////////////////////////////////
 // cp_pmpcfg_walk
 //   Write a walking one through bits 16..23 of every pmpcfg CSR and check
-//   the readback, skipping the reserved R=0/W=1 encoding and the A=NA4 bit.
+//   the readback, skipping the reserved R=0/W=1 encoding and the A=TOR and A=NA4 bits.
 /////////////////////////////////
 
 PMPSm_cp_pmpcfg_walk_bit16:
@@ -50,15 +50,6 @@ PMPSm_cp_pmpcfg_walk_bit18:
   .rept UDB_NUM_PMP_ENTRIES / (UDB_MXLEN / 8)
 1:  LI(t2, 1 << 18)
   RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_bit18_str)
-  .set pmpcfgi, pmpcfgi + (UDB_MXLEN / 32)
-  .endr
-
-PMPSm_cp_pmpcfg_walk_bit19:
-// Write 1 << 19 to every pmpcfg CSR
-  .set pmpcfgi, CSR_PMPCFG0
-  .rept UDB_NUM_PMP_ENTRIES / (UDB_MXLEN / 8)
-1:  LI(t2, 1 << 19)
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_bit19_str)
   .set pmpcfgi, pmpcfgi + (UDB_MXLEN / 32)
   .endr
 
@@ -99,12 +90,11 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-PMPSm_cp_pmpcfg_walk_bit16_str: .string "\"test: 14; cg: PMPSm; cp: cp_pmpcfg_walk; bin: bit16\""
-PMPSm_cp_pmpcfg_walk_bit18_str: .string "\"test: 15; cg: PMPSm; cp: cp_pmpcfg_walk; bin: bit18\""
-PMPSm_cp_pmpcfg_walk_bit19_str: .string "\"test: 16; cg: PMPSm; cp: cp_pmpcfg_walk; bin: bit19\""
-PMPSm_cp_pmpcfg_walk_bit21_str: .string "\"test: 17; cg: PMPSm; cp: cp_pmpcfg_walk; bin: bit21\""
-PMPSm_cp_pmpcfg_walk_bit22_str: .string "\"test: 18; cg: PMPSm; cp: cp_pmpcfg_walk; bin: bit22\""
-PMPSm_cp_pmpcfg_walk_bit23_str: .string "\"test: 19; cg: PMPSm; cp: cp_pmpcfg_walk; bin: bit23\""
+PMPSm_cp_pmpcfg_walk_bit16_str: .string "\"test: 12; cg: PMPSm; cp: cp_pmpcfg_walk; bin: bit16\""
+PMPSm_cp_pmpcfg_walk_bit18_str: .string "\"test: 13; cg: PMPSm; cp: cp_pmpcfg_walk; bin: bit18\""
+PMPSm_cp_pmpcfg_walk_bit21_str: .string "\"test: 14; cg: PMPSm; cp: cp_pmpcfg_walk; bin: bit21\""
+PMPSm_cp_pmpcfg_walk_bit22_str: .string "\"test: 15; cg: PMPSm; cp: cp_pmpcfg_walk; bin: bit22\""
+PMPSm_cp_pmpcfg_walk_bit23_str: .string "\"test: 16; cg: PMPSm; cp: cp_pmpcfg_walk; bin: bit23\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

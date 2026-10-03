@@ -45,6 +45,6 @@ def make_svinvalsm_tvm(test_data: TestData) -> list[TestChunk]:
             code.append("RVTEST_TSBI_GOTO_MMODE")
     chunk.code.extend(code)
     chunk.sigupd_count = 1
-    chunk.trap_sigupd_count = 80
+    chunk.trap_sigupd_count = 20
     test_data.int_regs.return_register(tvm_reg)
     return [test_data.end_test_chunk()]

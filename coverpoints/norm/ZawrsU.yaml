@@ -9,7 +9,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "ZawrsU_cg/cp_wrs_resume",
-        "stores not tested in single core configurations",
+        "Not tested: a store from another hart needs a multi-hart configuration",
       ]
 
   # WRS.STO (WRS-with-short-timeout) is provided that works like WRS.NTO
@@ -26,8 +26,8 @@ normative_rule_definitions:
   # While stalled, an implementation is permitted to occasionally terminate the
   # stall and complete execution for any reason.
   - name: Zawrs_stall_terminate
-    coverpoint:
-      ["ZawrsU_cg/cp_wrs_{resume, nto_timeout} loops if terminating early"]
+    # The tests repeat the WRS until the expected event, so an early termination passes
+    coverpoint: ["ZawrsU_cg/cp_wrs_{resume, nto_timeout}"]
 
   # WRS.NTO and WRS.STO instructions follow the rules of the WFI instruction
   # for resuming execution on a pending interrupt.

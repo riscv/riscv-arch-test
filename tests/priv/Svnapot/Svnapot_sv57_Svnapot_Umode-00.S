@@ -208,15 +208,15 @@ rvtest_slvl3_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Svnapot_cp_sv57_Svnapot_Umode_test1_access1_store_str: .string "\"test: 34; cg: Svnapot; cp: cp_sv57_Svnapot_Umode; bin: test1_access1_store\""
-Svnapot_cp_sv57_Svnapot_Umode_test1_access1_load_str: .string "\"test: 35; cg: Svnapot; cp: cp_sv57_Svnapot_Umode; bin: test1_access1_load\""
-Svnapot_cp_sv57_Svnapot_Umode_test1_access1_exec_str: .string "\"test: 36; cg: Svnapot; cp: cp_sv57_Svnapot_Umode; bin: test1_access1_exec\""
-Svnapot_cp_sv57_Svnapot_Umode_test1_access2_store_str: .string "\"test: 37; cg: Svnapot; cp: cp_sv57_Svnapot_Umode; bin: test1_access2_store\""
-Svnapot_cp_sv57_Svnapot_Umode_test1_access2_load_str: .string "\"test: 38; cg: Svnapot; cp: cp_sv57_Svnapot_Umode; bin: test1_access2_load\""
-Svnapot_cp_sv57_Svnapot_Umode_test1_access2_exec_str: .string "\"test: 39; cg: Svnapot; cp: cp_sv57_Svnapot_Umode; bin: test1_access2_exec\""
-Svnapot_cp_sv57_Svnapot_Umode_test1_access3_store_str: .string "\"test: 40; cg: Svnapot; cp: cp_sv57_Svnapot_Umode; bin: test1_access3_store\""
-Svnapot_cp_sv57_Svnapot_Umode_test1_access3_load_str: .string "\"test: 41; cg: Svnapot; cp: cp_sv57_Svnapot_Umode; bin: test1_access3_load\""
-Svnapot_cp_sv57_Svnapot_Umode_test1_access3_exec_str: .string "\"test: 42; cg: Svnapot; cp: cp_sv57_Svnapot_Umode; bin: test1_access3_exec\""
+Svnapot_cp_sv57_Svnapot_Umode_test1_access1_store_str: .string "\"test: 46; cg: Svnapot; cp: cp_sv57_Svnapot_Umode; bin: test1_access1_store\""
+Svnapot_cp_sv57_Svnapot_Umode_test1_access1_load_str: .string "\"test: 47; cg: Svnapot; cp: cp_sv57_Svnapot_Umode; bin: test1_access1_load\""
+Svnapot_cp_sv57_Svnapot_Umode_test1_access1_exec_str: .string "\"test: 48; cg: Svnapot; cp: cp_sv57_Svnapot_Umode; bin: test1_access1_exec\""
+Svnapot_cp_sv57_Svnapot_Umode_test1_access2_store_str: .string "\"test: 49; cg: Svnapot; cp: cp_sv57_Svnapot_Umode; bin: test1_access2_store\""
+Svnapot_cp_sv57_Svnapot_Umode_test1_access2_load_str: .string "\"test: 50; cg: Svnapot; cp: cp_sv57_Svnapot_Umode; bin: test1_access2_load\""
+Svnapot_cp_sv57_Svnapot_Umode_test1_access2_exec_str: .string "\"test: 51; cg: Svnapot; cp: cp_sv57_Svnapot_Umode; bin: test1_access2_exec\""
+Svnapot_cp_sv57_Svnapot_Umode_test1_access3_store_str: .string "\"test: 52; cg: Svnapot; cp: cp_sv57_Svnapot_Umode; bin: test1_access3_store\""
+Svnapot_cp_sv57_Svnapot_Umode_test1_access3_load_str: .string "\"test: 53; cg: Svnapot; cp: cp_sv57_Svnapot_Umode; bin: test1_access3_load\""
+Svnapot_cp_sv57_Svnapot_Umode_test1_access3_exec_str: .string "\"test: 54; cg: Svnapot; cp: cp_sv57_Svnapot_Umode; bin: test1_access3_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

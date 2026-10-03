@@ -162,6 +162,10 @@ normative_rule_definitions:
   - name: pmp_mmode_only_regions
     coverpoint: ["Descriptive spec text with no separately testable behavior"]
 
+  # The PMP address registers are CSRs named pmpaddr0-pmpaddr63.
+  - name: pmp_addr_registers
+    coverpoint: ["PMPSm_cg/{cp_pmpaddr_upper_zero, cp_grain_check_write}"]
+
   # Not all physical address bits may be implemented, and so the pmpaddr registers
   # are WARL.
   - name: pmp_addr_warl
@@ -217,6 +221,12 @@ normative_rule_definitions:
   - name: pmp_full_match_required
     coverpoint:
       ["PMPZca_cg/{cp_misaligned_napot, cp_misaligned_tor, cp_misaligned_na4}"]
+
+  # PMP violations are always trapped precisely at the processor.
+  - name: pmp_violation_precise_trap
+    # PMPZaamo checks rd after every AMO, and a later AMO's return value shows any write by a
+    # faulting one. The PMPSm, PMPS, PMPU, and PMPF store probes do not read memory back.
+    coverpoint: ["PMPZaamo_cg/cp_cfg_RW"]
 
   # Up to 64 PMP entries are supported. Implementations may implement zero, 16, or
   # 64 PMP entries; the lowest-numbered PMP entries must be implemented first.

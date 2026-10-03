@@ -42,11 +42,11 @@ def format_csb_type(
 
     sig_reg = test_data.int_regs.sig_reg
 
-    setup.append(f"addi x{sig_reg}, x{sig_reg}, {-params.immval} # adjust base address for offset")
-
+    # Store at offset uimm within the signature slot, then check the whole slot. The rest of the slot keeps
+    # its 0xdeadbeef fill, so a misdecoded offset changes the checked value when the stored data differs
+    # from the fill; cp_uimm tests choose rs2val to guarantee that.
     test = [f"{instr_name} x{params.rs2}, {params.immval}(x{sig_reg}) # perform store"]
     check = [
-        f"addi x{sig_reg}, x{sig_reg}, {params.immval} # restore base address",
         f"addi x{sig_reg}, x{sig_reg}, SIG_STRIDE # increment signature pointer",
         f"LREG x{params.temp_reg}, -SIG_STRIDE(x{sig_reg}) # load stored value for checking",
         write_sigupd(params.temp_reg, test_data),

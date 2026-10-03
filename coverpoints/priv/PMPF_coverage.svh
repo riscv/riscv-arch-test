@@ -14,8 +14,10 @@ covergroup PMPF_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logi
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-  addr_in_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
-    bins at_region = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
+  // The test places its NAPOT region at PMP_NAPOT_REGION_START, which is g_napot-aligned, so the
+  // fld/fsd probes are naturally aligned at every grain.
+  addr_in_napot_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
   read_fp_instr: coverpoint ins.current.insn {
@@ -43,8 +45,8 @@ covergroup PMPF_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logi
     bins non_zero = {1};
   }
 
-  cp_cfg_R: cross priv_mode_m, fs_mstatus, legal_lxwr, read_fp_instr, addr_in_region;
-  cp_cfg_W: cross priv_mode_m, fs_mstatus, legal_lxwr, write_fp_instr, addr_in_region;
+  cp_cfg_R: cross priv_mode_m, fs_mstatus, legal_lxwr, read_fp_instr, addr_in_napot_region;
+  cp_cfg_W: cross priv_mode_m, fs_mstatus, legal_lxwr, write_fp_instr, addr_in_napot_region;
 
 endgroup
 

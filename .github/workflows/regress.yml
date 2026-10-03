@@ -50,8 +50,6 @@ jobs:
 
       - name: Set up tools
         uses: $/.github/actions/setup-tools
-        with:
-          udb-gems: "true"
 
       # The act build cache is content-hash based and self-validating, so a
       # stale restore is safe: only configs whose UDB yaml changed rebuild.
@@ -96,7 +94,6 @@ jobs:
         uses: $/.github/actions/setup-tools
         with:
           install-architecture-tools: ${{ matrix.extensions != '' }}
-          udb-gems: "true"
 
       - name: Report shard assignment
         env:
@@ -290,7 +287,6 @@ jobs:
         uses: $/.github/actions/setup-tools
         with:
           install-architecture-tools: "true"
-          udb-gems: "true"
 
       - name: Verify Python version
         run: uv run python --version

@@ -7,4 +7,22 @@ normative_rule_definitions:
   # naturally aligned to the size of the operand (i.e., eight-byte aligned
   # for doublewords and four-byte aligned for words).
   - name: amo_alignment
-    coverpoint: ["Zaamo_amoadd_w_cg/cp_align_word"]
+    coverpoint: ["ExceptionsZaamo_cg/cp_amo_address_misaligned"]
+
+  # If a misaligned AMO accesses a region that does not specify a misaligned atomicity granule PMA, or
+  # if not all accessed bytes lie within the same misaligned atomicity granule, then an exception is
+  # raised.
+  - name: pma_mag_op_amo
+    coverpoint: ["ExceptionsZaamo_cg/cp_amo_address_misaligned"]
+
+  # The misaligned atomicity granule PMA optionally relaxes this alignment requirement.
+  # It applies only to AMOs defined in the Zaamo, Zabha, and Zacas extensions; base loads
+  # and stores; and FP loads and stores of no more than XLEN bits.
+  - names: [misaligned_atomicity_granule_size, pma_mag_insts]
+    # The Zabha and Zacas rows of the cross cover those extensions' AMOs
+    coverpoint: ["ExceptionsZaamo_cg/cp_amo_address_misaligned"]
+
+  # Implementations may raise access-fault exceptions instead of address-misaligned
+  # exceptions for some misaligned accesses.
+  - name: pma_mag_exc
+    coverpoint: ["ExceptionsZaamo_cg/cp_amo_address_misaligned"]

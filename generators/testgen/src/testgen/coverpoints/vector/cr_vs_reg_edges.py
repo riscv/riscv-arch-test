@@ -166,6 +166,9 @@ def make_vs2_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_d
 
     config = get_instruction_type_config(instr_type)
     imm_edges = IMMEDIATE_EDGES.imm_5bit if config.imm_signed else IMMEDIATE_EDGES.imm_5bit_u
+    if config.imm_bits == 6:
+        assert config.imm_signed == False, "Only 6-bit unsigned immediates are supported for vector"
+        imm_edges = IMMEDIATE_EDGES.imm_6bit_v
 
     test_chunks = []
     for vs2_edge in vs2_edges:

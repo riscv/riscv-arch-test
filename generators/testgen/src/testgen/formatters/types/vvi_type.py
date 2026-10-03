@@ -27,6 +27,9 @@ vvi_config = InstructionTypeConfig(
 vviu_config = InstructionTypeConfig(
     required_params={"vd", "immval", "vs2"}, imm_bits=5, imm_signed=False, vector_data=VectorTypeConfig()
 )
+vviu6_config = InstructionTypeConfig(
+    required_params={"vd", "immval", "vs2"}, imm_bits=6, imm_signed=False, vector_data=VectorTypeConfig()
+)
 vwi_config = InstructionTypeConfig(
     required_params={"vd", "immval", "vs2"},
     imm_bits=5,
@@ -79,6 +82,13 @@ def format_vviu(
     instr_str: str, test_data: TestData, params: InstructionParams
 ) -> tuple[list[str], list[str], list[str]]:
     return format_vvi_like_type(instr_str, test_data, params, "VVIU")
+
+
+@add_instruction_formatter("VVIU6", vviu6_config)
+def format_vviu6(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    return format_vvi_like_type(instr_str, test_data, params, "VVIU6")
 
 
 @add_instruction_formatter("VWI", vwi_config)

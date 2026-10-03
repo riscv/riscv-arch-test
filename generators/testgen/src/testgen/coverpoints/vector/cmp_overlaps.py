@@ -115,7 +115,7 @@ def make_two_way_cmp(instr_name: str, instr_type: str, coverpoint: str, test_dat
             test_data,
             instr_name,
             instr_type,
-            lmul=1,
+            lmul=lmul,
             additional_no_overlap=set(),
             suite="base",
             masked=False,

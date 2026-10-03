@@ -574,7 +574,7 @@
     "Shvstvala": { "supported": true },
     "Shvstvecd": { "supported": true },
     "Sstvecd": { "supported": true },
-    "Svukte": { "supported": false },
+    "Svukte": { "supported": true },
     "Zilx": { "supported": false },
     "Zibi": {
       "supported": true

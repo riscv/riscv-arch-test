@@ -35,6 +35,7 @@ from rich.progress import (
   TextColumn,
   TimeElapsedColumn,
 )
+from testgen.io.testplans import VectorCheck
 from testgen.io.testplans import get_extensions as get_main_testgen_extensions
 
 import vector_testgen_common as common
@@ -1608,9 +1609,11 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
   global immedgesv, NaNBox_tests, test, xlen, extension
 
   xlen = xlen_arg
-  extension = extension_arg
+  output_suite = extension_arg
+  extension = extension_arg.removesuffix(common.SCALAR_CHECK_SUFFIX)
+  common.setScalarCheck(extension != extension_arg)
 
-  seed(common.myhash(f"{xlen}-{extension}"))
+  seed(common.myhash(f"{xlen}-{extension}"))  # same seed and test data as the base suite
 
   testplans = readTestplans()
   if extension not in testplans:
@@ -1619,7 +1622,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
   setExtension(extension)
   setXlen(xlen)
 
-  pathname = f"{ARCH_VERIF}/tests/rv{xlen}i/{extension}"
+  pathname = f"{ARCH_VERIF}/tests/rv{xlen}i/{output_suite}"
 
   redgesv = [0, 1, 2, 2**xlen-1, 2**xlen-2, 2**(xlen-1), 2**(xlen-1)+1, 2**(xlen-1)-1, 2**(xlen-1)-2]
   if (xlen == 32):
@@ -1642,7 +1645,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
 
   os.makedirs(pathname, exist_ok=True)  # noqa: PTH103
 
-  sew = _detect_sew(pathname)
+  sew = _detect_sew(f"{ARCH_VERIF}/tests/rv{xlen}i/{extension}")
 
   instructions = list(testplans[extension].keys())
   applicable_instructions = list(testplans[extension].keys())
@@ -1661,7 +1664,7 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
     else:
       immedgesv = [0, 1, 2, 14, 15, -1, -2, -15, -16]
 
-    basename = extension + "-" + test
+    basename = output_suite + "-" + test
     fname = pathname + "/" + basename + ".S"
     tempfname = pathname + "/" + basename + "_temp.S"
 
@@ -1735,7 +1738,9 @@ def generate_extension(xlen_arg: int, extension_arg: str) -> str:
   return f"rv{xlen}/{extension}: {written} test(s)"
 
 
-def _list_tasks(include_set: set[str], exclude_set: set[str]) -> list[tuple[int, str]]:
+def _list_tasks(
+  include_set: set[str], exclude_set: set[str], vector_check: VectorCheck = VectorCheck.VECTOR
+) -> list[tuple[int, str]]:
   """Build the list of (xlen, extension) tasks honoring filters."""
   tasks: list[tuple[int, str]] = []
   testplans = readTestplans()
@@ -1745,6 +1750,14 @@ def _list_tasks(include_set: set[str], exclude_set: set[str]) -> list[tuple[int,
     extensions = [e for e in extensions if e in include_set]
   if exclude_set:
     extensions = [e for e in extensions if e not in exclude_set]
+  # Scalar self-checking variants of Vf suites are generated with --vector-check scalar or when requested by name
+  if vector_check == VectorCheck.SCALAR:
+    extensions = [re.sub(r"^(Vf\d+)$", rf"\1{common.SCALAR_CHECK_SUFFIX}", e) for e in extensions]
+  extensions += sorted(
+    e for e in include_set
+    if e.endswith(common.SCALAR_CHECK_SUFFIX) and e.removesuffix(common.SCALAR_CHECK_SUFFIX) in testplans
+    and e.startswith("Vf") and e not in exclude_set and e not in extensions
+  )
   for xlen in (32, 64):
     for extension in sorted(extensions):
       tasks.append((xlen, extension))
@@ -1765,6 +1778,10 @@ def run(
   jobs: Annotated[
     int, typer.Option("--jobs", "-j", help="Parallel worker processes (0 = auto-detect, 1 = serial)")
   ] = 0,
+  vector_check: Annotated[
+    VectorCheck,
+    typer.Option(help="Check vector test results with vector instructions or with scalar code", case_sensitive=False),
+  ] = VectorCheck.VECTOR,
 ) -> None:
   """Generate directed vector tests not handled by the main testgen."""
   include_set = set(filter(None, (s.strip() for s in extensions.split(",")))) if extensions else set()
@@ -1772,7 +1789,7 @@ def run(
 
   worker_count = jobs if jobs > 0 else (os.cpu_count() or 1)
 
-  tasks = _list_tasks(include_set, exclude_set)
+  tasks = _list_tasks(include_set, exclude_set, vector_check)
   if not tasks:
     return
 

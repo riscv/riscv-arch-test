@@ -20,7 +20,7 @@ from testgen.data.test_chunk import TestChunk, split_test_chunks
 from testgen.formatters.registry import get_instruction_type_config
 from testgen.instructions.vector import parse_vector_instruction_info
 from testgen.io.templates import canonicalize_extensions
-from testgen.io.testplans import read_testplan
+from testgen.io.testplans import VECTOR_SCALAR_CHECK_SUFFIX, read_testplan, split_vector_scalar_check
 from testgen.io.writer import write_test_file
 
 
@@ -57,6 +57,8 @@ def generate_unpriv_extension_tests(
         output_test_dir: Directory to output generated tests
         is_vector: Set in vector test suites
     """
+    testsuite, vector_scalar_check = split_vector_scalar_check(testsuite)
+
     # Read testplan for this testsuite
     if is_vector:
         match = re.search(r"([^0-9]*)\d*$", testsuite)
@@ -72,14 +74,19 @@ def generate_unpriv_extension_tests(
     if testsuite == "I" and E_ext:
         testsuite = "E"
 
+    # Scalar self-checking suites (e.g. Vx8-scalarcheck) generate the base suite into their own directory
+    output_suite = testsuite + VECTOR_SCALAR_CHECK_SUFFIX if vector_scalar_check else testsuite
+
     # Create testsuite-wide test configuration
-    output_dir = output_test_dir / f"rv{xlen}{'e' if E_ext else 'i'}/{testsuite}"
+    output_dir = output_test_dir / f"rv{xlen}{'e' if E_ext else 'i'}/{output_suite}"
     output_dir.mkdir(parents=True, exist_ok=True)
     generated_files: set[Path] = set()
 
     ext_components, _ = canonicalize_extensions(testsuite, xlen, E_ext, sew=sew, instr_name=instructions[0].instr_name)
     flen = get_flen_for_extensions(ext_components)
-    test_config = TestConfig(xlen=xlen, flen=flen, testsuite=testsuite, E_ext=E_ext, sew=sew)
+    test_config = TestConfig(
+        xlen=xlen, flen=flen, testsuite=testsuite, E_ext=E_ext, sew=sew, vector_scalar_check=vector_scalar_check
+    )
 
     # Iterate through each instruction in the testsuite; generate separate test files for each
     for instr_data in instructions:
@@ -182,6 +189,8 @@ def _generate_unpriv_tests_for_instruction(
                 f"#define RVTEST_SEW {sew}",
                 f"#define VDSEW {vdsew}",
             ]
+            if test_config.vector_scalar_check:
+                extra_defines.append("#define RVTEST_VEC_SCALAR_CHECK")
         else:
             extra_defines = []
 

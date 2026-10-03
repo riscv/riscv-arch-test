@@ -75,9 +75,9 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
                 f"addi x{params.temp_reg}, x{params.temp_reg}, -2 # jump not taken, decrement check value",
                 "3:  # done with sequence",
                 write_sigupd(params.temp_reg, test_data),
+                *check_return_address(instr_name, params.rd, params.temp_reg, test_data),
             ]
         )
-        tc.code.extend(check_return_address(instr_name, params.rd, params.temp_reg, test_data))
     elif instr_type in ["CJ", "CJAL"]:
         assert params.temp_reg is not None and params.temp_val is not None
         tc.code.extend(
@@ -181,9 +181,9 @@ def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> l
                     f"addi x{params.temp_reg}, x{params.temp_reg}, 2 # should execute; branch taken",
                     f"{INDENT}# check jump taken",
                     write_sigupd(params.temp_reg, test_data),
+                    *check_return_address(instr_name, params.rd, params.temp_reg, test_data),
                 ]
             )
-            test_lines.extend(check_return_address(instr_name, params.rd, params.temp_reg, test_data))
             return_testcase_registers(test_data, params)
     else:
         raise ValueError(f"cp_offset_lsbs coverpoint not supported for instruction type {instr_type}.")

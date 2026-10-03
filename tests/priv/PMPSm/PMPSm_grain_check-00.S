@@ -20,7 +20,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
-#define TRAP_SIGUPD_COUNT 6000
+#define TRAP_SIGUPD_COUNT 1500
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -72,7 +72,7 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-PMPSm_cp_grain_check_readback_str: .string "\"test: 935; cg: PMPSm; cp: cp_grain_check; bin: readback\""
+PMPSm_cp_grain_check_readback_str: .string "\"test: 899; cg: PMPSm; cp: cp_grain_check; bin: readback\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

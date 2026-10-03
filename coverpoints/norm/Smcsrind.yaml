@@ -2,21 +2,6 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
-  - name: csr_access
-    coverpoint: [""]
-
-  - name: select_value_separate_address_space
-    coverpoint: [""]
-
-  - name: select_value_unrelated
-    coverpoint: [""]
-
-  - name: csrs_alias
-    coverpoint: [""]
-
-  - name: miph_csr_number
-    coverpoint: [""]
-
   - name: miselect_op
     coverpoint: [""]
 
@@ -35,9 +20,6 @@ normative_rule_definitions:
   - name: mireg_access_on_legal_miselect
     coverpoint: [""]
 
-  - name: mireg_access_behaviour
-    coverpoint: [""]
-
   - name: siselect_min_range
     coverpoint: [""]
 
@@ -48,9 +30,6 @@ normative_rule_definitions:
     coverpoint: [""]
 
   - name: sireg_access_on_legal_siselect
-    coverpoint: [""]
-
-  - name: sireg_access_behaviour
     coverpoint: [""]
 
   - name: Sscsrind_smode_csrs_sz
@@ -66,12 +45,6 @@ normative_rule_definitions:
     coverpoint: [""]
 
   - name: vsireg_access_on_legal_vsiselect
-    coverpoint: [""]
-
-  - name: vsireg_access_behaviour
-    coverpoint: [""]
-
-  - name: vsmode_virtual_inst_fault
     coverpoint: [""]
 
   - name: Sscsrind_vsmode_csrs_sz

@@ -88,7 +88,8 @@ WORKDIR_SETUP = \
     mkdir -p $@.workdir/src && \
     ln -sfn $(patsubst %,../../../%,$(wildcard src/*.adoc)) $@.workdir/src/ && \
     ln -sfn ../../../$(GENERATED_DIR)/testplans ../../../$(GENERATED_DIR)/norm ../../../$(GENERATED_DIR)/param $@.workdir/src/ && \
-    ln -sfn ../../common ../../docs-resources $@.workdir/
+    ln -sfn ../../../common ../../../docs-resources $@.workdir/ && \
+    ln -sfn ../../common ../../docs-resources $(BUILD_DIR)/
 WORKDIR_TEARDOWN = mv $@.workdir/$@ $@
 else
 WORKDIR_SETUP = \
@@ -96,7 +97,8 @@ WORKDIR_SETUP = \
     mkdir -p $@.workdir/src && \
     ln -sfn $(patsubst %,../../../%,$(wildcard src/*.adoc)) $@.workdir/src/ && \
     ln -sfn ../../../$(GENERATED_DIR)/testplans ../../../$(GENERATED_DIR)/norm ../../../$(GENERATED_DIR)/param $@.workdir/src/ && \
-    ln -sfn ../../common ../../docs-resources $@.workdir/
+    ln -sfn ../../../common ../../../docs-resources $@.workdir/ && \
+    ln -sfn ../../common ../../docs-resources $(BUILD_DIR)/
 
 WORKDIR_TEARDOWN = \
     mv $@.workdir/$@ $@ && \

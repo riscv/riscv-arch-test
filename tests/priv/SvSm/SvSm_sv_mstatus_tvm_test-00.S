@@ -19,7 +19,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
-#define TRAP_SIGUPD_COUNT 30
+#define TRAP_SIGUPD_COUNT 8
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -44,12 +44,10 @@ SvSm_cg_cp_satp_access_tvm:
 SvSm_cg_cp_satp_access_m_csrw:
   # Read satp into x14 and check against expected.
   RVTEST_SIGUPD_CSR_READ(satp, x14, SvSm_cg_cp_satp_access_m_csrw, SvSm_cg_cp_satp_access_m_csrw_str)
-  li a0, 0
   csrs satp, a0
 SvSm_cg_cp_satp_access_m_csrs:
   # Read satp into x14 and check against expected.
   RVTEST_SIGUPD_CSR_READ(satp, x14, SvSm_cg_cp_satp_access_m_csrs, SvSm_cg_cp_satp_access_m_csrs_str)
-  li a0, 0
   csrc satp, a0
 SvSm_cg_cp_satp_access_m_csrc:
   # Read satp into x14 and check against expected.

@@ -13,8 +13,16 @@
   #error "SIGUPD_COUNT not defined. It should be defined at the beginning of the test file."
 #endif
 
+// TRAP_SIGUPD_COUNT is the number of expected traps. Each trap uses 4 signature
+// words, or 6 when H is supported.
 #ifndef TRAP_SIGUPD_COUNT
   #define TRAP_SIGUPD_COUNT 0
+#endif
+
+#ifdef H_SUPPORTED
+  #define TRAP_SIGUPD_WORDS ((TRAP_SIGUPD_COUNT)*6)
+#else
+  #define TRAP_SIGUPD_WORDS ((TRAP_SIGUPD_COUNT)*4)
 #endif
 
 ########## GLOBAL XLEN CHECK  ##########
@@ -25,10 +33,6 @@
 ########## rvmodel_macros.h CHECKS ##########
 #if defined(RVMODEL_INVISIBLE_TRAP_HANDLER) || defined(RVTEST_EMULATE_TIME_CSR)
   #define RVTEST_INVISIBLE_TRAP_HANDLER
-#endif
-
-#if defined(RVTEST_INVISIBLE_TRAP_HANDLER) && defined(H_SUPPORTED)
-  #error "Invisible trap emulation does not support traps from VS or VU mode yet."
 #endif
 
 #ifndef RVMODEL_DATA_SECTION
@@ -107,6 +111,10 @@
   #ifndef RVMODEL_CLR_MEXT_INT_M
     #define RVMODEL_CLR_MEXT_INT_M RVMODEL_CLR_MEXT_INT
   #endif
+
+  #ifndef RVMODEL_SET_MEXT_INT_M
+    #define RVMODEL_SET_MEXT_INT_M RVMODEL_SET_MEXT_INT
+  #endif
 #endif
 
 #ifdef RVMODEL_SET_MSW_INT
@@ -127,6 +135,12 @@
   #ifndef RVMODEL_CLR_SEXT_INT_M
     #ifdef RVMODEL_CLR_SEXT_INT
       #define RVMODEL_CLR_SEXT_INT_M RVMODEL_CLR_SEXT_INT
+    #endif
+  #endif
+
+  #ifndef RVMODEL_SET_SEXT_INT_M
+    #ifdef RVMODEL_SET_SEXT_INT
+      #define RVMODEL_SET_SEXT_INT_M RVMODEL_SET_SEXT_INT
     #endif
   #endif
 

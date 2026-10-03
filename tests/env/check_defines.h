@@ -79,8 +79,8 @@
 #endif
 
 // Interrupt macros are used only by the trap handler and privileged tests, which need a
-// standard M-mode. A DUT without one (STANDARD_SM_SUPPORTED undefined) need not define them.
-#ifdef STANDARD_SM_SUPPORTED
+// standard M-mode or S-mode. A DUT with neither need not define them.
+#if defined(STANDARD_SM_SUPPORTED) || defined(S_SUPPORTED)
 
 ##### Interrupt Delays #####
 #ifndef RVMODEL_INTERRUPT_LATENCY
@@ -158,7 +158,7 @@
   #endif
 #endif
 
-#endif // STANDARD_SM_SUPPORTED
+#endif // STANDARD_SM_SUPPORTED || S_SUPPORTED
 
 ##### Configuration Limitations #####
 #if UDB_NUM_PMP_ENTRIES > 0

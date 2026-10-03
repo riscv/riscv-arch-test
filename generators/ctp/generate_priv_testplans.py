@@ -79,7 +79,7 @@ def coverage_names(coverage_dir: Path | None, suite: str) -> set[str] | None:
         return None
     names: set[str] = set()
     for f in files:
-        names |= set(re.findall(r"^\s*(cp_\w+)\s*:", f.read_text(encoding="utf-8"), re.MULTILINE))
+        names |= set(re.findall(r"^\s*(\w+)\s*:\s*(?:coverpoint|cross)\b", f.read_text(encoding="utf-8"), re.MULTILINE))
     return names
 
 
@@ -140,12 +140,15 @@ def render(
             body += [f"{len(header)}+| {esc(e['heading'])}", ""]
             continue
         name = str(e.get("name") or "")
-        if cov is not None and name and name not in cov:
-            warnings.append(f"{suite}: {name} is not a coverpoint in {suite}_coverage.svh")
+        # A row may list several coverpoints, one per line; other lines are notes.
+        cps = [ln.strip() for ln in name.split("\n") if re.fullmatch(r"\w+", ln.strip())]
+        if cov is not None:
+            warnings += [f"{suite}: {cp} is not a coverpoint in {suite}_coverage.svh" for cp in cps if cp not in cov]
         cells = [esc(name)]
         for k in used:
             if k == "rules":
-                names = list(rules.get(name, []))
+                names = [r for cp in cps for r in rules.get(cp, [])]
+                names = list(dict.fromkeys(names))
                 for r in e.get("rules") or []:
                     if r not in names:
                         names.append(r)

@@ -85,9 +85,7 @@ def _generate_priv_test_entry(
         for file_idx, test_file_chunks in enumerate(test_files, start=first_file_idx):
             extra_defines = entry.extra_defines
             # The default trap signature is empty, so privileged tests reserve one unless they size their own
-            if not any(tc.trap_sigupd_count for tc in test_file_chunks) and not any(
-                d.startswith("#define TRAP_SIGUPD_COUNT") for d in extra_defines
-            ):
+            if not any(tc.trap_sigupd_count for tc in test_file_chunks):
                 extra_defines = [*extra_defines, f"#define TRAP_SIGUPD_COUNT {PRIV_TRAP_SIGUPD_COUNT}"]
             generated_files.add(
                 write_test_file(test_config, None, test_file_chunks, output_path, file_idx, extra_defines, split_name)

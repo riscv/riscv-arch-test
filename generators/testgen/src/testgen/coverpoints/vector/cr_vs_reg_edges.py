@@ -48,28 +48,38 @@ def make_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_dat
 
     edges1 = edges2 = VECTOR_EDGES.vx_edges
     suffix1 = suffix2 = "emul1"
-    if coverpoint.endswith("wv") and not coverpoint.endswith("fwv"):
-        suffix1 = "emul2"
-    elif coverpoint.endswith("wred") and not coverpoint.endswith("fwred"):
-        suffix2 = "emul2"
-    elif coverpoint.endswith("mm"):
-        suffix1 = suffix2 = "eew1"
-    elif coverpoint.endswith("f"):
-        suffix1 = suffix2 = "f"
-        edges1 = edges2 = VECTOR_EDGES.vf_edges
-    elif coverpoint.endswith("f_bf16"):
-        suffix1 = suffix2 = "f_bf16"
-        edges1 = edges2 = VECTOR_EDGES.vf_edges
-    elif coverpoint.endswith("fwv"):
-        suffix1 = "f_emul2"
-        suffix2 = "f"
-        edges1 = edges2 = VECTOR_EDGES.vf_edges
-    elif coverpoint.endswith("fwred"):
-        suffix1 = "f"
-        suffix2 = "f_emul2"
-        edges1 = edges2 = VECTOR_EDGES.vf_edges
-    elif coverpoint.endswith("egs"):
-        raise ValueError("Vector Crypto Edges are not yet implemented")
+
+    # Safely get the variant after cr_*_*_edges
+    coverpoint_suffix = coverpoint[coverpoint.find("edges") + len("edges") :]
+    coverpoint_suffix = coverpoint_suffix[1:] if coverpoint_suffix.startswith("_") else ""
+
+    match coverpoint_suffix:
+        case "":
+            pass  # Nothing needs to be done in the default case
+        case "wv":
+            suffix1 = "emul2"
+        case "wred":
+            suffix2 = "emul2"
+        case "mm":
+            suffix1 = suffix2 = "eew1"
+        case "f":
+            suffix1 = suffix2 = "f"
+            edges1 = edges2 = VECTOR_EDGES.vf_edges
+        case "f_bf16":
+            suffix1 = suffix2 = "f_bf16"
+            edges1 = edges2 = VECTOR_EDGES.vf_edges
+        case "fwv":
+            suffix1 = "f_emul2"
+            suffix2 = "f"
+            edges1 = edges2 = VECTOR_EDGES.vf_edges
+        case "fwred":
+            suffix1 = "f"
+            suffix2 = "f_emul2"
+            edges1 = edges2 = VECTOR_EDGES.vf_edges
+        case "egs":
+            raise ValueError("Vector Crypto Edges are not yet implemented")
+        case _:
+            raise ValueError(f"Unknown coverpoint variant: {coverpoint}")
 
     test_chunks = []
     for r1_edge in edges1:
@@ -169,7 +179,7 @@ def make_vs2_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_d
 @add_coverpoint_generator("cr_vs2_fs1_edges")
 def make_vs2_fs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """
-    Generate tests crossing edge values for vs2 and rs1. Supports only floating point crosses.
+    Generate tests crossing edge values for vs2 and fs1. Supports only floating point crosses.
     """
 
     sew = test_data.config.sew

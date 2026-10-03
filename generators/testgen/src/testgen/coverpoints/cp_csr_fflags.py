@@ -23,7 +23,7 @@ def make_fflags(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     test_chunks = []
 
     # This must come first due to how fflags is handled in the sail trace (otherwise coverage sees another 1->1 transition)
-    if instr_name.lower().startswith("v"):
+    if instr_name in ["vfmacc.vf", "vfnmacc.vf", "vfmsac.vf", "vfnmsac.vf"]:
         # Some vector tests do not hit the underflow flag naturally
         test_chunks.extend(generate_vector_special_cases(instr_name, instr_type, coverpoint, test_data))
 
@@ -73,18 +73,16 @@ def generate_vector_special_cases(
 
     kwargs = {}
 
-    if instr_name in ["vfmacc.vf", "vfnmacc.vf", "vfmsac.vf", "vfnmsac.vf"]:
-        vs2_label = make_and_register_edge_label("vs2", "min_subnorm", "f", test_data)
-        vd_label = make_and_register_edge_label("vd", "pos0", "f", test_data)
-        fs1_val = get_vector_edge("min_subnorm", "f", test_data.config.sew)
+    # Only is verified to work for vf variants of vmacc-style instructions
+    vs2_label = make_and_register_edge_label("vs2", "min_subnorm", "f", test_data)
+    vd_label = make_and_register_edge_label("vd", "pos0", "f", test_data)
+    fs1_val = get_vector_edge("min_subnorm", "f", test_data.config.sew)
 
-        kwargs = {
-            "vs2_val_pointer": vs2_label,
-            "vd_val_pointer": vd_label,
-            "fs1val": fs1_val,
-        }
-    else:
-        return []
+    kwargs = {
+        "vs2_val_pointer": vs2_label,
+        "vd_val_pointer": vd_label,
+        "fs1val": fs1_val,
+    }
 
     params = generate_random_vector_params(
         test_data,
@@ -98,7 +96,7 @@ def generate_vector_special_cases(
     )
 
     desc = "fflags hardcoded test"
-    bin_name = ""
+    bin_name = "underflow"
 
     tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
     return_testcase_registers(test_data, params)

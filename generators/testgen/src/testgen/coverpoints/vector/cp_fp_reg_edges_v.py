@@ -22,14 +22,16 @@ def make_fs1_edges_v(instr_name: str, instr_type: str, coverpoint: str, test_dat
     assert test_data.config.sew is not None, "SEW must be set for vector tests"
     sew = test_data.config.sew
 
-    if sew == 16:
+    if sew == 16 and coverpoint.endswith("bf16"):
+        fs1_edges = VECTOR_EDGES.bf16
+    elif sew == 16:
         fs1_edges = VECTOR_EDGES.f16
     elif sew == 32:
         fs1_edges = VECTOR_EDGES.f32
     elif sew == 64:
         fs1_edges = VECTOR_EDGES.f64
     else:
-        raise ValueError(f"Unsupported SEW ({sew}) for cr_vs2_fs2_edges")
+        raise ValueError(f"Unsupported SEW ({sew}) for cp_fs1_edges_v")
 
     lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
 

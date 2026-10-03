@@ -8530,7 +8530,6 @@ covergroup Vf32_vfncvt_f_f_w_cg with function sample(ins_t ins);
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -8846,7 +8845,6 @@ covergroup Vf32_vfncvt_f_x_w_cg with function sample(ins_t ins);
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -9129,7 +9127,6 @@ covergroup Vf32_vfncvt_f_xu_w_cg with function sample(ins_t ins);
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -9471,7 +9468,6 @@ covergroup Vf32_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -9780,7 +9776,6 @@ covergroup Vf32_vfncvt_rtz_x_f_w_cg with function sample(ins_t ins);
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -10089,7 +10084,6 @@ covergroup Vf32_vfncvt_rtz_xu_f_w_cg with function sample(ins_t ins);
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -10407,7 +10401,6 @@ covergroup Vf32_vfncvt_x_f_w_cg with function sample(ins_t ins);
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -10725,7 +10718,6 @@ covergroup Vf32_vfncvt_xu_f_w_cg with function sample(ins_t ins);
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -20248,7 +20240,6 @@ covergroup Vf32_vfwadd_wf_cg with function sample(ins_t ins);
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -20598,7 +20589,6 @@ covergroup Vf32_vfwadd_wv_cg with function sample(ins_t ins);
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -27687,7 +27677,6 @@ covergroup Vf32_vfwsub_wf_cg with function sample(ins_t ins);
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -28037,7 +28026,6 @@ covergroup Vf32_vfwsub_wv_cg with function sample(ins_t ins);
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////

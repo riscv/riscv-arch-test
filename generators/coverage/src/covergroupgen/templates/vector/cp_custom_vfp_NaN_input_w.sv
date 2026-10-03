@@ -17,7 +17,6 @@
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////

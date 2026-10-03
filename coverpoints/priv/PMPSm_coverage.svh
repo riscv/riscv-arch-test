@@ -638,25 +638,21 @@ covergroup PMPSm_cg with function sample(
     `ifdef UDB_MXLEN_32
       wildcard bins walking_ones_0  = {32'b00000000000000000000000000000001};
       wildcard bins walking_ones_2  = {32'b00000000000000000000000000000100};
-      wildcard bins walking_ones_3  = {32'b00000000000000000000000000001000};
       wildcard bins walking_ones_4  = {32'b00000000000000000000000000100000};
       wildcard bins walking_ones_5  = {32'b00000000000000000000000001000000};
       wildcard bins walking_ones_6  = {32'b00000000000000000000000010000000};
       wildcard bins walking_ones_7  = {32'b00000000000000000000000100000000};
       wildcard bins walking_ones_9  = {32'b00000000000000000000010000000000};
-      wildcard bins walking_ones_10 = {32'b00000000000000000000100000000000};
       wildcard bins walking_ones_11 = {32'b00000000000000000010000000000000};
       wildcard bins walking_ones_12 = {32'b00000000000000000100000000000000};
       wildcard bins walking_ones_13 = {32'b00000000000000001000000000000000};
       wildcard bins walking_ones_14 = {32'b00000000000000010000000000000000};
       wildcard bins walking_ones_16 = {32'b00000000000001000000000000000000};
-      wildcard bins walking_ones_17 = {32'b00000000000010000000000000000000};
       wildcard bins walking_ones_18 = {32'b00000000001000000000000000000000};
       wildcard bins walking_ones_19 = {32'b00000000010000000000000000000000};
       wildcard bins walking_ones_20 = {32'b00000000100000000000000000000000};
       wildcard bins walking_ones_21 = {32'b00000001000000000000000000000000};
       wildcard bins walking_ones_23 = {32'b00000100000000000000000000000000};
-      wildcard bins walking_ones_24 = {32'b00001000000000000000000000000000};
       wildcard bins walking_ones_25 = {32'b00100000000000000000000000000000};
       wildcard bins walking_ones_26 = {32'b01000000000000000000000000000000};
       wildcard bins walking_ones_27 = {32'b10000000000000000000000000000000};
@@ -664,49 +660,41 @@ covergroup PMPSm_cg with function sample(
     `ifdef UDB_MXLEN_64
       wildcard bins walking_ones_0  = {64'b0000000000000000000000000000000000000000000000000000000000000001};
       wildcard bins walking_ones_2  = {64'b0000000000000000000000000000000000000000000000000000000000000100};
-      wildcard bins walking_ones_3  = {64'b0000000000000000000000000000000000000000000000000000000000001000};
       wildcard bins walking_ones_4  = {64'b0000000000000000000000000000000000000000000000000000000000100000};
       wildcard bins walking_ones_5  = {64'b0000000000000000000000000000000000000000000000000000000001000000};
       wildcard bins walking_ones_6  = {64'b0000000000000000000000000000000000000000000000000000000010000000};
       wildcard bins walking_ones_7  = {64'b0000000000000000000000000000000000000000000000000000000100000000};
       wildcard bins walking_ones_9  = {64'b0000000000000000000000000000000000000000000000000000010000000000};
-      wildcard bins walking_ones_10 = {64'b0000000000000000000000000000000000000000000000000000100000000000};
       wildcard bins walking_ones_11 = {64'b0000000000000000000000000000000000000000000000000010000000000000};
       wildcard bins walking_ones_12 = {64'b0000000000000000000000000000000000000000000000000100000000000000};
       wildcard bins walking_ones_13 = {64'b0000000000000000000000000000000000000000000000001000000000000000};
       wildcard bins walking_ones_14 = {64'b0000000000000000000000000000000000000000000000010000000000000000};
       wildcard bins walking_ones_16 = {64'b0000000000000000000000000000000000000000000001000000000000000000};
-      wildcard bins walking_ones_17 = {64'b0000000000000000000000000000000000000000000010000000000000000000};
       wildcard bins walking_ones_18 = {64'b0000000000000000000000000000000000000000001000000000000000000000};
       wildcard bins walking_ones_19 = {64'b0000000000000000000000000000000000000000010000000000000000000000};
       wildcard bins walking_ones_20 = {64'b0000000000000000000000000000000000000000100000000000000000000000};
       wildcard bins walking_ones_21 = {64'b0000000000000000000000000000000000000001000000000000000000000000};
       wildcard bins walking_ones_23 = {64'b0000000000000000000000000000000000000100000000000000000000000000};
-      wildcard bins walking_ones_24 = {64'b0000000000000000000000000000000000001000000000000000000000000000};
       wildcard bins walking_ones_25 = {64'b0000000000000000000000000000000000100000000000000000000000000000};
       wildcard bins walking_ones_26 = {64'b0000000000000000000000000000000001000000000000000000000000000000};
       wildcard bins walking_ones_27 = {64'b0000000000000000000000000000000010000000000000000000000000000000};
       wildcard bins walking_ones_28 = {64'b0000000000000000000000000000000100000000000000000000000000000000};
       wildcard bins walking_ones_30 = {64'b0000000000000000000000000000010000000000000000000000000000000000};
-      wildcard bins walking_ones_31 = {64'b0000000000000000000000000000100000000000000000000000000000000000};
       wildcard bins walking_ones_32 = {64'b0000000000000000000000000010000000000000000000000000000000000000};
       wildcard bins walking_ones_33 = {64'b0000000000000000000000000100000000000000000000000000000000000000};
       wildcard bins walking_ones_34 = {64'b0000000000000000000000001000000000000000000000000000000000000000};
       wildcard bins walking_ones_35 = {64'b0000000000000000000000010000000000000000000000000000000000000000};
       wildcard bins walking_ones_37 = {64'b0000000000000000000001000000000000000000000000000000000000000000};
-      wildcard bins walking_ones_38 = {64'b0000000000000000000010000000000000000000000000000000000000000000};
       wildcard bins walking_ones_39 = {64'b0000000000000000001000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_40 = {64'b0000000000000000010000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_41 = {64'b0000000000000000100000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_42 = {64'b0000000000000001000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_44 = {64'b0000000000000100000000000000000000000000000000000000000000000000};
-      wildcard bins walking_ones_45 = {64'b0000000000001000000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_46 = {64'b0000000000100000000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_47 = {64'b0000000001000000000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_48 = {64'b0000000010000000000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_49 = {64'b0000000100000000000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_51 = {64'b0000010000000000000000000000000000000000000000000000000000000000};
-      wildcard bins walking_ones_52 = {64'b0000100000000000000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_53 = {64'b0010000000000000000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_54 = {64'b0100000000000000000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_55 = {64'b1000000000000000000000000000000000000000000000000000000000000000};
@@ -923,15 +911,16 @@ covergroup PMPSm_cg with function sample(
   // 7 overlapping NAPOT regions all based at PMP_NAPOT_PRIORITY_REGION_START, with
   // sizes g_napot, 2x, 4x, 8x, 16x, 32x, 64x. The base is aligned to the
   // largest region size so every NAPOT entry is naturally aligned.
-  // pmpaddr[i] = (PMP_NAPOT_PRIORITY_REGION_START >> 2) | ((1<<i) * g_napot/8 - 1)
+  // pmpaddr[i] = (PMP_NAPOT_PRIORITY_REGION_START >> 2) | ((1<<i) * g_napot/8 - 1),
+  // compared on bits >= G because each is written while its entry is OFF.
   napot_priority_regions: coverpoint (
-                   ((pmpaddr[6] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (64*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                   ((pmpaddr[5] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (32*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                   ((pmpaddr[4] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (16*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                   ((pmpaddr[3] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 8*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                   ((pmpaddr[2] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 4*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                   ((pmpaddr[1] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 2*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                   ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 1*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK))
+                   ((pmpaddr[6] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (64*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[5] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (32*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[4] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (16*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[3] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 8*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[2] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 4*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[1] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 2*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[0] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 1*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK))
                    ) {
     bins napot_regions = {1};
   }
@@ -957,11 +946,12 @@ covergroup PMPSm_cg with function sample(
 
   // pmpaddr0 and pmpaddr2 are OFF but set to the access address (PMP_NAPOT_REGION_START >> 2),
   // verifying they are ignored. pmpaddr1 and pmpaddr3 are NAPOT covering PMP_NAPOT_REGION_START.
+  // All four are written while OFF, so they are compared on bits >= G.
   first_four_pmp_entries: coverpoint (
-                    ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK) == ((`PMP_NAPOT_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK)) &&
-                    ((pmpaddr[1] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_REGION_START >> 2) | ((2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                    ((pmpaddr[2] & `PMP_PMPADDR_LOWMASK) == ((`PMP_NAPOT_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK)) &&
-                    ((pmpaddr[3] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_REGION_START >> 2) | ((2**`k)-1)) & `PMP_PMPADDR_LOWMASK))
+                    ((pmpaddr[0] & `PMP_PMPADDR_GRAINMASK) == ((`PMP_NAPOT_REGION_START >> 2) & `PMP_PMPADDR_GRAINMASK)) &&
+                    ((pmpaddr[1] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_REGION_START >> 2) | ((2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                    ((pmpaddr[2] & `PMP_PMPADDR_GRAINMASK) == ((`PMP_NAPOT_REGION_START >> 2) & `PMP_PMPADDR_GRAINMASK)) &&
+                    ((pmpaddr[3] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_REGION_START >> 2) | ((2**`k)-1)) & `PMP_PMPADDR_GRAINMASK))
                     ) {
     bins pmp_entries = {1};
   }

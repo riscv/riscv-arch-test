@@ -264,11 +264,16 @@ _ZC_TEST_CASES = {
 }
 
 
+#: The NAPOT pad keeps the walk region 8-byte aligned at every grain, so the 8-byte
+#: c.ld/c.sd/c.fld/c.fsd probes and their sp forms stay naturally aligned.
+_NAPOT_PAD = (NAPOT_REGION_WORDS, "jr ra")
+
+
 def _make_legal_chunk(test_data: TestData) -> TestChunk:
     chunk = test_data.begin_test_chunk("legal_lwrx")
     chunk.section_header = comment_banner("cp_cfg_RW", _ZCA_LEGAL_TEST_CASES)
     chunk.code.extend(lxwr_walk_body(test_data, LOCKED_LXWR_CASES, "napot", gen_zca, "cp_cfg_RW"))
-    chunk.raw_data.extend(make_exec_region((TOR_REGION_WORDS, "c.nop\nc.nop")))
+    chunk.raw_data.extend(make_exec_region((TOR_REGION_WORDS, "c.nop\nc.nop"), pad=_NAPOT_PAD))
     return test_data.end_test_chunk()
 
 
@@ -279,7 +284,7 @@ def _make_zc_chunk(test_data: TestData, subset: str) -> TestChunk:
     chunk.code.extend(lxwr_walk_body(test_data, LOCKED_LXWR_CASES, "napot", generator, "cp_cfg_RW"))
     # Two c.nops per .rept word: these tests build with Zca, where a bare `nop` compresses
     # to 2 bytes and leaves the region half a PMP grain short (see _make_legal_chunk).
-    chunk.raw_data.extend(make_exec_region((TOR_REGION_WORDS, "c.nop\nc.nop")))
+    chunk.raw_data.extend(make_exec_region((TOR_REGION_WORDS, "c.nop\nc.nop"), pad=_NAPOT_PAD))
     return test_data.end_test_chunk()
 
 

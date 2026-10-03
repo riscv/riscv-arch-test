@@ -86,14 +86,14 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-PMPSm_cp_pmpcfg_odd_rv64_pmpcfg1_str: .string "\"test: 26; cg: PMPSm; cp: cp_pmpcfg_odd_rv64; bin: pmpcfg1\""
-PMPSm_cp_pmpcfg_odd_rv64_pmpcfg3_str: .string "\"test: 27; cg: PMPSm; cp: cp_pmpcfg_odd_rv64; bin: pmpcfg3\""
-PMPSm_cp_pmpcfg_odd_rv64_pmpcfg5_str: .string "\"test: 28; cg: PMPSm; cp: cp_pmpcfg_odd_rv64; bin: pmpcfg5\""
-PMPSm_cp_pmpcfg_odd_rv64_pmpcfg7_str: .string "\"test: 29; cg: PMPSm; cp: cp_pmpcfg_odd_rv64; bin: pmpcfg7\""
-PMPSm_cp_pmpcfg_odd_rv64_pmpcfg9_str: .string "\"test: 30; cg: PMPSm; cp: cp_pmpcfg_odd_rv64; bin: pmpcfg9\""
-PMPSm_cp_pmpcfg_odd_rv64_pmpcfg11_str: .string "\"test: 31; cg: PMPSm; cp: cp_pmpcfg_odd_rv64; bin: pmpcfg11\""
-PMPSm_cp_pmpcfg_odd_rv64_pmpcfg13_str: .string "\"test: 32; cg: PMPSm; cp: cp_pmpcfg_odd_rv64; bin: pmpcfg13\""
-PMPSm_cp_pmpcfg_odd_rv64_pmpcfg15_str: .string "\"test: 33; cg: PMPSm; cp: cp_pmpcfg_odd_rv64; bin: pmpcfg15\""
+PMPSm_cp_pmpcfg_odd_rv64_pmpcfg1_str: .string "\"test: 22; cg: PMPSm; cp: cp_pmpcfg_odd_rv64; bin: pmpcfg1\""
+PMPSm_cp_pmpcfg_odd_rv64_pmpcfg3_str: .string "\"test: 23; cg: PMPSm; cp: cp_pmpcfg_odd_rv64; bin: pmpcfg3\""
+PMPSm_cp_pmpcfg_odd_rv64_pmpcfg5_str: .string "\"test: 24; cg: PMPSm; cp: cp_pmpcfg_odd_rv64; bin: pmpcfg5\""
+PMPSm_cp_pmpcfg_odd_rv64_pmpcfg7_str: .string "\"test: 25; cg: PMPSm; cp: cp_pmpcfg_odd_rv64; bin: pmpcfg7\""
+PMPSm_cp_pmpcfg_odd_rv64_pmpcfg9_str: .string "\"test: 26; cg: PMPSm; cp: cp_pmpcfg_odd_rv64; bin: pmpcfg9\""
+PMPSm_cp_pmpcfg_odd_rv64_pmpcfg11_str: .string "\"test: 27; cg: PMPSm; cp: cp_pmpcfg_odd_rv64; bin: pmpcfg11\""
+PMPSm_cp_pmpcfg_odd_rv64_pmpcfg13_str: .string "\"test: 28; cg: PMPSm; cp: cp_pmpcfg_odd_rv64; bin: pmpcfg13\""
+PMPSm_cp_pmpcfg_odd_rv64_pmpcfg15_str: .string "\"test: 29; cg: PMPSm; cp: cp_pmpcfg_odd_rv64; bin: pmpcfg15\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

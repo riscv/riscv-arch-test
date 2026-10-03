@@ -10,7 +10,13 @@
 import re
 
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.data.edges import VECTOR_EDGES, get_general_edges, get_orcb_edges
+from testgen.data.edges import (
+    VECTOR_EDGES,
+    get_general_edges,
+    get_orcb_edges,
+    get_walkmask_edges,
+    get_walkone_edges,
+)
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -26,6 +32,12 @@ def make_rs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_data:
         edges = get_general_edges(test_data.xlen)
     elif coverpoint.endswith("_orcb"):
         edges = get_orcb_edges(test_data.xlen)
+    elif coverpoint.endswith(("_walkone", "_walkonew")):
+        width = 32 if coverpoint.endswith("w") else test_data.xlen
+        edges = get_walkone_edges(test_data.xlen, width)
+    elif coverpoint.endswith(("_walkmask", "_walkmaskw")):
+        width = 32 if coverpoint.endswith("w") else test_data.xlen
+        edges = get_walkmask_edges(test_data.xlen, width)
     else:
         raise ValueError(f"Unknown cp_rs1_edges coverpoint variant: {coverpoint} for {instr_name}")
 

@@ -28,10 +28,10 @@ covergroup ExceptionsZicboSm_cg with function sample(ins_t ins);
         // menvcfg does not exist before Sm1.12.0
         `ifdef SM1P12P0_OR_LATER_SUPPORTED
             `ifdef U_SUPPORTED
-                menvcfg_cbie: coverpoint ins.current.csr[CSR_MENVCFG][5:4] {
+                menvcfg_cbie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "cbie")[1:0] {
                     ignore_bins reserved = {2'b10};
                 }
-                menvcfg_cbcfe: coverpoint ins.current.csr[CSR_MENVCFG][6] {
+                menvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "cbcfe")[0] {
                 }
             `endif
         `endif
@@ -44,7 +44,7 @@ covergroup ExceptionsZicboSm_cg with function sample(ins_t ins);
 
         `ifdef SM1P12P0_OR_LATER_SUPPORTED
             `ifdef U_SUPPORTED
-                menvcfg_cbze: coverpoint ins.current.csr[CSR_MENVCFG][7] {
+                menvcfg_cbze: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "cbze")[0] {
                 }
             `endif
         `endif
@@ -55,7 +55,7 @@ covergroup ExceptionsZicboSm_cg with function sample(ins_t ins);
 
     `ifdef SM1P12P0_OR_LATER_SUPPORTED
         `ifdef U_SUPPORTED
-            menvcfg_all_enable: coverpoint ins.current.csr[CSR_MENVCFG][7:4] {
+            menvcfg_all_enable: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "menvcfg")[7:4] {
                 bins ones = {4'b1111};
             }
         `endif

@@ -585,37 +585,37 @@ Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xbf800000:
   # Check if f20 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f20, Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xbf800000, Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xbf800000_str)
 
-# Testcase cp_fs1_edges (Test source fs1 value = 0x3fc00000)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x3fc00000
+# Testcase cp_fs1_edges (Test source fs1 value = 0x40200000)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f15) # load fs1: f15 = 0x40200000
   fsflagsi 0b00000 # clear all fflags
-Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x3fc00000:
+Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x40200000:
   fcvt.h.s f22, f15 # perform operation
   # Check if f22 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x3fc00000, Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x3fc00000_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f22, Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x40200000, Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x40200000_str)
 
-# Testcase cp_fs1_edges (Test source fs1 value = 0xbfc00000)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0xbfc00000
+# Testcase cp_fs1_edges (Test source fs1 value = 0xc0200000)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0xc0200000
   fsflagsi 0b00000 # clear all fflags
-Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xbfc00000:
+Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xc0200000:
   fcvt.h.s f7, f18 # perform operation
   # Check if f7 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xbfc00000, Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xbfc00000_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f7, Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xc0200000, Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xc0200000_str)
 
-# Testcase cp_fs1_edges (Test source fs1 value = 0x40000000)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x40000000
+# Testcase cp_fs1_edges (Test source fs1 value = 0x4b800000)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f18) # load fs1: f18 = 0x4b800000
   fsflagsi 0b00000 # clear all fflags
-Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x40000000:
+Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x4b800000:
   fcvt.h.s f29, f18 # perform operation
   # Check if f29 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x40000000, Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x40000000_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f29, Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x4b800000, Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x4b800000_str)
 
-# Testcase cp_fs1_edges (Test source fs1 value = 0xc0000000)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0xc0000000
+# Testcase cp_fs1_edges (Test source fs1 value = 0xcb800000)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0xcb800000
   fsflagsi 0b00000 # clear all fflags
-Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xc0000000:
+Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xcb800000:
   fcvt.h.s f26, f27 # perform operation
   # Check if f26 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xc0000000, Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xc0000000_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f26, Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xcb800000, Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xcb800000_str)
 
 # Testcase cp_fs1_edges (Test source fs1 value = 0x00800000)
   RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f27) # load fs1: f27 = 0x00800000
@@ -1245,10 +1245,10 @@ RVTEST_DATA_BEGIN
 .dword 0x0000000080000000
 .dword 0x000000003f800000
 .dword 0x00000000bf800000
-.dword 0x000000003fc00000
-.dword 0x00000000bfc00000
-.dword 0x0000000040000000
-.dword 0x00000000c0000000
+.dword 0x0000000040200000
+.dword 0x00000000c0200000
+.dword 0x000000004b800000
+.dword 0x00000000cb800000
 .dword 0x0000000000800000
 .dword 0x0000000080800000
 .dword 0x000000007f7fffff
@@ -1384,10 +1384,10 @@ Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x0_str: .string "\"test: 65; cg: Zfhmin_fcvt.h
 Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x80000000_str: .string "\"test: 66; cg: Zfhmin_fcvt.h.s_cg; cp: cp_fs1_edges; bin: b0x80000000\""
 Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x3f800000_str: .string "\"test: 67; cg: Zfhmin_fcvt.h.s_cg; cp: cp_fs1_edges; bin: b0x3f800000\""
 Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xbf800000_str: .string "\"test: 68; cg: Zfhmin_fcvt.h.s_cg; cp: cp_fs1_edges; bin: b0xbf800000\""
-Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x3fc00000_str: .string "\"test: 69; cg: Zfhmin_fcvt.h.s_cg; cp: cp_fs1_edges; bin: b0x3fc00000\""
-Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xbfc00000_str: .string "\"test: 70; cg: Zfhmin_fcvt.h.s_cg; cp: cp_fs1_edges; bin: b0xbfc00000\""
-Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x40000000_str: .string "\"test: 71; cg: Zfhmin_fcvt.h.s_cg; cp: cp_fs1_edges; bin: b0x40000000\""
-Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xc0000000_str: .string "\"test: 72; cg: Zfhmin_fcvt.h.s_cg; cp: cp_fs1_edges; bin: b0xc0000000\""
+Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x40200000_str: .string "\"test: 69; cg: Zfhmin_fcvt.h.s_cg; cp: cp_fs1_edges; bin: b0x40200000\""
+Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xc0200000_str: .string "\"test: 70; cg: Zfhmin_fcvt.h.s_cg; cp: cp_fs1_edges; bin: b0xc0200000\""
+Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x4b800000_str: .string "\"test: 71; cg: Zfhmin_fcvt.h.s_cg; cp: cp_fs1_edges; bin: b0x4b800000\""
+Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0xcb800000_str: .string "\"test: 72; cg: Zfhmin_fcvt.h.s_cg; cp: cp_fs1_edges; bin: b0xcb800000\""
 Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x800000_str: .string "\"test: 73; cg: Zfhmin_fcvt.h.s_cg; cp: cp_fs1_edges; bin: b0x800000\""
 Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x80800000_str: .string "\"test: 74; cg: Zfhmin_fcvt.h.s_cg; cp: cp_fs1_edges; bin: b0x80800000\""
 Zfhmin_fcvt_h_s_cg_cp_fs1_edges_b0x7f7fffff_str: .string "\"test: 75; cg: Zfhmin_fcvt.h.s_cg; cp: cp_fs1_edges; bin: b0x7f7fffff\""

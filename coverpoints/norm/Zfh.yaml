@@ -1,390 +1,201 @@
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  # insn:fadd.s[] and insn:fmul.s[] perform single-precision floating-point addition and
-  # multiplication respectively, between rs1 and rs2
-  - name: fadd-s_fmul-s_op
-    coverpoint:
-      [
-        "Zfh_fadd_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fmul_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-      ]
-  # The half-precision floating-point computational instructions are defined analogously
-  # to their single-precision counterparts, but operate on half-precision operands and
-  # produce half-precision results.
-  - name: Zfh_computational_instrs
-    coverpoint:
-      [
-        "Zfh_fadd_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fdiv_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_vdoun, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fmadd_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fmsub_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fmul_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fnmadd_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fnmsub_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fsqrt_h_cg/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_NaNBox_S_H, cp_fs1_badNB_S_H}",
-        "Zfh_fsub_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-      ]
-  # Apart from transfer operations described in the previous paragraph, all other
-  # floating-point operations on narrower n-bit operations, n&lt;FLEN, check if the input
-  # operands are correctly NaN-boxed, i.e., all upper FLEN-n bits are 1. If so, the n
-  # least-significant bits of the input are used as the input value, otherwise the input
-  # value is treated as an n-bit canonical NaN.
-  - name: fp_nontransfer_instrs_improper_nan_boxed_input
-    coverpoint:
-      [
-        "Zfh_fadd_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fdiv_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_vdoun, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fmadd_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fmsub_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fmul_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fnmadd_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fnmsub_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fsqrt_h_cg/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_NaNBox_S_H, cp_fs1_badNB_S_H}",
-        "Zfh_fsub_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-      ]
-  # Operations on subnormal numbers are handled in accordance with IEEE 754-2008.
-  - name: ieee_std_subnormal
-    coverpoint:
-      [
-        "Zfh_fadd_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fcvt_h_l_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_lu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_w_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_wu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_l_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_lu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_w_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_wu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fdiv_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_vdoun, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fmadd_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fmsub_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fmul_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fnmadd_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fnmsub_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fsqrt_h_cg/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_NaNBox_S_H, cp_fs1_badNB_S_H}",
-        "Zfh_fsub_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-      ]
-  # In the parlance of IEEE 754-2008, tininess is detected after rounding.
-  - name: ieee_std_tininess
-    coverpoint:
-      [
-        "Zfh_fadd_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fcvt_h_l_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_lu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_w_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_wu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_l_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_lu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_w_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_wu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fdiv_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_vdoun, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fmadd_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fmsub_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fmul_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fnmadd_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fnmsub_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fsqrt_h_cg/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_NaNBox_S_H, cp_fs1_badNB_S_H}",
-        "Zfh_fsub_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-      ]
-  # Rounding Mode|Mnemonic|Meaning === 000|RNE|Round to Nearest, ties to
-  # Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up
-  # (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for future
-  # use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field, selects
-  # dynamic rounding mode; In Rounding Mode register, reserved. ===
-  - name: dyn_round_enc
-    coverpoint:
-      [
-        "Zfh_fadd_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fcvt_h_l_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_lu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_w_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_wu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_l_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_lu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_w_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_wu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fdiv_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_vdoun, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fmadd_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fmsub_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fmul_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fnmadd_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fnmsub_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fsqrt_h_cg/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_NaNBox_S_H, cp_fs1_badNB_S_H}",
-        "Zfh_fsub_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-      ]
   # Floating-point operations use either a static rounding mode encoded in the
   # instruction, or a dynamic rounding mode held in frm. Rounding modes are encoded as
   # shown in &lt;&lt;norm:dyn_round_enc&gt;&gt;. A value of 111 in the instruction's rm
   # field selects the dynamic rounding mode held in frm
   - name: roundingmode_dynamic
+    # Representative: static rm (cp_frm_*) and dyn with every frm value (cp_csr_frm)
     coverpoint:
       [
-        "Zfh_fadd_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fcvt_h_l_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_lu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_w_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_wu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_l_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_lu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_w_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_wu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fdiv_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_vdoun, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fmadd_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fmsub_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fmul_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fnmadd_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fnmsub_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fsqrt_h_cg/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_NaNBox_S_H, cp_fs1_badNB_S_H}",
-        "Zfh_fsub_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
+        "Zfh_fadd_h_cg/{cp_frm_3, cp_csr_frm}",
+        "{Zfh_fsqrt_h_cg, Zfh_fcvt_h_s_cg}/cp_csr_frm",
       ]
-  # The insn:fclass.s[] instruction examines the value in floating-point register rs1 and
-  # writes to integer register rd a 10-bit mask that indicates the class of the
-  # floating-point number. The format of the mask is described in . The corresponding bit
-  # in rd will be set if the property is true and clear otherwise. All other bits in rd
-  # are cleared. Note that exactly one bit in rd will be set. insn:fclass.s[] does not set
-  # the floating-point exception flags.
-  - name: fclass-s_op
+  # Rounding Mode|Mnemonic|Meaning === 000|RNE|Round to Nearest, ties to
+  # Even¶001|RTZ|Round towards Zero¶010|RDN|Round Down (towards −∞)¶011|RUP|Round Up
+  # (towards +∞)¶100|RMM|Round to Nearest, ties to Max Magnitude¶101||Reserved for
+  # future use.¶110||Reserved for future use.¶111|DYN|In instruction&#8217;s rm field,
+  # selects dynamic rounding mode; In Rounding Mode register, reserved. ===
+  - name: dyn_round_enc
+    # Representative: every legal rm and frm encoding with half-precision operations
     coverpoint:
       [
-        "Zfh_fclass_h_cg/{cp_rd, cp_fs1, cp_fs1_edges_H, cp_fclass, cp_fs1_badNB_S_H}",
+        "Zfh_fadd_h_cg/{cp_frm_3, cp_csr_frm}",
+        "Zfh_fmadd_h_cg/{cp_frm_4, cp_csr_frm}",
       ]
-  # The half-precision floating-point classify instruction, insn:fclass.h[], is defined
-  # analogously to its single-precision counterpart, but operates on half-precision
-  # operands.
-  - name: fclass-h_op
+  # Operations on subnormal numbers are handled in accordance with IEEE 754-2008.
+  - name: ieee_std_subnormal
+    # Representative coverpoints; apply to the other Zfh covergroups' subnormal edges too
     coverpoint:
       [
-        "Zfh_fclass_h_cg/{cp_rd, cp_fs1, cp_fs1_edges_H, cp_fclass, cp_fs1_badNB_S_H}",
+        "{Zfh_fadd_h_cg, Zfh_fmul_h_cg}/cr_fs1_fs2_edges_frm_H",
+        "Zfh_fclass_h_cg/cp_fclass",
+        "ZicsrF_cg/cp_underflow_after_rounding_fma_h",
       ]
-  # insn:fcvt.h.w[] or insn:fcvt.h.l[] converts a 32-bit or 64-bit signed integer,
-  # respectively, into a half-precision floating-point number
-  - name: fcvt-h-w_fcvt-h-l_op
+  # In the parlance of IEEE 754-2008, tininess is detected after rounding.
+  - name: ieee_std_tininess
+    # ZicsrF has the directed half-precision cases that are tiny before but not after rounding
     coverpoint:
       [
-        "Zfh_fcvt_h_l_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_w_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
+        "ZicsrF_cg/{cp_underflow_after_rounding_fma_h, cp_underflow_after_rounding_fmul_h, cp_underflow_after_rounding_fcvt_h_s}",
+      ]
+  # If the rounded result is not representable in the destination format, it is clipped
+  # to the nearest value and the invalid flag is set
+  - name: fcvt_unrepresentable_nv
+    # Only half-to-integer conversions apply: out-of-range results come from inf, NaN and negative-to-unsigned
+    coverpoint:
+      [
+        "{Zfh_fcvt_w_h_cg, Zfh_fcvt_wu_h_cg, Zfh_fcvt_l_h_cg, Zfh_fcvt_lu_h_cg}/cr_fs1_edges_frm_H",
       ]
   # All floating-point to integer and integer to floating-point conversion instructions
   # round according to the rm field.
   - name: fcvt_round
+    # Representative coverpoints; apply to the other integer conversions too
     coverpoint:
       [
-        "Zfh_fcvt_h_l_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_lu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_w_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_wu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_l_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_lu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_w_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_wu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-      ]
-  # insn:fcvt.l.h[], insn:fcvt.lu.h[], insn:fcvt.h.l[], and insn:fcvt.h.lu[] are RV64-only
-  # instructions.
-  - name: fcvt_long_half_rv64_only
-    coverpoint:
-      [
-        "Zfh_fcvt_h_l_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_lu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_l_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_lu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
+        "{Zfh_fcvt_w_h_cg, Zfh_fcvt_l_h_cg}/cr_fs1_edges_frm_H",
+        "{Zfh_fcvt_h_w_cg, Zfh_fcvt_h_l_cg}/cp_frm_2",
       ]
   # All floating-point conversion instructions set the Inexact exception flag if the
   # rounded result differs from the operand value and the Invalid exception flag is not
   # set.
   - name: fcvt_nx
+    # Representative coverpoints; apply to the other conversions too
     coverpoint:
       [
-        "Zfh_fcvt_h_l_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_lu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_w_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_wu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_l_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_lu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_w_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_wu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
+        "Zfh_fcvt_w_h_cg/{cr_fs1_edges_frm_H, cp_csr_fflags_vn}",
+        "Zfh_fcvt_h_w_cg/{cp_rs1_edges, cp_csr_fflags_on}",
       ]
-  # If the rounded result is not representable in the destination format, it is clipped to
-  # the nearest value and the invalid flag is set
-  - name: fcvt_unrepresentable_nv
+  # When multiple floating-point precisions are supported, then valid values of narrower
+  # n-bit types, n&lt;FLEN, are represented in the lower n bits of an FLEN-bit NaN
+  # value, in a process termed NaN-boxing. The upper bits of a valid NaN-boxed value
+  # must be all 1s. Valid NaN-boxed n-bit values therefore appear as negative quiet NaNs
+  # (qNaNs) when viewed as any wider m-bit value, n &lt; m ≤ FLEN. Any operation that
+  # writes a narrower result to an f register must write all 1s to the uppermost FLEN-n
+  # bits to yield a legal NaN-boxed value.
+  - name: fp_nan_boxing
+    # Representative coverpoints; apply to the other cp_NaNBox_S_H coverpoints too
+    # Zfh checks half values NaN-boxed in 32 bits; ZfhD checks boxing in 64-bit registers
     coverpoint:
       [
-        "Zfh_fcvt_h_l_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_lu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_w_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_wu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_l_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_lu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_w_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_wu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
+        "{Zfh_fadd_h_cg, Zfh_fcvt_h_s_cg, Zfh_flh_cg, Zfh_fmv_h_x_cg}/cp_NaNBox_S_H",
       ]
+  # A narrower n-bit transfer, n&lt;FLEN, into the f registers will create a valid
+  # NaN-boxed value
+  - name: fp_transfer_instrs_narrow_transfer_in
+    coverpoint: ["{Zfh_flh_cg, Zfh_fmv_h_x_cg}/cp_NaNBox_S_H"]
+  # A narrower n-bit transfer out of the floating-point registers will transfer the
+  # lower n bits of the register ignoring the upper FLEN-n bits
+  - name: fp_transfer_instrs_narrow_transfer_out
+    coverpoint:
+      ["Zfh_fsh_cg/cp_fs2_badNB_S_H", "Zfh_fmv_x_h_cg/cp_fs1_badNB_S_H"]
+  # Apart from transfer operations described in the previous paragraph, all other
+  # floating-point operations on narrower n-bit operations, n&lt;FLEN, check if the
+  # input operands are correctly NaN-boxed, i.e., all upper FLEN-n bits are 1. If so,
+  # the n least-significant bits of the input are used as the input value, otherwise the
+  # input value is treated as an n-bit canonical NaN.
+  - name: fp_nontransfer_instrs_improper_nan_boxed_input
+    # Representative coverpoints; apply to the other cp_fs*_badNB_S_H coverpoints too
+    coverpoint:
+      [
+        "Zfh_fadd_h_cg/{cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
+        "Zfh_fmadd_h_cg/cp_fs3_badNB_S_H",
+        "Zfh_fcvt_s_h_cg/cp_fs1_badNB_S_H",
+      ]
+  # For half-precision floating-point, the canonical NaN corresponds to the pattern
+  # 0x7e00.
+  - name: Zfh_canonical_nan
+    # Representative coverpoints; apply to the other Zfh covergroups' NaN-producing edges too
+    coverpoint:
+      [
+        "{Zfh_fadd_h_cg, Zfh_fdiv_h_cg}/cr_fs1_fs2_edges_frm_H",
+        "Zfh_fsqrt_h_cg/cp_fs1_edges_H",
+        "Zfh_fmin_h_cg/cr_fs1_fs2_edges_H",
+      ]
+  # New 16-bit variants of LOAD-FP and STORE-FP instructions are added, encoded with a
+  # new value for the funct3 width field.
+  - name: fsh_flh_op
+    coverpoint: ["{Zfh_flh_cg, Zfh_fsh_cg}/{cp_rs1_nx0, cp_imm_edges}"]
+  # insn:flh[] and insn:fsh[] do not modify the bits being transferred; in particular,
+  # the payloads of non-canonical NaNs are preserved. insn:flh[] NaN-boxes the result
+  # written to rd, whereas insn:fsh[] ignores all but the lower 16 bits in rs2.
+  - name: fsh_flh_bits_maintained
+    coverpoint:
+      [
+        "Zfh_flh_cg/{cp_memval_fp_half, cp_NaNBox_S_H}",
+        "Zfh_fsh_cg/{cp_fs2_edges_H, cp_fs2_badNB_S_H}",
+      ]
+  # The half-precision floating-point computational instructions are defined analogously
+  # to their single-precision counterparts, but operate on half-precision operands and
+  # produce half-precision results.
+  - name: Zfh_computational_instrs
+    # Representative coverpoints; apply to the other Zfh computational covergroups too
+    coverpoint:
+      [
+        "{Zfh_fadd_h_cg, Zfh_fdiv_h_cg}/cr_fs1_fs2_edges_frm_H",
+        "Zfh_fmadd_h_cg/cr_fs1_fs2_edges_frm4_H",
+        "Zfh_fsqrt_h_cg/cp_fs1_edges_H",
+      ]
+  # insn:fcvt.w.h[] or insn:fcvt.l.h[] converts a half-precision floating-point number
+  # to a signed 32-bit or 64-bit integer, respectively
+  - name: fcvt-w-h_fcvt-l-h_op
+    coverpoint:
+      ["{Zfh_fcvt_w_h_cg, Zfh_fcvt_l_h_cg}/{cp_rd, cr_fs1_edges_frm_H}"]
+  # insn:fcvt.h.w[] or insn:fcvt.h.l[] converts a 32-bit or 64-bit signed integer,
+  # respectively, into a half-precision floating-point number
+  - name: fcvt-h-w_fcvt-h-l_op
+    coverpoint: ["{Zfh_fcvt_h_w_cg, Zfh_fcvt_h_l_cg}/{cp_fd, cp_rs1_edges}"]
   # insn:fcvt.wu.h[], insn:fcvt.lu.h[], insn:fcvt.h.wu[], and insn:fcvt.h.lu[] variants
   # convert to or from unsigned integer values
   - name: fcvt-wu-h_fcvt-lu-h_fcvt-h-wu_fcvt-h-lu_op
     coverpoint:
       [
-        "Zfh_fcvt_h_lu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_wu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_lu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_wu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
+        "{Zfh_fcvt_wu_h_cg, Zfh_fcvt_lu_h_cg}/cr_fs1_edges_frm_H",
+        "{Zfh_fcvt_h_wu_cg, Zfh_fcvt_h_lu_cg}/cp_rs1_edges",
       ]
-  # insn:fcvt.s.h[] or insn:fcvt.h.s[] converts a half-precision floating-point number to
-  # a single-precision floating-point number, or vice-versa, respectively
+  # insn:fcvt.l.h[], insn:fcvt.lu.h[], insn:fcvt.h.l[], and insn:fcvt.h.lu[] are
+  # RV64-only instructions.
+  - name: fcvt_long_half_rv64_only
+    # These covergroups exist only on RV64
+    coverpoint:
+      [
+        "{Zfh_fcvt_l_h_cg, Zfh_fcvt_lu_h_cg, Zfh_fcvt_h_l_cg, Zfh_fcvt_h_lu_cg}/cp_asm_count",
+      ]
+  # insn:fcvt.s.h[] or insn:fcvt.h.s[] converts a half-precision floating-point number
+  # to a single-precision floating-point number, or vice-versa, respectively
   - name: fcvt-s-h_fcvt-h-s_op
     coverpoint:
       [
-        "Zfh_fcvt_h_s_cg/{cp_fs1, cp_fd, cr_fs1_edges_frm, cp_frm_2, cp_csr_fflags_voun, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_s_h_cg/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_csr_fflags_v, cp_fs1_badNB_S_H}",
-      ]
-  # insn:fcvt.s.d[] rounds according to the rm field; insn:fcvt.d.s[] will never round
-  - name: fcvt_float_rounding
-    coverpoint:
-      [
-        "Zfh_fcvt_h_s_cg/{cp_fs1, cp_fd, cr_fs1_edges_frm, cp_frm_2, cp_csr_fflags_voun, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_s_h_cg/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_csr_fflags_v, cp_fs1_badNB_S_H}",
-      ]
-  # insn:fcvt.w.h[] or insn:fcvt.l.h[] converts a half-precision floating-point number to
-  # a signed 32-bit or 64-bit integer, respectively
-  - name: fcvt-w-h_fcvt-l-h_op
-    coverpoint:
-      [
-        "Zfh_fcvt_l_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_w_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-      ]
-  # &lt;&lt;int_conv&gt;&gt; gives the range of valid inputs for insn:fcvt.w.s[],
-  # insn:fcvt.wu.s[], insn:fcvt.l.s[], and insn:fcvt.lu.s[] and the behavior of these
-  # instructions for invalid inputs
-  - name: fcvt_int_float_valid_input
-    coverpoint:
-      [
-        "Zfh_fcvt_l_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_lu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_w_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_wu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-      ]
-  # insn:fdiv.s[] performs the single-precision floating-point division of rs1 by rs2
-  - name: fdiv-s_op
-    coverpoint:
-      [
-        "Zfh_fdiv_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_vdoun, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-      ]
-  # Floating-point compare instructions (insn:feq.s[], insn:flt.s[], insn:fle.s[]) perform
-  # the specified comparison between floating-point registers (rs1 = rs2, rs1 &lt; rs2,
-  # rs1 ≤ rs2) writing 1 to the integer register rd if the condition holds, and 0
-  # otherwise.
-  - name: feq-s_flt-s_fle-s_op
-    coverpoint:
-      [
-        "Zfh_feq_h_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fle_h_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_flt_h_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-      ]
-  # The half-precision floating-point compare instructions are defined analogously to
-  # their single-precision counterparts, but operate on half-precision operands.
-  - name: Zfh_compare_instrs
-    coverpoint:
-      [
-        "Zfh_feq_h_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fle_h_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_flt_h_cg/{cp_rd, cp_fs1, cp_fs2, cp_csr_fflags_v, cr_fs1_fs2_edges_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-      ]
-  # New 16-bit variants of LOAD-FP and STORE-FP instructions are added, encoded with a new
-  # value for the funct3 width field.
-  - name: fsh_flh_op
-    coverpoint:
-      [
-        "Zfh_flh_cg/{cp_rs1_nx0, cp_imm_edges, cp_fd, cp_NaNBox_S_H}",
-        "Zfh_fsh_cg/{cp_rs1_nx0, cp_imm_edges, cp_fs2, cp_fs2_edges_H, cp_fs2_badNB_S_H}",
-      ]
-  # insn:fmadd.s[] multiplies the values in rs1 and rs2, adds the value in rs3, and writes
-  # the final result to rd. insn:fmadd.s[] computes (rs1×rs2)+rs3.
-  - name: fmadd-s_op
-    coverpoint:
-      [
-        "Zfh_fmadd_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-      ]
-  # The fused multiply-add instructions must set the invalid operation exception flag when
-  # the multiplicands are ∞ and zero, even when the addend is a quiet NaN.
-  - name: fma_nv_flag
-    coverpoint:
-      [
-        "Zfh_fmadd_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fmsub_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fnmadd_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-        "Zfh_fnmsub_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-      ]
-  # insn:fmsub.s[] multiplies the values in rs1 and rs2, subtracts the value in rs3, and
-  # writes the final result to rd. insn:fmsub.s[] computes (rs1×rs2)−rs3.
-  - name: fmsub-s_op
-    coverpoint:
-      [
-        "Zfh_fmsub_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-      ]
-  # insn:fmv.d.x[] moves the double-precision value encoded in the IEEE 754-2008 encoding
-  # from the integer register rs1 to the floating-point register rd
-  - name: fmv-d-x_op
-    coverpoint: ["Zfh_fmv_h_x_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_NaNBox_S_H}"]
-  # insn:fmv.h.x[] moves the half-precision value encoded in the IEEE 754-2008 encoding
-  # from the lower 16 bits of integer register rs1 to the floating-point register rd,
-  # NaN-boxing the result.
-  - name: fmv-h-x_op
-    coverpoint: ["Zfh_fmv_h_x_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_NaNBox_S_H}"]
-  # insn:fmv.x.d[] moves the double-precision value in floating-point register rs1 to a
-  # representation in the IEEE 754-2008 encoding in integer register rd
-  - name: fmv-x-d_op
-    coverpoint:
-      ["Zfh_fmv_x_h_cg/{cp_rd, cp_fs1, cp_fs1_edges_H, cp_fs1_badNB_S_H}"]
-  # insn:fmv.x.h[] moves the half-precision value in floating-point register rs1 to a
-  # representation in the IEEE 754-2008 encoding in integer register rd, filling the upper
-  # XLEN-16 bits with copies of the floating-point number's sign bit
-  - name: fmv-x-h_op
-    coverpoint:
-      ["Zfh_fmv_x_h_cg/{cp_rd, cp_fs1, cp_fs1_edges_H, cp_fs1_badNB_S_H}"]
-  # insn:fnmadd.s[] multiplies the values in rs1 and rs2, negates the product, subtracts
-  # the value in rs3, and writes the final result to rd. insn:fnmadd.s[] computes
-  # −(rs1×rs2)−rs3.
-  - name: fnmadd-s_op
-    coverpoint:
-      [
-        "Zfh_fnmadd_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
-      ]
-  # insn:fnmsub.s[] multiplies the values in rs1 and rs2, negates the product, adds the
-  # value in rs3, and writes the final result to rd. insn:fnmsub.s[] computes
-  # −(rs1×rs2)+rs3.
-  - name: fnmsub-s_op
-    coverpoint:
-      [
-        "Zfh_fnmsub_h_cg/{cp_fs1, cp_fs2, cp_fs3, cp_fd, cp_frm_4, cp_csr_fflags_voun, cp_csr_frm, cr_fs1_fs2_edges_frm4_H, cr_fs1_fs3_edges_frm4_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H, cp_fs3_badNB_S_H}",
+        "Zfh_fcvt_h_s_cg/{cp_fd, cr_fs1_edges_frm}",
+        "Zfh_fcvt_s_h_cg/{cp_fd, cp_fs1_edges_H}",
       ]
   # Floating-point to floating-point sign-injection instructions, insn:fsgnj.h[],
   # insn:fsgnjn.h[], and insn:fsgnjx.h[] are defined analogously to the single-precision
   # sign-injection instruction.
   - name: fsgnj-h_fsgnjn-h_fsgnjx-h_op
     coverpoint:
-      [
-        "Zfh_fsgnj_h_cg/{cp_fs1, cp_fs2, cp_fd, cr_fs1_fs2_edges_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fsgnjn_h_cg/{cp_fs1, cp_fs2, cp_fd, cr_fs1_fs2_edges_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fsgnjx_h_cg/{cp_fs1, cp_fs2, cp_fd, cr_fs1_fs2_edges_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-      ]
-  # Floating-point to floating-point sign-injection instructions, insn:fsgnj.d[],
-  # insn:fsgnjn.d[], and insn:fsgnjx.d[], are defined analogously to the single-precision
-  # sign-injection instruction.
-  - name: fsgnj-d_fsgnjn-d_fsgnjx-d_op
+      ["{Zfh_fsgnj_h_cg, Zfh_fsgnjn_h_cg, Zfh_fsgnjx_h_cg}/cr_fs1_fs2_edges_H"]
+  # insn:fmv.x.h[] moves the half-precision value in floating-point register rs1 to a
+  # representation in the IEEE 754-2008 encoding in integer register rd, filling the
+  # upper XLEN-16 bits with copies of the floating-point number's sign bit
+  - name: fmv-x-h_op
+    coverpoint: ["Zfh_fmv_x_h_cg/{cp_rd, cp_fs1, cp_fs1_edges_H}"]
+  # insn:fmv.h.x[] moves the half-precision value encoded in the IEEE 754-2008 encoding
+  # from the lower 16 bits of integer register rs1 to the floating-point register rd,
+  # NaN-boxing the result.
+  - name: fmv-h-x_op
+    coverpoint: ["Zfh_fmv_h_x_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_NaNBox_S_H}"]
+  # The half-precision floating-point compare instructions are defined analogously to
+  # their single-precision counterparts, but operate on half-precision operands.
+  - name: Zfh_compare_instrs
     coverpoint:
       [
-        "Zfh_fsgnj_h_cg/{cp_fs1, cp_fs2, cp_fd, cr_fs1_fs2_edges_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fsgnjn_h_cg/{cp_fs1, cp_fs2, cp_fd, cr_fs1_fs2_edges_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-        "Zfh_fsgnjx_h_cg/{cp_fs1, cp_fs2, cp_fd, cr_fs1_fs2_edges_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
+        "{Zfh_feq_h_cg, Zfh_flt_h_cg, Zfh_fle_h_cg}/cr_fs1_fs2_edges_H",
+        "Zfh_feq_h_cg/cp_csr_fflags_v",
       ]
-  # insn:fsqrt.s[] computes the square root of rs1
-  - name: fsqrt-s_op
-    coverpoint:
-      [
-        "Zfh_fsqrt_h_cg/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_NaNBox_S_H, cp_fs1_badNB_S_H}",
-      ]
-  # insn:fsub.s[] performs the single-precision floating-point subtraction of rs2 from rs1
-  - name: fsub-s_op
-    coverpoint:
-      [
-        "Zfh_fsub_h_cg/{cp_fs1, cp_fs2, cp_fd, cp_frm_3, cp_csr_fflags_von, cp_csr_frm, cr_fs1_fs2_edges_frm_H, cp_NaNBox_S_H, cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
-      ]
+  # The half-precision floating-point classify instruction, insn:fclass.h[], is defined
+  # analogously to its single-precision counterpart, but operates on half-precision
+  # operands.
+  - name: fclass-h_op
+    coverpoint: ["Zfh_fclass_h_cg/{cp_rd, cp_fs1, cp_fs1_edges_H, cp_fclass}"]

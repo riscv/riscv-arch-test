@@ -5,8 +5,15 @@ parameter_definitions:
     coverpoint: ["all coverpoints", "cp_pmp64_{write, read}"]
     effect:
       [
-        "The suite runs only when NUM_PMP_ENTRIES > 0. The highest usable entry is the background entry",
+        "The suite runs only when NUM_PMP_ENTRIES > 0",
         "cp_pmp64_* exist only with 64 entries",
+      ]
+  - name: NUM_USABLE_PMP_ENTRIES
+    coverpoint: ["all coverpoints", "cp_pmp64_{write, read}"]
+    effect:
+      [
+        "Entry NUM_USABLE_PMP_ENTRIES - 1 is the locked background entry, except in cp_none_*",
+        "cp_pmp64_* bins for entries at or above NUM_USABLE_PMP_ENTRIES - 1 cannot be hit",
       ]
   - name: PMP_GRANULARITY
     coverpoint: ["all coverpoints", "cp_grain_*", "cp_cfg_A_all_{even, odd}"]

@@ -2,11 +2,15 @@
 === PMP
 
 Every PMP suite needs Sm and at least one PMP entry (`NUM_PMP_ENTRIES` > 0).
-The tests boot to M-mode to program the PMP and make the highest usable entry a locked background entry with full permissions, so accesses that match no lower entry succeed.
+The tests boot to M-mode to program the PMP.
+Most tests make the highest usable entry (`NUM_USABLE_PMP_ENTRIES` - 1) a locked background entry with full permissions, so accesses that match no lower entry succeed.
+The `cp_none_*` tests leave the background entry unset, so that their accesses match no entry.
 Tests for an address-matching mode run only when its UDB parameter (`PMP_NA4_SUPPORTED`, `PMP_NAPOT_SUPPORTED` or `PMP_TOR_SUPPORTED`) is true, and region sizes follow `PMP_GRANULARITY`.
 PMP combined with virtual memory is tested by the SvPMP, SvPMPZicbo and SvaduPMP suites in the virtual-memory section.
 The testplan also describes a PMPV suite for vector loads and stores, which is not implemented yet.
-Loads and stores that cross a PMP region boundary are not tested: a hart may split such an access into memory operations that are checked separately.
+An aligned load, store or AMO is a single memory operation, so it fails when the lowest-numbered entry that matches any of its bytes does not match all of them.
+Those tests are not implemented yet and are listed as TODO in the tables below.
+Outside a misaligned atomicity granule, a misaligned access may be split into memory operations that are checked separately, so one that straddles two permitted regions has no single expected result and is not tested.
 
 ==== PMPSm
 
@@ -42,7 +46,7 @@ include::norm/PMPS_norm_rules.adoc[]
 ==== PMPU
 
 PMP enforcement on U-mode accesses, which does not depend on the L bit, and on M-mode loads and stores with `mstatus.MPRV`=1 and MPP=U.
-Also checks that the PMP CSRs trap when accessed from U-mode, and that an U-mode access matching no PMP entry faults.
+Also checks that the PMP CSRs trap when accessed from U-mode, and that a U-mode access matching no PMP entry faults.
 Runs when U is implemented.
 
 [[t-PMPU-coverpoints]]

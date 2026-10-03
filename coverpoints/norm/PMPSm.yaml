@@ -253,6 +253,17 @@ normative_rule_definitions:
     # cp_cfg_rW00_all, cp_cfg_rW10_all, cp_cfg_rW11_all, cp_cfg_L_access_{exec, read, write}
     coverpoint: ["PMPSm_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_cfg_X0_all}"]
 
+  # On some implementations, misaligned loads, stores, and instruction fetches may be
+  # decomposed into multiple memory operations, some of which may succeed before an
+  # access-fault exception occurs, as described in the RVWMO specification. PMP checking
+  # is performed on each memory operation independently.
+  - name: pmp_misaligned_access_behavior
+    coverpoint:
+      [
+        "TODO: cp_misaligned_mag16: Zama16b: misaligned loads/stores within a 16-byte granule partly matched by 4- or 8-byte entries",
+        "TODO: cp_misaligned_partial: misaligned load/store partly in a locked no-permission region, rest unmatched (MISALIGNED_LDST)",
+      ]
+
   # PMP entries are statically prioritized. The lowest-numbered PMP entry that matches
   # any byte of a memory operation determines whether that operation succeeds or fails.
   - name: pmp_entry_priority
@@ -261,6 +272,16 @@ normative_rule_definitions:
     coverpoint:
       [
         "PMPSm_cg/{cp_priority_lw, cp_priority_sw, cp_priority_jalr, cp_priority_off_lw}",
+      ]
+
+  # The matching PMP entry must match all bytes of a memory operation, or the operation
+  # fails, irrespective of the L, R, W, and X bits.
+  - name: pmp_full_match_required
+    coverpoint:
+      [
+        "TODO: cp_partial_match: aligned ld/sd partly matched by 4-byte NA4/TOR entries: lower half, upper half, both halves (RV64, G = 0)",
+        "TODO: cp_misaligned_mag16: Zama16b: misaligned loads/stores within a 16-byte granule partly matched by 4- or 8-byte entries",
+        "TODO: cp_misaligned_partial: misaligned load/store partly in a locked no-permission region, rest unmatched (MISALIGNED_LDST)",
       ]
 
   # If a PMP entry matches all bytes of a memory operation, then the L, R, W, and X bits
@@ -286,6 +307,41 @@ normative_rule_definitions:
   - name: pmp_access_fault_exception
     # Representative coverpoints; also cp_cfg_X0_all, cp_cfg_X1_all, cp_priority_{lw, sw, jalr}
     coverpoint: ["PMPSm_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_cfg_A_napot_all}"]
+
+  # Each aligned memory instruction that accesses XLEN or fewer bits gives rise to
+  # exactly one memory operation, unless specified otherwise.
+  - name: rvwmo_aligned_memop
+    coverpoint:
+      [
+        "TODO: cp_partial_match: aligned ld/sd partly matched by 4-byte NA4/TOR entries: lower half, upper half, both halves (RV64, G = 0)",
+      ]
+
+  # memory accesses affected by the misaligned atomicity granule PMA that lie within a
+  # misaligned atomicity granule are not decomposed.
+  - name: rvwmo_misaligned_in_atomic_pma
+    coverpoint:
+      [
+        "TODO: cp_misaligned_mag16: Zama16b: misaligned loads/stores within a 16-byte granule partly matched by 4- or 8-byte entries",
+      ]
+
+  # if all accessed bytes lie within the same misaligned atomicity granule, the
+  # instruction will not raise an exception for reasons of address alignment, and the
+  # instruction will give rise to only one memory operation for the purposes of RVWMO--
+  # i.e., it will execute atomically.
+  - name: pma_mag_op_within
+    coverpoint:
+      [
+        "TODO: cp_misaligned_mag16: Zama16b: misaligned loads/stores within a 16-byte granule partly matched by 4- or 8-byte entries",
+      ]
+
+  # If mtval is written with a nonzero value when a misaligned load or store causes an
+  # access-fault, page-fault, or hardware-error exception, then mtval will contain the
+  # virtual address of the portion of the access that caused the fault.
+  - name: mtval_vaddr_wr_misaligned_addr
+    coverpoint:
+      [
+        "TODO: cp_misaligned_partial: misaligned load/store partly in a locked no-permission region, rest unmatched (MISALIGNED_LDST)",
+      ]
 
   # Certain regions’ privileges can be hardwired—for example, some regions might only
   # ever be visible in machine mode but in no lower-privilege layers.

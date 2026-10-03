@@ -3,9 +3,12 @@
 parameter_definitions:
   - name: NUM_PMP_ENTRIES
     coverpoint: ["all coverpoints"]
+    effect: ["The suite runs only when NUM_PMP_ENTRIES > 0"]
+  - name: NUM_USABLE_PMP_ENTRIES
+    coverpoint: ["all coverpoints"]
     effect:
       [
-        "The suite runs only when NUM_PMP_ENTRIES > 0. The highest usable entry is the background entry",
+        "Entry NUM_USABLE_PMP_ENTRIES - 1 is the locked background entry, except in cp_none_*",
       ]
   - name: PMP_GRANULARITY
     coverpoint: ["all coverpoints"]

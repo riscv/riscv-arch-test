@@ -28,6 +28,22 @@ normative_rule_definitions:
   - name: pmp_l_bit_m_mode_enforcement
     coverpoint: ["PMPZaamo_cg/cp_cfg_RW"]
 
+  # PMP entries are statically prioritized. The lowest-numbered PMP entry that matches
+  # any byte of a memory operation determines whether that operation succeeds or fails.
+  - name: pmp_entry_priority
+    coverpoint:
+      [
+        "TODO: cp_partial_match: aligned .d AMOs partly matched by 4-byte NA4/TOR entries: lower half, upper half, both halves (RV64, G = 0)",
+      ]
+
+  # The matching PMP entry must match all bytes of a memory operation, or the operation
+  # fails, irrespective of the L, R, W, and X bits.
+  - name: pmp_full_match_required
+    coverpoint:
+      [
+        "TODO: cp_partial_match: aligned .d AMOs partly matched by 4-byte NA4/TOR entries: lower half, upper half, both halves (RV64, G = 0)",
+      ]
+
   # If a PMP entry matches all bytes of a memory operation, then the L, R, W, and X bits
   # determine whether the operation succeeds or fails. If the L bit is clear and the
   # privilege mode of the access is M, the operation succeeds. Otherwise, if the L bit
@@ -39,3 +55,11 @@ normative_rule_definitions:
   # store, store-conditional, and AMO instructions generate store/AMO exceptions.
   - name: mcause_exccode_st_sc_amo
     coverpoint: ["PMPZaamo_cg/cp_cfg_RW"]
+
+  # An aligned AMO gives rise to a single memory operation that is both a load operation
+  # and a store operation simultaneously.
+  - name: rvwmo_aligned_amo_memop
+    coverpoint:
+      [
+        "TODO: cp_partial_match: aligned .d AMOs partly matched by 4-byte NA4/TOR entries: lower half, upper half, both halves (RV64, G = 0)",
+      ]

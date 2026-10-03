@@ -93,6 +93,24 @@ normative_rule_definitions:
     # Representative coverpoints; also cp_mprv_{lw, sw}
     coverpoint: ["PMPS_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_mprv_jalr}"]
 
+  # On some implementations, misaligned loads, stores, and instruction fetches may be
+  # decomposed into multiple memory operations, some of which may succeed before an
+  # access-fault exception occurs, as described in the RVWMO specification. PMP checking
+  # is performed on each memory operation independently.
+  - name: pmp_misaligned_access_behavior
+    coverpoint:
+      [
+        "TODO: cp_misaligned_partial: misaligned load/store from S-mode partly in a region, rest unmatched (MISALIGNED_LDST)",
+      ]
+
+  # The matching PMP entry must match all bytes of a memory operation, or the operation
+  # fails, irrespective of the L, R, W, and X bits.
+  - name: pmp_full_match_required
+    coverpoint:
+      [
+        "TODO: cp_misaligned_partial: misaligned load/store from S-mode partly in a region, rest unmatched (MISALIGNED_LDST)",
+      ]
+
   # If a PMP entry matches all bytes of a memory operation, then the L, R, W, and X bits
   # determine whether the operation succeeds or fails. If the L bit is clear and the
   # privilege mode of the access is M, the operation succeeds. Otherwise, if the L bit
@@ -114,3 +132,12 @@ normative_rule_definitions:
   - name: pmp_access_fault_exception
     # Representative coverpoints; also cp_none_{lw, sw}
     coverpoint: ["PMPS_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_none_jalr}"]
+
+  # If mtval is written with a nonzero value when a misaligned load or store causes an
+  # access-fault, page-fault, or hardware-error exception, then mtval will contain the
+  # virtual address of the portion of the access that caused the fault.
+  - name: mtval_vaddr_wr_misaligned_addr
+    coverpoint:
+      [
+        "TODO: cp_misaligned_partial: misaligned load/store from S-mode partly in a region, rest unmatched (MISALIGNED_LDST)",
+      ]

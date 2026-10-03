@@ -2813,13 +2813,13 @@ excpt_\__MODE__\()hndlr_tbl:
 #endif
 \__MODE__\()clr_Lcofi_int:                           // Local counter-overflow interrupt (Sscofpmf), cause 13
         .ifc \__MODE__ , M
-            li T2, (1<<13)
+            LI(T2, (1<<13))
             csrc mip, T2                              // M-mode: mip is accessible directly
         .else
-            li T2, (1<<13)
+            LI(T2, (1<<13))
             csrc sip, T2                               // S/H/V-mode: must clear via sip (mip is M-only)
         .endif
-        la      T2, resto_\__MODE__\()rtn
+        LA(     T2, resto_\__MODE__\()rtn)
         jr      T2
 
 \__MODE__\()clr_Vsw_int:                             // VS-mode software interrupt

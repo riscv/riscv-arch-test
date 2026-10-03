@@ -193,7 +193,6 @@ Zca_c_add_cg_cp_rs2_nx0_b3:
   mv x7, x4 # switch temp register to avoid conflict with test
   mv x8, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2_nx0 (Test source rs2 = x4)
-  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rd/rs1: x0 = 0xcc1c15ddd2a7363c
   RVTEST_TESTDATA_LOAD_INT(x9, x4) # load rs2: x4 = 0xcd2631e60573c3ae
 Zca_c_add_cg_cp_rs2_nx0_b4:
   c.add x0, x4 # perform operation
@@ -209,7 +208,6 @@ Zca_c_add_cg_cp_rs2_nx0_b5:
   RVTEST_SIGUPD(x12, x8, x7, x10, Zca_c_add_cg_cp_rs2_nx0_b5, Zca_c_add_cg_cp_rs2_nx0_b5_str)
 
 # Testcase cp_rs2_nx0 (Test source rs2 = x6)
-  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rd/rs1: x0 = 0x68fe929205d7c19b
   RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs2: x6 = 0x8343fe7cfdc5fe92
 Zca_c_add_cg_cp_rs2_nx0_b6:
   c.add x0, x6 # perform operation
@@ -219,7 +217,6 @@ Zca_c_add_cg_cp_rs2_nx0_b6:
   mv x4, x7 # switch temp register to avoid conflict with test
   mv x5, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2_nx0 (Test source rs2 = x7)
-  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rd/rs1: x0 = 0x612a3b14cdc32fd2
   RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs2: x7 = 0x6abed7a6361fe2d3
 Zca_c_add_cg_cp_rs2_nx0_b7:
   c.add x0, x7 # perform operation
@@ -3322,7 +3319,6 @@ Zca_c_add_cg_cmp_rs1_rs2_nx0_b15:
 /////////////////////////////////
 
 # Testcase cp_c_hint_add: rs2 = x1
-  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rd/rs1: x0 = 0x87a0d98bd9f3f951
   RVTEST_TESTDATA_LOAD_INT(x9, x1) # load rs2: x1 = 0x8b193fe0dca65f37
 Zca_c_add_cg_cp_c_hint_add_rs21:
   c.add x0, x1 # perform operation
@@ -3330,7 +3326,6 @@ Zca_c_add_cg_cp_c_hint_add_rs21:
   RVTEST_SIGUPD(x6, x8, x7, x0, Zca_c_add_cg_cp_c_hint_add_rs21, Zca_c_add_cg_cp_c_hint_add_rs21_str)
 
 # Testcase cp_c_hint_add: rs2 = x2
-  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rd/rs1: x0 = 0x07e5307348c525ad
   RVTEST_TESTDATA_LOAD_INT(x9, x2) # load rs2: x2 = 0xbbf7c788bbd0dc58
 Zca_c_add_cg_cp_c_hint_add_rs22:
   c.add x0, x2 # perform operation
@@ -3338,7 +3333,6 @@ Zca_c_add_cg_cp_c_hint_add_rs22:
   RVTEST_SIGUPD(x6, x8, x7, x0, Zca_c_add_cg_cp_c_hint_add_rs22, Zca_c_add_cg_cp_c_hint_add_rs22_str)
 
 # Testcase cp_c_hint_add: rs2 = x3
-  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rd/rs1: x0 = 0x35d6e74b03766e0f
   RVTEST_TESTDATA_LOAD_INT(x9, x3) # load rs2: x3 = 0x56e30a34d9a669e1
 Zca_c_add_cg_cp_c_hint_add_rs23:
   c.add x0, x3 # perform operation
@@ -3346,7 +3340,6 @@ Zca_c_add_cg_cp_c_hint_add_rs23:
   RVTEST_SIGUPD(x6, x8, x7, x0, Zca_c_add_cg_cp_c_hint_add_rs23, Zca_c_add_cg_cp_c_hint_add_rs23_str)
 
 # Testcase cp_c_hint_add: rs2 = x4
-  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rd/rs1: x0 = 0x415a8ea6d8e6b8dc
   RVTEST_TESTDATA_LOAD_INT(x9, x4) # load rs2: x4 = 0x01f6bb0047da3cb6
 Zca_c_add_cg_cp_c_hint_add_rs24:
   c.add x0, x4 # perform operation
@@ -3354,7 +3347,6 @@ Zca_c_add_cg_cp_c_hint_add_rs24:
   RVTEST_SIGUPD(x6, x8, x7, x0, Zca_c_add_cg_cp_c_hint_add_rs24, Zca_c_add_cg_cp_c_hint_add_rs24_str)
 
 # Testcase cp_c_hint_add: rs2 = x5
-  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rd/rs1: x0 = 0x281846b2b280e6b7
   RVTEST_TESTDATA_LOAD_INT(x9, x5) # load rs2: x5 = 0xa3d54ecfdd8d4328
 Zca_c_add_cg_cp_c_hint_add_rs25:
   c.add x0, x5 # perform operation
@@ -3363,7 +3355,6 @@ Zca_c_add_cg_cp_c_hint_add_rs25:
 
   mv x11, x6 # switch signature pointer register to avoid conflict with test
 # Testcase cp_c_hint_add: rs2 = x6
-  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rd/rs1: x0 = 0x5dc8db057b73e938
   RVTEST_TESTDATA_LOAD_INT(x9, x6) # load rs2: x6 = 0x60151729f89a4aa3
 Zca_c_add_cg_cp_c_hint_add_rs26:
   c.add x0, x6 # perform operation
@@ -3373,7 +3364,6 @@ Zca_c_add_cg_cp_c_hint_add_rs26:
   mv x13, x7 # switch temp register to avoid conflict with test
   mv x14, x8 # switch link pointer register to avoid conflict with test
 # Testcase cp_c_hint_add: rs2 = x7
-  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rd/rs1: x0 = 0x81237bc5f259c7ea
   RVTEST_TESTDATA_LOAD_INT(x9, x7) # load rs2: x7 = 0x2a67e038c123e20e
 Zca_c_add_cg_cp_c_hint_add_rs27:
   c.add x0, x7 # perform operation
@@ -3381,7 +3371,6 @@ Zca_c_add_cg_cp_c_hint_add_rs27:
   RVTEST_SIGUPD(x11, x14, x13, x0, Zca_c_add_cg_cp_c_hint_add_rs27, Zca_c_add_cg_cp_c_hint_add_rs27_str)
 
 # Testcase cp_c_hint_add: rs2 = x8
-  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rd/rs1: x0 = 0xa6068c4e84642652
   RVTEST_TESTDATA_LOAD_INT(x9, x8) # load rs2: x8 = 0xd31cbf2d19aa0795
 Zca_c_add_cg_cp_c_hint_add_rs28:
   c.add x0, x8 # perform operation
@@ -3390,7 +3379,6 @@ Zca_c_add_cg_cp_c_hint_add_rs28:
 
   mv x15, x9 # switch data pointer register to avoid conflict with test
 # Testcase cp_c_hint_add: rs2 = x9
-  RVTEST_TESTDATA_LOAD_INT(x15, x0) # load rd/rs1: x0 = 0xb69114d27d965d81
   RVTEST_TESTDATA_LOAD_INT(x15, x9) # load rs2: x9 = 0x51efa34a9824edac
 Zca_c_add_cg_cp_c_hint_add_rs29:
   c.add x0, x9 # perform operation
@@ -3398,7 +3386,6 @@ Zca_c_add_cg_cp_c_hint_add_rs29:
   RVTEST_SIGUPD(x11, x14, x13, x0, Zca_c_add_cg_cp_c_hint_add_rs29, Zca_c_add_cg_cp_c_hint_add_rs29_str)
 
 # Testcase cp_c_hint_add: rs2 = x10
-  RVTEST_TESTDATA_LOAD_INT(x15, x0) # load rd/rs1: x0 = 0x293622b747ef914a
   RVTEST_TESTDATA_LOAD_INT(x15, x10) # load rs2: x10 = 0x8b2a3a07fe67b814
 Zca_c_add_cg_cp_c_hint_add_rs210:
   c.add x0, x10 # perform operation
@@ -3407,7 +3394,6 @@ Zca_c_add_cg_cp_c_hint_add_rs210:
 
   mv x3, x11 # switch signature pointer register to avoid conflict with test
 # Testcase cp_c_hint_add: rs2 = x11
-  RVTEST_TESTDATA_LOAD_INT(x15, x0) # load rd/rs1: x0 = 0xa9acfba664257747
   RVTEST_TESTDATA_LOAD_INT(x15, x11) # load rs2: x11 = 0x60b1d67c9290daaa
 Zca_c_add_cg_cp_c_hint_add_rs211:
   c.add x0, x11 # perform operation
@@ -3415,7 +3401,6 @@ Zca_c_add_cg_cp_c_hint_add_rs211:
   RVTEST_SIGUPD(x3, x14, x13, x0, Zca_c_add_cg_cp_c_hint_add_rs211, Zca_c_add_cg_cp_c_hint_add_rs211_str)
 
 # Testcase cp_c_hint_add: rs2 = x12
-  RVTEST_TESTDATA_LOAD_INT(x15, x0) # load rd/rs1: x0 = 0xa74728ce2f13bb1d
   RVTEST_TESTDATA_LOAD_INT(x15, x12) # load rs2: x12 = 0x6c6beaa72e0ed478
 Zca_c_add_cg_cp_c_hint_add_rs212:
   c.add x0, x12 # perform operation
@@ -3425,7 +3410,6 @@ Zca_c_add_cg_cp_c_hint_add_rs212:
   mv x4, x13 # switch temp register to avoid conflict with test
   mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_c_hint_add: rs2 = x13
-  RVTEST_TESTDATA_LOAD_INT(x15, x0) # load rd/rs1: x0 = 0x354490890fee67d1
   RVTEST_TESTDATA_LOAD_INT(x15, x13) # load rs2: x13 = 0x0c1b1025fb3e11a5
 Zca_c_add_cg_cp_c_hint_add_rs213:
   c.add x0, x13 # perform operation
@@ -3433,7 +3417,6 @@ Zca_c_add_cg_cp_c_hint_add_rs213:
   RVTEST_SIGUPD(x3, x5, x4, x0, Zca_c_add_cg_cp_c_hint_add_rs213, Zca_c_add_cg_cp_c_hint_add_rs213_str)
 
 # Testcase cp_c_hint_add: rs2 = x14
-  RVTEST_TESTDATA_LOAD_INT(x15, x0) # load rd/rs1: x0 = 0xa5c4acd8ee431ec1
   RVTEST_TESTDATA_LOAD_INT(x15, x14) # load rs2: x14 = 0x1f8d98bf8cfc8f16
 Zca_c_add_cg_cp_c_hint_add_rs214:
   c.add x0, x14 # perform operation
@@ -3442,7 +3425,6 @@ Zca_c_add_cg_cp_c_hint_add_rs214:
 
   mv x9, x15 # switch data pointer register to avoid conflict with test
 # Testcase cp_c_hint_add: rs2 = x15
-  RVTEST_TESTDATA_LOAD_INT(x9, x0) # load rd/rs1: x0 = 0x6651c23239fa6da4
   RVTEST_TESTDATA_LOAD_INT(x9, x15) # load rs2: x15 = 0xe7d6a9d1fb2859b9
 Zca_c_add_cg_cp_c_hint_add_rs215:
   c.add x0, x15 # perform operation
@@ -3494,13 +3476,10 @@ RVTEST_DATA_BEGIN
 .dword 0xd99074452aa7a182
 .dword 0x0526b063d7b2c2c2
 .dword 0x8aea834c3aa15b05
-.dword 0xcc1c15ddd2a7363c
 .dword 0xcd2631e60573c3ae
 .dword 0x30f4b620b885de84
 .dword 0x40afd8d808099193
-.dword 0x68fe929205d7c19b
 .dword 0x8343fe7cfdc5fe92
-.dword 0x612a3b14cdc32fd2
 .dword 0x6abed7a6361fe2d3
 .dword 0xcd8a84b7e4aee3ff
 .dword 0x27fb65229d404bf4
@@ -4268,35 +4247,20 @@ RVTEST_DATA_BEGIN
 .dword 0x3ac58843919122f0
 .dword 0xa8e4e66fb9c5197d
 .dword 0x70b1a7b0b1d54769
-.dword 0x87a0d98bd9f3f951
 .dword 0x8b193fe0dca65f37
-.dword 0x07e5307348c525ad
 .dword 0xbbf7c788bbd0dc58
-.dword 0x35d6e74b03766e0f
 .dword 0x56e30a34d9a669e1
-.dword 0x415a8ea6d8e6b8dc
 .dword 0x01f6bb0047da3cb6
-.dword 0x281846b2b280e6b7
 .dword 0xa3d54ecfdd8d4328
-.dword 0x5dc8db057b73e938
 .dword 0x60151729f89a4aa3
-.dword 0x81237bc5f259c7ea
 .dword 0x2a67e038c123e20e
-.dword 0xa6068c4e84642652
 .dword 0xd31cbf2d19aa0795
-.dword 0xb69114d27d965d81
 .dword 0x51efa34a9824edac
-.dword 0x293622b747ef914a
 .dword 0x8b2a3a07fe67b814
-.dword 0xa9acfba664257747
 .dword 0x60b1d67c9290daaa
-.dword 0xa74728ce2f13bb1d
 .dword 0x6c6beaa72e0ed478
-.dword 0x354490890fee67d1
 .dword 0x0c1b1025fb3e11a5
-.dword 0xa5c4acd8ee431ec1
 .dword 0x1f8d98bf8cfc8f16
-.dword 0x6651c23239fa6da4
 .dword 0xe7d6a9d1fb2859b9
 
 // Testcase strings

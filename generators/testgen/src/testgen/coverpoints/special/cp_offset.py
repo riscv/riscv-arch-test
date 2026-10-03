@@ -75,12 +75,9 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
                 f"addi x{params.temp_reg}, x{params.temp_reg}, -2 # jump not taken, decrement check value",
                 "3:  # done with sequence",
                 write_sigupd(params.temp_reg, test_data),
-                f"{INDENT}# check return address from {instr_name}",
-                f"auipc x{params.temp_reg}, 0 # get current PC",
-                f"sub x{params.rd}, x{params.rd}, x{params.temp_reg} # subtract PC to make position-independent",
-                write_sigupd(params.rd, test_data),
             ]
         )
+        tc.code.extend(check_return_address(instr_name, params.rd, params.temp_reg, test_data))
     elif instr_type in ["CJ", "CJAL"]:
         assert params.temp_reg is not None and params.temp_val is not None
         tc.code.extend(
@@ -112,6 +109,16 @@ def make_offset(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
     return [test_data.end_test_chunk()]
 
 
+def check_return_address(instr_name: str, rd: int, temp_reg: int, test_data: TestData) -> list[str]:
+    """Check the return address written by a jump, relative to the current PC."""
+    return [
+        f"{INDENT}# check return address from {instr_name}",
+        f"auipc x{temp_reg}, 0 # get current PC",
+        f"sub x{rd}, x{rd}, x{temp_reg} # subtract PC to make position-independent",
+        write_sigupd(rd, test_data),
+    ]
+
+
 def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> list[str]:
     test_lines: list[str] = []
     if instr_type == "JR":
@@ -140,10 +147,7 @@ def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> l
                         f"{label}: addi x{params.temp_reg}, x{params.temp_reg}, 2 # should execute; branch taken",
                         f"{INDENT}# check jump taken",
                         write_sigupd(params.temp_reg, test_data),
-                        f"{INDENT}# check return address from {instr_name}",
-                        f"auipc x{params.temp_reg}, 0 # get current PC",
-                        f"sub x{params.rd}, x{params.rd}, x{params.temp_reg} # subtract PC to make position-independent",
-                        write_sigupd(params.rd, test_data),
+                        *check_return_address(instr_name, params.rd, params.temp_reg, test_data),
                     ]
                 )
                 return_testcase_registers(test_data, params)
@@ -171,16 +175,15 @@ def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> l
                     f"{instr_name} x{params.rs1} # jump",
                     f"addi x{params.temp_reg}, x{params.temp_reg}, -4  # should not execute; branch not taken",
                     ".p2align 2",
-                    f"{label}:{' c.nop' if rs1_lsbs >= 2 else ''}",
+                    f"{label}: c.addi x{params.temp_reg}, 1 # reached only if rs1[1] was dropped"
+                    if rs1_lsbs >= 2
+                    else f"{label}:",
                     f"addi x{params.temp_reg}, x{params.temp_reg}, 2 # should execute; branch taken",
                     f"{INDENT}# check jump taken",
                     write_sigupd(params.temp_reg, test_data),
-                    f"{INDENT}# check return address from {instr_name}",
-                    f"auipc x{params.temp_reg}, 0 # get current PC",
-                    f"sub x{params.rd}, x{params.rd}, x{params.temp_reg} # subtract PC to make position-independent",
-                    write_sigupd(params.rd, test_data),
                 ]
             )
+            test_lines.extend(check_return_address(instr_name, params.rd, params.temp_reg, test_data))
             return_testcase_registers(test_data, params)
     else:
         raise ValueError(f"cp_offset_lsbs coverpoint not supported for instruction type {instr_type}.")

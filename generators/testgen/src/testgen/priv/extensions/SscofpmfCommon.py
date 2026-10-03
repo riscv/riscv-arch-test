@@ -94,6 +94,8 @@ def clear_lcofip(r_tmp: int, priv_mode: str) -> list[str]:
 # counter would also count the round trip instead of just the workload.
 _HIGHER_MODE_INHIBITS = {"Sm": 0, "S": 1 << 62, "U": (1 << 62) | (1 << 61)}
 _HIGHER_MODE_INHIBITS_32 = {mode: bits >> 32 for mode, bits in _HIGHER_MODE_INHIBITS.items()}
+# On RV32, event-selector bits 55:32 live in mhpmevent3h[23:0]; every write of the high half keeps them.
+_EVENT_SEL_HI = "(((RVMODEL_MHPMEVENT_VAL) >> 32) & 0xFFFFFF)"
 
 
 def counted_since_all_ones(reg: int) -> list[str]:
@@ -148,7 +150,7 @@ def _generate_xinh_inhibits_tests(test_data: TestData, priv_mode: str) -> list[s
                 f"{indent}#if __riscv_xlen == 32",
                 f"{indent}LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
                 f"{indent}{_csr_access(f'csrw RVMODEL_MHPMEVENT, x{r_val}', priv_mode)}",
-                f"{indent}LI(x{r_val}, {hex(higher_inhibits_32 | (inh_val << inh_bit_pos_32))})",
+                f"{indent}LI(x{r_val}, {_EVENT_SEL_HI} | {hex(higher_inhibits_32 | (inh_val << inh_bit_pos_32))})",
                 f"{indent}{_csr_access(f'csrw CSR_MHPMEVENT3H, x{r_val}', priv_mode)}",
                 f"{indent}#else",
                 f"{indent}LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | {hex(higher_inhibits | (inh_val << inh_bit_pos))})",
@@ -174,7 +176,8 @@ def _generate_xinh_inhibits_tests(test_data: TestData, priv_mode: str) -> list[s
             f"{indent}LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
             f"{indent}{_csr_access(f'csrw RVMODEL_MHPMEVENT, x{r_val}', priv_mode)}",
             f"{indent}#if __riscv_xlen == 32",
-            f"{indent}{_csr_access('csrw CSR_MHPMEVENT3H, zero', priv_mode)}",
+            f"{indent}LI(x{r_val}, {_EVENT_SEL_HI})",
+            f"{indent}{_csr_access(f'csrw CSR_MHPMEVENT3H, x{r_val}', priv_mode)}",
             f"{indent}#endif",
             "",
         ]
@@ -204,7 +207,7 @@ def _generate_xinh_inhibits_tests(test_data: TestData, priv_mode: str) -> list[s
             [
                 f"{indent}LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
                 f"{indent}{_csr_access(f'csrw RVMODEL_MHPMEVENT, x{r_val}', priv_mode)}",
-                f"{indent}LI(x{r_hval}, {combo} << 26)",  # 58-32 = 26
+                f"{indent}LI(x{r_hval}, {_EVENT_SEL_HI} | ({combo} << 26))",  # 58-32 = 26
                 f"{indent}{_csr_access(f'csrw CSR_MHPMEVENT3H, x{r_hval}', priv_mode)}",
                 f"{indent}{_csr_access('csrw RVMODEL_MHPMCOUNTER, zero', priv_mode)}",
                 "",
@@ -261,12 +264,13 @@ def _generate_xinh_inhibits_tests(test_data: TestData, priv_mode: str) -> list[s
 def write_event_pattern(r_val: int, r_hval: int, inhibit_pattern: int, priv_mode: str) -> list[str]:
     """Write RVMODEL_MHPMEVENT_VAL with the MINH/SINH/UINH/VSINH/VUINH pattern at bits
     62:58, OF=0. LI truncates to 32 bits on RV32, so the pattern never reaches the event
-    high half through the RV64 form -- split the write across both halves there."""
+    high half through the RV64 form -- split the write across both halves there, keeping
+    selector bits 55:32 in the high half."""
     return [
         "#if __riscv_xlen == 32",
         f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
         _csr_access(f"csrw RVMODEL_MHPMEVENT, x{r_val}", priv_mode),
-        f"LI(x{r_hval}, {inhibit_pattern} << 26)   # 58-32 = 26",
+        f"LI(x{r_hval}, {_EVENT_SEL_HI} | ({inhibit_pattern} << 26))   # 58-32 = 26",
         _csr_access(f"csrw CSR_MHPMEVENT3H, x{r_hval}", priv_mode),
         "#else",
         f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | ({inhibit_pattern} << 58))   # OF starts at 0",
@@ -475,7 +479,7 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
             "#if __riscv_xlen == 32",
             f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
             _csr_access(f"csrw RVMODEL_MHPMEVENT, x{r_val}", priv_mode),
-            f"LI(x{r_hval}, {hex(1 << 31)})   # OF = 1, no inhibits",
+            f"LI(x{r_hval}, {_EVENT_SEL_HI} | {hex(1 << 31)})   # OF = 1, no inhibits",
             _csr_access(f"csrw CSR_MHPMEVENT3H, x{r_hval}", priv_mode),
             "#else",
             f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | {hex(1 << 63)})   # OF = 1, no inhibits",
@@ -488,7 +492,9 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
             f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_val})",
             f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})   # wait for RVMODEL_INTERRUPT_LATENCY",
             "",
-            test_data.add_testcase(f"of_overflow_{priv_mode.lower()}_of_already_set", coverpoint, covergroup),
+            test_data.add_testcase(
+                f"of_overflow_{priv_mode.lower()}_of_already_set", "cp_of_already_set_overflow", covergroup
+            ),
             *read_event_config_bits(),
             write_sigupd(r_temp, test_data),
             _csr_access(

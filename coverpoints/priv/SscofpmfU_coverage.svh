@@ -70,6 +70,26 @@ covergroup SscofpmfU_cg with function sample(ins_t ins);
         }
     `endif
     `ifdef S_SUPPORTED
+        // Armed with OF already 1: counter at all ones, counting enabled, LCOFIP clear. Only the
+        // OF-already-set test reaches this state; its signature checks that the overflow leaves
+        // OF set and raises no LCOFI request (norm:count_overflow_interrupt).
+        cp_of_already_set_overflow: cross priv_mode_u, sip_lcofi_zero, mie_clear, mhpmevent_of_one, mhpmevent_inhibits_pattern_state, mhpmcounter_extreme_state {
+            ignore_bins counting_inhibited = binsof(mhpmevent_inhibits_pattern_state.msu_set) ||
+                                             binsof(mhpmevent_inhibits_pattern_state.minh_only) ||
+                                             binsof(mhpmevent_inhibits_pattern_state.sinh_only) ||
+                                             binsof(mhpmevent_inhibits_pattern_state.uinh_only);
+            ignore_bins counter_zero = binsof(mhpmcounter_extreme_state.all_zeros);
+        }
+    `else
+        cp_of_already_set_overflow: cross priv_mode_u, lcofi_ip_zero, mie_clear, mhpmevent_of_one, mhpmevent_inhibits_pattern_state, mhpmcounter_extreme_state {
+            ignore_bins counting_inhibited = binsof(mhpmevent_inhibits_pattern_state.msu_set) ||
+                                             binsof(mhpmevent_inhibits_pattern_state.minh_only) ||
+                                             binsof(mhpmevent_inhibits_pattern_state.sinh_only) ||
+                                             binsof(mhpmevent_inhibits_pattern_state.uinh_only);
+            ignore_bins counter_zero = binsof(mhpmcounter_extreme_state.all_zeros);
+        }
+    `endif
+    `ifdef S_SUPPORTED
         cp_overflow_hw_only:   cross priv_mode_u, sip_clear, mie_clear, mhpmcounter_extreme_state, mhpmevent_all_zero;
     `else
         cp_overflow_hw_only:   cross priv_mode_u, mip_clear, mie_clear, mhpmcounter_extreme_state, mhpmevent_all_zero;

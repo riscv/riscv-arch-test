@@ -116,6 +116,16 @@ covergroup SscofpmfSm_cg with function sample(ins_t ins);
         ignore_bins self_inhibited = binsof(mhpmevent_inhibits_pattern_state.minh_only) ||
                                      binsof(mhpmevent_inhibits_pattern_state.msu_set);
     }
+    // Armed with OF already 1: counter at all ones, counting enabled, LCOFIP clear. Only the
+    // OF-already-set test reaches this state; its signature checks that the overflow leaves
+    // OF set and raises no LCOFI request (norm:count_overflow_interrupt).
+    cp_of_already_set_overflow: cross priv_mode_m, lcofi_ip_zero, mie_clear, mhpmevent_of_one, mhpmevent_inhibits_pattern_state, mhpmcounter_extreme_state {
+        ignore_bins counting_inhibited = binsof(mhpmevent_inhibits_pattern_state.msu_set) ||
+                                         binsof(mhpmevent_inhibits_pattern_state.minh_only) ||
+                                         binsof(mhpmevent_inhibits_pattern_state.sinh_only) ||
+                                         binsof(mhpmevent_inhibits_pattern_state.uinh_only);
+        ignore_bins counter_zero = binsof(mhpmcounter_extreme_state.all_zeros);
+    }
     cp_overflow_hw_only:       cross priv_mode_m, mip_clear, mie_clear, mhpmcounter_extreme_state, mhpmevent_all_zero;
     cp_lcofip_hw_only:         cross priv_mode_m, mhpmevent_of, lcofi_ip_zero;
     cp_scountovf_mcounteren:   cross priv_mode_m, of_write_pattern, mcounteren_stimulus_pattern_state;

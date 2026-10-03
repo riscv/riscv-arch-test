@@ -32,8 +32,6 @@ def tsbi_call(instr: str) -> str:
     rs2 = get_rs2(normalized_instr)
     rd = get_rd(normalized_instr)
     opcode = add_opcode(normalized_instr, rs1, rs2, rd)
-    if int(opcode, 16) not in _TSBI_TABLE:
-        raise ValueError(f"T-SBI cannot execute {instr}: {opcode} is not in tsbi_instr_table")
 
     preamble = []
     postscript = []
@@ -55,9 +53,9 @@ def tsbi_call(instr: str) -> str:
     )
 
 
-# Privilege level of each mode, compared against a CSR's lowest privilege level csr[9:8]
-# (0 = U, 1 = S, 2 = HS for hypervisor and VS CSRs, 3 = M).
-_MODE_LEVEL = {"M": 3, "S": 2, "VS": 1, "U": 0, "VU": 0}
+# Highest CSR privilege level, csr[9:8], that code in each mode may access directly. Level 2 holds the
+# hypervisor and VS CSRs, which exist only with H, and S-mode is HS-mode then.
+_MAX_CSR_LEVEL = {"M": 3, "S": 2, "VS": 1, "U": 0, "VU": 0}
 
 
 def tsbi_call_or_direct(instr: str, mode: str) -> str:
@@ -75,7 +73,7 @@ def tsbi_call_or_direct(instr: str, mode: str) -> str:
     if csr_match is None:
         raise ValueError(f"tsbi_call_or_direct takes a csrr/csrw/csrs/csrc instruction: {instr}")
     csr = csr_match.group(3) if csr_match.group(1).lower() == "csrr" else csr_match.group(2)
-    return instr if _MODE_LEVEL[mode] >= (_parse_csr(csr) >> 8) & 3 else tsbi_call(instr)
+    return instr if _MAX_CSR_LEVEL[mode] >= (_parse_csr(csr) >> 8) & 3 else tsbi_call(instr)
 
 
 _REGISTER_ALIASES = {
@@ -132,13 +130,13 @@ _CSR_ALIASES = {
     "mie": 0x304,
     "mtvec": 0x305,
     "mcounteren": 0x306,
+    "mcountinhibit": 0x320,
     "mscratch": 0x340,
     "mepc": 0x341,
     "mcause": 0x342,
     "mip": 0x344,
     "menvcfg": 0x30A,
     "mseccfg": 0x747,
-    "mcountinhibit": 0x320,
     "menvcfgh": 0x31A,
     "mstateen0": 0x30C,
     "mstateen0h": 0x31C,
@@ -155,19 +153,6 @@ _CSR_ALIASES = {
     "scontext": 0x5A8,
     "hcontext": 0x6A8,
 }
-
-# CSRs in tsbi_instr_table in tests/env/rvtest_trap_handler.h; keep the two in sync.
-_TSBI_CSRS = (
-    *(0x300, 0x304, 0x306, 0x30A, 0x30C, 0x31C, 0x31A, 0x344, 0x747, 0x320),
-    *(0x100, 0x104, 0x106, 0x10A, 0x144, 0x14D, 0x15D, 0x180),
-    *(0x7A0, 0x7A1, 0x7A2, 0x7A3, 0x7A4, 0x7A5, 0x7A8, 0x7AA, 0x5A8, 0x6A8),
-)
-# Encodings the T-SBI handler can execute: csrr a0 / csrw / csrs / csrc with a1 for each CSR, then
-# lw a0, 0/4(a1), sw a2, 0/4(a1), ld a0, 0(a1) and sd a2, 0(a1). The handler fails the test on anything else.
-_TSBI_TABLE = frozenset(
-    {(csr << 20) | low for csr in _TSBI_CSRS for low in (0x02573, 0x59073, 0x5A073, 0x5B073)}
-    | {0x0005A503, 0x0045A503, 0x00C5A023, 0x00C5A223, 0x0005B503, 0x00C5B023}
-)
 
 
 def _parse_register(reg: str) -> int:

@@ -2037,7 +2037,6 @@ tsbi_instr_not_found:
 // M-mode and S-mode dispatchers search the table, run a matching instruction, and return.
 // Only CSRs that lower-privilege code might be interested in accessing are needed here.
 // Each instruction must be followed by a ret to return to the dispatcher.
-// _TSBI_CSRS in generators/testgen/src/testgen/asm/tsbi.py lists these CSRs; keep the two in sync.
 tsbi_instr_table:
 
         TSBI_CSR_INSTR_TABLE(0x300) // mstatus

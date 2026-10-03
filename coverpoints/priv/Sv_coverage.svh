@@ -226,31 +226,31 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
             wildcard bins nonleaf = {8'b00?00001};
         }
         PTE_nonleaf_rsv_i: coverpoint ins.current.pte_i[63:54] {
-                bins bit_54 = {10'h001};
-                bins bit_55 = {10'h002};
-                bins bit_56 = {10'h004};
-                bins bit_57 = {10'h008};
-                bins bit_58 = {10'h010};
-                bins bit_59 = {10'h020};
-                bins bit_60 = {10'h040};
-                bins bit_61 = {10'h080};
-                bins bit_62 = {10'h100};
-                bins bit_63 = {10'h200};
+            bins bit_54 = {10'h001};
+            bins bit_55 = {10'h002};
+            bins bit_56 = {10'h004};
+            bins bit_57 = {10'h008};
+            bins bit_58 = {10'h010};
+            bins bit_59 = {10'h020};
+            bins bit_60 = {10'h040};
+            bins bit_61 = {10'h080};
+            bins bit_62 = {10'h100};
+            bins bit_63 = {10'h200};
         }
         PTE_nonleaf_d: coverpoint ins.current.pte_d[7:0] {
             wildcard bins nonleaf = {8'b00?00001};
         }
         PTE_nonleaf_rsv_d: coverpoint ins.current.pte_d[63:54] {
-                bins bit_54 = {10'h001};
-                bins bit_55 = {10'h002};
-                bins bit_56 = {10'h004};
-                bins bit_57 = {10'h008};
-                bins bit_58 = {10'h010};
-                bins bit_59 = {10'h020};
-                bins bit_60 = {10'h040};
-                bins bit_61 = {10'h080};
-                bins bit_62 = {10'h100};
-                bins bit_63 = {10'h200};
+            bins bit_54 = {10'h001};
+            bins bit_55 = {10'h002};
+            bins bit_56 = {10'h004};
+            bins bit_57 = {10'h008};
+            bins bit_58 = {10'h010};
+            bins bit_59 = {10'h020};
+            bins bit_60 = {10'h040};
+            bins bit_61 = {10'h080};
+            bins bit_62 = {10'h100};
+            bins bit_63 = {10'h200};
         }
     `endif
 
@@ -590,6 +590,7 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
 
     `ifdef UDB_MXLEN_64
         cp_PTE_rsv_nleaf_read_s: cross PTE_nonleaf_d, PTE_nonleaf_rsv_d, PageType_d, load_page_fault, priv_mode_s {
+            // a non-leaf PTE is never at level 0
             `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
             `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
             // With Svrsw60t59b, bits 60:59 are ignored and the access does not fault
@@ -599,6 +600,7 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
             `endif
         }
         cp_PTE_rsv_nleaf_write_s: cross PTE_nonleaf_d, PTE_nonleaf_rsv_d, PageType_d, store_page_fault, priv_mode_s {
+            // a non-leaf PTE is never at level 0
             `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
             `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
             // With Svrsw60t59b, bits 60:59 are ignored and the access does not fault
@@ -608,6 +610,7 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
             `endif
         }
         cp_PTE_rsv_nleaf_exec_s: cross PTE_nonleaf_i, PTE_nonleaf_rsv_i, PageType_i, ins_page_fault, priv_mode_s {
+            // a non-leaf PTE is never at level 0
             `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_i.sv48_kilo); `endif
             `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_i.sv39_kilo); `endif
             // With Svrsw60t59b, bits 60:59 are ignored and the access does not fault

@@ -666,6 +666,27 @@ def _make_pmpaddr_upper_chunk(test_data: TestData) -> TestChunk:
     return test_data.end_test_chunk()
 
 
+def _make_pmpcfg_odd_chunk(test_data: TestData) -> TestChunk:
+    chunk = test_data.begin_test_chunk("pmpcfg_odd")
+    chunk.section_header = comment_banner(
+        "cp_pmpcfg_odd_rv64",
+        "Write all ones to each odd pmpcfg CSR and read it back. On RV64 these CSRs are illegal,\n"
+        "so every access raises an illegal-instruction exception and x4 keeps its value.",
+    )
+    for csr in range(1, 16, 2):
+        if chunk.code:
+            chunk.code.append("")
+        chunk.code.extend(
+            [
+                test_data.add_testcase(f"pmpcfg{csr}", "cp_pmpcfg_odd_rv64", "PMPSm"),
+                "LI(x4, -1)",
+                # Numeric CSR address: pmpcfg1, pmpcfg3, ... are RV32-only names.
+                gen_csr_write_sigupd(4, f"CSR_PMPCFG{csr}", test_data),
+            ]
+        )
+    return test_data.end_test_chunk()
+
+
 #####################################################################
 # pmpsm_{na4,napot,tor}_legal_lxwr: every legal locked LXWR against
 # one region in each address mode
@@ -891,6 +912,7 @@ def make_pmpsm_rv64(test_data: TestData) -> list[TestChunk]:
     return [
         *(_make_pmpcfg_walk_chunk(test_data, byte + 2, byte) for byte in range(4, 8)),
         _make_pmpaddr_upper_chunk(test_data),
+        _make_pmpcfg_odd_chunk(test_data),
     ]
 
 

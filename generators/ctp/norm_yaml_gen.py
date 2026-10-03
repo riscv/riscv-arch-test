@@ -39,18 +39,17 @@ def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def load_csv_with_coverpoints(csv_path: Path) -> dict[str, dict[str, Any]]:
+def load_csv_with_coverpoints(csv_path: Path) -> dict[str, list[tuple[str, list[str]]]]:
     """
     Load instruction names and coverpoint data from a CSV testplan file.
 
-    Returns a dict mapping instruction names to dicts with 'row' and 'groups' keys. 'groups' lists
-    (REQUIRED_EXTENSIONS, coverpoints) for each of the instruction's rows; a row with extra extensions
-    maps to the covergroup <suite><ext>_<instr>_cg.
+    Returns a dict mapping each instruction name to a (REQUIRED_EXTENSIONS, coverpoints) pair for each
+    of its rows; a row with a REQUIRED_EXTENSIONS entry maps to the covergroup <suite><ext>_<instr>_cg.
     Excludes columns that:
     - Start with 'cmp'
     - Contain 'edges' unless they start with 'cr' OR no cr*edges coverpoint exists
     """
-    data = {}
+    data: dict[str, list[tuple[str, list[str]]]] = {}
     with csv_path.open("r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
 
@@ -115,11 +114,8 @@ def load_csv_with_coverpoints(csv_path: Path) -> dict[str, dict[str, Any]]:
                 else:
                     coverpoints.append(f"{col_name}_{cell_value}")
 
-            extra_extensions = tuple(
-                ext.strip() for ext in (row.get("REQUIRED_EXTENSIONS") or "").split(":") if ext.strip()
-            )
-            entry = data.setdefault(instr, {"row": row, "groups": []})
-            entry["groups"].append((extra_extensions, coverpoints))
+            extra_extension = (row.get("REQUIRED_EXTENSIONS") or "").strip()
+            data.setdefault(instr, []).append((extra_extension, coverpoints))
 
     return data
 
@@ -146,7 +142,9 @@ def find_rule_in_json(rule_name: str, json_data: dict[str, Any]) -> dict[str, An
     return None
 
 
-def generate_yaml_content(csv_base_name: str, instr_data: dict[str, dict[str, Any]], json_data: dict[str, Any]) -> str:
+def generate_yaml_content(
+    csv_base_name: str, instr_data: dict[str, list[tuple[str, list[str]]]], json_data: dict[str, Any]
+) -> str:
     """
     Generate YAML content for the given instructions.
 
@@ -160,7 +158,7 @@ def generate_yaml_content(csv_base_name: str, instr_data: dict[str, dict[str, An
         "normative_rule_definitions:",
     ]
 
-    for instruction, data in instr_data.items():
+    for instruction, rows in instr_data.items():
         rule_name = normalize_instruction_name(instruction)
         rule = find_rule_in_json(rule_name, json_data)
 
@@ -175,12 +173,12 @@ def generate_yaml_content(csv_base_name: str, instr_data: dict[str, dict[str, An
                     yaml_lines.extend(f"    # {line}" for line in text.split("\n"))
 
             # Generate coverpoints from CSV data
-            # Format: <file>[<ext>...]_<instr>_cg/{points}
+            # Format: <file>[<ext>]_<instr>_cg/{points}
             # instr uses underscores instead of dashes
             instr_with_underscore = instruction.replace(".", "_")
             cp_strs = [
-                f'"{"".join((csv_base_name, *extra_extensions))}_{instr_with_underscore}_cg/{{{", ".join(cps)}}}"'
-                for extra_extensions, cps in data["groups"]
+                f'"{csv_base_name}{extension}_{instr_with_underscore}_cg/{{{", ".join(cps)}}}"'
+                for extension, cps in rows
                 if cps
             ]
             if cp_strs:

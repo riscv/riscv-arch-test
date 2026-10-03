@@ -59,12 +59,7 @@ normative_rule_definitions:
   # New 16-bit variants of LOAD-FP and STORE-FP instructions are added, encoded with a
   # new value for the funct3 width field.
   - name: fsh_flh_op
-    coverpoint:
-      [
-        "{Zfhmin_flh_cg, Zfhmin_fsh_cg}/{cp_rs1_nx0, cp_imm_edges}",
-        "ZfhminD_flh_cg/cp_NaNBox_D_H",
-        "ZfhminD_fsh_cg/cp_fs2_badNB_D_H",
-      ]
+    coverpoint: ["{Zfhmin_flh_cg, Zfhmin_fsh_cg}/{cp_rs1_nx0, cp_imm_edges}"]
   # insn:flh[] and insn:fsh[] are only guaranteed to execute atomically if the effective
   # address is naturally aligned.
   - name: fsh_flh_atomic_align

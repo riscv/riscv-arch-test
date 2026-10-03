@@ -108,27 +108,6 @@ normative_rule_definitions:
         "Out of scope; also untestable without Ssstrict because reserved instructions behavior is UNSPECIFIED",
       ]
 
-  # For a given RISC-V execution environment, an instruction, extension, or other
-  # feature of the RISC-V ISA is ordinarily judged to be implemented or not by the
-  # observable execution behavior in that environment. For example, the F extension
-  # is said to be implemented for an execution environment if and only if the
-  # instructions that the RISC-V Unprivileged ISA defines for F execute as
-  # specified.
-  - name: misa_extensions_impl_def
-    coverpoint: ["Tested by executing all of the extensions being certified"]
-
-  # With this definition of implemented, disabling an extension by clearing its bit
-  # in misa results in the extension being considered not implemented in M-mode. For
-  # example, setting misa.F=0 results in the F extension being not implemented for
-  # M-mode, because the F extension&#8217;s instructions will not act as the
-  # Unprivileged ISA requires but may instead raise an illegal-instruction
-  # exception.
-  - name: misa_extensions_disabling_def
-    coverpoint:
-      [
-        "Out of scope; also untestable without Ssstrict because reserved instructions behavior is UNSPECIFIED",
-      ]
-
   # All bits that are reserved for future use must return zero when read.
   - name: misa_extensions_rsv_ret_0
     coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
@@ -161,14 +140,6 @@ normative_rule_definitions:
 
   # When the "U" bit is 1, the implementation supports user mode.
   - name: misa_u_op
-    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
-
-  # csr:misa[c] must be clear if any of the following holds:
-  - name: misa_C_set_line
-    coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
-  # ext:zca[] is not implemented MXLEN=32, ext:f[] is implemented, and ext:zcf[] is not
-  # implemented ext:d[] is implemented, and ext:zcd[] is not implemented
-  - name: misa_C_set_list
     coverpoint: ["Sm_mcsr_cg/cp_misa_mxl"]
 
   # Unless misa is all read-only zero, the "E" bit always reads as the complement of
@@ -1284,12 +1255,6 @@ normative_rule_definitions:
         "Sm_mcsr_cg/{cp_mtimeh_write, cp_csr_ro}",
       ]
 
-  # Implementations can convert reads of the time and timeh CSRs into loads to the
-  # memory-mapped mtime register, or emulate this functionality on behalf of less-privileged
-  # modes in M-mode software.
-  - name: time_csr_architectural_availability
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
-
   - name: mcountinhibit_enc_img
     coverpoint: ["Sm_mcsr_cg/cp_mcsr_access/mcountinhibit"]
 
@@ -1518,10 +1483,6 @@ normative_rule_definitions:
   - name: endianness_inst_fetch_little
     coverpoint: ["Tested by executing instructions"]
 
-  # Reset and NMI vector locations are given in a platform specification.
-  - name: rst_and_nmi_addr
-    coverpoint: ["Tested with linker script", "Out of scope"]
-
   # When a trap is delegated to S-mode The mcause, mepc, and mtval registers and the
   # MPP and MPIE fields of mstatus are not written.
   - name: trap_del_s_mode_no_m_mode
@@ -1724,10 +1685,6 @@ normative_rule_definitions:
   - name: mseccfg_useed_sseed_rst
     coverpoint:
       ["TODO: record mseccfg.USEED and SSEED after reset, before any write"]
-
-  # mcause reset values may alias mcause values following synchronous exceptions
-  - name: mcause_rst_alias_ok
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
 
   # cause an immediate jump to an implementation-defined NMI vector running in M-mode regardless of
   # the state of a hart’s interrupt enable bits. The mepc register is written with the virtual

@@ -469,8 +469,8 @@
       ret
 
     rvtest_set_mext_int_m:
-      #ifdef RVMODEL_SET_MEXT_INT
-        RVMODEL_SET_MEXT_INT(a0, a1) // platform-specific interrupt controller
+      #ifdef RVMODEL_SET_MEXT_INT_M
+        RVMODEL_SET_MEXT_INT_M(a0, a1) // platform-specific interrupt controller
       #endif
       ret
 
@@ -574,8 +574,8 @@
 
       rvtest_set_sext_int_m:
         // trigger with platform-specific interrupt controller if it exists, otherwise with mip.SEIP
-        #ifdef RVMODEL_SET_SEXT_INT
-          RVMODEL_SET_SEXT_INT(a0, a1)
+        #ifdef RVMODEL_SET_SEXT_INT_M
+          RVMODEL_SET_SEXT_INT_M(a0, a1)
         #else
           li a1, 1<<9 // SEIP bit
           csrs mip, a1        // Trigger mip.SEIP

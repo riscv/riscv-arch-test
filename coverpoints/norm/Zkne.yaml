@@ -10,9 +10,6 @@ normative_rule_definitions:
   - name: Zk_impl_all
     coverpoint: ["Definition, checked through UDB"]
 
-  - name: Zkne_shared_instr
-    coverpoint: ["Definition, checked through UDB"]
-
   - name: Zk_scalar_xreg_op
     coverpoint: ["{Zkne_aes32esi_cg, Zkne_aes64es_cg}/{cr_rs1_rs2_edges}"]
 

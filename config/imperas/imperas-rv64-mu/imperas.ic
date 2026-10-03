@@ -100,7 +100,7 @@
 --override cpu*/Smnpm=48_57 # (Enumeration) (default=48_57) (default) Specify Smnpm implemented modes
 
 # More extensions
-# Smdbltrp is off to match the UDB configuration: Sail does not model double trap
+# Smdbltrp off to match imperas-rv64-mu.yaml (Sail 0.14.1 rejects cause 16, #2403)
 --override cpu*/Smdbltrp=F
 --override cpu*/d_requires_f=T
 

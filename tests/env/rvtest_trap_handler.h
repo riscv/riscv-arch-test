@@ -408,10 +408,10 @@
 1:
 .endm
 
-// Clear mstatus.MDT on a failure exit from an M-mode trap handler. The failure code and
-// cleanup_epilogs make T-SBI ecalls, which are double traps while MDT is still 1 from
-// trap entry. Only failure exits use this, after the trap state has been captured, so a
-// passing trap never sees MDT changed.
+// Clear mstatus.MDT on an M-mode trap handler exit that does not use mret: the GOTO_MMODE
+// return and the failure exits. The failure code and cleanup_epilogs make T-SBI ecalls,
+// which are double traps while MDT is still 1 from trap entry. Failure exits clear it only
+// after the trap state has been captured, so a passing trap never sees MDT changed.
 .macro RVTEST_CLEAR_MDT TMP_REG
 #ifdef SMDBLTRP_SUPPORTED
   #if (UDB_MXLEN==64)
@@ -2830,16 +2830,7 @@ from_hs_u:
 rtn_fm_mmode:
         add     T2, T4, T2                             // T2 = M-mode code_begin + relative offset = return addr
 
-  #ifdef SMDBLTRP_SUPPORTED
-        # clear MDT bit in mstatus/h (if it was set) before returning without mret
-        #if (UDB_MXLEN==64)
-                LI(T3, MSTATUS_MDT)
-                csrc   CSR_MSTATUS, T3
-        #else // RV32
-                LI(T3, MSTATUSH_MDT)
-                csrc   CSR_MSTATUSH, T3
-        #endif // MXLEN
-  #endif // SMDBLTRP_SUPPORTED
+        RVTEST_CLEAR_MDT T3                            // returning without mret leaves MDT set
 
         LREG    T1, trap_sv_off+1*REGWIDTH(sp)        // restore T1
         LREG    T3, trap_sv_off+3*REGWIDTH(sp)        // restore T3
@@ -2871,7 +2862,7 @@ rtn_fm_mmode:
 .endif
 
 // Failure exits. They leave the handler without an xRET, so an M-mode handler clears MDT
-// first. T4 (x9) is free on all three paths.
+// first. T4 is free on all three paths.
 \__MODE__\()trap_mismatch:                         // from TRAP_SIGUPD: x7 = return address
   .ifc \__MODE__ , M
         RVTEST_CLEAR_MDT T4

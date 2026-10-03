@@ -286,6 +286,10 @@ covergroup Zaamo_amomax_w_cg with function sample(ins_t ins);
         `endif
     }
 
+    cr_memval_rs2_edges_word : cross cp_memval_word,cp_rs2_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of memory word and rs2 edges
+    }
+
 endgroup
 // ---------------------
 covergroup Zaamo_amomaxu_w_cg with function sample(ins_t ins);
@@ -376,6 +380,10 @@ covergroup Zaamo_amomaxu_w_cg with function sample(ins_t ins);
             bins walkeven = {64'b0101010101010101010101010101010101010101010101010101010101010101};
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
+    }
+
+    cr_memval_rs2_edges_word : cross cp_memval_word,cp_rs2_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of memory word and rs2 edges
     }
 
 endgroup
@@ -470,6 +478,10 @@ covergroup Zaamo_amomin_w_cg with function sample(ins_t ins);
         `endif
     }
 
+    cr_memval_rs2_edges_word : cross cp_memval_word,cp_rs2_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of memory word and rs2 edges
+    }
+
 endgroup
 // ---------------------
 covergroup Zaamo_amominu_w_cg with function sample(ins_t ins);
@@ -560,6 +572,10 @@ covergroup Zaamo_amominu_w_cg with function sample(ins_t ins);
             bins walkeven = {64'b0101010101010101010101010101010101010101010101010101010101010101};
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
+    }
+
+    cr_memval_rs2_edges_word : cross cp_memval_word,cp_rs2_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of memory word and rs2 edges
     }
 
 endgroup
@@ -1106,6 +1122,10 @@ covergroup Zaamo_amomax_d_cg with function sample(ins_t ins);
         `endif
     }
 
+    cr_memval_rs2_edges_double : cross cp_memval_double,cp_rs2_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of memory doubleword and rs2 edges
+    }
+
 endgroup
 // ---------------------
 covergroup Zaamo_amomaxu_d_cg with function sample(ins_t ins);
@@ -1193,6 +1213,10 @@ covergroup Zaamo_amomaxu_d_cg with function sample(ins_t ins);
             bins walkeven = {64'b0101010101010101010101010101010101010101010101010101010101010101};
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
+    }
+
+    cr_memval_rs2_edges_double : cross cp_memval_double,cp_rs2_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of memory doubleword and rs2 edges
     }
 
 endgroup
@@ -1284,6 +1308,10 @@ covergroup Zaamo_amomin_d_cg with function sample(ins_t ins);
         `endif
     }
 
+    cr_memval_rs2_edges_double : cross cp_memval_double,cp_rs2_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of memory doubleword and rs2 edges
+    }
+
 endgroup
 // ---------------------
 covergroup Zaamo_amominu_d_cg with function sample(ins_t ins);
@@ -1371,6 +1399,10 @@ covergroup Zaamo_amominu_d_cg with function sample(ins_t ins);
             bins walkeven = {64'b0101010101010101010101010101010101010101010101010101010101010101};
             wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
         `endif
+    }
+
+    cr_memval_rs2_edges_double : cross cp_memval_double,cp_rs2_edges  iff (ins.trap == 0 )  {
+        // Cross coverage of memory doubleword and rs2 edges
     }
 
 endgroup

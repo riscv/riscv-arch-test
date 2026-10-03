@@ -47,7 +47,7 @@
 
 // Calculate region size g in bytes.
 `define g_tor       (2 ** (`UDB_PMP_GRANULARITY))
-`define g_napot     ((`UDB_PMP_GRANULARITY > 3) ? (2 ** (`UDB_PMP_GRANULARITY)) : (2 ** (`UDB_PMP_GRANULARITY + 1)))
+`define g_napot     ((`UDB_PMP_GRANULARITY > 2) ? (2 ** (`UDB_PMP_GRANULARITY)) : (2 ** (`UDB_PMP_GRANULARITY + 1)))
 
 // Region bases. Each test pads its blob by one grain so that the region under test starts on a
 // grain-aligned boundary and the pad stays in the background region (the pad is emitted by

@@ -2,3 +2,64 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
+  # If mtval is written with a nonzero value when an instruction access-fault, page-fault, or
+  # hardware-error exception occurs on a hart with variable-length instructions, then mtval will
+  # contain the virtual address of the portion of the instruction that caused the fault
+  - name: mtval_varlen_wr
+    coverpoint:
+      [
+        "PMPZca_cg/{cp_misaligned_tor, cp_misaligned_napot, cp_misaligned_na4}",
+        "TODO: instruction page fault on the second half of a 32-bit instruction that straddles a page",
+      ]
+
+  # mepc will point to the beginning of the instruction.
+  - name: mepc_varlen_wr
+    coverpoint:
+      ["PMPZca_cg/{cp_misaligned_tor, cp_misaligned_napot, cp_misaligned_na4}"]
+
+  # The matching PMP entry must match all bytes of a memory operation, or the
+  # operation fails, irrespective of the L, R, W, and X bits.
+  - name: pmp_full_match_required
+    # Representative coverpoints; also cp_misaligned_{napot, na4}
+    coverpoint:
+      ["PMPZca_cg/{cp_cret_tor, cp_cret_napot, cp_cret_na4, cp_misaligned_tor}"]
+
+  # PMP entries are statically prioritized. The lowest-numbered PMP entry that
+  # matches any byte of a memory operation determines whether that operation
+  # succeeds or fails.
+  - name: pmp_entry_priority
+    coverpoint:
+      ["PMPZca_cg/{cp_misaligned_napot, cp_misaligned_tor, cp_misaligned_na4}"]
+
+  # When A=0, this PMP entry is disabled and matches no addresses.
+  - name: pmp_a_field_off
+    coverpoint: ["PMPZca_cg/cp_misaligned_off"]
+
+  # Attempting to fetch an instruction from a PMP region that does not have execute
+  # permissions raises an instruction access-fault exception.
+  - name: pmp_exec_fault
+    coverpoint:
+      ["PMPZca_cg/{cp_misaligned_napot, cp_misaligned_tor, cp_misaligned_na4}"]
+
+  # The R, W, and X bits, when set, indicate that the PMP entry permits read, write,
+  # and instruction execution, respectively. When one of these bits is clear, the
+  # corresponding access type is denied.
+  - name: pmp_cfg_permissions
+    coverpoint: ["PMPZca_cg/{cp_cfg_R, cp_cfg_W}"]
+
+  # Attempting to execute a load instruction that accesses a physical address within a
+  # PMP region without read permissions raises a load access-fault exception.
+  - name: pmp_load_fault
+    coverpoint: ["PMPZca_cg/cp_cfg_R"]
+
+  # Attempting to execute a store instruction which accesses a physical address within
+  # a PMP region without write permissions raises a store access-fault exception.
+  - name: pmp_store_fault
+    coverpoint: ["PMPZca_cg/cp_cfg_W"]
+
+  # The Zca extension allows 16-bit instructions to be freely intermixed with 32-bit
+  # instructions, with the latter now able to start on any 16-bit boundary, i.e.,
+  # IALIGN=16.
+  - name: Zca_align16
+    # 32-bit instructions that start 2 bytes before a PMP region boundary
+    coverpoint: ["PMPZca_cg/{cp_misaligned_napot, cp_misaligned_tor}"]

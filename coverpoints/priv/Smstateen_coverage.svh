@@ -275,9 +275,11 @@ covergroup Smstateen_cg with function sample(ins_t ins);
         }
     `endif
     `ifdef H_SUPPORTED
+    `ifdef UDB_MXLEN_32
         hedelegh_csr: coverpoint ins.current.insn[31:20] {
             wildcard bins hedelegh = {CSR_HEDELEGH};
         }
+    `endif
     `endif
 `endif
 
@@ -383,9 +385,9 @@ covergroup Smstateen_cg with function sample(ins_t ins);
     // Row 13: Sm1p13 + Hypervisor only
 `ifdef SM1P13P0_OR_LATER_SUPPORTED
     `ifdef H_SUPPORTED
-        `ifdef UDB_MXLEN_32
-            cp_p1p13: cross csrops, p1p13_state, hedelegh_csr, priv_mode_m_maybes_u;
-        `endif
+    `ifdef UDB_MXLEN_32
+        cp_p1p13: cross csrops, p1p13_state, hedelegh_csr, priv_mode_m_maybes_u;
+    `endif
     `endif
 `endif
 

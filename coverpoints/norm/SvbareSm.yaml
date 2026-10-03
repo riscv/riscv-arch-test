@@ -10,5 +10,6 @@ normative_rule_definitions:
 
   # Instruction address-translation and protection are unaffected by the setting of
   # csr::[mprv].
+  # With satp.MODE=Bare a fetch is not translated whatever MPRV is; SvSm shows the rule with translation on.
   - name: mstatus_mprv_inst_xlat_op
-    coverpoint: ["SvbareSm_cg/cp_satp_bare_mprv_exec"]
+    coverpoint: ["SvSm_mstatus_mprv_cg/cp_mprv_ins"]

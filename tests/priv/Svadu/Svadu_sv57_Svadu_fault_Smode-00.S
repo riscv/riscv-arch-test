@@ -72,7 +72,7 @@ main:
 
   LI(a2, 0x800) // Test signature initialization
 
-// Test case 1: Misaligned superpage at level 4 | A=0 D=0 | expected = RWX page fault, PTE unchanged
+// Test case 1: Misaligned superpage at level 4 | A=0 D=0 | expected = RWX page fault, D unchanged
   PTE_SETUP_SV57(rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V), va_misaligned, LEVEL4)
 
   LI(a5, (va_misaligned >> 48) << 48)
@@ -107,16 +107,17 @@ Svadu_cg_cp_ad_fault_no_update_test1_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test1_exec, Svadu_cg_cp_ad_fault_no_update_test1_exec_str)
 
-// The PTE must still have A=0 and D=0
+// The PTE must still have D=0. A may have been set speculatively, so clear it before the check.
   LA(a0, rvtest_Sroot_pg_tbl)
   LI(t0, 56)
   add a0, a0, t0
 Svadu_cg_cp_ad_fault_no_update_test1_read_pte:
-  ld a4, 0(a0)
+  LREG a4, 0(a0)
+  andi a4, a4, ~PTE_A
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test1_read_pte, Svadu_cg_cp_ad_fault_no_update_test1_read_pte_str)
 
-// Test case 2: Misaligned superpage at level 3 | A=0 D=0 | expected = RWX page fault, PTE unchanged
+// Test case 2: Misaligned superpage at level 3 | A=0 D=0 | expected = RWX page fault, D unchanged
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_misaligned, LEVEL4)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V), va_misaligned, LEVEL3)
 
@@ -152,16 +153,17 @@ Svadu_cg_cp_ad_fault_no_update_test2_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test2_exec, Svadu_cg_cp_ad_fault_no_update_test2_exec_str)
 
-// The PTE must still have A=0 and D=0
+// The PTE must still have D=0. A may have been set speculatively, so clear it before the check.
   LA(a0, rvtest_slvl3_pg_tbl)
   LI(t0, 0)
   add a0, a0, t0
 Svadu_cg_cp_ad_fault_no_update_test2_read_pte:
-  ld a4, 0(a0)
+  LREG a4, 0(a0)
+  andi a4, a4, ~PTE_A
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test2_read_pte, Svadu_cg_cp_ad_fault_no_update_test2_read_pte_str)
 
-// Test case 3: Misaligned superpage at level 2 | A=0 D=0 | expected = RWX page fault, PTE unchanged
+// Test case 3: Misaligned superpage at level 2 | A=0 D=0 | expected = RWX page fault, D unchanged
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_misaligned, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_misaligned, LEVEL3)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V), va_misaligned, LEVEL2)
@@ -198,16 +200,17 @@ Svadu_cg_cp_ad_fault_no_update_test3_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test3_exec, Svadu_cg_cp_ad_fault_no_update_test3_exec_str)
 
-// The PTE must still have A=0 and D=0
+// The PTE must still have D=0. A may have been set speculatively, so clear it before the check.
   LA(a0, rvtest_slvl2_pg_tbl)
   LI(t0, 0)
   add a0, a0, t0
 Svadu_cg_cp_ad_fault_no_update_test3_read_pte:
-  ld a4, 0(a0)
+  LREG a4, 0(a0)
+  andi a4, a4, ~PTE_A
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test3_read_pte, Svadu_cg_cp_ad_fault_no_update_test3_read_pte_str)
 
-// Test case 4: Misaligned superpage at level 1 | A=0 D=0 | expected = RWX page fault, PTE unchanged
+// Test case 4: Misaligned superpage at level 1 | A=0 D=0 | expected = RWX page fault, D unchanged
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_misaligned, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_misaligned, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_misaligned, LEVEL2)
@@ -245,16 +248,17 @@ Svadu_cg_cp_ad_fault_no_update_test4_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test4_exec, Svadu_cg_cp_ad_fault_no_update_test4_exec_str)
 
-// The PTE must still have A=0 and D=0
+// The PTE must still have D=0. A may have been set speculatively, so clear it before the check.
   LA(a0, rvtest_slvl1_pg_tbl)
   LI(t0, 0)
   add a0, a0, t0
 Svadu_cg_cp_ad_fault_no_update_test4_read_pte:
-  ld a4, 0(a0)
+  LREG a4, 0(a0)
+  andi a4, a4, ~PTE_A
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test4_read_pte, Svadu_cg_cp_ad_fault_no_update_test4_read_pte_str)
 
-// Test case 5: U page accessed from S-mode with SUM=0 | A=0 D=0 | expected = RWX page fault, PTE unchanged
+// Test case 5: U page accessed from S-mode with SUM=0 | A=0 D=0 | expected = RWX page fault, D unchanged
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -293,16 +297,17 @@ Svadu_cg_cp_ad_fault_no_update_test5_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test5_exec, Svadu_cg_cp_ad_fault_no_update_test5_exec_str)
 
-// The PTE must still have A=0 and D=0
+// The PTE must still have D=0. A may have been set speculatively, so clear it before the check.
   LA(a0, rvtest_slvl0_pg_tbl)
   LI(t0, 24)
   add a0, a0, t0
 Svadu_cg_cp_ad_fault_no_update_test5_read_pte:
-  ld a4, 0(a0)
+  LREG a4, 0(a0)
+  andi a4, a4, ~PTE_A
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test5_read_pte, Svadu_cg_cp_ad_fault_no_update_test5_read_pte_str)
 
-// Test case 6: Reserved encoding W=1 R=0 | A=0 D=0 | expected = RWX page fault, PTE unchanged
+// Test case 6: Reserved encoding W=1 R=0 | A=0 D=0 | expected = RWX page fault, D unchanged
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -341,16 +346,17 @@ Svadu_cg_cp_ad_fault_no_update_test6_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test6_exec, Svadu_cg_cp_ad_fault_no_update_test6_exec_str)
 
-// The PTE must still have A=0 and D=0
+// The PTE must still have D=0. A may have been set speculatively, so clear it before the check.
   LA(a0, rvtest_slvl0_pg_tbl)
   LI(t0, 24)
   add a0, a0, t0
 Svadu_cg_cp_ad_fault_no_update_test6_read_pte:
-  ld a4, 0(a0)
+  LREG a4, 0(a0)
+  andi a4, a4, ~PTE_A
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test6_read_pte, Svadu_cg_cp_ad_fault_no_update_test6_read_pte_str)
 
-// Test case 7: Reserved bit 54 set | A=0 D=0 | expected = RWX page fault, PTE unchanged
+// Test case 7: Reserved bit 54 set | A=0 D=0 | expected = RWX page fault, D unchanged
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -389,16 +395,17 @@ Svadu_cg_cp_ad_fault_no_update_test7_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test7_exec, Svadu_cg_cp_ad_fault_no_update_test7_exec_str)
 
-// The PTE must still have A=0 and D=0
+// The PTE must still have D=0. A may have been set speculatively, so clear it before the check.
   LA(a0, rvtest_slvl0_pg_tbl)
   LI(t0, 24)
   add a0, a0, t0
 Svadu_cg_cp_ad_fault_no_update_test7_read_pte:
-  ld a4, 0(a0)
+  LREG a4, 0(a0)
+  andi a4, a4, ~PTE_A
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test7_read_pte, Svadu_cg_cp_ad_fault_no_update_test7_read_pte_str)
 
-// Test case 8: Reserved PBMT=3 | A=0 D=0 | expected = RWX page fault, PTE unchanged
+// Test case 8: Reserved PBMT=3 | A=0 D=0 | expected = RWX page fault, D unchanged
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -437,16 +444,17 @@ Svadu_cg_cp_ad_fault_no_update_test8_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test8_exec, Svadu_cg_cp_ad_fault_no_update_test8_exec_str)
 
-// The PTE must still have A=0 and D=0
+// The PTE must still have D=0. A may have been set speculatively, so clear it before the check.
   LA(a0, rvtest_slvl0_pg_tbl)
   LI(t0, 24)
   add a0, a0, t0
 Svadu_cg_cp_ad_fault_no_update_test8_read_pte:
-  ld a4, 0(a0)
+  LREG a4, 0(a0)
+  andi a4, a4, ~PTE_A
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test8_read_pte, Svadu_cg_cp_ad_fault_no_update_test8_read_pte_str)
 
-// Test case 9: N=1 with reserved encoding ppn[3:0]=0000 | A=0 D=0 | expected = RWX page fault, PTE unchanged
+// Test case 9: N=1 with reserved encoding ppn[3:0]=0000 | A=0 D=0 | expected = RWX page fault, D unchanged
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -485,16 +493,17 @@ Svadu_cg_cp_ad_fault_no_update_test9_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test9_exec, Svadu_cg_cp_ad_fault_no_update_test9_exec_str)
 
-// The PTE must still have A=0 and D=0
+// The PTE must still have D=0. A may have been set speculatively, so clear it before the check.
   LA(a0, rvtest_slvl0_pg_tbl)
   LI(t0, 24)
   add a0, a0, t0
 Svadu_cg_cp_ad_fault_no_update_test9_read_pte:
-  ld a4, 0(a0)
+  LREG a4, 0(a0)
+  andi a4, a4, ~PTE_A
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test9_read_pte, Svadu_cg_cp_ad_fault_no_update_test9_read_pte_str)
 
-// Test case 10: N=1 with ppn[3:0]=1000 on a level 4 superpage | A=0 D=0 | expected = RWX page fault, PTE unchanged
+// Test case 10: N=1 with ppn[3:0]=1000 on a level 4 superpage | A=0 D=0 | expected = RWX page fault, D unchanged
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, ((1 << 63) | (1 << 13) | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
 
   LI(a5, (va_data >> 48) << 48)
@@ -529,16 +538,17 @@ Svadu_cg_cp_ad_fault_no_update_test10_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test10_exec, Svadu_cg_cp_ad_fault_no_update_test10_exec_str)
 
-// The PTE must still have A=0 and D=0
+// The PTE must still have D=0. A may have been set speculatively, so clear it before the check.
   LA(a0, rvtest_Sroot_pg_tbl)
   LI(t0, 56)
   add a0, a0, t0
 Svadu_cg_cp_ad_fault_no_update_test10_read_pte:
-  ld a4, 0(a0)
+  LREG a4, 0(a0)
+  andi a4, a4, ~PTE_A
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test10_read_pte, Svadu_cg_cp_ad_fault_no_update_test10_read_pte_str)
 
-// Test case 11: N=1 with ppn[3:0]=1000 on a level 3 superpage | A=0 D=0 | expected = RWX page fault, PTE unchanged
+// Test case 11: N=1 with ppn[3:0]=1000 on a level 3 superpage | A=0 D=0 | expected = RWX page fault, D unchanged
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, ((1 << 63) | (1 << 13) | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
 
@@ -574,16 +584,17 @@ Svadu_cg_cp_ad_fault_no_update_test11_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test11_exec, Svadu_cg_cp_ad_fault_no_update_test11_exec_str)
 
-// The PTE must still have A=0 and D=0
+// The PTE must still have D=0. A may have been set speculatively, so clear it before the check.
   LA(a0, rvtest_slvl3_pg_tbl)
   LI(t0, 40)
   add a0, a0, t0
 Svadu_cg_cp_ad_fault_no_update_test11_read_pte:
-  ld a4, 0(a0)
+  LREG a4, 0(a0)
+  andi a4, a4, ~PTE_A
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test11_read_pte, Svadu_cg_cp_ad_fault_no_update_test11_read_pte_str)
 
-// Test case 12: N=1 with ppn[3:0]=1000 on a level 2 superpage | A=0 D=0 | expected = RWX page fault, PTE unchanged
+// Test case 12: N=1 with ppn[3:0]=1000 on a level 2 superpage | A=0 D=0 | expected = RWX page fault, D unchanged
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, ((1 << 63) | (1 << 13) | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
@@ -620,16 +631,17 @@ Svadu_cg_cp_ad_fault_no_update_test12_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test12_exec, Svadu_cg_cp_ad_fault_no_update_test12_exec_str)
 
-// The PTE must still have A=0 and D=0
+// The PTE must still have D=0. A may have been set speculatively, so clear it before the check.
   LA(a0, rvtest_slvl2_pg_tbl)
   LI(t0, 160)
   add a0, a0, t0
 Svadu_cg_cp_ad_fault_no_update_test12_read_pte:
-  ld a4, 0(a0)
+  LREG a4, 0(a0)
+  andi a4, a4, ~PTE_A
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test12_read_pte, Svadu_cg_cp_ad_fault_no_update_test12_read_pte_str)
 
-// Test case 13: N=1 with ppn[3:0]=1000 on a level 1 superpage | A=0 D=0 | expected = RWX page fault, PTE unchanged
+// Test case 13: N=1 with ppn[3:0]=1000 on a level 1 superpage | A=0 D=0 | expected = RWX page fault, D unchanged
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -667,12 +679,13 @@ Svadu_cg_cp_ad_fault_no_update_test13_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test13_exec, Svadu_cg_cp_ad_fault_no_update_test13_exec_str)
 
-// The PTE must still have A=0 and D=0
+// The PTE must still have D=0. A may have been set speculatively, so clear it before the check.
   LA(a0, rvtest_slvl1_pg_tbl)
   LI(t0, 16)
   add a0, a0, t0
 Svadu_cg_cp_ad_fault_no_update_test13_read_pte:
-  ld a4, 0(a0)
+  LREG a4, 0(a0)
+  andi a4, a4, ~PTE_A
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svadu_cg_cp_ad_fault_no_update_test13_read_pte, Svadu_cg_cp_ad_fault_no_update_test13_read_pte_str)
 
@@ -713,58 +726,58 @@ rvtest_slvl3_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Svadu_cg_cp_ad_fault_no_update_test1_read_pte_str: .string "\"test: 181; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test1_read_pte\""
-Svadu_cg_cp_ad_fault_no_update_test1_store_str: .string "\"test: 182; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test1_store\""
-Svadu_cg_cp_ad_fault_no_update_test1_load_str: .string "\"test: 183; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test1_load\""
-Svadu_cg_cp_ad_fault_no_update_test1_exec_str: .string "\"test: 184; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test1_exec\""
-Svadu_cg_cp_ad_fault_no_update_test2_read_pte_str: .string "\"test: 185; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test2_read_pte\""
-Svadu_cg_cp_ad_fault_no_update_test2_store_str: .string "\"test: 186; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test2_store\""
-Svadu_cg_cp_ad_fault_no_update_test2_load_str: .string "\"test: 187; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test2_load\""
-Svadu_cg_cp_ad_fault_no_update_test2_exec_str: .string "\"test: 188; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test2_exec\""
-Svadu_cg_cp_ad_fault_no_update_test3_read_pte_str: .string "\"test: 189; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test3_read_pte\""
-Svadu_cg_cp_ad_fault_no_update_test3_store_str: .string "\"test: 190; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test3_store\""
-Svadu_cg_cp_ad_fault_no_update_test3_load_str: .string "\"test: 191; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test3_load\""
-Svadu_cg_cp_ad_fault_no_update_test3_exec_str: .string "\"test: 192; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test3_exec\""
-Svadu_cg_cp_ad_fault_no_update_test4_read_pte_str: .string "\"test: 193; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test4_read_pte\""
-Svadu_cg_cp_ad_fault_no_update_test4_store_str: .string "\"test: 194; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test4_store\""
-Svadu_cg_cp_ad_fault_no_update_test4_load_str: .string "\"test: 195; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test4_load\""
-Svadu_cg_cp_ad_fault_no_update_test4_exec_str: .string "\"test: 196; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test4_exec\""
-Svadu_cg_cp_ad_fault_no_update_test5_read_pte_str: .string "\"test: 197; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test5_read_pte\""
-Svadu_cg_cp_ad_fault_no_update_test5_store_str: .string "\"test: 198; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test5_store\""
-Svadu_cg_cp_ad_fault_no_update_test5_load_str: .string "\"test: 199; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test5_load\""
-Svadu_cg_cp_ad_fault_no_update_test5_exec_str: .string "\"test: 200; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test5_exec\""
-Svadu_cg_cp_ad_fault_no_update_test6_read_pte_str: .string "\"test: 201; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test6_read_pte\""
-Svadu_cg_cp_ad_fault_no_update_test6_store_str: .string "\"test: 202; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test6_store\""
-Svadu_cg_cp_ad_fault_no_update_test6_load_str: .string "\"test: 203; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test6_load\""
-Svadu_cg_cp_ad_fault_no_update_test6_exec_str: .string "\"test: 204; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test6_exec\""
-Svadu_cg_cp_ad_fault_no_update_test7_read_pte_str: .string "\"test: 205; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test7_read_pte\""
-Svadu_cg_cp_ad_fault_no_update_test7_store_str: .string "\"test: 206; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test7_store\""
-Svadu_cg_cp_ad_fault_no_update_test7_load_str: .string "\"test: 207; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test7_load\""
-Svadu_cg_cp_ad_fault_no_update_test7_exec_str: .string "\"test: 208; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test7_exec\""
-Svadu_cg_cp_ad_fault_no_update_test8_read_pte_str: .string "\"test: 209; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test8_read_pte\""
-Svadu_cg_cp_ad_fault_no_update_test8_store_str: .string "\"test: 210; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test8_store\""
-Svadu_cg_cp_ad_fault_no_update_test8_load_str: .string "\"test: 211; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test8_load\""
-Svadu_cg_cp_ad_fault_no_update_test8_exec_str: .string "\"test: 212; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test8_exec\""
-Svadu_cg_cp_ad_fault_no_update_test9_read_pte_str: .string "\"test: 213; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test9_read_pte\""
-Svadu_cg_cp_ad_fault_no_update_test9_store_str: .string "\"test: 214; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test9_store\""
-Svadu_cg_cp_ad_fault_no_update_test9_load_str: .string "\"test: 215; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test9_load\""
-Svadu_cg_cp_ad_fault_no_update_test9_exec_str: .string "\"test: 216; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test9_exec\""
-Svadu_cg_cp_ad_fault_no_update_test10_read_pte_str: .string "\"test: 217; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test10_read_pte\""
-Svadu_cg_cp_ad_fault_no_update_test10_store_str: .string "\"test: 218; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test10_store\""
-Svadu_cg_cp_ad_fault_no_update_test10_load_str: .string "\"test: 219; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test10_load\""
-Svadu_cg_cp_ad_fault_no_update_test10_exec_str: .string "\"test: 220; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test10_exec\""
-Svadu_cg_cp_ad_fault_no_update_test11_read_pte_str: .string "\"test: 221; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test11_read_pte\""
-Svadu_cg_cp_ad_fault_no_update_test11_store_str: .string "\"test: 222; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test11_store\""
-Svadu_cg_cp_ad_fault_no_update_test11_load_str: .string "\"test: 223; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test11_load\""
-Svadu_cg_cp_ad_fault_no_update_test11_exec_str: .string "\"test: 224; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test11_exec\""
-Svadu_cg_cp_ad_fault_no_update_test12_read_pte_str: .string "\"test: 225; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test12_read_pte\""
-Svadu_cg_cp_ad_fault_no_update_test12_store_str: .string "\"test: 226; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test12_store\""
-Svadu_cg_cp_ad_fault_no_update_test12_load_str: .string "\"test: 227; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test12_load\""
-Svadu_cg_cp_ad_fault_no_update_test12_exec_str: .string "\"test: 228; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test12_exec\""
-Svadu_cg_cp_ad_fault_no_update_test13_read_pte_str: .string "\"test: 229; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test13_read_pte\""
-Svadu_cg_cp_ad_fault_no_update_test13_store_str: .string "\"test: 230; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test13_store\""
-Svadu_cg_cp_ad_fault_no_update_test13_load_str: .string "\"test: 231; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test13_load\""
-Svadu_cg_cp_ad_fault_no_update_test13_exec_str: .string "\"test: 232; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test13_exec\""
+Svadu_cg_cp_ad_fault_no_update_test1_store_str: .string "\"test: 181; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test1_store\""
+Svadu_cg_cp_ad_fault_no_update_test1_load_str: .string "\"test: 182; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test1_load\""
+Svadu_cg_cp_ad_fault_no_update_test1_exec_str: .string "\"test: 183; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test1_exec\""
+Svadu_cg_cp_ad_fault_no_update_test1_read_pte_str: .string "\"test: 184; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test1_read_pte\""
+Svadu_cg_cp_ad_fault_no_update_test2_store_str: .string "\"test: 185; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test2_store\""
+Svadu_cg_cp_ad_fault_no_update_test2_load_str: .string "\"test: 186; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test2_load\""
+Svadu_cg_cp_ad_fault_no_update_test2_exec_str: .string "\"test: 187; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test2_exec\""
+Svadu_cg_cp_ad_fault_no_update_test2_read_pte_str: .string "\"test: 188; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test2_read_pte\""
+Svadu_cg_cp_ad_fault_no_update_test3_store_str: .string "\"test: 189; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test3_store\""
+Svadu_cg_cp_ad_fault_no_update_test3_load_str: .string "\"test: 190; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test3_load\""
+Svadu_cg_cp_ad_fault_no_update_test3_exec_str: .string "\"test: 191; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test3_exec\""
+Svadu_cg_cp_ad_fault_no_update_test3_read_pte_str: .string "\"test: 192; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test3_read_pte\""
+Svadu_cg_cp_ad_fault_no_update_test4_store_str: .string "\"test: 193; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test4_store\""
+Svadu_cg_cp_ad_fault_no_update_test4_load_str: .string "\"test: 194; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test4_load\""
+Svadu_cg_cp_ad_fault_no_update_test4_exec_str: .string "\"test: 195; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test4_exec\""
+Svadu_cg_cp_ad_fault_no_update_test4_read_pte_str: .string "\"test: 196; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test4_read_pte\""
+Svadu_cg_cp_ad_fault_no_update_test5_store_str: .string "\"test: 197; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test5_store\""
+Svadu_cg_cp_ad_fault_no_update_test5_load_str: .string "\"test: 198; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test5_load\""
+Svadu_cg_cp_ad_fault_no_update_test5_exec_str: .string "\"test: 199; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test5_exec\""
+Svadu_cg_cp_ad_fault_no_update_test5_read_pte_str: .string "\"test: 200; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test5_read_pte\""
+Svadu_cg_cp_ad_fault_no_update_test6_store_str: .string "\"test: 201; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test6_store\""
+Svadu_cg_cp_ad_fault_no_update_test6_load_str: .string "\"test: 202; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test6_load\""
+Svadu_cg_cp_ad_fault_no_update_test6_exec_str: .string "\"test: 203; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test6_exec\""
+Svadu_cg_cp_ad_fault_no_update_test6_read_pte_str: .string "\"test: 204; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test6_read_pte\""
+Svadu_cg_cp_ad_fault_no_update_test7_store_str: .string "\"test: 205; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test7_store\""
+Svadu_cg_cp_ad_fault_no_update_test7_load_str: .string "\"test: 206; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test7_load\""
+Svadu_cg_cp_ad_fault_no_update_test7_exec_str: .string "\"test: 207; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test7_exec\""
+Svadu_cg_cp_ad_fault_no_update_test7_read_pte_str: .string "\"test: 208; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test7_read_pte\""
+Svadu_cg_cp_ad_fault_no_update_test8_store_str: .string "\"test: 209; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test8_store\""
+Svadu_cg_cp_ad_fault_no_update_test8_load_str: .string "\"test: 210; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test8_load\""
+Svadu_cg_cp_ad_fault_no_update_test8_exec_str: .string "\"test: 211; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test8_exec\""
+Svadu_cg_cp_ad_fault_no_update_test8_read_pte_str: .string "\"test: 212; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test8_read_pte\""
+Svadu_cg_cp_ad_fault_no_update_test9_store_str: .string "\"test: 213; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test9_store\""
+Svadu_cg_cp_ad_fault_no_update_test9_load_str: .string "\"test: 214; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test9_load\""
+Svadu_cg_cp_ad_fault_no_update_test9_exec_str: .string "\"test: 215; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test9_exec\""
+Svadu_cg_cp_ad_fault_no_update_test9_read_pte_str: .string "\"test: 216; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test9_read_pte\""
+Svadu_cg_cp_ad_fault_no_update_test10_store_str: .string "\"test: 217; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test10_store\""
+Svadu_cg_cp_ad_fault_no_update_test10_load_str: .string "\"test: 218; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test10_load\""
+Svadu_cg_cp_ad_fault_no_update_test10_exec_str: .string "\"test: 219; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test10_exec\""
+Svadu_cg_cp_ad_fault_no_update_test10_read_pte_str: .string "\"test: 220; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test10_read_pte\""
+Svadu_cg_cp_ad_fault_no_update_test11_store_str: .string "\"test: 221; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test11_store\""
+Svadu_cg_cp_ad_fault_no_update_test11_load_str: .string "\"test: 222; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test11_load\""
+Svadu_cg_cp_ad_fault_no_update_test11_exec_str: .string "\"test: 223; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test11_exec\""
+Svadu_cg_cp_ad_fault_no_update_test11_read_pte_str: .string "\"test: 224; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test11_read_pte\""
+Svadu_cg_cp_ad_fault_no_update_test12_store_str: .string "\"test: 225; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test12_store\""
+Svadu_cg_cp_ad_fault_no_update_test12_load_str: .string "\"test: 226; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test12_load\""
+Svadu_cg_cp_ad_fault_no_update_test12_exec_str: .string "\"test: 227; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test12_exec\""
+Svadu_cg_cp_ad_fault_no_update_test12_read_pte_str: .string "\"test: 228; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test12_read_pte\""
+Svadu_cg_cp_ad_fault_no_update_test13_store_str: .string "\"test: 229; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test13_store\""
+Svadu_cg_cp_ad_fault_no_update_test13_load_str: .string "\"test: 230; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test13_load\""
+Svadu_cg_cp_ad_fault_no_update_test13_exec_str: .string "\"test: 231; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test13_exec\""
+Svadu_cg_cp_ad_fault_no_update_test13_read_pte_str: .string "\"test: 232; cg: Svadu_cg; cp: cp_ad_fault_no_update; bin: test13_read_pte\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

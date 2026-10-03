@@ -207,10 +207,10 @@ def _pte_address(sv: SvMode, va: str, level: int) -> list[str]:
 
 
 def _make_svadu_fault(test_data: TestData, sv: SvMode) -> TestChunk:
-    """Access leaf PTEs with A=D=0 that must page fault, then check that the PTE was not updated.
+    """Access leaf PTEs with A=D=0 that must page fault, then check that D is still clear.
 
-    The walk checks for a leaf PTE must all pass before the hardware A/D update, so a faulting access leaves A and D
-    clear.
+    The walk checks for a leaf PTE must all pass before the hardware A/D update, so a faulting store leaves D clear.
+    A may be set speculatively, so it is not checked.
     """
     csr, mask = ("menvcfg", "MENVCFG_ADUE") if sv.xlen == 64 else ("menvcfgh", "MENVCFGH_ADUE")
     chunk = begin_sv_test(
@@ -222,14 +222,12 @@ def _make_svadu_fault(test_data: TestData, sv: SvMode) -> TestChunk:
         va_defs=(("va_data", _FAULT_VA[sv.name]), ("va_misaligned", _MISALIGNED_VA[sv.name])),
         setup_asm=(f"LI(t0, {mask})", tsbi_call(f"csrs {csr}, t0")),
     )
-    load = "lw" if sv.xlen == 32 else "ld"
     fault_vas = {"va_data": _FAULT_VA[sv.name], "va_misaligned": _MISALIGNED_VA[sv.name]}
     cases = _fault_cases(sv)
     for number, (description, level, flags, superpage, va) in enumerate(cases, start=1):
-        label = test_data.add_testcase(f"test{number}_read_pte", "cp_ad_fault_no_update", "Svadu_cg").removesuffix(":")
         chunk.code.extend(
             [
-                f"// Test case {number}: {description} | A=0 D=0 | expected = RWX page fault, PTE unchanged",
+                f"// Test case {number}: {description} | A=0 D=0 | expected = RWX page fault, D unchanged",
                 *create_page_mapping(sv, virtual_address=va, leaf_level=level, leaf_flags=flags, superpage=superpage),
                 "",
                 *add_rwx_test(
@@ -245,11 +243,12 @@ def _make_svadu_fault(test_data: TestData, sv: SvMode) -> TestChunk:
                     covergroup="Svadu_cg",
                 ),
                 "",
-                "// The PTE must still have A=0 and D=0",
+                "// The PTE must still have D=0. A may have been set speculatively, so clear it before the check.",
                 *_pte_address(sv, fault_vas[va], level),
-                f"{label}:",
-                f"{load} a4, 0(a0)",
-                write_sigupd(14, test_data, label=label),
+                test_data.add_testcase(f"test{number}_read_pte", "cp_ad_fault_no_update", "Svadu_cg"),
+                "LREG a4, 0(a0)",
+                "andi a4, a4, ~PTE_A",
+                write_sigupd(14, test_data),
                 "",
             ]
         )

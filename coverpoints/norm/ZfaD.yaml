@@ -54,7 +54,9 @@ normative_rule_definitions:
   # are encoded like insn:fcvt.d.s[], but with rs2=4 and 5, respectively,
   - name: fround-d_froundnx-d_op
     coverpoint:
-      ["{ZfaD_fround_d_cg, ZfaD_froundnx_d_cg}/{cp_fs1_edges_D, cp_frm_2}"]
+      [
+        "{ZfaD_fround_d_cg, ZfaD_froundnx_d_cg}/{cp_fs1_edges_D, cr_fs1_cvt_edges_frm_D_R}",
+      ]
   # If the ext:q[] extension is implemented, insn:fround.q[] and insn:froundnx.q[]
   # instructions are analogously defined to operate on quad-precision numbers. They are
   # encoded like insn:fcvt.q.s[], but with rs2=4 and 5, respectively,
@@ -68,7 +70,9 @@ normative_rule_definitions:
   # NaN are converted to zero.
   - name: fcvtmod-w-d_op
     coverpoint:
-      ["ZfaD_fcvtmod_w_d_cg/{cp_rd, cp_fs1, cp_fs1_edges_D, cp_csr_fflags_vn}"]
+      [
+        "ZfaD_fcvtmod_w_d_cg/{cp_rd, cp_fs1_edges_D, cp_fs1_cvt_edges_D_I, cp_fs1_cvt_exact_D_I}",
+      ]
   # Floating-point exception flags are raised the same as they would be for
   # insn:fcvt.w.d[] with the same input operand.
   - name: fcvtmod-w-d_flags

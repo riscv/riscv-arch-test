@@ -65,7 +65,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "ZfhD_fcvt_d_h_cg/{cp_fd, cp_fs1_edges_H}",
-        "ZfhD_fcvt_h_d_cg/{cp_fd, cr_fs1_edges_frm_D}",
+        "ZfhD_fcvt_h_d_cg/{cp_fd, cr_fs1_edges_frm_D, cr_fs1_cvt_edges_frm_D_H}",
       ]
   # insn:fmv.x.h[] moves the half-precision value in floating-point register rs1 to a
   # representation in the IEEE 754-2008 encoding in integer register rd, filling the

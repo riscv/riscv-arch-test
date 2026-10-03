@@ -55,7 +55,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "{D_fcvt_w_d_cg, D_fcvt_l_d_cg}/cr_fs1_edges_frm_D",
-        "{D_fcvt_d_l_cg, D_fcvt_d_lu_cg}/cp_frm_2",
+        "{D_fcvt_w_d_cg, D_fcvt_l_d_cg}/cr_fs1_cvt_edges_frm_D_I",
+        "{D_fcvt_d_l_cg, D_fcvt_d_lu_cg}/cr_rs1_cvt_edges_frm_L_D",
       ]
   # All floating-point conversion instructions set the Inexact exception flag if the
   # rounded result differs from the operand value and the Invalid exception flag is not
@@ -181,6 +182,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "{D_fcvt_w_d_cg, D_fcvt_wu_d_cg, D_fcvt_l_d_cg, D_fcvt_lu_d_cg}/cr_fs1_edges_frm_D",
+        "{D_fcvt_w_d_cg, D_fcvt_wu_d_cg, D_fcvt_l_d_cg, D_fcvt_lu_d_cg}/cp_fs1_cvt_exact_D_I",
       ]
   # The double-precision to single-precision and single-precision to double-precision
   # conversion instructions, insn:fcvt.s.d[] and insn:fcvt.d.s[], are encoded in the
@@ -197,7 +199,7 @@ normative_rule_definitions:
   - name: fcvt_float_rounding
     coverpoint:
       [
-        "D_fcvt_s_d_cg/cr_fs1_edges_frm_D",
+        "D_fcvt_s_d_cg/{cr_fs1_edges_frm_D, cr_fs1_cvt_edges_frm_D_S}",
         "D_fcvt_d_s_cg/{cp_fs1_edges, cp_csr_fflags_v}",
         "ZicsrF_cg/cp_underflow_after_rounding_fcvt_s_d",
       ]
@@ -214,7 +216,8 @@ normative_rule_definitions:
   # insn:fmv.d.x[] moves the double-precision value encoded in the IEEE 754-2008
   # encoding from the integer register rs1 to the floating-point register rd
   - name: fmv-d-x_op
-    coverpoint: ["D_fmv_d_x_cg/{cp_rs1, cp_rs1_edges, cp_fd}"]
+    coverpoint:
+      ["D_fmv_d_x_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_rs1_fp_edges_D}"]
   # insn:fmv.x.d[] and insn:fmv.d.x[] do not modify the bits being transferred; in
   # particular, the payloads of non-canonical NaNs are preserved.
   - name: fmv_bits_preserved

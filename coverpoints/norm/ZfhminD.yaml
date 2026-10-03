@@ -60,7 +60,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "ZfhminD_fcvt_d_h_cg/{cp_fd, cp_fs1_edges_H}",
-        "ZfhminD_fcvt_h_d_cg/{cp_fd, cr_fs1_edges_frm_D}",
+        "ZfhminD_fcvt_h_d_cg/{cp_fd, cr_fs1_edges_frm_D, cr_fs1_cvt_edges_frm_D_H}",
       ]
   # If the ext:q[] extension is present, insn:fcvt.q.h[] or insn:fcvt.h.q[] converts a
   # half-precision floating-point number to a quad-precision floating-point number, or

@@ -19,7 +19,9 @@ normative_rule_definitions:
   # single-precision floating-point number, to floating-point register rd
   - name: fround-s_op
     coverpoint:
-      ["ZfaF_fround_s_cg/{cp_fs1_edges, cp_frm_2, cp_csr_frm, cp_csr_fflags_v}"]
+      [
+        "ZfaF_fround_s_cg/{cp_fs1_edges, cr_fs1_cvt_edges_frm_S_R, cp_csr_frm, cp_csr_fflags_v}",
+      ]
   # Zero and infinite inputs are copied to rd unmodified
   - name: fround-s_zero_inf
     coverpoint: ["{ZfaF_fround_s_cg, ZfaF_froundnx_s_cg}/cp_fs1_edges"]
@@ -37,7 +39,7 @@ normative_rule_definitions:
   - name: froundnx-s_op
     coverpoint:
       [
-        "ZfaF_froundnx_s_cg/{cp_fs1_edges, cp_frm_2, cp_csr_frm, cp_csr_fflags_vn}",
+        "ZfaF_froundnx_s_cg/{cp_fs1_edges, cr_fs1_cvt_edges_frm_S_R, cp_csr_frm, cp_csr_fflags_vn}",
       ]
   # The insn:fleq.s[] and insn:fltq.s[] instructions are defined like the insn:fle.s[]
   # and insn:flt.s[] instructions, except that quiet NaN inputs do not cause the invalid

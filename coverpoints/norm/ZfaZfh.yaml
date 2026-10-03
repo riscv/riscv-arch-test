@@ -44,7 +44,9 @@ normative_rule_definitions:
   # encoded like insn:fcvt.h.s[], but with rs2=4 and 5, respectively,
   - name: fround-h_froundnx-h_op
     coverpoint:
-      ["{ZfaZfh_fround_h_cg, ZfaZfh_froundnx_h_cg}/{cp_fs1_edges_H, cp_frm_2}"]
+      [
+        "{ZfaZfh_fround_h_cg, ZfaZfh_froundnx_h_cg}/{cp_fs1_edges_H, cr_fs1_cvt_edges_frm_H_R}",
+      ]
   # If the ext:zfh[] extension is implemented, insn:fleq.h[] and insn:fltq.h[]
   # instructions are analogously defined to operate on half-precision numbers.
   - name: fleq-h_fltq-h_op

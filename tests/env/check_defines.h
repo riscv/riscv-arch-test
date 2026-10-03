@@ -13,8 +13,16 @@
   #error "SIGUPD_COUNT not defined. It should be defined at the beginning of the test file."
 #endif
 
+// TRAP_SIGUPD_COUNT is the number of expected traps. Each trap uses 4 signature
+// words, or 6 when H is supported.
 #ifndef TRAP_SIGUPD_COUNT
-  #define TRAP_SIGUPD_COUNT 15000
+  #define TRAP_SIGUPD_COUNT 3750
+#endif
+
+#ifdef H_SUPPORTED
+  #define TRAP_SIGUPD_WORDS ((TRAP_SIGUPD_COUNT)*6)
+#else
+  #define TRAP_SIGUPD_WORDS ((TRAP_SIGUPD_COUNT)*4)
 #endif
 
 ########## GLOBAL XLEN CHECK  ##########
@@ -25,10 +33,6 @@
 ########## rvmodel_macros.h CHECKS ##########
 #if defined(RVMODEL_INVISIBLE_TRAP_HANDLER) || defined(RVTEST_EMULATE_TIME_CSR)
   #define RVTEST_INVISIBLE_TRAP_HANDLER
-#endif
-
-#if defined(RVTEST_INVISIBLE_TRAP_HANDLER) && defined(H_SUPPORTED)
-  #error "Invisible trap emulation does not support traps from VS or VU mode yet."
 #endif
 
 #ifndef RVMODEL_DATA_SECTION
@@ -87,52 +91,60 @@
 #endif
 
 ##### Machine Interrupts #####
-// TODO: Gate which interrupts macros need to be defined by whether they are supported
+// UDB_{MEI,MTI,MSI}_INTR_IMPL say which machine interrupts the platform can raise. Each one that
+// is implemented needs a way to raise it, and a platform providing a raise must also provide the
+// matching clear.
 
-// Only external must be defined because software may be handled through MSIP and timer through MTIME
-#ifndef RVMODEL_SET_MEXT_INT
-  #error "RVMODEL_SET_MEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
+#if defined(UDB_MEI_INTR_IMPL) && !defined(RVMODEL_SET_MEXT_INT)
+  #error "UDB_MEI_INTR_IMPL is set but RVMODEL_SET_MEXT_INT is not defined. Define it in rvmodel_macros.h."
 #endif
 
-#ifndef RVMODEL_CLR_MEXT_INT
-  #error "RVMODEL_CLR_MEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
+#if defined(UDB_MTI_INTR_IMPL) && !defined(RVMODEL_MTIMECMP_ADDRESS)
+  #error "UDB_MTI_INTR_IMPL is set but RVMODEL_MTIMECMP_ADDRESS is not defined. Define it in rvmodel_macros.h."
 #endif
 
-#ifndef RVMODEL_CLR_MEXT_INT_M
-  #ifdef RVMODEL_CLR_MEXT_INT
+#if defined(UDB_MSI_INTR_IMPL) && !defined(RVMODEL_MSIP_ADDRESS) && !defined(RVMODEL_SET_MSW_INT)
+  #error "UDB_MSI_INTR_IMPL is set but neither RVMODEL_MSIP_ADDRESS nor RVMODEL_SET_MSW_INT is defined. Define one of them in rvmodel_macros.h."
+#endif
+
+#ifdef RVMODEL_SET_MEXT_INT
+  #ifndef RVMODEL_CLR_MEXT_INT
+    #error "RVMODEL_SET_MEXT_INT is defined but RVMODEL_CLR_MEXT_INT is not. Define both in rvmodel_macros.h."
+  #endif
+
+  #ifndef RVMODEL_CLR_MEXT_INT_M
     #define RVMODEL_CLR_MEXT_INT_M RVMODEL_CLR_MEXT_INT
   #endif
+
+  #ifndef RVMODEL_SET_MEXT_INT_M
+    #define RVMODEL_SET_MEXT_INT_M RVMODEL_SET_MEXT_INT
+  #endif
 #endif
 
-#ifndef RVMODEL_MSIP_ADDRESS
-  #ifndef RVMODEL_SET_MSW_INT
-    #error "Neither RVMODEL_MSIP_ADDRESS nor RVMODEL_SET_MSW_INT is defined. Define one of them in rvmodel_macros.h."
-  #endif
-
+#ifdef RVMODEL_SET_MSW_INT
   #ifndef RVMODEL_CLR_MSW_INT
-    #error "RVMODEL_CLR_MSW_INT not defined. Make sure to define it in rvmodel_macros.h."
+    #error "RVMODEL_SET_MSW_INT is defined but RVMODEL_CLR_MSW_INT is not. Define both in rvmodel_macros.h."
   #endif
 
   #ifndef RVMODEL_CLR_MSW_INT_M
-    #ifdef RVMODEL_CLR_MSW_INT
-      #define RVMODEL_CLR_MSW_INT_M RVMODEL_CLR_MSW_INT
-    #endif
+    #define RVMODEL_CLR_MSW_INT_M RVMODEL_CLR_MSW_INT
   #endif
 #endif
 
 ##### Supervisor Interrupts #####
 #ifdef S_SUPPORTED
-  #ifndef RVMODEL_SET_SEXT_INT
-    #error "RVMODEL_SET_SEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
-  #endif
-
-  #ifndef RVMODEL_CLR_SEXT_INT
-    #error "RVMODEL_CLR_SEXT_INT not defined. Make sure to define it in rvmodel_macros.h."
-  #endif
+  // RVMODEL_SET_SEXT_INT / RVMODEL_CLR_SEXT_INT are optional: platforms without a supervisor
+  // external interrupt controller leave them undefined and the trap handler uses mip.SEIP.
 
   #ifndef RVMODEL_CLR_SEXT_INT_M
     #ifdef RVMODEL_CLR_SEXT_INT
       #define RVMODEL_CLR_SEXT_INT_M RVMODEL_CLR_SEXT_INT
+    #endif
+  #endif
+
+  #ifndef RVMODEL_SET_SEXT_INT_M
+    #ifdef RVMODEL_SET_SEXT_INT
+      #define RVMODEL_SET_SEXT_INT_M RVMODEL_SET_SEXT_INT
     #endif
   #endif
 

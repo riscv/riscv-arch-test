@@ -1,0 +1,21 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: Apache-2.0
+
+normative_rule_definitions:
+  # Load/store/AMO address-misaligned exceptions may have either higher or lower
+  # priority than load/store/AMO page-fault and access-fault exceptions.
+  - name: mcause_exccode_priority_misaligned
+    coverpoint: ["ExceptionsSvSm_cg/cp_misaligned_priority_m"]
+
+  # Priority|Exc.Code|Description === Highest|3|Instruction address breakpoint¶|12,
+  # 1|During instruction address translation: First encountered page fault or access
+  # fault¶|1|With physical address for instruction: Instruction access fault¶|2 0
+  # 8,9,11 3 3|Illegal instruction Instruction address misaligned Environment call
+  # Environment break Load/store/AMO address breakpoint¶|4,6|Optionally:
+  # Load/store/AMO address misaligned¶|13, 15, 5, 7|During address translation for
+  # an explicit memory access: First encountered page fault or access
+  # fault¶|5,7|With physical address for an explicit memory access: Load/store/AMO
+  # access fault¶Lowest|4,6|If not higher priority: Load/store/AMO address
+  # misaligned ===
+  - name: exc_priority
+    coverpoint: ["ExceptionsSvSm_cg/cp_misaligned_priority_m"]

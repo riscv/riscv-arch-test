@@ -14,8 +14,10 @@ covergroup PMPF_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logi
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-  addr_in_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
-    bins at_region = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
+  // The test places its NAPOT region at PMP_NAPOT_REGION_START, which is g_napot-aligned, so the
+  // fld/fsd probes are naturally aligned at every grain.
+  addr_in_napot_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
   read_fp_instr: coverpoint ins.current.insn {
@@ -39,12 +41,12 @@ covergroup PMPF_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logi
     wildcard bins cfg_l111 = {54'b10011111????????????????????????????????????????_?????1};
   }
 
-  fs_mstatus: coverpoint (ins.current.csr[CSR_MSTATUS][14:13]!=0) {
+  fs_mstatus: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "fs")[1:0]!=0) {
     bins non_zero = {1};
   }
 
-  cp_cfg_R: cross priv_mode_m, fs_mstatus, legal_lxwr, read_fp_instr, addr_in_region;
-  cp_cfg_W: cross priv_mode_m, fs_mstatus, legal_lxwr, write_fp_instr, addr_in_region;
+  cp_cfg_R: cross priv_mode_m, fs_mstatus, legal_lxwr, read_fp_instr, addr_in_napot_region;
+  cp_cfg_W: cross priv_mode_m, fs_mstatus, legal_lxwr, write_fp_instr, addr_in_napot_region;
 
 endgroup
 
@@ -57,7 +59,7 @@ function void pmpf_sample(int hart, int issue, ins_t ins);
   `ifdef UDB_MXLEN_32
     // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
     for (int i = 0; i < 16; i++) begin
-      logic [31:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + i];
+      logic [31:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + i, "pmpcfg", "pmpcfg");
       pmpcfg[i*4 + 0] = cfg_word[7:0];
       pmpcfg[i*4 + 1] = cfg_word[15:8];
       pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -66,7 +68,7 @@ function void pmpf_sample(int hart, int issue, ins_t ins);
   `elsif UDB_MXLEN_64
     // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-      logic [63:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + 2*i];
+      logic [63:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 2*i, "pmpcfg", "pmpcfg");
       pmpcfg[i*8 + 0] = cfg_word[7:0];
       pmpcfg[i*8 + 1] = cfg_word[15:8];
       pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -79,7 +81,7 @@ function void pmpf_sample(int hart, int issue, ins_t ins);
   `endif
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = ins.current.csr[CSR_PMPADDR0 + j];
+    pmpaddr[j] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0 + j, "pmpaddr", "pmpaddr");
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions

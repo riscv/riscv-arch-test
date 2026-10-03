@@ -78,7 +78,7 @@ def _make_napot(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     f"va_data{offset}",
                     0,
                     f"test1_access{access}",
-                    direct_address=True,
+                    address=[f"LI(a5, va_data{offset})"],
                 ),
                 "",
             ]
@@ -106,8 +106,7 @@ def _make_reserved(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     "va_data",
                     level,
                     f"test{number}",
-                    enter=[] if mode == "Smode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"],
-                    leave=[] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"],
+                    driver_mode="Smode",
                 ),
                 "",
             ]
@@ -127,8 +126,27 @@ def _make_reserved(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     "va_data",
                     0,
                     f"test{number}",
-                    enter=[] if mode == "Smode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"],
-                    leave=[] if mode == "Smode" else ["RVTEST_TSBI_GOTO_SMODE"],
+                    driver_mode="Smode",
+                ),
+                "",
+            ]
+        )
+    for level in range(sv.levels - 1, 0, -1):
+        number += 1
+        chunk.code.extend(
+            [
+                f"// PTE.N with the 64 KiB encoding ppn[3:0]=1000 on a level {level} superpage, which is reserved",
+                *create_page_mapping(sv, leaf_level=level, leaf_flags=_permissions(umode)),
+                "sfence.vma",
+                "",
+                *add_rwx_test(
+                    test_data,
+                    sv,
+                    mode,
+                    "va_data",
+                    level,
+                    f"test{number}",
+                    driver_mode="Smode",
                 ),
                 "",
             ]

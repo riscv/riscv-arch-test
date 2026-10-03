@@ -817,6 +817,25 @@ covergroup PMPSm_cg with function sample(
     `endif
   }
   `endif
+
+  `ifdef UDB_MXLEN_64
+    // The odd pmpcfg CSRs are illegal on RV64 whatever the number of PMP entries.
+    pmpcfg_entries_odd_rv64: coverpoint ins.current.insn[31:20] {
+      bins pmpcfg1   = {CSR_PMPCFG1};
+      bins pmpcfg3   = {CSR_PMPCFG3};
+      bins pmpcfg5   = {CSR_PMPCFG5};
+      bins pmpcfg7   = {CSR_PMPCFG7};
+      bins pmpcfg9   = {CSR_PMPCFG9};
+      bins pmpcfg11  = {CSR_PMPCFG11};
+      bins pmpcfg13  = {CSR_PMPCFG13};
+      bins pmpcfg15  = {CSR_PMPCFG15};
+    }
+
+    csrw_or_csrr: coverpoint ins.current.insn {
+      wildcard bins csrrw = {CSRRW};
+      wildcard bins csrr  = {CSRR};
+    }
+  `endif
 //-------------------------------------------------------
 
   `ifdef UDB_NUM_PMP_ENTRIES_64
@@ -1059,6 +1078,9 @@ covergroup PMPSm_cg with function sample(
   `ifdef UDB_MXLEN_32
     // Will throw illegal instruction when XLEN = 64.
     cp_pmpcfg_zero: cross priv_mode_m, cp_zero_rs1, csrrw, legal_pmpcfg_entries_odd ;
+  `endif
+  `ifdef UDB_MXLEN_64
+    cp_pmpcfg_odd_rv64: cross priv_mode_m, csrw_or_csrr, pmpcfg_entries_odd_rv64 ;
   `endif
 
   `ifdef UDB_NUM_PMP_ENTRIES_64

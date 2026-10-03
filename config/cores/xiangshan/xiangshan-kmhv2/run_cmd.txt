@@ -1,0 +1,1 @@
+run-xiangshan.sh --elf

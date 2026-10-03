@@ -1,0 +1,39 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# CI configuration for the XiangShan core
+#
+# XiangShan is not run in CI: Chisel elaboration of KunminghuV2Config needs about 22 GB of memory,
+# and the emulator runs at a few hundred cycles per second, so one ACT run takes days. Run it
+# manually as described in README.md.
+
+ci_enabled: false
+
+# OpenXiangShan/XiangShan @ e7bab53 (kunminghu-v2), KunminghuV2Config. Measured 2026-10-01 on act4 with
+# riscv/riscv-arch-test#2649, #2655, #2657 and #2658: 3564 of 3631 tests pass; every remaining failure
+# is in one of these suites.
+#   S, Sm             menvcfg.FIOM and senvcfg.FIOM are read-only zero although satp.MODE is not
+#                     always Bare (norm:menvcfg_fiom_rdonly0_ok); NewCSR/CSRBundles.scala L79. Sm also
+#                     writes 16 (double trap) to mcause, which Sail 0.14.1 does not model (no Smdbltrp).
+#   Zicntr            Counter reads are not ordered after older instructions (norm:csr_access_order):
+#                     two instret reads 8 instructions apart differ by 0-21. Counters are missing from
+#                     CSROoORead.waitForwardInOrderCsrReadList.
+#   SsstrictV, SsstrictS, SsstrictSm, SsstrictU
+#                     Reserved vector encodings that read one register with two EEWs execute instead of
+#                     raising illegal-instruction (norm:vreg_source_eew_rsv): v0 as both mask and source
+#                     (vadd.vv v4,v0,v8,v0.t; vsseg5e32.v v0,(t1),v0.t) and a widening multiply-add whose
+#                     vs2 is the upper half of vd (vwmaccu.vv v14,v9,v15,v0.t). With menvcfg.STCE = 0,
+#                     vstimecmp is still accessible from HS-mode (NewCSR/CSRPermitModule.scala L225-L227).
+#                     The CSR walks also expect illegal-instruction on the AIA, Smrnmi and Sdtrig context
+#                     CSRs (mtopi, miselect, mvien, siselect, stopi, hvien, vstopi, mnscratch, hcontext),
+#                     which XiangShan implements and Sail 0.14.1 does not.
+#   Smstateen         mstateen0.CONTEXT is writable (XiangShan implements scontext/hcontext); Sail models
+#                     it read-only zero.
+#   PMPSm             PMPSm_cfg_A_tor_zero stores to and loads from physical address 0. The SimTop PMA
+#                     table makes 0x0-0x0FFF_FFFF readable and writable I/O with no device behind it, and
+#                     the bus error is not reported: the store is dropped and the load returns 0. Sail has
+#                     no memory there and takes an access fault.
+exclude_extensions: "S,Sm,Zicntr,SsstrictV,SsstrictS,SsstrictSm,SsstrictU,Smstateen,PMPSm"
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache clang"
+install_script: ".github/scripts/install-xiangshan.sh"
+setup_script: ".github/scripts/setup-xiangshan.sh"

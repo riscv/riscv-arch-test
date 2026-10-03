@@ -2,6 +2,14 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
+  # RV32|RV64|Mnemonic|Instruction ===
+  # rol, rolw (RV64), ror, rori, roriw (RV64), rorw (RV64), andn, orn, xnor, pack,
+  # packh, packw (RV64), brev8, rev8, zip (RV32), unzip (RV32) ===
+  - name: Zbkb_insns_tbl
+    # Representative coverpoints; also cp_asm_count of the other Zbkb covergroups
+    coverpoint:
+      ["{Zbkb_rol_cg, Zbkb_andn_cg, Zbkb_pack_cg, Zbkb_brev8_cg}/cp_asm_count"]
+
   - name: pack_enc
     coverpoint: ["Zbkb_pack_cg/cr_rs1_rs2_edges"]
 

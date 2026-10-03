@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm']
+# REQUIRED_EXTENSIONS: ['Sm', ['I', 'E']]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv${XLEN}i_zicsr_zifencei
@@ -58,7 +58,7 @@ RVTEST_BEGIN
 
   RVTEST_PMP_SET_BACKGROUND x4
 
-  LI(t3, PMP_GRAIN_MASK)
+  LI(a3, PMP_GRAIN_MASK)
 
 
 PMPSm_cp_grain_zeros_write_NAPOT_read_OFF:
@@ -70,7 +70,7 @@ PMPSm_cp_grain_zeros_write_NAPOT_read_OFF:
   LI(x6, PMPREGION_OFF)
   csrw pmpcfg0, x6
   csrr x7, pmpaddr0
-  and x7, x7, t3
+  and x7, x7, a3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_zeros_write_NAPOT_read_OFF, PMPSm_cp_grain_zeros_write_NAPOT_read_OFF_str)
 
@@ -83,7 +83,7 @@ PMPSm_cp_grain_zeros_write_NAPOT_read_NAPOT:
   LI(x6, PMPREGION_NAPOT)
   csrw pmpcfg0, x6
   csrr x7, pmpaddr0
-  and x7, x7, t3
+  and x7, x7, a3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_zeros_write_NAPOT_read_NAPOT, PMPSm_cp_grain_zeros_write_NAPOT_read_NAPOT_str)
 #ifdef UDB_PMP_TOR_SUPPORTED
@@ -97,7 +97,7 @@ PMPSm_cp_grain_zeros_write_NAPOT_read_TOR:
   LI(x6, PMPREGION_TOR)
   csrw pmpcfg0, x6
   csrr x7, pmpaddr0
-  and x7, x7, t3
+  and x7, x7, a3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_zeros_write_NAPOT_read_TOR, PMPSm_cp_grain_zeros_write_NAPOT_read_TOR_str)
 #endif
@@ -111,7 +111,7 @@ PMPSm_cp_grain_zeros_write_OFF_read_OFF:
   LI(x6, PMPREGION_OFF)
   csrw pmpcfg0, x6
   csrr x7, pmpaddr0
-  and x7, x7, t3
+  and x7, x7, a3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_zeros_write_OFF_read_OFF, PMPSm_cp_grain_zeros_write_OFF_read_OFF_str)
 
@@ -124,7 +124,7 @@ PMPSm_cp_grain_zeros_write_OFF_read_NAPOT:
   LI(x6, PMPREGION_NAPOT)
   csrw pmpcfg0, x6
   csrr x7, pmpaddr0
-  and x7, x7, t3
+  and x7, x7, a3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_zeros_write_OFF_read_NAPOT, PMPSm_cp_grain_zeros_write_OFF_read_NAPOT_str)
 #ifdef UDB_PMP_TOR_SUPPORTED
@@ -138,7 +138,7 @@ PMPSm_cp_grain_zeros_write_OFF_read_TOR:
   LI(x6, PMPREGION_TOR)
   csrw pmpcfg0, x6
   csrr x7, pmpaddr0
-  and x7, x7, t3
+  and x7, x7, a3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_zeros_write_OFF_read_TOR, PMPSm_cp_grain_zeros_write_OFF_read_TOR_str)
 #endif
@@ -152,7 +152,7 @@ PMPSm_cp_grain_ones_write_NAPOT_read_OFF:
   LI(x6, PMPREGION_OFF)
   csrw pmpcfg0, x6
   csrr x7, pmpaddr0
-  and x7, x7, t3
+  and x7, x7, a3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_ones_write_NAPOT_read_OFF, PMPSm_cp_grain_ones_write_NAPOT_read_OFF_str)
 
@@ -165,7 +165,7 @@ PMPSm_cp_grain_ones_write_NAPOT_read_NAPOT:
   LI(x6, PMPREGION_NAPOT)
   csrw pmpcfg0, x6
   csrr x7, pmpaddr0
-  and x7, x7, t3
+  and x7, x7, a3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_ones_write_NAPOT_read_NAPOT, PMPSm_cp_grain_ones_write_NAPOT_read_NAPOT_str)
 #ifdef UDB_PMP_TOR_SUPPORTED
@@ -179,7 +179,7 @@ PMPSm_cp_grain_ones_write_NAPOT_read_TOR:
   LI(x6, PMPREGION_TOR)
   csrw pmpcfg0, x6
   csrr x7, pmpaddr0
-  and x7, x7, t3
+  and x7, x7, a3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_ones_write_NAPOT_read_TOR, PMPSm_cp_grain_ones_write_NAPOT_read_TOR_str)
 #endif
@@ -193,7 +193,7 @@ PMPSm_cp_grain_ones_write_OFF_read_OFF:
   LI(x6, PMPREGION_OFF)
   csrw pmpcfg0, x6
   csrr x7, pmpaddr0
-  and x7, x7, t3
+  and x7, x7, a3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_ones_write_OFF_read_OFF, PMPSm_cp_grain_ones_write_OFF_read_OFF_str)
 
@@ -206,7 +206,7 @@ PMPSm_cp_grain_ones_write_OFF_read_NAPOT:
   LI(x6, PMPREGION_NAPOT)
   csrw pmpcfg0, x6
   csrr x7, pmpaddr0
-  and x7, x7, t3
+  and x7, x7, a3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_ones_write_OFF_read_NAPOT, PMPSm_cp_grain_ones_write_OFF_read_NAPOT_str)
 #ifdef UDB_PMP_TOR_SUPPORTED
@@ -220,7 +220,7 @@ PMPSm_cp_grain_ones_write_OFF_read_TOR:
   LI(x6, PMPREGION_TOR)
   csrw pmpcfg0, x6
   csrr x7, pmpaddr0
-  and x7, x7, t3
+  and x7, x7, a3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_ones_write_OFF_read_TOR, PMPSm_cp_grain_ones_write_OFF_read_TOR_str)
 #endif
@@ -234,7 +234,7 @@ PMPSm_cp_grain_checkerboard_write_NAPOT_read_OFF:
   LI(x6, PMPREGION_OFF)
   csrw pmpcfg0, x6
   csrr x7, pmpaddr0
-  and x7, x7, t3
+  and x7, x7, a3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_checkerboard_write_NAPOT_read_OFF, PMPSm_cp_grain_checkerboard_write_NAPOT_read_OFF_str)
 
@@ -247,7 +247,7 @@ PMPSm_cp_grain_checkerboard_write_NAPOT_read_NAPOT:
   LI(x6, PMPREGION_NAPOT)
   csrw pmpcfg0, x6
   csrr x7, pmpaddr0
-  and x7, x7, t3
+  and x7, x7, a3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_checkerboard_write_NAPOT_read_NAPOT, PMPSm_cp_grain_checkerboard_write_NAPOT_read_NAPOT_str)
 #ifdef UDB_PMP_TOR_SUPPORTED
@@ -261,7 +261,7 @@ PMPSm_cp_grain_checkerboard_write_NAPOT_read_TOR:
   LI(x6, PMPREGION_TOR)
   csrw pmpcfg0, x6
   csrr x7, pmpaddr0
-  and x7, x7, t3
+  and x7, x7, a3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_checkerboard_write_NAPOT_read_TOR, PMPSm_cp_grain_checkerboard_write_NAPOT_read_TOR_str)
 #endif
@@ -275,7 +275,7 @@ PMPSm_cp_grain_checkerboard_write_OFF_read_OFF:
   LI(x6, PMPREGION_OFF)
   csrw pmpcfg0, x6
   csrr x7, pmpaddr0
-  and x7, x7, t3
+  and x7, x7, a3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_checkerboard_write_OFF_read_OFF, PMPSm_cp_grain_checkerboard_write_OFF_read_OFF_str)
 
@@ -288,7 +288,7 @@ PMPSm_cp_grain_checkerboard_write_OFF_read_NAPOT:
   LI(x6, PMPREGION_NAPOT)
   csrw pmpcfg0, x6
   csrr x7, pmpaddr0
-  and x7, x7, t3
+  and x7, x7, a3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_checkerboard_write_OFF_read_NAPOT, PMPSm_cp_grain_checkerboard_write_OFF_read_NAPOT_str)
 #ifdef UDB_PMP_TOR_SUPPORTED
@@ -302,7 +302,7 @@ PMPSm_cp_grain_checkerboard_write_OFF_read_TOR:
   LI(x6, PMPREGION_TOR)
   csrw pmpcfg0, x6
   csrr x7, pmpaddr0
-  and x7, x7, t3
+  and x7, x7, a3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_checkerboard_write_OFF_read_TOR, PMPSm_cp_grain_checkerboard_write_OFF_read_TOR_str)
 #endif

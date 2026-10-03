@@ -24,7 +24,7 @@ from testgen.priv.registry import add_priv_test_generator
 @add_priv_test_generator(
     "PMPF",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=["F", "Sm"],
+    required_extensions=[["I", "E"], "F", "Sm"],
     march_extensions=["F", "D", "Zfhmin"],
     params=["NUM_PMP_ENTRIES: '>0'"],
 )

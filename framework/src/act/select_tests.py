@@ -82,6 +82,21 @@ def _requires_extension_from(
     )
 
 
+_I_OR_E = frozenset({"I", "E"})
+
+
+def _select_base(test_metadata: TestMetadata, implemented_extensions: set[str]) -> TestMetadata:
+    """Build a test that accepts either base integer extension with the E base on a hart without I."""
+    if (
+        _I_OR_E in test_metadata.required_extensions
+        and "I" not in implemented_extensions
+        and "E" in implemented_extensions
+    ):
+        march = re.sub(r"^(rv(?:32|64|\$\{XLEN\}))i", r"\1e", test_metadata.march)
+        return test_metadata.model_copy(update={"march": march})
+    return test_metadata
+
+
 def check_test_params(test_params: dict[str, int | bool | str], config_params: dict[str, ConfigParamValue]) -> bool:
     """Check if all parameters in test_params match those in config_params."""
     for param, value in test_params.items():
@@ -123,7 +138,7 @@ def select_tests(
             # Check if all parameters match
             test_params = test_metadata.params
             if check_test_params(test_params, config_params):
-                selected_tests[test_name] = test_metadata
+                selected_tests[test_name] = _select_base(test_metadata, implemented_extensions)
     return selected_tests
 
 

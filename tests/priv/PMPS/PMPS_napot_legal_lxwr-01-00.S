@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'S', 'Sm']
+# REQUIRED_EXTENSIONS: ['S', 'Sm', ['I', 'E']]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
 #   PMP_NAPOT_SUPPORTED: true

@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm']
+# REQUIRED_EXTENSIONS: ['Sm', ['I', 'E']]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv${XLEN}i_zicsr_zifencei
@@ -55,9 +55,9 @@ PMPSm_cp_grain_check_readback:
   csrw pmpcfg0, x0
   LI(x6, -1)
   csrw pmpaddr0, x6
-  LI(t3, PMP_GRAIN_CHECK_MASK)
+  LI(a3, PMP_GRAIN_CHECK_MASK)
   csrr x7, pmpaddr0
-  and x7, x7, t3
+  and x7, x7, a3
   # Check if x7 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x7, PMPSm_cp_grain_check_readback, PMPSm_cp_grain_check_readback_str)
 

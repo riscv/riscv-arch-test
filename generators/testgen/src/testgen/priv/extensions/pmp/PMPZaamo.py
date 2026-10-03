@@ -24,7 +24,7 @@ from testgen.priv.registry import add_priv_test_generator
 @add_priv_test_generator(
     "PMPZaamo",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=["Zaamo", "Sm"],
+    required_extensions=[["I", "E"], "Zaamo", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'"],
 )
 def make_pmpzaamo(test_data: TestData) -> list[TestChunk]:

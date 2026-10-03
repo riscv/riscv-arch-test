@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Zcd', 'Sm', 'D', 'F']
+# REQUIRED_EXTENSIONS: ['Zcd', 'Sm', 'D', 'F', ['I', 'E']]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv${XLEN}ifd_zicsr_zifencei_zca_zcd

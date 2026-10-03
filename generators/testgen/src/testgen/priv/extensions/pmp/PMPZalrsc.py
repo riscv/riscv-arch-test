@@ -25,7 +25,7 @@ from testgen.priv.registry import add_priv_test_generator
 @add_priv_test_generator(
     "PMPZalrsc",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=["Zalrsc", "Sm"],
+    required_extensions=[["I", "E"], "Zalrsc", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'"],
 )
 def make_pmpzalrsc(test_data: TestData) -> list[TestChunk]:

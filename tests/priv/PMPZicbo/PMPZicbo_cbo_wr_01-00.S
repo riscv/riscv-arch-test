@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['I', 'Sm', 'Zicbom', 'Zicboz']
+# REQUIRED_EXTENSIONS: ['Sm', 'Zicbom', 'Zicboz', ['I', 'E']]
 # params:
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv${XLEN}i_zicbom_zicboz_zicsr_zifencei

@@ -135,8 +135,39 @@
     "update_whole_mask": true
   },
 
-  "wfi_timeout": 200,
+  "wfi_timeout": 0,
   "mmode_perf_event_map": {
     "Load": 11
-  }
+  },
+  "trigger_use_tcontrol": false,
+  "trigger_types": [
+    "none",
+    "disabled",
+    "mcontrol6",
+    "icount",
+    "itrigger",
+    "etrigger"
+  ],
+  "triggers": [
+    {
+      "reset": [0, 0, 0, "0x8078"],
+      "mask": ["0xf9ffffff", "0xffffffff", "0x0", 0],
+      "poke_mask": ["0xf9ffffff", "0xffffffff", "0x0", 0]
+    },
+    {
+      "reset": [0, 0, 0, "0x8078"],
+      "mask": ["0xf9ffffff", "0xffffffff", "0x0", 0],
+      "poke_mask": ["0xf9ffffff", "0xffffffff", "0x0", 0]
+    },
+    {
+      "reset": [0, 0, 0, "0x8078"],
+      "mask": ["0xf9ffffff", "0xffffffff", "0x0", 0],
+      "poke_mask": ["0xf9ffffff", "0xffffffff", "0x0", 0]
+    },
+    {
+      "reset": [0, 0, 0, "0x8078"],
+      "mask": ["0xf9ffffff", "0xffffffff", "0x0", 0],
+      "poke_mask": ["0xf9ffffff", "0xffffffff", "0x0", 0]
+    }
+  ]
 }

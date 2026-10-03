@@ -178,8 +178,6 @@
 
 ##### Supervisor Interrupts #####
 
-#define WHISPER_SSIP_ADDRESS (CLINT_BASE_ADDRESS + 0xC000)
-
 // using the supervisor APLIC domain to trigger supervisor external interrupts
 // - source 2 is delegated from the machine domain to the supervisor domain (see RVMODEL_BOOT)
 // - writing source number 2 to ADDR_S_SETIPNUM sets the interrupt pending

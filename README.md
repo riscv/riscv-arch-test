@@ -261,12 +261,14 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 **Interrupt Macros**: Defined if a platform-specific interrupt controller is used to set or clear. MSW and SSW preferably use `msip` and `mip.ssip` rather than a platform-specific controller, but are available to be defined for designs that only support a controller. _M flavors run in machine mode and do not use T-SBI. Others may be invoked from any mode and may need T-SBI if they access memory-mapped I/O that requires machine permissions. If the _M flavor is identical to the regular flavor, it does not need to be defined.
 
 - `RVMODEL_SET_MEXT_INT(_R1, _R2)`
+- `RVMODEL_SET_MEXT_INT_M(_R1, _R2)`
 - `RVMODEL_CLR_MEXT_INT(_R1, _R2)`
 - `RVMODEL_CLR_MEXT_INT_M(_R1, _R2)`
 - `RVMODEL_SET_MSW_INT(_R1, _R2)`
 - `RVMODEL_CLR_MSW_INT(_R1, _R2)`
 - `RVMODEL_CLR_MSW_INT_M(_R1, _R2)`
 - `RVMODEL_SET_SEXT_INT(_R1, _R2)`
+- `RVMODEL_SET_SEXT_INT_M(_R1, _R2)`
 - `RVMODEL_CLR_SEXT_INT(_R1, _R2)`
 - `RVMODEL_CLR_SEXT_INT_M(_R1, _R2)`
 - `RVMODEL_SET_SSW_INT(_R1, _R2)`

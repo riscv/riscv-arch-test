@@ -32,7 +32,7 @@ VERBOSE     ?=
 CLEAN_INTERMEDIATES ?=
 
 # COVERAGE_SIMULATOR is only used when collecting coverage (make coverage)
-COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
+COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa, vcs, or verilator
 
 # WORKDIR is where all of the generated files are created
 WORKDIR     ?= work
@@ -158,7 +158,7 @@ help:
 	  'FAST'                'Skip objdump for faster ELF builds' \
 	  'CLEAN_INTERMEDIATES' 'Delete intermediate build/ dirs after build (saves disk)' \
 	  'VERBOSE'             'Implies DEBUG, JOBS=1, prints each command' \
-	  'COVERAGE_SIMULATOR'  'questa or vcs (used with make coverage)'
+	  'COVERAGE_SIMULATOR'  'questa, vcs, or verilator (used with make coverage)'
 	@printf '\n\033[1mExamples:\033[0m\n'
 	@printf '  make                                 # default: spike rv32+rv64\n'
 	@printf '  make spike-rv64-max                  # build & run a single config\n'

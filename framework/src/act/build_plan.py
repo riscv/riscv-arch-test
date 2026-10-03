@@ -422,7 +422,11 @@ def gen_coverage_tasks(
     # a context that spans task execution.
     act_resources = importlib.resources.files("act")
     fcov_path = Path(str(act_resources / "fcov")).absolute()
-    script_name = "riscv-arch-test.do" if coverage_simulator == CoverageSimulator.QUESTA else "riscv-arch-test-vcs.sh"
+    script_name = {
+        CoverageSimulator.QUESTA: "riscv-arch-test.do",
+        CoverageSimulator.VCS: "riscv-arch-test-vcs.sh",
+        CoverageSimulator.VERILATOR: "riscv-arch-test-verilator.sh",
+    }[coverage_simulator]
     sim_script = Path(str(act_resources / script_name)).absolute()
 
     # Collect file dependencies for staleness checking.
@@ -439,7 +443,11 @@ def gen_coverage_tasks(
         coverage_dir = base_dir / coverage_group
         base_name = coverage_dir / coverage_group.stem
         tracelist_file = base_name.with_suffix(".tracelist")
-        coverage_db_ext = "ucdb" if coverage_simulator == CoverageSimulator.QUESTA else "vdb"
+        coverage_db_ext = {
+            CoverageSimulator.QUESTA: "ucdb",
+            CoverageSimulator.VCS: "vdb",
+            CoverageSimulator.VERILATOR: "dat",
+        }[coverage_simulator]
         simulator_artifact = base_name.with_suffix(f".{coverage_db_ext}")
         simulator_log = base_name.with_suffix(f".{coverage_db_ext}.log")
         work_dir = base_name.parent / f"{coverage_db_ext}_work"

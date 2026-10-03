@@ -79,6 +79,7 @@ class CoverageSimulator(str, Enum):
 
     QUESTA = "questa"
     VCS = "vcs"
+    VERILATOR = "verilator"
 
 
 class Config(BaseModel):

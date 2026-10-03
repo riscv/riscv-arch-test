@@ -161,6 +161,9 @@ coverpoints:
     bins: 3 address * 2 Vector Lengths * 4 SEW * 2 ops
     rules:
       - Sdtrig_mult_mem_access
+  - name: cp_vector_mask
+    goal: Masked vector operations do not match
+    description: WIP
   - name: cp_cm_pop_push
     goal: Accesses match as if happened individually
     description: |-
@@ -500,7 +503,7 @@ coverpoints:
       if ZCA_SUPPORTED and RV64, also perform c.{ld/sd/ldsp/sdsp}
       if ZCB_SUPPORTED, also perform c.{lbu/lh/lhu/sb/sh}
       if ZCF_SUPPORTEDand RV32, also perform c.{flw/flwsp/fsw/fswsp}
-      if ZCD_SUPPORTED and RV64, also perform c.{fld/fldsp/fsd/fsdsp}
+      if ZCD_SUPPORTED, also perform c.{fld/fldsp/fsd/fsdsp}
     expectation: Breakpoint exception if the size of the memory access matches the trigger size in mcontrol6
     bins: 2 values * 7 sizes * up to 39 instructions
     rules:
@@ -553,11 +556,12 @@ coverpoints:
       tdata1.XSL= 010
       tdata1.match = {4/5/12/13}
       if RV32:
-      tdata2 = {0x12345678}
-      perform SW{0x0}, {0x12345678}, {0xFFFF5678}, {0x1234FFFF}, {0xFFFFFFFF} to scratch
+      tdata2 = {0xF0F0_A0B0}
+      perform SW{0x0}, *** to scratch
       if RV64:
-      tdata2 = {0x123456789ABCDEF0}
-      perform SD{0x0}, {123456789ABCDEF0}, {FFFFFFFF9ABCDEF0}, {12345678FFFFFFFF}, {FFFFFFFF} to scratch
+      tdata2 = {0xF0F0F0F0_A0B0C0D0}
+      perform SD{0x0}, *** to scratch
+      *** depends on high/low
     expectation: Breakpoint exception if the store data meets the condition set by tdata1.match
     bins: 4 matches * 5 ops
     rules:

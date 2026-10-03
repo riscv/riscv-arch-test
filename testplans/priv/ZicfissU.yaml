@@ -190,7 +190,7 @@ coverpoints:
   - name: cp_ssp_csr_gating_u_zicfiss
     goal: Verify ssp CSR accessibility from U-mode across the menvcfg.SSE / senvcfg.SSE enable chain
     description: |-
-      From U-mode, attempt both a read and a write of ssp for each of the four (menvcfg.SSE, senvcfg.SSE) combinations.
+      From U-mode, attempt both a read and a write of ssp for each reachable (menvcfg.SSE, senvcfg.SSE) combination: (1,1), (1,0) and (0,0). (0,1) is the same state as (0,0), because menvcfg.SSE=0 makes senvcfg.SSE read-only zero.
       Also exercise the toggle direction: enable, use the shadow stack, then clear senvcfg.SSE and re-attempt the ssp access.
     expectation: |-
       (menvcfg.SSE=1, senvcfg.SSE=1): access allowed, correct value read/written.

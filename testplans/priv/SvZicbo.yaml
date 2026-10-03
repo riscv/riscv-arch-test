@@ -1,316 +1,240 @@
 # yaml-language-server: $schema=testplan.schema.json
 suite: SvZicbo
-source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=45572429#gid=45572429
+source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1997311976#gid=1997311976
 coverpoints:
-  - name: PTE_inv_cbo
-    goal: In-Valid Permission of PTE
-    description: |-
-      If PTE does not have Valid (pte.V=0) permission, then accessing it would raise store page fault exception.
-
-      Test in supervisor and user privilege mode for PTE at all levels
-      Test Environment:
-       Set satp.mode=sv32, sv39, sv48 & sv57
-       All PMP permissions on targated pages
-
-      Test Cases:
-      Set PTE.V = 0
-       Set PTE.W=1 & PTE.R=1 and test the write access on cache block.
-
-      Note:
-       For testing of leaf PTE at level0, set all the pte perimssions at other levels to 0 except PTE.V, so that non-leaf level points to level0
-      Set pte.U=0 when test in Supervisor mode and Set pte.U=1 when testing in user mode
-    expectation: store/AMO page fault raised
-    check: Check against RM
-    status: Done
-    coverage: Uncovered
-    notes: "feature: Exceptions"
-  - name: PTE_res_rwx_cbo
-    goal: Reserved RWX permission encodings of PTE
-    description: |-
-      If PTE has reserved RWX encodings (pte.w=1 & pte.r=0), then accessing it would raise page fault exception.
-
-      Test in supervisor and user mode for leaf PTE at all levels
-      Test Environment
-      Set satp.mode=sv32, sv39, sv48, & sv57
-      All PMP permissions on targated pages
-      Valid leaf PTE
-
-      Test Cases:
-       Set PTE.W=1 & PTE.R=0 and test the write access on cache block.
-
-      Note:
-       For testing at level0, set all the pte perimssions at other levels to 0 except PTE.V, so that non-leaf level points to level0
-      Set pte.U=0 when test in Supervisor mode and Set PTE.U=1 when testing in user mode
-    expectation: store/AMO page fault raised
-    check: Check against RM
-    status: Done
-    coverage: Uncovered
-  - name: PTE_nonleaf_lvl0_cbo
-    goal: Non-leaf PTE permission at level 0.
-    description: |-
-      If PTE at level0 has non-leaf RWX permissions (pte.x=0 & pte.r=0), then accessing it would raise page fault exception.
-
-      Test in supervisor and user privilege mode for level0 PTE.
-      Test Environment:
-      Set satp.mode=sv32, sv39, sv48 & sv57
-      All PMP permissions on targated pages
-      Valid leaf PTE at level0, with no invalid RWX encoding
-
-      Test Cases:
-      Set PTE.X=0 & PTE.R=0 & PTE.W=0 and test the write access on cache block.
-
-      Note:
-       For testing at level0, set all the pte perimssions at other levels to 0 except PTE.V, so that non-leaf level points to level0
-      Set pte.U=0 when test in Supervisor mode and Set pte.U=1 when testing in user mode
-    expectation: store/AMO page fault raised
-    check: Check against RM
-    status: Done
-    coverage: Uncovered
-  - name: PTE_r_set_w_unset_zicbom_s
-    goal: Execute Zicbom instructions on S-mode pages with R=1 & W=0 in S-mode with s/mstatus.SUM set & unset
-    description: |-
-      If PTE belongs to supervisor mode i.e. its U permission bit is clear (pte.u = 0), then accessing that PTE in supervisor mode should be successful if the corresponding R or W permission of PTE is granted. Otherwise raise store page fault exception.
-
-      When PTE has all PMP permissions, PTE has non-reserved W encoding, pte.u=0 and pte.v=1, then test the following in supervisor privilege mode for all level of PTE.
-
-       Test zicbom access for PTE.R=1 & PTE.W=0 with s/mstatus.SUM = 1 on cache block
-       Test zicbom access for PTE.R=1 & PTE.W=0 with s/mstatus.SUM = 0 on cache block
-
-      * For testing at level0, set all the pte perimssions at higher level to 0 except pte.v, so that non-leaf level points to level0
-    expectation: No fault expected
-    check: Check against RM
-    status: Done
-    coverage: Uncovered
-  - name: PTE_r_set_w_unset_zicbom_u
-    goal: Execute Zicbom instructions on U pages with R=1 & W=0 in U-mode
-    description: |-
-      If PTE belongs to user mode i.e. its U permission bit is set (pte.u = 1), then accessing that PTE in user mode should be successful if the corresponding R or W permission of PTE is granted. Otherwise raise store page fault exception.
-
-      When PTE has all PMP permissions, PTE has non-reserved W encoding, pte.u=1 and pte.v=1, then test the following in user privilege mode for all level of PTE.
-
-       Test zicbom access for PTE.R=1 & PTE.W=0  on cache block
-
-      * For testing at level0, set all the pte perimssions at higher level to 0 except pte.v, so that non-leaf level points to level0
-    expectation: No fault expected
-    check: Check against RM
-    status: Done
-    coverage: Uncovered
-  - name: PTE_rw_unset_zicbom
-    goal: Test Zicbom access for PTE.R=0 & PTE.W=0 in S & U modes
-    description: |-
-      If PTE belongs to supervisor mode i.e. its U permission bit is clear (pte.u = 0), then accessing that PTE in supervisor mode should be successful if the corresponding R or W permission of PTE is granted. Otherwise raise store page fault exception.
-
-      Test Environment:
-      Test in supervisor and user privilege mode for PTE at all levels
-       Set satp.mode=sv32, sv39, sv48 & sv57
-       All PMP permissions on targated pages
-
-      Test zicbom access for PTE.R=0 & PTE.W=0 on cache block
-
-      * For testing at level0, set all the pte perimssions at higher level to 0 except pte.v, so that non-leaf level points to level0.
-    expectation: store/AMO page fault raised
-    check: Check against RM
-    status: Done
-    coverage: Uncovered
-  - name: PTE_w_unset_zicboz
-    goal: Test Zicboz access for PTE.W=0 in S & U modes
-    description: |-
-      If PTE belongs to supervisor mode i.e. its U permission bit is clear (pte.u = 0), then accessing that PTE in supervisor mode should be successful if the corresponding R or W permission of PTE is granted. Otherwise raise store page fault exception.
-
-      Test Environment:
-      Test in supervisor and user privilege mode for PTE at all levels
-       Set satp.mode=sv32, sv39, sv48 & sv57
-       All PMP permissions on targated pages
-
-      Test zicboz access for PTE.W=0 on cache block
-
-      * For testing at level0, set all the pte perimssions at higher level to 0 except pte.v, so that non-leaf level points to level0.
-    expectation: store/AMO page fault raised
-    check: Check against RM
-    status: Done
-    coverage: Uncovered
-  - name: spage_rwx_cbo_u
-    goal: CBO access on S-mode pages in U-mode
-    description: |-
-      If PTE belongs to supervisor mode i.e. its U permission bit is clear (pte.u = 0), then accessing that PTE in supervisor mode should be successful if the corresponding W permission of PTE is granted. Otherwise raise store page fault exception.
-
-      Test in user privilege mode for leaf PTE on all levels
-      Test Environment:
-      Set satp.mode=sv32, 39, 48 & 57
-      All PMP permissions on targated pages if PMP is enabled if PMP is enabled
-      Valid leaf PTE, with no invalid RWX encoding
-
-      Test Cases:
-       Set PTE.U=0 and test the execution of cbo instructions in U-mode
-
-      Note:
-       For testing at level0, set all the pte perimssions at higher levels to 0 except PTE.V, so that non-leaf level points to level0.
-      For write access set PTE.W=1 and PTE.R=1
-    expectation: store/AMO page fault raised
-    check: Check against RM
-    status: Done
-    coverage: Uncovered
-  - name: upage_sumunset_cbo_s
-    goal: CBO access on U-mode pages in S-mode with s/mstatus.SUM unset
-    description: |-
-      If PTE belongs to user mode i.e. its U permission bit is set (pte.u = 1) and m/sstatus.SUM = 0, then accessing that PTE in supervisor mode would raise page fault exception.
-
-      Test in supervisor privilege mode for leaf PTE on all levels
-      Test Environment:
-       Set satp.mode=sv32, 39, 48 and 57
-       All PMP permissions on targated pages if PMP is enabled
-       Valid leaf PTE, with no invalid RWX encoding
-
-      Test Cases:
-       Set PTE.U=1 & s/mstatus.SUM = 0 and execute cbo instructions in S-mode
-
-      Note:
-       For testing at level0, set all the pte perimssions at higher levels to 0 except PTE.V, so that non-leaf level points to level0.
-      For write access set PTE.W=1 and PTE.R=1
-    expectation: store/AMO page fault raised
-    check: Check against RM
-    status: Done
-    coverage: Uncovered
-  - name: Abit_unset_cbo
-    goal: Access bit implementation for CBO instructions
-    description: |-
-      If implementation does not sets the pte.A on accessing the PTE, and PTE has pte.A=0, then accessing it would raise page fault exception.
-
-       Set satp.mode=sv32, 39, 48 and 57
-      Test in supervisor and user privilege mode for PTE at all levels
-       All PMP permissions on targated pages if PMP is enabled
-       Valid leaf PTE, with no invalid RWX encoding
-
-      Test Cases:
-       Set PTE.R=1 and PTE.W=1 & PTE.A=0 and execute CBO instructions
-
-      Note:
-       For testing at level0, set all the pte perimssions at higher levels to 0 except PTE.v, so that non-leaf level points to level0.
-       Set PTE.U=0 when test in Supervisor mode and Set pte.U=1 when testing in user mode.
-    expectation: store/AMO page fault raised If Svade is implemented
-    check: Check against RM
-    status: Done
-    coverage: Uncovered
-  - name: Dbit_unset_zicbom
-    goal: Dirty bit Implementation for Zicbom instructions
-    description: |-
-      A Zicbom instruction does not check the dirty bit and neither raises an exception nor sets the bit
-
-      Test Environment:
-      Test in supervisor and user privilege mode for leaf PTE on all levels.
-       Set satp.mode=sv32, 39, 48 and 57.
-       All PMP permissions on targated pages if PMP is enabled
-      PTE.V = 1, PTE.A = 1, with no invalid RWX encoding
-
-      Test Case:
-       Set PTE.R= 1, PTE.W=1, PTE.A=1 & PTE.D=0 and execute Zicbom instructions
-
-      Note:
-       For testing at level0, set all the pte perimssions at higher levels to 0 except PTE.V, so that non-leaf level points to level0.
-      Set PTE.U=0 when test in Supervisor mode and Set pte.U=1 when testing in user mode.
-    expectation: No fault expected
-    check: Check against RM
-    status: Done
-    coverage: Uncovered
-  - name: Dbit_unset_zicboz
-    goal: Dirty bit Implementation for Zicboz instructions
-    description: |-
-      A Zicboz instruction checks the dirty bit and may raise an exception and set the bit as required
-
-      Test Environment:
-      Test in supervisor and user privilege mode for leaf PTE on all levels.
-       Set satp.mode=sv32, 39, 48 and 57.
-       All PMP permissions on targated pages if PMP is enabled
-      PTE.V = 1, PTE.A = 1, with no invalid RWX encoding
-
-      Test Case:
-       Set PTE.R= 1, PTE.W=1, PTE.A=1 & PTE.D=0 and execute Zicboz instruction
-
-      Note:
-       For testing at level0, set all the pte perimssions at higher levels to 0 except PTE.V, so that non-leaf level points to level0.
-      Set PTE.U=0 when test in Supervisor mode and Set pte.U=1 when testing in user mode.
-    expectation: store/AMO page fault raised
-    check: Check against RM
-    status: Done
-    coverage: Uncovered
-  - name: misaligned_page_cbo
-    goal: Misaligned Superpage
-    description: |-
-      If PTE at level-i is leaf PTE (superpage) and its pte.ppn[i-1:0]!=0, then it is a misaligned superpage and accessing that PTE would raise page fault exception of the corresponding access type.
-
-      Test Environment:
-      Test in supervisor and user privilege mode.
-      Set satp.mode = sv32, 39, 48, and 57
-       All PMP permissions on targated pages if PMP is enabled
-       Valid leaf PTE, with no invalid RWX encoding.
-
-      Test Cases:
-      For leaf PTE at level4 set pte.ppn[3:0] != 0 and test for write access. (For sv57) on cache block
-      For leaf PTE at level3 set pte.ppn[2:0] != 0 and test for write access. (For sv48 & 57) on cache block
-       For leaf PTE at level2 set pte.ppn[1:0] != 0 and test for write access. (For sv39, 48 & 57) on cache block
-       For leaf PTE at level1 set pte.ppn[0] != 0 and test for write access. (For sv32, 39, 48 & 57) on cache block
-
-      Note:
-       Set pte.U=0 when test in Supervisor mode and Set pte.U=1 when testing in user mode.
-    expectation: store/AMO page fault raised
-    check: Check against RM
-    status: Done
-    coverage: Uncovered
-  - name: leaf_PTE_to_nonexistant_pa_cbo
-    goal: Leaf PTE points to invalid Physical Address
-    description: |-
-      If PTE points to a non existent physical address, it will raise a store access fault when CBO instructions are executed.
-
-      Test Environment:
-      Test in supervisor and user privilege mode on all levels.
-      Set satp.mode = sv32, 39, 48, and 57
-       All PMP permissions on targated pages if PMP is enabled
-       Valid leaf PTE, with no invalid RWX encoding.
-
-      Test Cases:
-      Execute CBO instructions using VA with leaf PTE pointing to non existent PA
-
-      Note:
-       For testing at level0, set all the pte perimssions at higher levels to 0 except PTE.V, so that non-leaf level points to level0.
-    expectation: store access fault raised
-    check: Check against RM
-    status: Done
-    coverage: Uncovered
-  - name: nonleaf_PTE_to_nonexistant_pa_cbo
-    goal: Non-leaf PTE points to invalid Physical Address
-    description: |-
-      If a non-leaf PTE points to a non existent physical address, it will raise a store access fault during the page table walk.
-
-      Test in supervisor and user privilege mode.
-      Test Environment:
-      Set satp.mode = sv32, 39, 48, and 57
-       All PMP permissions on targated pages if PMP is enabled
-       Valid leaf PTE, with no invalid RWX encoding.
-
-      Test Cases:
-      Execute CBO instructions using VA with non leaf PTE pointing to non existent PA instead of the next page table.
-
-      Note:
-       For testing at level0, set all the pte perimssions at higher levels to 0 except PTE.V, so that non-leaf level points to level0.
-    expectation: store access fault raised
-    check: Check against RM
-    status: Done
-    coverage: Uncovered
-  - name: PTE_nonleaf_DAU_cbo
-    goal: Set DAU bits for Non-leaf PTE
-    description: |-
-      If a non-leaf PTE has D, A or U bits set, it will result in a store page fault.
-      Test in supervisor and user privilege mode for all levels.
-      Test Environment:
-      Set satp.mode = sv32, 39, 48, and 57
-       All PMP permissions on targated pages if PMP is enabled
-       Valid leaf PTE, with no invalid RWX encoding.
-
-      Test Cases:
-      Execute CBO instructions using VA with non leaf PTE having D bit set.
-      Execute CBO instructions using VA with non leaf PTE having A bit set.
-      Execute CBO instructions using VA with non leaf PTE having U bit set.
-    expectation: store/AMO page fault raised
-    check: Check against RM
-    status: Done
-    coverage: Uncovered
+  - heading: "General Test Environment (SvZicbo):\n- T-SBI suite: boots to S-mode (BOOT_TO_SMODE) and drives the test from the boot identity map. The page under test is mapped at va_data. S-mode accesses run from the identity map. U-mode accesses use RVTEST_TSBI_GOTO_UMODE / RVTEST_TSBI_GOTO_SMODE; the handler moves execution to the U-accessible code alias va_rvtest_code_begin (registered with SAVE_AREA_SETUP) and back. menvcfg is written through T-SBI CSR calls. Page faults are delegated to S-mode, so causes are sampled from scause/stval.\n- menvcfg.CBCFE/CBIE/CBZE are set through T-SBI; U-mode tests also set senvcfg.\n- Run for every supported translation mode: Sv32 on RV32; Sv39, Sv48 and Sv57 on RV64, as selected by the UDB configuration."
+  - name: cp_PTE_rwx_zicbop_s
+    goal: Verify prefetch.i/r/w through a valid mapping execute without exception from S-mode
+    description: "S-mode: RWX leaf PTE with PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute prefetch.i, prefetch.r and prefetch.w on va_data."
+    expectation: No exception; prefetches never fault.
+    bins: |-
+      PTE_RWX_d x PageType_d x zicbop_ins x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: cbp_unperm_translate
+    rules:
+      - "[norm:cbp_unperm_translate]"
+  - name: cp_PTE_rwx_zicbop_u
+    goal: Verify prefetch.i/r/w through a valid mapping execute without exception from U-mode
+    description: "U-mode: RWX leaf PTE with PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute prefetch.i, prefetch.r and prefetch.w on va_data."
+    expectation: No exception; prefetches never fault.
+    bins: |-
+      PTE_RWX_d x PageType_d x zicbop_ins x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: cbp_unperm_translate
+    rules:
+      - "[norm:cbp_unperm_translate]"
+  - name: cp_PTE_inv_cbo_s
+    goal: Verify a CBO through an invalid PTE (V=0) raises a store/AMO page fault from S-mode
+    description: "S-mode: leaf PTE with V=0 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute cbo.clean, cbo.flush and cbo.inval (Zicbom) or cbo.zero (Zicboz) on va_data."
+    expectation: Store/AMO page fault (scause = 15) for every CBO; stval = faulting virtual address.
+    bins: |-
+      PTE_d_inv x PageType_d x store_page_fault x cbo_ins x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: fault_excep_csr
+    rules:
+      - "[norm:fault_excep_csr]"
+  - name: cp_PTE_inv_cbo_u
+    goal: Verify a CBO through an invalid PTE (V=0) raises a store/AMO page fault from U-mode
+    description: "U-mode: leaf PTE with V=0 and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute cbo.clean, cbo.flush and cbo.inval (Zicbom) or cbo.zero (Zicboz) on va_data."
+    expectation: Store/AMO page fault (scause = 15) for every CBO; stval = faulting virtual address.
+    bins: |-
+      PTE_d_inv x PageType_d x store_page_fault x cbo_ins x mode {U-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: fault_excep_csr
+    rules:
+      - "[norm:fault_excep_csr]"
+  - name: cp_PTE_res_rwx_cbo_s
+    goal: Verify a CBO through the reserved encoding W=1, R=0 raises a store/AMO page fault from S-mode
+    description: "S-mode: leaf PTE with W=1, R=0 (with X=1 and with X=0) and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_d_res_rwx x PageType_d x store_page_fault x cbo_ins x mode {S-mode}
+      = 28 bins on RV64, 8 on RV32
+  - name: cp_PTE_res_rwx_cbo_u
+    goal: Verify a CBO through the reserved encoding W=1, R=0 raises a store/AMO page fault from U-mode
+    description: "U-mode: leaf PTE with W=1, R=0 (with X=1 and with X=0) and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_d_res_rwx x PageType_d x store_page_fault x cbo_ins x mode {U-mode}
+      = 28 bins on RV64, 8 on RV32
+  - name: cp_PTE_nonleaf_lvl0_cbo_s
+    goal: Verify a CBO through a level-0 pointer PTE raises a store/AMO page fault from S-mode
+    description: "S-mode: level-0 PTE with V=1, R=W=X=0 and PTE.U=0. Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_nonleaf_lvl0_d x kilo_page x mode x store_page_fault x cbo_ins x mode {S-mode}
+      = 6 bins on RV64, 2 on RV32
+  - name: cp_PTE_nonleaf_lvl0_cbo_u
+    goal: Verify a CBO through a level-0 pointer PTE raises a store/AMO page fault from U-mode
+    description: "U-mode: level-0 PTE with V=1, R=W=X=0 and PTE.U=1. Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_nonleaf_lvl0_d x kilo_page x mode x store_page_fault x cbo_ins x mode {U-mode}
+      = 6 bins on RV64, 2 on RV32
+  - name: cp_PTE_r_set_w_unset_zicbom_s
+    goal: Verify Zicbom CBOs succeed with R=1 and W=0 from S-mode
+    description: "S-mode: RX leaf PTE (R=1, W=0) with PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode), with sstatus.SUM=0 and SUM=1. Execute cbo.clean, cbo.flush and cbo.inval on va_data."
+    expectation: "No exception: Zicbom needs read or write permission."
+    bins: |-
+      PTE_r_set_w_unset_spage_d x PageType_d x cbo_ins x sum_sstatus x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+  - name: cp_PTE_r_set_w_unset_zicbom_u
+    goal: Verify Zicbom CBOs succeed with R=1 and W=0 from U-mode
+    description: "U-mode: RX leaf PTE (R=1, W=0) with PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute cbo.clean, cbo.flush and cbo.inval on va_data."
+    expectation: "No exception: Zicbom needs read or write permission."
+    bins: |-
+      PTE_r_set_w_unset_upage_d x PageType_d x cbo_ins x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+  - name: cp_PTE_rw_unset_zicbom_s
+    goal: Verify Zicbom CBOs raise a store/AMO page fault with R=0 and W=0 from S-mode
+    description: "S-mode: execute-only leaf PTE with PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute cbo.clean, cbo.flush and cbo.inval on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_x_spage_d x PageType_d x store_page_fault x cbo_ins x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: cbm_unperm_fault
+    rules:
+      - "[norm:cbm_unperm_fault]"
+  - name: cp_PTE_rw_unset_zicbom_u
+    goal: Verify Zicbom CBOs raise a store/AMO page fault with R=0 and W=0 from U-mode
+    description: "U-mode: execute-only leaf PTE with PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute cbo.clean, cbo.flush and cbo.inval on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_x_upage_d x PageType_d x store_page_fault x cbo_ins x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: cbm_unperm_fault
+    rules:
+      - "[norm:cbm_unperm_fault]"
+  - name: cp_PTE_w_unset_zicboz_s
+    goal: Verify cbo.zero raises a store/AMO page fault with W=0 from S-mode
+    description: "S-mode: RX leaf PTE (W=0) with PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode), with sstatus.SUM=0 and SUM=1. Execute cbo.zero on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_w_unset_spage_d x PageType_d x store_page_fault x cbo_ins x sum_sstatus x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: cbz_unperm_fault
+    rules:
+      - "[norm:cbz_unperm_fault]"
+  - name: cp_PTE_w_unset_zicboz_u
+    goal: Verify cbo.zero raises a store/AMO page fault with W=0 from U-mode
+    description: "U-mode: RX leaf PTE (W=0) with PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute cbo.zero on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_w_unset_upage_d x PageType_d x store_page_fault x cbo_ins x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: cbz_unperm_fault
+    rules:
+      - "[norm:cbz_unperm_fault]"
+  - name: cp_spage_rwx_cbo_u
+    goal: Verify a U-mode CBO to a supervisor page (U=0) raises a store/AMO page fault
+    description: "U-mode: supervisor RWX leaf PTE (U=0), at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_spage_d x PageType_d x store_page_fault x cbo_ins x mode {U-mode}
+      = 14 bins on RV64, 4 on RV32
+  - name: cp_upage_sumunset_cbo_s
+    goal: Verify an S-mode CBO to a user page (U=1) raises a store/AMO page fault when sstatus.SUM=0
+    description: "S-mode with sstatus.SUM=0: user RWX leaf PTE (U=1), at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_upage_d x PageType_d x store_page_fault x cbo_ins x sum_sstatus x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+  - name: cp_Abit_unset_cbo_s
+    goal: Verify a CBO through a PTE with A=0 raises a store/AMO page fault from S-mode (no hardware A update)
+    description: "S-mode: leaf PTE with A=0 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode); menvcfg.ADUE=0. Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_Abit_unset_d x PageType_d x store_page_fault x cbo_ins x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: cbm_unperm_translate cbz_unperm_translate
+    rules:
+      - "[norm:cbm_unperm_translate] [norm:cbz_unperm_translate]"
+  - name: cp_Abit_unset_cbo_u
+    goal: Verify a CBO through a PTE with A=0 raises a store/AMO page fault from U-mode (no hardware A update)
+    description: "U-mode: leaf PTE with A=0 and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode); menvcfg.ADUE=0. Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_Abit_unset_d x PageType_d x store_page_fault x cbo_ins x mode {U-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: cbm_unperm_translate
+    rules:
+      - "[norm:cbm_unperm_translate]"
+  - name: cp_Dbit_unset_zicbom_s
+    goal: Verify Zicbom CBOs do not check PTE.D from S-mode
+    description: "S-mode: leaf PTE with A=1, D=0 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute cbo.clean, cbo.flush and cbo.inval on va_data."
+    expectation: No exception and D is not set.
+    bins: |-
+      PTE_Dbit_unset_d x PageType_d x cbo_ins x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+  - name: cp_Dbit_unset_zicbom_u
+    goal: Verify Zicbom CBOs do not check PTE.D from U-mode
+    description: "U-mode: leaf PTE with A=1, D=0 and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute cbo.clean, cbo.flush and cbo.inval on va_data."
+    expectation: No exception and D is not set.
+    bins: |-
+      PTE_Dbit_unset_d x PageType_d x cbo_ins x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+  - name: cp_Dbit_unset_zicboz_s
+    goal: Verify cbo.zero through a PTE with D=0 raises a store/AMO page fault from S-mode (no hardware D update)
+    description: "S-mode: leaf PTE with A=1, D=0 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode); menvcfg.ADUE=0. Execute cbo.zero on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_Dbit_unset_d x PageType_d x store_page_fault x cbo_ins x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: cbz_unperm_translate
+    rules:
+      - "[norm:cbz_unperm_translate]"
+  - name: cp_Dbit_unset_zicboz_u
+    goal: Verify cbo.zero through a PTE with D=0 raises a store/AMO page fault from U-mode (no hardware D update)
+    description: "U-mode: leaf PTE with A=1, D=0 and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode); menvcfg.ADUE=0. Execute cbo.zero on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_Dbit_unset_d x PageType_d x store_page_fault x cbo_ins x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+  - name: cp_misaligned_page_cbo_s
+    goal: Verify a CBO through a misaligned superpage raises a store/AMO page fault from S-mode
+    description: "S-mode: superpage leaf PTE with PTE.U=0 whose PPN has non-zero bits below the superpage size, at each superpage level. Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_RWX_d x misaligned_PPN_d x store_page_fault x cbo_ins x mode {S-mode}
+      = 10 bins on RV64, 2 on RV32
+  - name: cp_misaligned_page_cbo_u
+    goal: Verify a CBO through a misaligned superpage raises a store/AMO page fault from U-mode
+    description: "U-mode: superpage leaf PTE with PTE.U=1 whose PPN has non-zero bits below the superpage size, at each superpage level. Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_RWX_d x misaligned_PPN_d x store_page_fault x cbo_ins x mode {U-mode}
+      = 10 bins on RV64, 2 on RV32
+  - name: cp_PTE_nonleaf_DAU_cbo
+    goal: Verify a CBO with D, A or U set in a non-leaf PTE raises a store/AMO page fault
+    description: "S-mode and U-mode: set D, A or U (one at a time) in the non-leaf PTE above a valid leaf. Execute the CBOs on va_data. Requires privileged spec 1.12 or later."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_DAU_d x PageType_d x store_page_fault x cbo_ins x mode {S/U-mode}
+      = 60 bins on RV64, 12 on RV32
+  - name: cp_leaf_PTE_to_nonexistent_pa_cbo_s
+    goal: Verify a CBO to a non-existent physical address raises a store/AMO access fault from S-mode
+    description: "S-mode: valid leaf PTE with PTE.U=0 pointing at RVMODEL_ACCESS_FAULT_ADDRESS, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute the CBOs on va_data."
+    expectation: Store/AMO access fault (scause = 7); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_d x d_phys_address_nonexistent x PageType_d x store_acc_fault x cbo_ins x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: pma_chk_paddr
+    rules:
+      - "[norm:pma_chk_paddr]"
+  - name: cp_leaf_PTE_to_nonexistent_pa_cbo_u
+    goal: Verify a CBO to a non-existent physical address raises a store/AMO access fault from U-mode
+    description: "U-mode: valid leaf PTE with PTE.U=1 pointing at RVMODEL_ACCESS_FAULT_ADDRESS, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute the CBOs on va_data."
+    expectation: Store/AMO access fault (scause = 7); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_d x d_phys_address_nonexistent x PageType_d x store_acc_fault x cbo_ins x mode {U-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: pma_chk_paddr
+    rules:
+      - "[norm:pma_chk_paddr]"
+  - name: cp_nonleaf_PTE_to_nonexistent_pa_cbo
+    goal: Verify a CBO whose page-table walk reads a non-existent physical address raises a store/AMO access fault
+    description: "S-mode and U-mode: non-leaf PTE pointing at RVMODEL_ACCESS_FAULT_ADDRESS instead of the next page table. Execute the CBOs on va_data."
+    expectation: Store/AMO access fault (scause = 7).
+    bins: |-
+      pointer_PTE_d x d_phys_address_nonexistent x PageType_d x store_acc_fault x cbo_ins x mode {S/U-mode}
+      = 20 bins on RV64, 4 on RV32

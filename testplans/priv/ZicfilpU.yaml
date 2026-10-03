@@ -19,8 +19,6 @@ description: |
     exceptions are tested as per normative rules defined in the spec.
   - ELP state is observed via sstatus.SPELP when S-mode is implemented, because U-mode software-check exceptions are delegated to S-mode (medeleg[18]=1 in the ACT4 boot code). When S-mode is not implemented the trap is taken in M-mode and ELP is observed via mstatus.MPELP (RV64) or mstatush.MPELP (RV32).
     since U-mode traps are delivered to M-mode.
-  - Exception delivery target is U-mode; software-check exceptions are
-    delivered to U-mode privilege level.
   - Trap entry and return coverpoints from the M-mode sheet are not
     repeated here as they are M-mode specific by spec.
   - All other assumptions, instruction types, and execution conditions

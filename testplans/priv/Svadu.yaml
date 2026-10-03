@@ -1,52 +1,88 @@
 # yaml-language-server: $schema=testplan.schema.json
 suite: Svadu
-source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1484908158#gid=1484908158
+source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=129798575#gid=129798575
 coverpoints:
-  - name: |-
-      Abit_unset_exec
-      Abit_unset_read
-      Abit_unset_write
-    goal: Access bit implementation
-    description: |-
-      With menfcfg.ADUE = {0/1}: Test in supervisor and user privilege mode for leaf PTE on all levels.
-      Test Environment:
-       Set satp.mode=sv32, 39, 48 and 57
-       All PMP permissions on targated pages if PMP is enabled
-       Valid leaf PTE, with no invalid RWX encoding
-       Execute sfence.vma before accessign the PTE.
-
-      Test Cases:
-       Set PTE.R=1  & pte.a=0 and test the read access.
-       Set PTE.W=1&PTE.R=1 & pte.a=0 and test the write access.
-       Set PTE.X=1  & pte.a=0 and test the execute access.
-
-      Note:
-       For testing at level0, set all the pte perimssions at higher levels to 0 except PTE.v, so that nonleaf level points to level0.
-       Set PTE.U=0 when test in Supervisor mode and Set pte.U=1 when testing in user mode.
-    expectation: |-
-      if ADUE = 0:load/store/fetch page fault
-      If ADUE = 1: PTE.A bit is set after accessing; no page fault occurs
-    bins: 2 ADUE * 2 priv modes * (3 Sv39 +4 Sv48 + 5 Sv57) levels * 3 access
-  - name: Dbit_unset_write
-    goal: Dirty bit Implementation
-    description: |-
-      With menfcfg.ADUE = {0/1}: Test in supervisor and user privilege mode for leaf PTE on all levels.
-      Test Environment:
-       Set satp.mode=sv32, 39, 48 and 57.
-       All PMP permissions on targated pages if PMP is enabled
-       PTE.V = 1, PTE.A = 1, with no invalid RWX encoding
-       Execute sfence.vma before accessign the PTE.
-
-      Test Case:
-       Set PTE.W=1 & PTE.R=1 & PTE.D=0 and test the write access.
-
-      Note:
-       For testing at level0, set all the pte perimssions at higher levels to 0 except PTE.V, so that nonleaf level points to level0.
-       Set PTE.U=0 when test in Supervisor mode and Set pte.U=1 when testing in user mode.
-    expectation: |-
-      if ADUE = 0: store page fault
-      If ADUE = 1: PTE.A bit is set after accessing; no page fault occurs
-    bins: 2 ADUE * 2 priv modes * (3 Sv39 +4 Sv48 + 5 Sv57) levels
+  - heading: "General Test Environment (Svadu):\n- T-SBI suite: boots to S-mode (BOOT_TO_SMODE) and drives the test from the boot identity map. The page under test is mapped at va_data. S-mode accesses run from the identity map. U-mode accesses use RVTEST_TSBI_GOTO_UMODE / RVTEST_TSBI_GOTO_SMODE; the handler moves execution to the U-accessible code alias va_rvtest_code_begin (registered with SAVE_AREA_SETUP) and back. menvcfg is written through T-SBI CSR calls. Page faults are delegated to S-mode, so causes are sampled from scause/stval.\n- menvcfg.ADUE (menvcfgh.ADUE on RV32) is set through T-SBI.\n- Run for every supported translation mode: Sv32 on RV32; Sv39, Sv48 and Sv57 on RV64, as selected by the UDB configuration.\n\nNormative rules without a coverpoint in this suite:\n- Svadu_hypervisor_adue_writable: TODO: test in hypervisor tests\n- menvcfg_adue_rdonly0: Not tested: needs an implementation without Svadu\n- menvcfg_adue_henvcfg_adue_rdonly0: TODO: test in hypervisor tests"
+  - name: Abit_unset_exec_s
+    goal: Verify hardware sets PTE.A on an instruction fetch from S-mode (Svadu)
+    description: "S-mode: menvcfg.ADUE=1 (set through T-SBI). Leaf PTE with A=0 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode) (separate PTEs for store, load and fetch). Jump (jalr) into the page, then read the PTE back."
+    expectation: No fault; the PTE reads back with A=1 (and D=1 after a store).
+    bins: |-
+      PTE_Abit_unset_s_i x PageType_i x Svadu_enabled x exec_acc x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Svadu_hw_update_a_d_bits menvcfg_adue_op menvcfg_adue_fence
+    rules:
+      - "[norm:Svadu_hw_update_a_d_bits] [norm:menvcfg_adue_op] [norm:menvcfg_adue_fence]"
+  - name: Abit_unset_exec_u
+    goal: Verify hardware sets PTE.A on an instruction fetch from U-mode (Svadu)
+    description: "U-mode: menvcfg.ADUE=1 (set through T-SBI). Leaf PTE with A=0 and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode) (separate PTEs for store, load and fetch). Jump (jalr) into the page, then read the PTE back."
+    expectation: No fault; the PTE reads back with A=1 (and D=1 after a store).
+    bins: |-
+      PTE_Abit_unset_u_i x PageType_i x Svadu_enabled x exec_acc x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Svadu_hw_update_a_d_bits menvcfg_adue_op menvcfg_adue_fence
+    rules:
+      - "[norm:Svadu_hw_update_a_d_bits] [norm:menvcfg_adue_op] [norm:menvcfg_adue_fence]"
+  - name: Abit_unset_read_s
+    goal: Verify hardware sets PTE.A on a load from S-mode (Svadu)
+    description: "S-mode: menvcfg.ADUE=1 (set through T-SBI). Leaf PTE with A=0 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode) (separate PTEs for store, load and fetch). Load (lw) from the page, then read the PTE back."
+    expectation: No fault; the PTE reads back with A=1 (and D=1 after a store).
+    bins: |-
+      PTE_Abit_unset_s_d x PageType_d x Svadu_enabled x read_acc x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Svadu_hw_update_a_d_bits menvcfg_adue_op menvcfg_adue_fence
+    rules:
+      - "[norm:Svadu_hw_update_a_d_bits] [norm:menvcfg_adue_op] [norm:menvcfg_adue_fence]"
+  - name: Abit_unset_read_u
+    goal: Verify hardware sets PTE.A on a load from U-mode (Svadu)
+    description: "U-mode: menvcfg.ADUE=1 (set through T-SBI). Leaf PTE with A=0 and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode) (separate PTEs for store, load and fetch). Load (lw) from the page, then read the PTE back."
+    expectation: No fault; the PTE reads back with A=1 (and D=1 after a store).
+    bins: |-
+      PTE_Abit_unset_u_d x PageType_d x Svadu_enabled x read_acc x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Svadu_hw_update_a_d_bits menvcfg_adue_op menvcfg_adue_fence
+    rules:
+      - "[norm:Svadu_hw_update_a_d_bits] [norm:menvcfg_adue_op] [norm:menvcfg_adue_fence]"
+  - name: Abit_unset_write_s
+    goal: Verify hardware sets PTE.A on a store from S-mode (Svadu)
+    description: "S-mode: menvcfg.ADUE=1 (set through T-SBI). Leaf PTE with A=0 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode) (separate PTEs for store, load and fetch). Store (sw) to the page, then read the PTE back."
+    expectation: No fault; the PTE reads back with A=1 (and D=1 after a store).
+    bins: |-
+      PTE_Abit_unset_s_d x PageType_d x Svadu_enabled x write_acc x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Svadu_hw_update_a_d_bits menvcfg_adue_op menvcfg_adue_fence
+    rules:
+      - "[norm:Svadu_hw_update_a_d_bits] [norm:menvcfg_adue_op] [norm:menvcfg_adue_fence]"
+  - name: Abit_unset_write_u
+    goal: Verify hardware sets PTE.A on a store from U-mode (Svadu)
+    description: "U-mode: menvcfg.ADUE=1 (set through T-SBI). Leaf PTE with A=0 and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode) (separate PTEs for store, load and fetch). Store (sw) to the page, then read the PTE back."
+    expectation: No fault; the PTE reads back with A=1 (and D=1 after a store).
+    bins: |-
+      PTE_Abit_unset_u_d x PageType_d x Svadu_enabled x write_acc x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Svadu_hw_update_a_d_bits menvcfg_adue_op menvcfg_adue_fence
+    rules:
+      - "[norm:Svadu_hw_update_a_d_bits] [norm:menvcfg_adue_op] [norm:menvcfg_adue_fence]"
+  - name: Dbit_unset_write_s
+    goal: Verify hardware sets PTE.D on a store from S-mode (Svadu)
+    description: "S-mode: menvcfg.ADUE=1. Leaf PTE with A=1, D=0 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page, then read the PTE back."
+    expectation: No fault; the PTE reads back with D=1.
+    bins: |-
+      PTE_Dbit_unset_s_d x PageType_d x Svadu_enabled x write_acc x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Svadu_hw_update_a_d_bits menvcfg_adue_op menvcfg_adue_fence
+    rules:
+      - "[norm:Svadu_hw_update_a_d_bits] [norm:menvcfg_adue_op] [norm:menvcfg_adue_fence]"
+  - name: Dbit_unset_write_u
+    goal: Verify hardware sets PTE.D on a store from U-mode (Svadu)
+    description: "U-mode: menvcfg.ADUE=1. Leaf PTE with A=1, D=0 and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page, then read the PTE back."
+    expectation: No fault; the PTE reads back with D=1.
+    bins: |-
+      PTE_Dbit_unset_u_d x PageType_d x Svadu_enabled x write_acc x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Svadu_hw_update_a_d_bits menvcfg_adue_op menvcfg_adue_fence
+    rules:
+      - "[norm:Svadu_hw_update_a_d_bits] [norm:menvcfg_adue_op] [norm:menvcfg_adue_fence]"
   - name: |-
       fault_no_update_exec_s
       fault_no_update_read_s

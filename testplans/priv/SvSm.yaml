@@ -5,17 +5,17 @@ coverpoints:
   - heading: "General Test Environment (SvSm):\n- Sm suite: boots to M-mode (BOOT_TO_MMODE) because each coverpoint needs M-mode state (mstatus.MPRV/MPP, mstatus.TVM, mstatus.SBE or an M-mode CSR access). Mode changes use RVTEST_TSBI_GOTO_*.\n- These coverpoints were split out of Sv. Faults taken in M-mode are sampled from mcause.\n- Run for every supported translation mode: Sv32 on RV32; Sv39, Sv48 and Sv57 on RV64, as selected by the UDB configuration.\n- Split from Sv: the M-mode half of cp_access_m_s (now cp_access_m) and all of Sv_mstatus_mprv_cg."
   - name: cp_access_m
     goal: Verify satp is readable and writable from M-mode with csrrw, csrrs and csrrc
-    description: "Sv32 and Sv39 configurations, M-mode: csrrw satp with 1, csrrs with 2, csrrc with 1, reading satp back after each."
+    description: "Sv32 and Sv39 configurations, M-mode: csrrw satp with 1, csrrs with 2, csrrc with 1, reading satp back after each; and the same three accesses with satp = 0 while mstatus.TVM=1, which does not restrict M-mode."
     expectation: No exception; each read returns the value produced by the write.
     bins: |-
       cp_ins x Mcause x tvm_mstatus x mode {M-mode}
-      = 3 bins on RV64, 3 on RV32
+      = 6 bins on RV64, 6 on RV32
     id: satp_sz satp_acc satp_op satp_mode
     rules:
       - "[norm:satp_sz] [norm:satp_acc] [norm:satp_op] [norm:satp_mode]"
   - name: cp_tvm_exception_s
     goal: Verify mstatus.TVM=1 makes satp accesses and SFENCE.VMA illegal in S-mode
-    description: "M-mode: set mstatus.TVM, read mstatus back and write satp = 0. Switch to S-mode with RVTEST_TSBI_GOTO_SMODE, execute csrw, csrs and csrc on satp and sfence.vma, then return with RVTEST_TSBI_GOTO_MMODE."
+    description: "M-mode: set mstatus.TVM, read mstatus back, then csrw, csrs and csrc satp with 0. Switch to S-mode with RVTEST_TSBI_GOTO_SMODE, execute csrw, csrs and csrc on satp and sfence.vma, then return with RVTEST_TSBI_GOTO_MMODE."
     expectation: Illegal-instruction exception (mcause = 2) for each instruction.
     bins: |-
       tvm_mstatus x Mcause x cp_ins x mode {S-mode}

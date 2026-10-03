@@ -5,9 +5,13 @@ coverpoints:
   - heading: "In this sheet, all Zicfilp tests from the Zicfilp_common_reference sheet are re-executed in Supervisor Mode (S-mode).\n\nEnvironment:\n- Zicfilp extension enabled, Zicsr enabled.\n- Landing Pad Enabled (LPE) set according to privilege mode.\n- Tests execute in S-mode.\n\nExecution Notes:\n- All indirect branch instructions (JALR, C.JALR, C.JR) are exercised as in the M/U-mode sheet.\n- LPAD behavior, label matching, immediate encoding, and software-check exceptions are tested as per normative rules defined in the spec.\n- Privilege-specific CSRs (SPELP, sstatus) are used for capturing and verifying ELP state in S-mode.\n- Trap entry and return tests replicate M-mode tests but with S-mode as trap target.\n- All other assumptions, instruction types, and execution conditions are identical to the original Zicfilp testplan."
   - name: cp_pelp_trap_entry_s_zicfilp
     goal: Verify xPELP and ELP on trap entry to S-mode
-    description: "Test Environment: menvcfg.LPE=1. (1) Execute an Indirect_CT with rs1 != {x1,x5,x7} to a non-LPAD instruction so a software-check exception is taken in S-mode with ELP=LP_EXPECTED. (2) Execute EBREAK in S-mode with ELP=NO_LP_EXPECTED (breakpoint is delegated to S-mode; an S-mode ECALL is not delegated and reaches M-mode)."
-    expectation: "On trap entry: sstatus.SPELP = previous ELP and ELP = NO_LP_EXPECTED."
-    bins: 2 (ELP = {NO_LP_EXPECTED, LP_EXPECTED}) x trap target mode (S)
+    description: |-
+      Test Environment:
+      menvcfg.LPE=1. Execute EBREAK in S-mode with ELP=NO_LP_EXPECTED (no Indirect_CT before it), followed by a non-LPAD instruction.
+      The breakpoint is delegated to S-mode; an S-mode ECALL is not delegated and reaches M-mode.
+      The ELP=LP_EXPECTED case (software-check exception at a non-LPAD target) is covered by cp_zicfilp_lpad_label_exception_delivery.
+    expectation: "On trap entry: sstatus.SPELP = NO_LP_EXPECTED and ELP = NO_LP_EXPECTED. SRET therefore leaves ELP clear, so the non-LPAD instruction after the EBREAK does not trap."
+    bins: 1 (EBREAK in S-mode with ELP=NO_LP_EXPECTED)
     id: Zicfilp_pelp_trap
     rules:
       - "[norm:Zicfilp_pelp_trap]"
@@ -29,9 +33,9 @@ coverpoints:
       - "[norm:Zicfilp_pelp_trap], [norm:cfi_sstatus_spelp_op]"
   - name: cp_pelp_trap_return_s_zicfilp
     goal: Verify behavior of return from trap via SRET
-    description: "Test Environment: In S-mode set sstatus.SPP to S or U, set sstatus.SPELP to 0 or 1, set sepc to a non-LPAD instruction, and execute SRET. Test both values of the new mode xLPE (menvcfg.LPE when returning to S-mode, senvcfg.LPE when returning to U-mode)."
-    expectation: ELP is set to SPELP if the new mode xLPE is 1, otherwise NO_LP_EXPECTED. SPELP is set to NO_LP_EXPECTED. A software-check exception occurs only when SPELP=1 and xLPE=1.
-    bins: 2 target modes (S/U) x 2 xLPE x 2 SPELP = 8
+    description: "Test Environment: In S-mode set sstatus.SPP to S or U, set sstatus.SPELP to 0 or 1, set sepc to a non-LPAD instruction, and execute SRET. Sweep all four combinations of menvcfg.LPE and senvcfg.LPE for each target mode. After an SRET to S-mode, read SPELP back."
+    expectation: ELP is set to SPELP if the new mode xLPE is 1, otherwise NO_LP_EXPECTED. SPELP is set to NO_LP_EXPECTED. A software-check exception occurs only when SPELP=1 and xLPE=1. SPELP read back after an SRET to S-mode is 0.
+    bins: 2 target modes (S/U) x 4 (menvcfg.LPE x senvcfg.LPE) x 2 SPELP = 16
     id: Zicfilp_pelp_trap_return
     rules:
       - "[norm:Zicfilp_pelp_trap_return]"

@@ -41,6 +41,7 @@ coverpoints:
       Leg A: from M-mode set menvcfg.SSE=0, then attempt to write 1 to senvcfg.SSE (from S-mode) and to henvcfg.SSE (from HS-mode). Read both back.
       Leg B: menvcfg.SSE=1, henvcfg.SSE=0, V=1. Attempt to write 1 to senvcfg.SSE and read back.
       Positive control per leg: with the parent field set to 1 the child is writable and reads back 1.
+      The henvcfg leg (cp_envcfg_sse_rdonly0_henvcfg) is generated and compiled only with H_SUPPORTED, which ACT4 leaves undefined until Sail supports the hypervisor extension.
     expectation: |-
       Leg A: with menvcfg.SSE=0, both henvcfg.SSE and senvcfg.SSE are read-only zero -- the write is discarded and the field reads 0. No exception: these are WARL fields, not an illegal access.
       Leg B: with henvcfg.SSE=0 and V=1, senvcfg.SSE is read-only zero.
@@ -65,6 +66,14 @@ coverpoints:
     id: "sspop_exception (PMP read-write requirement: priv/cfi.adoc, untagged)"
     rules:
       - "[norm:sspop_exception]"
+  - name: cp_ss_satp_bare_zicfiss
+    goal: Verify that SS instructions below M-mode raise a store/AMO access fault when satp.MODE=Bare
+    description: "From M-mode set satp=0 (Bare), menvcfg.SSE=1 and senvcfg.SSE=1, and point ssp at the SS page. Drop to S-mode, then to U-mode, and in each execute every SS memory instruction: SSPUSH x1, SSPUSH x5, C.SSPUSH x1, SSPOPCHK x1, SSPOPCHK x5, C.SSPOPCHK x5, SSAMOSWAP.W, SSAMOSWAP.D."
+    expectation: Store/AMO access fault (cause=7) for every instruction, including SSPOPCHK, which only reads. ssp unchanged.
+    bins: 2 modes (S, U) x 8 instructions (SSAMOSWAP.D only on RV64) = 16 (14 on RV32)
+    id: satp_mode_bare
+    rules:
+      - "[norm:satp_mode_bare]"
   - name: cp_ss_instr_inactive_zicfiss
     goal: Verify SS instructions act as MOPs, touching no memory and raising nothing, whenever Zicfiss is inactive
     description: |-
@@ -84,6 +93,6 @@ coverpoints:
   - goal: "Folded into cp_menvcfg_sse_gating_zicfiss: the M-mode leg is now explicit -- ssp is accessible from M for BOTH menvcfg.SSE values, since [norm:zicfiss_m_menvcfg_sse] is scoped to privilege < M."
     description: Verify access to ssp from M-mode with menvcfg.SSE=0/1
   - goal: MOVED here from ZicfissU as cp_ss_instr_inactive_zicfiss, with an M-mode unconditional leg added and the hostile-ssp strong form applied to both legs.
-    description: SSPUSH/SSPOPCHK/SSRDP act as MOP (SSRDP -> 0) and do not touch memory or rais exceptions even if ssp is misaligned or unmapped or the values mismatch
+    description: SSPUSH/SSPOPCHK/SSRDP act as MOP (SSRDP -> 0) and do not touch memory or raise exceptions even if ssp is misaligned or unmapped or the values mismatch
   - goal: No separate suite needed -- PMP can only be programmed from M-mode, so this sheet is already the right home. The existing PMP row is widened into cp_ss_pmp_permissions_zicfiss, sweeping pmp0cfg R/W and covering the SSPOPCHK-needs-W asymmetry as well as the fault-priority case.
     description: Should we add a PMPZicfiss suite exercising PMP access to a shadow stack page, including that RW permission is needed for shadow stack instructions SSPOPCHK and SSPUSH.

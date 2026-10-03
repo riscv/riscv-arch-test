@@ -75,9 +75,15 @@ coverpoints:
     id: zicflip_elp_lpad_expected
   - name: cp_zicfilp_lpad_label_match_mismatch
     goal: Verify LPAD label matching and mismatching behavior
-    description: "Load label value (e.g, 0xABCDE) into x7 using LUI. Execute indirect branch to LPAD instruction with: (1) matching LPL, (2) mismatching LPL, (3) branch to non-LPAD instruction, (4) branch to LPAD without initializing x7."
+    description: |-
+      Test Environment:
+      - xLPE=1. Load a label (e.g. 0x12345) into x7[31:12], then execute an Indirect_CT with rs1 != {x1,x5,x7} so that ELP=LP_EXPECTED, to:
+      (1) an LPAD whose LPL matches x7[31:12],
+      (2) an LPAD whose nonzero LPL does not match x7[31:12],
+      (3) a non-LPAD instruction,
+      (4) an LPAD with nonzero LPL while x7[31:12]=0.
     expectation: If expected landing pad label in x7 matches LPAD immediate label, no exception. Otherwise, software-check exception occurs.
-    bins: 4 (Instruction type × rs1 category × ELP × N privilege modes)
+    bins: 4 scenarios x 3 Indirect_CT types (C.JR and C.JALR only with Zca) = 12
     id: zicflip_lpad_label
     rules:
       - "[norm:zicflip_lpad_label]"
@@ -85,10 +91,9 @@ coverpoints:
     goal: Verify software-check exception delivery and correct privilege-mode handling on LPAD label mismatch
     description: |-
       Test Environment:
-      Load x7 with a known label, execute indirect branch to set ELP=LP_EXPECTED.
-      Execute aligned LPAD with mismatched LPL.
-    expectation: Software-check exception (cause=18) delivered to the correct privilege mode (U or M). xtval="landing pad fault (code=2)".
-    bins: Instruction type × rs1 category × ELP × N privilege modes
+      - xLPE=1. Load x7[31:12] with a nonzero label, then execute an Indirect_CT with rs1 != {x1,x5,x7} so that ELP=LP_EXPECTED, to a 4-byte aligned LPAD whose nonzero LPL does not match x7[31:12].
+    expectation: "Software-check exception (cause=18) delivered to the mode that takes the suite's traps: M-mode for ZicfilpSm, S-mode for ZicfilpS, and S-mode for ZicfilpU (M-mode when S-mode is not implemented). xtval = landing pad fault (code=2). xPELP = LP_EXPECTED."
+    bins: 3 Indirect_CT types (C.JR and C.JALR only with Zca)
     id: |-
       zicflip_lpad_enabled_exception
       zicflip_lpad_label_exception
@@ -114,10 +119,11 @@ coverpoints:
     goal: Verify that ELP updates to NO_LP_EXPECTED after executing a valid LPAD
     description: |-
       Test Environment:
-      Execute an indirect branch (JALR/C.JALR) with rs1 != {x1,x5,x7} to set ELP=LP_EXPECTED.
-      Target address is 4-byte aligned, and x7[31:12] matches the expected LPL.
+      xLPE=1.
+      Execute an Indirect_CT (JALR, C.JR, C.JALR) with rs1 != {x1,x5,x7} so that ELP=LP_EXPECTED,
+      to a 4-byte aligned LPAD whose nonzero LPL matches x7[31:12].
     expectation: No software-check exception is raised. ELP is updated to NO_LP_EXPECTED after LPAD execution
-    bins: Instruction type × rs1 category × ELP × N privilege modes
+    bins: 3 Indirect_CT types (C.JR and C.JALR only with Zca)
     id: zicflip_lpad_sw_exception
     rules:
       - "[norm:zicflip_lpad_no_sw_exception]"
@@ -136,6 +142,32 @@ coverpoints:
     rules:
       - "[norm:Zicfilp_forward_trap_async_exception]"
       - "[norm:Zicfilp_exception_priority]"
+  - name: cp_lpad_alignment_exception_zicfilp
+    goal: Verify that an LPAD that is not 4-byte aligned raises a software-check exception when ELP=LP_EXPECTED
+    description: |-
+      Only when Zca is implemented.
+      Test Environment:
+      xLPE=1. Execute an Indirect_CT (JALR, C.JR, C.JALR) with rs1 != {x1,x5,x7} so that ELP=LP_EXPECTED,
+      to an LPAD with LPL=0 at pc[1:0]=2.
+      Without Zca such a target raises an instruction-address-misaligned exception first, which is why this case needs Zca.
+    expectation: Software-check exception (cause=18) with xtval = landing pad fault (code=2), even though LPL=0.
+    bins: 3 Indirect_CT types (Zca only)
+    id: Zicflip_elp_lpad_expected Zicflip_lpad_exception
+    rules:
+      - "[norm:Zicflip_elp_lpad_expected] [norm:Zicflip_lpad_exception]"
+  - name: cp_lpad_nop_no_lp_expected_zicfilp
+    goal: Verify that LPAD is a no-op when ELP=NO_LP_EXPECTED, even with xLPE=1
+    description: |-
+      Test Environment:
+      xLPE=1 and no Indirect_CT before the LPAD, so ELP=NO_LP_EXPECTED.
+      Load x7[31:12] with a nonzero label and execute sequentially:
+      (1) an LPAD whose nonzero LPL does not match x7[31:12],
+      (2) if Zca is implemented, an LPAD with LPL=0 at pc[1:0]=2.
+    expectation: No exception. Both LPADs execute as no-ops and ELP stays NO_LP_EXPECTED.
+    bins: 2 (LPL mismatch; pc[1:0]=2 only with Zca)
+    id: Zicflip_lpad_exception
+    rules:
+      - "[norm:Zicflip_lpad_exception]"
   - heading: The gray test are duplicates of other test and are excluded.
   - heading: The yellow coverpoints are excluded because they apply to debug
   - name: cp_lpad_misaligned_address_exception_zicfilp
@@ -148,26 +180,7 @@ coverpoints:
     id: zicflip_elp_lpad_expected
     rules:
       - "[norm:zicflip_elp_lpad_expected]"
-      - "Redundant: Not a certification case. Instruction-address misalignment generates an instruction-address-misaligned exception, which has higher architectural priority and is not specific to the landing pad validation rule. This is not a distinct normative requirement of [[norm:zicflip_elp_lpad_expected]]"
-  - name: cp_lpad_alignment_exception_zicflip
-    goal: Verify operation of LPAD instruction
-    description: |-
-      Test Case
-       Execute indirect branch (rs1 ≠ x1,x5,x7) in U-mode to set ELP=LP_EXPECTED, force PC %4 ≠ 0 for LPAD
-    expectation: |-
-      Software-check exception (cause=18), xtval="landing pad fault (code=2)
-      delivered to U or M mode"
-    bins: Instruction type  × rs1 category (non-link register) × ELP)xpriv mode
-    id: |-
-      zicflip_lpad_enabled_exception
-      zicflip_lpad_alignment_exception
-      lpad_sw_exception]
-      lpad_sw_exception
-    rules:
-      - "[norm:zicflip_lpad_enabled_exception]"
-      - "[norm:zicflip_lpad_alignment_exception]"
-      - "[[norm:lpad_sw_exception]]"
-      - "Redundant: Misaligned PC exceptions are already handled by standard ISA trap mechanisms. This is negative testing"
+      - Duplicate of cp_lpad_alignment_exception_zicfilp.
   - name: cp_elp_state_preservation_debug_zicfilp
     goal: |-
       Verify Debug Mode saves and

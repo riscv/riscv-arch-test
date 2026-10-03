@@ -24,7 +24,7 @@ coverpoints:
   - name: cp_user_tm
     goal: Access stimecmp
     description: Read stimecmp with mcounteren.TM = {0/1} * scounteren.TM = {0/1} (if S_SUPPORTED) for RV32, also access stimcmph
-    expectation: stimecmp nevereadable in user mode
+    expectation: stimecmp never readable in user mode
     check: Check against RM
     status: To be Done
     coverage: Uncovered

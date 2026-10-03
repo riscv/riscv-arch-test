@@ -2,11 +2,28 @@
 suite: PMPF
 source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1472001893#gid=1472001893
 coverpoints:
-  - heading: "See PMPM for general information.\nTests run in M mode.\nIn this suite, loads = flw, fld, flh\nstores = fsw, fsd, fsh\nSome loads/stores throw illegal instruction trap if not supported"
-  - name: cp_cfg_RW
-    goal: The R, W, ...bits, when set, indicate that the PMP entry permits read, write
-    description: |-
-      Check that WR bits control write/read access for every type of load and store.
-      mstatus.FS = nonzero. Attempt all types of reads and writes with pmpcfg_i.L=1, all legal pmpcfg_i.XWR
-      Observe proper access faults for restricted read/write regions
-    bins: 6 XWR * (3 loads + 3 stores)
+  - heading: |-
+      General Test Environment (PMPF):
+      - Runs when F and Sm are implemented and NUM_PMP_ENTRIES > 0. M-mode only, mstatus.FS != 0.
+      - Loads = flh, flw, fld. Stores = fsh, fsw, fsd. A width the hart does not implement raises an illegal-instruction exception before any PMP check; the access is still sampled.
+      - Standard region and L=1 XWR walk as in PMPSm cp_cfg_X/R/W.
+  - name: cp_cfg_R
+    goal: Verify that R controls floating-point loads when the entry is locked.
+    description: Six legal XWR with L=1, one entry each (as in PMPSm cp_cfg_R). flh, flw and fld at the start of the region.
+    expectation: Load access fault when R=0.
+    bins: 6 XWR × 3 loads = 18
+    rules:
+      - pmp_load_fault
+      - pmp_cfg_permissions
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+  - name: cp_cfg_W
+    goal: Verify that W controls floating-point stores when the entry is locked.
+    description: Same walk. fsh, fsw and fsd at the start of the region.
+    expectation: Store/AMO access fault when W=0.
+    bins: 6 XWR × 3 stores = 18
+    rules:
+      - pmp_store_fault
+      - pmp_cfg_permissions
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement

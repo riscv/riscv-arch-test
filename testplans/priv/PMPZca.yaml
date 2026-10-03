@@ -2,137 +2,110 @@
 suite: PMPZca
 source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1336315481#gid=1336315481
 coverpoints:
-  - heading: "See PMPM for general information.\nTests run in M mode.\nIn this suite, loads = c.lw, c.lwsp; stores = c.sw; c.swsp, fetch = c.jalr\nIgnore c.jr, c.j, c.jal because these are a hassle to test and their uncompressed forms were tested in PMPM.\nRV64 only: loads += c.ld, c.ldsp; stores += c.sd; c.sdsp\nZcf only: loads += c.flw, c.flwsp; stores += c.fsw, c.fswsp\nZcd only: loads += c.fld, c.fldsp; stores += c.fsd, c.fsdsp\nZcb only: loads += c.lbu, c.lh, c.lhu; stores +=  c.sb; c.sh"
-  - name: cp_cfg_RW
-    goal: The R, W, ...bits, when set, indicate that the PMP entry permits read, write
-    description: |-
-      Check that WR bits control write/read access for every type of load and store.
-      Attempt all types of reads and writes with pmpcfg_i.L=1, all legal pmpcfg_i.XWR
-      Observe proper access faults for restricted read/write regions
-    bins: 6 XWR * (~6 loads + ~6 stores)
-    id: |-
-      pmp_cfg_permissions
-
-      pmp_access_fault_exception
-
-      pmp_l_bit_m_mode_enforcement
+  - heading: |-
+      General Test Environment (PMPZca):
+      - Runs when Zca and Sm are implemented and NUM_PMP_ENTRIES > 0. Zcb, Zcf and Zcd test files add their instructions; NA4, NAPOT and TOR rows need PMP_NA4_SUPPORTED, PMP_NAPOT_SUPPORTED or PMP_TOR_SUPPORTED. M-mode only.
+      - Loads = c.lw, c.lwsp (+ c.ld, c.ldsp on RV64; c.flw, c.flwsp with Zcf on RV32; c.fld, c.fldsp with Zcd; c.lbu, c.lh, c.lhu with Zcb).
+      - Stores = c.sw, c.swsp (+ c.sd, c.sdsp on RV64; c.fsw, c.fswsp with Zcf on RV32; c.fsd, c.fsdsp with Zcd; c.sb, c.sh with Zcb).
+      - Fetch rows jump with c.jalr to a target that holds a 32-bit ret (jalr x0, 0(ra)) or a 16-bit c.ret. c.jr, c.j and c.jal are not tested; their 32-bit forms are covered in PMPSm.
+      - Standard region and L=1 XWR walk as in PMPSm cp_cfg_X/R/W.
+  - heading: Compressed loads and stores
+  - name: cp_cfg_R
+    goal: Verify that R controls every compressed load when the entry is locked.
+    description: Six legal XWR with L=1, one entry each. Every compressed load at the start of the region.
+    expectation: Load access fault when R=0.
+    bins: 6 XWR × compressed loads. c.lwsp and c.ldsp are ignored in the cross.
+    rules:
+      - pmp_load_fault
+      - pmp_cfg_permissions
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+  - name: cp_cfg_W
+    goal: Verify that W controls every compressed store when the entry is locked.
+    description: Same walk. Every compressed store at the start of the region.
+    expectation: Store/AMO access fault when W=0.
+    bins: 6 XWR × compressed stores
+    rules:
+      - pmp_store_fault
+      - pmp_cfg_permissions
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+  - heading: 32-bit fetch across a region boundary (IALIGN = 16)
   - name: cp_misaligned_napot
-    goal: |-
-      The lowest-numbered PMP entry that matches any byte of an access determines whether that access succeeds or fails.  The matching PMP entry must match all bytes of an access, or the access fails... On some implementations, misaligned loads, stores, and instruction fetches may also be decomposed
-      into multiple accesses, some of which may succeed
-    description: |-
-      Check that misaligned 32-bit fetches that cross a NAPOT PMP boundary fail.
-      Set up a 3 standard consecutive NAPOT PMP regions with L=1, XWR=111 (XWR = 000 for region 3).
-      Place an uncompressed ret = jalr ra inside first region, inside second region, and misaligned straddling the start and end of the second regions.
-      Attempt jalr to each ret.  Observe possible instr access fault on fetches straddling region boundaries.
-    expectation: May succeed if decomposed
+    goal: Verify that a 32-bit instruction straddling two NAPOT regions must be fully matched.
+    description: PMP_NAPOT_SUPPORTED only. Three consecutive standard NAPOT regions A, B, C in entries 0-2, all L=1, XWR = 111, 111, 000. A 32-bit ret inside A, inside B, straddling A|B and straddling B|C. c.jalr to each.
+    expectation: "Inside a region: executes. A|B: instruction access fault, or executes if the hart splits the fetch into parcels that each match fully. B|C: instruction access fault (C has X=0). On a fault mepc holds the instruction address and a nonzero mtval holds the address of the faulting portion."
     bins: 4 addresses
-    id: |-
-      pmp_entry_priority
-
-      pmp_full_match_required
-
-      pmp_access_fault_exception
-
-      pmp_misaligned_access_behavior
-  - name: cp_cret_napot
-    goal: |-
-      The lowest-numbered PMP entry that matches any byte of an access determines whether that access succeeds or fails.  The matching PMP entry must match all bytes of an access, or the access fails... On some implementations, misaligned loads, stores, and instruction fetches may also be decomposed
-      into multiple accesses, some of which may succeed
-    description: |-
-      Check that 16-bit fetches adjacent to a NAPOT PMP boundary succeed.
-      Set up a standard NAPOT PMP region with L=1, XWR = 111.
-      Place four c.ret = c.jr ra statements just below, at bottom, at top, and just above PMP region, half of which are on 16-bit boundaries. Attempt jalr to each c.ret.
-      Observe success on all jumps
-    bins: 4 addresses
-    id: |-
-      pmp_entry_priority
-
-      pmp_full_match_required
-
-      pmp_access_fault_exception
+    rules:
+      - pmp_full_match_required
+      - pmp_entry_priority
+      - pmp_misaligned_access_behavior
+      - pmp_exec_fault
+      - pmp_access_fault_exception
+      - Zca_align16
+      - mepc_varlen_wr
+      - mtval_varlen_wr
   - name: cp_misaligned_tor
-    goal: |-
-      The lowest-numbered PMP entry that matches any byte of an access determines whether that access succeeds or fails.  The matching PMP entry must match all bytes of an access, or the access fails... On some implementations, misaligned loads, stores, and instruction fetches may also be decomposed
-      into multiple accesses, some of which may succeed
-    description: |-
-      Check that misaligned 32-bit fetches that cross a TOR boundary fail.
-      Set up a 3 standard consecutive TOR PMP regions with L=1, XWR=111 (XWR = 000 for region 3)
-      Place an uncompressed ret = jalr ra inside first region, inside second region, and misaligned straddling the start and end of the second regions.
-      Attempt jalr to each ret.  Observe instr access fault on fetches straddling region boundaries.
+    goal: Verify that a 32-bit instruction straddling two TOR regions must be fully matched.
+    description: PMP_TOR_SUPPORTED only. Three consecutive one-grain TOR regions in entries 1-3 (entry 0 is OFF and holds the bottom), all L=1, XWR = 111, 111, 000. Same four ret positions as cp_misaligned_napot.
+    expectation: As for cp_misaligned_napot.
     bins: 4 addresses
-    id: |-
-      pmp_entry_priority
-
-      pmp_full_match_required
-
-      pmp_access_fault_exception
-
-      pmp_misaligned_access_behavior
-  - name: cp_cret_tor
-    goal: |-
-      The lowest-numbered PMP entry that matches any byte of an access determines whether that access succeeds or fails.  The matching PMP entry must match all bytes of an access, or the access fails... On some implementations, misaligned loads, stores, and instruction fetches may also be decomposed
-      into multiple accesses, some of which may succeed
-    description: |-
-      Check that 16-bit fetches adjacent to a TOR PMP boundary succeed.
-      Set up a standard TOR PMP region with L=1, XWR = 111.
-      Place four c.ret = c.jr ra statements just below, at bottom, at top, and just above PMP region, half of which are on 16-bit boundaries. Attempt jalr to each c.ret.
-      Observe success on all jumps
-    bins: 4 addresses
-    id: |-
-      pmp_entry_priority
-
-      pmp_full_match_required
-
-      pmp_access_fault_exception
+    rules:
+      - pmp_full_match_required
+      - pmp_entry_priority
+      - pmp_misaligned_access_behavior
+      - pmp_exec_fault
+      - pmp_access_fault_exception
+      - Zca_align16
+      - mepc_varlen_wr
+      - mtval_varlen_wr
   - name: cp_misaligned_na4
-    goal: |-
-      The lowest-numbered PMP entry that matches any byte of an access determines whether that access succeeds or fails.  The matching PMP entry must match all bytes of an access, or the access fails... On some implementations, misaligned loads, stores, and instruction fetches may also be decomposed
-      into multiple accesses, some of which may succeed
-    description: |-
-      G = 0 ONLY
-      Check that misaligned 32-bit fetches that cross a NA4 PMP boundary fail.
-      Set up a 3 standard consecutiveNA4 PMP regions with L=1, XWR=111 (XWR = 000 for region 3)
-      Place an uncompressed ret = jalr ra misaligned straddling the start and end of the second regions.
-      Attempt jalr to each ret.  Observe instr access fault on fetches straddling region boundaries.
+    goal: Verify that a 32-bit instruction straddling two NA4 regions must be fully matched.
+    description: PMP_NA4_SUPPORTED only (G = 0). Three consecutive NA4 regions in entries 0-2, all L=1, XWR = 111, 111, 000. A 32-bit ret straddling the first and second, and the second and third regions. c.jalr to each.
+    expectation: "First|second: instruction access fault, or executes if split. Second|third: instruction access fault."
     bins: 2 addresses
-    id: |-
-      pmp_entry_priority
-
-      pmp_full_match_required
-
-      pmp_access_fault_exception
-
-      pmp_misaligned_access_behavior
-  - name: cp_cret_na4
-    goal: |-
-      The lowest-numbered PMP entry that matches any byte of an access determines whether that access succeeds or fails.  The matching PMP entry must match all bytes of an access, or the access fails... On some implementations, misaligned loads, stores, and instruction fetches may also be decomposed
-      into multiple accesses, some of which may succeed
-    description: |-
-      G = 0 Only
-      Check that 16-bit fetches adjacent to a NA4 PMP boundary succeed.
-      Set up a standard NA4 PMP region with L=1, XWR = 111.
-      Place four c.ret = c.jr ra statements just below, at bottom, at top, and just above PMP region, half of which are on 16-bit boundaries. Attempt jalr to each c.ret.
-      Observe success on all jumps
-    bins: 4 addresses
-    id: |-
-      pmp_entry_priority
-
-      pmp_full_match_required
-
-      pmp_access_fault_exception
+    rules:
+      - pmp_full_match_required
+      - pmp_entry_priority
+      - pmp_misaligned_access_behavior
+      - pmp_exec_fault
+      - pmp_access_fault_exception
+      - Zca_align16
+      - mepc_varlen_wr
+      - mtval_varlen_wr
   - name: cp_misaligned_off
-    goal: "Off: Null region (disabled)"
-    description: |-
-      Check that misaligned 32-bit fetches that cross a OFF PMP boundary still succeed.
-      Set up a 3 standard consecutive OFF PMP regions with L=1, XWR=111.
-      Place an uncompressed ret = jalr ra inside first region, inside second region, and misaligned straddling the start and end of the second regions.
-      Attempt jalr to each ret.
-      All fetches match default region and succeed.
+    goal: Verify that a 32-bit instruction straddling OFF entries' regions only sees the background entry.
+    description: Three consecutive regions in entries 0-2, all L=1, A=OFF, XWR=111. Same four ret positions as cp_misaligned_napot.
+    expectation: "All execute: the background entry matches every byte."
     bins: 4 addresses
-    id: |-
-      pmp_a_field_off
-
-      pmp_misaligned_access_behavior
-
-      pmp_access_fault_exception
+    rules:
+      - pmp_a_field_off
+      - pmp_misaligned_access_behavior
+  - heading: 16-bit fetch at a region boundary
+  - name: cp_cret_napot
+    goal: Verify that 16-bit instructions at the edges of a NAPOT region execute.
+    description: PMP_NAPOT_SUPPORTED only. One standard NAPOT region in entry 0, L=1, XWR=111. c.ret 2 bytes below the region, at its base, 2 bytes below its top, and at its top. c.jalr to each.
+    expectation: "All execute: each 16-bit fetch lies wholly inside the region or wholly in the background."
+    bins: 4 addresses
+    rules:
+      - pmp_full_match_required
+      - pmp_entry_priority
+      - Zca_align16
+  - name: cp_cret_tor
+    goal: Verify that 16-bit instructions at the edges of a TOR region execute.
+    description: PMP_TOR_SUPPORTED only. One one-grain TOR region in entry 1 (bottom in pmpaddr0), L=1, XWR=111. c.ret at the same four positions as cp_cret_napot.
+    expectation: All execute.
+    bins: 4 addresses
+    rules:
+      - pmp_full_match_required
+      - pmp_entry_priority
+      - Zca_align16
+  - name: cp_cret_na4
+    goal: Verify that 16-bit instructions at the edges of an NA4 region execute.
+    description: PMP_NA4_SUPPORTED only. One NA4 region in entry 0, L=1, XWR=111. c.ret at region-2, region, region+2 and region+4.
+    expectation: All execute.
+    bins: 4 addresses
+    rules:
+      - pmp_full_match_required
+      - pmp_entry_priority
+      - Zca_align16

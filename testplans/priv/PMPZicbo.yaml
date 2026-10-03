@@ -2,21 +2,41 @@
 suite: PMPZicbo
 source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1958410505#gid=1958410505
 coverpoints:
-  - heading: "See PMPM for general information.\nTests run in M mode.\nmenvcfg.CBIE, CBCFE, CBZE = 1\nNote: if PMP is not the same for all physical addresses in block, behavior is unspecified and hence misaligned cbos are untested."
-  - name: cp_cbo
-    goal: |-
-      A cache-block zero instruction is permitted to access the specified cache block whenever a store instruction is permitted to access the corresponding physical address...
-      A cache-block management instruction is permitted to access the specified cache block whenever a load instruction or store instruction is permitted to access the corresponding physical address. ... If access to the cache block is not permitted ... raises a store access fault exception"
-    description: |-
-      Check that WR bits control access for cbo.*.
-      Attempt all {cbo.zero, cbo.flush, cbo.clean, cbo.inval} with pmpcfg_i.L=1, pmpcfg_i.WR = {00/01/11}, pmpcfg_i.X=0 at start of 4 KB region plenty long to encompass a cache line.
-      cbo.zero: observe store access faults for W=0 regions
-      others: observe store access fault for R=0 regions
-    bins: 3 WR * 4 instructions
-  - name: cp_prefetch
-    goal: If access to the cache block is not permitted, a cache-block prefetch instruction does not raise any exceptions and shall not access any caches or memory.
-    description: |-
-      Check that XWR bits control access for prefetch.
-      Attempt {prefetch.i/w/r} with pmpcfg_i.L=1, legal pmpcfg_i.XWR, at start of 4 KB region plenty long to encompass a cache line.
-      No exceptions should be raised.
-    bins: 6 XWR * (3 ops)
+  - heading: |-
+      General Test Environment (PMPZicbo):
+      - Runs when Sm and NUM_PMP_ENTRIES > 0, with Zicbom and Zicboz for the cbo rows and Zicbop for the prefetch rows. M-mode only.
+      - menvcfg.CBIE = 11, CBCFE = 1, CBZE = 1.
+      - The region under test is a 4 KiB-aligned NAPOT region much larger than a cache block, so every byte of the block has the same permissions. Misaligned or partially covered cache blocks are not tested: their behavior is unspecified (pmp_same).
+  - name: cp_cbo_zero
+    goal: Verify that cbo.zero needs W.
+    description: "Entry 0 over the region: L=1, XWR = 000, 001, 011. cbo.zero at the start of the region."
+    expectation: Store/AMO access fault (mcause = 7, mtval = rs1) when W=0. Otherwise the block is zeroed.
+    bins: 3 XWR
+    rules:
+      - cbz_access
+      - cbz_unperm_fault
+      - pmp_store_fault
+      - fault_excep_csr
+  - name: |-
+      cp_cbo_clean
+      cp_cbo_flush
+      cp_cbo_inval
+    goal: Verify that a cache-block management instruction needs R or W.
+    description: Same setup. cbo.clean, cbo.flush and cbo.inval at the start of the region.
+    expectation: "XWR=000: store/AMO access fault (mtval = rs1). XWR = 001 or 011: no exception."
+    bins: 3 XWR each
+    rules:
+      - cbm_access
+      - cbm_unperm_fault
+      - pmp_cbm_fault
+      - fault_excep_csr
+  - name: |-
+      cp_prefetch_i
+      cp_prefetch_r
+      cp_prefetch_w
+    goal: Verify that prefetches never trap on a PMP violation.
+    description: Six legal XWR with L=1, one entry each. prefetch.i, prefetch.r and prefetch.w at the start of the region.
+    expectation: No exception for any XWR.
+    bins: 6 XWR each
+    rules:
+      - cbp_unperm_noexcep

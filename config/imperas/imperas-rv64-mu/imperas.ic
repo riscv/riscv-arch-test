@@ -100,7 +100,8 @@
 --override cpu*/Smnpm=48_57 # (Enumeration) (default=48_57) (default) Specify Smnpm implemented modes
 
 # More extensions
---override cpu*/Smdbltrp=T
+# Smdbltrp is off to match the UDB configuration: Sail does not model double trap
+--override cpu*/Smdbltrp=F
 --override cpu*/d_requires_f=T
 
 # PMA Settings

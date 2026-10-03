@@ -1444,7 +1444,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `endif
       default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
     endcase
-  end else if (field != "")
+  end else
     $fatal(1, "get_csr_val: CSR %s has no fields; read it whole with field \"%s\"", name, name);
 
   return val;

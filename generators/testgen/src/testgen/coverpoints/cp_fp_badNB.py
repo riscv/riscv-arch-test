@@ -16,60 +16,66 @@ from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase, get_instruction_type_config
 from testgen.instructions.params import generate_random_params
 
-# Exponent and fraction widths of the narrow formats that can be NaN-boxed
-_NARROW_FORMATS = {32: (8, 23), 16: (5, 10)}
+FpSource = Literal["fs1", "fs2", "fs3"]
 
-
-def _badNB_variant(coverpoint: str, instr_name: str) -> tuple[tuple[int, ...], Literal["single", "double"], int, int]:
-    """Return (edges, load type, register width, narrow width) for a badNB coverpoint variant."""
-    if coverpoint.endswith("_D_S"):
-        return FLOAT_EDGES.bad_NaN_double_single, "double", 64, 32
-    if coverpoint.endswith("D_H"):
-        return FLOAT_EDGES.bad_NaN_double_half, "double", 64, 16
-    if coverpoint.endswith("S_H"):
-        return FLOAT_EDGES.bad_NaN_single_half, "single", 32, 16
-    raise ValueError(f"Unsupported coverpoint for bad NaN-Box tests: {coverpoint} for instr {instr_name}.")
+# Positive infinity and the canonical NaN of each narrow format that can be NaN-boxed, by width
+_INFINITY = {32: 0x7F800000, 16: 0x7C00}
+_CANONICAL_NAN = {32: 0x7FC00000, 16: 0x7E00}
 
 
 def _is_nan(narrow: int, narrow_bits: int) -> bool:
     """Return True if narrow is a NaN encoding of the narrow_bits-wide format."""
-    exp_bits, frac_bits = _NARROW_FORMATS[narrow_bits]
-    exp_mask = (1 << exp_bits) - 1
-    return (narrow >> frac_bits) & exp_mask == exp_mask and narrow & ((1 << frac_bits) - 1) != 0
+    return narrow & ((1 << (narrow_bits - 1)) - 1) > _INFINITY[narrow_bits]
 
 
-def _other_operand(instr_name: str, instr_type: str, rand_val: int, low_bits: int, narrow_bits: int) -> int:
+def _other_operand(
+    instr_name: str, instr_type: str, operand: FpSource, rand_val: int, low_bits: int, narrow_bits: int
+) -> int:
     """Choose a narrow value for an FP source that is not under test.
 
     The value is chosen so that a DUT that ignores the upper bits of the operand under test
     (using its low bits) gets a different result or flags than one that treats it as a
     canonical NaN:
-    - comparisons: the operand under test's own (non-NaN) low bits, so feq returns 1 and
-      flt/fle raise no NV only when the upper bits are ignored;
+    - fltq: +infinity when fs1 is under test and -infinity when fs2 is, so the comparison is
+      true for the low bits but false for the canonical NaN. fltq(+inf, y) and fltq(y, -inf)
+      are false for every y, so those two edges cannot tell the cases apart;
+    - other comparisons: the operand under test's own (non-NaN) low bits, so feq/fle/fleq
+      return 1 and flt raises no NV only when the upper bits are ignored;
     - fmin/fmax: the canonical NaN, so the result is the low bits instead of the canonical NaN;
-    - everything else: the random value, with any NaN turned into an infinity.
+    - everything else, including fminm/fmaxm, which return the canonical NaN for any NaN input:
+      the random value, with any NaN turned into an infinity.
     """
-    frac_bits = _NARROW_FORMATS[narrow_bits][1]
-    exp_bits = _NARROW_FORMATS[narrow_bits][0]
+    infinity = _INFINITY[narrow_bits]
+    sign = 1 << (narrow_bits - 1)
+    mnemonic = instr_name.split(".")[0]
     if instr_type == "FC" and not _is_nan(low_bits, narrow_bits):
+        if mnemonic == "fltq":
+            return infinity if operand == "fs1" else sign | infinity
         return low_bits
-    if instr_name.split(".")[0] in ("fmin", "fmax"):
-        return ((1 << (exp_bits + 1)) - 1) << (frac_bits - 1)  # canonical NaN
+    if mnemonic in ("fmin", "fmax"):
+        return _CANONICAL_NAN[narrow_bits]
     narrow = rand_val & ((1 << narrow_bits) - 1)
     if _is_nan(narrow, narrow_bits):
-        narrow &= ~((1 << frac_bits) - 1)  # clear the fraction so the value is not a NaN
+        narrow &= sign | infinity  # clear the fraction so the value is not a NaN
     return narrow
 
 
 def _make_badNB(
-    instr_name: str, instr_type: str, coverpoint: str, test_data: TestData, operand: str
+    instr_name: str, instr_type: str, coverpoint: str, test_data: TestData, operand: FpSource
 ) -> list[TestChunk]:
     """Generate bad NaN-Box tests for one FP source operand (fs1, fs2 or fs3).
 
     Only the operand under test is improperly boxed. Every other FP source is properly boxed,
     with a value chosen by _other_operand.
     """
-    edges, load_type, reg_bits, narrow_bits = _badNB_variant(coverpoint, instr_name)
+    if coverpoint.endswith("_D_S"):
+        edges, load_type, reg_bits, narrow_bits = FLOAT_EDGES.bad_NaN_double_single, "double", 64, 32
+    elif coverpoint.endswith("D_H"):
+        edges, load_type, reg_bits, narrow_bits = FLOAT_EDGES.bad_NaN_double_half, "double", 64, 16
+    elif coverpoint.endswith("S_H"):
+        edges, load_type, reg_bits, narrow_bits = FLOAT_EDGES.bad_NaN_single_half, "single", 32, 16
+    else:
+        raise ValueError(f"Unsupported coverpoint for bad NaN-Box tests: {coverpoint} for instr {instr_name}.")
     required_params = get_instruction_type_config(instr_type).required_params or set()
     other_vals = [f"{fs}val" for fs in ("fs1", "fs2", "fs3") if fs != operand and f"{fs}val" in required_params]
 
@@ -81,7 +87,7 @@ def _make_badNB(
         low_bits = edge_val & ((1 << narrow_bits) - 1)
         box = ((1 << reg_bits) - 1) ^ ((1 << narrow_bits) - 1)
         for name in other_vals:
-            other = _other_operand(instr_name, instr_type, getattr(params, name), low_bits, narrow_bits)
+            other = _other_operand(instr_name, instr_type, operand, getattr(params, name), low_bits, narrow_bits)
             setattr(params, name, box | other)
         desc = f"{coverpoint} (Test source {operand} value = {test_data.flen_format_str.format(edge_val)})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{edge_val:#x}", coverpoint)

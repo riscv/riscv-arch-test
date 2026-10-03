@@ -1163,7 +1163,7 @@ ZfaZfh_fround_h_cg_cp_csr_frm_rmm:
 /////////////////////////////////
 
 # Testcase cp_NaNBox_S_H (Test NaN-Boxed inputs)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fd (improperly boxed): f30 = 0x89abcdef
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f30) # load fd: f30 = 0x89abcdef
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f20) # load fs1: f20 = 0x91c5
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fround_h_cg_cp_NaNBox_S_H_NaNBox:

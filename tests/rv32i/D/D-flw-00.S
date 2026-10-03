@@ -34,7 +34,7 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 # Testcase cp_NaNBox_D_S (Test NaN-Boxed inputs)
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fd (improperly boxed): f25 = 0x0123456789abcdef
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f25) # load fd: f25 = 0x0123456789abcdef
   fsflagsi 0b00000 # clear all fflags
   addi x13, x3, -722 # copy data_ptr to rs1 and adjust for offset
 D_flw_cg_cp_NaNBox_D_S_NaNBox:

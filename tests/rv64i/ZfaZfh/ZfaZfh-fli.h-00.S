@@ -490,7 +490,7 @@ ZfaZfh_fli_h_cg_cp_fd_b31:
 /////////////////////////////////
 
 # Testcase cp_NaNBox_S_H (Test NaN-Boxed inputs)
-  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fd (improperly boxed): f25 = 0x89abcdef
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f25) # load fd: f25 = 0x89abcdef
   fsflagsi 0b00000 # clear all fflags
 ZfaZfh_fli_h_cg_cp_NaNBox_S_H_NaNBox:
   fli.h f25, 3.0 # perform operation

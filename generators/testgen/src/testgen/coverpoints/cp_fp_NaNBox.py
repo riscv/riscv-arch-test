@@ -7,15 +7,11 @@
 
 """Floating point NaN-Box value coverpoint generator (cp_NaNBox)."""
 
-from testgen.asm.helpers import load_float_reg
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
-from testgen.formatters import format_instruction
+from testgen.formatters import format_single_testcase
 from testgen.instructions.params import generate_random_params
-
-# Improperly boxed value preloaded into fd, so the operation must write all 1s to its upper bits
-FD_PRELOAD = 0x0123456789ABCDEF
 
 
 @add_coverpoint_generator("cp_NaNBox")
@@ -31,22 +27,21 @@ def make_NaNBox(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
         raise ValueError(f"Unsupported coverpoint for NaN-Box test: {coverpoint} for instr {instr_name}.")
 
     params = generate_random_params(test_data, instr_type, exclude_regs=[0], fp_load_type=load_size)
+    if params.fd is None or params.fd in (params.fs1, params.fs2, params.fs3):
+        raise ValueError(f"cp_NaNBox needs an fd that is not also a source: {instr_name} ({instr_type}).")
 
-    tc = test_data.begin_test_chunk()
-    tc.code.append(f"# Testcase {coverpoint} (Test NaN-Boxed inputs)")
-    label = test_data.add_testcase("NaNBox", coverpoint)
-    # Preload fd with an improperly boxed value unless fd is also a source, so a result
-    # that leaves the upper bits of fd unwritten is caught by the full-width signature check.
-    if params.fd is not None and params.fd not in (params.fs1, params.fs2, params.fs3):
-        fd_val = FD_PRELOAD & ((1 << fd_bits) - 1)
-        tc.code.append(load_float_reg("fd (improperly boxed)", params.fd, fd_val, test_data, fd_load_size))
-    setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
-    if setup:
-        tc.code.append(setup)
-    tc.code.extend([label, test])
-    if check:
-        tc.code.append(check)
-
-    test_chunk = test_data.end_test_chunk()
+    # Preload fd with an improperly boxed value, so a result that leaves the upper bits of fd
+    # unwritten is caught by the full-width signature check.
+    fd_preload = (0x0123456789ABCDEF & ((1 << fd_bits) - 1), fd_load_size)
+    test_chunk = format_single_testcase(
+        instr_name,
+        instr_type,
+        test_data,
+        params,
+        f"{coverpoint} (Test NaN-Boxed inputs)",
+        "NaNBox",
+        coverpoint,
+        fd_preload=fd_preload,
+    )
     return_testcase_registers(test_data, params)
     return [test_chunk]

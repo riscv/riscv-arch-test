@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
 
+from testgen.asm.helpers import load_float_reg
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -161,6 +162,8 @@ def format_single_testcase(
     desc: str,
     bin_name: str,
     coverpoint: str,
+    *,
+    fd_preload: tuple[int, Literal["half", "single", "double"]] | None = None,
 ) -> TestChunk:
     """
     Generate a complete single-instruction testcase with setup and signature update.
@@ -179,6 +182,7 @@ def format_single_testcase(
         desc: Test description (e.g., "cp_rd (Test destination rd = x5)")
         bin_name: Coverpoint bin covered by this testcase
         coverpoint: Coverpoint name
+        fd_preload: Value and load width to load into fd before the instruction, if any
     Returns:
         TestChunk containing the complete testcase
     """
@@ -187,6 +191,12 @@ def format_single_testcase(
 
     # Register the testcase label first so SIGUPD references the current testcase
     label_line = test_data.add_testcase(bin_name, coverpoint)
+
+    if fd_preload is not None:
+        if params.fd is None:
+            raise ValueError(f"fd_preload needs an fd operand: {instr_name} ({instr_type})")
+        fd_val, fd_load_type = fd_preload
+        tc.code.append(load_float_reg("fd", params.fd, fd_val, test_data, fd_load_type))
 
     # Add test and signature update lines
     setup, test, check = format_instruction(instr_name, instr_type, test_data, params)

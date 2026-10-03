@@ -15,7 +15,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "ZfhminD_fcvt_d_h_cg/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_csr_fflags_v, cp_fs1_badNB_D_H}",
-        "ZfhminD_fcvt_h_d_cg/{cp_fs1, cp_fd, cr_fs1_edges_frm_D, cp_frm_2, cp_csr_fflags_voun, cp_csr_frm, cp_NaNBox_D_H}",
+        "ZfhminD_fcvt_h_d_cg/{cp_fs1, cp_fd, cr_fs1_edges_frm_D, cp_frm_2, cp_csr_fflags_voun, cp_csr_frm, cp_NaNBox_D_H, cr_fs1_cvt_edges_frm_D_H}",
         "ZfhminD_fcvt_h_s_cg/{cp_NaNBox_D_H}",
         "ZfhminD_fcvt_s_h_cg/{cp_fs1_badNB_D_H}",
       ]

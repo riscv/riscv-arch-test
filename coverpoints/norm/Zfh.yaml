@@ -170,14 +170,14 @@ normative_rule_definitions:
   - name: fcvt_round
     coverpoint:
       [
-        "Zfh_fcvt_h_l_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_lu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_w_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_h_wu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H}",
-        "Zfh_fcvt_l_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_lu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_w_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
-        "Zfh_fcvt_wu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H}",
+        "Zfh_fcvt_h_l_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H, cr_rs1_cvt_edges_frm_L_H}",
+        "Zfh_fcvt_h_lu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H, cr_rs1_cvt_edges_frm_L_H}",
+        "Zfh_fcvt_h_w_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H, cr_rs1_cvt_edges_frm_W_H}",
+        "Zfh_fcvt_h_wu_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_frm_2, cp_csr_fflags_on, cp_csr_frm, cp_NaNBox_S_H, cr_rs1_cvt_edges_frm_W_H}",
+        "Zfh_fcvt_l_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H, cr_fs1_cvt_edges_frm_H_I}",
+        "Zfh_fcvt_lu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H, cr_fs1_cvt_edges_frm_H_I}",
+        "Zfh_fcvt_w_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H, cr_fs1_cvt_edges_frm_H_I}",
+        "Zfh_fcvt_wu_h_cg/{cp_rd, cp_fs1, cr_fs1_edges_frm_H, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cp_fs1_badNB_S_H, cr_fs1_cvt_edges_frm_H_I}",
       ]
   # insn:fcvt.l.h[], insn:fcvt.lu.h[], insn:fcvt.h.l[], and insn:fcvt.h.lu[] are RV64-only
   # instructions.
@@ -240,7 +240,7 @@ normative_rule_definitions:
   - name: fcvt_float_rounding
     coverpoint:
       [
-        "Zfh_fcvt_h_s_cg/{cp_fs1, cp_fd, cr_fs1_edges_frm, cp_frm_2, cp_csr_fflags_voun, cp_csr_frm, cp_NaNBox_S_H}",
+        "Zfh_fcvt_h_s_cg/{cp_fs1, cp_fd, cr_fs1_edges_frm, cp_frm_2, cp_csr_fflags_voun, cp_csr_frm, cp_NaNBox_S_H, cr_fs1_cvt_edges_frm_S_H}",
         "Zfh_fcvt_s_h_cg/{cp_fs1, cp_fd, cp_fs1_edges_H, cp_csr_fflags_v, cp_fs1_badNB_S_H}",
       ]
   # insn:fcvt.w.h[] or insn:fcvt.l.h[] converts a half-precision floating-point number to
@@ -323,12 +323,18 @@ normative_rule_definitions:
   # insn:fmv.d.x[] moves the double-precision value encoded in the IEEE 754-2008 encoding
   # from the integer register rs1 to the floating-point register rd
   - name: fmv-d-x_op
-    coverpoint: ["Zfh_fmv_h_x_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_NaNBox_S_H}"]
+    coverpoint:
+      [
+        "Zfh_fmv_h_x_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_NaNBox_S_H, cp_rs1_fp_edges_H}",
+      ]
   # insn:fmv.h.x[] moves the half-precision value encoded in the IEEE 754-2008 encoding
   # from the lower 16 bits of integer register rs1 to the floating-point register rd,
   # NaN-boxing the result.
   - name: fmv-h-x_op
-    coverpoint: ["Zfh_fmv_h_x_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_NaNBox_S_H}"]
+    coverpoint:
+      [
+        "Zfh_fmv_h_x_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_NaNBox_S_H, cp_rs1_fp_edges_H}",
+      ]
   # insn:fmv.x.d[] moves the double-precision value in floating-point register rs1 to a
   # representation in the IEEE 754-2008 encoding in integer register rd
   - name: fmv-x-d_op

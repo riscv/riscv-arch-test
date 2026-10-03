@@ -30,11 +30,11 @@ normative_rule_definitions:
     # to floating-point register rd
     coverpoint:
       [
-        "ZfaF_fround_s_cg/{cp_fs1, cp_fd, cp_fs1_edges, cp_frm_2, cp_csr_fflags_v, cp_csr_frm}",
+        "ZfaF_fround_s_cg/{cp_fs1, cp_fd, cp_fs1_edges, cp_frm_2, cp_csr_fflags_v, cp_csr_frm, cr_fs1_cvt_edges_frm_S_R}",
       ]
   - name: froundnx-s_op
     # The FROUNDNX.S instruction is defined similarly, but it also sets the inexact exception flag if the input differs from the rounded result and is not NaN. FROUNDNX.S is encoded like FCVT.S.D, but with rs2=5.
     coverpoint:
       [
-        "ZfaF_froundnx_s_cg/{cp_fs1, cp_fd, cp_fs1_edges, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm}",
+        "ZfaF_froundnx_s_cg/{cp_fs1, cp_fd, cp_fs1_edges, cp_frm_2, cp_csr_fflags_vn, cp_csr_frm, cr_fs1_cvt_edges_frm_S_R}",
       ]

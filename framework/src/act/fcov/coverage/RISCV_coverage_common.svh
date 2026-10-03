@@ -952,8 +952,6 @@ function int get_csr_addr(int hart, string s);
     "mhpmcounter29h": return CSR_MHPMCOUNTER29H;
     "mhpmcounter30h": return CSR_MHPMCOUNTER30H;
     "mhpmcounter31h": return CSR_MHPMCOUNTER31H;
-    // The trace names CSRs the reference model does not implement by number
-    default: if (s.substr(0, 1) == "0x") return s.substr(2, s.len() - 1).atohex();
-             else $fatal(1, "get_csr_addr: unknown CSR name %s", s);
+    default: $fatal(1, "get_csr_addr: unknown CSR name %s", s);
   endcase
 endfunction

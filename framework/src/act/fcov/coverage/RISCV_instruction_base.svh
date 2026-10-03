@@ -498,7 +498,8 @@ class RISCV_instruction
   endfunction
 
   virtual function void add_csr(int offset);
-    current.imm2 = get_csr_addr(current.hart, ops[offset].key);
+    // The disassembler names CSRs missing from its table by number, so take the address from the encoding
+    current.imm2 = current.insn[31:20];
   endfunction
 
   virtual function void add_mem_offset(int offset);

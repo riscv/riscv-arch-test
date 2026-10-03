@@ -5,9 +5,12 @@ normative_rule_definitions:
   - name: C_dep_Zca
     coverpoint: ["Definition, checked through UDB"]
   - name: Zca_offsets_mul2
-    # Representative: odd multiples of 2 as jump offsets and jump targets
+    # Representative: offsets that are multiples of 2 but not 4, for jumps and branches
     coverpoint:
-      ["Zca_c_j_cg/{cp_imm_edges_c_jal}", "Zca_c_jr_cg/{cp_offset_lsbs}"]
+      [
+        "Zca_c_j_cg/{cp_imm_edges_c_jal}",
+        "Zca_c_beqz_cg/{cp_imm_edges_c_branch}",
+      ]
   - name: Zca_regs8
     # Use a representative coverpoint; applies to others too
     coverpoint: ["Zca_c_and_cg/{cp_rs1_p, cp_rs2_p}"]

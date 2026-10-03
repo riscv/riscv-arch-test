@@ -3,23 +3,22 @@
 normative_rule_definitions:
   # However, unlike SFENCE.VMA, SINVAL.VMA instructions are only ordered with respect to
   # SFENCE.VMA, SFENCE.W.INVAL, and SFENCE.INVAL.IR instructions as defined below.
+  # Svinval_cg only shows that the instructions execute. The next three rules need a test that
+  # accesses a page, changes its PTE, runs SFENCE.W.INVAL; SINVAL.VMA rs1, rs2; SFENCE.INVAL.IR
+  # (rs1 = x0 or a VA in the page, rs2 = x0 or the current ASID), and accesses the page again.
   - name: Svinval_sinval_vma_invalidates_same_as_sfence_vma
-    coverpoint: ["Svinval_cg/cp_svinval"]
+    coverpoint: [""]
 
   # The SFENCE.INVAL.IR instruction guarantees that any previous SINVAL.VMA instructions
   # executed by the current hart are ordered before subsequent implicit references by
   # that hart to the memory-management data structures.
   - name: Svinval_sfence_w_inval_orders_before_sinval_vma
-    coverpoint:
-      [
-        "Svinval_cg/cp_svinval",
-        "ordering is not observable in single-hart signature tests",
-      ]
+    coverpoint: [""]
 
   # the values of rs1 and rs2 for the SFENCE.VMA are the same as those used in the
   # SINVAL.VMA,
   - name: Svinval_sequence_rs1_rs2
-    coverpoint: ["Svinval_cg/cp_svinval", "TODO: rs1/rs2 other than x0"]
+    coverpoint: [""]
 
   # reads and writes prior to the SFENCE.W.INVAL are considered to be those prior to the
   # SFENCE.VMA,

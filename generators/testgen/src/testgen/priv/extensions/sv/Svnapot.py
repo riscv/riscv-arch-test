@@ -96,9 +96,13 @@ def _make_napot(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
 
 
 def _make_reserved(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
-    # PTE.N on a superpage is covered by the reserved_ppni crosses, a reserved PPN encoding by reserved_enc.
+    # PTE.N on a superpage is covered by the reserved_ppni crosses, a reserved PPN encoding by reserved_enc,
+    # and the 64 KiB encoding on a superpage by reserved_ppni_napot_enc.
     superpage, reserved_ppn = _crosses("reserved_ppni", mode), _crosses("reserved_enc", mode)
-    chunk = _begin_test(test_data, sv, mode, "Svnapot_reserved_enc", cross_names(superpage, reserved_ppn))
+    superpage_napot = _crosses("reserved_ppni_napot_enc", mode)
+    chunk = _begin_test(
+        test_data, sv, mode, "Svnapot_reserved_enc", cross_names(superpage, reserved_ppn, superpage_napot)
+    )
     chunk.code.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
     umode = mode == "Umode"
     number = 0
@@ -140,6 +144,27 @@ def _make_reserved(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     f"test{number}",
                     driver_mode="Smode",
                     crosses=reserved_ppn,
+                ),
+                "",
+            ]
+        )
+    for level in range(sv.levels - 1, 0, -1):
+        number += 1
+        chunk.code.extend(
+            [
+                f"// PTE.N with the 64 KiB encoding ppn[3:0]=1000 on a level {level} superpage, which is reserved",
+                *create_page_mapping(sv, leaf_level=level, leaf_flags=_permissions(umode)),
+                "sfence.vma",
+                "",
+                *add_rwx_test(
+                    test_data,
+                    sv,
+                    mode,
+                    "va_data",
+                    level,
+                    f"test{number}",
+                    driver_mode="Smode",
+                    crosses=superpage_napot,
                 ),
                 "",
             ]

@@ -71,7 +71,7 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-PMPSm_cg_cp_grain_check_read_readback_str: .string "\"test: 935; cg: PMPSm_cg; cp: cp_grain_check_read; bin: readback\""
+PMPSm_cg_cp_grain_check_read_readback_str: .string "\"test: 899; cg: PMPSm_cg; cp: cp_grain_check_read; bin: readback\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

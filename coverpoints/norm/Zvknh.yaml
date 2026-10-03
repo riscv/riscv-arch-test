@@ -1,3 +1,215 @@
 # Mapping of normative rules to coverpoints for a test suite
+#
+# Zvknh covers the SHA-256/SHA-512 vector cryptography instructions (vsha2ch.vv,
+# vsha2cl.vv, vsha2ms.vv), shared between the Zvknha (SEW=32 only) and Zvknhb (SEW=32 or
+# 64) extensions.
 
 normative_rule_definitions:
+  # ext:zvknhb[] implies ext:zvknha[].
+  - name: Zvknhb_impZvknha
+    coverpoint: ["Zvknhb32_vsha2ch_vv_cg/cp_asm_count"]
+
+  # SHA-256: these instructions work on 128-bit element groups comprised of four 32-bit
+  # elements.
+  - names: [Zvknha_sha256_egw128b_elem32b, Zvknhb_sha256_egw128b_elem32b]
+    coverpoint: ["Zvknha_vsha2ch_vv_cg/cp_csr_vtype_lmul_egs4_sew32"]
+
+  # SHA-512: these instructions work on 256-bit element groups comprised of four 64-bit
+  # elements.
+  - name: Zvknhb_sha512_egw256b_elem64b
+    coverpoint:
+      [
+        "Zvknhb64_vsha2ch_vv_cg/cp_csr_vtype_lmul_egs4_sew64",
+        "Zvknhb64_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew64",
+        "Zvknhb64_vsha2cl_vv_cg/cr_vl_lmul_egs4_sew64",
+        "Zvknhb64_vsha2ms_vv_cg/cr_vl_lmul_egs4_sew64",
+      ]
+
+  # ext:zvknhb[] supports SHA-256 and SHA-512.
+  - name: Zvknhb_sha256_sha512
+    coverpoint:
+      [
+        "Zvknhb32_vsha2ch_vv_cg/cp_asm_count",
+        "Zvknhb32_vsha2ms_vv_cg/cp_asm_count",
+        "Zvknhb64_vsha2ch_vv_cg/cp_asm_count",
+        "Zvknhb64_vsha2ms_vv_cg/cp_asm_count",
+      ]
+
+  # ext:zvknha[] supports only SHA-256.
+  - name: Zvknha_sha256
+    # SEW=64 is reserved for Zvknha; see vsha2chl-vv_Zvknha_sewn32_rsv and
+    # vsha2ms-vv_Zvknha_sewn32_rsv in SsstrictV.yaml
+    coverpoint:
+      [
+        "Zvknha_vsha2ch_vv_cg/cp_asm_count",
+        "Zvknha_vsha2cl_vv_cg/cp_asm_count",
+        "Zvknha_vsha2ms_vv_cg/cp_asm_count",
+      ]
+
+  # To help avoid side-channel timing attacks, these instructions shall be implemented with
+  # data-independent timing.
+  - names: [Zvknha_dataindeptiming, Zvknhb_dataindeptiming]
+    coverpoint:
+      [
+        "TODO: data-independent execution timing cannot be observed from a final-state signature comparison",
+      ]
+
+  # The number of element groups to be processed is csr:vl[]/EGS. csr:vl[] must be set to
+  # the number of SEW elements to be processed and therefore must be a multiple of EGS=4.
+  - names: [Zvknha_vl, Zvknhb_vl]
+    coverpoint:
+      [
+        "TODO: no coverpoint verifies vl is rejected when not a multiple of EGS - the functional suites only ever generate compliant values",
+      ]
+
+  # Likewise, csr:vstart[] must be a multiple of EGS=4.
+  - names: [Zvknha_vstart, Zvknhb_vstart]
+    coverpoint:
+      [
+        "TODO: no coverpoint samples vstart for this suite and no ExceptionsZvk-style suite exists to exercise a non-multiple-of-EGS vstart value",
+      ]
+
+  # ext:zvknha[]: SEW is any value other than 32
+  - names: [vsha2ch-vv_Zvknha_sewn32_rsv, vsha2cl-vv_Zvknha_sewn32_rsv]
+    coverpoint:
+      [
+        "Out-of-Scope: reserved because of CSR state (vtype.sew); no suite drives it to a reserved value under Zvknha and there is no Ssstrict-equivalent suite for vector-crypto",
+      ]
+
+  # ext:zvknhb[]: SEW is any value other than 32 or 64
+  - names: [vsha2ch-vv_Zvknhb_sewn32or64_rsv, vsha2cl-vv_Zvknhb_sewn32or64_rsv]
+    coverpoint:
+      [
+        "Out-of-Scope: reserved because of CSR state (vtype.sew); no suite drives it to a reserved value under Zvknhb and there is no Ssstrict-equivalent suite for vector-crypto",
+      ]
+
+  # The vd register group overlaps with either vs1 or vs2
+  - names: [vsha2ch-vv_vdoverlapvs1vs2_rsv, vsha2cl-vv_vdoverlapvs1vs2_rsv]
+    coverpoint:
+      [
+        "TODO: this is an SsstrictV-style reserved-encoding test; no cmp_vd_vs1/cmp_vd_vs2-style register-aliasing coverpoint exists for this suite and no SsstrictV-equivalent suite exists for vector crypto",
+      ]
+
+  # Two words of vs1 are processed with the 8 words of current state held in vd and vs2 to
+  # perform two rounds of hash computation producing four words of the next state. SEW=32: 2
+  # rounds of SHA-256 compression are performed (ext:zvknha[] and ext:zvknhb[]). SEW=64: 2
+  # rounds of SHA-512 compression are performed (ext:zvknhb[]).
+  - names: [vsha2ch-vv_op, vsha2cl-vv_op]
+    coverpoint: ["Zvknha_vsha2ch_vv_cg/cp_vd_egs4"]
+
+  # ext:zvknha[]: SEW is any value other than 32
+  - name: vsha2ms-vv_Zvknha_sewn32_rsv
+    coverpoint:
+      [
+        "Out-of-Scope: reserved because of CSR state (vtype.sew); no suite drives it to a reserved value under Zvknha and there is no Ssstrict-equivalent suite for vector-crypto",
+      ]
+
+  # ext:zvknhb[]: SEW is any value other than 32 or 64
+  - name: vsha2ms-vv_Zvknhb_sewn32or64_rsv
+    coverpoint:
+      [
+        "Out-of-Scope: reserved because of CSR state (vtype.sew); no suite drives it to a reserved value under Zvknhb and there is no Ssstrict-equivalent suite for vector-crypto",
+      ]
+
+  # The vd register group overlaps with either vs1 or vs2
+  - name: vsha2ms-vv_vdoverlapvs1vs2_rsv
+    coverpoint:
+      [
+        "TODO: this is an SsstrictV-style reserved-encoding test; no cmp_vd_vs1/cmp_vd_vs2-style register-aliasing coverpoint exists for this suite and no SsstrictV-equivalent suite exists for vector crypto",
+      ]
+
+  # Eleven of the last 16 SEW-sized message-schedule words from vd (oldest), vs2, and vs1
+  # (most recent) are processed to produce the next 4 message-schedule words. SEW=32: Four
+  # rounds of SHA-256 message schedule expansion are performed (ext:zvknha[] and
+  # ext:zvknhb[]). SEW=64: Four rounds of SHA-512 message schedule expansion are performed
+  # (ext:zvknhb[]).
+  - name: vsha2ms-vv_op
+    coverpoint:
+      [
+        "Zvknha_vsha2ms_vv_cg/cp_vd_egs4",
+        "Zvknha_vsha2ms_vv_cg/cr_vs2_vs1_edges_egs4",
+        "Zvknha_vsha2ms_vv_cg/cr_vs1_vd_edges_egs4",
+        "Zvknha_vsha2ms_vv_cg/cr_vs2_vd_edges_egs4",
+        "Zvknhb64_vsha2ms_vv_cg/cr_vs2_vs1_edges_egs4",
+      ]
+
+  # The Zvknhb, Zvkn, Zvknc, Zvkng, and Zvksc depend on Zve64x.
+  - name: Zvknhb_Zvkn_Zvknc_Zvkng_Zvksc_depZve64x
+    coverpoint: ["Definition, checked through UDB"]
+
+  # SHA-256: these instructions work on 128-bit element groups comprised of four 32-bit elements.
+  - name: Zvknha_Zvknhb_sha256_egw128b_elem32b
+    # Representative coverpoints; also the Zvknha and Zvknhb32 vsha2cl covergroups
+    coverpoint:
+      [
+        "Zvknha_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknha_vsha2ms_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknhb32_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknhb32_vsha2ms_vv_cg/cr_vl_lmul_egs4_sew32",
+      ]
+
+  # To help avoid side-channel timing attacks, these instructions shall be implemented with
+  # data-independent timing.
+  - name: Zvknha_Zvknhb_dataindeptiming
+    coverpoint: ["Untestable: microarchitectural timing"]
+
+  # The number of element groups to be processed is vl/EGS. vl must be set to the number of SEW
+  # elements to be processed and therefore must be a multiple of EGS=4.
+  - name: Zvknha_Zvknhb_vl
+    # Representative coverpoints; also the vsha2cl and vsha2ms covergroups
+    coverpoint:
+      [
+        "Zvknha_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknhb32_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew32",
+        "Zvknhb64_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew64",
+      ]
+
+  # Likewise, vstart must be a multiple of EGS=4.
+  - name: Zvknha_Zvknhb_vstart
+    coverpoint: ["TODO: execute with vstart set to a nonzero multiple of EGS=4"]
+
+  # SEW=32: 2 rounds of SHA-256 compression are performed (Zvknha and Zvknhb)
+  - name: vsha2chl-vv_op_sew32
+    # Representative coverpoints; also cr_vs2_vs1_edges_egs4 and cr_vs1_vd_edges_egs4
+    coverpoint:
+      [
+        "Zvknha_vsha2ch_vv_cg/cr_vs2_vd_edges_egs4",
+        "Zvknha_vsha2cl_vv_cg/cr_vs2_vd_edges_egs4",
+        "Zvknhb32_vsha2ch_vv_cg/cr_vs2_vd_edges_egs4",
+        "Zvknhb32_vsha2cl_vv_cg/cr_vs2_vd_edges_egs4",
+      ]
+
+  # SEW=64: 2 rounds of SHA-512 compression are performed (Zvknhb)
+  - name: vsha2chl-vv_op_sew64
+    # Representative coverpoints; also cr_vs1_vd_edges_egs4 in these covergroups
+    coverpoint:
+      [
+        "Zvknhb64_vsha2ch_vv_cg/{cr_vs2_vd_edges_egs4, cr_vs2_vs1_edges_egs4}",
+        "Zvknhb64_vsha2cl_vv_cg/{cr_vs2_vd_edges_egs4, cr_vs2_vs1_edges_egs4}",
+      ]
+
+  # Two words of vs1 are processed with the 8 words of current state held in vd and vs2 to perform
+  # two rounds of hash computation producing four words of the next state.
+  - name: vsha2chl-vv_op
+    # Representative coverpoints; also cr_vs2_vd_edges_egs4, and the Zvknhb32/Zvknhb64 crosses
+    coverpoint:
+      [
+        "Zvknha_vsha2ch_vv_cg/{cr_vs2_vs1_edges_egs4, cr_vs1_vd_edges_egs4}",
+        "Zvknha_vsha2cl_vv_cg/{cr_vs2_vs1_edges_egs4, cr_vs1_vd_edges_egs4}",
+      ]
+
+  # SEW=32: Four rounds of SHA-256 message schedule expansion are performed (Zvknha and Zvknhb)
+  - name: vsha2ms-vv_op_sew32
+    # Representative coverpoints; also cr_vs2_vd_edges_egs4 in these covergroups
+    coverpoint:
+      [
+        "Zvknha_vsha2ms_vv_cg/{cr_vs2_vs1_edges_egs4, cr_vs1_vd_edges_egs4}",
+        "Zvknhb32_vsha2ms_vv_cg/{cr_vs2_vs1_edges_egs4, cr_vs1_vd_edges_egs4}",
+      ]
+
+  # SEW=64: Four rounds of SHA-512 message schedule expansion are performed (Zvknhb)
+  - name: vsha2ms-vv_op_sew64
+    coverpoint:
+      [
+        "Zvknhb64_vsha2ms_vv_cg/{cr_vs2_vs1_edges_egs4, cr_vs1_vd_edges_egs4, cr_vs2_vd_edges_egs4}",
+      ]

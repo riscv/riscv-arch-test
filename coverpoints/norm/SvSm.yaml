@@ -26,10 +26,11 @@ normative_rule_definitions:
   # When csr::[sum]=0, S-mode memory accesses to pages that are accessible by U-mode
   # (U=1 in <<sv32pte>>) will fault. When csr::[sum]=1, these accesses are permitted.
   - names: [mstatus_sum_op, mstatus_sum_op_mprv_mpp]
+    # Representative coverpoints; also cp_mprv_upage_smode_sumunset_noexec and cp_mprv_upage_smode_sumset_exec
     coverpoint:
       [
-        "SvSm_mstatus_mprv_cg/cp_mprv_upage_smode_sumunset_{noread,nowrite,noexec}",
-        "SvSm_mstatus_mprv_cg/cp_mprv_upage_smode_sumset_{exec,read,write}",
+        "SvSm_mstatus_mprv_cg/cp_mprv_upage_smode_sumunset_{noread,nowrite}",
+        "SvSm_mstatus_mprv_cg/cp_mprv_upage_smode_sumset_{read,write}",
       ]
 
   # The csr::[tvm] (Trap Virtual Memory) bit is a WARL field that supports intercepting
@@ -37,7 +38,7 @@ normative_rule_definitions:
   # or write the csr:satp[] CSR or execute an insn:sfence.vma[] or insn:sinval.vma[]
   # instruction while executing in S-mode will raise an illegal-instruction exception.
   # When csr::[tvm]=0, these operations are permitted in S-mode. csr::[tvm] is read-only
-  # 0 when S-mode is not supported or if csr:satp[mode] is read-only 0; otherwise, it
+  # 0 when S-mode is not supported or if satp.MODE is read-only 0; otherwise, it
   # must be writable.
   - names: [mstatus_tvm_op, mstatus_tvm_warl]
     coverpoint:
@@ -46,27 +47,17 @@ normative_rule_definitions:
   # The csr::[mbe], csr::[sbe], and csr::[ube] bits in csr:mstatus[] and csr:mstatush[]
   # are WARL fields that control the endianness of memory accesses other than instruction
   # fetches. Each may be read/write or read-only.
+  # The SBE crosses need a configuration with big-endian implicit page-table accesses.
   - name: mstatus_mstatush_xbe_warl
-    coverpoint:
-      [
-        "SvSm_mstatus_mprv_cg/cp_mstatus_sbe_{read,write}",
-        "NORUN: needs big-endian implicit page-table accesses",
-      ]
+    coverpoint: ["SvSm_mstatus_mprv_cg/cp_mstatus_sbe_{read,write}"]
   # For implicit accesses to supervisor-level memory management data structures, such as
   # page tables, endianness is always controlled by csr::[sbe].
   - name: mstatus_sbe_implicit
-    coverpoint:
-      [
-        "SvSm_mstatus_mprv_cg/cp_mstatus_sbe_{read,write}",
-        "NORUN: needs big-endian implicit page-table accesses",
-      ]
+    coverpoint: ["SvSm_mstatus_mprv_cg/cp_mstatus_sbe_{read,write}"]
 
   # If mtval is written with a nonzero value when a breakpoint, address-misaligned,
   # access-fault, page-fault, or hardware-error exception occurs on an instruction
   # fetch, load, or store, then mtval will contain the faulting virtual address.
+  # The trap signature records mtval.
   - name: mtval_vaddr_wr_faulting_addr
-    coverpoint:
-      [
-        "SvSm_mstatus_mprv_cg/{load_page_fault,store_page_fault}",
-        "mtval is checked by the trap signature",
-      ]
+    coverpoint: ["SvSm_mstatus_mprv_cg/{load_page_fault,store_page_fault}"]

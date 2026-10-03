@@ -55,7 +55,7 @@ def begin_bare_test(test_data: TestData, split_name: str) -> TestChunk:
         ]
     )
     chunk.raw_data.extend(DATA_REGION.splitlines())
-    chunk.trap_sigupd_count = 10
+    chunk.trap_sigupd_count = 3
     return chunk
 
 

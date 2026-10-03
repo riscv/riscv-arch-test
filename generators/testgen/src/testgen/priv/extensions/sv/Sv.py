@@ -278,7 +278,7 @@ def _t_global_pte(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode)
                 ]
             )
         chunk.raw_data.extend(sv_data(sv))
-        chunk.trap_sigupd_count = 10
+        chunk.trap_sigupd_count = 3
         test_chunks.append(test_data.end_test_chunk())
 
 
@@ -555,7 +555,7 @@ def _t_pte_rsw(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) ->
                     ]
                 )
         chunk.raw_data.extend(sv_data(sv))
-        chunk.trap_sigupd_count = 10
+        chunk.trap_sigupd_count = 3
         test_chunks.append(test_data.end_test_chunk())
 
 
@@ -946,7 +946,7 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
         style="x_only",
     )
     chunk.raw_data.extend(sv_data(sv, (0,), data_region_body=VA_ONES_DATA))
-    chunk.trap_sigupd_count = 10
+    chunk.trap_sigupd_count = 3
     test_chunks.append(test_data.end_test_chunk())
 
     chunk = begin_sv_test(
@@ -981,7 +981,7 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
         style="x_only",
     )
     chunk.raw_data.extend(sv_data(sv, (0,), data_region_body=VA_ZEROS_DATA))
-    chunk.trap_sigupd_count = 10
+    chunk.trap_sigupd_count = 3
     test_chunks.append(test_data.end_test_chunk())
 
 
@@ -1003,23 +1003,46 @@ SATP_FIELDS = {
 }
 
 
-def satp_access_ops(test_data: TestData, mode: str, values: tuple[int, int, int]) -> list[str]:
+def satp_access_ops(test_data: TestData, mode: str, sources: tuple[str, str, str]) -> list[str]:
+    """csrw, csrs and csrc satp from the ``sources`` registers, reading satp back after each."""
     lines = []
-    for operation, value in zip(("csrw", "csrs", "csrc"), values, strict=True):
-        lines.extend([f"li a0, {value}", f"{operation} satp, a0"])
+    for operation, source in zip(("csrw", "csrs", "csrc"), sources, strict=True):
+        lines.append(f"{operation} satp, {source}")
         lines.extend(satp_csr_read(test_data, f"{mode[0].lower()}_{operation}"))
     return lines
 
 
+def satp_mode_value(sv: SvMode, reg: str, *, root: bool) -> list[str]:
+    """Load ``reg`` with satp.MODE = ``sv``, and satp.PPN = the S-mode root table if ``root``, else 0.
+
+    satp_access tests never write MODE = Bare with a nonzero PPN or ASID: that is UNSPECIFIED
+    [norm:satp_mode_bare_nonzero_unspec].
+    """
+    shift = SATP_FIELDS[sv.name][0]
+    if not root:
+        return [f"LI({reg}, SATP_MODE_{sv.suffix} << {shift})"]
+    return [
+        f"LA({reg}, rvtest_Sroot_pg_tbl)",
+        f"srli {reg}, {reg}, 12",
+        f"LI(a0, SATP_MODE_{sv.suffix} << {shift})",
+        f"or {reg}, {reg}, a0",
+    ]
+
+
 def _t_satp_access(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
-    shift, asid_ones, asid_shift, asid_bits = SATP_FIELDS[sv.name]
+    _, asid_ones, asid_shift, asid_bits = SATP_FIELDS[sv.name]
     chunk = test_data.begin_test_chunk(f"{sv.name}_satp_access_Smode")
     chunk.section_header = comment_banner("cp_access_s")
     chunk.code.extend(["main:", "csrw scause, zero"])
     if sv.name in ("sv32", "sv39"):
-        chunk.code.extend(satp_access_ops(test_data, "Smode", (4, 8, 4)))
+        # Write MODE = sv with the identity-mapped root table so S-mode keeps running, then set and
+        # clear the lowest ASID bit; return to Bare with all-zero satp before the U-mode accesses.
+        chunk.code.extend(satp_mode_value(sv, "a1", root=True))
+        chunk.code.extend([f"LI(a2, 1 << {asid_shift})"])
+        chunk.code.extend(satp_access_ops(test_data, "Smode", ("a1", "a2", "a2")))
         chunk.code.extend(
             [
+                "csrw satp, zero",
                 "RVTEST_TSBI_GOTO_UMODE",
                 "csrw satp, x0",
                 "csrs satp, x0",
@@ -1030,10 +1053,7 @@ def _t_satp_access(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
     chunk.code.extend(
         [
             "// satp.PPN points at the identity-mapped root table so the S-mode code keeps running",
-            "LA(a1, rvtest_Sroot_pg_tbl)",
-            "srli a1, a1, 12",
-            f"LI(a0, SATP_MODE_{sv.suffix} << {shift})",
-            "or a1, a1, a0",
+            *satp_mode_value(sv, "a1", root=True),
             "csrw satp, a1",
         ]
     )
@@ -1045,7 +1065,7 @@ def _t_satp_access(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
     for bit in range(asid_bits):
         chunk.code.extend(["li a2, 1", f"slli a2, a2, {asid_shift + bit}", "or a0, a1, a2", "csrw satp, a0"])
         chunk.code.extend(satp_csr_read(test_data, f"asid_walk_{bit}"))
-    chunk.trap_sigupd_count = 30 if sv.name in ("sv32", "sv39") else 10
+    chunk.trap_sigupd_count = 8 if sv.name in ("sv32", "sv39") else 3
     test_chunks.append(test_data.end_test_chunk())
 
 

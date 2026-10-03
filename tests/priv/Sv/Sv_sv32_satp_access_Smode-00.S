@@ -19,7 +19,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
-#define TRAP_SIGUPD_COUNT 30
+#define TRAP_SIGUPD_COUNT 8
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -35,21 +35,24 @@ RVTEST_BEGIN
 
 main:
   csrw scause, zero
-  li a0, 4
-  csrw satp, a0
+  LA(a1, rvtest_Sroot_pg_tbl)
+  srli a1, a1, 12
+  LI(a0, SATP_MODE_SV32 << 31)
+  or a1, a1, a0
+  LI(a2, 1 << 22)
+  csrw satp, a1
 Sv_satp_cg_cp_access_s_s_csrw:
   # Read satp into x14 and check against expected.
   RVTEST_SIGUPD_CSR_READ(satp, x14, Sv_satp_cg_cp_access_s_s_csrw, Sv_satp_cg_cp_access_s_s_csrw_str)
-  li a0, 8
-  csrs satp, a0
+  csrs satp, a2
 Sv_satp_cg_cp_access_s_s_csrs:
   # Read satp into x14 and check against expected.
   RVTEST_SIGUPD_CSR_READ(satp, x14, Sv_satp_cg_cp_access_s_s_csrs, Sv_satp_cg_cp_access_s_s_csrs_str)
-  li a0, 4
-  csrc satp, a0
+  csrc satp, a2
 Sv_satp_cg_cp_access_s_s_csrc:
   # Read satp into x14 and check against expected.
   RVTEST_SIGUPD_CSR_READ(satp, x14, Sv_satp_cg_cp_access_s_s_csrc, Sv_satp_cg_cp_access_s_s_csrc_str)
+  csrw satp, zero
   RVTEST_TSBI_GOTO_UMODE
   csrw satp, x0
   csrs satp, x0

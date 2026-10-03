@@ -314,13 +314,14 @@ RVTEST_DATA_BEGIN
   .option push
   .option norvc
 TEST_FOR_EXECUTION_0:
-  .rept (PMP_TOR_REGION_BYTES / 4)
+  .rept PMP_NAPOT_REGION_PAD_WORDS
   jr ra
   .endr
   .option pop
 TEST_FOR_EXECUTION:
   .rept (PMP_TOR_REGION_BYTES / 4)
-  nop
+  c.nop
+  c.nop
   .endr
   .option push
   .option norvc

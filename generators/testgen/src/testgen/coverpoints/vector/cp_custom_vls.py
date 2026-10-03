@@ -120,6 +120,8 @@ def make_cp_custom_ffLS(instr_name: str, instr_type: str, coverpoint: str, test_
     if ifdef != "":
         tc.code.insert(0, f"#ifdef {ifdef}")
         tc.code.append("#endif")
+    tc.code.insert(0, "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
+    tc.code.append("#endif")
 
     tc = test_data.end_test_chunk()
 

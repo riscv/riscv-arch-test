@@ -37,5 +37,6 @@ def make_pmpf(test_data: TestData) -> list[TestChunk]:
     )
     crosses = cross_by_access(load="cp_cfg_R", store="cp_cfg_W")
     chunk.code.extend(lxwr_walk_body(test_data, LOCKED_LXWR_CASES, "napot", gen_float, crosses))
-    chunk.raw_data.extend(REGION_BLOBS["off"])
+    # The NAPOT pad keeps the region 8-byte aligned at every grain, so fld and fsd stay naturally aligned.
+    chunk.raw_data.extend(REGION_BLOBS["napot_pad"])
     return [test_data.end_test_chunk()]

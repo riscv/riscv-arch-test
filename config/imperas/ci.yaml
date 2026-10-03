@@ -19,6 +19,8 @@
 #   https://solvnetplus.synopsys.com/s/case/500WQ000029smeCYAQ/mretsret-do-not-set-mpelpspelp-to-nolpexpected
 #   norm:Zicfilp_pelp_trap_return requires xRET to set xPELP to NO_LP_EXPECTED unconditionally, and
 #   Sail, Spike, Whisper and QEMU all clear it. ZicfilpU passes.
+# - Svnapot: Imperas accepts N=1 on superpage leaf PTEs instead of page faulting
+#   (validSvnapotEntry checks only for a leaf, not level 0, and fillTLBEntry skips the alignment check)
 #
 ci_enabled: false
-exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,ZicfilpSm,ZicfilpS"
+exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,ZicfilpSm,ZicfilpS,Svnapot"

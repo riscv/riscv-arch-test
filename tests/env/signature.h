@@ -99,6 +99,8 @@
 // transforms the wrong instruction is caught. Sail writes zero on every trap, so
 // nothing is compared against a Sail reference until sail-riscv#1982 adds the
 // option to write the transformed instruction.
+// Both compile modes emit the same number of instructions so the signature and
+// self-check ELFs have identical code layout.
 #ifdef RVTEST_SELFCHECK
   #define TRAP_SIGUPD_ZERO_OK(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR) \
     LREG _TMPREG, _OFF*REGWIDTH(T1)                             ;\
@@ -117,6 +119,7 @@
     SREG _R, _OFF*REGWIDTH(T1)                                  ;\
     beq  x0, x0, 2f                                             ;\
     beqz _R, 2f                                                 ;\
+    nop                                                         ;\
     mv   T1, _R                                                 ;\
     mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
     jal  T2, failedtest_trap_x7_x9                              ;\

@@ -134,6 +134,13 @@ covergroup Svnapot_cg with function sample(ins_t ins);
     Svnapot_reserved_ppni_write_s: cross PTE_RWX_s_d, PTE_N_d, PageType_d, write_acc, store_page_fault, priv_mode_s;
     Svnapot_reserved_ppni_write_u: cross PTE_RWX_u_d, PTE_N_d, PageType_d, write_acc, store_page_fault, priv_mode_u;
 
+    Svnapot_reserved_ppni_napot_enc_exec_s:  cross PTE_RWX_s_i, PTE_Svnapot_i, PTE_N_i, PageType_i, exec_acc, ins_page_fault, priv_mode_s;
+    Svnapot_reserved_ppni_napot_enc_exec_u:  cross PTE_RWX_u_i, PTE_Svnapot_i, PTE_N_i, PageType_i, exec_acc, ins_page_fault, priv_mode_u;
+    Svnapot_reserved_ppni_napot_enc_read_s:  cross PTE_RWX_s_d, PTE_Svnapot_d, PTE_N_d, PageType_d, read_acc, load_page_fault, priv_mode_s;
+    Svnapot_reserved_ppni_napot_enc_read_u:  cross PTE_RWX_u_d, PTE_Svnapot_d, PTE_N_d, PageType_d, read_acc, load_page_fault, priv_mode_u;
+    Svnapot_reserved_ppni_napot_enc_write_s: cross PTE_RWX_s_d, PTE_Svnapot_d, PTE_N_d, PageType_d, write_acc, store_page_fault, priv_mode_s;
+    Svnapot_reserved_ppni_napot_enc_write_u: cross PTE_RWX_u_d, PTE_Svnapot_d, PTE_N_d, PageType_d, write_acc, store_page_fault, priv_mode_u;
+
 endgroup
 
 function void svnapot_sample(int hart, int issue, ins_t ins);

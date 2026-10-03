@@ -16,6 +16,8 @@
 # - Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
 # - Sscofpmf*: there are no plans for Imperas to support HPM events, so this one is not
 #   expected to be resolved in the foreseeable future.
+# - Svnapot: Imperas accepts N=1 on superpage leaf PTEs instead of page faulting
+#   (validSvnapotEntry checks only for a leaf, not level 0, and fillTLBEntry skips the alignment check)
 #
 ci_enabled: false
-exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,InterruptsSm,InterruptsS,InterruptsSSm,InterruptsU,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,SscofpmfSm,SscofpmfS,SscofpmfU"
+exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,Svnapot,SscofpmfSm,SscofpmfS,SscofpmfU"

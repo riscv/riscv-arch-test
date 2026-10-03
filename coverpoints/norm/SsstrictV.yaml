@@ -120,11 +120,6 @@ normative_rule_definitions:
     coverpoint: ["ExceptionsVx_vsaddu_vv_cg/cp_vstart_gt_vl"]
   - name: vtype_lmul_fval_rsv
     coverpoint: ["SmV_cg/cp_vtype_vill_set_vl_0"]
-  - name: vtype_vsew_rsv
-    coverpoint:
-      [
-        "TODO: SmV_cg's rs2_sew coverpoint explicitly ignore_bins the reserved vsew encodings (100/101/110/111) rather than sampling them, and the one template that would exercise them (cp_vtype_walking1s.sv) is not wired into any generated covergroup",
-      ]
   - name: vtype_vset_rsv
     coverpoint:
       [

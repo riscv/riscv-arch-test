@@ -291,36 +291,41 @@ typedef enum {
     None
 } edge_vs2_ls_values_t;
 
+// Index EEW of an indexed load or store, from its width field; 0 if the width is not an index width
+function int index_eew(bit [2:0] width);
+  case (width)
+    3'b000:  return 8;
+    3'b101:  return 16;
+    3'b110:  return 32;
+    3'b111:  return 64;
+    default: return 0;
+  endcase
+endfunction
+
 // val is the first register of the index operand of an indexed load or store, and insn is the
 // instruction.  Only the body elements (index < vl) supply addresses, so only they are checked.
-// The elements are as wide as the index EEW from the width field, not vtype.vsew.  The generator
-// clamps each index into [0, 2*VLMAX) and scales it by the bytes in one segment (nf * SEW/8,
-// rounded up to a power of two) so that segments do not overlap, so an index is in range when it
-// is below 2*VLMAX times that scale.
+// The elements are as wide as the index EEW from the width field, not vtype.vsew.  An index is in
+// range when it is below 2*VLMAX times the segment size (nf * SEW/8, rounded up to a power of two).
 function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BITS val, logic [31:0] insn);
   `XLEN_BITS vl     = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vl", "vl");
   `XLEN_BITS vsew   = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew");
   int vlmax         = get_vtype_vlmax(hart, issue, `SAMPLE_BEFORE);
-  int segments      = int'(insn[31:29]) + 1;
+  bit [2:0] nf      = insn[31:29];
+  bit [2:0] width   = insn[14:12];
+  int segments      = int'(nf) + 1;
   int segment_bytes = segments * (2 ** (unsigned'(vsew[2:0])));  // nf * SEW/8
   int scale         = 1;
-  int eew;
+  int eew           = index_eew(width);
   int elements;
   longint unsigned bound;
   longint unsigned elem;
   logic all_zero    = 1'b1;
   logic all_in_range = 1'b1;
 
-  case (insn[14:12])
-    3'b000:  eew = 8;
-    3'b101:  eew = 16;
-    3'b110:  eew = 32;
-    3'b111:  eew = 64;
-    default: begin
-      $error("ERROR: SystemVerilog Functional Coverage: Unsupported index width field: %b", insn[14:12]);
-      $fatal(1);
-    end
-  endcase
+  if (eew == 0) begin
+    $error("ERROR: SystemVerilog Functional Coverage: Unsupported index width field: %b", width);
+    $fatal(1);
+  end
 
   while (scale < segment_bytes) scale = scale * 2;
   bound = longint'(2 * vlmax) * scale;
@@ -541,16 +546,10 @@ endfunction
 function int data_overlap(int hart, int issue, bit[2:0] width, `VLEN_BITS val);
   `XLEN_BITS vl = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vl", "vl");
   int capped_vl;
-  int index_sew;
+  int index_sew = index_eew(width);
   bit seen[logic[63:0]];
 
-  case (width)
-    3'b000: index_sew = 8;
-    3'b101: index_sew = 16;
-    3'b110: index_sew = 32;
-    3'b111: index_sew = 64;
-    default: return 0;
-  endcase
+  if (index_sew == 0) return 0;
 
   capped_vl = (vl < `UDB_VLEN / index_sew) ? vl : `UDB_VLEN / index_sew;
 

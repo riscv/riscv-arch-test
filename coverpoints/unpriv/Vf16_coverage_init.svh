@@ -39,7 +39,6 @@
     Vf16_vfmv_f_s_cg = new(); Vf16_vfmv_f_s_cg.set_inst_name("obj_Vf16_vfmv_f_s");
     Vf16_vfmv_s_f_cg = new(); Vf16_vfmv_s_f_cg.set_inst_name("obj_Vf16_vfmv_s_f");
     Vf16_vfmv_v_f_cg = new(); Vf16_vfmv_v_f_cg.set_inst_name("obj_Vf16_vfmv_v_f");
-    Vf16_vfncvt_f_f_w_cg = new(); Vf16_vfncvt_f_f_w_cg.set_inst_name("obj_Vf16_vfncvt_f_f_w");
     Vf16_vfncvt_f_x_w_cg = new(); Vf16_vfncvt_f_x_w_cg.set_inst_name("obj_Vf16_vfncvt_f_x_w");
     Vf16_vfncvt_f_xu_w_cg = new(); Vf16_vfncvt_f_xu_w_cg.set_inst_name("obj_Vf16_vfncvt_f_xu_w");
     Vf16_vfncvt_rod_f_f_w_cg = new(); Vf16_vfncvt_rod_f_f_w_cg.set_inst_name("obj_Vf16_vfncvt_rod_f_f_w");

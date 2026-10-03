@@ -39,16 +39,16 @@ normative_rule_definitions:
   # block, and if write permission is granted by the PMP access control bits, read
   # permission shall also be granted
   - name: pmp_same
-    coverpoint: ["Untestable because behavior is UNSPECIFIED"]
+    coverpoint: ["Not tested: behavior is UNSPECIFIED"]
   # The PMAs shall be the same for all physical addresses in the cache block, and if write
   # permission is granted by the supported access type PMAs, read permission shall also be
   # granted
   - name: pma_same
-    coverpoint: ["Untestable because behavior is UNSPECIFIED"]
+    coverpoint: ["Not tested: behavior is UNSPECIFIED"]
   # If the above constraints are not met, the behavior of a CBO instruction is
   # UNSPECIFIED.
   - name: cbo_rsv
-    coverpoint: ["Untestable because behavior is UNSPECIFIED"]
+    coverpoint: ["Not tested: behavior is UNSPECIFIED"]
 
   # For the purposes of writing the mtinst or htinst register on a trap, the
   # following standard transformation is defined for cache-block management
@@ -61,18 +61,14 @@ normative_rule_definitions:
   - name: cbo-clean_op
     coverpoint: ["Zicbom_cbo_clean_cg/cp_custom_cbo"]
 
-  # The offset operand may be omitted; otherwise, any expression that computes the
-  # offset shall evaluate to zero.
-  - name: cbo-clean_offset
-    coverpoint: ["Assembler information, not a normative rule"]
-
-  # A cbo.flush instruction performs a flush operation on the cache block whose that
-  # contains the address specified in rs1.
+  # A cbo.flush instruction performs a flush operation on the cache block that contains
+  # the address specified in rs1.
   - name: cbo-flush_op
     coverpoint: ["Zicbom_cbo_flush_cg/cp_custom_cbo"]
 
   # It is not required that rs1 is aligned to the size of a cache block.
   - name: cbo-flush_unaligned
+    # cp_custom_cbo testcases use rs1 at offsets 0 and 255; the coverpoint does not sample the offset
     coverpoint: ["Zicbom_cbo_flush_cg/cp_custom_cbo"]
 
   # A cbo.inval instruction performs an invalidate operation on the cache block that
@@ -82,4 +78,5 @@ normative_rule_definitions:
 
   # It is not required that rs1 is aligned to the size of a cache block.
   - name: cbo-inval_unaligned
+    # cp_custom_cbo testcases use rs1 at offsets 0 and 255; the coverpoint does not sample the offset
     coverpoint: ["Zicbom_cbo_inval_cg/cp_custom_cbo"]

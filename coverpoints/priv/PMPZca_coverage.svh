@@ -14,8 +14,10 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-  addr_in_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
-    bins at_region = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
+  // The legal_lwrx and Zcb/Zcd/Zcf walks place their NAPOT region at PMP_NAPOT_REGION_START, which
+  // is g_napot-aligned, so the 8-byte c.ld/c.sd/c.fld/c.fsd probes are naturally aligned at every grain.
+  addr_in_napot_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+    bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
   }
 
   exec_c_instr: coverpoint ins.current.insn[15:0] {
@@ -78,12 +80,14 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
     wildcard bins cfg_1111 = {54'b10011111????????????????????????????????????????_?????1};
   }
 
-  addr_in_consecutive_regions: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
-    bins inside_first_region   = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
-    bins straddle_first_second = {(`PMP_REGION_START + `g_tor - 2) & `PMP_ADDR_LOWMASK};
-    bins inside_second_region  = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};
-    bins straddle_second_third = {(`PMP_REGION_START + 2*`g_tor - 2) & `PMP_ADDR_LOWMASK};
-  }
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    addr_in_consecutive_regions: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+      bins inside_first_region   = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
+      bins straddle_first_second = {(`PMP_REGION_START + `g_tor - 2) & `PMP_ADDR_LOWMASK};
+      bins inside_second_region  = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};
+      bins straddle_second_third = {(`PMP_REGION_START + 2*`g_tor - 2) & `PMP_ADDR_LOWMASK};
+    }
+  `endif
 
   // Bins are relative to PMP_NAPOT_REGION_START (not PMP_REGION_START): the NAPOT region-under-test
   // sits g_napot-aligned to avoid swallowing the return-pad, same convention as PMPS's addr_offset_napot.
@@ -101,12 +105,14 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
     }
   `endif
 
-  addr_adjacent_to_pmp_boundary_tor: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
-    bins just_below_pmp = {(`PMP_REGION_START - 2) & `PMP_ADDR_LOWMASK};          // 2 bytes before region start (possible straddle)
-    bins at_start_pmp   = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};              // aligned to start of region
-    bins at_end_pmp     = {(`PMP_REGION_START + `g_tor - 2) & `PMP_ADDR_LOWMASK};   // 2 bytes before end → straddles out
-    bins just_above_pmp = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};       // just outside region
-  }
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    addr_adjacent_to_pmp_boundary_tor: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+      bins just_below_pmp = {(`PMP_REGION_START - 2) & `PMP_ADDR_LOWMASK};          // 2 bytes before region start (possible straddle)
+      bins at_start_pmp   = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};              // aligned to start of region
+      bins at_end_pmp     = {(`PMP_REGION_START + `g_tor - 2) & `PMP_ADDR_LOWMASK};   // 2 bytes before end → straddles out
+      bins just_above_pmp = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};       // just outside region
+    }
+  `endif
 
   // Bins are relative to PMP_NAPOT_REGION_START (not PMP_REGION_START): see addr_in_consecutive_regions_napot.
   addr_adjacent_to_pmp_boundary_napot: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
@@ -148,30 +154,32 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
     bins napot_lxwr = {8'b10011111}; // NAPOT region with LXWR 1111
   }
 
-  // First three consecutive standard tor regions.
-  // Region 0 -> LXWR 1111, Region 1 -> LXWR 1111, Region 2 -> LXWR 1000
-  cfg_consecutive_tor: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")) {
-    bins locked_tor_regions = {32'b10001000_10001111_10001111_00000000};
-  }
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    // First three consecutive standard tor regions.
+    // Region 0 -> LXWR 1111, Region 1 -> LXWR 1111, Region 2 -> LXWR 1000
+    cfg_consecutive_tor: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")) {
+      bins locked_tor_regions = {32'b10001000_10001111_10001111_00000000};
+    }
 
-  // PMP TOR regions configured as follows:
-  // - Region 0: start at 0, end at `PMP_REGION_START + `g` (pmpaddr0)
-  // - Region 1: start at `PMP_REGION_START + `g`, end at `PMP_REGION_START + 2*`g` (pmpaddr1)
-  // - Region 2: start at `PMP_REGION_START + 2*`g`, end at `PMP_REGION_START + 3*`g` (pmpaddr2)
-  pmpaddr_consecutive_tor: coverpoint ({((pmpaddr[3] & `PMP_PMPADDR_LOWMASK) == (((`PMP_REGION_START + 3*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) &&
-                                        ((pmpaddr[2] & `PMP_PMPADDR_LOWMASK) == (((`PMP_REGION_START + 2*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) &&
-                                        ((pmpaddr[1] & `PMP_PMPADDR_LOWMASK) == (((`PMP_REGION_START +   `g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) &&
-                                        ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK) == ((`PMP_REGION_START            >> 2) & `PMP_PMPADDR_LOWMASK))}) {
-    bins first_three_region = {1};
-  }
+    // PMP TOR regions configured as follows:
+    // - Region 0: start at 0, end at `PMP_REGION_START + `g` (pmpaddr0)
+    // - Region 1: start at `PMP_REGION_START + `g`, end at `PMP_REGION_START + 2*`g` (pmpaddr1)
+    // - Region 2: start at `PMP_REGION_START + 2*`g`, end at `PMP_REGION_START + 3*`g` (pmpaddr2)
+    pmpaddr_consecutive_tor: coverpoint ({((pmpaddr[3] & `PMP_PMPADDR_LOWMASK) == (((`PMP_REGION_START + 3*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) &&
+                                          ((pmpaddr[2] & `PMP_PMPADDR_LOWMASK) == (((`PMP_REGION_START + 2*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) &&
+                                          ((pmpaddr[1] & `PMP_PMPADDR_LOWMASK) == (((`PMP_REGION_START +   `g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) &&
+                                          ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK) == ((`PMP_REGION_START            >> 2) & `PMP_PMPADDR_LOWMASK))}) {
+      bins first_three_region = {1};
+    }
 
-  tor_region: coverpoint ({ ((pmpaddr[1] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START + `g_tor)>>2 & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK) == ((`PMP_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK)) }) {
-    bins address = {1};
-  }
+    tor_region: coverpoint ({ ((pmpaddr[1] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START + `g_tor)>>2 & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK) == ((`PMP_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK)) }) {
+      bins address = {1};
+    }
 
-  tor_setup: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[15:8]) {
-    bins tor_lxwr = { 8'b10001111}; // TOR region with LXWR 1111
-  }
+    tor_setup: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[15:8]) {
+      bins tor_lxwr = { 8'b10001111}; // TOR region with LXWR 1111
+    }
+  `endif
 
   `ifdef UDB_PMP_NA4_SUPPORTED
     cfg_consecutive_na4: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[23:0]) {
@@ -199,19 +207,21 @@ covergroup PMPZca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], 
     bins locked_off_regions = {24'b100001111000011110000111};
   }
 
-  cp_cfg_R: cross priv_mode_m, legal_lxwr, addr_in_region, read_c_instr {
-    ignore_bins ig1 = binsof(addr_in_region.at_region) && binsof(read_c_instr.c_lwsp);
+  cp_cfg_R: cross priv_mode_m, legal_lxwr, addr_in_napot_region, read_c_instr {
+    ignore_bins ig1 = binsof(addr_in_napot_region.at_region) && binsof(read_c_instr.c_lwsp);
     `ifdef UDB_MXLEN_64
-      ignore_bins ig2 = binsof(addr_in_region.at_region) && binsof(read_c_instr.c_ldsp);
+      ignore_bins ig2 = binsof(addr_in_napot_region.at_region) && binsof(read_c_instr.c_ldsp);
     `endif
   }
-  cp_cfg_W: cross priv_mode_m, legal_lxwr, addr_in_region, write_c_instr;
+  cp_cfg_W: cross priv_mode_m, legal_lxwr, addr_in_napot_region, write_c_instr;
 
   cp_misaligned_napot: cross priv_mode_m, cfg_consecutive_napot, pmpaddr_consecutive_napot, addr_in_consecutive_regions_napot, exec_c_instr;
   cp_cret_napot: cross priv_mode_m, napot_setup, napot_region, exec_c_instr, addr_adjacent_to_pmp_boundary_napot;
 
-  cp_misaligned_tor: cross priv_mode_m, cfg_consecutive_tor, pmpaddr_consecutive_tor, addr_in_consecutive_regions, exec_c_instr;
-  cp_cret_tor: cross priv_mode_m, tor_setup, tor_region, exec_c_instr, addr_adjacent_to_pmp_boundary_tor;
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    cp_misaligned_tor: cross priv_mode_m, cfg_consecutive_tor, pmpaddr_consecutive_tor, addr_in_consecutive_regions, exec_c_instr;
+    cp_cret_tor: cross priv_mode_m, tor_setup, tor_region, exec_c_instr, addr_adjacent_to_pmp_boundary_tor;
+  `endif
 
   `ifdef UDB_PMP_NA4_SUPPORTED
     cp_misaligned_na4: cross priv_mode_m, cfg_consecutive_na4, pmpaddr_consecutive_na4, addr_in_consecutive_na4, exec_c_instr;

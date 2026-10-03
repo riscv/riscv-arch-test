@@ -8,7 +8,7 @@
 """cp_memval coverpoint generator."""
 
 from testgen.coverpoints.registry import add_coverpoint_generator
-from testgen.data.edges import FLOAT_EDGES, MEMORY_EDGES
+from testgen.data.edges import FLOAT_EDGES, MEMORY_EDGES, get_general_edges
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
@@ -46,5 +46,29 @@ def make_memval(instr_name: str, instr_type: str, coverpoint: str, test_data: Te
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"{val:#x}", coverpoint)
         test_chunks.append(tc)
         return_testcase_registers(test_data, params)
+
+    return test_chunks
+
+
+@add_coverpoint_generator("cr_memval_rs2_edges")
+def make_memval_rs2_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """Generate the cross-product of memory and rs2 edge values."""
+    if instr_type != "A":
+        raise ValueError(f"cr_memval_rs2_edges only supports A-type instructions, got {instr_type} for {instr_name}")
+    memvals = {
+        "cr_memval_rs2_edges_word": MEMORY_EDGES.word,
+        "cr_memval_rs2_edges_double": MEMORY_EDGES.double,
+    }[coverpoint]
+    rs2vals = get_general_edges(test_data.xlen)
+    test_chunks: list[TestChunk] = []
+    for memval in memvals:
+        for rs2val in rs2vals:
+            # For AMOs, rs1val holds the value written to memory before the operation
+            params = generate_random_params(test_data, instr_type, exclude_regs=[0], rs1val=memval, rs2val=rs2val)
+            bin_name = f"memval={memval:#x}, rs2val={rs2val:#x}"
+            desc = f"{coverpoint} (memory value = {memval:#x}, rs2 = {test_data.xlen_format_str.format(rs2val)})"
+            tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+            test_chunks.append(tc)
+            return_testcase_registers(test_data, params)
 
     return test_chunks

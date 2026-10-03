@@ -2,3 +2,23 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
+  # Attempting to execute a load or load-reserved instruction that accesses a physical
+  # address within a PMP region without read permissions raises a load access-fault
+  # exception.
+  - name: pmp_load_fault
+    coverpoint: ["PMPZalrsc_cg/cp_cfg_RW"]
+
+  # Attempting to execute a store, store-conditional, AMO, or cache-block zero
+  # instruction which accesses a physical address within a PMP region without write
+  # permissions raises a store access-fault exception.
+  - name: pmp_store_fault
+    coverpoint: ["PMPZalrsc_cg/cp_cfg_RW"]
+
+  # No SC.W instruction shall retire unless it passes memory permission checks
+  - name: sc_retire_permission
+    # Covers SCs with and without a live reservation
+    coverpoint: ["PMPZalrsc_cg/cp_cfg_RW"]
+
+  # Load and load-reserved instructions generate load exceptions.
+  - name: mcause_exccode_ld_ldrsv
+    coverpoint: ["PMPZalrsc_cg/cp_cfg_RW"]

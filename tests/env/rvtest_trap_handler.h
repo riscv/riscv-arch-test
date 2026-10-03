@@ -2824,9 +2824,9 @@ excpt_\__MODE__\()hndlr_tbl:
         jr      T2
 
 \__MODE__\()clr_Lcof_int:                            // local counter overflow interrupt
-        li      T2, MIP_LCOFIP
+        LI(     T2, MIP_LCOFIP)
         csrc    CSR_XIP, T2                           // xIP.LCOFIP is writable in mip and sip
-        la      T2, resto_\__MODE__\()rtn
+        LA(     T2, resto_\__MODE__\()rtn)
         jr      T2
 
 .popsection                                          // end of .text.rvmodel section

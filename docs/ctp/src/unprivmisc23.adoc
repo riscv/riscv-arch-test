@@ -12,6 +12,7 @@ include::{testplansdir}/Zacas.adoc[]
 [[t-Zacas-coverpoint-definitions]]
 .Zacas Coverpoint Definitions
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Coverpoint|Bins|Definition
 3+^|Zacas Value Comparison Coverpoints

@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import check_store_canary, fill_store_canary, int_store_data, load_int_reg
+from testgen.asm.helpers import check_store_canary, load_int_reg, store_canary
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -33,24 +33,17 @@ def format_csh_type(
     # Mask off bottom bit to ensure alignment
     params.immval &= ~1
 
-    store_val, known_bytes = int_store_data(params.rs2, params.rs2val, params.rs1, params.immval, 2)
-
+    # rs1 points at the store target itself, so uimm selects the byte within it. The store lands at
+    # offset uimm of the checked area, and a misdecoded offset writes a different byte of it.
+    area_bytes = params.immval + 2
     setup = [
         load_int_reg("rs2", params.rs2, params.rs2val, test_data),
-        *fill_store_canary(
-            params.rs1,
-            params.temp_reg,
-            test_data,
-            area_bytes=2,
-            store_val=store_val,
-            store_bytes=known_bytes,
-        ),
-        f"addi x{params.rs1}, x{params.rs1}, {-params.immval} # adjust base address for offset",
+        f"LA(x{params.rs1}, scratch) # point base at scratch",
+        *store_canary(params.rs1, params.rs2, params.temp_reg, shift_bytes=params.immval),
     ]
 
     test = [f"{instr_name} x{params.rs2}, {params.immval}(x{params.rs1}) # perform store"]
     check = [
-        f"addi x{params.rs1}, x{params.rs1}, {params.immval} # restore base address",
-        *check_store_canary(params.rs1, params.temp_reg, test_data, area_bytes=2),
+        *check_store_canary(params.rs1, params.temp_reg, test_data, area_bytes=area_bytes),
     ]
     return (setup, test, check)

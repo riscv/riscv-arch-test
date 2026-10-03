@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import check_store_canary, fill_store_canary, int_store_data, load_int_reg
+from testgen.asm.helpers import check_store_canary, load_int_reg, store_canary
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -52,19 +52,12 @@ def format_css_type(
         if asm:
             setup.append(asm)
 
-    store_val, known_bytes = int_store_data(params.rs2, params.rs2val, 2, params.immval, alignment)
     setup.extend(
         [
             load_int_reg("rs2", params.rs2, params.rs2val, test_data),
-            *fill_store_canary(
-                2,
-                params.temp_reg,
-                test_data,
-                area_bytes=alignment,
-                store_val=store_val,
-                store_bytes=known_bytes,
-            ),
+            "LA(sp, scratch) # point base at scratch",
             f"addi sp, sp, {-params.immval}  # adjust for offset",
+            *store_canary(2, params.rs2, params.temp_reg, (params.immval,)),
         ]
     )
 

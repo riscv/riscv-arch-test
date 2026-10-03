@@ -7,7 +7,7 @@
 
 """cp_align coverpoint generator."""
 
-from testgen.asm.helpers import check_store_canary, fill_store_canary, load_int_reg, write_sigupd
+from testgen.asm.helpers import check_store_canary, load_int_reg, store_area_offsets, store_canary, write_sigupd
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
@@ -61,19 +61,17 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
             assert params.immval is not None, "immval must be provided for S-type instructions"
 
             # Stores reach byte 7 of scratch, so fill and check 8 bytes
-            store_bytes = {"sb": 1, "sh": 2, "sw": 4, "sd": 8}[instr_name]
             tc.code.extend(
                 [
                     f"# Testcase: {coverpoint} (imm[2:0] = {params.immval:03b})",
                     load_int_reg("rs2", params.rs2, params.rs2val, test_data),
-                    *fill_store_canary(
+                    f"LA(x{params.rs1}, scratch) # point base at scratch",
+                    *store_canary(
                         params.rs1,
+                        params.rs2,
                         params.temp_reg,
-                        test_data,
-                        area_bytes=8,
-                        store_val=params.rs2val,
-                        store_bytes=store_bytes,
-                        offset=alignment,
+                        store_area_offsets(8, test_data),
+                        shift_bytes=alignment % (test_data.xlen // 8),
                     ),
                     test_data.add_testcase(f"b{alignment}", coverpoint),
                     f"{instr_name} x{params.rs2}, {params.immval}(x{params.rs1}) # perform store",

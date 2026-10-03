@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import FP_STORE_AREA_BYTES, check_store_canary, fill_store_canary, load_float_reg, write_sigupd
+from testgen.asm.helpers import check_store_canary, fp_store_area_bytes, fp_store_canary, load_float_reg, write_sigupd
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -43,6 +43,7 @@ def format_cfss_type(
     params.immval = params.immval & ~(alignment - 1)
     # Wrap into valid range
     params.immval = params.immval % (max_val + alignment)
+    area_bytes = fp_store_area_bytes(alignment, test_data)
 
     setup: list[str] = ["fsflagsi 0b00000 # clear all fflags"]
     asm = test_data.int_regs.consume_registers([2])  # sp (x2) is used as the base pointer for CSS instructions
@@ -51,11 +52,12 @@ def format_cfss_type(
     setup.extend(
         [
             load_float_reg("fs2", params.fs2, params.fs2val, test_data),
-            *fill_store_canary(
+            "LA(sp, scratch) # point base at scratch",
+            *fp_store_canary(
                 2,
                 params.temp_reg,
                 test_data,
-                area_bytes=FP_STORE_AREA_BYTES,
+                area_bytes=area_bytes,
                 store_val=params.fs2val,
                 store_bytes=alignment,
             ),
@@ -67,7 +69,7 @@ def format_cfss_type(
 
     check = [
         f"addi sp, sp, {params.immval} # remove offset from sp",
-        *check_store_canary(2, params.temp_reg, test_data, area_bytes=FP_STORE_AREA_BYTES),
+        *check_store_canary(2, params.temp_reg, test_data, area_bytes=area_bytes),
         write_sigupd(None, test_data, "fflags"),
     ]
 

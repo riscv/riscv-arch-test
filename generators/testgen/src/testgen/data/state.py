@@ -51,6 +51,7 @@ class TestData:
         self._vec_regs = VectorRegisterFile()
         self._test_count = 0
         self._current_testcase_label = ""
+        self._current_coverpoint = ""
         self._fp_load_size: Literal["single", "double", "half", "quad"] | None = None
         self.test_chunk: TestChunk | None = None
         self._vector_labels: dict[str, tuple[list[int], int]] = {}
@@ -109,6 +110,11 @@ class TestData:
     def current_testcase_label(self) -> str:
         """Get the current testcase label."""
         return self._current_testcase_label
+
+    @property
+    def current_coverpoint(self) -> str:
+        """Get the coverpoint of the current testcase."""
+        return self._current_coverpoint
 
     # Read-only properties delegated to config
     @property
@@ -228,6 +234,7 @@ class TestData:
 
         # Return label
         self._current_testcase_label = label
+        self._current_coverpoint = coverpoint
         return f"{label}:"
 
     def destroy(self) -> None:

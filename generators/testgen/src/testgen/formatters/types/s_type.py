@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import check_store_canary, fill_store_canary, int_store_data, load_int_reg
+from testgen.asm.helpers import STORE_BYTES, check_store_canary, load_int_reg, store_canary
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -32,20 +32,10 @@ def format_s_type(
         test_data.int_regs.return_register(params.rs1)
         params.rs1 = test_data.int_regs.get_register(exclude_regs=[0])
 
-    store_bytes = {"sb": 1, "sh": 2, "sw": 4, "sd": 8}[instr_name]
-    store_val, known_bytes = int_store_data(params.rs2, params.rs2val, params.rs1, params.immval, store_bytes)
-
-    # load test value and fill the store target at scratch with a canary
+    store_bytes = STORE_BYTES[instr_name]
     setup = [
         load_int_reg("rs2", params.rs2, params.rs2val, test_data),
-        *fill_store_canary(
-            params.rs1,
-            params.temp_reg,
-            test_data,
-            area_bytes=store_bytes,
-            store_val=store_val,
-            store_bytes=known_bytes,
-        ),
+        f"LA(x{params.rs1}, scratch) # point base at scratch",
     ]
 
     # Handle special case where offset is -2048
@@ -58,6 +48,7 @@ def format_s_type(
         )
     else:
         setup.append(f"addi x{params.rs1}, x{params.rs1}, {-params.immval} # adjust base address for offset")
+    setup.extend(store_canary(params.rs1, params.rs2, params.temp_reg, (params.immval,)))
 
     test = [f"{instr_name} x{params.rs2}, {params.immval}(x{params.rs1}) # perform store"]
     check = [

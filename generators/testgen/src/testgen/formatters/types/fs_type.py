@@ -5,7 +5,14 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import FP_STORE_AREA_BYTES, check_store_canary, fill_store_canary, load_float_reg, write_sigupd
+from testgen.asm.helpers import (
+    STORE_BYTES,
+    check_store_canary,
+    fp_store_area_bytes,
+    fp_store_canary,
+    load_float_reg,
+    write_sigupd,
+)
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -27,7 +34,8 @@ def format_fs_type(
     assert params.temp_reg is not None, "temp_reg must be provided for FS-type instructions"
     assert params.immval is not None, "immval must be provided for FS-type instructions"
 
-    store_bytes = {"fsh": 2, "fsw": 4, "fsd": 8, "fsq": 16}[instr_name]
+    store_bytes = STORE_BYTES[instr_name]
+    area_bytes = fp_store_area_bytes(store_bytes, test_data)
 
     # Ensure rs1 is not x0 (base address)
     if params.rs1 == 0:
@@ -38,11 +46,12 @@ def format_fs_type(
     setup = [
         load_float_reg("fs2", params.fs2, params.fs2val, test_data, params.fp_load_type),
         "fsflagsi 0b00000 # clear all fflags",
-        *fill_store_canary(
+        f"LA(x{params.rs1}, scratch) # point base at scratch",
+        *fp_store_canary(
             params.rs1,
             params.temp_reg,
             test_data,
-            area_bytes=FP_STORE_AREA_BYTES,
+            area_bytes=area_bytes,
             store_val=params.fs2val,
             store_bytes=store_bytes,
         ),
@@ -62,7 +71,7 @@ def format_fs_type(
     test = [f"{instr_name} f{params.fs2}, {params.immval}(x{params.rs1}) # perform store"]
     check = [
         f"addi x{params.rs1}, x{params.rs1}, {params.immval} # restore base address",
-        *check_store_canary(params.rs1, params.temp_reg, test_data, area_bytes=FP_STORE_AREA_BYTES),
+        *check_store_canary(params.rs1, params.temp_reg, test_data, area_bytes=area_bytes),
         write_sigupd(None, test_data, "fflags"),
     ]
     return (setup, test, check)

@@ -12,8 +12,7 @@
 # Sdtrig* not yet implemented in Sail (https://github.com/riscv/sail-riscv/issues/222)
 # Sscofpmf* will be added back in CI once Sail increments HPM counters
 #   (https://github.com/riscv/sail-riscv/issues/1733); whisper counts events, so every
-#   result that depends on a real overflow diverges from the Sail reference. On RV32,
-#   whisper also leaves mhpmevent3h..31h read-only zero, so OF and xINH cannot be set there.
+#   result that depends on a real overflow diverges from the Sail reference.
 # Svnapot: Whisper accepts N=1 on superpage leaf PTEs instead of page faulting (https://github.com/tenstorrent/whisper/issues/98)
 # Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)
 ci_enabled: true

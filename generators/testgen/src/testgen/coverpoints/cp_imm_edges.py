@@ -14,15 +14,11 @@ from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
 from testgen.instructions.params import generate_random_params
-from testgen.instructions.vector_params import generate_random_vector_params
 
 
 @add_coverpoint_generator("cp_imm_edges")
 def make_cp_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
     """Generate tests for immediate edge values."""
-
-    is_vector = False
-
     if coverpoint == "cp_imm_edges":
         edges_imm = IMMEDIATE_EDGES.imm_12bit
     elif coverpoint.endswith("_20bit"):
@@ -31,19 +27,13 @@ def make_cp_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_da
         edges_imm = IMMEDIATE_EDGES.imm_6bit
     elif coverpoint.endswith("_6bit_n0"):
         edges_imm = IMMEDIATE_EDGES.imm_6bit[1:]  # exclude imm=0
-    elif coverpoint.endswith("_6bit_v"):
-        edges_imm = IMMEDIATE_EDGES.imm_6bit_u
-        is_vector = True
     else:
         raise ValueError(f"Unknown cp_imm_edges coverpoint variant: {coverpoint} for {instr_name}")
 
     test_chunks: list[TestChunk] = []
 
     for edge_val in edges_imm:
-        if is_vector:
-            params = generate_random_vector_params(test_data, instr_name, instr_type, lmul=1, immval=edge_val)
-        else:
-            params = generate_random_params(test_data, instr_type, immval=edge_val, exclude_regs=[0])
+        params = generate_random_params(test_data, instr_type, immval=edge_val, exclude_regs=[0])
         desc = f"{coverpoint} (imm = {edge_val})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"{edge_val:#x}", coverpoint)
         test_chunks.append(tc)

@@ -39,7 +39,7 @@ COVERGROUP = "SmnpmS_cg"
 @add_priv_test_generator(
     "SmnpmS",
     required_extensions=["Smnpm", "S"],
-    march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
+    march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz", "Zicfiss"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_smnpms(test_data: TestData) -> list[TestChunk]:

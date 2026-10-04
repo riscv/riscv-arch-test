@@ -8,6 +8,7 @@ The basic coverpoints are defined in <<t-unprivileged-coverpoints>>. Modified co
 [[t-float-modified-coverpoints]]
 .Floating-Point Modified Coverpoint Definitions
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Modified Coverpoint|Bins|Definition
 |cp_frm_{2, 3, 4}|6|Rounding modes for instructions with 2/3/4 arguments
@@ -50,6 +51,8 @@ include::norm/Zfh_norm_rules.adoc[]
 
 
 ===== ZfhD
+
+include::{testplansdir}/ZfhD.adoc[]
 
 include::norm/ZfhD_norm_rules.adoc[]
 
@@ -146,10 +149,6 @@ skipped when the extension they need (D, Zfh or Zfhmin) is absent.
 |cp_fma_exact_zero_{s,d,h}|4*5 each|Each FMA whose exact product (1 + 2^−k^)(1 − 2^−k^) cancels the addend, under each static rounding mode: +0, or −0 under RDN.
 |===
 
-[[t-ZicsrF-coverpoints]]
-.ZicsrF Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1673314448#gid=1673314448[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/ZicsrF.adoc[]
 
 include::norm/ZicsrF_norm_rules.adoc[]

@@ -202,6 +202,7 @@
 #define TSBI_GOTO_VSMODE    0x00000004
 #define TSBI_GOTO_VUMODE    0x00000005
 #define TSBI_ECALL_TEST     0x00000073
+#define TSBI_SFENCE_VMA     0x12000073           // sfence.vma x0, x0: flush address-translation caches
 #define TSBI_LW             0x0005a503
 #define TSBI_LWP4           0x0045a503
 #define TSBI_LD             0x0005b503
@@ -756,6 +757,16 @@
   .option pop
 .endm
 
+// Execute sfence.vma x0, x0 via T-SBI, for a U-mode test that has set satp through
+// TSBI_CSR_WRITE and cannot execute sfence.vma itself. Runs in the S-mode handler when
+// one exists, otherwise in the M-mode handler. Clobbers a0.
+.macro RVTEST_TSBI_SFENCE_VMA
+  .option push
+  .option norvc
+  li   a0, TSBI_SFENCE_VMA
+  ecall
+  .option pop
+.endm                                         // trap to handler; handler executes sfence.vma
 .macro RVTEST_TSBI_LW
   .option push
   .option norvc                                  // ensure consistent code size
@@ -1856,6 +1867,8 @@ tsbi_\__MODE__\()dispatch:
         andi    T2, a0, 0x7F                       // T2 = a0[6:0]
         LI(     T4, 0x73)                           // T4 = SYSTEM opcode
         bne     T2, T4, tsbi_\__MODE__\()reserved   // not SYSTEM -> reserved
+        LI(     T4, TSBI_SFENCE_VMA)                // sfence.vma is legal in S-mode: execute it locally
+        beq     a0, T4, tsbi_\__MODE__\()instr_dispatch
         srli    T2, a0, 12                          // T2 = a0[14:12]
         andi    T2, T2, 0x7                         // T2 = funct3
         beqz    T2, tsbi_\__MODE__\()reserved       // funct3==0 -> not CSR -> reserved
@@ -1987,7 +2000,7 @@ tsbi_\__MODE__\()csr_access:
         bne     T2, T4, 11f                         // S/U CSR -> handle locally below
         j       tsbi_\__MODE__\()forward_to_m       // M-mode CSR -> forward to the M-mode handler
 11:
-        // S-mode or U-mode CSR: find and execute the approved instruction locally.
+        // S-mode or U-mode CSR, or sfence.vma: find and execute the approved instruction locally.
         j       tsbi_\__MODE__\()instr_dispatch
 
 .endif  // --------- END S-MODE T-SBI DISPATCH ---------
@@ -2188,6 +2201,10 @@ tsbi_instr_table:
                 sd a2, 0(a1)
                 ret
         #endif  // RV64
+        #ifdef S_SUPPORTED
+                sfence.vma                       // TSBI_SFENCE_VMA
+                ret
+        #endif  // S_SUPPORTED
         .word 0 // sentinel to mark end of table
 
 .endif

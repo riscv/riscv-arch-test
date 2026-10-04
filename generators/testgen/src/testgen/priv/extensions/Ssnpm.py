@@ -11,6 +11,7 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
     EDGE_CASES,
+    IMAGE_TABLES,
     MODE_GUARDS,
     MODES,
     PMM_CONFIGS,
@@ -23,11 +24,14 @@ from testgen.priv.extensions.ZpmCommon import (
     generate_instruction_sweep_tests,
     generate_sign_extension_tests,
     generate_xlen_change_tests,
+    generate_zicfiss_tests,
     map_pm_hi_page,
     satp_clear,
     satp_setup,
     set_mxr,
     set_pmm_field,
+    set_sse,
+    ss_data_page,
 )
 from testgen.priv.registry import add_priv_test_generator
 
@@ -59,7 +63,8 @@ def make_ssnpm(test_data: TestData) -> list[TestChunk]:
                         [
                             *data_page("pm_hi_page"),
                             *data_slvl_tables(mode),
-                            *data_slvl_tables(mode, "pm_img_slvl{}_pg_tbl"),
+                            *data_slvl_tables(mode, IMAGE_TABLES),
+                            *ss_data_page(),
                         ]
                     )
                 if guard:
@@ -90,10 +95,12 @@ def _ssnpm_chunk(
     if not is_bare:
         lines.extend(
             [
+                *set_sse("menvcfg", True, test_data, tsbi=True),
+                *set_sse("senvcfg", True, test_data),
                 "",
                 *build_4k_image_map(
                     mode,
-                    "pm_img_slvl{}_pg_tbl",
+                    IMAGE_TABLES,
                     [
                         ("pm_utext_begin", "pm_utext_end"),
                         ("pm_lo_page", 4096),
@@ -101,6 +108,7 @@ def _ssnpm_chunk(
                         ("rvtest_data_begin", "end_signature"),
                     ],
                     test_data,
+                    ss_page_user=True,
                 ),
                 "",
                 *map_pm_hi_page(mode, user=True),
@@ -121,6 +129,9 @@ def _ssnpm_chunk(
             *generate_instruction_sweep_tests(prefix, test_data, COVERGROUP, uppers),
         ]
     )
+    # A shadow-stack instruction always faults with satp Bare, so pointer masking has nothing to act on.
+    if not is_bare:
+        lines.extend(generate_zicfiss_tests(prefix, test_data, COVERGROUP, uppers))
     if split == EDGE_CASES:
         if not is_bare:
             lines.extend(generate_sign_extension_tests(prefix, mode, test_data, COVERGROUP))
@@ -157,10 +168,11 @@ def _ssnpm_chunk(
         [
             *set_pmm_field("senvcfg", 0b00, 0, test_data),
             *set_mxr(False, test_data),
-            ".p2align 12",
-            "pm_utext_end:",
         ]
     )
+    if not is_bare:
+        lines.extend([*set_sse("senvcfg", False, test_data), *set_sse("menvcfg", False, test_data, tsbi=True)])
+    lines.extend([".p2align 12", "pm_utext_end:"])
     if guard:
         lines.append(f"#endif // {guard}")
     return lines

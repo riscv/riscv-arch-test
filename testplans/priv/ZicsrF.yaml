@@ -37,9 +37,17 @@ coverpoints:
       Writing to the CSR field
       (WARL)
     description: "Reset fflags to 0, then execute following instructions: 1/0 (DivZero), 1/3 (Inexact), largest + largest (overflow), smallest * smallest (underflow), infinity - infinity (invalid)"
-  - name: cp_underflow_after_rounding
+  - name: |-
+      cp_underflow_after_rounding_fma_s
+      cp_underflow_after_rounding_fmul_s
+      cp_underflow_after_rounding_fma_d
+      cp_underflow_after_rounding_fmul_d
+      cp_underflow_after_rounding_fcvt_s_d
+      cp_underflow_after_rounding_fma_h
+      cp_underflow_after_rounding_fmul_h
+      cp_underflow_after_rounding_fcvt_h_s
     description: |-
-      Test each of the following floating-point operations does not set the underflow flag, even though it would if underflow were detected before rounding.  Note that these test cases are obtained from TestFloat.
+      Run each of the following TestFloat operand sets under all five static rounding modes and check the result and fflags.  Each result is tiny before rounding.  Depending on the mode, it is not tiny after rounding (UF = 0), or it is tiny after rounding even though the delivered result is +/-2^emin (UF = 1).  The rounding mode and result shown are from TestFloat.
 
       fma.s.rdn 3F00FBFF x 80000001 + 807FFFFF = 80800000
       fmul.s.rup 00800001 x 3F7FFFFE = 00800000
@@ -50,20 +58,66 @@ coverpoints:
       fmul.rdn 0010000000000001 x BFEFFFFFFFFFFFFE = 8010000000000000
       fcvt.s.d.rne B80FFFFFFFFDFEFF = 80800000
 
-      if Q supported:
+      if Q supported (not generated, because Sail does not support Q):
       fma.q.rdn 3F9800000000000001FFFFFFFF7FFFFE x 00000000000000000000000000000001 + 80010000000000000000000000000000 = 80010000000000000000000000000000
       fmul.q.rne 0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF x 3FFF0000000000000000000000000001 = 00010000000000000000000000000000
       fcvt.s.q.rup 3F80FFFFFFFE0000000000FFFFFFFFFF = 00800000
 
       If Zfh supported:
       fma.h.rne 0BC7 x 03FF + 8400 = 8400
-      fmul.h.rup 0401 x 3BF8 = 0400
-      fcvt.h.s.rne 387FF000 = ***
+      fmul.h.rup 0401 x 3BFE = 0400
+
+      If Zfhmin supported:
+      fcvt.h.s.rne 387FF000 = 0400
 
       Notes:
       sqrt, add, sub cannot cause underflow so are not tested
-      TODO: Adding division underflow tests would be good
       No Zfa tests cause underflow
+    bins: 8 operand sets * 5 rounding modes
+  - name: |-
+      cp_underflow_after_rounding_fmul_emin_s
+      cp_underflow_after_rounding_fmul_emin_d
+      cp_underflow_after_rounding_fmul_emin_h
+    description: |-
+      2^emin x (1 - 2^-p) under all five static rounding modes.  The result is tiny after rounding in every mode, so UF = 1 even where it rounds to +/-2^emin.
+
+      fmul.s 00800000 x 3F7FFFFF
+      if D supported: fmul.d 8010000000000000 x 3FEFFFFFFFFFFFFF
+      if Zfh supported: fmul.h 0400 x 3BFF
+    bins: 3 precisions * 5 rounding modes
+  - name: |-
+      cp_underflow_after_rounding_fdiv_s
+      cp_underflow_after_rounding_fdiv_d
+      cp_underflow_after_rounding_fdiv_h
+    description: |-
+      (2 - 2^-(p-2)) x 2^emin / (2 - 2^-(p-1)) under all five static rounding modes.  The quotient is just below 2^emin and rounds to +/-2^emin only when rounding away from zero, with UF = 1.  fdiv has no case that is tiny before rounding but not after.
+
+      fdiv.s 00FFFFFE / 3FFFFFFF
+      if D supported: fdiv.d 801FFFFFFFFFFFFE / 3FFFFFFFFFFFFFFF
+      if Zfh supported: fdiv.h 07FE / 3FFF
+    bins: 3 precisions * 5 rounding modes
+  - name: cp_frm_reserved_static_rm
+    description: |-
+      Set frm to each reserved value (5, 6, 7) and execute three fadd.s with each static rounding mode.  Only dynamic rounding depends on frm, so none of these trap.  The three sums together give different results in every rounding mode:
+      1 + 1.5*2^-23 (a tie between 1 + 2^-23 and 1 + 2^-22)
+      -1 - 2^-24 (a tie between -1 and -1 - 2^-23)
+      1 + 2^-25 (below half an ulp)
+    bins: 3 frm * 5 rounding modes * 3 sums
+  - name: |-
+      cp_fma_inf_zero_s
+      cp_fma_inf_zero_d
+      cp_fma_inf_zero_h
+    description: |-
+      fmadd, fmsub, fnmadd and fnmsub with multiplicands +inf and +0 and a quiet NaN, signaling NaN or 1.0 addend.  The result is the canonical NaN with NV set, even for the quiet NaN addend.
+      D and H cases run if D or Zfh is supported.
+    bins: 4 instructions * 3 addends per precision
+  - name: |-
+      cp_fma_exact_zero_s
+      cp_fma_exact_zero_d
+      cp_fma_exact_zero_h
+    description: |-
+      fmadd, fmsub, fnmadd and fnmsub whose exact product (1 + 2^-k)(1 - 2^-k) cancels the addend, under all five static rounding modes.  The result is +0, or -0 under RDN.  fnmadd and fnmsub negate the product, not the sum.
+      D and H cases run if D or Zfh is supported.
+    bins: 4 instructions * 5 rounding modes per precision
   - heading: These are unprivileged tests that should never trap.  Suitable for RVI20 and other systems with no machine mode.
   - heading: Tests run in M mode with mstatus.FS = 11 if Sm is supported, or else mode is not set
-  - heading: fdiv.h.rne 07FF 4000 = 03FF

@@ -134,20 +134,7 @@ rounding mode. The tininess and exact-zero cases run under all five static
 rounding modes. Every case checks the result and fflags. The fused
 multiply-add cases are in a separate test file (`ZicsrF_fma`). Cases are
 skipped when the extension they need (D, Zfh or Zfhmin) is absent.
-<<t-ZicsrF-directed-coverpoints>> lists them.
-
-[[t-ZicsrF-directed-coverpoints]]
-.ZicsrF Directed Floating-Point Coverpoints
-[cols="3,1,10" options=header]
-|===
-|Coverpoint|Bins|Definition
-|cp_underflow_after_rounding_{fma,fmul}_{s,d,h}, _fcvt_s_d, _fcvt_h_s|8*5|TestFloat operand sets that are tiny before rounding, under each static rounding mode. In some modes the result is not tiny after rounding (UF = 0); in others it is tiny after rounding although the delivered result is ±2^emin^ (UF = 1).
-|cp_underflow_after_rounding_fmul_emin_{s,d,h}|3*5|2^emin^ × (1 − 2^−p^): tiny after rounding in every mode, so UF = 1 even where the result rounds to ±2^emin^.
-|cp_underflow_after_rounding_fdiv_{s,d,h}|3*5|A quotient just below 2^emin^ that rounds to ±2^emin^ only when rounding away from zero, with UF = 1. fdiv has no case that is tiny before rounding but not after.
-|cp_frm_reserved_static_rm|3*5*3|frm = 5, 6, 7 with each static rounding mode and three fadd.s whose results together differ in every mode.
-|cp_fma_inf_zero_{s,d,h}|4*3 each|fmadd, fmsub, fnmadd, fnmsub with multiplicands +∞ and +0 and a quiet NaN, signaling NaN or 1.0 addend: canonical NaN with NV.
-|cp_fma_exact_zero_{s,d,h}|4*5 each|Each FMA whose exact product (1 + 2^−k^)(1 − 2^−k^) cancels the addend, under each static rounding mode: +0, or −0 under RDN.
-|===
+<<t-ZicsrF-coverpoints>> lists them.
 
 include::{testplansdir}/priv/ZicsrF.adoc[]
 

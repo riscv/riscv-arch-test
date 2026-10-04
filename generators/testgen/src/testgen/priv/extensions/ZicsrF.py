@@ -310,7 +310,7 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
     lines.append(
         comment_banner(
             "cp_underflow_after_rounding_*",
-            "Check underflow flag is determined after rounding (f-st-ext.adoc:188).\n"
+            "Check underflow flag is determined after rounding (F extension, Subnormal Arithmetic).\n"
             "Each operand set is run under all five static rounding modes. Depending on the mode, the result\n"
             "is tiny before rounding but not after (UF = 0), or tiny after rounding even when the delivered\n"
             "result is +/-2^emin (UF = 1).\n"
@@ -426,7 +426,6 @@ def _generate_frm_reserved_static_rm(test_data: TestData) -> list[str]:
 
 def _fma_cases(
     test_data: TestData,
-    p: str,
     load_type: Literal["single", "double", "half"],
     *,
     inf: int,
@@ -438,10 +437,13 @@ def _fma_cases(
     product: int,
     neg_product: int,
 ) -> list[str]:
-    """FMA special cases in precision p, given that precision's encodings.
+    """FMA special cases in one precision.
 
-    a = 1 + 2^-k and b = 1 - 2^-k, so a*b = product = 1 - 2^-2k is exact; neg_product is -product.
+    load_type names the precision. inf, qnan, snan and one are that precision's encodings of +inf, a quiet NaN,
+    a signaling NaN and 1.0. a = 1 + 2^-k and b = 1 - 2^-k, so a*b = product = 1 - 2^-2k is exact;
+    neg_product is -product.
     """
+    p = load_type[0]  # instruction suffix: s, d or h
     covergroup = "ZicsrF_cg"
     ops = ("fmadd", "fmsub", "fnmadd", "fnmsub")
     fs1, fs2, fs3, fd = test_data.float_regs.get_registers(4)
@@ -451,7 +453,8 @@ def _fma_cases(
         comment_banner(
             coverpoint,
             "Each FMA with multiplicands +inf and +0 and a quiet NaN, signaling NaN or finite addend.\n"
-            "The result is the canonical NaN and NV is set, even for a quiet NaN addend (f-st-ext.adoc:310-312).",
+            "The result is the canonical NaN and NV is set, even for a quiet NaN addend (F extension,\n"
+            "Single-Precision Floating-Point Computational Instructions).",
         )
     ]
     for op in ops:
@@ -475,8 +478,8 @@ def _fma_cases(
             coverpoint,
             "Each FMA with (1 + 2^-k)(1 - 2^-k) = 1 - 2^-2k exact, and an addend that cancels the product.\n"
             "An exact zero sum is +0 in every rounding mode except RDN, where it is -0 (IEEE 754-2008 6.3).\n"
-            "fnmadd and fnmsub negate the product, not the sum, so they follow the same rule\n"
-            "(f-st-ext.adoc:284-290).",
+            "fnmadd and fnmsub negate the product, not the sum, so they follow the same rule (F extension,\n"
+            "Single-Precision Floating-Point Computational Instructions).",
         )
     )
     for op in ops:
@@ -509,7 +512,6 @@ def _generate_fma(test_data: TestData) -> list[str]:
     """FMA special cases in single, double and half precision."""
     lines = _fma_cases(
         test_data,
-        "s",
         "single",
         inf=0x7F800000,
         qnan=0x7FC00000,
@@ -526,7 +528,6 @@ def _generate_fma(test_data: TestData) -> list[str]:
             "defined(D_SUPPORTED)",
             lambda: _fma_cases(
                 test_data,
-                "d",
                 "double",
                 inf=0x7FF0000000000000,
                 qnan=0x7FF8000000000000,
@@ -545,7 +546,6 @@ def _generate_fma(test_data: TestData) -> list[str]:
             "defined(ZFH_SUPPORTED)",
             lambda: _fma_cases(
                 test_data,
-                "h",
                 "half",
                 inf=0x7C00,
                 qnan=0x7E00,

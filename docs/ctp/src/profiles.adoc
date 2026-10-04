@@ -222,6 +222,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 8+^|Miscellaneous RV{A/B}23 Extensions
 |Ss1p13|Supervisor 1p13|<<t-Ss1p13-coverpoints>>||||x|x
 |Ssnpm|Pointer Masking|<<t-Ssnpm-coverpoints>>||||x|x
+|SsnpmSm|Machine-Mode Pointer Masking with MPRV|<<t-SsnpmSm-coverpoints>>||||x|x
 |SsnpmH|Hypervisor Pointer Masking|<<t-SsnpmH-coverpoints>>|||||
 |Zacas|Atomic Compare-And-Swap|<<t-Zacas-coverpoints>>||||o|o
 |Zabha|Subword Atomics|<<t-Zabha-coverpoints>>||||o|o
@@ -272,7 +273,9 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Ssdbltrp|Supervisor Double Trap|<<t-Ssdbltrp-coverpoints>>|||||
 |SsdbltrpH|Hypervisor Double Trap|<<t-SsdbltrpH-coverpoints>>|||||
 |SmnpmS|Machine Pointer Masking with S-mode|<<t-SmnpmS-coverpoints>>|||||
+|SmnpmSSm|Machine Pointer Masking with S-mode and MPRV|<<t-SmnpmSSm-coverpoints>>|||||
 |SmnpmU|Machine Pointer Masking without S-mode|<<t-SmnpmU-coverpoints>>|||||
+|SmnpmUSm|Machine Pointer Masking without S-mode and with MPRV|<<t-SmnpmUSm-coverpoints>>|||||
 |Smmpm|Pointer Masking|<<t-Smmpm-coverpoints>>|||||
 |SmnpmH|Hypervisor Pointer Masking|<<t-SmnpmH-coverpoints>>|||||
 |Smctr|Control Transfer Records|<<t-Smctr-coverpoints>>|||||

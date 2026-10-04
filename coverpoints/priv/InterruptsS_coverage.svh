@@ -65,7 +65,7 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     `endif
 
     // mideleg delegates every S-level interrupt, as it does from boot. Bits outside INTS_NOH_MASK are
-    // don't care: M-level interrupts cannot be delegated and H hardwires the VS bits to 1.
+    // don't care: the tests never delegate M-level interrupts, and H hardwires the VS bits to 1.
     mideleg_s_ones: coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "mideleg")[15:0] & `INTS_NOH_MASK) == `INTS_NOH_MASK) {
         bins ones = {1'b1};
     }
@@ -265,8 +265,10 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         // records those. What S can raise itself: SSI and LCOFI through sip, STI through stimecmp
         // when Sstc is implemented, and SSI and SEI through the platform interrupt controller.
         // U has no sip or stimecmp access, so it reaches only the interrupt controller.
+        // U cannot reach stimecmp or mip.STIP, so U-mode STI is raised through T-SBI (cp_trigger_tsbi)
         ignore_bins u_sti_tsbi = binsof(priv_mode_interrupts.U_mode) && binsof(sip_walking.stip);
         `ifdef SSCOFPMF_SUPPORTED
+            // U has no sip, so U-mode LCOFI is raised through T-SBI and recorded by cp_trigger_tsbi
             ignore_bins u_lcofi_tsbi = binsof(priv_mode_interrupts.U_mode) && binsof(sip_walking.lcofip);
         `endif
         `ifndef SSTC_SUPPORTED
@@ -302,9 +304,9 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     cp_enable_one:              cross priv_mode_interrupts, mideleg_s_ones, sstatus_sie_one, walking_sie_one, sip_matches_sie_one {
         // STI and LCOFI are raised through T-SBI by RVTEST_SET_STIME_INT and RVTEST_SET_LCOFI_INT,
         // so with their enable set they are taken on the xret and covered by cp_enable_one_tsbi
-        ignore_bins sti_tsbi = binsof(walking_sie_one.stie);
+        ignore_bins sti_tsbi = binsof(walking_sie_one.stie); // taken on the T-SBI xret: cp_enable_one_tsbi
         `ifdef SSCOFPMF_SUPPORTED
-            ignore_bins lcofi_tsbi = binsof(walking_sie_one.lcofie);
+            ignore_bins lcofi_tsbi = binsof(walking_sie_one.lcofie); // taken on the T-SBI xret: cp_enable_one_tsbi
         `endif
     }
     // sstatus_sie_on_return_one also keeps out the U-mode path's mret into the S handler, which
@@ -321,10 +323,10 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     // priority interrupt is taken on that csrw. U writes sie through T-SBI, so it is taken on the
     // sret out of the S handler and recorded by the _tsbi crosses.
     cp_priority_sip:            cross priv_mode_interrupts, sstatus_sie_one, mideleg_s_ones, sie_ones, sip_pairs {
-        ignore_bins tsbi = binsof(priv_mode_interrupts.U_mode);
+        ignore_bins tsbi = binsof(priv_mode_interrupts.U_mode); // U writes sie through T-SBI: cp_priority_sip_tsbi
     }
     cp_priority_sie:            cross priv_mode_interrupts, sstatus_sie_one, mideleg_s_ones, sip_all_ones, sie_pairs {
-        ignore_bins tsbi = binsof(priv_mode_interrupts.U_mode);
+        ignore_bins tsbi = binsof(priv_mode_interrupts.U_mode); // U writes sie through T-SBI: cp_priority_sie_tsbi
     }
     cp_priority_sip_tsbi:       cross tsbi_return_u, mideleg_s_ones, sie_ones, sip_pairs;
     cp_priority_sie_tsbi:       cross tsbi_return_u, mideleg_s_ones, sip_all_ones, sie_pairs;

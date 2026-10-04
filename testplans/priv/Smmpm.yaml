@@ -5,6 +5,7 @@ notes: |
   Smmpm is a machine-level extension that provides pointer masking for M-mode.
   Exactly same coverpoints as Ssnpm except delete cp_pmm_uxl_clear, add the following, and run in M-mode:
   - all addresses are physical, all tests run in Bare/ M-mode .
+  - drop cp_pmlen_zicfiss_amo and cp_pmlen_zicfiss_ssp because Zicfiss cannot be activated in M-mode: SSAMOSWAP always raises a store/AMO access fault, and SSPUSH and SSPOPCHK revert to their Zimop/Zcmop behavior and do not access memory.
   the JALR cross is kept separate from MXR and not guarded by S_SUPPORTED , since implicit fetch must be verified as never masked regardless of whether S-mode (and hence MXR) is implemented.
 coverpoints:
   - heading: "- For cp_hardware_csr_* , traps are being handled in M mode and mtval will be checked."

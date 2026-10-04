@@ -26,9 +26,8 @@ normative_rule_definitions:
   # return the upper XLEN bits of the full 2×XLEN-bit product, for signed×signed,
   # unsigned×unsigned, and rs1×unsigned rs2 multiplication.
   - name: mulh_mulhu_mulhsu_op
+    # Representative coverpoints; also cp_rs1, cp_rs2 and cp_rd of each covergroup
     coverpoint:
-      [
-        "{Zmmul_mulh_cg, Zmmul_mulhu_cg, Zmmul_mulhsu_cg}/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}",
-      ]
+      ["{Zmmul_mulh_cg, Zmmul_mulhu_cg, Zmmul_mulhsu_cg}/cr_rs1_rs2_edges"]
   - name: mulw_op
     coverpoint: ["Zmmul_mulw_cg/{cp_rs1, cp_rs2, cp_rd, cr_rs1_rs2_edges}"]

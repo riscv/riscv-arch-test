@@ -5,84 +5,127 @@ normative_rule_definitions:
   # The maximum size in bits of a vector element that any operation can produce or
   # consume, ELEN {ge} 8, which must be a power of 2.
   - name: elen
-    coverpoint: [""]
+    coverpoint: ["Implicit"]
 
   # The number of bits in a single vector register, VLEN {ge} ELEN, which must be a
   # power of 2, and must be no greater than 2^16^.
   - name: vlen
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: a fixed implementation parameter - every other coverpoint's vl/lmul arithmetic implicitly depends on it being correct",
+      ]
+
+  # A small implementation supporting ELEN=32 requires only seven bits of state in
+  # vtype: two bits for ma and ta, two bits for vsew[1:0] and three bits for
+  # vlmul[2:0]. The illegal value represented by vill can be internally encoded
+  # using the illegal 64-bit combination in vsew[1:0] without requiring an
+  # additional storage bit to hold vill.
+  - name: vill_implicit_encoding
+    coverpoint:
+      [
+        "Implicit: internal vill encoding choice is exercised whenever any test produces and checks vill, regardless of how it's internally encoded",
+      ]
 
   # Implementations may also change mstatus.VS or vsstatus.VS from Initial or Clean
   # to Dirty at any time, even when there is no change in vector state.
   - name: hw_mstatus_vs_dirty_update
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: whether an implementation opportunistically marks mstatus.VS/vsstatus.VS Dirty is a permissive implementation choice with no single correct answer to assert",
+      ]
 
   # Implementations may set vill in either case.
   - name: reserved_vill_set
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: Implementation Specific, Theoretically Implicit with Correct Sail Config",
+      ]
 
   # The vector extension adds 32 architectural vector registers, v0-v31 to the base
   # scalar RISC-V ISA.
   - name: vreg_count
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfmv_f_s_cg/cp_custom_fmv_fs_vs2_all_lmul_regs"]
 
   # The csr::[vs] field encodes the status of the vector extension state, including the
   # vector registers v0&amp;#8205;&amp;#8211;&amp;#8205;v31 and the CSRs csr:vcsr[],
   # csr:vxrm[], csr:vxsat[], csr:vstart[], csr:vl[], csr:vtype[], and csr:vlenb[].
   - name: mstatus_vs_op
-    coverpoint: [""]
+    coverpoint: ["SmV_cg/cp_vcsrs_walking1s"]
+
   # A vector context status field, csr::[vs], is added to csr:mstatus[][10:9] and shadowed
   # in csr:sstatus[][10:9]. It is defined analogously to the floating-point context status
   # field, csr::[fs].
   - name: mstatus_vs_sstatus_vs_op
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: sstatus.VS is a CSR-shadowing/layout fact, not independently observable via a coverpoint",
+      ]
 
   # When mstatus.VS is set to Initial or Clean, executing any instruction that
   # changes vector state, including the vector CSRs, will change mstatus.VS to
   # Dirty. Implementations may also change mstatus.VS from Initial or Clean to Dirty
   # at any time, even when there is no change in vector state.
   - name: mstatus_vs_op_initial_clean
-    coverpoint: [""]
+    coverpoint:
+      [
+        "SmV_cg/cp_mstatus_vs_set_dirty_arithmetic",
+        "SmV_cg/cp_mstatus_vs_set_dirty_csr",
+      ]
 
   # When V=1, both csr:vsstatus[vs] and csr:mstatus[vs] are in effect: attempts to execute
   # any vector instruction, or to access the vector CSRs, raise an illegal-instruction
   # exception when either field is set to Off.
   - name: vsstatus_vs_mstatus_vs_op_off
-    coverpoint: [""]
+    coverpoint:
+      [
+        "ExceptionsHV_cg/cp_mstatus_vs_off",
+        "ExceptionsHV_cg/cp_vsstatus_vs_off",
+      ]
 
   # When the hypervisor extension is present, a vector context status field, csr::[vs], is
   # added to csr:vsstatus[][10:9]. It is defined analogously to the floating-point context
   # status field, csr::[fs].
   - name: vsstatus_vs_sz_acc
-    coverpoint: [""]
+    coverpoint: ["ExceptionsHV_cg/cp_vsstatus_vs_off"]
 
   # Attempts to execute any vector instruction, or to access the vector CSRs, raise
   # an illegal-instruction exception when mstatus.VS is set to Off.
   - name: mstatus_vs_op_off
-    coverpoint: [""]
+    coverpoint: ["SmV_cg/cp_mstatus_vs_off_arithmetic"]
 
   # When V=1 and neither csr:vsstatus[vs] nor csr:mstatus[vs] is set to Off, executing any
   # instruction that changes vector state, including the vector CSRs, will change both
   # csr:mstatus[vs] and csr:vsstatus[vs] to Dirty.
   - name: vsstatus_vs_mstatus_vs_op_active
-    coverpoint: [""]
+    coverpoint:
+      [
+        "SmV_cg/cp_mstatus_vs_set_dirty_arithmetic",
+        "SmV_cg/cp_mstatus_vs_set_dirty_csr",
+      ]
 
   # Similarly, when V=1, both vsstatus.VS and the HS-level sstatus.VS are in effect.
   # Attempts to execute a vector instruction when either field is 0 (Off) raise an
   # illegal-instruction exception. Modifying the vector state when V=1 causes both
   # fields to be set to 3 (Dirty).
   - name: vsstatus_vs_op
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: requires the H extension configured; see mstatus_vs_op_off for the non-hypervisor form",
+      ]
 
   # If vsstatus.VS is Dirty, vsstatus.SD is 1; otherwise, vsstatus.SD is set in
   # accordance with existing specifications.
   - name: vsstatus_sd_op_vs
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: vsstatus.SD is a CSR-layout consequence of VS state, not independently observable via a coverpoint",
+      ]
 
   # summarizes whether either the csr::[fs], csr::[vs], or csr::[xs] fields signal the
   # presence of some dirty state that will require saving extended user context to memory.
   - name: mstatus_sd_summary_op
     coverpoint: ["Sm_mstatus_cg/cp_mstatus_sd_write"]
+
   # If csr:mstatus[vs] is Dirty, csr:mstatus[sd] is 1; otherwise, csr:mstatus[sd] is set
   # in accordance with existing specifications.
   - name: mstatus_sd_vs_dirty_op
@@ -91,52 +134,53 @@ normative_rule_definitions:
   # If mstatus.VS is Dirty, mstatus.SD is 1; otherwise, mstatus.SD is set in
   # accordance with existing specifications.
   - name: mstatus_sd_op_vs
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: mstatus.SD is a CSR-layout consequence of VS state, not independently observable via a coverpoint",
+      ]
 
   # Implementations may have a writable misa.V field.
   - name: mutable_misa_v
-    coverpoint: [""]
+    coverpoint: ["SmV_cg/cp_misa_v_clear_set"]
 
   # Analogous to the way in which the floating-point unit is handled, the mstatus.VS
   # field may exist even if misa.V is clear.
   - name: mstatus_vs_exists
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: field-existence-independent-of-misa.V is an implementation/config fact, not a runtime coverpoint",
+      ]
 
   # For implementations with a writable misa.V field, the vsstatus.VS field may
   # exist even if misa.V is clear.
   - name: vsstatus_vs_exists
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: field-existence-independent-of-misa.V is an implementation/config fact, not a runtime coverpoint",
+      ]
 
   # The read-only XLEN-wide vector type CSR, csr:vtype[] provides the default type used to
   # interpret the contents of the vector register file, and can only be updated by
   # insn:vsetvli[], insn:vsetivli[], and insn:vsetvl[] instructions.
   - name: vtype_sz_acc_op
-    coverpoint:
-      [
-        "UV_vucsr_cg/cp_uvcsr_access/vtype",
-        "UV_vucsr_cg/cp_uvcsrwalk/vtype",
-        "SmV_cg/{cp_sew_lmul_vsetvl, cp_sew_lmul_vset_i_vli}",
-      ]
+    coverpoint: ["SmV_cg/cp_sew_lmul_vset_i_vli", "SmV_cg/cp_sew_lmul_vsetvl"]
 
   # The csr:vtype[] register has five fields, csr::[vill], csr::[vma], csr::[vta],
   # csr::[vsew], and csr::[vlmul]. Bits csr:vtype[][XLEN-2:8] should be written with zero,
   # and non-zero values in this field are reserved.
   - name: vtype_fields_sz
-    coverpoint: [""]
+    coverpoint: ["SmV_cg/cp_sew_lmul_vsetvl"]
 
   # The value in vsew sets the dynamic selected element width (SEW). By default, a
   # vector register is viewed as being divided into VLEN/SEW elements.
   - name: vtype_vsew_op
-    coverpoint: [""]
-
-  # While it is anticipated the larger vsew[2:0] encodings (100-111) will be used to
-  # encode larger SEW, the encodings are formally reserved at this point.
-  - name: vtype_vsew_rsv
-    coverpoint: [""]
+    coverpoint:
+      ["SmV_cg/cp_sew_lmul_vset_i_vli", "Vf16_vfadd_vf_cg/cr_vl_lmul_sew16"]
 
   # Implementations must support LMUL integer values of 1, 2, 4, and 8.
   - name: vtype_lmul_val
-    coverpoint: [""]
+    coverpoint:
+      ["Vf16_vfadd_vf_cg/cr_vl_lmul_sew16", "SmV_cg/cp_sew_lmul_vset_i_vli"]
 
   # Implementations must provide fractional LMUL settings that allow the narrowest
   # supported type to occupy a fraction of a vector register corresponding to the
@@ -148,63 +192,64 @@ normative_rule_definitions:
   # supported. For standard vector extensions with ELEN=64, fractional LMULs of 1/2,
   # 1/4, and 1/8 must be supported.
   - name: vtype_lmul_fval
-    coverpoint: [""]
+    coverpoint:
+      ["Vf16_vfadd_vf_cg/cr_vl_lmul_sew16", "SmV_cg/cp_sew_lmul_vset_i_vli"]
 
   # For a given supported fractional LMUL setting, implementations must support SEW
   # settings between SEWMIN and LMUL * ELEN, inclusive.
   - name: vtype_sew_val
-    coverpoint: [""]
+    coverpoint: ["SmV_cg/cp_sew_lmul_vset_i_vli"]
 
   # The use of vtype encodings with LMUL &lt; SEWMIN/ELEN is reserved, but
   # implementations can set vill if they do not support these configurations.
   - name: vtype_lmul_fval_rsv
-    coverpoint: [""]
+    coverpoint: ["SmV_cg/cp_vtype_vill_set_vl_0"]
 
   # LMUL is set by the signed vlmul field in vtype (i.e., LMUL = 2vlmul[2:0]).
   - name: lmul
-    # Representative coverpoints; cr_vl_lmul_sew* in every Vx covergroup
-    coverpoint:
-      [
-        "SmV_cg/{cp_sew_lmul_vset_i_vli, cp_vsetvl_i_rd_nx0_rs1_x0}",
-        "Vx8_vadd_vv_cg/cr_vl_lmul_sew8",
-        "Vx64_vadd_vv_cg/cr_vl_lmul_sew64",
-      ]
+    coverpoint: ["Vf16_vfadd_vf_cg/cr_vl_lmul_sew16"]
 
   # The derived value VLMAX = LMUL*VLEN/SEW represents the maximum number of
   # elements that can be operated on with a single vector instruction given the
   # current SEW and LMUL settings as shown in the table below.
   - name: vlmax
-    # Representative coverpoints; cr_vl_lmul_sew* (vlmax bin) in every Vx covergroup
     coverpoint:
       [
-        "SmV_cg/{cp_vsetvl_i_rd_nx0_rs1_x0, cp_vsetvl_i_avl_gt_2x_vlmax}",
-        "Vx8_vadd_vv_cg/cr_vl_lmul_sew8",
-        "Vx64_vadd_vv_cg/cr_vl_lmul_sew64",
+        "Vx16_vrgather_vv_cg/cp_custom_vindexCorners_index_ge_vlmax",
+        "Vx16_vrgather_vv_cg/cp_custom_vindexCorners_index_gt_vl_lt_vlmax",
       ]
 
   # Instructions specifying an LMUL=2 vector register group with an odd-numbered
   # vector register are reserved.
   - name: vreg_offgroup_lmul2_rsv
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Out-of-Scope: reserved behavior that depends on prior CSR state is unspecified and outside Ssstrict's encoding-only methodology",
+      ]
 
   # instructions specifying an LMUL=4 vector register group using vector register
   # numbers that are not multiples of four are reserved.
   - name: vreg_offgroup_lmul4_rsv
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Out-of-Scope: reserved behavior that depends on prior CSR state is unspecified and outside Ssstrict's encoding-only methodology",
+      ]
 
   # instructions specifying an LMUL=8 vector register group using register numbers
   # that are not multiples of eight are reserved.
   - name: vreg_offgroup_lmul8_rsv
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Out-of-Scope: reserved behavior that depends on prior CSR state is unspecified and outside Ssstrict's encoding-only methodology",
+      ]
 
   # Mask registers are always contained in a single vector register, regardless of
   # LMUL.
   - name: vreg_mask_lmul_indp
-    # Representative coverpoints; cp_custom_vmask_write_lmulge1 in every mask-producing Vx covergroup
     coverpoint:
       [
-        "{Vx8_vmseq_vv_cg, Vx8_vmand_mm_cg, Vx8_vmadc_vv_cg, Vx8_vmsbf_m_cg}/cp_custom_vmask_write_lmulge1",
-        "{Vx64_vmseq_vv_cg, Vx64_vmand_mm_cg, Vx64_vmadc_vv_cg, Vx64_vmsbf_m_cg}/cp_custom_vmask_write_lmulge1",
+        "Vls16_vlm_v_cg/cp_custom_maskLS_emul_ge_16",
+        "Vx16_vmadc_vi_cg/cp_custom_vmask_write_lmulge1",
       ]
 
   # These two bits modify the behavior of destination tail elements and destination
@@ -212,35 +257,21 @@ normative_rule_definitions:
   # The tail and inactive sets contain element positions that are not receiving new
   # results during a vector operation, as defined in .
   - name: vtype_vta_vma_op
-    # Representative coverpoints; cr_vtype_agnostic* in every maskable Vx covergroup
-    coverpoint:
-      [
-        "Vx8_vadd_vv_cg/cr_vtype_agnostic",
-        "Vx16_vadd_vv_cg/cr_vtype_agnostic",
-        "Vx32_vadd_vv_cg/cr_vtype_agnostic",
-        "Vx64_vadd_vv_cg/cr_vtype_agnostic",
-      ]
+    coverpoint: ["Vf16_vfadd_vf_cg/cr_vtype_agnostic"]
 
   # All systems must support all four options:
   - name: vtype_vta_vma_val
-    # Representative coverpoints; cr_vtype_agnostic* in every maskable Vx covergroup
-    coverpoint:
-      [
-        "Vx8_vadd_vv_cg/cr_vtype_agnostic",
-        "Vx16_vadd_vv_cg/cr_vtype_agnostic",
-        "Vx32_vadd_vv_cg/cr_vtype_agnostic",
-        "Vx64_vadd_vv_cg/cr_vtype_agnostic",
-      ]
+    coverpoint: ["Vf16_vfadd_vf_cg/cr_vtype_agnostic"]
 
   # Mask destination tail elements are always treated as tail-agnostic, regardless
   # of the setting of vta.
   - name: vreg_mask_tail_agn
-    coverpoint: [""]
+    coverpoint: ["Vx8_vmor_mm_cg/cr_vtype_agnostic_nomask"]
 
   # When a set is marked undisturbed, the corresponding set of destination elements
   # in a vector register group retain the value they previously held.
   - name: vreg_mask_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfadd_vf_cg/cp_masking_edges"]
 
   # When a set is marked agnostic, the corresponding set of destination elements in
   # any vector destination operand can either retain the value they previously held,
@@ -250,7 +281,7 @@ normative_rule_definitions:
   # required to be deterministic when the instruction is executed with the same
   # inputs.
   - name: vreg_agnostic_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfadd_vf_cg/cp_masking_edges"]
 
   # In addition, except for mask load instructions, any element in the tail of a
   # mask result can also be written with the value the mask-producing operation
@@ -260,46 +291,47 @@ normative_rule_definitions:
   # would have calculated with vl=VLEN, SEW=8, and LMUL=8 (i.e., all bits of the
   # mask register can be overwritten).
   - name: vreg_mask_tail_op
-    coverpoint: [""]
+    coverpoint: ["Vx16_vmseq_vv_cg/cr_vtype_agnostic"]
 
   # If the vill bit is set, then any attempt to execute a vector instruction that
   # depends upon vtype will raise an illegal-instruction exception.
   - name: vtype_vill_op
-    coverpoint: [""]
+    coverpoint: ["ExceptionsVx_vsaddu_vv_cg/cp_vill"]
 
   # The XLEN-bit-wide read-only vl CSR can only be updated by the vset{i}vl{i}
   # instructions, and the fault-only-first vector load instruction variants.
   - name: vl_acc
-    coverpoint: [""]
+    coverpoint:
+      [
+        "SmV_cg/cp_vsetvl_i_rd_nx0_rs1_x0",
+        "Vls16_vle16ff_v_cg/cp_custom_ffLS_update_vl",
+      ]
 
   # The vl register holds an unsigned integer specifying the number of elements to
   # be updated with results from a vector instruction, as further detailed in .
   - name: vl_op
-    coverpoint: [""]
+    coverpoint:
+      ["Vf16_vfadd_vf_cg/cr_vl_lmul_sew16", "Vf16_vfadd_vf_cg/cp_vl_0"]
 
   # The XLEN-bit-wide read-only CSR csr:vlenb[] holds the value VLEN/8, i.e., the vector
   # register length in bytes.
   - name: vlenb_acc_op
-    coverpoint:
-      ["UV_vucsr_cg/cp_uvcsr_access/vlenb", "UV_vucsr_cg/cp_uvcsrwalk/vlenb"]
+    coverpoint: ["SmV_cg/cp_vcsrrswc"]
 
   # The XLEN-bit-wide read-write csr:vstart[] CSR specifies the index of the first element
   # to be executed by a vector instruction, as described in .
   - name: vstart_acc_sz
-    # Representative coverpoints; cp_vstart in every ExceptionsVx and ExceptionsVls covergroup
-    coverpoint:
-      [
-        "UV_vucsr_cg/cp_uvcsr_access/vstart",
-        "UV_vucsr_cg/cp_uvcsrwalk/vstart",
-        "ExceptionsVx_vadd_vv_cg/cp_vstart",
-        "ExceptionsVls_vle8_v_cg/cp_vstart",
-      ]
+    coverpoint: ["SmV_cg/cp_vcsrs_walking1s", "SmV_cg/cp_vstart_out_of_bounds"]
 
   # All vector instructions are defined to begin execution with the element number
   # given in the vstart CSR, leaving earlier elements in the destination vector
   # undisturbed
   - name: vstart_op
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Vx16_vcpop_m_cg/cp_custom_gprWriting_vstart_eq_vl",
+        "ExceptionsVls_vle8_v_cg/cp_vstart",
+      ]
 
   # reset the vstart CSR to zero at the end of execution.
   - name: vstart_update
@@ -313,141 +345,162 @@ normative_rule_definitions:
   # The vstart CSR is defined to have only enough writable bits to hold the largest
   # element index (one less than the maximum VLMAX).
   - name: vstart_sz_writable
-    coverpoint: [""]
+    coverpoint: ["SmV_cg/cp_vstart_out_of_bounds"]
 
   # The use of vstart values greater than the largest element index for the current
   # vtype setting is reserved.
   - name: vstart_val_rsv
-    coverpoint: [""]
+    coverpoint: ["ExceptionsVx_vsaddu_vv_cg/cp_vstart_gt_vl"]
 
   # Implementations are permitted to raise illegal-instruction exceptions when
   # attempting to execute a vector instruction with a value of vstart that the
   # implementation can never produce when executing that same instruction with the
   # same vtype setting.
   - name: vstart_vtype_dep
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: implementations are permitted, not required, to raise this exception, so no behavior can be asserted",
+      ]
 
   # The vector fixed-point rounding-mode register holds a two-bit read-write rounding-mode
   # field in the least-significant bits (csr:vxrm[][1:0]). The upper bits,
   # csr:vxrm[][XLEN-1:2], should be written as zeros.
   - name: vxrm_val_sz_acc
-    # Representative coverpoints; cp_csr_vxrm in every Vx fixed-point covergroup
     coverpoint:
       [
-        "UV_vucsr_cg/cp_uvcsr_access/vxrm",
-        "UV_vucsr_cg/cp_uvcsrwalk/vxrm",
-        "Vx8_vaadd_vv_cg/cp_csr_vxrm",
-        "Vx64_vssrl_vv_cg/cp_csr_vxrm",
+        "SmV_cg/cp_vcsrs_walking1s",
+        "Vx16_vaadd_vv_cg/cr_vxrm_vs2_vs1_edges",
+        "Vx16_vaadd_vx_cg/cr_vxrm_vs2_rs1_edges",
+        "Vx16_vssra_vi_cg/cr_vxrm_vs2_imm_edges",
       ]
 
   # The vector fixed-point rounding-mode is given a separate CSR address to allow
   # independent access, but is also reflected as a field in vcsr.
   - name: vcsr_vxrm_op
-    coverpoint: [""]
+    coverpoint: ["SmV_cg/cp_vcsrrswc"]
 
   # The fixed-point rounding algorithm is specified as follows. Suppose the
   # pre-rounding result is v, and d bits of that result are to be rounded off. Then
   # the rounded result is (v &gt;&gt; d) + r, where r depends on the rounding mode
   # as specified in the following table.
   - name: vxrm_op
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Vx16_vaadd_vx_cg/cr_vxrm_vs2_rs1_edges",
+        "Vx16_vssra_vi_cg/cr_vxrm_vs2_imm_edges",
+        "Vx16_vaadd_vv_cg/cr_vxrm_vs2_vs1_edges",
+      ]
 
   # The csr:vxsat[] CSR has a single read-write least-significant bit (csr:vxsat[][0])
   # that indicates if a fixed-point instruction has had to saturate an output value to fit
   # into a destination format. The remaining bits, csr:vxsat[][XLEN-1:1], should be
   # written as zeros.
   - name: vxsat_op_acc_sz
-    # Representative coverpoints; cp_csr_vxsat in every Vx saturating covergroup
-    coverpoint:
-      [
-        "UV_vucsr_cg/cp_uvcsr_access/vxsat",
-        "UV_vucsr_cg/cp_uvcsrwalk/vxsat",
-        "Vx8_vsadd_vv_cg/cp_csr_vxsat",
-        "Vx64_vssubu_vv_cg/cp_csr_vxsat",
-      ]
+    coverpoint: ["SmV_cg/cp_vcsrs_walking1s", "Vx16_vsaddu_vv_cg/cp_csr_vxsat"]
 
   # The vxsat bit is mirrored in vcsr.
   - name: vcsr_vxsat_op
-    coverpoint: [""]
+    coverpoint: ["SmV_cg/cp_vcsrrswc"]
 
   # The csr:vxrm[] and csr:vxsat[] separate CSRs can also be accessed via fields in the
   # XLEN-bit-wide vector control and status CSR, csr:vcsr[].
   - name: vcsr_vxrm_vxsat_acc
-    coverpoint: [""]
-
-  # The vector extension must have a consistent state at reset. In particular, vtype and vl must
-  # have values that can be read and then restored with a single vsetvl instruction.
-  - name: vector_reset_state
-    coverpoint:
-      ["TODO: after reset, read vtype and vl and restore them with one vsetvl"]
+    coverpoint: ["SmV_cg/cp_vcsrrswc"]
 
   # When LMUL=1, elements are simply packed in order from the least-significant to
   # most-significant bits of the vector register.
   - name: vreg_lmul1_op
-    coverpoint: [""]
+    coverpoint: ["Vx16_vadd_vv_cg/cp_vd"]
 
   # When LMUL &lt; 1, only the first LMUL*VLEN/SEW elements in the vector register
   # are used. The remaining space in the vector register is treated as part of the
   # tail, and hence must obey the vta setting.
   - name: vreg_flmul_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfadd_vf_cg/cr_vl_lmul_sew16"]
 
   # When vector registers are grouped, the elements of the vector register group are
   # packed contiguously in element order beginning with the lowest-numbered vector
   # register and moving to the next-highest-numbered vector register in the group
   # once each vector register is filled.
   - name: vreg_lmulge2_op
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Vx16_vsext_vf2_cg/cp_custom_vext2_overlapping_vd_vs2_lmul4",
+        "Vx16_vsext_vf2_cg/cp_custom_vext2_overlapping_vd_vs2_lmul8",
+        "Vx64_vsext_vf8_cg/cp_custom_vext8_overlapping_vd_vs2_lmul8",
+        "Vx16_vwaddu_vv_cg/cp_custom_vdOverlapTopVs1_vd_vs1_lmul4",
+        "Vx16_vwaddu_vv_cg/cp_custom_vdOverlapTopVs2_vd_vs2_lmul4",
+        "Vx16_vwadd_vv_cg/cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2",
+        "Vf16_vfadd_vf_cg/cr_vl_lmul_sew16",
+      ]
 
   # A vector mask occupies only one vector register regardless of SEW and LMUL.
   - name: vreg_mask_vtype_indp
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Vls16_vlm_v_cg/cp_custom_maskLS_emul_ge_16",
+        "Vx16_vmadc_vi_cg/cp_custom_vmask_write_lmulge1",
+      ]
 
   # Each element is allocated a single mask bit in a mask vector register. The mask
   # bit for element i is located in bit i of the mask register, independent of SEW
   # or LMUL.
   - name: vreg_mask_sz
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfadd_vf_cg/cp_masking_edges"]
 
   # Any vector register can be used to hold a scalar regardless of the current LMUL
   # setting.
   - name: vreg_scalar_lmul_indp
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Vf16_vfmv_s_f_cg/cp_custom_fmv_sf_vd_all_lmul_regs",
+        "Vf16_vfmv_f_s_cg/cp_custom_fmv_fs_vs2_all_lmul_regs",
+        "Vx16_vmv_s_x_cg/cp_custom_voffgroup_vd_lmul2",
+        "Vx16_vredand_vs_cg/cp_custom_voffgroup_vs1_lmul2",
+        "Vx16_vmv_x_s_cg/cp_custom_voffgroup_vs2_lmul2",
+        "Vx16_vmv_s_x_cg/cp_custom_voffgroup_vd_lmul4",
+        "Vx16_vmv_s_x_cg/cp_custom_voffgroup_vd_lmul8",
+        "Vx16_vwredsum_vs_cg/cp_custom_vreductionw_vd_vs1_emul_16",
+      ]
 
   # Each vector operand has an effective element width (EEW) and an effective LMUL (EMUL)
   # that is used to determine the size and location of all the elements within a vector
   # register group. By default, for most operands of most instructions, EEW=SEW and
   # EMUL=LMUL.
   - name: eew_emul
-    # Representative coverpoints; cr_vl_lmul_sew* in every single-width Vx covergroup
     coverpoint:
-      ["Vx8_vadd_vv_cg/cr_vl_lmul_sew8", "Vx64_vadd_vv_cg/cr_vl_lmul_sew64"]
+      [
+        "Vx16_vaadd_vv_cg/cp_vs2_edges",
+        "Vx16_vwadd_vv_cg/cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2",
+        "Vx16_vwadd_wv_cg/cr_vl_lmul_lmul4max_sew16",
+        "Vx16_vsext_vf2_cg/cp_custom_vext2_overlapping_vd_vs2_lmul4",
+      ]
 
   # EEW/EMUL = SEW/LMUL.
   - name: eew_emul_sew_lmul_dep
-    # Representative coverpoints; the same coverpoints in the other widening, narrowing, extension and Vls covergroups
     coverpoint:
       [
-        "Vx8_vwadd_vv_cg/{cp_vd_emul2, cr_vl_lmul_lmul4max_sew8}",
-        "Vx8_vnsrl_wv_cg/{cp_vs2_emul2, cr_vl_lmul_lmul4max_sew8}",
-        "Vx16_vsext_vf2_cg/{cp_vs2_edges_emulf2, cr_vl_lmul_sew16}",
-        "Vls8_vle64_v_cg/cr_vl_lmul_e64_sew8",
+        "Vx16_vwadd_wv_cg/cr_vl_lmul_lmul4max_sew16",
+        "Vx16_vsext_vf2_cg/cp_custom_vext2_overlapping_vd_vs2_lmul4",
       ]
 
   # Narrowing instructions have a source operand that has EEW=2*SEW and EMUL=2*LMUL but
   # with a destination where EEW=SEW and EMUL=LMUL.
   - name: vnarrowing_eew_emul
-    # Representative coverpoints; the same coverpoints in the .wx/.wi forms and Vx16 covergroups
     coverpoint:
       [
-        "{Vx8_vnsrl_wv_cg, Vx8_vnsra_wv_cg, Vx8_vnclip_wv_cg, Vx8_vnclipu_wv_cg}/{cp_vs2_emul2, cr_vl_lmul_lmul4max_sew8}",
-        "{Vx32_vnsrl_wv_cg, Vx32_vnsra_wv_cg, Vx32_vnclip_wv_cg, Vx32_vnclipu_wv_cg}/{cp_vs2_emul2, cr_vl_lmul_lmul4max_sew32}",
+        "Vx16_vnclip_wi_cg/cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2",
+        "Vx16_vnclip_wi_cg/cp_custom_allVdOverlapBtmVs2_vd_vs2_lmul2",
+        "Vx16_vnclip_wi_cg/cr_vl_lmul_lmul4max_sew16",
       ]
 
   # Using other than the lowest-numbered vector register to specify a vector
   # register group is a reserved encoding.
   - name: emul_offgroup_rsv
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Out-of-Scope: this behavior is unspecified even under Ssstrict, which does not cover CSR-state-dependent reserved conditions",
+      ]
 
   # A vector register cannot be used to provide source operands with more than one
   # EEW for a single instruction. A mask register source is considered to have EEW=1
@@ -456,32 +509,42 @@ normative_rule_definitions:
   # appears at different positions within two or more vector register groups, is
   # reserved.
   - name: vreg_source_eew_rsv
-    # Representative coverpoints; cp_ssstrictv_widening_source_overlap and cp_ssstrictv_masking_vs{1,2}_eq_v0 in every SsstrictV covergroup that has them
-    coverpoint:
-      [
-        "{SsstrictV_vwadd_wv_cg, SsstrictV_vwsubu_wv_cg, SsstrictV_vnsrl_wv_cg}/cp_ssstrictv_widening_source_overlap",
-        "{SsstrictV_vadd_vv_cg, SsstrictV_vand_vv_cg}/{cp_ssstrictv_masking_vs1_eq_v0, cp_ssstrictv_masking_vs2_eq_v0}",
-      ]
+    coverpoint: ["SsstrictV_vwadd_wv_cg/cp_ssstrictv_widening_source_overlap"]
 
   # A destination vector register group can overlap a source vector register group
   # only if one of the following holds:
   - name: vreg_overlap_legal
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Vx16_vsext_vf2_cg/cp_custom_vext2_overlapping_vd_vs2_lmul4",
+        "Vx32_vsext_vf4_cg/cp_custom_vext4_overlapping_vd_vs2_lmul4",
+        "Vx64_vsext_vf8_cg/cp_custom_vext8_overlapping_vd_vs2_lmul8",
+        "Vx16_vwaddu_vv_cg/cp_custom_vdOverlapTopVs1_vd_vs1_lmul2",
+        "Vx16_vwaddu_vv_cg/cp_custom_vdOverlapTopVs2_vd_vs2_lmul2",
+        "Vx16_vwadd_vv_cg/cp_custom_allVdOverlapTopVs1_vd_vs1_lmul2",
+        "Vx16_vwadd_vv_cg/cp_custom_allVdOverlapTopVs2_vd_vs2_lmul2",
+        "Vx16_vnclip_wi_cg/cp_custom_vdOverlapBtmVs2_vd_vs2_lmul2",
+        "Vf16_vfadd_vf_cg/cmp_vd_vs2",
+        "Vf16_vfadd_vv_cg/cmp_vd_vs1",
+        "Vf16_vfadd_vv_cg/cmp_vs1_vs2",
+        "Vf16_vfadd_vv_cg/cmp_vd_vs1_vs2",
+        "Vls16_vsoxei16_v_cg/cmp_vs3_vs2_eew_eq_sew",
+      ]
 
   # For the purpose of determining register group overlap constraints, mask elements
   # have EEW=1.
   - name: vreg_mask_overlap
-    coverpoint: [""]
+    coverpoint: ["SsstrictV_vwadd_wv_cg/cp_ssstrictv_masking_vd_eq_v0"]
 
   # Any instruction encoding that violates the overlap constraints is reserved.
   - name: vreg_overlap_rsv
-    coverpoint: [""]
+    coverpoint: ["SsstrictV_vwadd_wv_cg/cp_ssstrictv_widening_source_overlap"]
 
   # When source and destination registers overlap and have different EEW, the
   # instruction is mask- and tail-agnostic, regardless of the setting of the vta and
   # vma bits in vtype.
   - name: vreg_overlap_agn
-    coverpoint: [""]
+    coverpoint: ["Vx16_vnclip_wi_cg/cp_masking_edges"]
 
   # The largest vector register group used by an instruction can not be greater than
   # 8 vector registers (i.e., EMUL≤8), and if a vector instruction would require
@@ -490,73 +553,80 @@ normative_rule_definitions:
   # register group result when LMUL=8 is reserved as this would imply a result
   # EMUL=16.
   - name: emul_rsv
-    coverpoint: [""]
+    coverpoint:
+      ["Out-of-Scope: reserved behavior that is not covered by Ssstrict"]
 
   # Widened scalar values, e.g., input and output to a widening reduction operation,
   # are held in the first element of a vector register and have EMUL=1.
   - name: vreg_scalar_emul
-    # Representative coverpoints; also the lmul2/lmul8 voffgroup coverpoints and the Vx16 covergroups
-    coverpoint:
-      [
-        "{Vx8_vwredsum_vs_cg, Vx8_vwredsumu_vs_cg}/{cp_custom_vreductionw_vd_vs1_emul_16, cp_custom_voffgroup_vd_lmul4, cp_custom_voffgroup_vs1_lmul4}",
-        "{Vx32_vwredsum_vs_cg, Vx32_vwredsumu_vs_cg}/cp_custom_vreductionw_vd_vs1_emul_16",
-      ]
+    coverpoint: ["Vx16_vwredsum_vs_cg/cp_custom_vreductionw_vd_vs1_emul_16"]
 
   # Element operations that are masked off (inactive) never generate exceptions.
   - name: vmask_inactive_op
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Vf16_vfrsqrt7_v_cg/cp_custom_vfp_flags_inactive_not_set",
+        "Vf16_vfadd_vf_cg/cp_masking_edges",
+      ]
   # The destination vector register elements corresponding to masked-off elements are
   # handled with either a mask-undisturbed or mask-agnostic policy depending on the
   # setting of the csr::[vma] bit in csr:vtype[]
   - name: vmask_agn_op
-    # Representative coverpoints; cr_vtype_agnostic* in every maskable Vx covergroup
     coverpoint:
       [
-        "Vx8_vadd_vv_cg/cr_vtype_agnostic",
-        "Vx16_vadd_vv_cg/cr_vtype_agnostic",
-        "Vx32_vadd_vv_cg/cr_vtype_agnostic",
-        "Vx64_vadd_vv_cg/cr_vtype_agnostic",
+        "Vf16_vfrsqrt7_v_cg/cp_custom_vfp_flags_inactive_not_set",
+        "Vf16_vfadd_vf_cg/cp_masking_edges",
       ]
   # Where available, masking is encoded in a single-bit vm field in the instruction
   # (inst[25]).
   - name: vmask_vm_enc
-    # Representative coverpoints; cp_masking_edges in every maskable Vx covergroup
     coverpoint:
-      ["Vx8_vadd_vv_cg/cp_masking_edges", "Vx64_vadd_vv_cg/cp_masking_edges"]
+      [
+        "Implicit: the vm field encoding is exercised by every masked and unmasked vector instruction the suite runs",
+      ]
 
   # The mask value used to control execution of a masked vector instruction is
   # always supplied by vector register v0.
   - name: vreg_vmask
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Vls16_vloxei16_v_cg/cp_masking_edges",
+        "Vf16_vfadd_vf_cg/cp_masking_edges",
+      ]
 
   # The destination vector register group for a masked vector instruction cannot
   # overlap the source mask register (v0), unless the destination vector register is
   # being written with a mask value (e.g., compares) or the scalar result of a
   # reduction. These instruction encodings are reserved.
   - name: vreg_vmask_rsv
-    coverpoint: [""]
+    coverpoint: ["SsstrictV_vadd_vv_cg/cp_ssstrictv_masking_vd_eq_v0"]
 
   # When vstart ≥ vl, there are no body elements, and no elements are updated in any
   # destination vector register group, including that no tail elements are updated
   # with agnostic values.
   - name: vstart_vl_dep
-    coverpoint: [""]
+    coverpoint: ["ExceptionsVx_vsaddu_vv_cg/cp_vstart_gt_vl"]
 
   # Instructions that write an x register or f register do so even when vstart ≥ vl,
   # including when vl=0.
   - name: vstart_vl_scalar_indp
-    coverpoint: [""]
+    coverpoint: ["Vx16_vcpop_m_cg/cp_custom_gprWriting_vstart_eq_vl"]
 
   # The prestart elements do not raise exceptions and do not update the destination
   # vector register.
   - name: vector_prestart_element
-    coverpoint: [""]
+    coverpoint: ["ExceptionsVls_vle8_v_cg/cp_vstart"]
 
   # The inactive elements do not raise exceptions and do not update any destination
   # vector register group unless masked agnostic is specified (vtype.vma=1), in
   # which case inactive elements may be overwritten with 1s.
   - name: vector_inactive_element
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Vf16_vfadd_vf_cg/cr_vtype_agnostic",
+        "Vf16_vfrsqrt7_v_cg/cp_custom_vfp_flags_inactive_not_set",
+        "Vx16_vadd_vv_cg/cp_masking_edges",
+      ]
 
   # The tail elements do not raise exceptions, and do not update any destination
   # vector register group unless tail agnostic is specified (vtype.vta=1), in which
@@ -565,58 +635,62 @@ normative_rule_definitions:
   # When LMUL &lt; 1, the tail includes the elements past VLMAX that are held in the
   # same vector register.
   - name: vector_tail_element
-    coverpoint: [""]
+    coverpoint:
+      ["Vf16_vfadd_vf_cg/cp_vl_0", "Vf16_vfadd_vf_cg/cp_masking_edges"]
 
   # The vset{i}vl{i} instructions set the vtype and vl CSRs based on their
   # arguments, and write the new value of vl into rd.
   - name: vset_op
     coverpoint:
       [
-        "SmV_cg/{cp_sew_lmul_vsetvl, cp_sew_lmul_vset_i_vli}",
-        "SmV_cg/{cp_vsetvl_i_avl_eq_vlmax, cp_vsetivli_avl_edges}",
-      ]
-
-  # The configuration-setting instructions do not depend on vstart; they reset vstart to zero.
-  - name: vset_vstart
-    coverpoint:
-      [
-        "TODO: vset* with nonzero vstart; result unaffected and vstart reset to 0",
+        "SmV_cg/cp_sew_lmul_vsetvl",
+        "SmV_cg/cp_sew_lmul_vset_i_vli",
+        "SmV_cg/cp_vsetvl_i_avl_eq_vlmax",
+        "SmV_cg/cp_vsetivli_avl_edges",
       ]
 
   # the vl register is also set to zero.
   - name: vtype_vstart_op
-    coverpoint: [""]
+    coverpoint:
+      [
+        "SmV_cg/cp_sew_lmul_vset_i_vli",
+        "SmV_cg/cp_sew_lmul_vsetvl",
+        "SmV_cg/cp_vtype_vill_set_vl_0",
+      ]
 
   # The new csr:vtype[] value is encoded in the immediate fields of insn:vsetvli[] and
   # insn:vsetivli[], and in the rs2 register for insn:vsetvl[].
   - name: vtype_acc
-    coverpoint: ["SmV_cg/{cp_sew_lmul_vsetvl, cp_sew_lmul_vset_i_vli}"]
+    coverpoint: ["SmV_cg/cp_sew_lmul_vset_i_vli", "SmV_cg/cp_sew_lmul_vsetvl"]
 
   # If the csr:vtype[] value is not supported by the implementation, then the csr::[vill]
   # bit is set in csr:vtype[], the remaining bits in csr:vtype[] are set to zero
   - name: vtype_vill_val
     coverpoint:
-      [
-        "SmV_cg/{cp_sew_lmul_vsetvl, cp_sew_lmul_vset_i_vli, cp_vtype_vill_set_vl_0}",
-      ]
+      ["Vls16_vl1re16_v_cg/cp_custom_vwholeRegLS_vill", "SmV_cg/cp_vill_vsetvl"]
   # A csr:vtype[] value with csr::[vill] set is treated as an unsupported configuration.
   - name: vtype_vill_val_vill
     coverpoint:
-      [
-        "SmV_cg/{cp_vsetvl_rs2_vill, cp_vill_vsetvl_rs2_vill, cp_vtype_vill_set_vl_0}",
-      ]
+      ["Vls16_vl1re16_v_cg/cp_custom_vwholeRegLS_vill", "SmV_cg/cp_vill_vsetvl"]
   # Implementations must consider all bits of the csr:vtype[] value to determine if the
   # configuration is supported. An unsupported value in any location within the
   # csr:vtype[] value must result in csr::[vill] being set.
   - name: vtype_vill_all_bits
-    coverpoint: [""]
+    coverpoint:
+      ["Vls16_vl1re16_v_cg/cp_custom_vwholeRegLS_vill", "SmV_cg/cp_vill_vsetvl"]
 
   # When rs1 is not x0, the AVL is an unsigned integer held in the x register specified by
   # rs1, and the new csr:vl[] value is also written to the x register specified by rd.
   - name: vsetvl_op
     coverpoint:
       [
-        "SmV_cg/{cp_vsetvl_i_avl_eq_zero, cp_vsetvl_i_avl_eq_vlmax, cp_vsetvl_i_avl_lt_2x_vlmax, cp_vsetvl_i_avl_eq_2x_vlmax, cp_vsetvl_i_avl_gt_2x_vlmax}",
+        "SmV_cg/cp_vsetvl_i_rd_x0_rs1_x0",
+        "SmV_cg/cp_vsetvl_i_rd_nx0_rs1_x0",
+        "SmV_cg/cp_vsetvl_i_avl_eq_zero",
+        "SmV_cg/cp_vsetvl_i_avl_eq_vlmax",
+        "SmV_cg/cp_vsetvl_i_avl_lt_2x_vlmax",
+        "SmV_cg/cp_vsetvl_i_avl_eq_2x_vlmax",
+        "SmV_cg/cp_vsetvl_i_avl_gt_2x_vlmax",
       ]
   # When rs1=x0 but rd≠x0, the maximum unsigned integer value (~0) is used as the AVL, and
   # the resulting VLMAX is written to vl and also to the x register specified by rd.
@@ -633,17 +707,26 @@ normative_rule_definitions:
   # of VLMAX is reserved. Use of the instructions is also reserved if vill was 1
   # beforehand.
   - name: vtype_vset_rsv
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Out-of-Scope: we cannot test reserved behavior that depends on prior vill state; outside Ssstrict's encoding-only methodology",
+      ]
 
   # For the vsetivli instruction, the AVL is encoded as a 5-bit zero-extended
   # immediate (0&#8212;&#8203;31) in the rs1 field.
   - name: vsetivli_op
-    coverpoint: [""]
+    coverpoint: ["SmV_cg/cp_vsetivli_avl_edges"]
 
   # The insn:vset*[] instructions first set VLMAX according to their csr:vtype[] argument,
   # then set csr:vl[] obeying the following constraints:
   - name: vl_val_lead_in
-    coverpoint: [""]
+    coverpoint:
+      [
+        "SmV_cg/cp_vsetvl_i_avl_eq_vlmax",
+        "SmV_cg/cp_vsetvl_i_avl_lt_2x_vlmax",
+        "SmV_cg/cp_vsetvl_i_avl_gt_2x_vlmax",
+        "SmV_cg/cp_vsetvl_i_avl_eq_zero",
+      ]
   # csr:vl[] = AVL if AVL ≤ VLMAX ceil(AVL / 2) ≤ vl ≤ VLMAX if AVL &lt; (2 * VLMAX)
   # csr:vl[] = VLMAX if AVL ≥ (2 * VLMAX) Deterministic on any given implementation for
   # same input AVL and VLMAX values These specific properties follow from the prior rules:
@@ -654,81 +737,80 @@ normative_rule_definitions:
   - name: vl_val_list
     coverpoint:
       [
-        "SmV_cg/{cp_vsetvl_i_avl_eq_zero, cp_vsetvl_i_avl_eq_vlmax, cp_vsetvl_i_avl_lt_2x_vlmax, cp_vsetvl_i_avl_eq_2x_vlmax, cp_vsetvl_i_avl_gt_2x_vlmax}",
-        "SmV_cg/cp_vsetivli_avl_edges",
+        "SmV_cg/cp_vsetvl_i_avl_eq_vlmax",
+        "SmV_cg/cp_vsetvl_i_avl_lt_2x_vlmax",
+        "SmV_cg/cp_vsetvl_i_avl_gt_2x_vlmax",
+        "SmV_cg/cp_vsetvl_i_avl_eq_zero",
       ]
 
   # All vector loads and stores may generate and accept a non-zero vstart value.
   - name: vector_ls_vstart
-    # Representative coverpoints; cp_vstart in every ExceptionsVls covergroup
-    coverpoint:
-      [
-        "ExceptionsVls_vle8_v_cg/cp_vstart",
-        "ExceptionsVls_vlse32_v_cg/cp_vstart",
-        "ExceptionsVls_vloxei16_v_cg/cp_vstart",
-        "ExceptionsVls_vse64_v_cg/cp_vstart",
-      ]
+    coverpoint: ["ExceptionsVls_vle8_v_cg/cp_vstart"]
 
   # Vector load/store base registers and strides are taken from the GPR x registers.
   - name: vector_ls_base_stride_regtype
-    coverpoint: [""]
+    coverpoint: ["Vls16_vlse16_v_cg/cp_rs1_nx0", "Vls16_vlse16_v_cg/cp_rs2"]
 
   # The base effective address for all vector accesses is given by the contents of
   # the x register named in rs1.
   - name: vector_ls_base
-    coverpoint: [""]
+    coverpoint: ["Vls16_vle8_v_cg/cp_rs1_nx0", "Vls16_vse8_v_cg/cp_rs1_nx0"]
 
   # Vector unit-stride operations access elements stored contiguously in memory
   # starting from the base effective address.
   - name: vector_ls_unit_stride_op
-    coverpoint: [""]
+    coverpoint: ["Vls16_vle8_v_cg/cp_vd"]
 
   # Vector constant-stride operations access the first memory element at the base
   # effective address, and then access subsequent elements at address increments
   # given by the byte offset contained in the x register specified by rs2.
   - name: vector_ls_constant_stride_op
-    coverpoint: [""]
+    coverpoint: ["Vls16_vlse8_v_cg/cp_rs2"]
 
   # Vector memory unit-stride and constant-stride operations directly encode EEW of
   # the data to be transferred statically in the instruction to reduce the number of
   # vtype changes when accessing memory in a mixed-width routine.
   - name: vector_ls_strided_eew
-    # Representative coverpoints; cr_vl_lmul_e*_sew* in every unit-stride and strided Vls covergroup
     coverpoint:
-      [
-        "Vls8_vle16_v_cg/cr_vl_lmul_e16_sew8",
-        "Vls64_vle8_v_cg/cr_vl_lmul_e8_sew64",
-        "Vls8_vlse64_v_cg/cr_vl_lmul_e64_sew8",
-        "Vls64_vsse8_v_cg/cr_vl_lmul_e8_sew64",
-      ]
+      ["{Vls16_vlse16_v_cg,Vls32_vlse32_v_cg,Vls64_vlse64_v_cg}/cp_asm_count"]
 
   # For loads, the vd register will hold the first field loaded from the segment.
   # For stores, the vs3 register is read to provide the first field to be stored to
   # each segment.
   - name: vector_ls_seg_unit_stride_vd_vs3
-    coverpoint: [""]
+    coverpoint:
+      ["Vls16_vlseg2e8_v_cg/cp_vd_lte30", "Vls16_vsseg2e8_v_cg/cp_vs3_lte30"]
 
   # Support for misaligned vector memory accesses is independent of an
   # implementation&#8217;s support for misaligned scalar memory accesses.
   - name: vector_ls_scalar_misaligned_independence
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: independence from the scalar misaligned-access implementation cannot be observed from a self-checking test",
+      ]
 
   # Vector misaligned memory accesses follow the same rules for atomicity as scalar
   # misaligned memory accesses.
   - name: vector_ls_scalar_misaligned_dependence
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Not Tested: atomicity of misaligned vector accesses is not exercised by this suite",
+      ]
 
   # However, even for the ordered form, accesses to the fields within an individual
   # segment are not ordered with respect to each other.
   - name: vector_ls_seg_indexed_unordered
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: memory-ordering guarantees are not observable from a single-hart self-checking signature",
+      ]
 
   # If element 0 raises an exception, vl is not modified, and the trap is taken. If
   # an element &gt; 0 raises an exception, the corresponding trap is not taken, and
   # the vector length vl is reduced to the index of the element that would have
   # raised an exception.
   - name: vector_ff_op
-    coverpoint: [""]
+    coverpoint: ["Vls16_vle8ff_v_cg/cp_custom_ffLS_update_vl"]
 
   # Vector indexed operations add the contents of each element of the vector offset
   # operand specified by vs2 to the base effective address to give the effective
@@ -736,66 +818,65 @@ normative_rule_definitions:
   # while the offset vector register group has EEW encoded in the instruction and
   # EMUL=(EEW/SEW)*LMUL.
   - name: vector_ls_indexed_op
-    coverpoint: [""]
+    coverpoint:
+      ["Vls16_vloxei16_v_cg/cp_vs2", "Vls16_vloxei16_v_cg/cp_vs2_edges_ls"]
 
   # Indexed operations use the explicit EEW encoding in the instruction to set the
   # size of the indices used, and use SEW/LMUL to specify the data width.
   - name: vector_ls_indexed_eew
-    # Representative coverpoints; the same coverpoints in every indexed Vls covergroup
     coverpoint:
       [
-        "Vls8_vloxei64_v_cg/{cp_vs2_edges_ls, cr_vl_lmul_e64_sew8}",
-        "Vls64_vluxei8_v_cg/{cp_vs2_edges_ls, cr_vl_lmul_e8_sew64}",
-        "Vls32_vsoxei16_v_cg/cr_vl_lmul_e16_sew32",
+        "{Vls8_vloxei16_v_cg,Vls16_vloxei16_v_cg,Vls32_vloxei16_v_cg,Vls64_vloxei16_v_cg}/cp_asm_count",
       ]
 
   # Implementations must provide vector loads and stores with EEWs corresponding to
   # all supported SEW settings.
   - name: vector_ls_ins_req
-    # Representative coverpoints; cp_asm_count in the strided, indexed and segment Vls covergroups for each EEW
     coverpoint:
       [
-        "{Vls8_vle8_v_cg, Vls8_vle16_v_cg, Vls8_vle32_v_cg, Vls8_vle64_v_cg}/cp_asm_count",
-        "{Vls8_vse8_v_cg, Vls8_vse16_v_cg, Vls8_vse32_v_cg, Vls8_vse64_v_cg}/cp_asm_count",
+        "{Vls8_vle8_v_cg,Vls16_vle16_v_cg,Vls32_vle32_v_cg,Vls64_vle64_v_cg}/cp_asm_count",
       ]
 
   # Vector load/store encodings for unsupported EEW widths are reserved.
   - name: vector_ls_ins_rsv
-    coverpoint: [""]
+    coverpoint: ["SsstrictV_vle8_v_cg/cp_ssstrictv_ls_eew_lt_sewmin"]
 
   # The vector offset operand is treated as a vector of byte-address offsets.
   - name: vector_ls_bytewise
-    coverpoint: [""]
+    coverpoint: ["Vls16_vloxei16_v_cg/cp_vs2_edges_ls"]
 
   # If the vector offset elements are narrower than XLEN, they are zero-extended to
   # XLEN before adding to the base effective address. If the vector offset elements
   # are wider than XLEN, the least-significant XLEN bits are used in the address
   # calculation.
   - name: vector_ls_xlen_dep
-    coverpoint: [""]
+    coverpoint: ["Vls16_vloxei64_v_cg/cp_custom_ls_indexed_truncated"]
 
   # If the implementation does not support the EEW of the offset elements, the
   # instruction is reserved.
   - name: vector_ls_eew_rsv
-    coverpoint: [""]
+    coverpoint: ["ExceptionsVls_vloxei16_v_cg/cp_exceptionsv_index_eew16"]
 
   # Vector unit-stride and constant-stride memory accesses do not guarantee ordering
   # between individual element accesses. The vector indexed load and store memory
   # operations have two forms, ordered and unordered. The indexed-ordered variants
   # preserve element ordering on memory accesses.
   - name: vector_ls_stride_ordered_op
-    coverpoint: [""]
+    coverpoint: ["Vls16_vloxei16_v_cg/index_register_data_overlap"]
 
   # For unordered instructions (mop[1:0]!=11) there is no guarantee on element
   # access order. If the accesses are to a strongly ordered IO region, the element
   # accesses can be initiated in any order.
   - name: vector_ls_stride_unordered_op
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: memory-ordering guarantees are not observable from a single-hart self-checking signature",
+      ]
 
   # For implementations with precise vector traps, exceptions on indexed-unordered
   # stores must also be precise.
   - name: vector_ls_stride_unordered_precise
-    coverpoint: [""]
+    coverpoint: ["ExceptionsVls_vsoxei16_v_cg/cp_exceptionsv_address_fault"]
 
   # The nf[2:0] field encodes the number of fields in each segment. For regular
   # vector loads and stores, nf=0, indicating that a single value is moved between a
@@ -803,67 +884,47 @@ normative_rule_definitions:
   # nf field are used to access multiple contiguous fields within a segment as
   # described below in .
   - name: vector_ls_nf_op
-    # Representative coverpoints; cr_vl_lmul_e*_emul*max_sew* in every segment Vls covergroup
-    coverpoint:
-      [
-        "Vls8_vle8_v_cg/cr_vl_lmul_e8_sew8",
-        "Vls8_vlseg2e8_v_cg/cr_vl_lmul_e8_emul4max_sew8",
-        "Vls8_vlseg8e8_v_cg/cr_vl_lmul_e8_emul1max_sew8",
-        "Vls8_vssseg4e8_v_cg/cr_vl_lmul_e8_emul2max_sew8",
-      ]
+    coverpoint: ["Vls16_vlseg2e8_v_cg/cp_asm_count"]
 
   # The nf[2:0] field also encodes the number of whole vector registers to transfer
   # for the whole vector register load/store instructions.
   - name: vector_wholels_nf_op
-    coverpoint: [""]
+    coverpoint:
+      [
+        "{Vls16_vl1re8_v_cg,Vls16_vl2re8_v_cg,Vls16_vl4re8_v_cg,Vls16_vl8re8_v_cg}/cp_asm_count",
+      ]
 
   # Vector loads and stores have an EEW encoded directly in the instruction. The
   # corresponding EMUL is calculated as EMUL = (EEW/SEW)*LMUL.
   - name: vector_ls_eew_emul
-    # Representative coverpoints; cr_vl_lmul_e*_sew* in every Vls covergroup
     coverpoint:
       [
-        "Vls8_vle64_v_cg/cr_vl_lmul_e64_sew8",
-        "Vls64_vle8_v_cg/cr_vl_lmul_e8_sew64",
-        "Vls8_vse32_v_cg/cr_vl_lmul_e32_sew8",
-        "Vls64_vlse16_v_cg/cr_vl_lmul_e16_sew64",
+        "{Vls8_vle8_v_cg,Vls16_vle8_v_cg,Vls32_vle8_v_cg,Vls64_vle8_v_cg}/cp_asm_count",
+        "Vls16_vl2re8_v_cg/cp_vd_emul2",
       ]
 
   # If the EMUL would be out of range (EMUL&gt;8 or EMUL&lt;1/8), the instruction
   # encoding is reserved.
   - name: vector_ls_emul_rsv
-    coverpoint: [""]
+    coverpoint: ["ExceptionsVls_vloxei16_v_cg/cp_exceptionsv_index_eew16"]
 
   # The vector register groups must have legal register specifiers for the selected
   # EMUL, otherwise the instruction encoding is reserved.
   - name: vector_ls_emul_offgroup_rsv
-    coverpoint: [""]
+    coverpoint: ["SsstrictV_vl8re8_v_cg/cp_ssstrictv_ls_wr_nreg8_vd_unaligned"]
 
   # Vector unit-stride and constant-stride use the EEW/EMUL encoded in the
   # instruction for the data values, while vector indexed loads and stores use the
   # EEW/EMUL encoded in the instruction for the index values and the SEW/LMUL
   # encoded in vtype for the data values.
   - name: vector_ls_indexed_eew_emul
-    # Representative coverpoints; cr_vl_lmul_e*_sew* in every Vls covergroup
     coverpoint:
-      [
-        "Vls8_vle64_v_cg/cr_vl_lmul_e64_sew8",
-        "Vls64_vse8_v_cg/cr_vl_lmul_e8_sew64",
-        "Vls8_vloxei64_v_cg/cr_vl_lmul_e64_sew8",
-        "Vls64_vluxei8_v_cg/cr_vl_lmul_e8_sew64",
-      ]
+      ["Vls16_vloxei16_v_cg/cp_vd", "Vls16_vloxei16_v_cg/cp_vs2_edges_ls"]
 
   # The mew bit (inst[28]) when set is expected to be used to encode expanded memory
   # sizes of 128 bits and above, but these encodings are currently reserved.
   - name: vector_ls_mew_rsv
-    # Representative coverpoints; cp_ssstrictv_ls_mew_reserved in every SsstrictV load/store covergroup
-    coverpoint:
-      [
-        "SsstrictV_vle8_v_cg/cp_ssstrictv_ls_mew_reserved",
-        "SsstrictV_vse32_v_cg/cp_ssstrictv_ls_mew_reserved",
-        "SsstrictV_vlse16_v_cg/cp_ssstrictv_ls_mew_reserved",
-        "SsstrictV_vsoxei64_v_cg/cp_ssstrictv_ls_mew_reserved",
-      ]
+    coverpoint: ["SsstrictV_vle8_v_cg/cp_ssstrictv_ls_mew_reserved"]
 
   # Additional unit-stride mask load and store instructions are provided to transfer
   # mask values to/from memory. These operate similarly to unmasked byte loads or
@@ -871,40 +932,38 @@ normative_rule_definitions:
   # EMUL=1), and the destination register is always written with a tail-agnostic
   # policy.
   - name: vector_ls_unit_stride_mask
-    coverpoint: [""]
+    coverpoint: ["Vls16_vlm_v_cg/cp_custom_maskLS_emul_ge_16"]
 
   # Negative and zero strides are supported.
   - name: vector_ls_neg_zero_stride
-    # Representative coverpoints; cp_rs2_edges_ls_e* in every strided Vls covergroup
-    coverpoint:
-      [
-        "{Vls8_vlse8_v_cg, Vls8_vsse8_v_cg}/cp_rs2_edges_ls_e8",
-        "{Vls8_vlse64_v_cg, Vls8_vsse64_v_cg}/cp_rs2_edges_ls_e64",
-      ]
+    coverpoint: ["Vls16_vlse8_v_cg/cp_rs2_edges_ls_e8"]
 
   # Element accesses within a constant-stride instruction are unordered with respect
   # to each other.
   - name: vector_ls_constant_stride_unordered
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: memory-ordering guarantees are not observable from a single-hart self-checking signature",
+      ]
 
   # When rs2=x0, then an implementation is allowed, but not required, to perform
   # fewer memory operations than the number of active elements, and may perform
   # different numbers of memory operations across different dynamic executions of
   # the same static instruction.
   - name: vector_ls_constant_stride_x0
-    coverpoint: [""]
+    coverpoint: ["Vls16_vlse8_v_cg/cp_rs2_edges_ls_e8"]
 
   # The unit-stride fault-only-first load instructions are used to vectorize loops
   # with data-dependent exit conditions ("while" loops). These instructions execute
   # as a regular load except that they will only take a trap caused by a synchronous
   # exception on element 0.
   - name: vector_ff_trigger
-    coverpoint: [""]
+    coverpoint: ["Vls16_vle8ff_v_cg/cp_custom_ffLS_fault_addr"]
 
   # Load instructions may overwrite active destination vector register group
   # elements past the element index at which the trap is reported.
   - name: vector_ls_overwrite_past_trap
-    coverpoint: [""]
+    coverpoint: ["ExceptionsVls_vle8_v_cg/cp_exceptionsv_address_fault"]
 
   # Similarly, fault-only-first load instructions may update active destination
   # elements past the element that causes trimming of the vector length (but not
@@ -914,13 +973,16 @@ normative_rule_definitions:
   # corresponding element load operation will not be restarted due to a trap or
   # vector-length trimming.
   - name: vector_ff_past_trap
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: implementation-defined spurious past-trap updates are not observable from a self-checking signature",
+      ]
 
   # Even when an exception is not raised, implementations are permitted to process
   # fewer than vl elements and reduce vl accordingly, but if vstart=0 and vl&gt;0,
   # then at least one element must be processed.
   - name: vector_ff_no_exception
-    coverpoint: [""]
+    coverpoint: ["Vls16_vle8ff_v_cg/cp_custom_ffLS_update_vl"]
 
   # When the fault-only-first instruction takes a trap due to an interrupt,
   # implementations should not reduce vl and should instead set a vstart value.
@@ -930,12 +992,9 @@ normative_rule_definitions:
   # The three-bit nf field in the vector instruction encoding is an unsigned integer that
   # contains one less than the number of fields per segment, NFIELDS.
   - name: nfields
-    # Representative coverpoints; cr_vl_lmul_e*_emul*max_sew* in every segment Vls covergroup
     coverpoint:
       [
-        "Vls8_vlseg2e8_v_cg/cr_vl_lmul_e8_emul4max_sew8",
-        "Vls8_vlseg8e8_v_cg/cr_vl_lmul_e8_emul1max_sew8",
-        "Vls8_vssseg4e8_v_cg/cr_vl_lmul_e8_emul2max_sew8",
+        "{Vls16_vlseg2e8_v_cg,Vls16_vlseg4e8_v_cg,Vls16_vlseg8e8_v_cg}/cp_asm_count",
       ]
   # Each field will be held in successively numbered vector register groups. When
   # EMUL&gt;1, each field will occupy a vector register group held in multiple
@@ -944,143 +1003,160 @@ normative_rule_definitions:
   # NFIELDS=4, each field&#8217;s vector register group must start at an even vector
   # register, but does not have to start at a multiple of 8 vector register number).
   - name: nfields_op
-    # Representative coverpoints; the same coverpoints in every segment Vls covergroup
     coverpoint:
       [
-        "Vls8_vlseg2e8_v_cg/{cp_vd_lte30, cr_vl_lmul_e8_emul4max_sew8}",
-        "Vls8_vlseg4e16_v_cg/cr_vl_lmul_e16_emul2max_sew8",
-        "Vls8_vsseg2e8_v_cg/{cp_vs3_lte30, cr_vl_lmul_e8_emul4max_sew8}",
+        "{Vls16_vlseg2e8_v_cg,Vls16_vlseg4e8_v_cg,Vls16_vlseg8e8_v_cg}/cp_asm_count",
       ]
 
   # The EMUL setting must be such that EMUL * NFIELDS ≤ 8, otherwise the instruction
   # encoding is reserved.
   - name: emul_nfields_rsv
-    coverpoint: [""]
+    coverpoint: ["SsstrictV_vlseg2e8_v_cg/cp_ssstrictv_ls_seg_vd_overflow"]
 
   # If the vector register numbers accessed by the segment load or store would
   # increment past 31, then the instruction encoding is reserved.
   - name: vector_ls_seg_rsv
-    coverpoint: [""]
+    coverpoint: ["SsstrictV_vlseg2e8_v_cg/cp_ssstrictv_ls_seg_vd_overflow"]
 
   # The vl register gives the number of segments to move, which is equal to the
   # number of elements transferred to each vector register group. Masking is also
   # applied at the level of whole segments.
   - name: vector_ls_seg_op
-    coverpoint: [""]
+    coverpoint: ["Vls16_vlseg2e8_v_cg/cr_vl_lmul_e8_emul4max_sew16"]
 
   # For segment loads and stores, the individual memory accesses used to access
   # fields within each segment are unordered with respect to each other even for
   # ordered indexed segment loads and stores.
   - name: vector_ls_seg_unordered
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: memory-ordering guarantees are not observable from a single-hart self-checking signature",
+      ]
 
   # The vstart value is in units of whole segments.
   - name: vector_ls_seg_vstart_dep
-    # Representative coverpoints; cp_vstart in every segment ExceptionsVls covergroup
-    coverpoint:
-      [
-        "ExceptionsVls_vlseg2e8_v_cg/cp_vstart",
-        "ExceptionsVls_vlsseg4e16_v_cg/cp_vstart",
-        "ExceptionsVls_vloxseg8ei32_v_cg/cp_vstart",
-        "ExceptionsVls_vsseg3e64_v_cg/cp_vstart",
-      ]
+    coverpoint: ["ExceptionsVls_vlseg2e8_v_cg/cp_vstart"]
 
   # If a trap occurs during access to a segment, it is implementation-defined
   # whether a subset of the faulting segment's accesses are performed before the
   # trap is taken.
   - name: vector_ls_seg_partial_access
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: implementation-defined partial-segment-access behavior is not observable from a self-checking signature",
+      ]
 
   # The vector unit-stride load and store segment instructions move packed
   # contiguous segments into multiple destination vector register groups.
   - name: vector_ls_seg_unit_stride_op
-    coverpoint: [""]
+    coverpoint: ["Vls16_vlseg2e8_v_cg/cp_vd_lte30"]
 
   # For fault-only-first segment loads, if an exception is detected partway through
   # accessing the zeroth segment, the trap is taken. If an exception is detected
   # partway through accessing a subsequent segment, vl is reduced to the index of
   # that segment.
   - name: vector_ls_seg_ff_unit_stride_op
-    coverpoint: [""]
+    coverpoint:
+      ["ExceptionsVls_vlseg2e8ff_v_cg/cp_exceptionsv_ffLS_first_elm_trap"]
 
   # In both cases, it is implementation-defined whether a subset of the segment is
   # loaded.
   - name: vector_ff_seg_partial_access
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: implementation-defined partial-segment-access behavior is not observable from a self-checking signature",
+      ]
 
   # These instructions may overwrite destination vector register group elements past
   # the point at which a trap is reported or past the point at which vector length
   # is trimmed.
   - name: vector_ls_seg_ff_overload
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: implementation-defined spurious past-trap updates are not observable from a self-checking signature",
+      ]
 
   # Vector constant-stride segment loads and stores move contiguous segments where
   # each segment is separated by the byte-stride offset given in the rs2 GPR
   # argument.
   - name: vector_ls_seg_constant_stride_op
-    coverpoint: [""]
+    coverpoint: ["Vls16_vlsseg2e8_v_cg/cp_rs2"]
 
   # Accesses to the fields within each segment can occur in any order, including the
   # case where the byte stride is such that segments overlap in memory.
   - name: vector_ls_seg_constant_stride_unordered
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: memory-ordering guarantees are not observable from a single-hart self-checking signature",
+      ]
 
   # Vector indexed segment loads and stores move contiguous segments where each
   # segment is located at an address given by adding the scalar base address in the
   # rs1 field to byte offsets in vector register vs2.
   - name: vector_ls_seg_indexed_op
-    coverpoint: [""]
+    coverpoint: ["Vls16_vloxseg2ei8_v_cg/cp_vs2"]
 
   # The data vector register group has EEW=SEW, EMUL=LMUL, while the index vector register
   # group has EEW encoded in the instruction with EMUL=(EEW/SEW)*LMUL.
   - name: vector_ls_seg_indexed_eew_emul_op
-    # Representative coverpoints; the same coverpoints in every indexed segment Vls covergroup
-    coverpoint:
-      [
-        "Vls8_vloxseg2ei16_v_cg/cr_vl_lmul_e16_emul4max_sew8",
-        "Vls64_vluxseg2ei8_v_cg/cr_vl_lmul_e8_emul4max_sew64",
-        "Vls8_vloxseg2ei16_v_cg/cp_custom_indexed_emul_data_only",
-      ]
+    coverpoint: ["Vls16_vloxseg2ei8_v_cg/cr_vl_lmul_e8_emul4max_sew16"]
 
   # The EMUL * NFIELDS ≤ 8 constraint applies to the data vector register group.
   - name: vector_ls_seg_indexed_emul_nfields_val
-    # Representative coverpoints; cp_custom_indexed_emul_data_only in every indexed segment Vls covergroup
-    coverpoint:
-      [
-        "Vls8_vloxseg2ei16_v_cg/cp_custom_indexed_emul_data_only",
-        "Vls8_vloxseg4ei32_v_cg/cp_custom_indexed_emul_data_only",
-        "Vls8_vloxseg8ei64_v_cg/cp_custom_indexed_emul_data_only",
-      ]
+    coverpoint: ["SsstrictV_vlseg2e8_v_cg/cp_ssstrictv_ls_seg_vd_overflow"]
 
   # For vector indexed segment loads, the destination vector register groups cannot
   # overlap the source vector register group (specified by vs2), else the
   # instruction encoding is reserved.
   - name: vector_ls_seg_indexed_vreg_rsv
-    coverpoint: [""]
+    coverpoint:
+      ["SsstrictV_vloxseg2ei8_v_cg/cp_ssstrictv_ls_seg_idx_vd_vs2_overlap"]
 
   # The load instructions have an EEW encoded in the mew and width fields following
   # the pattern of regular unit-stride loads.
   - name: vector_ls_seg_wholereg_eew
-    # Representative coverpoints; cp_asm_count in the vl2re/vl4re/vl8re Vls covergroups
     coverpoint:
       [
-        "{Vls8_vl1re8_v_cg, Vls8_vl1re16_v_cg, Vls8_vl1re32_v_cg, Vls8_vl1re64_v_cg}/cp_asm_count",
+        "Vls16_vl1re16_v_cg/cp_custom_vwholeRegLS_lmul",
+        "Vls16_vl1re8_v_cg/cp_asm_count",
+        "Vls16_vl1re16_v_cg/cp_asm_count",
+        "Vls16_vl1re32_v_cg/cp_asm_count",
+        "Vls16_vl1re64_v_cg/cp_asm_count",
+        "Vls16_vl2re8_v_cg/cp_asm_count",
+        "Vls16_vl2re16_v_cg/cp_asm_count",
+        "Vls16_vl2re32_v_cg/cp_asm_count",
+        "Vls16_vl2re64_v_cg/cp_asm_count",
+        "Vls16_vl4re8_v_cg/cp_asm_count",
+        "Vls16_vl4re16_v_cg/cp_asm_count",
+        "Vls16_vl4re32_v_cg/cp_asm_count",
+        "Vls16_vl4re64_v_cg/cp_asm_count",
+        "Vls16_vl8re8_v_cg/cp_asm_count",
+        "Vls16_vl8re16_v_cg/cp_asm_count",
+        "Vls16_vl8re32_v_cg/cp_asm_count",
+        "Vls16_vl8re64_v_cg/cp_asm_count",
       ]
 
   # NFIELDS indicates the number of vector registers to transfer, numbered
   # successively after the base.
   - name: vector_ls_seg_wholereg_op
-    coverpoint: [""]
+    coverpoint:
+      [
+        "{Vls16_vl1re8_v_cg,Vls16_vl2re8_v_cg,Vls16_vl4re8_v_cg,Vls16_vl8re8_v_cg}/cp_asm_count",
+      ]
 
   # Only NFIELDS values of 1, 2, 4, 8 are supported, with other values reserved.
   - name: vector_ls_seg_wholereg_nf_rsv
-    coverpoint: [""]
+    coverpoint:
+      [
+        "SsstrictV_vl1re8_v_cg/cp_ssstrictv_ls_wr_nf_not_pow2",
+        "SsstrictV_vs1r_v_cg/cp_ssstrictv_ls_wr_nf_not_pow2",
+      ]
 
   # When multiple registers are transferred, the lowest-numbered vector register is
   # held in the lowest-numbered memory addresses and successive vector register
   # numbers are placed contiguously in memory.
   - name: vector_ls_seg_wholereg_op_cont
-    coverpoint: [""]
+    coverpoint: ["Vls16_vl2re8_v_cg/cp_custom_vwholeRegLS_lmul"]
 
   # The instructions operate with an effective vector length, evl=NFIELDS*VLEN/EEW,
   # regardless of current settings in vtype and vl. The usual property that no
@@ -1089,7 +1165,7 @@ normative_rule_definitions:
   # largest element index for the current vtype setting does not apply. Instead, the
   # instructions are reserved if vstart ≥ evl.
   - name: vector_ls_seg_wholereg_evl
-    coverpoint: [""]
+    coverpoint: ["Vls16_vl2re8_v_cg/cr_vl_lmul_lmul4max_sew16"]
 
   # Implementations are allowed to raise a misaligned address exception on whole
   # register loads and stores if the base address is not naturally aligned to the
@@ -1098,100 +1174,147 @@ normative_rule_definitions:
   - name: vector_ls_wholereg_misaligned_exception
     coverpoint:
       [
-        "{MisalignV_vl1re16_v_cg,MisalignV_vl1re32_v_cg,MisalignV_vl1re64_v_cg,MisalignV_vl1re8_v_cg,MisalignV_vl2re16_v_cg,MisalignV_vl2re32_v_cg,MisalignV_vl2re64_v_cg,MisalignV_vl2re8_v_cg,MisalignV_vl4re16_v_cg,MisalignV_vl4re32_v_cg,MisalignV_vl4re64_v_cg,MisalignV_vl4re8_v_cg,MisalignV_vl8re16_v_cg,MisalignV_vl8re32_v_cg,MisalignV_vl8re64_v_cg,MisalignV_vl8re8_v_cg,MisalignV_vs1r_v_cg,MisalignV_vs2r_v_cg,MisalignV_vs4r_v_cg,MisalignV_vs8r_v_cg}/{cp_misalignv_ls_wholereg_misaligned}",
+        "MisalignV_vl1re16_v_cg/cp_misalignv_ls_wholereg_misaligned",
+        "MisalignV_vl1re32_v_cg/cp_misalignv_ls_wholereg_misaligned",
+        "MisalignV_vl1re64_v_cg/cp_misalignv_ls_wholereg_misaligned",
+        "MisalignV_vl1re8_v_cg/cp_misalignv_ls_wholereg_misaligned",
+        "MisalignV_vl2re16_v_cg/cp_misalignv_ls_wholereg_misaligned",
+        "MisalignV_vl2re32_v_cg/cp_misalignv_ls_wholereg_misaligned",
+        "MisalignV_vl2re64_v_cg/cp_misalignv_ls_wholereg_misaligned",
+        "MisalignV_vl2re8_v_cg/cp_misalignv_ls_wholereg_misaligned",
+        "MisalignV_vl4re16_v_cg/cp_misalignv_ls_wholereg_misaligned",
+        "MisalignV_vl4re32_v_cg/cp_misalignv_ls_wholereg_misaligned",
+        "MisalignV_vl4re64_v_cg/cp_misalignv_ls_wholereg_misaligned",
+        "MisalignV_vl4re8_v_cg/cp_misalignv_ls_wholereg_misaligned",
+        "MisalignV_vl8re16_v_cg/cp_misalignv_ls_wholereg_misaligned",
+        "MisalignV_vl8re32_v_cg/cp_misalignv_ls_wholereg_misaligned",
+        "MisalignV_vl8re64_v_cg/cp_misalignv_ls_wholereg_misaligned",
+        "MisalignV_vl8re8_v_cg/cp_misalignv_ls_wholereg_misaligned",
+        "MisalignV_vs1r_v_cg/cp_misalignv_ls_wholereg_misaligned",
+        "MisalignV_vs2r_v_cg/cp_misalignv_ls_wholereg_misaligned",
+        "MisalignV_vs4r_v_cg/cp_misalignv_ls_wholereg_misaligned",
+        "MisalignV_vs8r_v_cg/cp_misalignv_ls_wholereg_misaligned",
       ]
 
   # If an element accessed by a vector memory instruction is not naturally aligned
   # to the size of the element, either the element is transferred successfully or an
   # address-misaligned exception is raised on that element.
   - name: vector_ls_misaligned_exception
-    # Representative coverpoints; cp_misalignv_ls_element_misaligned in every MisalignV covergroup
     coverpoint:
       [
-        "{MisalignV_vle16_v_cg, MisalignV_vle32_v_cg, MisalignV_vle64_v_cg}/cp_misalignv_ls_element_misaligned",
-        "{MisalignV_vse16_v_cg, MisalignV_vse32_v_cg, MisalignV_vse64_v_cg}/cp_misalignv_ls_element_misaligned",
-        "{MisalignV_vlse16_v_cg, MisalignV_vlse32_v_cg, MisalignV_vlse64_v_cg}/cp_misalignv_ls_element_misaligned",
-        "{MisalignV_vloxei16_v_cg, MisalignV_vluxseg2ei32_v_cg, MisalignV_vsoxei64_v_cg}/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vle16_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vle32_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vle64_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vle8_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vse16_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vse32_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vse64_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vse8_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vlm_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vlse16_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vlse32_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vlse64_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vlse8_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vsm_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vsse16_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vsse32_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vsse64_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vsse8_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vle16ff_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vle32ff_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vle64ff_v_cg/cp_misalignv_ls_element_misaligned",
+        "MisalignV_vle8ff_v_cg/cp_misalignv_ls_element_misaligned",
       ]
 
   # Vector memory instructions appear to execute in program order on the local hart.
   - name: vector_ls_program_order
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Not Tested: RVWMO program-order guarantees would require a concurrent/multi-hart checking methodology this repo doesn't have yet",
+      ]
 
   # Vector memory instructions follow RVWMO at the instruction level.
   - name: vector_ls_rvwmo
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Not Tested: RVWMO memory-ordering guarantees would require a concurrent/multi-hart checking methodology this repo doesn't have yet",
+      ]
 
   # Except for vector indexed-ordered loads and stores, element operations are
   # unordered within the instruction.
   - name: vector_ls_indexed_ordered_ordered
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: memory-ordering guarantees are not observable from a single-hart self-checking signature",
+      ]
 
   # Vector indexed-ordered loads and stores read and write elements from/to memory
   # in element order respectively, obeying RVWMO at the element level.
   - name: vector_ls_indexed_ordered_rvwmo
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Not Tested: RVWMO memory-ordering guarantees would require a concurrent/multi-hart checking methodology this repo doesn't have yet",
+      ]
 
   # Instructions affected by the vector length register vl have a control dependency
   # on vl, rather than a data dependency.
   - name: vl_control_dependency
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Not Tested: control-dependency timing is not exercised by any suite yet",
+      ]
 
   # Similarly, masked vector instructions have a control dependency on the source
   # mask register, rather than a data dependency.
   - name: vmask_control_dependency
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Not Tested: control-dependency timing is not exercised by any suite yet",
+      ]
 
   # All vector floating-point operations use the dynamic rounding mode in the frm
   # register.
   - name: V_fp_frm
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfadd_vv_cg/cp_csr_frm_v"]
 
   # Use of the frm field when it contains an invalid rounding mode by any vector
   # floating-point instruction--even those that do not depend on the rounding mode,
   # or when vl=0, or when vstart {ge} vl--is reserved.
   - name: V_inv_frm_rsv
-    coverpoint: [""]
+    coverpoint: ["Out-of-Scope: Ssstrict does not apply to CSR values"]
 
   # Vector-vector operations take two vectors of operands from vector register
   # groups specified by vs2 and vs1 respectively.
   - name: vop-vv_vreg_vs2_vs1
-    coverpoint: [""]
+    coverpoint: ["Vx16_vadd_vv_cg/cr_vs2_vs1_edges"]
 
   # the vector register group operand is specified by vs2.
   - name: vop-vx_vop-vi_vreg_vs2
-    # Representative coverpoints; cp_vs2 in every .vx and .vi Vx covergroup
-    coverpoint:
-      [
-        "Vx8_vadd_vx_cg/cp_vs2",
-        "Vx8_vadd_vi_cg/cp_vs2",
-        "Vx64_vadd_vx_cg/cp_vs2",
-        "Vx64_vadd_vi_cg/cp_vs2",
-      ]
+    coverpoint: ["{Vx16_vadd_vx_cg,Vx16_vadd_vi_cg}/cp_vs2"]
 
   # For integer operations, the scalar can be a 5-bit immediate, imm[4:0], encoded
   # in the rs1 field. The value is sign-extended to SEW bits, unless otherwise
   # specified.
   - name: vop-vi_imm_5bit
-    coverpoint: [""]
+    coverpoint: ["Vx16_vadd_vi_cg/cp_imm_edges_5bit"]
 
   # For integer operations, the scalar can be taken from the scalar x register
   # specified by rs1.
   - name: vop-vx_xreg_rs1
-    coverpoint: [""]
+    coverpoint: ["Vx16_vadd_vx_cg/cp_rs1"]
 
   # If XLEN&gt;SEW, the least-significant SEW bits of the x register are used,
   # unless otherwise specified.
   - name: vop-vx_rs1_trunc_lsb_sewbits
-    coverpoint: [""]
+    coverpoint: ["Vx16_vadd_vx_cg/cp_rs1_edges"]
 
   # If XLEN&lt;SEW, the value from the x register is sign-extended to SEW bits.
   - name: vop-vx_rs1_sext_sewbits
-    coverpoint: [""]
+    coverpoint: ["Vx64_vadd_vx_cg/cp_rs1_edges"]
 
   # For floating-point operations, the scalar can be taken from a scalar f register.
   - name: vfop_freg
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfadd_vf_cg/cp_fs1"]
 
   # If FLEN &gt; SEW, the value in the f registers is checked for a valid NaN-boxed
   # value, in which case the least-significant SEW bits of the f register are used,
@@ -1203,7 +1326,7 @@ normative_rule_definitions:
   # supported floating-point type width (which includes when FLEN &lt; SEW) are
   # reserved.
   - name: V_fp_eew_rsv
-    coverpoint: [""]
+    coverpoint: ["ExceptionsVf16_vfadd_vv_cg/cp_vill"]
 
   # When adding a vector extension to the Zfinx/Zdinx/Zhinx extensions,
   # floating-point scalar arguments are taken from the x registers. NaN-boxing is
@@ -1215,188 +1338,109 @@ normative_rule_definitions:
 
   # Vector arithmetic instructions are masked under control of the vm field.
   - name: V_masked
-    coverpoint: [""]
+    coverpoint: ["Vx16_vadd_vv_cg/cp_masking_edges"]
 
   # A few vector arithmetic instructions are defined to be widening operations where
   # the destination vector register group has EEW=2*SEW and EMUL=2*LMUL.
   - name: vwop_vd_eew_emul
-    coverpoint: [""]
+    coverpoint: ["Vx16_vwaddu_vv_cg/cp_vd_emul2"]
 
   # A few instructions are provided to convert double-width source vectors into
   # single-width destination vectors. These instructions convert a vector register group
   # specified by vs2 with EEW/EMUL=2*SEW/2*LMUL to a vector register group with the
   # current SEW/LMUL setting.
   - name: vnop_vd_vs2_eew_emul
-    # Representative coverpoints; the same coverpoints in the .wx/.wi forms and Vx16 covergroups
-    coverpoint:
-      [
-        "{Vx8_vnsrl_wv_cg, Vx8_vnsra_wv_cg, Vx8_vnclip_wv_cg, Vx8_vnclipu_wv_cg}/{cp_vs2_emul2, cr_vl_lmul_lmul4max_sew8}",
-        "{Vx32_vnsrl_wv_cg, Vx32_vnsra_wv_cg, Vx32_vnclip_wv_cg, Vx32_vnclipu_wv_cg}/{cp_vs2_emul2, cr_vl_lmul_lmul4max_sew32}",
-      ]
+    coverpoint: ["Vx16_vnsrl_wv_cg/cp_vs2_emul2"]
 
   # Where there is a second source vector register group (specified by vs1), this
   # has the same (narrower) width as the result (i.e., EEW=SEW).
   - name: vnop_vs1_eew_emul
-    coverpoint: [""]
+    coverpoint: ["Vx16_vnsrl_wv_cg/cp_vs1_edges"]
 
   # Vector integer add and subtract are provided.
   - name: vadd_vsub_op
-    # Representative coverpoints; the same coverpoints in vadd.vi, vrsub and the Vx16/Vx32 covergroups
-    coverpoint:
-      [
-        "{Vx8_vadd_vv_cg, Vx8_vsub_vv_cg}/{cr_vs2_vs1_edges, cr_vl_lmul_sew8}",
-        "{Vx8_vadd_vx_cg, Vx8_vsub_vx_cg}/cr_vs2_rs1_edges",
-        "{Vx64_vadd_vv_cg, Vx64_vsub_vv_cg}/{cr_vs2_vs1_edges, cr_vl_lmul_sew64}",
-      ]
+    coverpoint: ["Vx16_vadd_vv_cg/cp_vd", "Vx16_vsub_vv_cg/cp_vd"]
 
   # Reverse-subtract instructions are also provided for the vector-scalar forms.
   - name: vrsub_op
-    coverpoint: [""]
+    coverpoint: ["Vx16_vrsub_vx_cg/cp_vd"]
 
   # The widening add/subtract instructions are provided in both signed and unsigned
   # variants, depending on whether the narrower source operands are first sign- or
   # zero-extended before forming the double-width sum.
   - name: vwaddu_vwadd_vwsubu_vwsub_op
-    # Representative coverpoints; the same coverpoints in the .vx/.wx forms and Vx16 covergroups
-    coverpoint:
-      [
-        "{Vx8_vwaddu_vv_cg, Vx8_vwadd_vv_cg, Vx8_vwsubu_vv_cg, Vx8_vwsub_vv_cg}/cr_vs2_vs1_edges",
-        "{Vx8_vwaddu_wv_cg, Vx8_vwadd_wv_cg, Vx8_vwsubu_wv_cg, Vx8_vwsub_wv_cg}/cr_vs2_vs1_edges_wv",
-        "{Vx32_vwaddu_vv_cg, Vx32_vwadd_vv_cg, Vx32_vwsubu_vv_cg, Vx32_vwsub_vv_cg}/cr_vs2_vs1_edges",
-      ]
+    coverpoint: ["Vx16_vwaddu_vv_cg/cp_vd_emul2"]
 
   # The vector integer extension instructions zero- or sign-extend a source vector integer
   # operand with EEW less than SEW to fill SEW-sized elements in the destination.
   - name: vsext_vzext_op
-    # Representative coverpoints; the same coverpoints in the remaining Vx32/Vx64 vsext/vzext covergroups
-    coverpoint:
-      [
-        "{Vx16_vsext_vf2_cg, Vx16_vzext_vf2_cg}/{cp_vs2_edges_emulf2, cr_vl_lmul_sew16}",
-        "{Vx32_vsext_vf4_cg, Vx32_vzext_vf4_cg}/{cp_vs2_edges_emulf4, cr_vl_lmul_sew32}",
-        "{Vx64_vsext_vf8_cg, Vx64_vzext_vf8_cg}/{cp_vs2_edges_emulf8, cr_vl_lmul_sew64}",
-      ]
+    coverpoint: ["Vx16_vsext_vf2_cg/cp_vd"]
 
   # The EEW of the source is 1/2, 1/4, or 1/8 of SEW, while EMUL of the source is
   # (EEW/SEW)*LMUL.
   - name: vsext_vzext_vs_eew_emul
-    # Representative coverpoints; the same coverpoints in every vsext/vzext covergroup
-    coverpoint:
-      [
-        "Vx16_vsext_vf2_cg/{cp_vs2_edges_emulf2, cr_vl_lmul_sew16}",
-        "Vx32_vzext_vf4_cg/{cp_vs2_edges_emulf4, cr_vl_lmul_sew32}",
-        "Vx64_vsext_vf8_cg/{cp_vs2_edges_emulf8, cr_vl_lmul_sew64}",
-      ]
+    coverpoint: ["Vx16_vsext_vf2_cg/cp_vs2_edges_emulf2"]
 
   # The destination has EEW equal to SEW and EMUL equal to LMUL.
   - name: vsext_vzext_vd_eew_emul
-    # Representative coverpoints; the same coverpoints in every vsext/vzext covergroup
-    coverpoint:
-      [
-        "Vx16_vsext_vf2_cg/{cp_vd, cr_vl_lmul_sew16}",
-        "Vx64_vzext_vf8_cg/{cp_vd, cr_vl_lmul_sew64}",
-      ]
+    coverpoint: ["Vx16_vsext_vf2_cg/cp_vd"]
 
   # If the source EEW is not a supported width, or source EMUL would be below the minimum
   # legal LMUL, the instruction encoding is reserved.
   - name: vsext_vzext_ill_eew_emul_rsv
-    coverpoint: [""]
+    coverpoint: ["ExceptionsVx_vsext_vf2_cg/cp_vill"]
 
   # The carry inputs and outputs are represented using the mask register layout as
   # described in &lt;&lt;sec-mask-register-layout&gt;&gt;. Due to encoding constraints,
   # the carry input must come from the implicit v0 register,
   - name: vmadc_vmsbc_vadc_vsbc_carry_v0
-    # Representative coverpoints; the same coverpoints in the .vxm/.vim and Vx16/Vx32 covergroups
-    coverpoint:
-      [
-        "{Vx8_vadc_vvm_cg, Vx8_vsbc_vvm_cg, Vx8_vmadc_vvm_cg, Vx8_vmsbc_vvm_cg}/cp_masking_edges",
-        "{Vx64_vadc_vvm_cg, Vx64_vsbc_vvm_cg, Vx64_vmadc_vvm_cg, Vx64_vmsbc_vvm_cg}/cp_masking_edges",
-        "{Vx8_vmadc_vv_cg, Vx8_vmsbc_vv_cg}/cp_custom_vmask_write_lmulge1",
-      ]
+    coverpoint: ["Vx16_vadc_vvm_cg/cp_masking_edges"]
 
   # insn:vadc[] and insn:vsbc[] add or subtract the source operands and the carry-in or
   # borrow-in, and write the result to vector register vd.
   - name: vadc_vsbc_op
-    # Representative coverpoints; the same coverpoints in vadc.vim and the Vx16/Vx32 covergroups
-    coverpoint:
-      [
-        "{Vx8_vadc_vvm_cg, Vx8_vsbc_vvm_cg}/{cr_vs2_vs1_edges, cp_masking_edges}",
-        "{Vx8_vadc_vxm_cg, Vx8_vsbc_vxm_cg}/{cr_vs2_rs1_edges, cp_masking_edges}",
-        "{Vx64_vadc_vvm_cg, Vx64_vsbc_vvm_cg}/{cr_vs2_vs1_edges, cp_masking_edges}",
-      ]
+    coverpoint: ["Vx16_vadc_vvm_cg/cp_vd_nv0"]
 
   # These instructions are encoded as masked instructions (vm=0), but they operate on and
   # write back all body elements.
   - name: vadc_vsbc_masked_write_all_elem
-    # Representative coverpoints; cp_masking_edges in every vadc/vsbc covergroup
-    coverpoint:
-      [
-        "{Vx8_vadc_vvm_cg, Vx8_vsbc_vvm_cg}/cp_masking_edges",
-        "{Vx64_vadc_vvm_cg, Vx64_vsbc_vvm_cg}/cp_masking_edges",
-      ]
+    coverpoint: ["Vx16_vadc_vvm_cg/cp_masking_edges"]
 
   # Encodings corresponding to the unmasked versions (vm=1) are reserved.
   - name: vadc_vsbc_unmasked_rsv
     coverpoint:
       [
-        "{SsstrictV_vadc_vvm_cg, SsstrictV_vadc_vxm_cg, SsstrictV_vadc_vim_cg, SsstrictV_vsbc_vvm_cg, SsstrictV_vsbc_vxm_cg}/cp_ssstrictv_vadc_vsbc_vm1_reserved",
+        "{SsstrictV_vadc_vvm_cg,SsstrictV_vsbc_vvm_cg}/cp_ssstrictv_vadc_vsbc_vm1_reserved",
       ]
 
   # insn:vmadc[] and insn:vmsbc[] add or subtract the source operands, optionally add the
   # carry-in or subtract the borrow-in if masked (vm=0), and write the resulting carry-out
   # or borrow-out back to mask register vd.
   - name: vmadc_vmsbc_op_masked
-    # Representative coverpoints; the same coverpoints in the Vx16/Vx32 covergroups
-    coverpoint:
-      [
-        "{Vx8_vmadc_vvm_cg, Vx8_vmsbc_vvm_cg}/{cr_vs2_vs1_edges, cp_masking_edges}",
-        "{Vx8_vmadc_vxm_cg, Vx8_vmsbc_vxm_cg}/{cr_vs2_rs1_edges, cp_masking_edges}",
-        "Vx8_vmadc_vim_cg/{cr_vs2_imm_edges, cp_masking_edges}",
-        "{Vx64_vmadc_vvm_cg, Vx64_vmsbc_vvm_cg}/{cr_vs2_vs1_edges, cp_masking_edges}",
-      ]
+    coverpoint: ["Vx16_vmadc_vi_cg/cp_vd", "Vx16_vmsbc_vvm_cg/cp_vd"]
   # If unmasked (vm=1), there is no carry-in or borrow-in.
   - name: vmadc_vmsbc_op_unmasked
-    # Representative coverpoints; the same coverpoints in the Vx16/Vx32 covergroups
     coverpoint:
-      [
-        "{Vx8_vmadc_vv_cg, Vx8_vmsbc_vv_cg}/cr_vs2_vs1_edges",
-        "{Vx8_vmadc_vx_cg, Vx8_vmsbc_vx_cg}/cr_vs2_rs1_edges",
-        "Vx8_vmadc_vi_cg/cr_vs2_imm_edges",
-        "{Vx64_vmadc_vv_cg, Vx64_vmsbc_vv_cg}/cr_vs2_vs1_edges",
-      ]
+      ["Vx16_vmadc_vv_cg/cr_vs2_vs1_edges", "Vx16_vmsbc_vv_cg/cr_vs2_vs1_edges"]
 
   # These instructions operate on and write back all body elements, even if masked.
   - name: vmadc_vmsbc_masked_write_all_elem
-    # Representative coverpoints; cp_masking_edges in every masked vmadc/vmsbc covergroup
-    coverpoint:
-      [
-        "{Vx8_vmadc_vvm_cg, Vx8_vmsbc_vvm_cg, Vx8_vmadc_vxm_cg, Vx8_vmsbc_vxm_cg}/cp_masking_edges",
-        "{Vx64_vmadc_vvm_cg, Vx64_vmsbc_vvm_cg, Vx64_vmadc_vxm_cg, Vx64_vmsbc_vxm_cg}/cp_masking_edges",
-      ]
+    coverpoint: ["Vx16_vmadc_vim_cg/cp_masking_edges"]
 
   # Because these instructions produce a mask value, they always operate with a
   # tail-agnostic policy.
   - name: vmadc_vmsbc_tail_agnostic
-    # Representative coverpoints; the same coverpoints in the .vx/.vi and Vx16/Vx32 covergroups
-    coverpoint:
-      [
-        "{Vx8_vmadc_vvm_cg, Vx8_vmsbc_vvm_cg}/cr_vtype_agnostic",
-        "{Vx8_vmadc_vv_cg, Vx8_vmsbc_vv_cg}/cr_vtype_agnostic_nomask",
-        "{Vx64_vmadc_vvm_cg, Vx64_vmsbc_vvm_cg}/cr_vtype_agnostic",
-        "{Vx64_vmadc_vv_cg, Vx64_vmsbc_vv_cg}/cr_vtype_agnostic_nomask",
-      ]
+    coverpoint: ["Vx16_vmadc_vim_cg/cr_vtype_agnostic"]
 
   # For vmsbc, the borrow is defined to be 1 iff the difference, prior to
   # truncation, is negative.
   - name: vmsbc_borrow_neg
-    coverpoint: [""]
+    coverpoint: ["Vx16_vmsbc_vvm_cg/cp_vs2_edges"]
 
   # For insn:vadc[] and insn:vsbc[], the instruction encoding is reserved if the
   # destination vector register is v0.
   - name: vadc_vsbc_vd_v0_rsv
-    coverpoint:
-      [
-        "{SsstrictV_vadc_vvm_cg, SsstrictV_vadc_vxm_cg, SsstrictV_vadc_vim_cg, SsstrictV_vsbc_vvm_cg, SsstrictV_vsbc_vxm_cg}/cp_ssstrictv_masking_vd_eq_v0",
-      ]
+    coverpoint: ["SsstrictV_vadc_vim_cg/cp_ssstrictv_masking_vd_eq_v0"]
 
   # # Bitwise logical operations. vand.vv vd, vs2, vs1, vm # Vector-vector vand.vx vd,
   # vs2, rs1, vm # vector-scalar vand.vi vd, vs2, imm, vm # vector-immediate vor.vv vd,
@@ -1404,14 +1448,7 @@ normative_rule_definitions:
   # imm, vm # vector-immediate vxor.vv vd, vs2, vs1, vm # Vector-vector vxor.vx vd, vs2,
   # rs1, vm # vector-scalar vxor.vi vd, vs2, imm, vm # vector-immediate
   - name: vand_vor_vxor_op
-    # Representative coverpoints; the same coverpoints in the Vx16/Vx32 and Vx64 .vx/.vi covergroups
-    coverpoint:
-      [
-        "{Vx8_vand_vv_cg, Vx8_vor_vv_cg, Vx8_vxor_vv_cg}/cr_vs2_vs1_edges",
-        "{Vx8_vand_vx_cg, Vx8_vor_vx_cg, Vx8_vxor_vx_cg}/cr_vs2_rs1_edges",
-        "{Vx8_vand_vi_cg, Vx8_vor_vi_cg, Vx8_vxor_vi_cg}/cr_vs2_imm_edges",
-        "{Vx64_vand_vv_cg, Vx64_vor_vv_cg, Vx64_vxor_vv_cg}/cr_vs2_vs1_edges",
-      ]
+    coverpoint: ["Vx16_vand_vv_cg/cp_vd"]
 
   # A full set of vector shift instructions are provided, including logical shift left
   # (insn:sll[]), and logical (zero-extending insn:srl[]) and arithmetic (sign-extending
@@ -1419,25 +1456,15 @@ normative_rule_definitions:
   # specified by vs2 and the shift amount value can come from a vector register group vs1,
   # a scalar integer register rs1, or a zero-extended 5-bit immediate.
   - name: vsll_vsrl_vsra_op
-    # Representative coverpoints; the same coverpoints in the Vx16/Vx32 and Vx64 .vx/.vi covergroups
-    coverpoint:
-      [
-        "{Vx8_vsll_vv_cg, Vx8_vsrl_vv_cg, Vx8_vsra_vv_cg}/cr_vs2_vs1_edges",
-        "{Vx8_vsll_vx_cg, Vx8_vsrl_vx_cg, Vx8_vsra_vx_cg}/cr_vs2_rs1_edges",
-        "{Vx8_vsll_vi_cg, Vx8_vsrl_vi_cg, Vx8_vsra_vi_cg}/{cp_imm_5bit_u, cr_vs2_imm_edges}",
-        "{Vx64_vsll_vv_cg, Vx64_vsrl_vv_cg, Vx64_vsra_vv_cg}/cr_vs2_vs1_edges",
-      ]
+    coverpoint: ["Vx16_vsll_vv_cg/cp_vd"]
 
   # Only the low lg2(SEW) bits of the shift-amount value are used to control the shift
   # amount.
   - name: vsll_vsrl_vsra_shamt
-    # Representative coverpoints; the same coverpoints in the Vx16/Vx32 covergroups
     coverpoint:
       [
-        "{Vx8_vsll_vv_cg, Vx8_vsrl_vv_cg, Vx8_vsra_vv_cg}/cp_custom_vshift_upperbits_vs1_ones",
-        "{Vx8_vsll_vx_cg, Vx8_vsrl_vx_cg, Vx8_vsra_vx_cg}/cp_custom_vshift_upperbits_rs1_ones",
-        "{Vx64_vsll_vv_cg, Vx64_vsrl_vv_cg, Vx64_vsra_vv_cg}/cp_custom_vshift_upperbits_vs1_ones",
-        "{Vx64_vsll_vx_cg, Vx64_vsrl_vx_cg, Vx64_vsra_vx_cg}/cp_custom_vshift_upperbits_rs1_ones",
+        "Vx16_vsll_vv_cg/cp_custom_vshift_upperbits_vs1_ones",
+        "Vx16_vsll_vx_cg/cp_custom_vshift_upperbits_rs1_ones",
       ]
 
   # The narrowing right shifts extract a smaller field from a wider operand and have both
@@ -1445,77 +1472,40 @@ normative_rule_definitions:
   # can come from a vector register group, or a scalar x register, or a zero-extended
   # 5-bit immediate.
   - name: vnsrl_vnsra_op
-    # Representative coverpoints; the same coverpoints in the Vx16 and Vx32 .wx/.wi covergroups
     coverpoint:
       [
-        "{Vx8_vnsrl_wv_cg, Vx8_vnsra_wv_cg}/cr_vs2_vs1_edges_wv",
-        "{Vx8_vnsrl_wx_cg, Vx8_vnsra_wx_cg}/cr_vs2_rs1_edges_wx",
-        "{Vx8_vnsrl_wi_cg, Vx8_vnsra_wi_cg}/{cp_imm_5bit_u, cr_vs2_imm_edges_wiu}",
-        "{Vx32_vnsrl_wv_cg, Vx32_vnsra_wv_cg}/cr_vs2_vs1_edges_wv",
+        "{Vx16_vnsrl_wv_cg,Vx16_vnsra_wv_cg}/cp_custom_vshiftn_upperbits_vs1_ones",
       ]
 
   # The low lg2(2*SEW) bits of the shift-amount value are used (e.g., the low 6 bits for a
   # SEW=64-bit to SEW=32-bit narrowing operation).
   - name: vnsrl_vnsra_shamt
-    # Representative coverpoints; the same coverpoints in the Vx16 covergroups
-    coverpoint:
-      [
-        "{Vx8_vnsrl_wv_cg, Vx8_vnsra_wv_cg}/cp_custom_vshiftn_upperbits_vs1_ones",
-        "{Vx8_vnsrl_wx_cg, Vx8_vnsra_wx_cg}/cp_custom_vshiftn_upperbits_rs1_ones",
-        "{Vx32_vnsrl_wv_cg, Vx32_vnsra_wv_cg}/cp_custom_vshiftn_upperbits_vs1_ones",
-        "{Vx32_vnsrl_wx_cg, Vx32_vnsra_wx_cg}/cp_custom_vshiftn_upperbits_rs1_ones",
-      ]
+    coverpoint: ["Vx16_vnsrl_wv_cg/cp_custom_vshiftn_upperbits_vs1_ones"]
 
   # The following integer compare instructions write 1 to the destination mask register
   # element if the comparison evaluates to true, and 0 otherwise. The destination mask
   # vector is always held in a single vector register, with a layout of elements as
   # described in &lt;&lt;sec-mask-register-layout&gt;&gt;.
   - name: vmseq_vmsne_vmsltu_vmslt_vmsleu_vmsle_vmsgtu_vmsgt_op
-    # Representative coverpoints; the same coverpoints in the remaining .vx/.vi and Vx16/Vx32 compare covergroups
-    coverpoint:
-      [
-        "{Vx8_vmseq_vv_cg, Vx8_vmsne_vv_cg, Vx8_vmsltu_vv_cg, Vx8_vmslt_vv_cg, Vx8_vmsleu_vv_cg, Vx8_vmsle_vv_cg}/{cr_vs2_vs1_edges, cp_custom_vmask_write_lmulge1}",
-        "{Vx8_vmsgtu_vx_cg, Vx8_vmsgt_vx_cg}/cr_vs2_rs1_edges",
-        "{Vx8_vmsgtu_vi_cg, Vx8_vmsgt_vi_cg}/cr_vs2_imm_edges",
-        "{Vx64_vmseq_vv_cg, Vx64_vmsne_vv_cg, Vx64_vmsltu_vv_cg, Vx64_vmslt_vv_cg, Vx64_vmsleu_vv_cg, Vx64_vmsle_vv_cg}/cr_vs2_vs1_edges",
-      ]
+    coverpoint: ["Vx16_vmseq_vv_cg/cp_vd"]
 
   # The destination mask vector register may be the same as the source vector mask
   # register (v0).
   - name: vmseq_vmsne_vmsltu_vmslt_vmsleu_vmsle_vmsgtu_vmsgt_vd_v0_legal
-    # Representative coverpoints; cp_custom_vmask_write_v0_masked in every compare covergroup
-    coverpoint:
-      [
-        "{Vx8_vmseq_vv_cg, Vx8_vmsne_vv_cg, Vx8_vmsltu_vv_cg, Vx8_vmslt_vv_cg, Vx8_vmsleu_vv_cg, Vx8_vmsle_vv_cg}/cp_custom_vmask_write_v0_masked",
-        "{Vx8_vmsgtu_vx_cg, Vx8_vmsgt_vx_cg, Vx8_vmsgtu_vi_cg, Vx8_vmsgt_vi_cg}/cp_custom_vmask_write_v0_masked",
-        "{Vx64_vmseq_vv_cg, Vx64_vmsne_vv_cg, Vx64_vmsltu_vv_cg, Vx64_vmslt_vv_cg, Vx64_vmsleu_vv_cg, Vx64_vmsle_vv_cg}/cp_custom_vmask_write_v0_masked",
-      ]
+    coverpoint: ["Vx16_vmseq_vv_cg/cp_custom_vmask_write_v0_masked"]
 
   # Compares effectively AND in the mask under a mask-undisturbed policy if the
   # destination register is v0,
   - name: vmseq_vmsne_vmsltu_vmslt_vmsleu_vmsle_vmsgtu_vmsgt_maskundisturbed
-    coverpoint: [""]
+    coverpoint: ["Vx16_vmseq_vv_cg/cp_custom_vmask_write_v0_masked"]
 
   # Compares write mask registers, and so always operate under a tail-agnostic policy.
   - name: vmseq_vmsne_vmsltu_vmslt_vmsleu_vmsle_vmsgtu_vmsgt_tail_agnostic
-    # Representative coverpoints; cr_vtype_agnostic in every compare covergroup
-    coverpoint:
-      [
-        "{Vx8_vmseq_vv_cg, Vx8_vmsne_vv_cg, Vx8_vmsltu_vv_cg, Vx8_vmslt_vv_cg, Vx8_vmsleu_vv_cg, Vx8_vmsle_vv_cg}/cr_vtype_agnostic",
-        "{Vx8_vmsgtu_vx_cg, Vx8_vmsgt_vx_cg, Vx8_vmsgtu_vi_cg, Vx8_vmsgt_vi_cg}/cr_vtype_agnostic",
-        "{Vx64_vmseq_vv_cg, Vx64_vmsne_vv_cg, Vx64_vmsltu_vv_cg, Vx64_vmslt_vv_cg, Vx64_vmsleu_vv_cg, Vx64_vmsle_vv_cg}/cr_vtype_agnostic",
-      ]
+    coverpoint: ["Vx16_vmseq_vv_cg/cr_vtype_agnostic"]
 
   # Signed and unsigned integer minimum and maximum instructions are supported.
   - name: vminu_vmin_vmaxu_vmax_op
-    # Representative coverpoints; the same coverpoints in the Vx16/Vx32 covergroups
-    coverpoint:
-      [
-        "{Vx8_vminu_vv_cg, Vx8_vmin_vv_cg, Vx8_vmaxu_vv_cg, Vx8_vmax_vv_cg}/cr_vs2_vs1_edges",
-        "{Vx8_vminu_vx_cg, Vx8_vmin_vx_cg, Vx8_vmaxu_vx_cg, Vx8_vmax_vx_cg}/cr_vs2_rs1_edges",
-        "{Vx64_vminu_vv_cg, Vx64_vmin_vv_cg, Vx64_vmaxu_vv_cg, Vx64_vmax_vv_cg}/cr_vs2_vs1_edges",
-        "{Vx64_vminu_vx_cg, Vx64_vmin_vx_cg, Vx64_vmaxu_vx_cg, Vx64_vmax_vx_cg}/cr_vs2_rs1_edges",
-      ]
+    coverpoint: ["Vx16_vmin_vv_cg/cp_vd"]
 
   # The single-width multiply instructions perform a SEW-bit*SEW-bit multiply to generate
   # a 2*SEW-bit product, then return one half of the product in the SEW-bit-wide
@@ -1523,75 +1513,47 @@ normative_rule_definitions:
   # register, while the mulh versions write the high half of the product to the
   # destination register.
   - name: vmul_vmulh_vmulhu_vmulhsu_op
-    # Representative coverpoints; the same coverpoints in the Vx16/Vx32 covergroups
-    coverpoint:
-      [
-        "{Vx8_vmul_vv_cg, Vx8_vmulh_vv_cg, Vx8_vmulhu_vv_cg, Vx8_vmulhsu_vv_cg}/cr_vs2_vs1_edges",
-        "{Vx8_vmul_vx_cg, Vx8_vmulh_vx_cg, Vx8_vmulhu_vx_cg, Vx8_vmulhsu_vx_cg}/cr_vs2_rs1_edges",
-        "{Vx64_vmul_vv_cg, Vx64_vmulh_vv_cg, Vx64_vmulhu_vv_cg, Vx64_vmulhsu_vv_cg}/cr_vs2_vs1_edges",
-        "{Vx64_vmul_vx_cg, Vx64_vmulh_vx_cg, Vx64_vmulhu_vx_cg, Vx64_vmulhsu_vx_cg}/cr_vs2_rs1_edges",
-      ]
+    coverpoint: ["Vx16_vmul_vv_cg/cp_vd"]
 
   # The divide and remainder instructions are equivalent to the RISC-V standard scalar
   # integer multiply/divides, with the same results for extreme inputs.
   - name: vdivu_vdiv_vremu_vrem_op
-    # Representative coverpoints; the same coverpoints in the Vx16/Vx32 covergroups
-    coverpoint:
-      [
-        "{Vx8_vdivu_vv_cg, Vx8_vdiv_vv_cg, Vx8_vremu_vv_cg, Vx8_vrem_vv_cg}/cr_vs2_vs1_edges",
-        "{Vx8_vdivu_vx_cg, Vx8_vdiv_vx_cg, Vx8_vremu_vx_cg, Vx8_vrem_vx_cg}/cr_vs2_rs1_edges",
-        "{Vx64_vdivu_vv_cg, Vx64_vdiv_vv_cg, Vx64_vremu_vv_cg, Vx64_vrem_vv_cg}/cr_vs2_vs1_edges",
-        "{Vx64_vdivu_vx_cg, Vx64_vdiv_vx_cg, Vx64_vremu_vx_cg, Vx64_vrem_vx_cg}/cr_vs2_rs1_edges",
-      ]
+    coverpoint: ["Vx16_vdiv_vv_cg/cp_vd"]
 
   # The widening integer multiply instructions return the full 2*SEW-bit product from an
   # SEW-bit*SEW-bit multiply.
   - name: vwmul_vwmulu_vwmulsu_op
-    # Representative coverpoints; the same coverpoints in the Vx16 covergroups
-    coverpoint:
-      [
-        "{Vx8_vwmul_vv_cg, Vx8_vwmulu_vv_cg, Vx8_vwmulsu_vv_cg}/cr_vs2_vs1_edges",
-        "{Vx8_vwmul_vx_cg, Vx8_vwmulu_vx_cg, Vx8_vwmulsu_vx_cg}/cr_vs2_rs1_edges",
-        "{Vx32_vwmul_vv_cg, Vx32_vwmulu_vv_cg, Vx32_vwmulsu_vv_cg}/cr_vs2_vs1_edges",
-        "{Vx32_vwmul_vx_cg, Vx32_vwmulu_vx_cg, Vx32_vwmulsu_vx_cg}/cr_vs2_rs1_edges",
-      ]
+    coverpoint: ["Vx16_vwmul_vv_cg/cp_vd_emul2"]
 
   # The integer multiply-add instructions are destructive and are provided in two forms,
   # one that overwrites the addend or minuend (insn:vmacc[], insn:vnmsac[]) and one that
   # overwrites the first multiplicand (insn:vmadd[], insn:vnmsub[]).
   - name: vmacc_vnmsac_vmadd_vnmsub_op
-    # Representative coverpoints; the same coverpoints in the Vx16/Vx32 and Vx64 .vx covergroups
     coverpoint:
       [
-        "{Vx8_vmacc_vv_cg, Vx8_vnmsac_vv_cg, Vx8_vmadd_vv_cg, Vx8_vnmsub_vv_cg}/{cr_vs2_vs1_edges, cmp_vd_vs1, cmp_vd_vs2}",
-        "{Vx8_vmacc_vx_cg, Vx8_vnmsac_vx_cg, Vx8_vmadd_vx_cg, Vx8_vnmsub_vx_cg}/cr_vs2_rs1_edges",
-        "{Vx64_vmacc_vv_cg, Vx64_vnmsac_vv_cg, Vx64_vmadd_vv_cg, Vx64_vnmsub_vv_cg}/cr_vs2_vs1_edges",
+        "Vx16_vmacc_vv_cg/cp_vd",
+        "Vx16_vnmsac_vv_cg/cp_vd",
+        "Vx16_vmadd_vv_cg/cp_vd",
+        "Vx16_vnmsub_vv_cg/cp_vd",
       ]
   # The low half of the product is added or subtracted from the third operand.
   - name: vmacc_vnmsac_vmadd_vnmsub_op_lowhalf
-    # Representative coverpoints; the same coverpoints in the Vx16/Vx32 covergroups
     coverpoint:
       [
-        "{Vx8_vmacc_vv_cg, Vx8_vnmsac_vv_cg, Vx8_vmadd_vv_cg, Vx8_vnmsub_vv_cg}/cr_vs2_vs1_edges",
-        "{Vx8_vmacc_vx_cg, Vx8_vnmsac_vx_cg, Vx8_vmadd_vx_cg, Vx8_vnmsub_vx_cg}/cr_vs2_rs1_edges",
-        "{Vx64_vmacc_vv_cg, Vx64_vnmsac_vv_cg, Vx64_vmadd_vv_cg, Vx64_vnmsub_vv_cg}/cr_vs2_vs1_edges",
+        "Vx16_vmacc_vv_cg/cr_vs2_vs1_edges",
+        "Vx16_vnmsac_vv_cg/cr_vs2_vs1_edges",
+        "Vx16_vmadd_vv_cg/cr_vs2_vs1_edges",
+        "Vx16_vnmsub_vv_cg/cr_vs2_vs1_edges",
       ]
 
   # The widening integer multiply-add instructions add the full 2*SEW-bit product from a
   # SEW-bit*SEW-bit multiply to a 2*SEW-bit value and produce a 2*SEW-bit result.
   - name: vwmaccu_vwmacc_vwmaccsu_vwmaccus_op
-    # Representative coverpoints; the same coverpoints in the Vx16 covergroups
-    coverpoint:
-      [
-        "{Vx8_vwmaccu_vv_cg, Vx8_vwmacc_vv_cg, Vx8_vwmaccsu_vv_cg}/cr_vs2_vs1_edges",
-        "{Vx8_vwmaccu_vx_cg, Vx8_vwmacc_vx_cg, Vx8_vwmaccsu_vx_cg, Vx8_vwmaccus_vx_cg}/cr_vs2_rs1_edges",
-        "{Vx32_vwmaccu_vv_cg, Vx32_vwmacc_vv_cg, Vx32_vwmaccsu_vv_cg}/cr_vs2_vs1_edges",
-        "{Vx32_vwmaccu_vx_cg, Vx32_vwmacc_vx_cg, Vx32_vwmaccsu_vx_cg, Vx32_vwmaccus_vx_cg}/cr_vs2_rs1_edges",
-      ]
+    coverpoint: ["Vx16_vwmaccu_vv_cg/cp_vd_emul2"]
 
   # The vector integer merge instructions combine two source operands based on a mask.
   - name: vmerge_op
-    coverpoint: [""]
+    coverpoint: ["Vx16_vmerge_vvm_cg/cp_vd_nv0"]
   # The insn:vmerge[] instructions are encoded as masked instructions (vm=0). The
   # instructions combine two sources as follows. At elements where the mask value is zero,
   # the first operand is copied to the destination element, otherwise the second operand
@@ -1599,82 +1561,81 @@ normative_rule_definitions:
   # group specified by vs2. The second operand is a vector register group specified by vs1
   # or a scalar x register specified by rs1 or a 5-bit sign-extended immediate.
   - name: vmerge_op_mask
-    # Representative coverpoints; the same coverpoints in the Vx16/Vx32 covergroups
     coverpoint:
       [
-        "{Vx8_vmerge_vvm_cg, Vx8_vmerge_vxm_cg, Vx8_vmerge_vim_cg}/cp_masking_edges",
-        "Vx8_vmerge_vvm_cg/cr_vs2_vs1_edges",
-        "{Vx64_vmerge_vvm_cg, Vx64_vmerge_vxm_cg, Vx64_vmerge_vim_cg}/cp_masking_edges",
+        "Vx16_vmerge_vvm_cg/cp_masking_edges",
+        "Vx16_vmerge_vvm_cg/cr_vs2_vs1_edges",
       ]
 
   # Unlike regular arithmetic instructions, the merge operates on all body elements
   # (i.e., the set of elements from vstart up to the current vector length in vl).
   - name: vmerge_all_elem
-    coverpoint: [""]
+    coverpoint: ["Vx16_vmerge_vvm_cg/cp_masking_edges"]
 
   # The vector integer move instructions copy a source operand to a vector register
   # group. The vmv.v.v variant copies a vector register group, whereas the vmv.v.x
   # and vmv.v.i variants splat a scalar register or immediate to all active elements
   # of the destination vector register group.
   - name: vmv_op
-    coverpoint: [""]
+    coverpoint: ["{Vx16_vmv_v_v_cg,Vx16_vmv_v_x_cg,Vx16_vmv_v_i_cg}/cp_vd"]
 
   # The first operand specifier (vs2) must contain v0, and any other vector register
   # number in vs2 is reserved.
   - name: vmv_vs2_nv0_rsv
     coverpoint:
       [
-        "{SsstrictV_vmv_v_v_cg, SsstrictV_vmv_v_x_cg, SsstrictV_vmv_v_i_cg}/cp_ssstrictv_vmv_vs2_not_v0_reserved",
+        "SsstrictV_vmv_v_v_cg/cp_ssstrictv_vmv_vs2_not_v0_reserved",
+        "SsstrictV_vmv_v_x_cg/cp_ssstrictv_vmv_vs2_not_v0_reserved",
+        "SsstrictV_vmv_v_i_cg/cp_ssstrictv_vmv_vs2_not_v0_reserved",
       ]
 
   # Saturating forms of integer add and subtract are provided, for both signed and
   # unsigned integers.
   - name: vsaddu_vsadd_vssubu_vssub_op
-    # Representative coverpoints; the same coverpoints in the Vx16/Vx32 covergroups
     coverpoint:
       [
-        "{Vx8_vsaddu_vv_cg, Vx8_vsadd_vv_cg, Vx8_vssubu_vv_cg, Vx8_vssub_vv_cg}/cr_vs2_vs1_edges",
-        "{Vx8_vsaddu_vx_cg, Vx8_vsadd_vx_cg, Vx8_vssubu_vx_cg, Vx8_vssub_vx_cg}/cr_vs2_rs1_edges",
-        "{Vx8_vsaddu_vi_cg, Vx8_vsadd_vi_cg}/cr_vs2_imm_edges",
-        "{Vx64_vsaddu_vv_cg, Vx64_vsadd_vv_cg, Vx64_vssubu_vv_cg, Vx64_vssub_vv_cg}/cr_vs2_vs1_edges",
+        "Vx16_vsaddu_vv_cg/cr_vs2_vs1_edges",
+        "Vx16_vsadd_vv_cg/cr_vs2_vs1_edges",
+        "Vx16_vssubu_vv_cg/cr_vs2_vs1_edges",
+        "Vx16_vssub_vv_cg/cr_vs2_vs1_edges",
       ]
   # If the result would overflow the destination, the result is replaced with the closest
   # representable value, and the csr:vxsat[] bit is set.
   - name: vsaddu_vsadd_vssubu_vssub_op_overflow_vxsat_op_vsaddsub
-    # Representative coverpoints; the same coverpoints in the .vi and Vx16/Vx32 covergroups
     coverpoint:
       [
-        "{Vx8_vsaddu_vv_cg, Vx8_vsadd_vv_cg, Vx8_vssubu_vv_cg, Vx8_vssub_vv_cg}/{cr_vs2_vs1_edges, cp_csr_vxsat}",
-        "{Vx8_vsaddu_vx_cg, Vx8_vsadd_vx_cg, Vx8_vssubu_vx_cg, Vx8_vssub_vx_cg}/{cr_vs2_rs1_edges, cp_csr_vxsat}",
-        "{Vx64_vsaddu_vv_cg, Vx64_vsadd_vv_cg, Vx64_vssubu_vv_cg, Vx64_vssub_vv_cg}/{cr_vs2_vs1_edges, cp_csr_vxsat}",
+        "Vx16_vsaddu_vv_cg/cp_csr_vxsat",
+        "Vx16_vsadd_vv_cg/cp_csr_vxsat",
+        "Vx16_vssubu_vv_cg/cp_csr_vxsat",
+        "Vx16_vssub_vv_cg/cp_csr_vxsat",
       ]
 
   # The averaging add and subtract instructions right shift the result by one bit and
   # round off the result according to the setting in csr:vxrm[]. Computation is performed
   # in infinite precision before rounding and truncating.
   - name: vaaddu_vaadd_vasubu_vasub_op
-    # Representative coverpoints; also cr_vxrm_vs2_rs1_edges in the .vx covergroups, and the same coverpoints in the Vx16/32/64 covergroups
     coverpoint:
       [
-        "{Vx8_vaadd_vv_cg, Vx8_vaaddu_vv_cg, Vx8_vasub_vv_cg, Vx8_vasubu_vv_cg}/cr_vxrm_vs2_vs1_edges",
+        "Vx16_vaadd_vv_cg/cr_vxrm_vs2_vs1_edges",
+        "Vx16_vasubu_vv_cg/cr_vxrm_vs2_vs1_edges",
+        "Vx16_vasub_vv_cg/cr_vxrm_vs2_vs1_edges",
       ]
   # For insn:vasub[] and insn:vasubu[], overflow is ignored and the result wraps around.
   - name: vasub_vasubu_op_overflow
-    # Representative coverpoints; the same coverpoints in the Vx16/32/64 covergroups
     coverpoint:
       [
-        "{Vx8_vasub_vv_cg, Vx8_vasubu_vv_cg}/cr_vxrm_vs2_vs1_edges",
-        "{Vx8_vasub_vx_cg, Vx8_vasubu_vx_cg}/cr_vxrm_vs2_rs1_edges",
+        "Vx16_vasub_vv_cg/cr_vxrm_vs2_vs1_edges",
+        "Vx16_vasubu_vv_cg/cr_vxrm_vs2_vs1_edges",
       ]
 
   # The signed fractional multiply instruction produces a 2*SEW product of the two SEW
   # inputs, then shifts the result right by SEW-1 bits, rounding these bits according to
   # csr:vxrm[], then saturates the result to fit into SEW bits.
   - name: vsmul_op
-    coverpoint: [""]
+    coverpoint: ["Vx16_vsmul_vv_cg/cp_csr_vxrm"]
   # If the result causes saturation, the csr:vxsat[] bit is set.
   - name: vxsat_op_vsmul
-    coverpoint: [""]
+    coverpoint: ["Vx16_vsmul_vv_cg/cp_csr_vxsat"]
 
   # These instructions shift the input value right, and round off the shifted out bits
   # according to csr:vxrm[]. The scaling right shifts have both zero-extending
@@ -1683,22 +1644,12 @@ normative_rule_definitions:
   # vector register group vs1, a scalar integer register rs1, or a zero-extended 5-bit
   # immediate.
   - name: vssrl_vssra_op
-    # Representative coverpoints; also cr_vxrm_vs2_imm_edges in Vx8_vssrl_vi_cg/Vx8_vssra_vi_cg, and the same coverpoints in the Vx16/32/64 covergroups
-    coverpoint:
-      [
-        "{Vx8_vssrl_vv_cg, Vx8_vssra_vv_cg}/cr_vxrm_vs2_vs1_edges",
-        "{Vx8_vssrl_vx_cg, Vx8_vssra_vx_cg}/cr_vxrm_vs2_rs1_edges",
-      ]
+    coverpoint: ["Vx16_vssrl_vv_cg/cp_csr_vxrm"]
 
   # Only the low lg2(SEW) bits of the shift-amount value are used to control the shift
   # amount.
   - name: vssrl_vssra_shamt
-    # Representative coverpoints; the same coverpoints in the Vx16/32/64 covergroups
-    coverpoint:
-      [
-        "{Vx8_vssrl_vv_cg, Vx8_vssra_vv_cg}/cp_custom_vshift_upperbits_vs1_ones",
-        "{Vx8_vssrl_vx_cg, Vx8_vssra_vx_cg}/cp_custom_vshift_upperbits_rs1_ones",
-      ]
+    coverpoint: ["Vx16_vssrl_vv_cg/cp_custom_vshift_upperbits_vs1_ones"]
 
   # The insn:vnclip[] instructions are used to pack a fixed-point value into a narrower
   # destination. The instructions support rounding, scaling, and saturation into the final
@@ -1706,35 +1657,25 @@ normative_rule_definitions:
   # The scaling shift amount value can come from a vector register group vs1, a scalar
   # integer register rs1, or a zero-extended 5-bit immediate.
   - name: vnclipu_vnclip_op
-    # Representative coverpoints; also cr_vxrm_vs2_imm_edges_wi in the .wi covergroups, and the same coverpoints in the Vx16/32 covergroups
-    coverpoint:
-      [
-        "{Vx8_vnclip_wv_cg, Vx8_vnclipu_wv_cg}/cr_vxrm_vs2_vs1_edges_wv",
-        "{Vx8_vnclip_wx_cg, Vx8_vnclipu_wx_cg}/cr_vxrm_vs2_rs1_edges_wx",
-      ]
+    coverpoint: ["Vx16_vnclipu_wv_cg/cp_vd"]
 
   # The low lg2(2*SEW) bits of the vector or scalar shift-amount value (e.g., the low 6
   # bits for a SEW=64-bit to SEW=32-bit narrowing operation) are used to control the right
   # shift amount, which provides the scaling.
   - name: vnclipu_vnclip_shamt
-    # Representative coverpoints; the same coverpoints in the Vx16/32 covergroups
-    coverpoint:
-      [
-        "{Vx8_vnclip_wv_cg, Vx8_vnclipu_wv_cg}/cp_custom_vshiftn_upperbits_vs1_ones",
-        "{Vx8_vnclip_wx_cg, Vx8_vnclipu_wx_cg}/cp_custom_vshiftn_upperbits_rs1_ones",
-      ]
+    coverpoint: ["Vx16_vnclipu_wv_cg/cp_custom_vshiftn_upperbits_vs1_ones"]
 
   # For vnclipu, the shifted rounded source value is treated as an unsigned integer
   # and saturates if the result would overflow the destination viewed as an unsigned
   # integer.
   - name: vnclipu_overflow
-    coverpoint: [""]
+    coverpoint: ["Vx16_vnclipu_wv_cg/cp_vs2_edges_emul2"]
 
   # For vnclip, the shifted rounded source value is treated as a signed integer and
   # saturates if the result would overflow the destination viewed as a signed
   # integer.
   - name: vnclip_overflow
-    coverpoint: [""]
+    coverpoint: ["Vx16_vnclip_wv_cg/cp_vs2_edges_emul2"]
 
   # If any destination element is saturated, the vxsat bit is set in the vxsat
   # register.
@@ -1744,23 +1685,18 @@ normative_rule_definitions:
   # If the EEW of a vector floating-point operand does not correspond to a supported
   # IEEE floating-point type, the instruction encoding is reserved.
   - name: V_fp_eew_ieee_nsupported_rsv
-    coverpoint: [""]
+    coverpoint: ["ExceptionsVf16_vfmv_f_s_cg/cp_vill"]
 
   # If the floating-point unit status field mstatus.FS is Off then any attempt to
   # execute a vector floating-point instruction will raise an illegal-instruction
   # exception.
   - name: mstatus_fs_off_V_fp_ill
-    # Representative coverpoints; cp_mstatus_fs_off in every ExceptionsVf16/32/64 and ExceptionsVfmin covergroup
-    coverpoint:
-      [
-        "{ExceptionsVf16_vfadd_vv_cg, ExceptionsVf32_vfadd_vv_cg, ExceptionsVf64_vfadd_vv_cg}/cp_mstatus_fs_off",
-        "ExceptionsVf32_vfmv_f_s_cg/cp_mstatus_fs_off",
-      ]
+    coverpoint: ["ExceptionsVf16_vfadd_vv_cg/cp_mstatus_fs_off"]
 
   # Any vector floating-point instruction that modifies any floating-point extension
   # state (i.e., floating-point CSRs or f registers) must set mstatus.FS to Dirty.
   - name: mstatus_fs_dirty_V_fp
-    coverpoint: [""]
+    coverpoint: ["SmVF_cg/cp_vectorfp_mstatus_fs_state_affecting_register"]
 
   # If the hypervisor extension is implemented and V=1, the csr:vsstatus[fs] field is
   # additionally in effect for vector floating-point instructions. If csr:vsstatus[fs] or
@@ -1779,19 +1715,18 @@ normative_rule_definitions:
   # standard FP exception flags in the fflags register. Inactive elements do not set
   # FP exception flags.
   - name: fflags_op_V_fp
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Vf16_vfadd_vv_cg/cp_csr_fflags_vdoun_set",
+        "Vf16_vfrsqrt7_v_cg/cp_custom_vfp_flags_inactive_not_set",
+      ]
 
   # # Floating-point add vfadd.vv vd, vs2, vs1, vm # Vector-vector vfadd.vf vd, vs2, rs1,
   # vm # vector-scalar # Floating-point subtract vfsub.vv vd, vs2, vs1, vm # Vector-vector
   # vfsub.vf vd, vs2, rs1, vm # Vector-scalar vd[i] = vs2[i] - f[rs1] vfrsub.vf vd, vs2,
   # rs1, vm # Scalar-vector vd[i] = f[rs1] - vs2[i]
   - name: vfadd_vfsub_vfrsub_op
-    # Representative coverpoints; also Vf32_vfadd_vf_cg/cr_vs2_fs1_edges_f_sew32, and the same coverpoints in the Vf16/Vf64 covergroups
-    coverpoint:
-      [
-        "{Vf32_vfadd_vv_cg, Vf32_vfsub_vv_cg}/cr_vs2_vs1_edges_f_sew32",
-        "{Vf32_vfsub_vf_cg, Vf32_vfrsub_vf_cg}/cr_vs2_fs1_edges_f_sew32",
-      ]
+    coverpoint: ["Vf16_vfadd_vv_cg/cp_vd"]
 
   # # Widening FP add/subtract, 2*SEW = SEW +/- SEW vfwadd.vv vd, vs2, vs1, vm #
   # vector-vector vfwadd.vf vd, vs2, rs1, vm # vector-scalar vfwsub.vv vd, vs2, vs1,
@@ -1800,7 +1735,7 @@ normative_rule_definitions:
   # vfwadd.wf vd, vs2, rs1, vm # vector-scalar vfwsub.wv vd, vs2, vs1, vm #
   # vector-vector vfwsub.wf vd, vs2, rs1, vm # vector-scalar
   - name: vfwadd_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfwadd_vv_cg/cp_vd_emul2"]
 
   # # Floating-point multiply vfmul.vv vd, vs2, vs1, vm # Vector-vector vfmul.vf vd, vs2,
   # rs1, vm # vector-scalar # Floating-point divide vfdiv.vv vd, vs2, vs1, vm #
@@ -1808,45 +1743,32 @@ normative_rule_definitions:
   # divide vector = scalar / vector vfrdiv.vf vd, vs2, rs1, vm # scalar-vector, vd[i] =
   # f[rs1]/vs2[i]
   - name: vfmul_vfdiv_vfrdiv_op
-    # Representative coverpoints; also Vf32_vfmul_vf_cg/cr_vs2_fs1_edges_f_sew32, and the same coverpoints in the Vf16/Vf64 covergroups
-    coverpoint:
-      [
-        "{Vf32_vfmul_vv_cg, Vf32_vfdiv_vv_cg}/cr_vs2_vs1_edges_f_sew32",
-        "{Vf32_vfdiv_vf_cg, Vf32_vfrdiv_vf_cg}/cr_vs2_fs1_edges_f_sew32",
-      ]
+    coverpoint: ["Vf16_vfmul_vv_cg/cp_vd", "Vf16_vfdiv_vv_cg/cp_vd"]
 
   # # Widening floating-point multiply vfwmul.vv vd, vs2, vs1, vm # vector-vector
   # vfwmul.vf vd, vs2, rs1, vm # vector-scalar
   - name: vfwmul_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfwmul_vv_cg/cp_vd_emul2"]
 
   # All four varieties of fused multiply-add are provided, and in two destructive forms
   # that overwrite one of the operands, either the addend or the first multiplicand.
   - name: vfmacc_vfnmacc_vfmsac_vfnmsac_vfmadd_vfnmadd_vfmsub_vfnmsub_op
-    # Representative coverpoints; also vfnmacc, vfmsac, vfnmadd and vfmsub, the .vf forms (cr_vs2_fs1_edges_f_sew32), and the Vf16/Vf64 covergroups
-    coverpoint:
-      [
-        "{Vf32_vfmacc_vv_cg, Vf32_vfnmsac_vv_cg, Vf32_vfmadd_vv_cg, Vf32_vfnmsub_vv_cg}/cr_vs2_vs1_edges_f_sew32",
-      ]
+    coverpoint: ["Vf16_vfmacc_vv_cg/cp_vd", "Vf16_vfmadd_vv_cg/cp_vd"]
 
   # The widening floating-point fused multiply-add instructions all overwrite the wide
   # addend with the result. The multiplier inputs are all SEW wide, while the addend and
   # destination is 2*SEW bits wide.
   - name: vfwmacc_vfwnmacc_vfwmsac_vfwnmsac_op
-    # Representative coverpoints; also the .vf forms (cr_vs2_fs1_edges_f_sew32) and the Vf16 covergroups
-    coverpoint:
-      [
-        "{Vf32_vfwmacc_vv_cg, Vf32_vfwnmacc_vv_cg, Vf32_vfwmsac_vv_cg, Vf32_vfwnmsac_vv_cg}/cr_vs2_vs1_edges_f_sew32",
-      ]
+    coverpoint: ["Vf16_vfwmacc_vv_cg/cp_vd_emul2"]
 
   # # Floating-point square root vfsqrt.v vd, vs2, vm # Vector-vector square root
   - name: vfsqrt_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfsqrt_v_cg/cp_vd"]
 
   # This is a unary vector-vector instruction that returns an estimate of 1/sqrt(x)
   # accurate to 7 bits.
   - name: vfrsqrt7_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfrsqrt7_v_cg/cp_custom_FpRecSqrtEst_edges"]
   # For the non-exceptional cases, the low bit of the exponent and the six high bits of
   # significand (after the leading one) are concatenated and used to address the following
   # table. The output of the table becomes the seven high bits of the result significand
@@ -1855,12 +1777,7 @@ normative_rule_definitions:
   # output exponent is chosen to make the result approximate the reciprocal of the square
   # root of the argument.
   - name: vfrsqrt7_op_unex
-    # Representative coverpoints; cp_vs2_edges_f_sew16/64 in the Vf16/Vf64 covergroups
-    coverpoint:
-      [
-        "{Vf16_vfrsqrt7_v_cg, Vf32_vfrsqrt7_v_cg, Vf64_vfrsqrt7_v_cg}/cp_custom_FpRecSqrtEst_edges",
-        "Vf32_vfrsqrt7_v_cg/cp_vs2_edges_f_sew32",
-      ]
+    coverpoint: ["Vf16_vfrsqrt7_v_cg/cp_custom_FpRecSqrtEst_edges"]
   # More precisely, the result is computed as follows. Let the normalized input exponent
   # be equal to the input exponent if the input is normal, or 0 minus the number of
   # leading zeros in the significand otherwise. If the input is subnormal, the normalized
@@ -1869,17 +1786,12 @@ normative_rule_definitions:
   # floor((3*B - 1 - the normalized input exponent) / 2), where B is the exponent bias.
   # The output sign equals the input sign.
   - name: vfrsqrt7_op_precise
-    # Representative coverpoints; the same coverpoints in the Vf16 covergroup
-    coverpoint:
-      [
-        "Vf32_vfrsqrt7_v_cg/{cp_custom_FpRecSqrtEst_edges, cp_vs2_edges_f_sew32}",
-        "Vf64_vfrsqrt7_v_cg/{cp_custom_FpRecSqrtEst_edges, cp_vs2_edges_f_sew64}",
-      ]
+    coverpoint: ["Vf16_vfrsqrt7_v_cg/cp_custom_FpRecSqrtEst_edges"]
 
   # This is a unary vector-vector instruction that returns an estimate of 1/x accurate to
   # 7 bits.
   - name: vfrec7_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges"]
   # For the non-exceptional cases, the seven high bits of significand (after the leading
   # one) are used to address the following table. The output of the table becomes the
   # seven high bits of the result significand (after the leading one); the remainder of
@@ -1888,12 +1800,7 @@ normative_rule_definitions:
   # result approximate the reciprocal of the argument, and subnormal outputs are
   # denormalized accordingly.
   - name: vfrec7_op_unex
-    # Representative coverpoints; the same coverpoints in the Vf16 covergroup
-    coverpoint:
-      [
-        "Vf32_vfrec7_v_cg/{cp_custom_FpRecipEst_edges, cp_custom_FpRecipEst_flag_edges}",
-        "Vf64_vfrec7_v_cg/{cp_custom_FpRecipEst_edges, cp_custom_FpRecipEst_flag_edges}",
-      ]
+    coverpoint: ["Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges"]
   # More precisely, the result is computed as follows. Let the normalized input exponent
   # be equal to the input exponent if the input is normal, or 0 minus the number of
   # leading zeros in the significand otherwise. The normalized output exponent equals (2*B
@@ -1901,12 +1808,7 @@ normative_rule_definitions:
   # range [-1, 2*B], the result corresponds to one of the exceptional cases in the table
   # above.
   - name: vfrec7_op_precise
-    # Representative coverpoints; the same coverpoints in the Vf16 covergroup
-    coverpoint:
-      [
-        "Vf32_vfrec7_v_cg/{cp_custom_FpRecipEst_flag_edges, cp_vs2_edges_f_sew32}",
-        "Vf64_vfrec7_v_cg/{cp_custom_FpRecipEst_flag_edges, cp_vs2_edges_f_sew64}",
-      ]
+    coverpoint: ["Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges"]
   # If the input is subnormal, the normalized input significand is given by shifting the
   # input significand left by 1 minus the normalized input exponent, discarding the
   # leading 1 bit. Otherwise, the normalized input significand equals the input
@@ -1914,12 +1816,7 @@ normative_rule_definitions:
   # significand as a function of the seven MSBs of the normalized input significand; the
   # other bits of the normalized output significand are zero.
   - name: vfrec7_op_subnorm
-    # Representative coverpoints; the same coverpoints in the Vf16 covergroup
-    coverpoint:
-      [
-        "Vf32_vfrec7_v_cg/{cp_custom_FpRecipEst_flag_edges, cp_custom_FpRecipEst_edges}",
-        "Vf64_vfrec7_v_cg/{cp_custom_FpRecipEst_flag_edges, cp_custom_FpRecipEst_edges}",
-      ]
+    coverpoint: ["Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges"]
   # If the normalized output exponent is 0 or -1, the result is subnormal: the output
   # exponent is 0, and the output significand is given by concatenating a 1 bit to the
   # left of the normalized output significand, then shifting that quantity right by 1
@@ -1927,39 +1824,24 @@ normative_rule_definitions:
   # normalized output exponent, and the output significand equals the normalized output
   # significand. The output sign equals the input sign.
   - name: vfrec7_op_output
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfrec7_v_cg/cp_custom_FpRecipEst_edges"]
 
   # The vector floating-point insn:vfmin[] and insn:vfmax[] instructions have the same
   # behavior as the corresponding scalar floating-point instructions in the ext:f[],
   # ext:d[], and ext:q[] extensions: they perform the IEEE 754-2019 minimumNumber or
   # maximumNumber operation on active elements.
   - name: vfmin_vfmax_op
-    # Representative coverpoints; the same coverpoints in the Vf16/Vf64 covergroups
-    coverpoint:
-      [
-        "{Vf32_vfmin_vv_cg, Vf32_vfmax_vv_cg}/cr_vs2_vs1_edges_f_sew32",
-        "{Vf32_vfmin_vf_cg, Vf32_vfmax_vf_cg}/cr_vs2_fs1_edges_f_sew32",
-      ]
+    coverpoint: ["Vf16_vfmax_vv_cg/cp_vd"]
 
   # Vector versions of the scalar sign-injection instructions. The result takes all bits
   # except the sign bit from the vector vs2 operands.
   - name: vfsgnj_vfsgnjn_vfsgnjx_op
-    # Representative coverpoints; also the vfsgnj.vf and vfsgnjn.vf covergroups, and the Vf16/Vf64 covergroups
-    coverpoint:
-      [
-        "{Vf32_vfsgnj_vv_cg, Vf32_vfsgnjn_vv_cg, Vf32_vfsgnjx_vv_cg}/cr_vs2_vs1_edges_f_sew32",
-        "Vf32_vfsgnjx_vf_cg/cr_vs2_fs1_edges_f_sew32",
-      ]
+    coverpoint: ["Vf16_vfsgnj_vv_cg/cp_vd"]
 
   # These vector FP compare instructions compare two source operands and write the
   # comparison result to a mask register.
   - name: vmfeq_vmfne_vmflt_vmfle_vmfgt_vmfge_op
-    # Representative coverpoints; also the vmfne and vmfle covergroups, the other .vv/.vf forms, and the Vf16/Vf64 covergroups
-    coverpoint:
-      [
-        "{Vf32_vmfeq_vv_cg, Vf32_vmflt_vv_cg}/cr_vs2_vs1_edges_f_sew32",
-        "{Vf32_vmfgt_vf_cg, Vf32_vmfge_vf_cg}/cr_vs2_fs1_edges_f_sew32",
-      ]
+    coverpoint: ["Vf16_vmfeq_vv_cg/cp_vd"]
 
   # The destination mask vector is always held in a single vector register, with a layout
   # of elements as described in &lt;&lt;sec-mask-register-layout&gt;&gt;.
@@ -1973,93 +1855,63 @@ normative_rule_definitions:
   # The destination mask vector register may be the same as the source vector mask
   # register (v0).
   - name: vmfeq_vmfne_vmflt_vmfle_vmfgt_vmfge_vd_eq_v0
-    coverpoint: [""]
+    coverpoint: ["SsstrictV_vmfeq_vv_cg/cp_ssstrictv_masking_vd_eq_v0"]
 
   # Compares write mask registers, and so always operate under a tail-agnostic policy.
   - name: vmfeq_vmfne_vmflt_vmfle_vmfgt_vmfge_tail_agnostic
-    # Representative coverpoints; also the vmfgt/vmfge .vf covergroups and the Vf16/Vf64 covergroups
-    coverpoint:
-      [
-        "{Vf32_vmfeq_vv_cg, Vf32_vmflt_vv_cg, Vf32_vmfle_vv_cg, Vf32_vmfne_vv_cg}/cr_vtype_agnostic",
-      ]
+    coverpoint: ["Vf16_vmfeq_vv_cg/cr_vtype_agnostic"]
 
   # insn:vmfeq[] and insn:vmfne[] raise the invalid operation exception only on signaling
   # NaN inputs.
   - name: vmfeq_vmfne_snan_invalid
-    # Representative coverpoints; the same coverpoints in the Vf16/Vf64 covergroups
-    coverpoint:
-      [
-        "{Vf32_vmfeq_vv_cg, Vf32_vmfne_vv_cg}/cr_vs2_vs1_edges_f_sew32",
-        "{Vf32_vmfeq_vf_cg, Vf32_vmfne_vf_cg}/cr_vs2_fs1_edges_f_sew32",
-      ]
+    coverpoint: ["Vf16_vmfeq_vv_cg/cp_custom_vfp_NaN_input"]
 
   # insn:vmflt[], insn:vmfle[], insn:vmfgt[], and insn:vmfge[] raise the invalid operation
   # exception on both signaling and quiet NaN inputs.
   - name: vmflt_vmfle_vmfgt_vmfge_sqnan_invalid
-    # Representative coverpoints; also the vmflt.vf/vmfle.vf covergroups and the Vf16/Vf64 covergroups
-    coverpoint:
-      [
-        "{Vf32_vmflt_vv_cg, Vf32_vmfle_vv_cg}/cr_vs2_vs1_edges_f_sew32",
-        "{Vf32_vmfgt_vf_cg, Vf32_vmfge_vf_cg}/cr_vs2_fs1_edges_f_sew32",
-      ]
+    coverpoint: ["Vf16_vmflt_vv_cg/cp_custom_vfp_flags_nv"]
 
   # vmfne writes 1 to the destination element when either operand is NaN,
   - name: vmfne_vdval1_nan
-    # Representative coverpoints; the same coverpoints in the Vf16/Vf64 covergroups
-    coverpoint:
-      [
-        "Vf32_vmfne_vv_cg/cr_vs2_vs1_edges_f_sew32",
-        "Vf32_vmfne_vf_cg/cr_vs2_fs1_edges_f_sew32",
-      ]
+    coverpoint: ["Vf16_vmfeq_vv_cg/cp_custom_vfp_NaN_input"]
 
   # whereas the other compares write 0 when either operand is NaN.
   - name: vmfeq_vmflt_vmfle_vmfgt_vmfge_vdval0_nan
-    # Representative coverpoints; also vmfge.vf, the other .vf forms, and the Vf16/Vf64 covergroups
-    coverpoint:
-      [
-        "{Vf32_vmfeq_vv_cg, Vf32_vmflt_vv_cg, Vf32_vmfle_vv_cg}/cr_vs2_vs1_edges_f_sew32",
-        "Vf32_vmfgt_vf_cg/cr_vs2_fs1_edges_f_sew32",
-      ]
+    coverpoint: ["Vf16_vmfeq_vv_cg/cp_custom_vfp_NaN_input"]
 
   # This is a unary vector-vector instruction that operates in the same way as the scalar
   # classify instruction.
   - name: vfclass_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfclass_v_cg/cp_custom_vfclass_onehot"]
   # The 10-bit mask produced by this instruction is placed in the least-significant bits
   # of the result elements. The upper (SEW-10) bits of the result are filled with zeros.
   - name: vfclass_op_result
-    coverpoint:
-      [
-        "{Vf16_vfclass_v_cg, Vf32_vfclass_v_cg, Vf64_vfclass_v_cg}/cp_custom_vfclass_onehot",
-      ]
+    coverpoint: ["Vf16_vfclass_v_cg/cp_custom_vfclass_onehot"]
 
   # The instruction is only defined for SEW=16b and above, so the result will always
   # fit in the destination elements.
   - name: vfclass_sewge16
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfclass_v_cg/cp_vd"]
 
   # A vector-scalar floating-point merge instruction is provided,
   - name: vfmerge_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfmerge_vfm_cg/cp_masking_edges"]
   # At elements where the mask value is zero, the first vector operand is copied to the
   # destination element, otherwise a scalar floating-point register value is copied to the
   # destination element.
   - name: vfmerge_op_mask
-    coverpoint:
-      [
-        "{Vf16_vfmerge_vfm_cg, Vf32_vfmerge_vfm_cg, Vf64_vfmerge_vfm_cg}/cp_masking_edges",
-      ]
+    coverpoint: ["Vf16_vfmerge_vfm_cg/cp_masking_edges"]
 
   # operates on all body elements from vstart up to the current vector length in vl
   # regardless of mask value.
   - name: vfmerge_all_elem
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfmerge_vfm_cg/cp_masking_edges"]
 
   # The vector floating-point move instruction splats a floating-point scalar
   # operand to a vector register group. The instruction copies a scalar f register
   # value to all active elements of a vector register group.
   - name: vfmv_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfmv_v_f_cg/cp_vd"]
 
   # The instruction must have the vs2 field set to v0, with all other values for vs2
   # reserved.
@@ -2069,96 +1921,69 @@ normative_rule_definitions:
   # Conversion operations are provided to convert to and from floating-point values and
   # unsigned and signed integers, where both source and destination are SEW wide.
   - name: vfcvt_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfcvt_x_f_v_cg/cp_vd"]
   # The conversions follow the same rules on exceptional conditions as the scalar
   # conversion instructions.
   - name: vfcvt_op_exceptions
-    # Representative coverpoints; the same coverpoints in the other vfcvt covergroups and in the Vf16/Vf64 covergroups
-    coverpoint:
-      [
-        "Vf32_vfcvt_x_f_v_cg/{cp_vs2_edges_f_sew32, cp_custom_vfp_flags_nv_nx}",
-        "Vf32_vfcvt_xu_f_v_cg/{cp_vs2_edges_f_sew32, cp_custom_vfp_flags_nv_nx}",
-      ]
+    coverpoint: ["Vf16_vfcvt_x_f_v_cg/cp_custom_vfp_flags_nv_nx"]
   # The conversions use the dynamic rounding mode in csr:frm[], except for the rtz
   # variants, which round towards zero.
   - name: vfcvt_op_frm
-    # Representative coverpoints; also vfcvt.xu.f.v/vfcvt.f.xu.v cp_csr_frm_v, and the same coverpoints in the Vf16/Vf64 covergroups
-    coverpoint:
-      [
-        "{Vf32_vfcvt_x_f_v_cg, Vf32_vfcvt_f_x_v_cg}/cp_csr_frm_v",
-        "{Vf32_vfcvt_rtz_x_f_v_cg, Vf32_vfcvt_rtz_xu_f_v_cg}/cp_vs2_edges_f_sew32",
-      ]
+    coverpoint: ["Vf16_vfcvt_x_f_v_cg/cp_csr_frm_v"]
 
   # A set of conversion instructions is provided to convert between narrower integer
   # and floating-point datatypes to a type of twice the width.
   - name: vfwcvt_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfwcvt_x_f_v_cg/cp_vd_emul2"]
 
   # These instructions have the same constraints on vector register overlap as other
   # widening instructions (see &lt;&lt;sec-widening&gt;&gt;).
   - name: vfwcvt_vreg_constr
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfwadd_vv_cg/cp_custom_allVdOverlapTopVs2_vd_vs2_lmul1"]
 
   # A set of conversion instructions is provided to convert wider integer and
   # floating-point datatypes to a type of half the width.
   - name: vfncvt_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfncvt_x_f_w_cg/cp_vd"]
 
   # These instructions have the same constraints on vector register overlap as other
   # narrowing instructions (see &lt;&lt;sec-narrowing&gt;&gt;).
   - name: vfncvt_vreg_constr
-    coverpoint: [""]
+    coverpoint:
+      ["SsstrictV_vfncvt_x_f_w_cg/cp_ssstrictv_vnarrow_overlapping_vd_vs2"]
 
   # Vector reduction operations take a vector register group of elements and a scalar held
   # in element 0 of a vector register group, and perform a reduction using some binary
   # operator, to produce a scalar result in element 0 of a vector register group.
   - name: vreduction_scalar_def
-    # Representative coverpoints; the same coverpoints in the other integer and FP reduction covergroups at every SEW
     coverpoint:
       [
-        "{Vx8_vredsum_vs_cg, Vx8_vredand_vs_cg}/cr_vs2_vs1_edges",
-        "Vx8_vwredsum_vs_cg/cr_vs2_vs1_edges_wred",
-        "Vf32_vfredosum_vs_cg/cr_vs2_vs1_edges_f_sew32",
+        "Vx16_vredsum_vs_cg/cp_custom_voffgroup_vs1_lmul2",
+        "Vx16_vredsum_vs_cg/cp_custom_element0Masked",
       ]
   # The scalar input and output operands are held in element 0 of a group with EMUL =
   # ceil(EEW/VLEN), regardless of LMUL setting.
   - name: vreduction_scalar_disregard_lmul
-    # Representative coverpoints; cp_custom_voffgroup_{vd,vs1}_lmul{2,4,8} in every Vx single-width and widening reduction covergroup and in Vf32_vfwredosum_vs_cg/Vf32_vfwredusum_vs_cg
-    coverpoint:
-      [
-        "Vx8_vredsum_vs_cg/{cp_custom_voffgroup_vd_lmul8, cp_custom_voffgroup_vs1_lmul8}",
-        "Vx8_vwredsum_vs_cg/{cp_custom_voffgroup_vd_lmul4, cp_custom_vreductionw_vd_vs1_emul_16}",
-      ]
+    coverpoint: ["Vx16_vredsum_vs_cg/cp_custom_voffgroup_vs1_lmul2"]
   # Inactive elements from the source vector register group are excluded from the
   # reduction, but the scalar operand is always included regardless of the mask values.
   - name: vreduction_scalar_disregard_maskval
-    # Representative coverpoints; cp_masking_edges in the other reduction covergroups at every SEW
-    coverpoint:
-      [
-        "{Vx8_vredsum_vs_cg, Vx8_vwredsum_vs_cg}/cp_masking_edges",
-        "{Vf32_vfredosum_vs_cg, Vf32_vfredusum_vs_cg}/cp_masking_edges",
-      ]
+    coverpoint: ["Vx16_vredsum_vs_cg/cp_custom_element0Masked"]
 
   # The destination vector register can overlap the source operands, including the
   # mask register.
   - name: vreduction_vd_overlap_vs
-    coverpoint: [""]
+    coverpoint: ["Vx16_vredsum_vs_cg/cmp_vd_vs2"]
 
   # The other elements in the destination vector register ( 0 &lt; index &lt;
   # VLEN/SEW) are considered the tail and are managed with the current tail
   # agnostic/undisturbed policy.
   - name: vreduction_tail_policy
-    # Representative coverpoints; the same coverpoints in the other reduction covergroups at every SEW
-    coverpoint:
-      [
-        "{Vx8_vredsum_vs_cg, Vx8_vredmax_vs_cg}/cr_vtype_agnostic",
-        "Vx8_vwredsum_vs_cg/cr_vtype_agnostic_lmul4max",
-        "Vf32_vfredosum_vs_cg/cr_vtype_agnostic",
-      ]
+    coverpoint: ["Vx16_vredsum_vs_cg/cr_vtype_agnostic"]
 
   # If vl=0, no operation is performed and the destination register is not updated.
   - name: vreduction_vl_0
-    coverpoint: [""]
+    coverpoint: ["Vx16_vredsum_vs_cg/cp_vl_0"]
 
   # Traps on vector reduction instructions are always reported with a vstart of 0.
   - name: vreduction_trap
@@ -2167,27 +1992,89 @@ normative_rule_definitions:
   # Vector reduction operations raise an illegal-instruction exception if vstart is
   # non-zero.
   - name: vreduction_vstart_n0_ill
-    # Representative coverpoints; cp_vstart in every ExceptionsVx and ExceptionsVf16/32/64 reduction covergroup
     coverpoint:
       [
-        "{ExceptionsVx_vredsum_vs_cg, ExceptionsVx_vwredsum_vs_cg}/cp_vstart",
-        "{ExceptionsVf32_vfredosum_vs_cg, ExceptionsVf32_vfwredosum_vs_cg}/cp_vstart",
+        "ExceptionsVx_vredsum_vs_cg/cp_vstart",
+        "ExceptionsVx_vwredsum_vs_cg/cp_vstart",
+        "ExceptionsVf32_vfredosum_vs_cg/cp_vstart",
+        "ExceptionsVf32_vfwredosum_vs_cg/cp_vstart",
       ]
 
   # All operands and results of single-width reduction instructions have the same SEW
   # width.
   - name: vredsum_vredmaxu_vredmax_vredminu_vredmin_vredand_vredor_vredxor_op
-    # Representative coverpoints; cr_vs2_vs1_edges in the vredmaxu/vredmax/vredminu/vredmin/vredand/vredor/vredxor covergroups at every SEW
     coverpoint:
       [
-        "{Vx8_vredsum_vs_cg, Vx16_vredsum_vs_cg, Vx32_vredsum_vs_cg, Vx64_vredsum_vs_cg}/cr_vs2_vs1_edges",
+        "Vx8_vredsum_vs_cg/cp_vd",
+        "Vx16_vredsum_vs_cg/cp_vd",
+        "Vx32_vredsum_vs_cg/cp_vd",
+        "Vx64_vredsum_vs_cg/cp_vd",
+        "Vx8_vredmaxu_vs_cg/cp_vd",
+        "Vx16_vredmaxu_vs_cg/cp_vd",
+        "Vx32_vredmaxu_vs_cg/cp_vd",
+        "Vx64_vredmaxu_vs_cg/cp_vd",
+        "Vx8_vredmax_vs_cg/cp_vd",
+        "Vx16_vredmax_vs_cg/cp_vd",
+        "Vx32_vredmax_vs_cg/cp_vd",
+        "Vx64_vredmax_vs_cg/cp_vd",
+        "Vx8_vredminu_vs_cg/cp_vd",
+        "Vx16_vredminu_vs_cg/cp_vd",
+        "Vx32_vredminu_vs_cg/cp_vd",
+        "Vx64_vredminu_vs_cg/cp_vd",
+        "Vx8_vredmin_vs_cg/cp_vd",
+        "Vx16_vredmin_vs_cg/cp_vd",
+        "Vx32_vredmin_vs_cg/cp_vd",
+        "Vx64_vredmin_vs_cg/cp_vd",
+        "Vx8_vredand_vs_cg/cp_vd",
+        "Vx16_vredand_vs_cg/cp_vd",
+        "Vx32_vredand_vs_cg/cp_vd",
+        "Vx64_vredand_vs_cg/cp_vd",
+        "Vx8_vredor_vs_cg/cp_vd",
+        "Vx16_vredor_vs_cg/cp_vd",
+        "Vx32_vredor_vs_cg/cp_vd",
+        "Vx64_vredor_vs_cg/cp_vd",
+        "Vx8_vredxor_vs_cg/cp_vd",
+        "Vx16_vredxor_vs_cg/cp_vd",
+        "Vx32_vredxor_vs_cg/cp_vd",
+        "Vx64_vredxor_vs_cg/cp_vd",
       ]
 
   # Overflows wrap around on arithmetic sums.
   - name: vredsum_vredmaxu_vredmax_vredminu_vredmin_vredand_vredor_vredxor_overflow
     coverpoint:
       [
-        "{Vx8_vredsum_vs_cg, Vx16_vredsum_vs_cg, Vx32_vredsum_vs_cg, Vx64_vredsum_vs_cg}/cr_vs2_vs1_edges",
+        "Vx8_vredsum_vs_cg/cr_vs2_vs1_edges",
+        "Vx16_vredsum_vs_cg/cr_vs2_vs1_edges",
+        "Vx32_vredsum_vs_cg/cr_vs2_vs1_edges",
+        "Vx64_vredsum_vs_cg/cr_vs2_vs1_edges",
+        "Vx8_vredmaxu_vs_cg/cr_vs2_vs1_edges",
+        "Vx16_vredmaxu_vs_cg/cr_vs2_vs1_edges",
+        "Vx32_vredmaxu_vs_cg/cr_vs2_vs1_edges",
+        "Vx64_vredmaxu_vs_cg/cr_vs2_vs1_edges",
+        "Vx8_vredmax_vs_cg/cr_vs2_vs1_edges",
+        "Vx16_vredmax_vs_cg/cr_vs2_vs1_edges",
+        "Vx32_vredmax_vs_cg/cr_vs2_vs1_edges",
+        "Vx64_vredmax_vs_cg/cr_vs2_vs1_edges",
+        "Vx8_vredminu_vs_cg/cr_vs2_vs1_edges",
+        "Vx16_vredminu_vs_cg/cr_vs2_vs1_edges",
+        "Vx32_vredminu_vs_cg/cr_vs2_vs1_edges",
+        "Vx64_vredminu_vs_cg/cr_vs2_vs1_edges",
+        "Vx8_vredmin_vs_cg/cr_vs2_vs1_edges",
+        "Vx16_vredmin_vs_cg/cr_vs2_vs1_edges",
+        "Vx32_vredmin_vs_cg/cr_vs2_vs1_edges",
+        "Vx64_vredmin_vs_cg/cr_vs2_vs1_edges",
+        "Vx8_vredand_vs_cg/cr_vs2_vs1_edges",
+        "Vx16_vredand_vs_cg/cr_vs2_vs1_edges",
+        "Vx32_vredand_vs_cg/cr_vs2_vs1_edges",
+        "Vx64_vredand_vs_cg/cr_vs2_vs1_edges",
+        "Vx8_vredor_vs_cg/cr_vs2_vs1_edges",
+        "Vx16_vredor_vs_cg/cr_vs2_vs1_edges",
+        "Vx32_vredor_vs_cg/cr_vs2_vs1_edges",
+        "Vx64_vredor_vs_cg/cr_vs2_vs1_edges",
+        "Vx8_vredxor_vs_cg/cr_vs2_vs1_edges",
+        "Vx16_vredxor_vs_cg/cr_vs2_vs1_edges",
+        "Vx32_vredxor_vs_cg/cr_vs2_vs1_edges",
+        "Vx64_vredxor_vs_cg/cr_vs2_vs1_edges",
       ]
 
   # The unsigned insn:vwredsumu.vs[] instruction zero-extends the SEW-wide vector elements
@@ -2196,14 +2083,20 @@ normative_rule_definitions:
   - name: vwredsumu_op
     coverpoint:
       [
-        "{Vx8_vwredsumu_vs_cg, Vx16_vwredsumu_vs_cg, Vx32_vwredsumu_vs_cg}/cr_vs2_vs1_edges_wred",
+        "Vx8_vwredsumu_vs_cg/cr_vs2_vs1_edges_wred",
+        "Vx16_vwredsumu_vs_cg/cr_vs2_vs1_edges_wred",
+        "Vx32_vwredsumu_vs_cg/cr_vs2_vs1_edges_wred",
       ]
   # For both insn:vwredsumu.vs[] and insn:vwredsum.vs[], overflows wrap around.
   - name: vwredsumu_vwredsum_op_overflow
-    # Representative coverpoints; the same coverpoint in the Vx32 covergroups
     coverpoint:
       [
-        "{Vx8_vwredsumu_vs_cg, Vx8_vwredsum_vs_cg, Vx16_vwredsumu_vs_cg, Vx16_vwredsum_vs_cg}/cr_vs2_vs1_edges_wred",
+        "Vx8_vwredsumu_vs_cg/cr_vs2_vs1_edges_wred",
+        "Vx16_vwredsumu_vs_cg/cr_vs2_vs1_edges_wred",
+        "Vx32_vwredsumu_vs_cg/cr_vs2_vs1_edges_wred",
+        "Vx8_vwredsum_vs_cg/cr_vs2_vs1_edges_wred",
+        "Vx16_vwredsum_vs_cg/cr_vs2_vs1_edges_wred",
+        "Vx32_vwredsum_vs_cg/cr_vs2_vs1_edges_wred",
       ]
 
   # The insn:vwredsum.vs[] instruction sign-extends the SEW-wide vector elements before
@@ -2211,29 +2104,23 @@ normative_rule_definitions:
   - name: vwredsum_op
     coverpoint:
       [
-        "{Vx8_vwredsum_vs_cg, Vx16_vwredsum_vs_cg, Vx32_vwredsum_vs_cg}/cr_vs2_vs1_edges_wred",
+        "Vx8_vwredsum_vs_cg/cr_vs2_vs1_edges_wred",
+        "Vx16_vwredsum_vs_cg/cr_vs2_vs1_edges_wred",
+        "Vx32_vwredsum_vs_cg/cr_vs2_vs1_edges_wred",
       ]
 
   # The insn:vfredosum[] instruction must sum the floating-point values in element order,
   # starting with the scalar in vs1[0]
   - name: vfredosum_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfredosum_vs_cg/cp_custom_vfredosum_ordered_sum"]
   # where each addition operates identically to the scalar floating-point instructions in
   # terms of raising exception flags and generating or propagating special values.
   - name: vfredosum_op_exceptions
-    # Representative coverpoints; the same coverpoints in the Vf16 covergroup
-    coverpoint:
-      [
-        "Vf32_vfredosum_vs_cg/{cr_vs2_vs1_edges_f_sew32, cp_csr_fflags_von}",
-        "Vf64_vfredosum_vs_cg/{cr_vs2_vs1_edges_f_sew64, cp_csr_fflags_von}",
-      ]
+    coverpoint: ["Vf16_vfredosum_vs_cg/cp_custom_vfp_flags_nv_nx"]
   # When the operation is masked (vm=0), the masked-off elements do not affect the result
   # or the exception flags.
   - name: vfredosum_maskoff
-    coverpoint:
-      [
-        "{Vf16_vfredosum_vs_cg, Vf32_vfredosum_vs_cg, Vf64_vfredosum_vs_cg}/cp_masking_edges",
-      ]
+    coverpoint: ["Vf16_vfredosum_vs_cg/cp_masking_edges"]
 
   # The implementation must produce a result equivalent to a reduction tree composed
   # of binary operator nodes, with the inputs being elements from the source vector
@@ -2252,82 +2139,75 @@ normative_rule_definitions:
   # using the dynamic rounding mode) to the standard floating-point format indicated
   # by SEW.
   - name: vfredusum_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfredusum_vs_cg/cp_vd"]
 
   # The additive identity is +0.0 when rounding down (towards -{inf}) or -0.0 for
   # all other rounding modes.
   - name: vfredusum_additive_impl
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: the additive-identity sign is whatever the reference model produces and is checked by the ordinary signature comparison, just not isolated by a dedicated coverpoint",
+      ]
 
   # The reduction tree structure must be deterministic for a given value in vtype
   # and vl.
   - name: vfredusum_redtree
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: reduction-tree determinism across runs is not observable from a single self-checking execution",
+      ]
 
   # The insn:vfredmin[] and insn:vfredmax[] instructions reduce the scalar argument in
   # vs1[0] and active elements in vs2 using the IEEE 754-2019 minimumNumber and
   # maximumNumber operations, respectively.
   - name: vfredmin_vfredmax_op
-    # Representative coverpoints; the same coverpoints in the Vf16 covergroups
-    coverpoint:
-      [
-        "{Vf32_vfredmin_vs_cg, Vf32_vfredmax_vs_cg}/cr_vs2_vs1_edges_f_sew32",
-        "{Vf64_vfredmin_vs_cg, Vf64_vfredmax_vs_cg}/cr_vs2_vs1_edges_f_sew64",
-      ]
+    coverpoint: ["Vf16_vfredmin_vs_cg/cp_vd"]
 
   # Widening forms of the sum reductions are provided that read and write a double-width
   # reduction result.
   - name: vfwredosum_vfwredusum_op
     coverpoint:
-      [
-        "{Vf16_vfwredosum_vs_cg, Vf16_vfwredusum_vs_cg}/cr_vs2_vs1_edges_fwred_sew16",
-        "{Vf32_vfwredosum_vs_cg, Vf32_vfwredusum_vs_cg}/cr_vs2_vs1_edges_fwred_sew32",
-      ]
+      ["Vf16_vfwredosum_vs_cg/cp_vd_emul2", "Vf16_vfwredusum_vs_cg/cp_vd_emul2"]
   # The reduction of the SEW-width elements is performed as in the single-width reduction
   # case, with the elements in vs2 promoted to 2*SEW bits before adding to the 2*SEW-bit
   # accumulator.
   - name: vfwredosum_vfwredusum_op_reduction
     coverpoint:
-      [
-        "{Vf16_vfwredosum_vs_cg, Vf16_vfwredusum_vs_cg}/cr_vs2_vs1_edges_fwred_sew16",
-        "{Vf32_vfwredosum_vs_cg, Vf32_vfwredusum_vs_cg}/cr_vs2_vs1_edges_fwred_sew32",
-      ]
+      ["Vf16_vfwredosum_vs_cg/cp_vd_emul2", "Vf16_vfwredusum_vs_cg/cp_vd_emul2"]
 
   # Vector mask-register logical operations operate on mask registers. Each element
   # in a mask register is a single bit,
   - name: vmask_maskreg_def
-    # Representative coverpoints; the same coverpoints in the other mask-logical covergroups
-    coverpoint:
-      [
-        "{Vx8_vmand_mm_cg, Vx8_vmor_mm_cg}/{cr_vs2_vs1_edges_mm, cp_custom_vmask_write_lmulge1}",
-      ]
+    coverpoint: ["Vx16_vmand_mm_cg/cp_vd"]
 
   # The destination vector register may be the same as either source vector
   # register.
   - name: vmask_vd_overlap_vs
-    coverpoint: [""]
+    coverpoint: ["Vx16_vmand_mm_cg/cmp_vd_vs1"]
 
   # As with other vector instructions, the elements with indices less than vstart
   # are unchanged, and vstart is reset to zero after execution.
   - name: vmask_vstart
-    coverpoint: [""]
+    coverpoint: ["ExceptionsVx_vmand_mm_cg/cp_vstart"]
 
   # Vector mask logical instructions are always unmasked,
   - name: vmasklogical_unmasked
-    coverpoint: [""]
+    coverpoint: ["Vx16_vmand_mm_cg/cr_vtype_agnostic_nomask"]
 
   # so there are no inactive elements, and the encodings with vm=0 are reserved.
   - name: vmasklogical_masked_rsv
-    # Representative coverpoints; also the SsstrictV vmandn/vmnor/vmorn/vmxnor covergroups
     coverpoint:
       [
-        "{SsstrictV_vmand_mm_cg, SsstrictV_vmnand_mm_cg, SsstrictV_vmor_mm_cg, SsstrictV_vmxor_mm_cg}/cp_ssstrictv_mask_logical_vm0_reserved",
+        "SsstrictV_vmand_mm_cg/cp_ssstrictv_mask_logical_vm0_reserved",
+        "SsstrictV_vmnand_mm_cg/cp_ssstrictv_mask_logical_vm0_reserved",
+        "SsstrictV_vmor_mm_cg/cp_ssstrictv_mask_logical_vm0_reserved",
+        "SsstrictV_vmxor_mm_cg/cp_ssstrictv_mask_logical_vm0_reserved",
       ]
 
   # Mask elements past vl, the tail elements, are always updated with a
   # tail-agnostic policy.
   - name: vmasklogical_tail_agnostic
-    coverpoint: [""]
+    coverpoint: ["Vx16_vmand_mm_cg/cr_vtype_agnostic_nomask"]
 
   # vmand.mm vd, vs2, vs1 # vd.mask[i] = vs2.mask[i] &amp;&amp; vs1.mask[i] vmnand.mm vd,
   # vs2, vs1 # vd.mask[i] = !(vs2.mask[i] &amp;&amp; vs1.mask[i]) vmandn.mm vd, vs2, vs1 #
@@ -2337,34 +2217,37 @@ normative_rule_definitions:
   # vmorn.mm vd, vs2, vs1 # vd.mask[i] = vs2.mask[i] || !vs1.mask[i] vmxnor.mm vd, vs2,
   # vs1 # vd.mask[i] = !(vs2.mask[i] ^^ vs1.mask[i])
   - name: vmand_vmnand_vmandn_vmxor_vmor_vmnor_vmorn_vmxnor_op
-    # Representative coverpoints; also vmxor/vmor/vmnor/vmorn, and the same coverpoint in the Vx16/32/64 covergroups
     coverpoint:
       [
-        "{Vx8_vmand_mm_cg, Vx8_vmnand_mm_cg, Vx8_vmandn_mm_cg, Vx8_vmxnor_mm_cg}/cr_vs2_vs1_edges_mm",
+        "Vx16_vmand_mm_cg/cr_vs2_vs1_edges_mm",
+        "Vx16_vmnand_mm_cg/cr_vs2_vs1_edges_mm",
+        "Vx16_vmandn_mm_cg/cr_vs2_vs1_edges_mm",
+        "Vx16_vmxor_mm_cg/cr_vs2_vs1_edges_mm",
+        "Vx16_vmor_mm_cg/cr_vs2_vs1_edges_mm",
+        "Vx16_vmnor_mm_cg/cr_vs2_vs1_edges_mm",
+        "Vx16_vmorn_mm_cg/cr_vs2_vs1_edges_mm",
+        "Vx16_vmxnor_mm_cg/cr_vs2_vs1_edges_mm",
       ]
 
   # The source operand is a single vector register holding mask register values as
   # described in &lt;&lt;sec-mask-register-layout&gt;&gt;.
   - name: vcpop_vs_single_vreg
-    coverpoint: [""]
+    coverpoint: ["Vx16_vcpop_m_cg/cp_vs2_edges_eew1"]
 
   # The insn:vcpop.m[] instruction counts the number of mask elements of the active
   # elements of the vector source mask register that have the value 1 and writes the
   # result to a scalar x register.
   - name: vcpop_op
-    coverpoint: [""]
+    coverpoint: ["Vx16_vcpop_m_cg/cp_rd"]
   # The operation can be performed under a mask, in which case only the masked elements
   # are counted.
   - name: vcpop_op_mask
-    coverpoint:
-      [
-        "{Vx8_vcpop_m_cg, Vx16_vcpop_m_cg, Vx32_vcpop_m_cg, Vx64_vcpop_m_cg}/cp_masking_edges",
-      ]
+    coverpoint: ["Vx16_vcpop_m_cg/cp_masking_edges"]
 
   # The vcpop.m instruction writes x[rd] even if vl=0 (with the value 0, since no
   # mask elements are active).
   - name: vcpop_vl0
-    coverpoint: [""]
+    coverpoint: ["Vx16_vcpop_m_cg/cp_vl_0"]
 
   # Traps on vcpop.m are always reported with a vstart of 0.
   - name: vcpop_trap
@@ -2373,18 +2256,22 @@ normative_rule_definitions:
   # The vcpop.m instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
   - name: vcpop_vstart_n0_ill
-    coverpoint: ["ExceptionsVx_vcpop_m_cg/cp_vstart"]
+    coverpoint:
+      [
+        "ExceptionsVx_vcpop_m_cg/cp_vstart_gt_vl",
+        "ExceptionsVx_vcpop_m_cg/cp_vstart",
+      ]
 
   # The vfirst instruction finds the lowest-numbered active element of the source
   # mask vector that has the value 1 and writes that element's index to a GPR. If no
   # active element has the value 1, -1 is written to the GPR.
   - name: vfirst_op
-    coverpoint: [""]
+    coverpoint: ["Vx16_vfirst_m_cg/cp_rd"]
 
   # The vfirst.m instruction writes x[rd] even if vl=0 (with the value -1, since no
   # mask elements are active).
   - name: vfirst_vl0
-    coverpoint: [""]
+    coverpoint: ["Vx16_vfirst_m_cg/cp_vl_0"]
 
   # Traps on vfirst are always reported with a vstart of 0.
   - name: vfirst_trap
@@ -2393,7 +2280,11 @@ normative_rule_definitions:
   # The vfirst instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
   - name: vfirst_vstart_n0_ill
-    coverpoint: ["ExceptionsVx_vfirst_m_cg/cp_vstart"]
+    coverpoint:
+      [
+        "ExceptionsVx_vfirst_m_cg/cp_vstart_gt_vl",
+        "ExceptionsVx_vfirst_m_cg/cp_vstart",
+      ]
 
   # The vmsbf.m instruction takes a mask register as input and writes results to a
   # mask register. The instruction writes a 1 to all active mask elements before the
@@ -2401,12 +2292,12 @@ normative_rule_definitions:
   # following active elements. If there is no set bit in the active elements of the
   # source vector, then all active elements in the destination are written with a 1.
   - name: vmsbf_op
-    coverpoint: [""]
+    coverpoint: ["Vx16_vmsbf_m_cg/cp_vd"]
 
   # The tail elements in the destination mask register are updated under a
   # tail-agnostic policy.
   - name: vmsbf_tail_agnostic
-    coverpoint: [""]
+    coverpoint: ["Vx16_vmsbf_m_cg/cr_vtype_agnostic"]
 
   # Traps on vmsbf.m are always reported with a vstart of 0.
   - name: vmsbf_trap
@@ -2415,25 +2306,26 @@ normative_rule_definitions:
   # The vmsbf instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
   - name: vmsbf_vstart_n0_ill
-    coverpoint: ["ExceptionsVx_vmsbf_m_cg/cp_vstart"]
+    coverpoint:
+      [
+        "ExceptionsVx_vmsbf_m_cg/cp_vstart_gt_vl",
+        "ExceptionsVx_vmsbf_m_cg/cp_vstart",
+      ]
 
   # The destination register cannot overlap the source register and, if masked,
   # cannot overlap the mask register ('v0').
   - name: vmsbf_vreg_constr
-    coverpoint:
-      [
-        "SsstrictV_vmsbf_m_cg/{cp_exceptionsv_vd_vs2_overlap, cp_ssstrictv_masking_vd_eq_v0}",
-      ]
+    coverpoint: ["SsstrictV_vmsbf_m_cg/cp_ssstrictv_masking_vd_eq_v0"]
 
   # The vector mask set-including-first instruction is similar to set-before-first,
   # except it also includes the element with a set bit.
   - name: vmsif_op
-    coverpoint: [""]
+    coverpoint: ["Vx16_vmsif_m_cg/cp_vd"]
 
   # The tail elements in the destination mask register are updated under a
   # tail-agnostic policy.
   - name: vmsif_tail_agnostic
-    coverpoint: [""]
+    coverpoint: ["Vx16_vmsif_m_cg/cr_vtype_agnostic"]
 
   # Traps on vmsif.m are always reported with a vstart of 0.
   - name: vmsif_trap
@@ -2442,25 +2334,26 @@ normative_rule_definitions:
   # The vmsif instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
   - name: vmsif_vstart_n0_ill
-    coverpoint: ["ExceptionsVx_vmsif_m_cg/cp_vstart"]
+    coverpoint:
+      [
+        "ExceptionsVx_vmsif_m_cg/cp_vstart_gt_vl",
+        "ExceptionsVx_vmsif_m_cg/cp_vstart",
+      ]
 
   # The destination register cannot overlap the source register and, if masked,
   # cannot overlap the mask register ('v0').
   - name: vmsif_vreg_constr
-    coverpoint:
-      [
-        "SsstrictV_vmsif_m_cg/{cp_exceptionsv_vd_vs2_overlap, cp_ssstrictv_masking_vd_eq_v0}",
-      ]
+    coverpoint: ["SsstrictV_vmsif_m_cg/cp_ssstrictv_masking_vd_eq_v0"]
 
   # The vector mask set-only-first instruction is similar to set-before-first,
   # except it only sets the first element with a bit set, if any.
   - name: vmsof_op
-    coverpoint: [""]
+    coverpoint: ["Vx16_vmsof_m_cg/cp_vd"]
 
   # The tail elements in the destination mask register are updated under a
   # tail-agnostic policy.
   - name: vmsof_tail_agnostic
-    coverpoint: [""]
+    coverpoint: ["Vx16_vmsof_m_cg/cr_vtype_agnostic"]
 
   # Traps on vmsof.m are always reported with a vstart of 0.
   - name: vmsof_trap
@@ -2469,29 +2362,27 @@ normative_rule_definitions:
   # The vmsof instruction will raise an illegal-instruction exception if vstart is
   # non-zero.
   - name: vmsof_vstart_n0_ill
-    coverpoint: ["ExceptionsVx_vmsof_m_cg/cp_vstart"]
+    coverpoint:
+      [
+        "ExceptionsVx_vmsof_m_cg/cp_vstart_gt_vl",
+        "ExceptionsVx_vmsof_m_cg/cp_vstart",
+      ]
 
   # The destination register cannot overlap the source register and, if masked,
   # cannot overlap the mask register ('v0').
   - name: vmsof_vreg_constr
-    coverpoint:
-      [
-        "SsstrictV_vmsof_m_cg/{cp_exceptionsv_vd_vs2_overlap, cp_ssstrictv_masking_vd_eq_v0}",
-      ]
+    coverpoint: ["SsstrictV_vmsof_m_cg/cp_ssstrictv_masking_vd_eq_v0"]
 
   # The insn:viota.m[] instruction reads a source vector mask register and writes to each
   # element of the destination vector register group the sum of all the bits of elements
   # in the mask register whose index is less than the element, e.g., a parallel prefix sum
   # of the mask values.
   - name: viota_op
-    coverpoint: [""]
+    coverpoint: ["Vx16_viota_m_cg/cp_vd"]
   # This instruction can be masked, in which case only the enabled elements contribute to
   # the sum.
   - name: viota_op_masked
-    coverpoint:
-      [
-        "{Vx8_viota_m_cg, Vx16_viota_m_cg, Vx32_viota_m_cg, Vx64_viota_m_cg}/cp_masking_edges",
-      ]
+    coverpoint: ["Vx16_viota_m_cg/cp_masking_edges"]
   # The result value is zero-extended to fill the destination element if SEW is wider than
   # the result.
   - name: viota_op_zext
@@ -2504,7 +2395,7 @@ normative_rule_definitions:
   # If the result value would overflow the destination SEW, the least-significant SEW bits
   # are retained.
   - name: viota_op_overflow
-    coverpoint: [""]
+    coverpoint: ["Vx8_viota_m_cg/cr_vl_lmul_sew8"]
 
   # Traps on viota.m are always reported with a vstart of 0,
   - name: viota_trap
@@ -2512,24 +2403,29 @@ normative_rule_definitions:
 
   # An illegal-instruction exception is raised if vstart is non-zero.
   - name: viota_vstart_n0_ill
-    coverpoint: ["ExceptionsVx_viota_m_cg/cp_vstart"]
+    coverpoint:
+      [
+        "ExceptionsVx_viota_m_cg/cp_vstart_gt_vl",
+        "ExceptionsVx_viota_m_cg/cp_vstart",
+      ]
 
   # The destination register group cannot overlap the source register and, if
   # masked, cannot overlap the mask register (v0).
   - name: viota_vreg_constr
-    coverpoint: [""]
+    coverpoint:
+      [
+        "SsstrictV_viota_m_cg/cp_exceptionsv_vd_vs2_overlap",
+        "SsstrictV_viota_m_cg/cp_ssstrictv_masking_vd_eq_v0",
+      ]
 
   # The insn:vid.v[] instruction writes each element's index to the destination vector
   # register group, from 0 to csr:vl[]-1.
   - name: vid_op
-    coverpoint: [""]
+    coverpoint: ["Vx16_vid_v_cg/cp_vd"]
   # The instruction can be masked. Masking does not change the index value written to
   # active elements.
   - name: vid_op_mask
-    coverpoint:
-      [
-        "{Vx8_vid_v_cg, Vx16_vid_v_cg, Vx32_vid_v_cg, Vx64_vid_v_cg}/cp_masking_edges",
-      ]
+    coverpoint: ["Vx16_vid_v_cg/cp_masking_edges"]
   # The result value is zero-extended to fill the destination element if SEW is wider than
   # the result.
   - name: vid_op_zext
@@ -2542,7 +2438,7 @@ normative_rule_definitions:
   # If the result value would overflow the destination SEW, the least-significant SEW bits
   # are retained.
   - name: vid_op_overflow
-    coverpoint: [""]
+    coverpoint: ["Vx8_vid_v_cg/cr_vl_lmul_sew8"]
 
   # The vs2 field of the instruction must be set to v0, otherwise the encoding is
   # reserved.
@@ -2551,11 +2447,10 @@ normative_rule_definitions:
 
   # The instructions ignore LMUL; EMUL is computed as ceil(EEW/VLEN).
   - name: vmv-x-s_vmv-s-x_ignorelmul
-    # Representative coverpoints; also the lmul4 coverpoints and the same coverpoints in the Vx16/32/64 covergroups
     coverpoint:
       [
-        "Vx8_vmv_x_s_cg/{cp_custom_voffgroup_vs2_lmul2, cp_custom_voffgroup_vs2_lmul8}",
-        "Vx8_vmv_s_x_cg/{cp_custom_voffgroup_vd_lmul2, cp_custom_voffgroup_vd_lmul8}",
+        "Vx16_vmv_s_x_cg/cp_custom_voffgroup_vd_lmul2",
+        "Vx16_vmv_x_s_cg/cp_custom_voffgroup_vs2_lmul2",
       ]
 
   # The vmv.x.s instruction copies a single SEW-wide element from index 0 of the
@@ -2563,13 +2458,14 @@ normative_rule_definitions:
   # least-significant XLEN bits are transferred and the upper SEW-XLEN bits are
   # ignored. If SEW &lt; XLEN, the value is sign-extended to XLEN bits.
   - name: vmv-x-s_op
-    coverpoint: [""]
+    coverpoint: ["Vx16_vmv_x_s_cg/cp_rd"]
 
   # insn:vmv.x.s[] performs its operation even if csr:vstart[] ≥ csr:vl[] or csr:vl[]=0.
   - name: vmv-x-s_vstartgevl_vl0
     coverpoint:
       [
-        "{Vx8_vmv_x_s_cg, Vx16_vmv_x_s_cg, Vx32_vmv_x_s_cg, Vx64_vmv_x_s_cg}/cp_custom_gprWriting_vstart_eq_vl",
+        "Vx16_vmv_x_s_cg/cp_custom_gprWriting_vstart_eq_vl",
+        "Vx16_vmv_x_s_cg/cp_vl_0",
       ]
 
   # The vmv.s.x instruction copies the scalar integer register to element 0 of the
@@ -2579,69 +2475,75 @@ normative_rule_definitions:
   # ( 0 &lt; index &lt; VLEN/SEW) are treated as tail elements using the current
   # tail agnostic/undisturbed policy.
   - name: vmv-s-x_op
-    coverpoint: [""]
+    coverpoint: ["Vx16_vmv_s_x_cg/cp_rs1_edges"]
 
   # If vstart {ge} vl, no operation is performed and the destination register is not
   # updated.
   - name: vmv-s-x_vstart_ge_vl
-    coverpoint: [""]
+    coverpoint: ["ExceptionsVx_vmv_s_x_cg/cp_vstart_gt_vl"]
 
   # The encodings corresponding to the masked versions (vm=0) of insn:vmv.x.s[] and
   # insn:vmv.s.x[] are reserved.
   - name: vmv-s-x_vmv-x-s_masked_rsv
-    coverpoint:
-      [
-        "{SsstrictV_vmv_x_s_cg, SsstrictV_vmv_s_x_cg}/cp_ssstrictv_vmv_xs_sx_vm0_reserved",
-      ]
+    coverpoint: ["SsstrictV_vmv_s_x_cg/cp_ssstrictv_vmv_xs_sx_vm0_reserved"]
 
   # The instructions ignore LMUL; EMUL is computed as ceil(EEW/VLEN).
   - name: vfmv-f-s_vfmv-s-f_ignorelmul
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Vf16_vfmv_f_s_cg/cp_custom_fmv_fs_vs2_all_lmul_regs",
+        "Vf16_vfmv_s_f_cg/cp_custom_fmv_sf_vd_all_lmul_regs",
+      ]
 
   # The vfmv.f.s instruction copies a single SEW-wide element from index 0 of the
   # source vector register to a destination scalar floating-point register.
   - name: vfmv-f-s_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfmv_f_s_cg/cp_fd"]
 
   # The vfmv.s.f instruction copies the scalar floating-point register to element 0
   # of the destination vector register. The other elements in the destination vector
   # register ( 0 &lt; index &lt; VLEN/SEW) are treated as tail elements using the
   # current tail agnostic/undisturbed policy.
   - name: vfmv-s-f_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfmv_s_f_cg/cp_fs1"]
 
   # If vstart {ge} vl, no operation is performed and the destination register is not
   # updated.
   - name: vfmv-s-f_vstart_ge_vl
-    coverpoint: [""]
+    coverpoint: ["ExceptionsVf16_vfmv_s_f_cg/cp_vstart_gt_vl"]
 
   # The encodings corresponding to the masked versions (vm=0) of vfmv.f.s and
   # vfmv.s.f are reserved.
   - name: vfmv-s-f_masked_rsv
-    coverpoint:
-      [
-        "{SsstrictV_vfmv_f_s_cg, SsstrictV_vfmv_s_f_cg}/cp_ssstrictv_vfmv_fs_sf_vm0_reserved",
-      ]
+    coverpoint: ["SsstrictV_vfmv_s_f_cg/cp_ssstrictv_vfmv_fs_sf_vm0_reserved"]
 
   # For all of the insn:vslideup[], insn:vslidedown[], insn:vslide1up[],
   # insn:vfslide1up[], insn:vslide1down[], and insn:vfslide1down[] instructions, if
   # csr:vstart[] ≥ csr:vl[], the instruction performs no operation and leaves the
   # destination vector register unchanged.
   - name: vslide_vstart_ge_vl
-    # Representative coverpoints; also the .vi forms, Vf vfslide1up/vfslide1down, and the Vx16/32/64 covergroups
     coverpoint:
       [
-        "{Vx8_vslideup_vx_cg, Vx8_vslidedown_vx_cg, Vx8_vslide1up_vx_cg, Vx8_vslide1down_vx_cg}/cp_vl_0",
+        "ExceptionsVx_vslideup_vx_cg/cp_vstart_gt_vl",
+        "ExceptionsVx_vslidedown_vx_cg/cp_vstart_gt_vl",
+        "ExceptionsVx_vslide1up_vx_cg/cp_vstart_gt_vl",
+        "ExceptionsVx_vslide1down_vx_cg/cp_vstart_gt_vl",
+        "ExceptionsVf16_vfslide1up_vf_cg/cp_vstart_gt_vl",
+        "ExceptionsVf16_vfslide1down_vf_cg/cp_vstart_gt_vl",
       ]
 
   # The slide instructions may be masked, with mask element i controlling whether
   # destination element i is written. The mask undisturbed/agnostic policy is followed for
   # inactive elements.
   - name: vslide_mask
-    # Representative coverpoints; the same coverpoints in the vslide1up/vslide1down, .vi, Vf vfslide1up/vfslide1down and Vx16/32/64 covergroups
     coverpoint:
       [
-        "{Vx8_vslideup_vx_cg, Vx8_vslidedown_vx_cg}/{cp_masking_edges, cr_vtype_agnostic}",
+        "Vx16_vslideup_vx_cg/cp_masking_edges",
+        "Vx16_vslidedown_vx_cg/cp_masking_edges",
+        "Vx16_vslide1up_vx_cg/cp_masking_edges",
+        "Vx16_vslide1down_vx_cg/cp_masking_edges",
+        "Vf16_vfslide1up_vf_cg/cp_masking_edges",
+        "Vf16_vfslide1down_vf_cg/cp_masking_edges",
       ]
 
   # For vslideup, the value in vl specifies the maximum number of destination
@@ -2651,30 +2553,31 @@ normative_rule_definitions:
   # not truncated to SEW bits. Destination elements OFFSET through vl-1 are written
   # if unmasked and if OFFSET &lt; vl.
   - name: vslideup_op
-    coverpoint: [""]
+    coverpoint: ["Vx16_vslideup_vx_cg/cr_vs2_rs1_edges"]
 
   # The destination vector register group for vslideup cannot overlap the source
   # vector register group, otherwise the instruction encoding is reserved.
   - name: vslideup_vreg_constr
     coverpoint:
       [
-        "{SsstrictV_vslideup_vx_cg, SsstrictV_vslideup_vi_cg}/cp_ssstrictv_vslideup_vd_vs2_overlap",
+        "SsstrictV_vslideup_vx_cg/cp_ssstrictv_vslideup_vd_vs2_overlap",
+        "SsstrictV_vslideup_vi_cg/cp_ssstrictv_vslideup_vd_vs2_overlap",
       ]
 
   # For insn:vslidedown[], the value in csr:vl[] specifies the maximum number of
   # destination elements that are written. The remaining elements past csr:vl[] are
   # handled according to the current tail policy (&lt;&lt;sec-agnostic&gt;&gt;).
   - name: vslidedown_op
-    coverpoint: [""]
+    coverpoint: ["Vx16_vslidedown_vx_cg/cr_vs2_rs1_edges"]
   # The start index (OFFSET) for the source can be either specified using an unsigned
   # integer in the x register specified by rs1, or a 5-bit immediate, zero-extended to
   # XLEN bits. If XLEN &gt; SEW, OFFSET is not truncated to SEW bits.
   - name: vslidedown_op_src
-    # Representative coverpoints; the same coverpoints in the Vx16/32/64 covergroups
     coverpoint:
       [
-        "Vx8_vslidedown_vx_cg/{cp_rs1_edges, cp_custom_vindexVX_rs1_not_truncated_32, cp_custom_vindexVX_rs1_not_truncated_64}",
-        "Vx8_vslidedown_vi_cg/cp_imm_5bit_u",
+        "Vx16_vslidedown_vx_cg/cp_rs1_edges",
+        "Vx16_vslidedown_vx_cg/cp_custom_vindexVX_rs1_not_truncated_32",
+        "Vx16_vslidedown_vx_cg/cp_custom_vindexVX_rs1_not_truncated_64",
       ]
 
   # The insn:vslide1up[] instruction places the x register argument at location 0 of the
@@ -2683,26 +2586,16 @@ normative_rule_definitions:
   # XLEN &lt; SEW, the value is sign-extended to SEW bits. If XLEN &gt; SEW, the
   # least-significant bits are copied over and the high XLEN-SEW bits are ignored.
   - name: vslide1up-vx_op
-    coverpoint: [""]
+    coverpoint: ["Vx16_vslide1up_vx_cg/cr_vs2_rs1_edges"]
   # The remaining active csr:vl[]-1 elements are copied over from index i in the source
   # vector register group to index i+1 in the destination vector register group.
   - name: vslide1up-vx_op_rem_elem
-    # Representative coverpoints; the same coverpoints in the Vx16/Vx64 covergroups
-    coverpoint:
-      [
-        "Vx8_vslide1up_vx_cg/{cr_vl_lmul_sew8, cp_masking_edges}",
-        "Vx32_vslide1up_vx_cg/{cr_vl_lmul_sew32, cp_masking_edges}",
-      ]
+    coverpoint: ["Vx16_vslide1up_vx_cg/cr_vs2_rs1_edges"]
   # The csr:vl[] register specifies the maximum number of destination vector register
   # elements updated with source values, and remaining elements past csr:vl[] are handled
   # according to the current tail policy (&lt;&lt;sec-agnostic&gt;&gt;).
   - name: vslide1up-vx_op_vl
-    # Representative coverpoints; the same coverpoints in the Vx16/Vx64 covergroups
-    coverpoint:
-      [
-        "Vx8_vslide1up_vx_cg/{cr_vl_lmul_sew8, cr_vtype_agnostic}",
-        "Vx32_vslide1up_vx_cg/{cr_vl_lmul_sew32, cr_vtype_agnostic}",
-      ]
+    coverpoint: ["Vx16_vslide1up_vx_cg/cp_csr_vl_edges"]
 
   # The vslide1up instruction requires that the destination vector register group
   # does not overlap the source vector register group. Otherwise, the instruction
@@ -2714,23 +2607,18 @@ normative_rule_definitions:
   # The vfslide1up instruction is defined analogously to vslide1up, but sources its
   # scalar argument from an f register.
   - name: vslide1up-vf_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfslide1up_vf_cg/cr_vs2_fs1_edges_f_sew16"]
 
   # The insn:vslide1down[] instruction copies the first csr:vl[]-1 active elements values
   # from index i+1 in the source vector register group to index i in the destination
   # vector register group.
   - name: vslide1down-vx_op
-    coverpoint: [""]
+    coverpoint: ["Vx16_vslide1down_vx_cg/cr_vs2_rs1_edges"]
   # The csr:vl[] register specifies the maximum number of destination vector register
   # elements written with source values, and remaining elements past csr:vl[] are handled
   # according to the current tail policy (&lt;&lt;sec-agnostic&gt;&gt;).
   - name: vslide1down-vx_op_vl
-    # Representative coverpoints; the same coverpoints in the Vx16/Vx64 covergroups
-    coverpoint:
-      [
-        "Vx8_vslide1down_vx_cg/{cr_vl_lmul_sew8, cr_vtype_agnostic}",
-        "Vx32_vslide1down_vx_cg/{cr_vl_lmul_sew32, cr_vtype_agnostic}",
-      ]
+    coverpoint: ["Vx16_vslide1down_vx_cg/cp_csr_vl_edges"]
   # The insn:vslide1down[] instruction places the x register argument at location
   # csr:vl[]-1 in the destination vector register, provided that element csr:vl[]-1 is
   # active, otherwise the destination element update follows the current mask
@@ -2738,78 +2626,75 @@ normative_rule_definitions:
   # If XLEN &gt; SEW, the least-significant bits are copied over and the high SEW-XLEN
   # bits are ignored.
   - name: vslide1down-vx_op_details
-    # Representative coverpoints; the same coverpoints in the Vx16/Vx32 covergroups
     coverpoint:
       [
-        "Vx8_vslide1down_vx_cg/{cp_rs1_edges, cp_masking_edges}",
-        "Vx64_vslide1down_vx_cg/{cp_rs1_edges, cp_masking_edges}",
+        "Vx16_vslide1down_vx_cg/cp_masking_edges",
+        "Vx16_vslide1down_vx_cg/cr_vl_lmul_sew16",
       ]
 
   # The vfslide1down instruction is defined analogously to vslide1down, but sources
   # its scalar argument from an f register.
   - name: vslide1down-vf_op
-    coverpoint: [""]
+    coverpoint: ["Vf16_vfslide1down_vf_cg/cr_vs2_fs1_edges_f_sew16"]
 
   # The index values in the second vector are treated as unsigned integers.
   - name: vrgather_vrgatherei16_vs2_uint
-    # Representative coverpoints; the same coverpoints in the Vx8/32/64 vrgather.vv and Vx32/64 vrgatherei16.vv covergroups
     coverpoint:
       [
-        "{Vx16_vrgather_vv_cg, Vx16_vrgatherei16_vv_cg}/{cp_custom_vindexCorners_index_ge_vlmax, cr_vs2_vs1_edges}",
+        "Vx16_vrgather_vv_cg/cp_vs1_edges",
+        "Vx16_vrgatherei16_vv_cg/cp_vs1_edges",
       ]
 
   # The source vector can be read at any index &lt; VLMAX regardless of csr:vl[].
   - name: vrgather_vrgatherei16_vs_ignore_vl
-    # Representative coverpoints; the same coverpoint in the Vx16/32 vrgather.vv and Vx32 vrgatherei16.vv covergroups
     coverpoint:
       [
-        "{Vx8_vrgather_vv_cg, Vx64_vrgather_vv_cg, Vx16_vrgatherei16_vv_cg, Vx64_vrgatherei16_vv_cg}/cp_custom_vindexCorners_index_gt_vl_lt_vlmax",
+        "Vx16_vrgather_vv_cg/cp_custom_vindexCorners_index_gt_vl_lt_vlmax",
+        "Vx16_vrgatherei16_vv_cg/cp_custom_vindexCorners_index_gt_vl_lt_vlmax",
       ]
 
   # The maximum number of elements to write to the destination register is given by
   # csr:vl[],
   - name: vrgather_vrgatherei16_vl
-    # Representative coverpoints; the same coverpoints in the other SEW covergroups
     coverpoint:
       [
-        "{Vx8_vrgather_vv_cg, Vx8_vrgather_vx_cg, Vx8_vrgather_vi_cg}/cr_vl_lmul_sew8",
+        "Vx16_vrgather_vv_cg/cr_vl_lmul_sew16",
         "Vx16_vrgatherei16_vv_cg/cr_vl_lmul_sew16",
       ]
 
   # and the remaining elements past csr:vl[] are handled according to the current tail
   # policy (&lt;&lt;sec-agnostic&gt;&gt;).
   - name: vrgather_vrgatherei16_tail
-    # Representative coverpoints; the same coverpoint in the other SEW covergroups
     coverpoint:
       [
-        "{Vx8_vrgather_vv_cg, Vx8_vrgather_vx_cg, Vx8_vrgather_vi_cg, Vx16_vrgatherei16_vv_cg}/cr_vtype_agnostic",
+        "Vx16_vrgather_vv_cg/cr_vtype_agnostic",
+        "Vx16_vrgatherei16_vv_cg/cr_vtype_agnostic",
       ]
 
   # The operation can be masked, and the mask undisturbed/agnostic policy is followed for
   # inactive elements.
   - name: vrgather_vrgatherei16_mask
-    # Representative coverpoints; the same coverpoints in the vrgather.vx/.vi and other SEW covergroups
     coverpoint:
       [
-        "{Vx8_vrgather_vv_cg, Vx16_vrgatherei16_vv_cg}/{cp_masking_edges, cr_vtype_agnostic}",
+        "Vx16_vrgather_vv_cg/cp_masking_edges",
+        "Vx16_vrgatherei16_vv_cg/cp_masking_edges",
       ]
 
   # The vrgather.vv form uses SEW/LMUL for both the data and indices.
   - name: vrgather-vv_sew_lmul
-    coverpoint: [""]
+    coverpoint: ["Vx16_vrgather_vv_cg/cr_vl_lmul_sew16"]
 
   # The vrgatherei16.vv form uses SEW/LMUL for the data in vs2 but EEW=16 and EMUL =
   # (16/SEW)*LMUL for the indices in vs1.
   - name: vrgatherei16-vv_sew_lmul
-    coverpoint: [""]
+    coverpoint: ["Vx32_vrgatherei16_vv_cg/cp_vs1_edges"]
 
   # If an element index is out of range ( vs1[i] ≥ VLMAX ) then zero is returned for the
   # element value.
   - name: vrgather_vrgatherei16_id_ge_vlmax
-    # Representative coverpoints; the same coverpoint in the Vx8/32 vrgather.vv and Vx32 vrgatherei16.vv covergroups
     coverpoint:
       [
-        "{Vx16_vrgather_vv_cg, Vx64_vrgather_vv_cg, Vx16_vrgatherei16_vv_cg, Vx64_vrgatherei16_vv_cg}/cp_custom_vindexCorners_index_ge_vlmax",
+        "{Vx16_vrgather_vv_cg,Vx16_vrgatherei16_vv_cg}/cp_custom_vindexCorners_index_ge_vlmax",
       ]
 
   # Vector-scalar and vector-immediate forms of the register gather are also provided.
@@ -2818,21 +2703,19 @@ normative_rule_definitions:
   # scalar register and the immediate, zero-extended to XLEN bits, are treated as unsigned
   # integers. If XLEN &gt; SEW, the index value is not truncated to SEW bits.
   - name: vrgather-vx_vrgather-vi_op
-    # Representative coverpoints; the same coverpoints in the Vx16/32/64 covergroups
     coverpoint:
       [
-        "Vx8_vrgather_vx_cg/{cp_rs1_edges, cp_custom_vindexVX_rs1_not_truncated_32, cp_custom_vindexVX_rs1_not_truncated_64}",
-        "Vx8_vrgather_vi_cg/cp_imm_5bit_u",
+        "{Vx16_vrgather_vx_cg,Vx16_vrgather_vi_cg}/cp_vd",
+        "Vx16_vrgather_vx_cg/cp_custom_vindexVX_rs1_not_truncated_64",
       ]
 
   # For any insn:vrgather[] instruction, the destination vector register group cannot
   # overlap with the source vector register groups, otherwise the instruction encoding is
   # reserved.
   - name: vrgather_vrgatherei16_vreg_constr
-    # Representative coverpoints; also cp_ssstrictv_vrgather_vd_vs2_overlap in SsstrictV_vrgather_vx_cg/SsstrictV_vrgather_vi_cg
     coverpoint:
       [
-        "{SsstrictV_vrgather_vv_cg, SsstrictV_vrgatherei16_vv_cg}/{cp_ssstrictv_vrgather_vd_vs2_overlap, cp_ssstrictv_vrgather_vd_vs1_overlap}",
+        "{SsstrictV_vrgather_vv_cg,SsstrictV_vrgatherei16_vv_cg}/cp_ssstrictv_vrgather_vd_vs2_overlap",
       ]
 
   # The vector mask register specified by vs1 indicates which of the first vl
@@ -2841,12 +2724,18 @@ normative_rule_definitions:
   # elements of vd are treated as tail elements according to the current tail policy
   # (&lt;&lt;sec-agnostic&gt;&gt;).
   - name: vcompress_op
-    coverpoint: [""]
+    coverpoint: ["Vx16_vcompress_vm_cg/cr_vs2_vs1_edges"]
 
   # T`vcompress` is encoded as an unmasked instruction (vm=1).
   - name: vcompress_enc
-    # Representative coverpoints; the same coverpoint in the Vx16/32/64 covergroups
-    coverpoint: ["Vx8_vcompress_vm_cg/cp_asm_count"]
+    coverpoint:
+      [
+        "Vx8_vcompress_vm_cg/cp_asm_count",
+        "Vx16_vcompress_vm_cg/cp_asm_count",
+        "Vx32_vcompress_vm_cg/cp_asm_count",
+        "Vx64_vcompress_vm_cg/cp_asm_count",
+        "SsstrictV_vcompress_vm_cg/cp_ssstrictv_vcompress_vm0_reserved",
+      ]
 
   # The equivalent masked instruction (vm=0) is reserved.
   - name: vcompress_masked_rsv
@@ -2857,7 +2746,8 @@ normative_rule_definitions:
   # group or the source mask register, otherwise the instruction encoding is
   # reserved.
   - name: vcompress_vreg_constr
-    coverpoint: [""]
+    coverpoint:
+      ["SsstrictV_vcompress_vm_cg/cp_ssstrictv_vcompress_vd_vs2_overlap"]
 
   # A trap on a vcompress instruction is always reported with a vstart of 0.
   - name: vcompress_trap
@@ -2866,17 +2756,23 @@ normative_rule_definitions:
   # Executing a vcompress instruction with a non-zero vstart raises an
   # illegal-instruction exception.
   - name: vcompress_vstart_n0_ill
-    coverpoint: ["ExceptionsVx_vcompress_vm_cg/cp_vstart"]
+    coverpoint:
+      [
+        "ExceptionsVx_vcompress_vm_cg/cp_vstart_gt_vl",
+        "ExceptionsVx_vcompress_vm_cg/cp_vstart",
+      ]
 
   # The vmv&lt;nr&gt;r.v instructions copy whole vector registers (i.e., all VLEN
   # bits) and can copy whole vector register groups. The nr value in the opcode is
   # the number of individual vector registers, NREG, to copy. The instructions
   # operate as if EEW=SEW, EMUL = NREG, effective length evl= EMUL * VLEN/SEW.
   - name: vmv-nr-r_op
-    # Representative coverpoints; the same coverpoints in the Vx16/32/64 covergroups
     coverpoint:
       [
-        "{Vx8_vmv1r_v_cg, Vx8_vmv2r_v_cg, Vx8_vmv4r_v_cg, Vx8_vmv8r_v_cg}/cr_vl_lmul_sew8",
+        "Vx8_vmv1r_v_cg/cr_vl_lmul_sew8",
+        "Vx8_vmv2r_v_cg/cr_vl_lmul_sew8",
+        "Vx8_vmv4r_v_cg/cr_vl_lmul_sew8",
+        "Vx8_vmv8r_v_cg/cr_vl_lmul_sew8",
       ]
 
   # The instruction is encoded as an OPIVI instruction. The number of vector
@@ -2884,10 +2780,13 @@ normative_rule_definitions:
   # using the same encoding as the nf[2:0] field for memory instructions (Figure
   # &lt;&lt;fig-nf&gt;&gt;), i.e., simm[2:0] = NREG-1.
   - name: vmv-nr-r_enc
-    # Representative coverpoints; the same coverpoints in the Vx16/32/64 covergroups
     coverpoint:
       [
-        "{Vx8_vmv1r_v_cg, Vx8_vmv2r_v_cg, Vx8_vmv4r_v_cg, Vx8_vmv8r_v_cg}/cp_asm_count",
+        "SsstrictV_vmv1r_v_cg/cp_ssstrictv_vmvnr_simm_reserved",
+        "Vx8_vmv1r_v_cg/cp_asm_count",
+        "Vx8_vmv2r_v_cg/cp_asm_count",
+        "Vx8_vmv4r_v_cg/cp_asm_count",
+        "Vx8_vmv8r_v_cg/cp_asm_count",
       ]
 
   # The value of NREG must be 1, 2, 4, or 8, and values of simm[4:0] other than 0,
@@ -2898,54 +2797,70 @@ normative_rule_definitions:
   # The source and destination vector register numbers must be aligned appropriately
   # for the vector register group size,
   - name: vmv-nr-r_vreg_constr
-    coverpoint: [""]
+    coverpoint: ["SsstrictV_vmv2r_v_cg/cp_ssstrictv_vmv2r_both_unaligned"]
 
   # encodings with other vector register numbers are reserved.
   - name: vmv-nr-r_unaligned_rsv
-    coverpoint: [""]
+    coverpoint: ["SsstrictV_vmv4r_v_cg/cp_ssstrictv_vmv4r_both_unaligned"]
 
   # On a trap during a vector instruction (caused by either a synchronous exception or an
   # asynchronous interrupt), the existing csr:*epc[] CSR is written with a pointer to the
   # trapping vector instruction, while the csr:vstart[] CSR contains the element index on
   # which the trap was taken.
   - name: epc_vstart_op_V_trap
-    coverpoint: [""]
-
-  # Non-idempotent memory regions must not have been updated for indices equal to or greater than
-  # the element that caused a synchronous trap during a vector store instruction.
-  - name: vec_store_nonidempotent_no_update
-    coverpoint: ["Untestable: no I/O devices defined in profile"]
+    coverpoint: ["ExceptionsVx_vsaddu_vv_cg/cp_vstart"]
 
   # Any of these extensions can be added to base ISAs with XLEN=32 or XLEN=64.
   - name: Zve_xlen
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: extension-support requirement exercised by the config simply running under that XLEN",
+      ]
 
   # The Zve32f and Zve64x extensions depend on the Zve32x extension.
   - name: Zve32f_Zve64x_dependent_Zve32x
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: extension-composition fact exercised implicitly whenever the config runs at all",
+      ]
 
   # The Zve64f extension depends on the Zve32f and Zve64x extensions.
   - name: Zve64f_dependent_Zve32f_Zve64x
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: extension-composition fact exercised implicitly whenever the config runs at all",
+      ]
 
   # The Zve64d extension depends on the Zve64f extension.
   - name: Zve64d_dependent_Zve64f
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: extension-composition fact exercised implicitly whenever the config runs at all",
+      ]
 
   # All Zve* extensions have precise traps.
   - name: Zve_precise_traps
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: trap precision is a cross-cutting property of every exception test, not something one coverpoint can isolate",
+      ]
 
   # All Zve* extensions provide support for EEW of 8, 16, and 32, and Zve64*
   # extensions also support EEW of 64.
   - name: Zve_eew
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: extension-support requirement exercised implicitly by which EEWs the generated suite runs at all",
+      ]
 
   # All Zve* extensions support all vector load and store instructions
   # (&lt;&lt;sec-vector-memory&gt;&gt;), except Zve64* extensions do not support
   # EEW=64 for index values when XLEN=32.
   - name: Zve_nsupport_eew64_xlen32
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: extension-support exclusion exercised implicitly by config-driven test generation filtering",
+      ]
 
   # All Zve* extensions support all vector integer instructions
   # (&lt;&lt;sec-vector-integer&gt;&gt;), except that the vmulh integer multiply
@@ -2953,95 +2868,117 @@ normative_rule_definitions:
   # vmulhu.vv, vmulhu.vx, vmulhsu.vv, vmulhsu.vx) are not included for EEW=64 in
   # Zve64*.
   - name: Zve64_eew64_nsupport_vmulh
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: config-driven instruction exclusion exercised implicitly by test generation filtering",
+      ]
 
   # All Zve* extensions support all vector fixed-point arithmetic instructions
   # (&lt;&lt;sec-vector-fixed-point&gt;&gt;), except that vsmul.vv and vsmul.vx are
   # not included in EEW=64 in Zve64*.
   - name: Zve64_eew64_nsupport_vsmul
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: config-driven instruction exclusion exercised implicitly by test generation filtering",
+      ]
 
   # All Zve* extensions support all vector permutation instructions
   # (&lt;&lt;sec-vector-permute&gt;&gt;), except that Zve32x and Zve64x do not
   # include those with floating-point operands, and Zve64f does not include those
   # with EEW=64 floating-point operands.
   - name: Zve32x_Zve64x_nsupport_freg
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: extension-support requirement exercised implicitly by config-driven test generation filtering",
+      ]
 
   # The Zve32x extension depends on the Zicsr extension.
   - name: Zve32x_dependent_Zicsr
-    coverpoint: [""]
+    coverpoint: ["SmV_cg/cp_vcsrrswc"]
 
   # The ext:zve32f[] extension depends on the ext:zve32x[] and ext:f[] extensions.
   - name: Zve32f_Zve64f_dependent_F
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: extension-composition fact exercised implicitly whenever the config runs at all",
+      ]
 
   # The misa.v bit is set for implementations providing misa and supporting V.
   - name: misa_v_op
-    coverpoint: ["Sm_mcsr_cg/cp_misa_v"]
+    coverpoint: ["SmV_cg/cp_misa_v_clear_set", "Sm_mcsr_cg/cp_misa_v"]
 
   # The V vector extension has precise traps.
   - name: V_precise_traps
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: trap precision is a cross-cutting property of every exception test, not something one coverpoint can isolate",
+      ]
 
   # The V vector extension depends upon the Zvl128b and Zve64d extensions.
   - name: V_dependent_Zvl128b_Zve64d
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: extension-composition fact exercised implicitly whenever the config runs at all",
+      ]
 
   # The V extension supports EEW of 8, 16, and 32, and 64.
   - name: V_supported_eew
-    coverpoint: [""]
+    coverpoint:
+      [
+        "{Vx8_vadd_vv_cg,Vx16_vadd_vv_cg,Vx32_vadd_vv_cg,Vx64_vadd_vv_cg}/cp_asm_count",
+      ]
 
   # The V extension supports the vector configuration instructions
   # (&lt;&lt;sec-vector-config&gt;&gt;).
   - name: V_instr_config
-    coverpoint: ["SmV_cg/{cp_sew_lmul_vsetvl, cp_sew_lmul_vset_i_vli}"]
+    coverpoint:
+      [
+        "Implicit: extension-support requirement exercised implicitly by which instructions the generated suite runs at all",
+      ]
   # The V extension supports all vector load and store instructions
   # (&lt;&lt;sec-vector-memory&gt;&gt;), except the V extension does not support EEW=64
   # for index values when XLEN=32.
   - name: V_instr_ls_eew64_nsupported_xlen32
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: extension-support requirement exercised implicitly by which instructions the generated suite runs at all",
+      ]
   # The V extension supports all vector integer instructions
   # (&lt;&lt;sec-vector-integer&gt;&gt;).
   - name: V_instr_int
-    # Representative coverpoints; cp_asm_count in every Vx8/16/32/64 integer-arithmetic covergroup
     coverpoint:
       [
-        "{Vx8_vadd_vv_cg, Vx8_vwmul_vv_cg, Vx8_vdiv_vv_cg, Vx8_vmseq_vv_cg}/cp_asm_count",
+        "Implicit: extension-support requirement exercised implicitly by which instructions the generated suite runs at all",
       ]
   # The V extension supports all vector fixed-point arithmetic instructions
   # (&lt;&lt;sec-vector-fixed-point&gt;&gt;).
   - name: V_instr_fixedpt
-    # Representative coverpoints; cp_asm_count in the other saturating add/subtract, averaging, vsmul, vssrl/vssra and vnclip(u) covergroups at every SEW
     coverpoint:
       [
-        "{Vx8_vsadd_vv_cg, Vx8_vaadd_vv_cg, Vx8_vsmul_vv_cg, Vx8_vnclip_wv_cg}/cp_asm_count",
+        "Implicit: extension-support requirement exercised implicitly by which instructions the generated suite runs at all",
       ]
   # The V extension supports all vector integer single-width and widening reduction
   # operations (&lt;&lt;sec-vector-integer-reduce&gt;&gt;,
   # &lt;&lt;sec-vector-integer-reduce-widen&gt;&gt;).
   - name: V_instr_red
-    # Representative coverpoints; cp_asm_count in the other vred* covergroups and the Vx16/32/64 reduction covergroups
     coverpoint:
       [
-        "{Vx8_vredsum_vs_cg, Vx8_vredmaxu_vs_cg, Vx8_vwredsumu_vs_cg, Vx8_vwredsum_vs_cg}/cp_asm_count",
+        "Implicit: extension-support requirement exercised implicitly by which instructions the generated suite runs at all",
       ]
   # The V extension supports all vector mask instructions
   # (&lt;&lt;sec-vector-mask&gt;&gt;).
   - name: V_instr_mask
-    # Representative coverpoints; cp_asm_count in the other mask-logical, vfirst.m, vmsif.m, vmsof.m and vid.v covergroups
     coverpoint:
       [
-        "{Vx8_vmand_mm_cg, Vx8_vcpop_m_cg, Vx8_vmsbf_m_cg, Vx8_viota_m_cg}/cp_asm_count",
+        "Implicit: extension-support requirement exercised implicitly by which instructions the generated suite runs at all",
       ]
   # The V extension supports all vector permutation instructions
   # (&lt;&lt;sec-vector-integer-permute&gt;&gt;,
   # &lt;&lt;sec-vector-float-permute&gt;&gt;).
   - name: V_instr_perm
-    # Representative coverpoints; cp_asm_count in the other Vx scalar-move, slide, gather and whole-register-move covergroups, and in the Vf vfmv.f.s/vfmv.s.f/vfslide1up/vfslide1down covergroups
     coverpoint:
       [
-        "{Vx8_vmv_x_s_cg, Vx8_vslideup_vx_cg, Vx8_vrgather_vv_cg, Vx8_vcompress_vm_cg}/cp_asm_count",
+        "Implicit: extension-support requirement exercised implicitly by which instructions the generated suite runs at all",
       ]
 
   # The V extension depends upon the F and D extensions, and implements all vector
@@ -3051,11 +2988,17 @@ normative_rule_definitions:
   # reductions (&lt;&lt;sec-vector-float-reduce&gt;&gt;) for EEW=32 and EEW=64 are
   # supported as well as widening reductions from FP32 to FP64.
   - name: V_dependent_F_D
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: the F and D dependency is satisfied by the configuration under test; the vector floating-point tests cannot run without it",
+      ]
 
   # The Zvfhmin extension depends on the Zve32f extension.
   - name: Zvfhmin_dependent_Zve32f
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: extension-composition fact exercised implicitly whenever the config runs at all",
+      ]
 
   # When the ext:zvfh[] extension is implemented, all instructions in
   # &lt;&lt;sec-vector-float&gt;&gt;, &lt;&lt;sec-vector-float-reduce&gt;&gt;,
@@ -3063,32 +3006,55 @@ normative_rule_definitions:
   # &lt;&lt;sec-vfslide1up&gt;&gt;, and &lt;&lt;sec-vfslide1down&gt;&gt; become defined
   # when SEW=16.
   - name: Zvfh_instr
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: extension-support requirement exercised implicitly by which instructions the generated suite runs at all",
+      ]
   # Additionally, conversions between 8-bit integers and binary16 values are provided. The
   # floating-point-to-integer narrowing conversions (insn:vfncvt.x.f.w[],
   # insn:vfncvt.xu.f.w[], insn:vfncvt.rtz.x.f.w[], and insn:vfncvt.rtz.xu.f.w[]) and
   # integer-to-floating-point widening conversions (insn:vfwcvt.f.x.v[] and
   # insn:vfwcvt.f.xu.v[]) become defined when SEW=8.
   - name: Zvfh_instr_cvt
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Vf16_vfwcvt_f_x_v_cg/cp_asm_count",
+        "Vf16_vfwcvt_f_xu_v_cg/cp_asm_count",
+        "Vf16_vfncvt_x_f_w_cg/cp_asm_count",
+        "Vf16_vfncvt_xu_f_w_cg/cp_asm_count",
+        "Vf16_vfncvt_rtz_x_f_w_cg/cp_asm_count",
+        "Vf16_vfncvt_rtz_xu_f_w_cg/cp_asm_count",
+      ]
 
   # The EEW=16 floating-point operands of these instructions use the binary16
   # format.
   - name: Zvfh_eew16
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: extension-support requirement exercised implicitly by which EEWs the generated suite runs at all",
+      ]
 
   # The Zvfh extension depends on the Zve32f and Zfhmin extensions.
   - name: Zvfh_dependent_Zve32f_Zfhmin
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: extension-composition fact exercised implicitly whenever the config runs at all",
+      ]
 
   # Vector instructions with EGS &gt; VLMAX are reserved.
   - name: egs_ge_vlmax_rsv
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Out-of-Scope: no Ssstrict-equivalent suite exists for the vector-crypto (Zvk*) extensions, and this reserved condition depends on CSR state, matching Ssstrict's own encoding-only scope boundary",
+      ]
 
   # When an operand is a vector of element groups, the vl setting must correspond to
   # an integer multiple of the element group size, with other values of vl reserved.
   - name: egs_vl_rsv
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Out-of-Scope: no Ssstrict-equivalent suite exists for the vector-crypto (Zvk*) extensions, and this reserved condition depends on CSR state, matching Ssstrict's own encoding-only scope boundary",
+      ]
 
   # When element group instructions are present, an additional constraint is placed
   # on the setting of vl based on an AVL value (augmenting
@@ -3096,14 +3062,17 @@ normative_rule_definitions:
   # by the implementation. When AVL &gt; VLMAX, the value of vl must be set to
   # either VLMAX or a positive integer multiple of EGSMAX.
   - name: egs_vl_avl
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Untestable: AVL-to-vl rounding under EGSMAX is not exercised by any suite and depends on an implementation-chosen EGSMAX",
+      ]
 
   # The vtype SEW can be used to indicate or calculate the effective element size
   # (EEW) of one or more operands of an element group instruction. Where the operand
   # is an element group, SEW and EEW refer to the number of bits in each individual
   # element within a group not the number of bits in the group as a whole.
   - name: egs_sew_eew
-    coverpoint: [""]
+    coverpoint: ["Zvknha_vsha2ch_vv_cg/cp_csr_vtype_lmul_egs4_sew32"]
 
   # The vtype LMUL setting can be used to indicate or calculate the effective length
   # multiplier (EMUL) for one or more operands. Element group instructions tend to
@@ -3113,49 +3082,96 @@ normative_rule_definitions:
   # 1-element groups with EEW=32b. In this case, the input and output EMUL values
   # are equal even though the EEW settings differ by a factor of 4.
   - name: egs_lmul_emul
-    coverpoint: [""]
+    coverpoint: ["Zvknha_vsha2ch_vv_cg/cr_vl_lmul_egs4_sew32"]
 
   # The element group width (EGW) is the number of bits in the element group as a
   # whole. For example, the SHA-256 instructions in the Zvknha extension operate on
   # an EGW of 128, with EGS=4 and EEW=32. It is possible to use LMUL to concatenate
   # multiple vector registers together to support larger EGW&gt;VLEN.
   - name: egs_egw
-    coverpoint: [""]
+    coverpoint: ["Zvknha_vsha2ch_vv_cg/cp_vd_egs4"]
 
   # The active elements can raise exceptions and update the destination vector
   # register group.
   - name: vector_active_element
-    coverpoint: [""]
+    coverpoint: ["Vx16_vadd_vv_cg/cp_masking_edges"]
 
   # If the Ztso extension is implemented, vector memory instructions additionally
   # follow RVTSO at the instruction level.
   - name: vector_ls_rvtso
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Not Tested: no Ztso-configured vector test config exists yet to exercise RVTSO ordering",
+      ]
 
   # For vnclipu/vnclip, the rounding mode is specified in the vxrm CSR. Rounding
   # occurs around the least-significant bit of the destination and before
   # saturation.
   - name: vnclipu_vnclip_rounding
-    coverpoint: [""]
+    coverpoint:
+      ["{Vx16_vnclip_wv_cg,Vx16_vnclipu_wv_cg}/cr_vxrm_vs2_vs1_edges_wv"]
 
   # Vector floating-point instructions require the presence of base scalar
   # floating-point extensions corresponding to the supported vector floating-point
   # element widths.
   - name: vf_requires_vx
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Implicit: the vector floating-point tests cannot run unless the scalar floating-point extensions are present",
+      ]
 
   # so these instructions all operate on single vector registers regardless of the
   # setting of the vlmul field in vtype. They do not change the value of vlmul.
   - name: instrgrp_vmask_disregard_vlmul
-    coverpoint: [""]
+    coverpoint: ["Vx16_vmseq_vv_cg/cp_custom_vmask_write_lmulge1"]
 
   # execution is always restarted from the beginning when resuming after a trap
   # handler.
   - name: viota_restart
-    coverpoint: [""]
+    coverpoint:
+      [
+        "Not Tested: restart-from-vstart-after-trap sequencing is not generated by this suite yet",
+      ]
 
   # vrgather.vv vd, vs2, vs1, vm # vd[i] = (vs1[i] &gt;= VLMAX) ? 0 : vs2[vs1[i]];
   # vrgatherei16.vv vd, vs2, vs1, vm # vd[i] = (vs1[i] &gt;= VLMAX) ? 0 :
   # vs2[vs1[i]];
   - name: vrgather-vv_op_vrgatherei16-vv_op
-    coverpoint: [""]
+    coverpoint:
+      ["Vx16_vrgather_vv_cg/cp_custom_vindexCorners_index_gt_vl_lt_vlmax"]
+
+  # The vector extension must have a consistent state at reset. In particular, vtype and vl
+  # must have values that can be read and then restored with a single vsetvl instruction.
+  - name: vector_reset_state
+    coverpoint:
+      [
+        "Untestable: reset-time CSR state is not observable via a coverpoint in a self-checking test that boots past reset",
+      ]
+
+  # Zve32f supports all vector floating-point permutation instructions for floating-point
+  # operands with EEW=32.
+  - name: Zve32f_instr_perm
+    coverpoint:
+      [
+        "Implicit: extension-support requirement exercised implicitly by which instructions the generated suite runs at all",
+      ]
+
+  # Zve64d supports all vector floating-point permutation instructions for floating-point
+  # operands with EEW=32 or EEW=64.
+  - name: Zve64d_instr_perm
+    coverpoint:
+      [
+        "Implicit: extension-support requirement exercised implicitly by which instructions the generated suite runs at all",
+      ]
+
+  # The configuration-setting instructions do not depend on vstart; they reset vstart to zero.
+  - name: vset_vstart
+    coverpoint:
+      [
+        "TODO: vset* with nonzero vstart; result unaffected and vstart reset to 0",
+      ]
+
+  # Non-idempotent memory regions must not have been updated for indices equal to or greater than
+  # the element that caused a synchronous trap during a vector store instruction.
+  - name: vec_store_nonidempotent_no_update
+    coverpoint: ["Untestable: no I/O devices defined in profile"]

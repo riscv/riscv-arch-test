@@ -101,13 +101,16 @@
     #ifdef STANDARD_SM_SUPPORTED
       RVTEST_TSBI_GOTO_MMODE
       #ifdef S_SUPPORTED
+        // Exact reverse of the prolog order (M, S, V).
         #ifdef H_SUPPORTED
           RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code
-          RVTEST_TRAP_EPILOG H        // actual h-mode prolog/epilog/handler code
         #endif
         RVTEST_TRAP_EPILOG S          // actual s-mode prolog/epilog/handler code
       #endif
       RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
+      LA(T1, rvtest_trap_prolog_error)
+      LREG T1, 0(T1)
+      bnez T1, rvtest_trap_setup_failed
     #endif
 
   #ifndef RVTEST_NOSIG
@@ -211,6 +214,14 @@
   .global rvtest_fail_summary
   rvtest_fail_summary:
     LA(a0, failstr)
+    call rvmodel_io_write_str
+    call rvmodel_halt_fail
+
+  rvtest_trap_setup_failed:
+    LA(a0, failstr)
+    call rvmodel_io_write_str
+    LA(a0, rvtest_trap_prolog_error)
+    LREG a0, 0(a0)
     call rvmodel_io_write_str
     call rvmodel_halt_fail
 
@@ -455,8 +466,8 @@
       ret
 
     rvtest_set_mext_int_m:
-      #ifdef RVMODEL_SET_MEXT_INT
-        RVMODEL_SET_MEXT_INT(a0, a1) // platform-specific interrupt controller
+      #ifdef RVMODEL_SET_MEXT_INT_M
+        RVMODEL_SET_MEXT_INT_M(a0, a1) // platform-specific interrupt controller
       #endif
       ret
 
@@ -560,8 +571,8 @@
 
       rvtest_set_sext_int_m:
         // trigger with platform-specific interrupt controller if it exists, otherwise with mip.SEIP
-        #ifdef RVMODEL_SET_SEXT_INT
-          RVMODEL_SET_SEXT_INT(a0, a1)
+        #ifdef RVMODEL_SET_SEXT_INT_M
+          RVMODEL_SET_SEXT_INT_M(a0, a1)
         #else
           li a1, 1<<9 // SEIP bit
           csrs mip, a1        // Trigger mip.SEIP
@@ -954,7 +965,7 @@
         TRAP_CANARY
 
       trap_sigptr:
-          .fill TRAP_SIGUPD_COUNT*(SIG_STRIDE>>2),4,0xdeadbeef
+          .fill TRAP_SIGUPD_WORDS*(SIG_STRIDE>>2),4,0xdeadbeef
 
       // Create canary at end of signature region to detect overwrites
       sig_end_canary:
@@ -1001,20 +1012,35 @@
         csrw medeleg, zero  // don't delegate exceptions (until S-mode handler is set up)
       #endif
 
-      // initialize trap CSRs to known values
-      csrw mepc, zero
-      csrw mtval, zero
-      csrw mcause, zero
-
       // Set up trap handlers for all modes
       // S and H-mode setup could be deferred to RVTEST_BOOT_TO_SMODE, but that is upsetting the linker
       // and there is no harm setting up all the trap handlers here
       RVTEST_TRAP_PROLOG M
       #ifdef S_SUPPORTED
+        // Order matches INSTANTIATE_MODE_MACRO: M, S, V.
         RVTEST_TRAP_PROLOG S
         #ifdef H_SUPPORTED
-          RVTEST_TRAP_PROLOG H
           RVTEST_TRAP_PROLOG V
+        #endif
+      #endif
+
+      // Initialize trap CSRs to known values. This follows the prologs so that an
+      // unimplemented CSR traps to the M-mode handler instead of an uninitialized mtvec.
+      csrw mepc, zero
+      csrw mtval, zero
+      csrw mcause, zero
+      #ifdef S_SUPPORTED
+        csrw sepc, zero
+        csrw stval, zero
+        csrw scause, zero
+        #ifdef H_SUPPORTED
+          csrw mtval2, zero
+          csrw mtinst, zero
+          csrw htval, zero
+          csrw htinst, zero
+          csrw vsepc, zero
+          csrw vstval, zero
+          csrw vscause, zero
         #endif
       #endif
 
@@ -1084,32 +1110,32 @@
         #endif
       #endif
 
-      // Enable necessary state for unpriv instructions
-      // Disable privileged extensions until they are turned on explicitly by tests that need them
-      // mstateen0.SE0 = 0: disable access to hststateen0, hstatene0h, ssstateen0
-      // mstateen0.ENVCFG = 0: disable access to henvcfg, henvcfgh, senvcfg
-      // mstateen0.CSRIND = 0: disable access to Sscrind siselect, sireg* registers (until turned on for those tests)
-      // mstateen0.AIA = 0: disable access to Ssaia advanced interrupt architecture state
-      // mstateen0.IMSIC = 0: disable access to MISIC state
-      // mstateen0.P1P13 = 0: disable access to hedelegh for 1P13 until turned on
-      // mstateen0.SRMCFG = 0: disable access to srmcfg for Ssqosid until turned on
-      // mstateen0.CTR = 0: disable access to Smctr control transfer records until turned on
-      // mstateen0.JVT = 1: Enable jvt for Zcmt
-      // mstateen0.FCSR = 1: Enable fcsr access for Zfinx only if supported ZFINX_SUPPORTED (to avoid conflicts with F)
-      // mstateen0.C = 0: Disable custom state
+      // Enable access to standard state from lower privilege modes.
+      // mstateen0.SE0 = 1: Enable access to hstateen0, hstateen0h, and sstateen0
+      // mstateen0.ENVCFG = 1: Enable access to henvcfg, henvcfgh, and senvcfg
+      // mstateen0.CSRIND = 1: Enable access to supervisor indirect CSR state
+      // mstateen0.AIA = 1: Enable access to Ssaia advanced interrupt architecture state
+      // mstateen0.IMSIC = 1: Enable access to IMSIC state
+      // mstateen0.CONTEXT = 1: Enable access to supervisor and hypervisor context registers
+      // mstateen0.P1P13 = 1: Enable access to hedelegh
+      // mstateen0.SRMCFG = 1: Enable access to srmcfg for Ssqosid
+      // mstateen0.CTR = 1: Enable access to control transfer record state
+      // mstateen0.JVT = 1: Enable access to jvt for Zcmt
+      // mstateen0.FCSR = 1: Enable access to floating-point CSRs for Zfinx
+      // Keep custom state and reserved bits disabled.
       #ifdef SMSTATEEN_SUPPORTED
         #if __riscv_xlen == 64
-          li t0, MSTATEEN0_JVT
+          LI(t0, MSTATEEN_HSTATEEN | MSTATEEN0_HENVCFG | MSTATEEN0_CSRIND | MSTATEEN0_AIA | \
+                 MSTATEEN0_IMSIC | MSTATEEN0_HCONTEXT | MSTATEEN0_PRIV113 | MSTATEEN0_PRIV114 | \
+                 MSTATEEN0_CTR | MSTATEEN0_JVT | MSTATEEN0_FCSR)
           csrw mstateen0, t0
         #else    // RV32
-          csrw mstateen0h, zero
-          li t0, MSTATEEN0_JVT
+          LI(t0, MSTATEENH_HSTATEEN | MSTATEEN0H_HENVCFG | MSTATEEN0H_CSRIND | MSTATEEN0H_AIA | \
+                 MSTATEEN0H_IMSIC | MSTATEEN0H_HCONTEXT | MSTATEEN0H_PRIV113 | MSTATEEN0H_PRIV114 | \
+                 MSTATEEN0H_CTR)
+          csrw mstateen0h, t0
+          LI(t0, MSTATEEN0_JVT | MSTATEEN0_FCSR)
           csrw mstateen0, t0
-        #endif
-        #ifdef ZFINX_SUPPORTED
-          li t0, MSTATEEN0_FCSR
-          csrs mstateen0, t0 // Set mstateen0.FCSR
-          li t0, 0
         #endif
       #endif
 
@@ -1189,6 +1215,12 @@
       #ifdef RVMODEL_MTIMECMP_ADDRESS
         // Initialize mtimecmp to all 1s so that it does not generate a timer interrupt prematurely
         LA(t0, RVMODEL_MTIMECMP_ADDRESS)
+        addi t1, zero, -1
+        sw t1, 0(t0)
+        sw t1, 4(t0)
+      #elif !defined(RVTEST_SELFCHECK)
+        // Sail always has a CLINT, and its mtimecmp resets to 0, so park it even if the DUT has no timer.
+        LA(t0, SAIL_MTIMECMP_ADDRESS)
         addi t1, zero, -1
         sw t1, 0(t0)
         sw t1, 4(t0)
@@ -1313,21 +1345,9 @@
     csrw mideleg, t0
 
     // Enable necessary state for access from lower privilege modes
-    // mstateen0.SE0 = 1: enable access to hststateen0, hstatene0h, ssstateen0
-    // mstateen0.ENVCFG = 1: enable access to henvcfg, henvcfgh, senvcfg
     // sstateen0.JVT = 1: Enable jvt for Zcmt
-    // sstateen0.FCSR = 1: Enable fcsr access for Zfinx only if supported ZFINX_SUPPORTED (to avoid conflicts with F)
-    // sstateen0.C = 0: Disable custom state
-
-    #ifdef SMSTATEEN_SUPPORTED
-      #if __riscv_xlen == 64
-        li t0, MSTATEEN_HSTATEEN | MSTATEEN0_HENVCFG  # alternate names for SE0 and ENVCFG in encoding.h
-        csrs mstateen0, t0  // Set these fields
-      #else    // RV32
-        li t0, MSTATEENH_HSTATEEN | MSTATEEN0H_HENVCFG   # alternate names for SE0 and ENVCFG in encoding.h
-        csrs mstateen0h, t0 // Set these fields
-      #endif
-    #endif
+    // sstateen0.FCSR = 1: Enable access to floating-point CSRs for Zfinx
+    // Keep custom state and reserved bits disabled.
     #ifdef SSSTATEEN_SUPPORTED
       li t0, SSTATEEN0_JVT | SSTATEEN0_FCSR
       csrs sstateen0, t0 // enable access from lower privilege mode
@@ -1353,6 +1373,86 @@
       li t0, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE
       csrw senvcfg, t0
     #endif
+
+    #ifdef H_SUPPORTED
+      // Initialize HS-mode CSRs.
+      // hstatus: every field zero except VSXL = 64 on RV64.
+      // Tests that need other values set them themselves.
+      LI(t0, HSTATUS_SPV | HSTATUS_SPVP | HSTATUS_HU | HSTATUS_VGEIN | \
+             HSTATUS_VTVM | HSTATUS_VTW | HSTATUS_VTSR | HSTATUS_VSBE)
+      csrc hstatus, t0
+      #if __riscv_xlen == 64
+        csrr t1, hstatus
+        LI(t0, ~HSTATUS_VSXL)
+        and t1, t1, t0
+        LI(t0, 0x0000000200000000)  // VSXL = 2
+        or t1, t1, t0
+        csrw hstatus, t1
+      #endif
+
+      // vsstatus: every field zero except UXL = 64 on RV64 and FS/VS dirty when supported.
+      li t0, 0
+      #if __riscv_xlen == 64
+        LI(t0, 0x0000000200000000)  // UXL = 2
+      #endif
+      #ifdef F_SUPPORTED
+        LI(t1, SSTATUS_FS)
+        or t0, t0, t1
+      #endif
+      #ifdef ZVL32B_SUPPORTED
+        LI(t1, SSTATUS_VS)
+        or t0, t0, t1
+      #endif
+      csrw vsstatus, t0
+
+      csrw htimedelta, zero
+      #if __riscv_xlen == 32
+        csrw htimedeltah, zero
+      #endif
+
+      // No pending virtual interrupts and no guest external interrupts enabled.
+      // hedeleg and hideleg are saved and cleared by RVTEST_TRAP_PROLOG S.
+      csrw hvip, zero
+      csrw hgeie, zero
+
+      // Make counters accessible from VS/VU-mode
+      li t0, -1
+      csrw hcounteren, t0
+
+      // henvcfg mirrors senvcfg: unprivileged configuration enabled, privileged features disabled.
+      #ifdef S1P12P0_OR_LATER_SUPPORTED
+        li t0, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE
+        csrw henvcfg, t0
+      #endif
+
+      // Enable access to standard state from VS/VU-mode, matching mstateen0 above.
+      // hstateen0.SE0 = 1: Enable access to sstateen0
+      // hstateen0.ENVCFG = 1: Enable access to senvcfg
+      // hstateen0.CSRIND = 1: Enable access to supervisor indirect CSR state
+      // hstateen0.AIA = 1: Enable access to Ssaia advanced interrupt architecture state
+      // hstateen0.IMSIC = 1: Enable access to IMSIC state
+      // hstateen0.SCONTEXT = 1: Enable access to scontext
+      // hstateen0.CTR = 1: Enable access to control transfer record state
+      // hstateen0.JVT = 1: Enable access to jvt for Zcmt
+      // hstateen0.FCSR = 1: Enable access to floating-point CSRs for Zfinx
+      // Keep custom state and reserved bits disabled. hstateen0 has no P1P13 or SRMCFG
+      // bit; that state is M-level only. A bit whose feature is not implemented reads
+      // as zero, so enabling the whole set costs nothing on a smaller hart.
+      #ifdef SSSTATEEN_SUPPORTED
+        #if __riscv_xlen == 64
+          LI(t0, HSTATEEN_SSTATEEN | HSTATEEN0_SENVCFG | HSTATEEN0_CSRIND | HSTATEEN0_AIA | \
+                 HSTATEEN0_IMSIC | HSTATEEN0_SCONTEXT | HSTATEEN0_CTR | HSTATEEN0_JVT | \
+                 HSTATEEN0_FCSR)
+          csrw hstateen0, t0
+        #else    // RV32
+          LI(t0, HSTATEENH_SSTATEEN | HSTATEEN0H_SENVCFG | HSTATEEN0H_CSRIND | HSTATEEN0H_AIA | \
+                 HSTATEEN0H_IMSIC | HSTATEEN0H_SCONTEXT | HSTATEEN0H_CTR)
+          csrw hstateen0h, t0
+          LI(t0, HSTATEEN0_JVT | HSTATEEN0_FCSR)
+          csrw hstateen0, t0
+        #endif
+      #endif
+    #endif // H_SUPPORTED
 
     // Boot into S-mode
     RVTEST_TSBI_GOTO_SMODE
@@ -1396,6 +1496,7 @@
       csrs mstatus, t0 // Set VS to dirty to enable vector
       csrr t0, vlenb   // Read VLENB so coverage trace records VLEN/8 (used by vlmax computation)
       csrw vstart, x0  // vstart = 0
+      csrw vcsr, x0    // vxrm = 0 (rnu), vxsat = 0: both have arbitrary values at reset
       #ifdef ZVE32X_SUPPORTED // this should be defined if EEW of 32 is supported
         .option push
         .option arch, RVTEST_VEC_INIT_ARCH

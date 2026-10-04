@@ -2,3 +2,17 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
+  # Attempting to execute a load instruction that accesses a physical address within a
+  # PMP region without read permissions raises a load access-fault exception.
+  - name: pmp_load_fault
+    coverpoint: ["PMPF_cg/cp_cfg_R"]
+
+  # Attempting to execute a store instruction which accesses a physical address within
+  # a PMP region without write permissions raises a store access-fault exception.
+  - name: pmp_store_fault
+    coverpoint: ["PMPF_cg/cp_cfg_W"]
+
+  # When the L bit is set, the R/W/X permissions are enforced for all privilege modes.
+  - name: pmp_l_bit_m_mode_enforcement
+    # M-mode FP loads and stores to locked entries
+    coverpoint: ["PMPF_cg/{cp_cfg_R, cp_cfg_W}"]

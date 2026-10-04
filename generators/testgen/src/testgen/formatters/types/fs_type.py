@@ -8,7 +8,6 @@
 from testgen.asm.helpers import (
     STORE_BYTES,
     check_store_canary,
-    fp_store_area_bytes,
     fp_store_canary,
     load_float_reg,
     write_sigupd,
@@ -35,7 +34,7 @@ def format_fs_type(
     assert params.immval is not None, "immval must be provided for FS-type instructions"
 
     store_bytes = STORE_BYTES[instr_name]
-    area_bytes = fp_store_area_bytes(store_bytes, test_data)
+    area_bytes = max(store_bytes, params.fp_store_check_bytes)
 
     # Ensure rs1 is not x0 (base address)
     if params.rs1 == 0:

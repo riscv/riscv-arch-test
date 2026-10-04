@@ -101,6 +101,7 @@ class InstructionParams:
 
     # Internal params to pass to formatters
     fp_load_type: Literal["single", "double", "half", "quad"] | None = None  # Type for FP loads/stores
+    fp_store_check_bytes: int = 0  # Bytes an FP store test fills and checks, if more than the store writes
 
     @property
     def used_int_regs(self) -> list[int]:

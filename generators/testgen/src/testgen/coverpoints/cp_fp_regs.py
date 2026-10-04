@@ -102,7 +102,8 @@ def make_fs2(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     # Generate tests
     for fs2 in fs2_regs:
         test_data.float_regs.consume_registers([fs2])
-        params = generate_random_params(test_data, instr_type, fs2=fs2)
+        # FP stores check 8 bytes, so an RV32 store that writes the whole 64-bit register fails
+        params = generate_random_params(test_data, instr_type, fs2=fs2, fp_store_check_bytes=8)
         desc = f"{coverpoint} (Test source fs2 = f{fs2})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{fs2}", coverpoint)
         test_chunks.append(tc)

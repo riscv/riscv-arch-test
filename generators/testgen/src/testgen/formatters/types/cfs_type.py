@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import check_store_canary, fp_store_area_bytes, fp_store_canary, load_float_reg, write_sigupd
+from testgen.asm.helpers import check_store_canary, fp_store_canary, load_float_reg, write_sigupd
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -44,7 +44,7 @@ def format_cfs_type(
     params.immval = params.immval & ~(alignment - 1)
     # Wrap into valid range
     params.immval = params.immval % (max_val + alignment)
-    area_bytes = fp_store_area_bytes(alignment, test_data)
+    area_bytes = max(alignment, params.fp_store_check_bytes)
 
     setup = [
         load_float_reg("fs2", params.fs2, params.fs2val, test_data),

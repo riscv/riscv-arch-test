@@ -158,15 +158,11 @@ def write_sigupd(
         raise ValueError(f"Unknown sig_type: {sig_type}")
 
 
-# Bytes written by each store whose formatter does not take the width from its own alignment rules
+# Bytes written by each S/FS-type store
 STORE_BYTES = {"sb": 1, "sh": 2, "sw": 4, "sd": 8, "fsh": 2, "fsw": 4, "fsd": 8, "fsq": 16}
 
 # Background pattern for FP store targets. Its bytes differ from each other and from common edge-value bytes.
 STORE_CANARY = 0xD2691EA74DB836E5
-
-# Coverpoints whose FP stores check at least 8 bytes, so an RV32 store that writes a whole 64-bit FP
-# register instead of its low bytes fails. One coverpoint per instruction is enough to catch it.
-_FP_STORE_WIDE_CHECK_COVERPOINTS = ("cp_fs2", "cp_fs2_p")
 
 
 def store_area_offsets(area_bytes: int, test_data: TestData) -> range:
@@ -189,13 +185,6 @@ def store_canary(
         lines.append(f"slli x{temp_reg}, x{temp_reg}, {8 * shift_bytes} # line the canary up with the store")
     lines.extend(f"SREG x{temp_reg}, {offset}(x{base_reg}) # fill store target with canary" for offset in offsets)
     return lines
-
-
-def fp_store_area_bytes(store_bytes: int, test_data: TestData) -> int:
-    """Bytes of an FP store target to fill and check."""
-    if test_data.current_coverpoint in _FP_STORE_WIDE_CHECK_COVERPOINTS:
-        return max(8, store_bytes)
-    return store_bytes
 
 
 def fp_store_canary(

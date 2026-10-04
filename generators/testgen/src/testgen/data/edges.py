@@ -25,7 +25,7 @@ class IMMEDIATE_EDGES:
     # 6-bit signed immediate (compressed instructions)
     imm_6bit = (0, 1, 2, 3, 4, 8, 16, 30, 31, -32, -31, -2, -1)
 
-    # 6-bit signed immediate (vector instructions, unsigned, values surround SEW boundaries)
+    # 6-bit unsigned immediate (vector instructions, values surround SEW boundaries)
     imm_6bit_v = (0, 1, 2, 3, 4, 7, 8, 9, 15, 16, 17, 30, 31, 32, 33, 62, 63)
 
     # 12-bit signed immediate (I-type, S-type)

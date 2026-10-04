@@ -348,12 +348,12 @@
 
     #ifdef RVTEST_VECTOR
         # We need to ensure that VS is set in mstatus here, as VS off is an exceptions test
-        LA(x6, failedtest_vs_on)           # already set by failedtest_epilog_x7_x9
+        LA(x6, failedtest_vs_on)           # nonzero when the caller already turned VS on in M-mode
         lw x6, 0(x6)
         bnez x6, failedtest_vs_ready
-        RVTEST_TSBI_CSR_SET(CSR_MSTATUS, 0x600)
+        RVTEST_TSBI_CSR_SET(CSR_MSTATUS, MSTATUS_VS)
     failedtest_vs_ready:
-        la x6, vecreg_scratch              # vecreg_scratch base address
+        LA(x6, vecreg_scratch)             # vecreg_scratch base address
         vs1r.v v0, (x6)
         addi x6, x6, VLEN_BYTES            # increment by one vector's bytes
         vs1r.v v1, (x6)

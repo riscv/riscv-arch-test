@@ -49,7 +49,7 @@
 
     //Main Crosses
     cp_pmlen_masking : cross priv_mode_u, pmm, satp_mode, a_upper_bits, pm_insn;
-    cp_pmlen_misaligned_word: cross priv_mode_u, satp_mode, pm_misalign;
+    cp_pmlen_misaligned_word: cross priv_mode_u, satp_mode, pmm, a_upper_bits, sw_lw_insn, misaligned_addr;
     cp_pmm_mxr: cross priv_mode_u, pmm, a_upper_bits, mxr_bit, satp_mode, sw_lw_insn;
     cp_pmm_jalr: cross priv_mode_u, pmm, a_upper_bits, mxr_bit, satp_mode, jalr_insn;
     `ifdef UDB_UXLEN_32
@@ -58,7 +58,7 @@
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         // Fault crosses confirm lw/sw executed in U-mode at the illegal address.
-        cp_hardware_csr_writes_fault: cross priv_mode_u, satp_mode, pm_fault;
+        cp_hardware_csr_writes_fault: cross priv_mode_u, satp_mode, pmm, a_upper_bits, sw_lw_insn, illegal_addr;
     `endif
 
 endgroup

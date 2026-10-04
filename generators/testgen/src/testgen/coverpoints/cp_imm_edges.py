@@ -32,7 +32,7 @@ def make_cp_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_da
     elif coverpoint.endswith("_6bit_n0"):
         edges_imm = IMMEDIATE_EDGES.imm_6bit[1:]  # exclude imm=0
     elif coverpoint.endswith("_6bit_v"):
-        edges_imm = IMMEDIATE_EDGES.imm_6bit_v
+        edges_imm = IMMEDIATE_EDGES.imm_6bit_u
         is_vector = True
     else:
         raise ValueError(f"Unknown cp_imm_edges coverpoint variant: {coverpoint} for {instr_name}")

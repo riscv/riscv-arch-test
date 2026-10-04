@@ -93,7 +93,7 @@ def make_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_dat
             edges1 = edges2 = VECTOR_EDGES.v_crypto_edges
             suffix1 = suffix2 = "emul4"
         case "egs8":
-            lmul = 4
+            lmul = 8
             edges1 = edges2 = VECTOR_EDGES.v_crypto_edges
             suffix1 = suffix2 = "emul8"
         case _:
@@ -176,7 +176,7 @@ def make_vs2_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_d
     imm_edges = IMMEDIATE_EDGES.imm_5bit if config.imm_signed else IMMEDIATE_EDGES.imm_5bit_u
     if config.imm_bits == 6:
         assert config.imm_signed == False, "Only 6-bit unsigned immediates are supported for vector"
-        imm_edges = IMMEDIATE_EDGES.imm_6bit_v
+        imm_edges = IMMEDIATE_EDGES.imm_6bit_u
 
     test_chunks = []
     for vs2_edge in vs2_edges:

@@ -62,13 +62,24 @@ def expand_braces(text: str) -> list[str]:
     ]
 
 
-def coverpoints_of(ref: str) -> list[tuple[str, str]]:
-    """(covergroup, coverpoint) pairs in a norm-YAML coverpoint reference such as {A_cg, B_cg}/cp_{x, y}/bin."""
+def coverpoints_of(mapping: str) -> list[tuple[str, str]]:
+    """(covergroup, coverpoint) pairs named by a norm-YAML coverpoint mapping.
+
+    A mapping is either a reference such as {A_cg, B_cg}/cp_{x, y}/bin, or prose
+    such as "Tested by A_cg/cp_x when ..." whose words may include references.
+    Raises ValueError for a reference that does not parse.
+    """
     pairs = []
-    for path in expand_braces(ref):
-        parts = path.split("/")
-        if len(parts) >= 2 and parts[0].strip().endswith("_cg") and (m := re.match(r"\w+", parts[1].strip())):
-            pairs.append((parts[0].strip(), m.group(0)))
+    for text in expand_braces(mapping):
+        for word in text.split():
+            path = word.strip("()[],.;:'\"`").split("/")
+            # a slash in prose ("PMA/PMP") is not a reference unless it names a covergroup
+            if len(path) < 2 or (word != text and not path[0].endswith("_cg")):
+                continue
+            covergroup, coverpoint = path[:2]
+            if not re.fullmatch(r"[\w*]+_cg", covergroup) or not re.fullmatch(r"\w+", coverpoint):
+                raise ValueError(f"malformed coverpoint reference {word!r} in {mapping!r}")
+            pairs.append((covergroup, coverpoint))
     return list(dict.fromkeys(pairs))
 
 
@@ -82,16 +93,24 @@ def covergroup_suites(coverage_dir: Path) -> dict[str, str]:
 
 
 def rule_map(norm_dir: Path, coverage_dir: Path) -> dict[str, dict[str, list[str]]]:
-    """suite -> coverpoint -> [rule names]. A rule belongs to the suite that declares the covergroup it names,
-    or, for a covergroup no coverage file declares, to the suite of its coverpoints/norm/<suite>.yaml file."""
+    """suite -> coverpoint -> [rule names], inverted from every coverpoints/norm/*.yaml.
+
+    A rule belongs to the suite whose <suite>_coverage.svh declares the covergroup it names.
+    A covergroup that no coverage file declares belongs to the suite its name starts with
+    (<suite>_cg or <suite>_<group>_cg).
+    """
     owners = covergroup_suites(coverage_dir)
     out: dict[str, dict[str, list[str]]] = defaultdict(lambda: defaultdict(list))
     for f in sorted(norm_dir.glob("*.yaml")):
         for group in build_coverpoint_groups(load_yaml(f)):
-            refs = group["coverpoint"] or []
-            for ref in [refs] if isinstance(refs, str) else refs:
-                for cg, cp in coverpoints_of(str(ref)):
-                    rules = out[owners.get(cg, f.stem)][cp]
+            mappings = group["coverpoint"] or []
+            for mapping in [mappings] if isinstance(mappings, str) else mappings:
+                try:
+                    pairs = coverpoints_of(str(mapping))
+                except ValueError as err:
+                    sys.exit(f"{f}: {err}")
+                for covergroup, coverpoint in pairs:
+                    rules = out[owners.get(covergroup, covergroup.split("_")[0])][coverpoint]
                     rules += [n for n in group["names"] if n not in rules]
     return out
 

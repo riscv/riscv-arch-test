@@ -11,6 +11,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Literal
 
+from testgen.asm.helpers import write_sigupd
 from testgen.constants import INDENT, VLEN_MAX
 from testgen.data.params import InstructionParams, PresetMask
 from testgen.data.random import random_int
@@ -275,7 +276,9 @@ def prep_base_v(
                 "# Load Vl=Random",
                 f"LI(x{temp_reg}, {randomVl})",
                 f"vsetvli x{vlmax_reg}, x0, e{params.sew}, {flags}",
-                f"remu x{temp_reg}, x{temp_reg}, x{vlmax_reg}",
+                "# VLMAX should be a power of 2, so taking a remainder is simple",
+                f"addi x{vlmax_reg}, x{vlmax_reg}, -1",
+                f"and x{temp_reg}, x{temp_reg}, x{vlmax_reg}",
             ]
         )
 
@@ -559,7 +562,9 @@ def generate_random_vl(params: InstructionParams, test_data: TestData, egs: int)
             "# Load vl=random",
             f"LI(x{temp_reg}, {randomVl})",
             f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, tu, mu",
-            f"remu x{temp_reg}, x{temp_reg}, x{params.temp_reg}",
+            "# VLMAX should be a power of 2, so taking a remainder is simple",
+            f"addi x{params.temp_reg}, x{params.temp_reg}, -1",
+            f"and x{temp_reg}, x{temp_reg}, x{params.temp_reg}",
         ]
     )
     if egs != 1:
@@ -754,3 +759,18 @@ def get_egs_lmul_for_register(reg_num: int, egs: int) -> int:
             return possible_lmul
 
     assert False, "Unreachable"
+
+
+def handle_vector_fp(setup: list[str], check: list[str], frm_val: int, test_data: TestData) -> None:
+    """Modifies Setup, Test, Check in place to ensure that vector-fp tests are run with the correct rounding mode"""
+    setup.append(f"fsrmi {frm_val}")
+    setup.append("fsflagsi 0b00000 # clear all fflags")
+    check.insert(0, write_sigupd(None, test_data, "fflags"))
+
+    # Insert a rounding mode reset inside the test body, (i.e before any #endifs)
+    for i in range(len(check) - 1, -1, -1):
+        if check[i] != "#endif":
+            check.insert(i + 1, "fsrmi 0x0")
+            break
+    else:
+        check.insert(0, "fsrmi 0x0")

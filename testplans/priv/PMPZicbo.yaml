@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: PMPZicbo
+source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1958410505#gid=1958410505
+coverpoints:
+  - heading: |-
+      General Test Environment (PMPZicbo):
+      - Runs when Sm and NUM_PMP_ENTRIES > 0, with Zicbom and Zicboz for the cbo rows and Zicbop for the prefetch rows. M-mode only.
+      - menvcfg.CBIE = 11, CBCFE = 1, CBZE = 1.
+      - The region under test is a 4 KiB-aligned NAPOT region much larger than a cache block, so every byte of the block has the same permissions. Misaligned or partially covered cache blocks are not tested: their behavior is unspecified (pmp_same).
+  - name: cp_cbo_zero
+    goal: Verify that cbo.zero needs W.
+    description: "Entry 0 over the region: L=1, XWR = 000, 001, 011. cbo.zero at the start of the region."
+    expectation: Store/AMO access fault (mcause = 7, mtval = rs1) when W=0. Otherwise the block is zeroed.
+    bins: 3 XWR
+    rules:
+      - cbz_access
+      - cbz_unperm_fault
+      - pmp_store_fault
+      - fault_excep_csr
+  - name: |-
+      cp_cbo_clean
+      cp_cbo_flush
+      cp_cbo_inval
+    goal: Verify that a cache-block management instruction needs R or W.
+    description: Same setup. cbo.clean, cbo.flush and cbo.inval at the start of the region.
+    expectation: "XWR=000: store/AMO access fault (mtval = rs1). XWR = 001 or 011: no exception."
+    bins: 3 XWR each
+    rules:
+      - cbm_access
+      - cbm_unperm_fault
+      - pmp_cbm_fault
+      - fault_excep_csr
+  - name: |-
+      cp_prefetch_i
+      cp_prefetch_r
+      cp_prefetch_w
+    goal: Verify that prefetches never trap on a PMP violation.
+    description: Six legal XWR with L=1, one entry each. prefetch.i, prefetch.r and prefetch.w at the start of the region.
+    expectation: No exception for any XWR.
+    bins: 6 XWR each
+    rules:
+      - cbp_unperm_noexcep

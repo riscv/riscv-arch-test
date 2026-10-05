@@ -1762,7 +1762,7 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines: list[str] = tc.code
 
     # setup registers
-    t1, t2 = test_data.int_regs.get_registers(4, exclude_regs=[2], reg_range=list(range(8, 16)))
+    t1, t2 = test_data.int_regs.get_registers(2, exclude_regs=[2], reg_range=list(range(8, 16)))
 
     ######################################
     coverpoint = "cp_sdtrig_itrigger"
@@ -1780,7 +1780,7 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
         if gated:
             lines.append("#ifdef S_SUPPORTED")
         codes = INTERRUPT_CODES if origin == "Sm" else LOWER_MODE_INTERRUPT_CODES
-        delegations = (0,) if mode == "Sm" else (1,)
+        delegations = (0,) if origin == "Sm" else (1,)
         for trig_num in range(UDB_NUM_TRIGGERS):
             # TODO Uncomment once udb add these parameters
             # lines.append(f"#ifdef UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE")

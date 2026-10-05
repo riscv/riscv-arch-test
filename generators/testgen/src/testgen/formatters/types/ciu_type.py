@@ -25,8 +25,7 @@ def format_ciu_type(
     """Format CIU-type instruction."""
     assert params.rs1 is not None and params.rs1val is not None
     assert params.immval is not None
-    setup: list[str] = []
-    setup.append(load_int_reg("rd/rs1", params.rs1, params.rs1val, test_data))
+    setup = [load_int_reg("rd/rs1", params.rs1, params.rs1val, test_data)]
     test = [
         f"{instr_name} x{params.rs1}, {to_hex(params.immval, 20)} # perform operation",
     ]

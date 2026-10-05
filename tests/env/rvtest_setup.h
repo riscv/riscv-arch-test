@@ -196,6 +196,8 @@
     #ifdef STANDARD_SM_SUPPORTED
       RVTEST_TSBI_GOTO_MMODE
     #endif
+
+  rvtest_fail_epilogs_mmode:
     LI(T5, 1)
 
   run_epilogs_body:
@@ -212,7 +214,9 @@
       LREG T1, 0(T1)
       bnez T1, rvtest_trap_setup_failed
     #endif
-    bnez T5, rvmodel_halt_fail
+    beqz T5, exit_cleanup
+    LA(T1, rvmodel_halt_fail)
+    jr T1
 
   // Terminate test with passing status
   exit_cleanup:
@@ -235,7 +239,8 @@
     LA(a0, rvtest_trap_prolog_error)
     LREG a0, 0(a0)
     call rvmodel_io_write_str
-    j       rvmodel_halt_fail
+    LA(T1, rvmodel_halt_fail)
+    jr T1
 
   // Terminate the test with a failure message indicating the trap signature overflowed
   trap_sig_overflow:

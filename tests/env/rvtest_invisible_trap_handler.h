@@ -168,7 +168,7 @@
     call    rvmodel_io_write_str
     LA(a0, failstr)
     call    rvmodel_io_write_str
-    LA      T1, rvtest_fail_epilogs
+    LA(T1, rvtest_fail_epilogs_mmode)
     jr      T1
 
   #ifdef H_SUPPORTED

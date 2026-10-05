@@ -28,8 +28,7 @@ def format_ci_type(
         asm = test_data.int_regs.consume_registers([params.rs1])
         if asm:
             setup.append(asm)
-    if params.rs1 != 0:  # rd = x0 is a HINT; nothing to load
-        setup.append(load_int_reg("rd/rs1", params.rs1, params.rs1val, test_data))
+    setup.append(load_int_reg("rd/rs1", params.rs1, params.rs1val, test_data))
     test = [
         f"{instr_name} x{params.rs1}, {params.immval} # perform operation",
     ]

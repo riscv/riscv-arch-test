@@ -13,3 +13,6 @@ apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"
 shards: 1
 config_shards:
   spike-rv64-max: 2
+  spike-rv64-experimental: 2
+experimental_configs:
+  - spike-rv64-experimental

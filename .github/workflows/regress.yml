@@ -155,6 +155,7 @@ jobs:
         env:
           MATRIX_EXCLUDE_EXTENSIONS: ${{ matrix.exclude_extensions }}
           MATRIX_CONFIG_FILE: ${{ matrix.config_file }}
+          ENABLE_EXPERIMENTAL_EXTENSIONS: ${{ matrix.enable_experimental_extensions }}
         run: |
           FAST=True \
           EXTENSIONS="${MATRIX_EXTENSIONS}" \

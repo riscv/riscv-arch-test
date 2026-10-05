@@ -50,6 +50,10 @@
 
     // Main Crosses
     cp_pmlen_masking : cross priv_mode_s, pmm, satp_mode, a_upper_bits, pm_insn;
+    `ifdef ZICFISS_SUPPORTED
+        cp_pmlen_zicfiss_amo : cross priv_mode_s, pmm, satp_mode_zicfiss, a_upper_bits, pm_ssamoswap_insn;
+        cp_pmlen_zicfiss_ssp : cross priv_mode_s, pmm, satp_mode_zicfiss, ssp_upper_bits, pm_ssp_insn;
+    `endif // ZICFISS_SUPPORTED
     cp_pmlen_misaligned_word: cross priv_mode_s, satp_mode, pmm, a_upper_bits, sw_lw_insn, misaligned_addr;
     cp_pmm_mxr: cross priv_mode_s, pmm, mxr_bit, satp_mode, a_upper_bits, sw_lw_insn;
     cp_pmm_jalr: cross priv_mode_s, pmm, mxr_bit, satp_mode, a_upper_bits, jalr_insn;

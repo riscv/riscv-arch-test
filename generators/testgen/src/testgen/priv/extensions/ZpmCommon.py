@@ -607,8 +607,6 @@ def _probe_ssp(
     Records the resulting ssp on successful access and the memory value for pushes, using x1 or x5 as the link register.
     """
     base_reg, addr, value = test_data.int_regs.get_registers(3)
-    # The compressed forms are Zcmop encodings; norvc keeps the assembler from compressing the others.
-    options = [".option arch, +zca, +zcmop"] if compressed else [".option norvc"]
     lines = [
         *_tagged_address(base_reg, addr, SS_PAGE, upper_tag),
         f"LI(x{value}, {hex(VALUE_OLD)})",
@@ -617,10 +615,7 @@ def _probe_ssp(
         f"csrw CSR_SSP, x{addr}",
         f"LI(x{link}, {hex(VALUE_NEW if push else VALUE_OLD)})",
         test_data.add_testcase(bin_name, "cp_pmlen_zicfiss_ssp", cg),
-        ".option push",
-        *options,
-        f"{mnemonic} x{link}",
-        ".option pop",
+        *arch_block([f"{mnemonic} x{link}"], *(("zca", "zcmop") if compressed else ())),
         f"csrr x{value}, CSR_SSP",
         write_sigupd(value, test_data),
     ]

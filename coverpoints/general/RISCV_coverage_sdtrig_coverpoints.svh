@@ -50,6 +50,15 @@ tdata1_xsl: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1"
     type_option.weight = 0;
     bins xsl[] = {[0:7]};
 }
+// tdata1 defaults, crossed where a coverpoint does not vary them
+tdata1_match_equal: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "match")[3:0] {
+    type_option.weight = 0;
+    bins equal = {4'd0};
+}
+tdata1_size_any: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "size")[2:0] {
+    type_option.weight = 0;
+    bins any = {3'd0};
+}
 tdata1_size: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "size")[2:0] {
     type_option.weight = 0;
     bins any = {3'd0};

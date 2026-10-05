@@ -32,6 +32,8 @@
 - `make help`: list supported targets and variables.
 - `make tests`: generate assembly tests and coverpoints without compiling them.
 - `make`: generate tests and build ELFs for the default Spike RV32 and RV64 configurations.
+- `RVMODEL_DIR=<dir> make`: take `rvmodel_macros.h` from `<dir>` instead of each config's `dut_include_dir`.
+- `CONFIG_FILES=<config>/test_config.yaml make kit`: package the certified objects as a certification kit in `work/kits/`.
 - `CONFIG_FILES=config/cores/<vendor>/<config>/test_config.yaml make`: build tests for one DUT configuration.
 - `make <config-target>`: build and run one or more configurations discovered from `run_cmd.txt`.
 - `EXTENSIONS=I,M make tests` or `EXTENSIONS=I make <config-target>`: restrict work to selected suites. `EXCLUDE_EXTENSIONS=Sm` applies a negative filter.
@@ -67,8 +69,10 @@
 ## Configurations And CI
 
 - `test_config.yaml` references the UDB configuration, linker script, DUT include directory, compiler, and reference model. Paths are relative to `test_config.yaml`.
+- The build is driver-based. Test objects (`work/<config>/objects`) never include `rvmodel_macros.h`; only the driver (`tests/env/rvmodel_driver.S`, routines in `rvtest_driver.h`) is assembled against it, and the reference model's driver against `sail_macros.h`. Without `rvmodel_macros.h` the build stops at the objects. Do not expand DUT code macros in test code; add a driver routine instead.
+- Device addresses, timings and `STANDARD_SM_SUPPORTED` belong in the `dut_environment` block of the UDB configuration, not in `rvmodel_macros.h`.
 - Audit every field copied from another DUT. The UDB configuration, `sail.json`, linker script, and DUT behavior must agree. For example, mismatched `mtvec` modes or alignment can break trap-handler setup.
-- Keep `.text.rvmodel` after `.data` in linker scripts. Otherwise, DUT and reference-model ELFs can assign different addresses to test data. If the ELF base changes, update the memory map in `sail.json`.
+- Keep `.text.rvmodel` after `.data` in linker scripts. The driver goes there, and it differs between the DUT and the reference model, so otherwise their ELFs can assign different addresses to test data. If the ELF base changes, update the memory map in `sail.json`.
 - `run_cmd.txt` contains one command. `run_tests.py` appends the ELF path. Use `{debug:...}` for debug-only arguments, `__TRACEFILE__` for a separate trace, and `__SUMMARYFILE__` for redirected console summaries.
 - CI discovers matrices from `config/*/ci.yaml` and `run_cmd.txt`. Run `make tests` before `.github/scripts/ci_config.py` because generated tests determine shard weights.
 - CI verifies that checked-in generated files under `tests/` and `coverpoints/` match their generators.

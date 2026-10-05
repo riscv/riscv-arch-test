@@ -55,6 +55,7 @@ include::norm/Ss1p13_norm_rules.adoc[]
 ==== Ssnpm Pointer Masking
 
 include::{testplansdir}/priv/Ssnpm.adoc[]
+include::{testplansdir}/priv/SsnpmSm.adoc[]
 
 include::norm/Ssnpm_norm_rules.adoc[]
 
@@ -63,7 +64,9 @@ include::norm/Zpm_norm_rules.adoc[]
 ==== Smnpm Pointer Masking
 
 include::{testplansdir}/priv/SmnpmS.adoc[]
+include::{testplansdir}/priv/SmnpmSSm.adoc[]
 include::{testplansdir}/priv/SmnpmU.adoc[]
+include::{testplansdir}/priv/SmnpmUSm.adoc[]
 
 See <<t-Ssnpm-normative-rules>> for normative rules.
 

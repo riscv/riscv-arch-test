@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SsnpmH
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=669410459#gid=669410459
+notes: |
+  Develop this after baseline pointer masking tests
+coverpoints: []

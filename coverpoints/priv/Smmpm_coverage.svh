@@ -61,7 +61,7 @@
 
     //Main Crosses
     cp_pmlen_masking : cross priv_mode_m, pmm, a_upper_bits, pm_insn;
-    cp_pmlen_misaligned_word: cross priv_mode_m, pm_misalign;
+    cp_pmlen_misaligned_word: cross priv_mode_m, pmm, a_upper_bits, sw_lw_insn, misaligned_addr;
     cp_pm_csr_software_access: cross priv_mode_m, pmm, csr_target, csrw_insn;
 
     // MPRV with MPP=M: the effective privilege stays M, so mseccfg.PMM governs and
@@ -80,7 +80,7 @@
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         // Fault crosses confirm lw/sw executed in M-mode at the illegal address.
-        cp_hardware_csr_writes_fault: cross priv_mode_m, pm_fault;
+        cp_hardware_csr_writes_fault: cross priv_mode_m, pmm, a_upper_bits, sw_lw_insn, illegal_addr;
     `endif
 
 endgroup

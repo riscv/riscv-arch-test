@@ -96,7 +96,7 @@ repos:
 
   # Prettier for json, yaml, markdown, etc. formatting
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: 5c9b20b95f2bc1c4d3d929b83a96d5c96a29e752 # frozen: v3.9.8
+    rev: ef4a397f916211b4a39ccf9d3d9cbb6562157251 # frozen: v3.9.9
     hooks:
       - id: prettier
 
@@ -115,7 +115,7 @@ repos:
 
   # Validate Renovate configuration
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 2d888c2bb94b7f5a42ebd1b08d2e2ec7c5f31e63 # frozen: 44.106.0
+    rev: c3db9649a72d6f358b0ae58b6c287d73b1821418 # frozen: 44.115.13
     hooks:
       - id: renovate-config-validator
 

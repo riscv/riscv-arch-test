@@ -1919,7 +1919,7 @@
         call rvmodel_io_write_str
 
     failedtest_terminate:
-        call rvmodel_halt_fail
+        j rvtest_fail_epilogs
 
 
     # Print saved xepc, xcause, xtval, xstatus for trap failure diagnostics.

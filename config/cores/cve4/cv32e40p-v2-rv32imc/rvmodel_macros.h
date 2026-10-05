@@ -5,24 +5,14 @@
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
-#define RVMODEL_DATA_SECTION
+// Device addresses, interrupt timings and STANDARD_SM_SUPPORTED are in the
+// dut_environment block of the config's UDB yaml. Only the driver library
+// (librvmodel.a) is built from this file; test objects never see it.
 
-#define STANDARD_SM_SUPPORTED
+#define RVMODEL_DATA_SECTION
 
 ##### STARTUP #####
 //#define RVMODEL_BOOT \
-
-// Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
-// if defined.  For most DUTs, the default should work and this macro
-// should not be defined.  If no M-mode or CSRs are implemented, define this
-// macro as blank to bypass the boot process.  If a nonconforming
-// M-mode is implemented, define this macro to set up the necessary
-// state in a fashion similar to RVTEST_BOOT_TO_MMODE.
-//#define RVMODEL_BOOT_TO_MMODE
-
-# Address to use for load/store fault tests that should cause an access fault on the DUT.
-// This DUT does not generate access faults.  Comment out RVMODEL_ACCESS_FAULT_ADDRESS to prevent testing them.
-//#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
 
 ##### TERMINATION #####
 
@@ -60,18 +50,6 @@
   addi _STR_PTR, _STR_PTR, 1 ; /* Next char */        \
   j 1b                       ; /* Loop */             \
 3:
-
-##### Interrupt Latency #####
-
-#define RVMODEL_INTERRUPT_LATENCY 10
-
-##### Machine Timer #####
-#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
-
-#define RVMODEL_TIMER_INT_SOON_DELAY 10000
-
-#define RVMODEL_MTIME_ADDRESS     0x0200BFF8
-#define RVMODEL_MTIMECMP_ADDRESS  0x02004000
 
 ##### Machine Interrupts #####
 

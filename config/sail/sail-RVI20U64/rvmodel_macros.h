@@ -6,6 +6,10 @@
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
+// Device addresses, interrupt timings and STANDARD_SM_SUPPORTED are in the
+// dut_environment block of the config's UDB yaml. Only the driver library
+// (librvmodel.a) is built from this file; test objects never see it.
+
 #define CLINT_BASE_ADDRESS 0x02000000
 
 #define RVMODEL_DATA_SECTION \
@@ -18,14 +22,6 @@
 
 # Perform boot operations. Can be empty.
 #define RVMODEL_BOOT
-
-// Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
-// if defined.  For most DUTs, the default should work and this macro
-// should not be defined.  If no M-mode or CSRs are implemented, define this
-// macro as blank to bypass the boot process.  If a nonconforming
-// M-mode is implemented, define this macro to set up the necessary
-// state in a fashion similar to RVTEST_BOOT_TO_MMODE.
-#define RVMODEL_BOOT_TO_MMODE
 
 ##### TERMINATION #####
 
@@ -42,7 +38,6 @@
     sw x0, 4(t0)          ;\
     j write_tohost_pass   ;\
 
-
 # Terminate test with a fail indication.
 # When the test is run in simulation, this should end the simulation.
 #define RVMODEL_HALT_FAIL \
@@ -53,14 +48,12 @@
     sw x0, 4(t0)          ;\
     j write_tohost_fail   ;\
 
-
 ##### IO #####
 
 # Initialization steps needed prior to writing to the console
 # _R1, _R2, and _R3 can be used as temporary registers if needed.
 # Do not modify any other registers (or make sure to restore them).
 #define RVMODEL_IO_INIT(_R1, _R2, _R3)
-
 
 # Prints a null-terminated string using a DUT specific mechanism.
 # A pointer to the string is passed in _STR_PTR.
@@ -80,23 +73,9 @@
   j 1b                       ;/* Loop */             \
 3:
 
-##### Access Fault #####
-
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
-
-##### Machine Timer #####
-
-#define RVMODEL_MTIMECMP_ADDRESS  0x02004000  /* Address of mtimecmp CSR */
-
-#define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
-
 ##### Machine Interrupts #####
-#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 
 // Interrupt latency configuration
-#define RVMODEL_INTERRUPT_LATENCY 10
-
-#define RVMODEL_TIMER_INT_SOON_DELAY 5000
 
 // TODO: need to implement external interrupts in SAIL
 #define RVMODEL_MEXT_ADDRESS  0x80000000  /* Address of a memory mapped machine external interrupt generator */
@@ -105,11 +84,9 @@
   li _R2, RVMODEL_MEXT_ADDRESS; \
   sw _R1, 0(_R2)            ; /* Set MEXT interrupt */ \
 
-
 #define RVMODEL_CLR_MEXT_INT(_R1, _R2)        \
   li _R2, RVMODEL_MEXT_ADDRESS; \
   sw zero, 0(_R2)            ; /* Clear MEXT interrupt */ \
-
 
 #define MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 
@@ -118,12 +95,9 @@
   li _R2, MSIP_ADDRESS;              \
   sw _R1, 0(_R2);
 
-
 #define RVMODEL_CLR_MSW_INT(_R1, _R2)        \
   li _R2, MSIP_ADDRESS;              \
   sw zero, 0(_R2);
-
-
 
 ##### Supervisor Interrupts #####
 
@@ -134,11 +108,9 @@
   li _R2, SAIL_SEXT_ADDRESS; \
   sw _R1, 0(_R2)            ; /* Set SEXT interrupt */ \
 
-
 #define RVMODEL_CLR_SEXT_INT(_R1, _R2)        \
   li _R2, SAIL_SEXT_ADDRESS; \
   sw zero, 0(_R2)            ; /* Clear SEXT interrupt */
-
 
 // Sail does not yet support memory-mapped I/O to cause a supervisor software interrupt. Change CLINT_SSIP_ADDRSS to appropriate location when implemented in Sail.
 // #define CLINT_SSIP_ADDRESS (CLINT_BASE_ADDRESS + 0xC000)
@@ -148,11 +120,8 @@
   li _R2, CLINT_SSIP_ADDRESS;              \
   sw _R1, 0(_R2);
 
-
 #define RVMODEL_CLR_SSW_INT(_R1, _R2)        \
   li _R2, CLINT_SSIP_ADDRESS;              \
   sw zero, 0(_R2);
-
-
 
 #endif // _RVMODEL_MACROS_H

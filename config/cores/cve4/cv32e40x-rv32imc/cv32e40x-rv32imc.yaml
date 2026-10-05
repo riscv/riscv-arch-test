@@ -212,3 +212,16 @@ params:
       false,
     ]
 # end
+
+# Device addresses and timings baked into test objects. The objects are built
+# without rvmodel_macros.h, and the reference model needs the same values.
+dut_environment:
+  RVMODEL_MTIME_ADDRESS: 0x0200BFF8
+  RVMODEL_MTIMECMP_ADDRESS: 0x02004000
+  RVMODEL_INTERRUPT_LATENCY: 10
+  RVMODEL_TIMER_INT_SOON_DELAY: 10000
+  RVMODEL_MAX_CYCLES_PER_TIMER_TICK: 1
+  STANDARD_SM_SUPPORTED: true
+  # Not set: RVMODEL_ACCESS_FAULT_ADDRESS. CV32E40X raises access fault only for
+  # misaligned accesses in I/O regions (PMA controlled). With PMA_NUM_REGIONS=0, no
+  # explicit I/O regions are defined so access faults may not be reproducible.

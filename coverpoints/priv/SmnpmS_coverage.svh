@@ -54,14 +54,14 @@
         cp_pmlen_zicfiss_amo : cross priv_mode_s, pmm, satp_mode_zicfiss, a_upper_bits, pm_ssamoswap_insn;
         cp_pmlen_zicfiss_ssp : cross priv_mode_s, pmm, satp_mode_zicfiss, ssp_upper_bits, pm_ssp_insn;
     `endif // ZICFISS_SUPPORTED
-    cp_pmlen_misaligned_word: cross priv_mode_s, satp_mode, pm_misalign;
+    cp_pmlen_misaligned_word: cross priv_mode_s, satp_mode, pmm, a_upper_bits, sw_lw_insn, misaligned_addr;
     cp_pmm_mxr: cross priv_mode_s, pmm, mxr_bit, satp_mode, a_upper_bits, sw_lw_insn;
     cp_pmm_jalr: cross priv_mode_s, pmm, mxr_bit, satp_mode, a_upper_bits, jalr_insn;
     cp_pm_csr_software_access: cross priv_mode_s, pmm, csr_target, csrw_insn;
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         // Fault crosses confirm lw/sw executed in S-mode at the illegal address.
-        cp_hardware_csr_writes_fault: cross priv_mode_s, satp_mode, pm_fault;
+        cp_hardware_csr_writes_fault: cross priv_mode_s, satp_mode, pmm, a_upper_bits, sw_lw_insn, illegal_addr;
     `endif
 
 endgroup

@@ -267,8 +267,6 @@
         type_option.weight = 0;
         bins misaligned = {[2'b01:2'b11]};
     }
-    // ---- Misalign common cross dimensions ----
-    pm_misalign : cross pmm, a_upper_bits, sw_lw_insn, misaligned_addr;
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         // Exception should write xtval with masked version of pointer.
@@ -276,5 +274,4 @@
             type_option.weight = 0;
             bins is_illegal_base = {`RVMODEL_ACCESS_FAULT_ADDRESS& 48'hFFFF_FFFF_FFFF};
         }
-        pm_fault : cross pmm, a_upper_bits, sw_lw_insn, illegal_addr;
     `endif

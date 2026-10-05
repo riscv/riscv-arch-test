@@ -26,6 +26,19 @@ from testgen.priv.extensions.pmp.helpers import (
     set_pmpcfg,
     zero_pmp_regs,
 )
+from testgen.priv.extensions.pmp.partial import (
+    ALIGNED_NA4,
+    ALIGNED_TOR,
+    COVERING,
+    ENTRIES_PARAM,
+    GRANULE_LDST,
+    GRANULE_TOR,
+    IMPRECISE_XTVAL,
+    gen_accesses,
+    make_misaligned_chunk,
+    make_partial_chunk,
+    misaligned_setup_m,
+)
 from testgen.priv.extensions.pmp.probes import (
     gen_lw_bounds,
     gen_rwx,
@@ -963,4 +976,91 @@ def make_pmpsm_tor(test_data: TestData) -> list[TestChunk]:
         _make_tor_all_chunk(test_data),
         *(_make_tor_check_chunk(test_data, part) for part in (1, 2, 3)),
         *(_make_legal_chunk(test_data, "tor", part) for part in (1, 2)),
+    ]
+
+
+#####################################################################
+# pmpsm_partial_*: the deciding entry matches only part of the access
+#####################################################################
+
+_LDST = gen_accesses([("ld", None), ("sd", None)])
+
+
+@add_priv_test_generator(
+    "PMPSm",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=[["I", "E"], "Sm"],
+    params=["MXLEN: 64", ENTRIES_PARAM, "PMP_GRANULARITY: 2", "PMP_NA4_SUPPORTED: true", "PMP_NAPOT_SUPPORTED: true"],
+)
+def make_pmpsm_partial_na4(test_data: TestData) -> list[TestChunk]:
+    return [
+        make_partial_chunk(
+            test_data,
+            "partial_na4",
+            [*ALIGNED_NA4, *COVERING],
+            _LDST,
+            "cp_partial_match",
+            "ld and sd on aligned doublewords that NA4 entries match in the lower half, the upper half or both;\n"
+            "the access fails even with L=0. A lower-numbered entry covering the whole doubleword decides instead.",
+        )
+    ]
+
+
+@add_priv_test_generator(
+    "PMPSm",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=[["I", "E"], "Sm"],
+    params=["MXLEN: 64", ENTRIES_PARAM, "PMP_GRANULARITY: 2", "PMP_TOR_SUPPORTED: true"],
+)
+def make_pmpsm_partial_tor(test_data: TestData) -> list[TestChunk]:
+    return [
+        make_partial_chunk(
+            test_data,
+            "partial_tor",
+            ALIGNED_TOR,
+            _LDST,
+            "cp_partial_match",
+            "ld and sd on aligned doublewords that 4-byte TOR entries match in the lower half, the upper half\n"
+            "or both; the access fails even with L=0.",
+        )
+    ]
+
+
+@add_priv_test_generator(
+    "PMPSm",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=[["I", "E"], "Sm", "Zama16b"],
+    march_extensions=["Sm"],
+    params=[ENTRIES_PARAM, "PMP_GRANULARITY: '<=3'", "PMP_TOR_SUPPORTED: true"],
+)
+def make_pmpsm_granule(test_data: TestData) -> list[TestChunk]:
+    return [
+        make_partial_chunk(
+            test_data,
+            "partial_granule",
+            GRANULE_TOR,
+            GRANULE_LDST,
+            "cp_misaligned_mag16",
+            "Misaligned loads and stores inside a 16-byte granule that one-grain TOR entries match in the lower\n"
+            "part, the upper part or both. Within a misaligned atomicity granule the access is one memory\n"
+            "operation, so it fails.",
+        )
+    ]
+
+
+@add_priv_test_generator(
+    "PMPSm",
+    extra_defines=["#define BOOT_TO_MMODE", IMPRECISE_XTVAL],
+    required_extensions=[["I", "E"], "Sm"],
+    params=["MISALIGNED_LDST: true", "NUM_USABLE_PMP_ENTRIES: '>=2'", "PMP_TOR_SUPPORTED: true"],
+)
+def make_pmpsm_misaligned(test_data: TestData) -> list[TestChunk]:
+    return [
+        make_misaligned_chunk(
+            test_data,
+            misaligned_setup_m(),
+            "cp_misaligned_partial",
+            "Misaligned loads and stores across each end of a locked TOR region without permissions; the rest of\n"
+            "the access matches no entry. Each faults whether or not the hart splits it. xtval is not recorded.",
+        )
     ]

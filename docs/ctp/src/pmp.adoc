@@ -4,17 +4,23 @@
 Every PMP suite needs Sm and at least one PMP entry (`NUM_PMP_ENTRIES` > 0).
 The tests boot to M-mode to program the PMP.
 Most tests make the highest usable entry (`NUM_USABLE_PMP_ENTRIES` - 1) a locked background entry with full permissions, so accesses that match no lower entry succeed.
-The `cp_none_*` tests leave the background entry unset, so that their accesses match no entry.
+The `cp_none_*` and `cp_misaligned_partial` tests leave the background entry unset, so that part of their accesses match no entry.
 Tests for an address-matching mode run only when its UDB parameter (`PMP_NA4_SUPPORTED`, `PMP_NAPOT_SUPPORTED` or `PMP_TOR_SUPPORTED`) is true, and region sizes follow `PMP_GRANULARITY`.
 PMP combined with virtual memory is tested by the SvPMP, SvPMPZicbo and SvaduPMP suites in the virtual-memory section.
 The testplan also describes a PMPV suite for vector loads and stores, which is not implemented yet.
-An aligned load, store or AMO is a single memory operation, so it fails when the lowest-numbered entry that matches any of its bytes does not match all of them.
-Those tests are not implemented yet and are listed as TODO in the tables below.
-Outside a misaligned atomicity granule, a misaligned access may be split into memory operations that are checked separately, so one that straddles two permitted regions has no single expected result and is not tested.
+An aligned load, store or AMO is a single memory operation, so it fails when the lowest-numbered entry that matches any of its bytes does not match all of them, whatever L, R, W and X are.
+The `cp_partial_*` coverpoints test this with 4-byte NA4 and TOR entries (G = 0) and 8-byte NAPOT and TOR entries (G {le} 1) over the lower half, the upper half or both halves of the access, with L = 0 and L = 1.
+With Zama16b, a misaligned access inside a 16-byte granule is also a single memory operation, which the `cp_misaligned_mag16` coverpoints test with one-grain TOR entries (G {le} 1).
+These tests give each case its own entries below the background entry, so they need `NUM_USABLE_PMP_ENTRIES` {ge} 16.
+Outside a misaligned atomicity granule, a misaligned access may be split into memory operations that are checked separately.
+When `MISALIGNED_LDST` is true, `cp_misaligned_partial` checks that an access partly in a region it may not use, with the rest matching no entry, faults whether or not it is split.
+Those tests check only the trap: `mtval` may hold the address of the access or of its faulting part, so the trap handler does not record it (`IMPRECISE_ACCESS_FAULT_XTVAL`), and part of a split store may become visible.
+A misaligned access outside a granule that straddles two permitted regions has no single expected result and is not tested.
 
 ==== PMPSm
 
 Machine-mode tests of the pmpcfg and pmpaddr CSRs (WARL fields, locking, grain, and the illegal odd pmpcfg CSRs on RV64), each address-matching mode in every entry, entry priority, and enforcement of locked entries on M-mode accesses.
+Also aligned `ld` and `sd` partly matched by an entry, and misaligned loads and stores inside a granule or partly in a locked region without permissions.
 The 64-entry coverpoints need `NUM_PMP_ENTRIES` = 64.
 
 [[t-PMPSm-coverpoints]]
@@ -30,7 +36,7 @@ include::norm/PMPSm_norm_rules.adoc[]
 ==== PMPS
 
 PMP enforcement on S-mode accesses, which does not depend on the L bit, and on M-mode loads and stores with `mstatus.MPRV`=1 and MPP=S.
-Also checks that the PMP CSRs trap when accessed from S-mode, and that an S-mode access matching no PMP entry faults.
+Also checks that the PMP CSRs trap when accessed from S-mode, that an S-mode access matching no PMP entry faults, and that a misaligned S-mode access partly in a region faults when the rest matches no entry.
 Runs when S is implemented.
 
 [[t-PMPS-coverpoints]]
@@ -46,7 +52,7 @@ include::norm/PMPS_norm_rules.adoc[]
 ==== PMPU
 
 PMP enforcement on U-mode accesses, which does not depend on the L bit, and on M-mode loads and stores with `mstatus.MPRV`=1 and MPP=U.
-Also checks that the PMP CSRs trap when accessed from U-mode, and that a U-mode access matching no PMP entry faults.
+Also checks that the PMP CSRs trap when accessed from U-mode, that a U-mode access matching no PMP entry faults, and that a misaligned U-mode access partly in a region faults when the rest matches no entry.
 Runs when U is implemented.
 
 [[t-PMPU-coverpoints]]
@@ -60,7 +66,7 @@ include::norm/PMPU_norm_rules.adoc[]
 
 ==== PMPF
 
-Floating-point loads and stores against locked entries, from M-mode.
+Floating-point loads and stores against locked entries, and misaligned ones inside a 16-byte granule partly matched by an entry, from M-mode.
 Runs when F is implemented.
 
 [[t-PMPF-coverpoints]]
@@ -75,7 +81,7 @@ include::norm/PMPF_norm_rules.adoc[]
 
 ==== PMPZca
 
-Compressed loads and stores against locked entries, and 32-bit and 16-bit instruction fetches at PMP region boundaries, from M-mode.
+Compressed loads and stores against locked entries, misaligned ones inside a 16-byte granule partly matched by an entry, and 32-bit and 16-bit instruction fetches at PMP region boundaries, from M-mode.
 Runs when Zca is implemented; Zcb, Zcf and Zcd add their loads and stores.
 
 [[t-PMPZca-coverpoints]]
@@ -104,6 +110,7 @@ include::norm/PMPZicbo_norm_rules.adoc[]
 ==== PMPZaamo
 
 Every AMO against locked entries, from M-mode; an AMO needs both R and W.
+Also aligned `.d` AMOs, and misaligned AMOs inside a 16-byte granule, partly matched by an entry.
 Runs when Zaamo is implemented.
 
 [[t-PMPZaamo-coverpoints]]
@@ -119,6 +126,7 @@ include::norm/PMPZaamo_norm_rules.adoc[]
 ==== PMPZalrsc
 
 LR and SC against locked entries, from M-mode.
+Also aligned `lr.d` and `sc.d` partly matched by an entry; the `sc.d` has no reservation and still faults.
 Runs when Zalrsc is implemented.
 
 [[t-PMPZalrsc-coverpoints]]
@@ -129,3 +137,19 @@ https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZO
 ,===
 
 include::norm/PMPZalrsc_norm_rules.adoc[]
+
+
+==== PMPZacas
+
+Aligned `amocas.d` and `amocas.q` partly matched by an entry, and misaligned `amocas.w` and `amocas.d` inside a 16-byte granule, from M-mode.
+An aligned AMO is one memory operation even when it is wider than XLEN, so `amocas.d` on RV32 is included.
+Runs when Zacas is implemented.
+
+[[t-PMPZacas-coverpoints]]
+.PMPZacas Coverpoints
+
+,===
+https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit[Google Sheet Testplan]
+,===
+
+include::norm/PMPZacas_norm_rules.adoc[]

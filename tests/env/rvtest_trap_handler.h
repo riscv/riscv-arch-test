@@ -2453,6 +2453,13 @@ adj_\__MODE__\()epc_rtn:
         csrw    CSR_XEPC, T3
 
 skp_adj_\__MODE__\()epc:
+#ifdef IMPRECISE_ACCESS_FAULT_XTVAL
+        csrr    T2, CSR_XCAUSE                        // a misaligned access that faults may report the address
+        LI(     T6, CAUSE_LOAD_ACCESS)                //   of any faulting part of it in xtval -> don't record
+        beq     T2, T6, skp_\__MODE__\()tval          //   xtval for load and store/AMO access faults
+        LI(     T6, CAUSE_STORE_ACCESS)
+        beq     T2, T6, skp_\__MODE__\()tval
+#endif
         csrr    T3, CSR_XTVAL                         // T3 = xtval (trap value: faulting addr or instruction)
 
 sv_\__MODE__\()tval:

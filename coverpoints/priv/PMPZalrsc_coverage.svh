@@ -9,8 +9,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_PMPZALRSC
+`include "PMP_partial.svh"
 
-covergroup PMPZalrsc_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
+covergroup PMPZalrsc_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit, pmp_partial_t partial);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -40,6 +41,51 @@ covergroup PMPZalrsc_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0]
   }
 
   cp_cfg_RW: cross priv_mode_m, legal_lxwr, atomic_intrs, rs1_in_region;
+
+  // Partial matches (see PMP_partial.svh): the deciding entry matches only some bytes of the access.
+  `ifdef UDB_MXLEN_64
+    partial_lrsc_d: coverpoint ins.current.insn {
+      type_option.weight = 0;
+      wildcard bins lr_d = {LR_D};
+      wildcard bins sc_d = {SC_D};
+    }
+  `endif
+
+  partial_kind: coverpoint partial.kind {
+    type_option.weight = 0;
+    bins lower = {PMP_PARTIAL_LOWER};
+    bins upper = {PMP_PARTIAL_UPPER};
+    bins both  = {PMP_PARTIAL_BOTH};
+  }
+
+  partial_aligned: coverpoint partial.align {
+    type_option.weight = 0;
+    bins aligned = {PMP_ACCESS_ALIGNED};
+  }
+
+  partial_lock: coverpoint partial.cfg[7] {
+    type_option.weight = 0;
+    bins unlocked = {1'b0};
+    bins locked   = {1'b1};
+  }
+
+  partial_amode: coverpoint partial.cfg[4:3] {
+    type_option.weight = 0;
+    `ifdef UDB_PMP_NA4_SUPPORTED
+      bins na4 = {2'b10};
+    `endif
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      bins tor = {2'b01};
+    `endif
+  }
+
+  `ifdef PMP_PARTIAL_ENTRIES
+    `ifdef UDB_MXLEN_64
+      `ifdef UDB_PMP_GRANULARITY_2
+        cp_partial_match: cross priv_mode_m, partial_lrsc_d, partial_aligned, partial_amode, partial_lock, partial_kind ;
+      `endif
+    `endif
+  `endif
 
 endgroup
 
@@ -83,5 +129,5 @@ function void pmpzalrsc_sample(int hart, int issue, ins_t ins);
                  ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`SPECIAL_NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
-  PMPZalrsc_cg.sample(ins, pmpcfg, pmp_hit);
+  PMPZalrsc_cg.sample(ins, pmpcfg, pmp_hit, pmp_partial(ins));
 endfunction

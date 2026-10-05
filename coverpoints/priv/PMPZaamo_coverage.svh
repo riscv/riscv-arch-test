@@ -9,8 +9,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_PMPZAAMO
+`include "PMP_partial.svh"
 
-covergroup PMPZaamo_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
+covergroup PMPZaamo_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit, pmp_partial_t partial);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -52,6 +53,102 @@ covergroup PMPZaamo_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],
 
   cp_cfg_RW: cross priv_mode_m, legal_lxwr, atomic_intrs, rs1_in_region;
 
+  // Partial matches (see PMP_partial.svh): the deciding entry matches only some bytes of the access.
+  partial_amo: coverpoint ins.current.insn {
+    type_option.weight = 0;
+    wildcard bins amoswap_w = {AMOSWAP_W};
+    wildcard bins amoadd_w = {AMOADD_W};
+    wildcard bins amoxor_w = {AMOXOR_W};
+    wildcard bins amoand_w = {AMOAND_W};
+    wildcard bins amoor_w = {AMOOR_W};
+    wildcard bins amomin_w = {AMOMIN_W};
+    wildcard bins amomax_w = {AMOMAX_W};
+    wildcard bins amominu_w = {AMOMINU_W};
+    wildcard bins amomaxu_w = {AMOMAXU_W};
+    `ifdef UDB_MXLEN_64
+      wildcard bins amoswap_d = {AMOSWAP_D};
+      wildcard bins amoadd_d = {AMOADD_D};
+      wildcard bins amoxor_d = {AMOXOR_D};
+      wildcard bins amoand_d = {AMOAND_D};
+      wildcard bins amoor_d = {AMOOR_D};
+      wildcard bins amomin_d = {AMOMIN_D};
+      wildcard bins amomax_d = {AMOMAX_D};
+      wildcard bins amominu_d = {AMOMINU_D};
+      wildcard bins amomaxu_d = {AMOMAXU_D};
+    `endif
+  }
+
+  `ifdef UDB_MXLEN_64
+    partial_amo_d: coverpoint ins.current.insn {
+      type_option.weight = 0;
+      wildcard bins amoswap_d = {AMOSWAP_D};
+      wildcard bins amoadd_d = {AMOADD_D};
+      wildcard bins amoxor_d = {AMOXOR_D};
+      wildcard bins amoand_d = {AMOAND_D};
+      wildcard bins amoor_d = {AMOOR_D};
+      wildcard bins amomin_d = {AMOMIN_D};
+      wildcard bins amomax_d = {AMOMAX_D};
+      wildcard bins amominu_d = {AMOMINU_D};
+      wildcard bins amomaxu_d = {AMOMAXU_D};
+    }
+  `endif
+
+  partial_kind: coverpoint partial.kind {
+    type_option.weight = 0;
+    bins lower = {PMP_PARTIAL_LOWER};
+    bins upper = {PMP_PARTIAL_UPPER};
+    bins both  = {PMP_PARTIAL_BOTH};
+  }
+
+  partial_aligned: coverpoint partial.align {
+    type_option.weight = 0;
+    bins aligned = {PMP_ACCESS_ALIGNED};
+  }
+
+  partial_in_granule16: coverpoint partial.align {
+    type_option.weight = 0;
+    bins in_granule16 = {PMP_ACCESS_IN_GRANULE16};
+  }
+
+  partial_lock: coverpoint partial.cfg[7] {
+    type_option.weight = 0;
+    bins unlocked = {1'b0};
+    bins locked   = {1'b1};
+  }
+
+  partial_amode: coverpoint partial.cfg[4:3] {
+    type_option.weight = 0;
+    `ifdef UDB_PMP_NA4_SUPPORTED
+      bins na4 = {2'b10};
+    `endif
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      bins tor = {2'b01};
+    `endif
+  }
+
+  partial_tor: coverpoint partial.cfg[4:3] {
+    type_option.weight = 0;
+    bins tor = {2'b01};
+  }
+
+  `ifdef PMP_PARTIAL_ENTRIES
+    `ifdef UDB_MXLEN_64
+      `ifdef UDB_PMP_GRANULARITY_2
+        cp_partial_match: cross priv_mode_m, partial_amo_d, partial_aligned, partial_amode, partial_lock, partial_kind ;
+      `endif
+    `endif
+  `endif
+
+  `ifdef PMP_PARTIAL_ENTRIES
+    `ifdef ZAMA16B_SUPPORTED
+      `ifdef PMP_PARTIAL_GRAIN_8
+        `ifdef UDB_PMP_TOR_SUPPORTED
+          cp_misaligned_mag16: cross priv_mode_m, partial_amo, partial_in_granule16, partial_tor, partial_lock, partial_kind ;
+        `endif
+      `endif
+    `endif
+  `endif
+
 endgroup
 
 function void pmpzaamo_sample(int hart, int issue, ins_t ins);
@@ -92,5 +189,5 @@ function void pmpzaamo_sample(int hart, int issue, ins_t ins);
     pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`SPECIAL_STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`SPECIAL_NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
-  PMPZaamo_cg.sample(ins, pmpcfg, pmp_hit);
+  PMPZaamo_cg.sample(ins, pmpcfg, pmp_hit, pmp_partial(ins));
 endfunction

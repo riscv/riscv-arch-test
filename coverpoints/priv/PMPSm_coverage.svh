@@ -9,6 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_PMPSM
+`include "PMP_partial.svh"
 `define PMP_NAPOT_PRIORITY_REGION_START ((`PMP_REGION_START & ~(64*`g_napot - 1)) + 64*`g_napot)
 // The priority tests write pmpaddr while the entry is OFF, which reads (and traces) pmpaddr[G-1:0]
 // as 0 at granularity G >= 1, so compare those registers on bits >= G only.
@@ -28,7 +29,8 @@ covergroup PMPSm_cg with function sample(
                     logic [14:0] pmpcfg_l,            // first 15 regions L fields
                     logic [47:0] pmpcfg_L,            // next 48 regions L fields
                     logic [14:0] pmp_hit,             // for first 15 regions indicating hit of pmp_entry
-                    logic [47:0] pmp_HIT              // for next 48 regions indicating hit of pmp_entry
+                    logic [47:0] pmp_HIT,             // for next 48 regions indicating hit of pmp_entry
+                    pmp_partial_t partial             // how the entries match the bytes of a load or store
                     );
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
@@ -1117,6 +1119,117 @@ covergroup PMPSm_cg with function sample(
   cp_grain_check_write: cross priv_mode_m, pmpcfg_for_cp_grain_check, value_to_write, csrw_to_pmpaddr0;
   cp_grain_check_read: cross priv_mode_m, pmpcfg_for_cp_grain_check, csrr_to_pmpaddr0;
 
+  // Partial matches (see PMP_partial.svh): the deciding entry matches only some bytes of the access.
+  partial_ldst_d: coverpoint ins.current.insn {
+    type_option.weight = 0;
+    wildcard bins ld = {LD};
+    wildcard bins sd = {SD};
+  }
+
+  partial_ldst: coverpoint ins.current.insn {
+    type_option.weight = 0;
+    wildcard bins lh  = {LH};
+    wildcard bins lhu = {LHU};
+    wildcard bins sh  = {SH};
+    wildcard bins lw  = {LW};
+    wildcard bins sw  = {SW};
+    `ifdef UDB_MXLEN_64
+      wildcard bins lwu = {LWU};
+      wildcard bins ld  = {LD};
+      wildcard bins sd  = {SD};
+    `endif
+  }
+
+  partial_kind: coverpoint partial.kind {
+    type_option.weight = 0;
+    bins lower = {PMP_PARTIAL_LOWER};
+    bins upper = {PMP_PARTIAL_UPPER};
+    bins both  = {PMP_PARTIAL_BOTH};
+  }
+
+  partial_one_end: coverpoint partial.kind {
+    type_option.weight = 0;
+    bins lower = {PMP_PARTIAL_LOWER};
+    bins upper = {PMP_PARTIAL_UPPER};
+  }
+
+  partial_covered: coverpoint partial.kind {
+    type_option.weight = 0;
+    bins covered = {PMP_PARTIAL_COVERED};
+  }
+
+  partial_aligned: coverpoint partial.align {
+    type_option.weight = 0;
+    bins aligned = {PMP_ACCESS_ALIGNED};
+  }
+
+  partial_in_granule16: coverpoint partial.align {
+    type_option.weight = 0;
+    bins in_granule16 = {PMP_ACCESS_IN_GRANULE16};
+  }
+
+  partial_misaligned: coverpoint partial.align {
+    type_option.weight = 0;
+    bins misaligned = {PMP_ACCESS_IN_GRANULE16, PMP_ACCESS_CROSSES_GRANULE16};
+  }
+
+  partial_lock: coverpoint partial.cfg[7] {
+    type_option.weight = 0;
+    bins unlocked = {1'b0};
+    bins locked   = {1'b1};
+  }
+
+  partial_amode: coverpoint partial.cfg[4:3] {
+    type_option.weight = 0;
+    `ifdef UDB_PMP_NA4_SUPPORTED
+      bins na4 = {2'b10};
+    `endif
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      bins tor = {2'b01};
+    `endif
+  }
+
+  partial_tor: coverpoint partial.cfg[4:3] {
+    type_option.weight = 0;
+    bins tor = {2'b01};
+  }
+
+  partial_locked_tor_none: coverpoint partial.cfg {
+    type_option.weight = 0;
+    bins l1_tor_xwr000 = {8'b1000_1000};
+  }
+
+  partial_rest_unmatched: coverpoint partial.rest_matched {
+    type_option.weight = 0;
+    bins unmatched = {1'b0};
+  }
+
+  `ifdef PMP_PARTIAL_ENTRIES
+    `ifdef UDB_MXLEN_64
+      `ifdef UDB_PMP_GRANULARITY_2
+        cp_partial_match: cross priv_mode_m, partial_ldst_d, partial_aligned, partial_amode, partial_lock, partial_kind ;
+        `ifdef UDB_PMP_NA4_SUPPORTED
+          `ifdef UDB_PMP_NAPOT_SUPPORTED
+            cp_partial_covered: cross priv_mode_m, partial_ldst_d, partial_aligned, partial_covered ;
+          `endif
+        `endif
+      `endif
+    `endif
+    `ifdef ZAMA16B_SUPPORTED
+      `ifdef PMP_PARTIAL_GRAIN_8
+        `ifdef UDB_PMP_TOR_SUPPORTED
+          cp_misaligned_mag16: cross priv_mode_m, partial_ldst, partial_in_granule16, partial_tor, partial_lock, partial_kind ;
+        `endif
+      `endif
+    `endif
+  `endif
+
+  `ifdef UDB_MISALIGNED_LDST
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      cp_misaligned_partial: cross priv_mode_m, partial_ldst, partial_misaligned, partial_locked_tor_none, partial_one_end, partial_rest_unmatched ;
+    `endif
+  `endif
+
 endgroup
 
 function void pmpsm_sample(int hart, int issue, ins_t ins);
@@ -1762,5 +1875,5 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_l")[0]
           };
   `endif
-  PMPSm_cg.sample(ins, pmpcfg, pmpaddr, pack_pmpaddr, pmpcfg_wr, pmpcfg_WR, pmpcfg_a, pmpcfg_A, pmpcfg_x, pmpcfg_X, pmpcfg_l, pmpcfg_L, pmp_hit, pmp_HIT);
+  PMPSm_cg.sample(ins, pmpcfg, pmpaddr, pack_pmpaddr, pmpcfg_wr, pmpcfg_WR, pmpcfg_a, pmpcfg_A, pmpcfg_x, pmpcfg_X, pmpcfg_l, pmpcfg_L, pmp_hit, pmp_HIT, pmp_partial(ins));
 endfunction

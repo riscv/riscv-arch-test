@@ -9,8 +9,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_PMPF
+`include "PMP_partial.svh"
 
-covergroup PMPF_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
+covergroup PMPF_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit, pmp_partial_t partial);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -47,6 +48,53 @@ covergroup PMPF_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logi
 
   cp_cfg_R: cross priv_mode_m, fs_mstatus, legal_lxwr, read_fp_instr, addr_in_napot_region;
   cp_cfg_W: cross priv_mode_m, fs_mstatus, legal_lxwr, write_fp_instr, addr_in_napot_region;
+
+  // Partial matches (see PMP_partial.svh): the deciding entry matches only some bytes of the access.
+  // fld and fsd are in a misaligned atomicity granule only when they are at most XLEN bits.
+  partial_fp: coverpoint ins.current.insn {
+    type_option.weight = 0;
+    wildcard bins flw = {FLW};
+    wildcard bins fsw = {FSW};
+    `ifdef UDB_MXLEN_64
+      `ifdef D_SUPPORTED
+        wildcard bins fld = {FLD};
+        wildcard bins fsd = {FSD};
+      `endif
+    `endif
+  }
+
+  partial_kind: coverpoint partial.kind {
+    type_option.weight = 0;
+    bins lower = {PMP_PARTIAL_LOWER};
+    bins upper = {PMP_PARTIAL_UPPER};
+    bins both  = {PMP_PARTIAL_BOTH};
+  }
+
+  partial_in_granule16: coverpoint partial.align {
+    type_option.weight = 0;
+    bins in_granule16 = {PMP_ACCESS_IN_GRANULE16};
+  }
+
+  partial_lock: coverpoint partial.cfg[7] {
+    type_option.weight = 0;
+    bins unlocked = {1'b0};
+    bins locked   = {1'b1};
+  }
+
+  partial_tor: coverpoint partial.cfg[4:3] {
+    type_option.weight = 0;
+    bins tor = {2'b01};
+  }
+
+  `ifdef PMP_PARTIAL_ENTRIES
+    `ifdef ZAMA16B_SUPPORTED
+      `ifdef PMP_PARTIAL_GRAIN_8
+        `ifdef UDB_PMP_TOR_SUPPORTED
+          cp_misaligned_mag16: cross priv_mode_m, partial_fp, partial_in_granule16, partial_tor, partial_lock, partial_kind ;
+        `endif
+      `endif
+    `endif
+  `endif
 
 endgroup
 
@@ -88,5 +136,5 @@ function void pmpf_sample(int hart, int issue, ins_t ins);
     pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
-  PMPF_cg.sample(ins, pmpcfg, pmp_hit);
+  PMPF_cg.sample(ins, pmpcfg, pmp_hit, pmp_partial(ins));
 endfunction

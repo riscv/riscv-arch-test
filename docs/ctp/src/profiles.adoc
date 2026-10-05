@@ -133,6 +133,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |PMPZicbo|PMP + CBOM/CBOZ|<<t-PMPZicbo-coverpoints>>|||x|x|x
 |PMPZaamo|AMO PMP|<<t-PMPZaamo-coverpoints>>|||x|x|x
 |PMPZalrsc|LR/SC PMP|<<t-PMPZalrsc-coverpoints>>|||x|x|x
+|PMPZacas|CAS PMP|<<t-PMPZacas-coverpoints>>||||o|o
 |Svbare|No Virtual Memory|<<t-Svbare-coverpoints>>|||x|x|x
 |Sv|Sv32/39/48/57 Virtual Memory|<<t-Sv-coverpoints>>|||x|x|x
 |Svinval|TLB Invalidation|<<t-Svinval-coverpoints>>|||x|x|x

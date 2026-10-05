@@ -32,19 +32,16 @@ normative_rule_definitions:
   # The matching PMP entry must match all bytes of a memory operation, or the operation
   # fails, irrespective of the L, R, W, and X bits.
   - name: pmp_full_match_required
-    coverpoint:
-      [
-        "TODO: cp_partial_match: aligned lr.d/sc.d partly matched by 4-byte NA4/TOR entries; sc.d without a reservation (RV64, G = 0)",
-      ]
+    coverpoint: ["PMPZalrsc_cg/cp_partial_match"]
 
   # No insn:sc.w[] instruction shall retire unless it passes memory permission checks,
   - name: sc_retire_permission
-    coverpoint: ["PMPZalrsc_cg/cp_cfg_RW"]
+    coverpoint: ["PMPZalrsc_cg/{cp_cfg_RW, cp_partial_match}"]
 
   # Note that load and load-reserved instructions generate load exceptions
   - name: mcause_exccode_ld_ldrsv
-    coverpoint: ["PMPZalrsc_cg/cp_cfg_RW"]
+    coverpoint: ["PMPZalrsc_cg/{cp_cfg_RW, cp_partial_match}"]
 
   # store, store-conditional, and AMO instructions generate store/AMO exceptions.
   - name: mcause_exccode_st_sc_amo
-    coverpoint: ["PMPZalrsc_cg/cp_cfg_RW"]
+    coverpoint: ["PMPZalrsc_cg/{cp_cfg_RW, cp_partial_match}"]

@@ -5,14 +5,29 @@ parameter_definitions:
     coverpoint: ["all coverpoints"]
     effect: ["The suite runs only when NUM_PMP_ENTRIES > 0"]
   - name: NUM_USABLE_PMP_ENTRIES
-    coverpoint: ["all coverpoints"]
-    effect: ["Entry NUM_USABLE_PMP_ENTRIES - 1 is the locked background entry"]
+    coverpoint: ["all coverpoints", "cp_partial_match"]
+    effect:
+      [
+        "Entry NUM_USABLE_PMP_ENTRIES - 1 is the locked background entry",
+        "Tests of the partial-match coverpoints run only when NUM_USABLE_PMP_ENTRIES >= 16: each case has its own entries below the background entry",
+      ]
   - name: PMP_GRANULARITY
-    coverpoint: ["all coverpoints"]
+    coverpoint: ["all coverpoints", "cp_partial_match"]
     effect:
       [
         "Sets the grain g = 2^(G+2) and so the size and placement of every region under test",
+        "cp_partial_match needs G = 0 (PMP_GRANULARITY = 2) for 4-byte regions",
       ]
+  - name: PMP_NA4_SUPPORTED
+    coverpoint: ["cp_partial_match"]
+    effect: ["NA4 bins and test exist only when true"]
+  - name: PMP_TOR_SUPPORTED
+    coverpoint: ["cp_partial_match"]
+    effect: ["TOR bins and test exist only when true"]
   - name: MXLEN
-    coverpoint: ["cp_cfg_RW"]
-    effect: ["lr.d and sc.d bins exist only on RV64"]
+    coverpoint: ["cp_cfg_RW, cp_partial_match"]
+    effect:
+      [
+        "lr.d and sc.d bins exist only on RV64",
+        "cp_partial_match exists only on RV64",
+      ]

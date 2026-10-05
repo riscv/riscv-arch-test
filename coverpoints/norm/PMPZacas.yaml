@@ -1,0 +1,46 @@
+# Normative rule to coverpoint mappings
+# Generated from riscv-isa-manual normative rule definitions
+
+normative_rule_definitions:
+  # On some implementations, misaligned loads, stores, and instruction fetches may be
+  # decomposed into multiple memory operations, some of which may succeed before an
+  # access-fault exception occurs, as described in the RVWMO specification. PMP checking
+  # is performed on each memory operation independently.
+  - name: pmp_misaligned_access_behavior
+    coverpoint: ["PMPZacas_cg/cp_misaligned_mag16"]
+
+  # The matching PMP entry must match all bytes of a memory operation, or the operation
+  # fails, irrespective of the L, R, W, and X bits.
+  - name: pmp_full_match_required
+    coverpoint:
+      [
+        "PMPZacas_cg/{cp_partial_match_d, cp_partial_match_q, cp_misaligned_mag16}",
+      ]
+
+  # An aligned AMO gives rise to a single memory operation that is both a load operation
+  # and a store operation simultaneously.
+  - name: rvwmo_aligned_amo_memop
+    coverpoint: ["PMPZacas_cg/{cp_partial_match_d, cp_partial_match_q}"]
+
+  # store, store-conditional, and AMO instructions generate store/AMO exceptions.
+  - name: mcause_exccode_st_sc_amo
+    coverpoint:
+      [
+        "PMPZacas_cg/{cp_partial_match_d, cp_partial_match_q, cp_misaligned_mag16}",
+      ]
+
+  # if all accessed bytes lie within the same misaligned atomicity granule, the
+  # instruction will not raise an exception for reasons of address alignment, and the
+  # instruction will give rise to only one memory operation for the purposes of RVWMO--
+  # i.e., it will execute atomically.
+  - name: pma_mag_op_within
+    coverpoint: ["PMPZacas_cg/cp_misaligned_mag16"]
+
+  # The misaligned atomicity granule PMA applies only to AMOs defined in the
+  # ext:zaamo[], ext:zabha[], and ext:zacas[] extensions; loads and stores defined in
+  # the base ISAs; loads and stores of no more than XLEN bits defined in the ext:f[],
+  # ext:d[], and ext:q[] extensions; the load-acquire and store-release instructions
+  # defined in the ext:zalasr[] extension; and compressed encodings of the foregoing
+  # loads and stores.
+  - name: pma_mag_insts
+    coverpoint: ["PMPZacas_cg/cp_misaligned_mag16"]

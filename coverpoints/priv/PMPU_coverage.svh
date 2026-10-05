@@ -9,8 +9,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_PMPU
+`include "PMP_partial.svh"
 
-covergroup PMPU_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pack_pmpaddr, logic [29:0] pmpcfg_a, logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit, logic others_off);
+covergroup PMPU_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pack_pmpaddr, logic [29:0] pmpcfg_a, logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit, logic others_off, pmp_partial_t partial);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -312,6 +313,48 @@ covergroup PMPU_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
     cp_none_sw: cross priv_mode_u, none_cfg, none_pmpaddr, write_instr_sw, addr_in_region ;
   `endif
 
+  // Misaligned accesses partly in a region (see PMP_partial.svh), the rest matching no entry.
+  partial_ldst: coverpoint ins.current.insn {
+    type_option.weight = 0;
+    wildcard bins lh  = {LH};
+    wildcard bins lhu = {LHU};
+    wildcard bins sh  = {SH};
+    wildcard bins lw  = {LW};
+    wildcard bins sw  = {SW};
+    `ifdef UDB_MXLEN_64
+      wildcard bins lwu = {LWU};
+      wildcard bins ld  = {LD};
+      wildcard bins sd  = {SD};
+    `endif
+  }
+
+  partial_misaligned: coverpoint partial.align {
+    type_option.weight = 0;
+    bins misaligned = {PMP_ACCESS_IN_GRANULE16, PMP_ACCESS_CROSSES_GRANULE16};
+  }
+
+  partial_tor_xwr111: coverpoint partial.cfg {
+    type_option.weight = 0;
+    bins l0_tor_xwr111 = {8'b0000_1111};
+  }
+
+  partial_one_end: coverpoint partial.kind {
+    type_option.weight = 0;
+    bins lower = {PMP_PARTIAL_LOWER};
+    bins upper = {PMP_PARTIAL_UPPER};
+  }
+
+  partial_rest_unmatched: coverpoint partial.rest_matched {
+    type_option.weight = 0;
+    bins unmatched = {1'b0};
+  }
+
+  `ifdef UDB_MISALIGNED_LDST
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      cp_misaligned_partial: cross priv_mode_u, partial_ldst, partial_misaligned, partial_tor_xwr111, partial_one_end, partial_rest_unmatched ;
+    `endif
+  `endif
+
 endgroup
 
 function void pmpu_sample(int hart, int issue, ins_t ins);
@@ -418,5 +461,5 @@ function void pmpu_sample(int hart, int issue, ins_t ins);
   others_off = 1'b1;
   for (int k = 3; k < 64; k++) others_off &= (pmpcfg[k][4:3] == 2'b00);
 
-  PMPU_cg.sample(ins, pack_pmpaddr, pmpcfg_a, pmpcfg, pmp_hit, others_off);
+  PMPU_cg.sample(ins, pack_pmpaddr, pmpcfg_a, pmpcfg, pmp_hit, others_off, pmp_partial(ins));
 endfunction

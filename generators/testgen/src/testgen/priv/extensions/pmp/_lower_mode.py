@@ -25,6 +25,7 @@ from testgen.priv.extensions.pmp.helpers import (
     set_pmpcfg,
     zero_pmp_regs,
 )
+from testgen.priv.extensions.pmp.partial import make_misaligned_chunk, misaligned_setup_lower
 from testgen.priv.extensions.pmp.probes import (
     gen_rwx,
     gen_rwx_all,
@@ -253,3 +254,18 @@ def make_lower_mode_amode(test_data: TestData, mode: Mode, amode: str) -> list[T
     if amode == "tor":
         chunks.append(_make_none_chunk(test_data, mode))
     return chunks
+
+
+def make_lower_mode_misaligned(test_data: TestData, mode: Mode) -> list[TestChunk]:
+    """Misaligned loads and stores from the lower mode, partly in a region and partly in a gap that matches no entry."""
+    return [
+        make_misaligned_chunk(
+            test_data,
+            misaligned_setup_lower(),
+            "cp_misaligned_partial",
+            f"Misaligned loads and stores from {mode.letter} mode across each end of a TOR region with XWR = 111; the\n"
+            "rest of the access is in a gap that matches no entry. Each faults whether or not the hart splits it.\n"
+            "xtval is not recorded.",
+            lower_mode=mode.letter,
+        )
+    ]

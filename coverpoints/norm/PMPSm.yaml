@@ -260,15 +260,15 @@ normative_rule_definitions:
   - name: pmp_misaligned_access_behavior
     coverpoint:
       [
-        "TODO: cp_misaligned_mag16: Zama16b: misaligned loads/stores within a 16-byte granule partly matched by 4- or 8-byte entries",
-        "TODO: cp_misaligned_partial: misaligned load/store partly in a locked no-permission region, rest unmatched (MISALIGNED_LDST)",
+        "PMPSm_cg/{cp_partial_match, cp_misaligned_mag16, cp_misaligned_partial}",
       ]
 
   # PMP entries are statically prioritized. The lowest-numbered PMP entry that matches
   # any byte of a memory operation determines whether that operation succeeds or fails.
   - name: pmp_entry_priority
     # Representative coverpoints; also cp_cfg_X0_all, cp_cfg_X1_all, cp_cfg_Rw00_all, cp_cfg_Rw10_all,
-    # cp_cfg_Rw11_all, cp_cfg_rW00_all, cp_cfg_rW10_all, cp_cfg_rW11_all, cp_priority_off_{sw, jalr}
+    # cp_cfg_Rw11_all, cp_cfg_rW00_all, cp_cfg_rW10_all, cp_cfg_rW11_all, cp_priority_off_{sw, jalr},
+    # cp_partial_{match, covered}
     coverpoint:
       [
         "PMPSm_cg/{cp_priority_lw, cp_priority_sw, cp_priority_jalr, cp_priority_off_lw}",
@@ -279,9 +279,7 @@ normative_rule_definitions:
   - name: pmp_full_match_required
     coverpoint:
       [
-        "TODO: cp_partial_match: aligned ld/sd partly matched by 4-byte NA4/TOR entries: lower half, upper half, both halves (RV64, G = 0)",
-        "TODO: cp_misaligned_mag16: Zama16b: misaligned loads/stores within a 16-byte granule partly matched by 4- or 8-byte entries",
-        "TODO: cp_misaligned_partial: misaligned load/store partly in a locked no-permission region, rest unmatched (MISALIGNED_LDST)",
+        "PMPSm_cg/{cp_partial_match, cp_partial_covered, cp_misaligned_mag16, cp_misaligned_partial}",
       ]
 
   # If a PMP entry matches all bytes of a memory operation, then the L, R, W, and X bits
@@ -293,7 +291,7 @@ normative_rule_definitions:
     # Representative coverpoints; also cp_cfg_X1_all, cp_cfg_Rw00_all, cp_cfg_Rw10_all, cp_cfg_Rw11_all,
     # cp_cfg_rW00_all, cp_cfg_rW10_all, cp_cfg_rW11_all, cp_cfg_L_access_{exec, read, write},
     # cp_cfg_A_napot_{x, r, w}, cp_cfg_A_na4_{x, r, w}, cp_cfg_A_tor_{x, r, w}, cp_cfg_A_tor_bot_L0_{x, w, r},
-    # cp_cfg_A_tor_bot_L1_{x, w, r}, cp_priority_{lw, sw, jalr}
+    # cp_cfg_A_tor_bot_L1_{x, w, r}, cp_priority_{lw, sw, jalr}, cp_misaligned_partial
     coverpoint: ["PMPSm_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_cfg_X0_all}"]
 
   # If no PMP entry matches an M-mode memory operation, the operation succeeds. If no
@@ -305,43 +303,41 @@ normative_rule_definitions:
   # Failed memory operations generate an instruction, load, or store access-fault
   # exception.
   - name: pmp_access_fault_exception
-    # Representative coverpoints; also cp_cfg_X0_all, cp_cfg_X1_all, cp_priority_{lw, sw, jalr}
+    # Representative coverpoints; also cp_cfg_X0_all, cp_cfg_X1_all, cp_priority_{lw, sw, jalr},
+    # cp_partial_match
     coverpoint: ["PMPSm_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_cfg_A_napot_all}"]
 
   # Each aligned memory instruction that accesses XLEN or fewer bits gives rise to
   # exactly one memory operation, unless specified otherwise.
   - name: rvwmo_aligned_memop
-    coverpoint:
-      [
-        "TODO: cp_partial_match: aligned ld/sd partly matched by 4-byte NA4/TOR entries: lower half, upper half, both halves (RV64, G = 0)",
-      ]
+    coverpoint: ["PMPSm_cg/cp_partial_match"]
 
   # memory accesses affected by the misaligned atomicity granule PMA that lie within a
   # misaligned atomicity granule are not decomposed.
   - name: rvwmo_misaligned_in_atomic_pma
-    coverpoint:
-      [
-        "TODO: cp_misaligned_mag16: Zama16b: misaligned loads/stores within a 16-byte granule partly matched by 4- or 8-byte entries",
-      ]
+    coverpoint: ["PMPSm_cg/cp_misaligned_mag16"]
 
   # if all accessed bytes lie within the same misaligned atomicity granule, the
   # instruction will not raise an exception for reasons of address alignment, and the
   # instruction will give rise to only one memory operation for the purposes of RVWMO--
   # i.e., it will execute atomically.
   - name: pma_mag_op_within
-    coverpoint:
-      [
-        "TODO: cp_misaligned_mag16: Zama16b: misaligned loads/stores within a 16-byte granule partly matched by 4- or 8-byte entries",
-      ]
+    coverpoint: ["PMPSm_cg/cp_misaligned_mag16"]
+
+  # The misaligned atomicity granule PMA applies only to AMOs defined in the
+  # ext:zaamo[], ext:zabha[], and ext:zacas[] extensions; loads and stores defined in
+  # the base ISAs; loads and stores of no more than XLEN bits defined in the ext:f[],
+  # ext:d[], and ext:q[] extensions; the load-acquire and store-release instructions
+  # defined in the ext:zalasr[] extension; and compressed encodings of the foregoing
+  # loads and stores.
+  - name: pma_mag_insts
+    coverpoint: ["PMPSm_cg/cp_misaligned_mag16"]
 
   # If mtval is written with a nonzero value when a misaligned load or store causes an
   # access-fault, page-fault, or hardware-error exception, then mtval will contain the
   # virtual address of the portion of the access that caused the fault.
   - name: mtval_vaddr_wr_misaligned_addr
-    coverpoint:
-      [
-        "TODO: cp_misaligned_partial: misaligned load/store partly in a locked no-permission region, rest unmatched (MISALIGNED_LDST)",
-      ]
+    coverpoint: ["PMPSm_cg/cp_misaligned_partial"]
 
   # Certain regions’ privileges can be hardwired—for example, some regions might only
   # ever be visible in machine mode but in no lower-privilege layers.

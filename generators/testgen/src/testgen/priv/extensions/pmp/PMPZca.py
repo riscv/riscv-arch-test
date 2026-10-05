@@ -24,6 +24,13 @@ from testgen.priv.extensions.pmp.helpers import (
     set_pmpcfg,
     zero_pmp_regs,
 )
+from testgen.priv.extensions.pmp.partial import (
+    ENTRIES_PARAM,
+    GRANULE_TOR,
+    RV64,
+    granule_accesses,
+    make_partial_chunk,
+)
 from testgen.priv.extensions.pmp.probes import (
     gen_compressed_execute,
     gen_zca,
@@ -378,3 +385,71 @@ def make_pmpzca_zcd(test_data: TestData) -> list[TestChunk]:
 )
 def make_pmpzca_zcf(test_data: TestData) -> list[TestChunk]:
     return [_make_zc_chunk(test_data, "zcf")]
+
+
+#: Compressed loads and stores in a 16-byte granule. c.fld and c.fsd are in the granule only when they are at most
+#: XLEN bits, so Zcd is probed on RV64 only.
+_C_GRANULE = {
+    "zca": granule_accesses(words=[("c.lw", None), ("c.sw", None)], doubles=[("c.ld", RV64), ("c.sd", RV64)]),
+    "zcb": granule_accesses(halves=[("c.lh", None), ("c.lhu", None), ("c.sh", None)]),
+    "zcf": granule_accesses(words=[("c.flw", None), ("c.fsw", None)]),
+    "zcd": granule_accesses(doubles=[("c.fld", None), ("c.fsd", None)]),
+}
+
+
+def _make_granule_chunk(test_data: TestData, subset: str) -> TestChunk:
+    name = "partial_granule" if subset == "zca" else f"{subset}_partial_granule"
+    return make_partial_chunk(
+        test_data,
+        name,
+        GRANULE_TOR,
+        _C_GRANULE[subset],
+        "cp_misaligned_mag16",
+        f"Misaligned {subset.capitalize()} loads and stores inside a 16-byte granule that one-grain TOR entries\n"
+        "match in the lower part, the upper part or both. Within a misaligned atomicity granule the access is\n"
+        "one memory operation, so it fails.",
+    )
+
+
+@add_priv_test_generator(
+    "PMPZca",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=[["I", "E"], "Zca", "Sm", "Zama16b"],
+    march_extensions=["Zca"],
+    params=[ENTRIES_PARAM, "PMP_GRANULARITY: '<=3'", "PMP_TOR_SUPPORTED: true"],
+)
+def make_pmpzca_zca_granule(test_data: TestData) -> list[TestChunk]:
+    return [_make_granule_chunk(test_data, "zca")]
+
+
+@add_priv_test_generator(
+    "PMPZca",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=[["I", "E"], "Zcb", "Sm", "Zama16b"],
+    march_extensions=["Zca", "Zcb"],
+    params=[ENTRIES_PARAM, "PMP_GRANULARITY: '<=3'", "PMP_TOR_SUPPORTED: true"],
+)
+def make_pmpzca_zcb_granule(test_data: TestData) -> list[TestChunk]:
+    return [_make_granule_chunk(test_data, "zcb")]
+
+
+@add_priv_test_generator(
+    "PMPZca",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=[["I", "E"], "Zcf", "Sm", "Zama16b"],
+    march_extensions=["Zca", "Zcf"],
+    params=["MXLEN: 32", ENTRIES_PARAM, "PMP_GRANULARITY: '<=3'", "PMP_TOR_SUPPORTED: true"],
+)
+def make_pmpzca_zcf_granule(test_data: TestData) -> list[TestChunk]:
+    return [_make_granule_chunk(test_data, "zcf")]
+
+
+@add_priv_test_generator(
+    "PMPZca",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=[["I", "E"], "Zcd", "Sm", "Zama16b"],
+    march_extensions=["Zca", "Zcd"],
+    params=["MXLEN: 64", ENTRIES_PARAM, "PMP_GRANULARITY: '<=3'", "PMP_TOR_SUPPORTED: true"],
+)
+def make_pmpzca_zcd_granule(test_data: TestData) -> list[TestChunk]:
+    return [_make_granule_chunk(test_data, "zcd")]

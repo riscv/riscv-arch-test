@@ -9,7 +9,13 @@
 
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.pmp._lower_mode import S_MODE, make_lower_mode_amode, make_lower_mode_base
+from testgen.priv.extensions.pmp._lower_mode import (
+    S_MODE,
+    make_lower_mode_amode,
+    make_lower_mode_base,
+    make_lower_mode_misaligned,
+)
+from testgen.priv.extensions.pmp.partial import IMPRECISE_XTVAL
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -51,3 +57,13 @@ def make_pmps_napot(test_data: TestData) -> list[TestChunk]:
 )
 def make_pmps_tor(test_data: TestData) -> list[TestChunk]:
     return make_lower_mode_amode(test_data, S_MODE, "tor")
+
+
+@add_priv_test_generator(
+    "PMPS",
+    extra_defines=["#define BOOT_TO_MMODE", IMPRECISE_XTVAL],
+    required_extensions=[["I", "E"], "S", "Sm"],
+    params=["MISALIGNED_LDST: true", "NUM_USABLE_PMP_ENTRIES: '>=5'", "PMP_TOR_SUPPORTED: true"],
+)
+def make_pmps_misaligned(test_data: TestData) -> list[TestChunk]:
+    return make_lower_mode_misaligned(test_data, S_MODE)

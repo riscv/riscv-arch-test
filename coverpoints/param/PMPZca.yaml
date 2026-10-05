@@ -5,13 +5,18 @@ parameter_definitions:
     coverpoint: ["all coverpoints"]
     effect: ["The suite runs only when NUM_PMP_ENTRIES > 0"]
   - name: NUM_USABLE_PMP_ENTRIES
-    coverpoint: ["all coverpoints"]
-    effect: ["Entry NUM_USABLE_PMP_ENTRIES - 1 is the locked background entry"]
+    coverpoint: ["all coverpoints", "cp_misaligned_mag16"]
+    effect:
+      [
+        "Entry NUM_USABLE_PMP_ENTRIES - 1 is the locked background entry",
+        "Tests of the partial-match coverpoints run only when NUM_USABLE_PMP_ENTRIES >= 16: each case has its own entries below the background entry",
+      ]
   - name: PMP_GRANULARITY
-    coverpoint: ["all coverpoints"]
+    coverpoint: ["all coverpoints", "cp_misaligned_mag16"]
     effect:
       [
         "Sets the grain g = 2^(G+2) and so the size and placement of every region under test",
+        "cp_misaligned_mag16 needs G <= 1 (PMP_GRANULARITY <= 3) so that one-grain regions split a 16-byte granule",
       ]
   - name: PMP_NA4_SUPPORTED
     coverpoint: ["cp_misaligned_na4, cp_cret_na4"]
@@ -20,11 +25,12 @@ parameter_definitions:
     coverpoint: ["cp_misaligned_napot, cp_cret_napot"]
     effect: ["NAPOT test file runs only when true"]
   - name: PMP_TOR_SUPPORTED
-    coverpoint: ["cp_misaligned_tor, cp_cret_tor"]
+    coverpoint: ["cp_misaligned_tor, cp_cret_tor, cp_misaligned_mag16"]
     effect: ["TOR coverpoints and tests exist only when true"]
   - name: MXLEN
-    coverpoint: ["cp_cfg_R, cp_cfg_W"]
+    coverpoint: ["cp_cfg_R, cp_cfg_W, cp_misaligned_mag16"]
     effect:
       [
         "c.ld, c.ldsp, c.sd and c.sdsp bins exist only on RV64; Zcf only on RV32",
+        "c.fld and c.fsd are in cp_misaligned_mag16 only on RV64: on RV32 they are wider than XLEN",
       ]

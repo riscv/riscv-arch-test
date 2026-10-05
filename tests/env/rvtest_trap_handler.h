@@ -130,8 +130,7 @@
 #define DEFAULT_LINK_REG x5                      // link register for test macros (jal return address)
 
 
-// T1..T6 now live in utils.h (included before this file) so the shim can use
-// them without pulling in the whole trap handler.
+// T1..T6 are defined in utils.h (included before this file).
 
 //==============================================================================
 // SECTION 2: ARCHITECTURE CONSTANTS
@@ -2624,21 +2623,16 @@ excpt_\__MODE__\()hndlr_tbl:
 // reference don't affect .text.rvtest size.
 //==============================================================================
 
-// RVTEST_MODEL_INT_CLR0(_SHIM, _MACRO): interrupt-clear from handler context, for
-// the VS-mode clears, which take no arguments. Normally expands _MACRO inline; in a
-// kit build it calls _SHIM instead so the object stays DUT-free. The _SHIM routines
-// may only touch ra/T2/T5 (T2/T5 are restored by resto_Xrtn) -- a0/a1 are live. ra is
-// spilled to save-area slot 0 around the call, as in the T-SBI CSR_ACCESS dispatch
-// above. The M and S clears reach the DUT through the rvtest_*_int_m / _su entry
-// points instead, which the shim defines in a kit build.
-#ifdef RVMODEL_SHIM_EXTERN
-  #define RVTEST_MODEL_INT_CLR0(_SHIM, _MACRO)                  \
+// RVTEST_MODEL_INT_CLR0(_DRIVER): interrupt-clear from handler context, for the
+// VS-mode clears, which take no arguments. Calls the driver routine _DRIVER
+// (rvtest_driver.h), which may only touch ra/T2/T5 (T2/T5 are restored by
+// resto_Xrtn) -- a0/a1 are live. ra is spilled to save-area slot 0 around the call,
+// as in the T-SBI CSR_ACCESS dispatch above. The M and S clears reach the DUT
+// through the driver's rvtest_*_int_m / _su routines instead.
+#define RVTEST_MODEL_INT_CLR0(_DRIVER)                          \
         SREG    ra, trap_sv_off+0*REGWIDTH(sp)                 ;\
-        call    _SHIM                                          ;\
+        call    _DRIVER                                        ;\
         LREG    ra, trap_sv_off+0*REGWIDTH(sp)
-#else
-  #define RVTEST_MODEL_INT_CLR0(_SHIM, _MACRO) _MACRO
-#endif
 
 .pushsection .text.rvmodel, "ax"
 
@@ -2648,8 +2642,9 @@ excpt_\__MODE__\()hndlr_tbl:
 
 // Each routine below clears its interrupt source through the RVTEST_CLR_*_INT
 // flavor for the mode this handler runs in: _M performs the operation directly,
-// _S (S/HS handlers) goes through T-SBI. Both flavors live in rvtest_setup.h and
-// exist only when Sm is supported; without Sm these interrupts are unexpected.
+// _S (S/HS handlers) goes through T-SBI. Both flavors live in the driver
+// (rvtest_driver.h) and exist only when Sm is supported; without Sm these
+// interrupts are unexpected.
 #ifdef STANDARD_SM_SUPPORTED
 
 \__MODE__\()clr_Msw_int:                             // M-mode software interrupt
@@ -2747,17 +2742,17 @@ excpt_\__MODE__\()hndlr_tbl:
 #endif
 
 \__MODE__\()clr_Vsw_int:                             // VS-mode software interrupt
-        RVTEST_MODEL_INT_CLR0(rvmodel_clr_vsw_int_h, RVMODEL_CLR_VSW_INT)
+        RVTEST_MODEL_INT_CLR0(rvmodel_clr_vsw_int_h)
         la      T2, resto_\__MODE__\()rtn
         jr      T2
 
 \__MODE__\()clr_Vtmr_int:                            // VS-mode timer interrupt
-        RVTEST_MODEL_INT_CLR0(rvmodel_clr_vtimer_int_h, RVMODEL_CLR_VTIMER_INT)
+        RVTEST_MODEL_INT_CLR0(rvmodel_clr_vtimer_int_h)
         la      T2, resto_\__MODE__\()rtn
         jr      T2
 
 \__MODE__\()clr_Vext_int:                            // VS-mode external interrupt: clear + save intID
-        RVTEST_MODEL_INT_CLR0(rvmodel_clr_vext_int_h, RVMODEL_CLR_VEXT_INT)
+        RVTEST_MODEL_INT_CLR0(rvmodel_clr_vext_int_h)
         la      T2, resto_\__MODE__\()rtn
         jr      T2
 

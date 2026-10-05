@@ -10,13 +10,12 @@
   #include "rvtest_experimental.h"
 #endif
 #include "utils.h"
-// Kit builds never see rvmodel_macros.h (implementations come from the shim,
-// values from dut_environment.h). Normal builds include it as before, and
-// dut_environment.h cross-checks the two.
-// A driver-based (kit) config ships no rvmodel_macros.h at all: implementations
-// come from the shim, values from dut_environment.h, and the reference build gets
-// its model behaviour from sail_macros.h below.
-#if !defined(RVMODEL_SHIM_EXTERN) && __has_include("rvmodel_macros.h")
+// Only the DUT driver (rvmodel_driver.S with RVTEST_SELFCHECK) sees the DUT's
+// rvmodel_macros.h. Test objects call into the driver instead, and take device
+// addresses and timings from dut_environment.h, which act generates from the
+// config. The reference build (no RVTEST_SELFCHECK) gets the reference model's
+// values and macros from sail_macros.h.
+#if defined(RVTEST_DRIVER) && defined(RVTEST_SELFCHECK)
   #include "rvmodel_macros.h"
 #endif
 #include "dut_environment.h"

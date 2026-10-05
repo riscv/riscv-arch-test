@@ -3,8 +3,8 @@
 # Jordan Carlin jcarlin@hmc.edu November 2025
 # SPDX-License-Identifier: BSD-3-Clause
 
-// Temporary-register convention (moved here from rvtest_trap_handler.h so the
-// shim can use T1..T6 without it). #ifndef lets a test or DUT override one.
+// Temporary-register convention, shared by the trap handler and the driver.
+// #ifndef lets a test override one.
 #ifndef T1
   #define T1      x6                             // handler temporary 1
 #endif
@@ -68,28 +68,12 @@
 // has been written to memory (relocating the trampoline, writing a dynamic
 // instruction to scratch, or storing into an executable PMP region before jumping
 // into it). It is fence.i when the DUT supports Zifencei, otherwise nop (coherent
-// I-cache assumed). A DUT that needs a custom mechanism may predefine RVMODEL_FENCEI
-// (e.g. a JAL to a sync routine) and it is used as-is. Must stay a single instruction
-// (or a JAL) so code size is constant.
-//
-// Kit builds reject a custom RVMODEL_FENCEI. It expands inside certified code, so
-// a private sync the reference model never ran would break the signature; and it
-// can't move behind a call since a JAL needs a link register and none is free here.
-#if defined(RVMODEL_FENCEI) && defined(RVMODEL_SHIM_EXTERN)
-  #error "RVMODEL_FENCEI is not supported in a certification-kit build. The reference \
-model must execute the same instruction stream as the DUT, so the instruction-stream \
-sync must be the architectural one (fence.i, via Zifencei) or unnecessary (coherent \
-I-cache). Declare Zifencei support in the config instead of supplying a private mechanism."
-#endif
-
-#if defined(RVMODEL_FENCEI) && !defined(RVMODEL_SHIM_EXTERN)
-  #define RVTEST_FENCEI RVMODEL_FENCEI
+// I-cache assumed). It expands inside the test object, which the reference model
+// runs too, so a DUT-specific mechanism (RVMODEL_FENCEI) is rejected by check_defines.h.
+#ifdef ZIFENCEI_SUPPORTED
+  #define RVTEST_FENCEI fence.i
 #else
-  #ifdef ZIFENCEI_SUPPORTED
-    #define RVTEST_FENCEI fence.i
-  #else
-    #define RVTEST_FENCEI nop
-  #endif
+  #define RVTEST_FENCEI nop
 #endif
 
 // Execute an sfence.vma if supported by the DUT. Primarily used in PMP tests.

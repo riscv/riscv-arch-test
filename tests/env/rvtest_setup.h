@@ -221,7 +221,7 @@
   // from the test sources, so a rebuilt test reproduces it; the kit id is random and
   // only the certifying authority holds it, so it is what ties a log to the objects
   // that were actually shipped. Both lines come out of one string and one call, so
-  // this costs no extra instructions.
+  // this costs no extra instructions. Objects built by a plain `make` are unstamped.
   #ifndef RVCP_KIT_ID
     #define RVCP_KIT_ID "not-a-kit-build"
   #endif
@@ -299,21 +299,11 @@
     #endif
   #endif
 
-  // Model specific boot code
+  // Model specific boot code, in the driver (rvtest_driver.h). ra is dead here
+  // (rvmodel_boot ends with `jr T1`), so `call` is free to clobber it.
   rvmodel_boot:
-    #ifdef RVMODEL_SHIM_EXTERN
-      // Kit build: boot/IO-init come from the shim. ra is dead here (rvmodel_boot
-      // ends with `jr T1`), so `call` is free to clobber it.
-      call rvmodel_dut_boot
-      call rvmodel_dut_io_init
-    #else
-      #ifdef RVMODEL_BOOT
-        RVMODEL_BOOT
-      #endif
-      #ifdef RVMODEL_IO_INIT
-        RVMODEL_IO_INIT(T1, T2, T3)
-      #endif
-    #endif
+    call rvmodel_dut_boot
+    call rvmodel_dut_io_init
 
     // Boot to the lowest supported privilege mode unless a test requests M-mode or S-mode.
     RVTEST_BOOT_TO_MMODE
@@ -371,487 +361,6 @@
 
     LA (T1, rvtest_code_begin)
     jr T1                         // Jump back to the start of the test
-
-  // Everything below expands DUT-private RVMODEL_* macros. In a kit build the
-  // shim supplies these instead, keeping DUT code out of the test object.
-  #ifndef RVMODEL_SHIM_EXTERN
-
-  rvmodel_io_write_str:
-    // a0 = string pointer; T1-T3 (x6-x8) are scratch. Clobbers ra.
-    // Use rvmodel_io_write_str_c for C-ABI compatible version.
-    RVMODEL_IO_WRITE_STR(T1, T2, T3, a0)
-    ret
-
-  .global rvmodel_io_write_str_c
-  rvmodel_io_write_str_c:
-    addi sp, sp, -16
-    SREG ra, 0(sp)
-    SREG s0, REGWIDTH(sp)
-    call rvmodel_io_write_str
-    LREG s0, REGWIDTH(sp)
-    LREG ra, 0(sp)
-    addi sp, sp, 16
-    ret
-
-  rvmodel_halt_pass:
-    RVMODEL_HALT_PASS
-    j . // Explicit non-returning tail if the macro returns (it should not)
-
-  rvmodel_halt_fail:
-    RVMODEL_HALT_FAIL
-    j . // Explicit non-returning tail if the macro returns (it should not)
-
-  //////////////////////
-  // Interrupt functions
-  // All these functions can touch a0 and a1 and a2
-  //////////////////////
-
-  // Note: _ms and _su are shared implementations
-  // used for multiple privilege modes
-
-  // A write to msip, mtimecmp, or stimecmp reaches mip only eventually. After
-  // clearing an interrupt source, poll mip until the pending bit reads 0, for at most
-  // RVMODEL_INTERRUPT_LATENCY iterations, so the interrupt is not taken again
-  // when the test next enables it. The _SU flavor reads mip through T-SBI.
-  .macro RVTEST_WAIT_MIP_CLEAR_M mask
-    LI(a2, RVMODEL_INTERRUPT_LATENCY)
-    1:
-    csrr a0, mip
-    andi a0, a0, \mask
-    beqz a0, 2f // pending bit is clear
-    beqz a2, 2f // latency exhausted
-    addi a2, a2, -1
-    j 1b
-    2:
-  .endm
-
-  .macro RVTEST_WAIT_MIP_CLEAR_SU mask
-    LI(a2, RVMODEL_INTERRUPT_LATENCY)
-    1:
-    RVTEST_TSBI_CSR_READ(CSR_MIP) // a0 = mip; a2 is preserved
-    andi a0, a0, \mask
-    beqz a0, 2f // pending bit is clear
-    beqz a2, 2f // latency exhausted
-    addi a2, a2, -1
-    j 1b
-    2:
-  .endm
-
-  // Flavors to run from M-mode
-
-  #ifdef STANDARD_SM_SUPPORTED
-
-    rvtest_set_mtime_int_soon_m:
-      #if defined(RVMODEL_MTIME_ADDRESS) && defined(RVMODEL_MTIMECMP_ADDRESS) && defined(RVMODEL_TIMER_INT_SOON_DELAY)
-        LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
-        #if UDB_MXLEN == 32
-          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
-          li a0, -1
-          sw a0, 4(a1) // mtimecmp high word = all 1s so the split update cannot fire early
-          LA(a1, RVMODEL_MTIME_ADDRESS)
-          lw a0, 0(a1) // read mtime low word
-          add a0, a0, a2 // add delay to mtime low word
-          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
-          sw a0, 0(a1) // write to mtimecmp low word
-          mv a2, a0 // Save mtimecmp low word
-          LA(a1, RVMODEL_MTIME_ADDRESS)
-          lw a0, 4(a1) // read mtime high word
-          LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
-          bgeu a2, a1, 1f // skip if didn't wrap
-          addi a0, a0, 1 // increment mtime high word
-          1:
-          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
-          sw a0, 4(a1) // write to mtimecmp high word
-        #else
-          LA(a1, RVMODEL_MTIME_ADDRESS)
-          ld a0, 0(a1) // read mtime
-          add a0, a2, a0 // add delay to mtime
-          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
-          sd a0, 0(a1) // write to mtimecmp
-        #endif
-      #endif
-      ret
-
-    rvtest_set_mtime_int_m:
-      #ifdef RVMODEL_MTIMECMP_ADDRESS
-        LA(a1, RVMODEL_MTIMECMP_ADDRESS)
-        sw zero, 4(a1)
-        sw zero, 0(a1)
-      #endif
-      ret
-
-    rvtest_clr_mtime_int_m:
-      #ifdef RVMODEL_MTIMECMP_ADDRESS
-        LA(a1, RVMODEL_MTIMECMP_ADDRESS)
-        li a2, -1 // all 1s
-        sw a2, 4(a1)      // don't bother with lower bits, which stay at 0
-        RVTEST_WAIT_MIP_CLEAR_M 0x80 // mip.MTIP
-      #endif
-      ret
-
-    rvtest_set_msw_int_m:
-      #ifdef RVMODEL_MSIP_ADDRESS
-        LA(a1, RVMODEL_MSIP_ADDRESS)
-        li a2, 1
-        sw a2, 0(a1) // normal way to set MSI is to write a 1 to MSIP
-      #elif defined(RVMODEL_SET_MSW_INT)
-        RVMODEL_SET_MSW_INT(a0, a1) // if normal way isn't supported, use platform-specific method
-      #endif
-      ret
-
-    rvtest_clr_msw_int_m:
-      #ifdef RVMODEL_MSIP_ADDRESS
-        LA(a1, RVMODEL_MSIP_ADDRESS)
-        sw zero, 0(a1) // normal way to clear MSI is to write a 0 to MSIP
-        RVTEST_WAIT_MIP_CLEAR_M 0x8 // mip.MSIP
-      #elif defined(RVMODEL_CLR_MSW_INT_M)
-        RVMODEL_CLR_MSW_INT_M(a0, a1) // if normal way isn't supported, use platform-specific method
-      #endif
-      ret
-
-    rvtest_set_mext_int_m:
-      #ifdef RVMODEL_SET_MEXT_INT_M
-        RVMODEL_SET_MEXT_INT_M(a0, a1) // platform-specific interrupt controller
-      #endif
-      ret
-
-    rvtest_clr_mext_int_m:
-      #ifdef RVMODEL_CLR_MEXT_INT_M
-        RVMODEL_CLR_MEXT_INT_M(a0, a1) // platform-specific interrupt controller
-      #endif
-      ret
-
-    #ifdef SSTC_SUPPORTED
-      rvtest_set_sstc_int_soon_m:
-        #if defined(RVMODEL_MTIME_ADDRESS) && defined(RVMODEL_TIMER_INT_SOON_DELAY)
-          LA(a1, RVMODEL_MTIME_ADDRESS)
-          LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
-          #if UDB_MXLEN == 32
-            li a0, -1
-            csrw stimecmph, a0 // stimecmp high word = all 1s so the split update cannot fire early
-            lw a0, 0(a1) // read mtime low word
-            add a1, a0, a2 // add delay to mtime low word
-            csrw stimecmp, a1 // write low word of timer compare
-            mv a2, a1 // save stimecmp low word
-            LA(a1, RVMODEL_MTIME_ADDRESS)
-            lw a0, 4(a1) // read mtime high word
-            LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
-            bgeu a2, a1, 1f // skip if didn't wrap
-            addi a0, a0, 1 // increment mtime high word
-            1:
-            csrw stimecmph, a0 // write high word of timer compare
-          #else
-            ld a0, 0(a1) // read mtime
-            add a1, a2, a0 // add delay to mtime
-            csrw stimecmp, a1 // write to timer compare
-          #endif
-        #endif
-        ret
-
-      // Set STI using Sstc.  Assumes menvcfg.STCE=1
-      rvtest_set_sstc_int_ms:
-        #if UDB_MXLEN == 32
-          csrw stimecmph, zero // clear upper word of stimecmp
-        #endif
-        csrw stimecmp, zero // clear stimecmp, set STI
-        ret
-
-      // Clear STI using Sstc.  Assumes menvcfg.STCE=1
-      rvtest_clr_sstc_int_m:
-        li a1, -1 // all 1s
-        #if UDB_MXLEN == 32
-          // Upper word first, which is what actually clears STI; the lower word then makes the
-          // 64-bit stimecmp read all 1s as it does on RV64, and is never transiently armed.
-          csrw stimecmph, a1 // set upper word of stimecmp to all 1s to clear STI
-          csrw stimecmp, a1  // and the lower word, so the whole register is all 1s
-        #else
-          csrw stimecmp, a1 // set stimecmp to all 1s to clear STI
-        #endif
-        RVTEST_WAIT_MIP_CLEAR_M 0x20 // mip.STIP
-        ret
-
-      // Clear STI from S-mode using Sstc.  Assumes menvcfg.STCE=1
-      rvtest_clr_sstc_int_s:
-        li a1, -1 // all 1s
-        #if UDB_MXLEN == 32
-          // Upper word first, which is what actually clears STI; the lower word then makes the
-          // 64-bit stimecmp read all 1s as it does on RV64, and is never transiently armed.
-          csrw stimecmph, a1 // set upper word of stimecmp to all 1s to clear STI
-          csrw stimecmp, a1  // and the lower word, so the whole register is all 1s
-        #else
-          csrw stimecmp, a1 // set stimecmp to all 1s to clear STI
-        #endif
-        RVTEST_WAIT_MIP_CLEAR_SU 0x20 // mip.STIP
-        ret
-    #endif // SSTC_SUPPORTED
-
-    #ifdef S_SUPPORTED
-      rvtest_set_stime_int_m:
-        li a1, 1<<5 // STIP bit
-        csrs mip, a1        // Trigger mip.STIP
-        ret
-
-      rvtest_clr_stime_int_m:
-        li a1, 1<<5 // STIP bit
-        csrc mip, a1        // Clear mip.STIP
-        ret
-
-      rvtest_set_ssw_int_m:
-        // trigger with platform-specific interrupt controller if it exists, otherwise with mip.SSIP
-        #ifdef RVMODEL_SET_SSW_INT
-          RVMODEL_SET_SSW_INT(a0, a1)
-        #else
-          csrsi mip, 1<<1 // Trigger mip.SSIP
-        #endif
-        ret
-
-      rvtest_clr_ssw_int_m:
-        // clear using both platform-specific interrupt controller if it exists and mip.SSIP
-        #ifdef RVMODEL_CLR_SSW_INT_M
-          RVMODEL_CLR_SSW_INT_M(a0, a1)
-        #endif
-        csrci mip, 1<<1             /* Always called from M-mode; mip.SSIP must be cleared via mip */
-        ret
-
-      rvtest_set_sext_int_m:
-        // trigger with platform-specific interrupt controller if it exists, otherwise with mip.SEIP
-        #ifdef RVMODEL_SET_SEXT_INT_M
-          RVMODEL_SET_SEXT_INT_M(a0, a1)
-        #else
-          li a1, 1<<9 // SEIP bit
-          csrs mip, a1        // Trigger mip.SEIP
-        #endif
-        ret
-
-      rvtest_clr_sext_int_m:
-        // clear both platform-specific interrupt controller if it exists and mip.SEIP
-        #ifdef RVMODEL_CLR_SEXT_INT_M
-          RVMODEL_CLR_SEXT_INT_M(a0, a1)
-        #endif
-        li a1, 1<<9 // SEIP bit
-        csrc mip, a1 // clear mip.SEIP
-        ret
-    #endif // S_SUPPORTED
-  #endif
-
-  // Flavors to run from supervisor mode
-
-  #ifdef STANDARD_SM_SUPPORTED
-
-    rvtest_set_mtime_int_soon_su:
-      #if defined(RVMODEL_MTIME_ADDRESS) && defined(RVMODEL_MTIMECMP_ADDRESS) && defined(RVMODEL_TIMER_INT_SOON_DELAY)
-        LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
-        #if UDB_MXLEN == 32
-          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
-          li a2, -1
-          RVTEST_TSBI_SWP4 // sw a2, 4(a1) // mtimecmp high word = all 1s so the split update cannot fire early
-          LA(a1, RVMODEL_MTIME_ADDRESS)
-          LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
-          RVTEST_TSBI_LW // lw a0, 0(a1) // read mtime low word
-          add a2, a0, a2 // add delay to mtime low word
-          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
-          RVTEST_TSBI_SW // sw a2, 0(a1) // write to mtimecmp low word
-          LA(a1, RVMODEL_MTIME_ADDRESS)
-          RVTEST_TSBI_LWP4 // lw a0, 4(a1) // read mtime high word
-          LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
-          bgeu a2, a1, 1f // skip if didn't wrap
-          addi a0, a0, 1 // increment mtime high word
-          1:
-          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
-          mv a2, a0 // Save mtimecmp high word
-          RVTEST_TSBI_SWP4 // sw a2, 4(a1) // write to mtimecmp high word
-        #else
-          LA(a1, RVMODEL_MTIME_ADDRESS)
-          RVTEST_TSBI_LD // ld a0, 0(a1) // read mtime
-          add a2, a2, a0 // add delay to mtime
-          LA(a1, RVMODEL_MTIMECMP_ADDRESS)
-          RVTEST_TSBI_SD // sd a2, 0(a1) // write to mtimecmp
-        #endif
-      #endif
-      ret
-
-
-    rvtest_set_mtime_int_su:
-      #ifdef RVMODEL_MTIMECMP_ADDRESS
-        LA(a1, RVMODEL_MTIMECMP_ADDRESS)
-        li a2, 0 // store zero
-        #if UDB_MXLEN == 32
-          RVTEST_TSBI_SW // sw a2, 0(a1)
-          RVTEST_TSBI_SWP4 // sw a2, 4(a1)
-        #else
-          RVTEST_TSBI_SD // sd a2, 0(a1)
-        #endif
-      #endif
-      ret
-
-    rvtest_clr_mtime_int_su:
-      #ifdef RVMODEL_MTIMECMP_ADDRESS
-        LA(a1, RVMODEL_MTIMECMP_ADDRESS)
-        li a2, -1 // all 1s
-        RVTEST_TSBI_SWP4 // sw a2, 4(a1)      // don't bother with lower bits, which stay at 0
-        RVTEST_WAIT_MIP_CLEAR_SU 0x80 // mip.MTIP
-      #endif
-      ret
-
-    rvtest_set_msw_int_su:
-      #ifdef RVMODEL_MSIP_ADDRESS
-        LA(a1, RVMODEL_MSIP_ADDRESS)
-        li a2, 1
-        RVTEST_TSBI_SW // sw a2, 0(a1) // normal way to set MSI is to write a 1 to MSIP
-      #elif defined(RVMODEL_SET_MSW_INT)
-        RVMODEL_SET_MSW_INT(a0, a1) // if normal way isn't supported, use platform-specific method
-      #endif
-      ret
-
-    rvtest_clr_msw_int_su:
-      #ifdef RVMODEL_MSIP_ADDRESS
-        LA(a1, RVMODEL_MSIP_ADDRESS)
-        li a2, 0
-        RVTEST_TSBI_SW // sw a2, 0(a1) // normal way to clear MSI is to write a 0 to MSIP
-        RVTEST_WAIT_MIP_CLEAR_SU 0x8 // mip.MSIP
-      #elif defined(RVMODEL_CLR_MSW_INT)
-        RVMODEL_CLR_MSW_INT(a0, a1) // if normal way isn't supported, use platform-specific method
-      #endif
-      ret
-
-    rvtest_set_mext_int_su:
-      #ifdef RVMODEL_SET_MEXT_INT
-        RVMODEL_SET_MEXT_INT(a0, a1) // platform-specific interrupt controller
-      #endif
-      ret
-
-    rvtest_clr_mext_int_su:
-      #ifdef RVMODEL_CLR_MEXT_INT
-        RVMODEL_CLR_MEXT_INT(a0, a1) // platform-specific interrupt controller
-      #endif
-      ret
-  #endif
-
-  #ifdef S_SUPPORTED
-    #ifdef SSTC_SUPPORTED
-      rvtest_set_sstc_int_soon_s:
-        #if defined(RVMODEL_MTIME_ADDRESS) && defined(RVMODEL_TIMER_INT_SOON_DELAY)
-          LA(a1, RVMODEL_MTIME_ADDRESS)
-          LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
-          #if UDB_MXLEN == 32
-            li a0, -1
-            csrw stimecmph, a0 // stimecmp high word = all 1s so the split update cannot fire early
-            RVTEST_TSBI_LW // lw a0, 0(a1) // read mtime low word
-            add a0, a0, a2 // add delay to mtime low word
-            csrw stimecmp, a0 // write low word of timer compare
-            mv a2, a0 // save stimecmp low word
-            RVTEST_TSBI_LWP4 // lw a0, 4(a1) // read mtime high word
-            LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
-            bgeu a2, a1, 1f // skip if didn't wrap
-            addi a0, a0, 1 // increment mtime high word
-            1:
-            csrw stimecmph, a0 // write high word of timer compare
-          #else
-            RVTEST_TSBI_LD // ld a0, 0(a1) // read mtime
-            add a1, a2, a0 // add delay to mtime
-            csrw stimecmp, a1 // write to timer compare
-          #endif
-        #endif
-        ret
-    #endif // SSTC_SUPPORTED
-
-    rvtest_set_stime_int_su:
-      RVTEST_TSBI_CSR_SET(CSR_MIP, 1<<5) // set mip.STIP
-      ret
-
-    rvtest_clr_stime_int_su:
-      RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<5) // clear mip.STIP
-      ret
-
-    rvtest_set_ssw_int_su:
-      // trigger with platform-specific interrupt controller if it exists, otherwise with mip.SSIP.
-      // sip.SSIP is read-only zero unless SSI is delegated, so write mip.SSIP through T-SBI,
-      // which works whether or not mideleg.SSI is set.
-      #ifdef RVMODEL_SET_SSW_INT
-        RVMODEL_SET_SSW_INT(a0, a1)
-      #else
-        RVTEST_TSBI_CSR_SET(CSR_MIP, 1<<1) // set mip.SSIP
-      #endif
-      ret
-
-    rvtest_clr_ssw_int_su:
-      // clear using both platform-specific interrupt controller if it exists and mip.SSIP
-      #ifdef RVMODEL_CLR_SSW_INT
-        RVMODEL_CLR_SSW_INT(a0, a1)
-      #endif
-      RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<1) // clear mip.SSIP
-      ret
-
-    rvtest_set_sext_int_su:
-      // trigger with platform-specific interrupt controller if it exists, otherwise with mip.SEIP
-      #ifdef RVMODEL_SET_SEXT_INT
-        RVMODEL_SET_SEXT_INT(a0, a1)
-      #else
-        RVTEST_TSBI_CSR_SET(CSR_MIP, 1<<9) // set mip.SEIP
-      #endif
-      ret
-
-    rvtest_clr_sext_int_su:
-      // clear both platform-specific interrupt controller if it exists and mip.SEIP
-      #ifdef RVMODEL_CLR_SEXT_INT
-        RVMODEL_CLR_SEXT_INT(a0, a1)
-      #endif
-      RVTEST_TSBI_CSR_CLEAR(CSR_MIP, 1<<9) // clear mip.SEIP
-      ret
-
-    // Flavors to run from user mode
-
-    #ifdef SSTC_SUPPORTED
-      rvtest_set_sstc_int_soon_u:
-        #if defined(RVMODEL_MTIME_ADDRESS) && defined(RVMODEL_TIMER_INT_SOON_DELAY)
-          LI(a2, RVMODEL_TIMER_INT_SOON_DELAY)
-          #if UDB_MXLEN == 32
-            li a1, -1
-            RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMPH) // stimecmp high word = all 1s so the split update cannot fire early
-            LA(a1, RVMODEL_MTIME_ADDRESS)
-            RVTEST_TSBI_LW // lw a0, 0(a1) // read mtime low word
-            add a2, a0, a2 // stimecmp low word = mtime low word + delay
-            mv a1, a2
-            RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMP) // write low word of timer compare
-            LA(a1, RVMODEL_MTIME_ADDRESS)
-            RVTEST_TSBI_LWP4 // lw a0, 4(a1) // read mtime high word
-            LI(a1, RVMODEL_TIMER_INT_SOON_DELAY)
-            bgeu a2, a1, 1f // skip if didn't wrap
-            addi a0, a0, 1 // increment mtime high word
-            1:
-            mv a1, a0
-            RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMPH) // write high word of timer compare
-          #else
-            LA(a1, RVMODEL_MTIME_ADDRESS)
-            RVTEST_TSBI_LD // ld a0, 0(a1) // read mtime
-            add a1, a2, a0 // add delay to mtime
-            RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMP) // write timer compare
-          #endif
-        #endif
-        ret
-
-      // Set STI using Sstc.  Assumes menvcfg.STCE=1
-      rvtest_set_sstc_int_u:
-        #if UDB_MXLEN == 32
-          RVTEST_TSBI_CSR_WRITE(CSR_STIMECMPH, 0) // clear upper word of stimecmp
-        #endif
-        RVTEST_TSBI_CSR_WRITE(CSR_STIMECMP, 0) // clear stimecmp, set STI
-        ret
-
-      // Clear STI using Sstc.  Assumes menvcfg.STCE=1
-      rvtest_clr_sstc_int_u:
-        li a1, -1 // all 1s
-        #if UDB_MXLEN == 32
-          RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMPH) // set upper word of stimecmp to all 1s to clear STI
-          RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMP)  // and the lower word, so the whole register is all 1s
-        #else
-          RVTEST_TSBI_CSR_WRITE_A1(CSR_STIMECMP) // set stimecmp to all 1s to clear STI
-        #endif
-        RVTEST_WAIT_MIP_CLEAR_SU 0x20 // mip.STIP
-        ret
-    #endif // SSTC_SUPPORTED
-  #endif // S_SUPPORTED
-  #endif // RVMODEL_SHIM_EXTERN
 
   nop // Padding to ensure valid memory at the edge of the section
 
@@ -1023,306 +532,295 @@
   .global end_signature
   end_signature:
 
-  // Model specific data region (tohost/fromhost, etc). Defined in rvmodel_macros.h.
-  // Placed after the signature so variable-size DUT data does not affect any
-  // test-visible symbol addresses. In a kit build it comes from the shim.
-  #ifndef RVMODEL_SHIM_EXTERN
-    RVMODEL_DATA_SECTION
-  #endif
+  // The model-specific data region (tohost/fromhost, etc.) comes from the driver
+  // (RVMODEL_DATA_SECTION in rvtest_driver.h).
 .endm
 /*********************************** end of RVTEST_SIG_SETUP *********************************/
 
 
 /************************************ RVTEST_BOOT_TO_M_MODE ********************************/
 /**** Set up M-mode trap handler and initialize M-mode CSRs                             ****/
-/**** Can be overridden by DUT-specific RVMODEL_BOOT_TO_MMODE for custom M-mode         ****/
 /*******************************************************************************************/
 .macro RVTEST_BOOT_TO_MMODE
-  #ifdef RVMODEL_BOOT_TO_MMODE
-    // Run custom RVMODEL flavor if the DUT provides it to override this default boot
-    RVMODEL_BOOT_TO_MMODE
-  #else
-    rvtest_boot_to_mmode:
-    // Default implementation assumes standard M-mode or no M-mode registers
-    // We are in M-mode now at initial boot time
+  rvtest_boot_to_mmode:
+  // Default implementation assumes standard M-mode or no M-mode registers
+  // We are in M-mode now at initial boot time
 
-    // Do setup that requires a standard M-mode
-    #ifdef STANDARD_SM_SUPPORTED
+  // Do setup that requires a standard M-mode
+  #ifdef STANDARD_SM_SUPPORTED
 
-      // Disable interrupts
-      csrw mie, zero
-      csrw mip, zero
+    // Disable interrupts
+    csrw mie, zero
+    csrw mip, zero
 
-      // disable trap delegation
-      #ifdef S_SUPPORTED
-        csrw mideleg, zero  // don't delegate interrupts (until S-mode handler is set up)
-        csrw medeleg, zero  // don't delegate exceptions (until S-mode handler is set up)
+    // disable trap delegation
+    #ifdef S_SUPPORTED
+      csrw mideleg, zero  // don't delegate interrupts (until S-mode handler is set up)
+      csrw medeleg, zero  // don't delegate exceptions (until S-mode handler is set up)
+    #endif
+
+    // Set up trap handlers for all modes
+    // S and H-mode setup could be deferred to RVTEST_BOOT_TO_SMODE, but that is upsetting the linker
+    // and there is no harm setting up all the trap handlers here
+    RVTEST_TRAP_PROLOG M
+    #ifdef S_SUPPORTED
+      // Order matches INSTANTIATE_MODE_MACRO: M, S, V.
+      RVTEST_TRAP_PROLOG S
+      #ifdef H_SUPPORTED
+        RVTEST_TRAP_PROLOG V
       #endif
+    #endif
 
-      // Set up trap handlers for all modes
-      // S and H-mode setup could be deferred to RVTEST_BOOT_TO_SMODE, but that is upsetting the linker
-      // and there is no harm setting up all the trap handlers here
-      RVTEST_TRAP_PROLOG M
-      #ifdef S_SUPPORTED
-        // Order matches INSTANTIATE_MODE_MACRO: M, S, V.
-        RVTEST_TRAP_PROLOG S
-        #ifdef H_SUPPORTED
-          RVTEST_TRAP_PROLOG V
+    // Initialize trap CSRs to known values. This follows the prologs so that an
+    // unimplemented CSR traps to the M-mode handler instead of an uninitialized mtvec.
+    csrw mepc, zero
+    csrw mtval, zero
+    csrw mcause, zero
+    #ifdef S_SUPPORTED
+      csrw sepc, zero
+      csrw stval, zero
+      csrw scause, zero
+      #ifdef H_SUPPORTED
+        csrw mtval2, zero
+        csrw mtinst, zero
+        csrw htval, zero
+        csrw htinst, zero
+        csrw vsepc, zero
+        csrw vstval, zero
+        csrw vscause, zero
+      #endif
+    #endif
+
+  rvtest_boot_to_mmode_csr_init:
+    // Initialize M-mode CSRs
+
+    // Put mstatus in a known initial state.
+    // mstatus.SIE = 0: Disable S-mode interrupts
+    // mstatus.MIE = 0: Disable M-mode interrupts
+    // mstatus.SPIE = 0: Clear S-mode previous interrupt enable bit
+    // mstatus.UBE = 0: User-mode Little Endian
+    // mstatus.MPIE = 0: Clear M-mode previous interrupt enable bit
+    // mstatus.SPP = 0: Clear previous privilege mode bit (set to U-mode)
+    // mstatus.XS = 00: Set custom state to OFF
+    // mstatus.FS = 00: Set floating-point state to OFF
+    // mstatus.VS = 00: Set vector state to OFF
+    // mstatus.MPRV = 0: Disable MPRV so memory accesses are in M-mode
+    // mstatus.SUM = 0: Disable supervisor access to user memory
+    // mstatus.MXR = 0: Disable Make eXecutable Readable
+    // mstatus.TVM = 0: Disable Trap Virtual Memory
+    // mstatus.TW = 0: Disable Timeout Wait
+    // mstatus.TSR = 0: Enable SRET instruction when S-mode supported
+    // mstatus.MPP = 11: Set previous privilege mode to M-mode
+    // mstatus.UXL = XLEN (RV64 only)
+    // mstatus.SXL = XLEN (RV64 only)
+    // mstatus.SBE = 0: Set S-mode to little endian if supported
+    // mstatus.MBE = 0: Set M-mode to little endian if supported
+    // mstatus.GVA = 0: Guest virtual address
+    // mstatus.MPV = 0: Previous virtualization OFF
+    // mstatus.MPELP = 0: Disable landing pads
+    // mstatus.MDT = 0: Disable double trap
+    #if __riscv_xlen == 64
+      #define MSTATUS_UXL_64         0x0000000200000000
+      #define MSTATUS_SXL_64         0x0000000800000000
+      li t0, MSTATUS_MPP | MSTATUS_UXL_64 | MSTATUS_SXL_64
+      csrw mstatus, t0  // Set just all these fields
+    #else    // RV32
+      li t0, MSTATUS_MPP
+      csrw mstatus, t0
+      #ifdef SM1P12P0_OR_LATER_SUPPORTED
+        csrw mstatush, zero // Clear all these fields
+      #endif
+    #endif
+
+    // Disable all privileged environment configuration, and enable unprivileged configuration
+    // Privileged tests that want to use these features should turn them on
+    // Unprivileged tests don't make SBI calls so the features should already be enabled
+    // menvcfg.STCE = 0: Disable Sstc supervisor timer compare
+    // menvcfg.PBMTE = 0: Disable Svpbmt page-based memory types
+    // menvcfg.ADUE = 0: Disable Svadu A/D bit update
+    // menvcfg.CDE = 0: Disable counter delegation ***check
+    // menvcfg.DTE = 0: Disable Ssdbltrp double traps
+    // menvcfg.PMM = 00: Disable Smnpm pointer masking at next lower privilege mode
+    // menvcfg.SSE = 0: Disable Zicfiss shadow stacks
+    // menvcfg.LPE = 0: Disable Zicfilp landing pads
+    // menvcfg.FIOM = 0: Disable Fence of I/O Implies Memory
+    // menvcfg.CBZE = 1: Enable Zicboz cache block zero instructions
+    // menvcfg.CBCFE = 1: Enable Zicbom cache block clean/flush instructions
+    // menvcfg.CBIE = 11: Enable Zicbom cache block invalidate instructions to perform invalidate operation
+    #ifdef U_SUPPORTED // menvcfg only exists if U-mode is supported
+      #ifdef SM1P12P0_OR_LATER_SUPPORTED
+        li t0, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE
+        csrw menvcfg, t0
+        #if __riscv_xlen == 32
+          csrw menvcfgh, zero // Clear upper bits if they exist
         #endif
       #endif
+    #endif
 
-      // Initialize trap CSRs to known values. This follows the prologs so that an
-      // unimplemented CSR traps to the M-mode handler instead of an uninitialized mtvec.
-      csrw mepc, zero
-      csrw mtval, zero
-      csrw mcause, zero
-      #ifdef S_SUPPORTED
-        csrw sepc, zero
-        csrw stval, zero
-        csrw scause, zero
-        #ifdef H_SUPPORTED
-          csrw mtval2, zero
-          csrw mtinst, zero
-          csrw htval, zero
-          csrw htinst, zero
-          csrw vsepc, zero
-          csrw vstval, zero
-          csrw vscause, zero
-        #endif
-      #endif
-
-    rvtest_boot_to_mmode_csr_init:
-      // Initialize M-mode CSRs
-
-      // Put mstatus in a known initial state.
-      // mstatus.SIE = 0: Disable S-mode interrupts
-      // mstatus.MIE = 0: Disable M-mode interrupts
-      // mstatus.SPIE = 0: Clear S-mode previous interrupt enable bit
-      // mstatus.UBE = 0: User-mode Little Endian
-      // mstatus.MPIE = 0: Clear M-mode previous interrupt enable bit
-      // mstatus.SPP = 0: Clear previous privilege mode bit (set to U-mode)
-      // mstatus.XS = 00: Set custom state to OFF
-      // mstatus.FS = 00: Set floating-point state to OFF
-      // mstatus.VS = 00: Set vector state to OFF
-      // mstatus.MPRV = 0: Disable MPRV so memory accesses are in M-mode
-      // mstatus.SUM = 0: Disable supervisor access to user memory
-      // mstatus.MXR = 0: Disable Make eXecutable Readable
-      // mstatus.TVM = 0: Disable Trap Virtual Memory
-      // mstatus.TW = 0: Disable Timeout Wait
-      // mstatus.TSR = 0: Enable SRET instruction when S-mode supported
-      // mstatus.MPP = 11: Set previous privilege mode to M-mode
-      // mstatus.UXL = XLEN (RV64 only)
-      // mstatus.SXL = XLEN (RV64 only)
-      // mstatus.SBE = 0: Set S-mode to little endian if supported
-      // mstatus.MBE = 0: Set M-mode to little endian if supported
-      // mstatus.GVA = 0: Guest virtual address
-      // mstatus.MPV = 0: Previous virtualization OFF
-      // mstatus.MPELP = 0: Disable landing pads
-      // mstatus.MDT = 0: Disable double trap
+    // Enable access to standard state from lower privilege modes.
+    // mstateen0.SE0 = 1: Enable access to hstateen0, hstateen0h, and sstateen0
+    // mstateen0.ENVCFG = 1: Enable access to henvcfg, henvcfgh, and senvcfg
+    // mstateen0.CSRIND = 1: Enable access to supervisor indirect CSR state
+    // mstateen0.AIA = 1: Enable access to Ssaia advanced interrupt architecture state
+    // mstateen0.IMSIC = 1: Enable access to IMSIC state
+    // mstateen0.CONTEXT = 1: Enable access to supervisor and hypervisor context registers
+    // mstateen0.P1P13 = 1: Enable access to hedelegh
+    // mstateen0.SRMCFG = 1: Enable access to srmcfg for Ssqosid
+    // mstateen0.CTR = 1: Enable access to control transfer record state
+    // mstateen0.JVT = 1: Enable access to jvt for Zcmt
+    // mstateen0.FCSR = 1: Enable access to floating-point CSRs for Zfinx
+    // Keep custom state and reserved bits disabled.
+    #ifdef SMSTATEEN_SUPPORTED
       #if __riscv_xlen == 64
-        #define MSTATUS_UXL_64         0x0000000200000000
-        #define MSTATUS_SXL_64         0x0000000800000000
-        li t0, MSTATUS_MPP | MSTATUS_UXL_64 | MSTATUS_SXL_64
-        csrw mstatus, t0  // Set just all these fields
+        LI(t0, MSTATEEN_HSTATEEN | MSTATEEN0_HENVCFG | MSTATEEN0_CSRIND | MSTATEEN0_AIA | \
+               MSTATEEN0_IMSIC | MSTATEEN0_HCONTEXT | MSTATEEN0_PRIV113 | MSTATEEN0_PRIV114 | \
+               MSTATEEN0_CTR | MSTATEEN0_JVT | MSTATEEN0_FCSR)
+        csrw mstateen0, t0
       #else    // RV32
-        li t0, MSTATUS_MPP
-        csrw mstatus, t0
-        #ifdef SM1P12P0_OR_LATER_SUPPORTED
-          csrw mstatush, zero // Clear all these fields
-        #endif
+        LI(t0, MSTATEENH_HSTATEEN | MSTATEEN0H_HENVCFG | MSTATEEN0H_CSRIND | MSTATEEN0H_AIA | \
+               MSTATEEN0H_IMSIC | MSTATEEN0H_HCONTEXT | MSTATEEN0H_PRIV113 | MSTATEEN0H_PRIV114 | \
+               MSTATEEN0H_CTR)
+        csrw mstateen0h, t0
+        LI(t0, MSTATEEN0_JVT | MSTATEEN0_FCSR)
+        csrw mstateen0, t0
       #endif
+    #endif
 
-      // Disable all privileged environment configuration, and enable unprivileged configuration
-      // Privileged tests that want to use these features should turn them on
-      // Unprivileged tests don't make SBI calls so the features should already be enabled
-      // menvcfg.STCE = 0: Disable Sstc supervisor timer compare
-      // menvcfg.PBMTE = 0: Disable Svpbmt page-based memory types
-      // menvcfg.ADUE = 0: Disable Svadu A/D bit update
-      // menvcfg.CDE = 0: Disable counter delegation ***check
-      // menvcfg.DTE = 0: Disable Ssdbltrp double traps
-      // menvcfg.PMM = 00: Disable Smnpm pointer masking at next lower privilege mode
-      // menvcfg.SSE = 0: Disable Zicfiss shadow stacks
-      // menvcfg.LPE = 0: Disable Zicfilp landing pads
-      // menvcfg.FIOM = 0: Disable Fence of I/O Implies Memory
-      // menvcfg.CBZE = 1: Enable Zicboz cache block zero instructions
-      // menvcfg.CBCFE = 1: Enable Zicbom cache block clean/flush instructions
-      // menvcfg.CBIE = 11: Enable Zicbom cache block invalidate instructions to perform invalidate operation
-      #ifdef U_SUPPORTED // menvcfg only exists if U-mode is supported
-        #ifdef SM1P12P0_OR_LATER_SUPPORTED
-          li t0, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE
-          csrw menvcfg, t0
-          #if __riscv_xlen == 32
-            csrw menvcfgh, zero // Clear upper bits if they exist
-          #endif
-        #endif
+    // Enable all performance counters if they exist.
+    // mcountinhibit is optional and accessing the CSR is reserved
+    // if it is not implemented.
+    #ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
+      csrw mcountinhibit, zero
+    #endif
+
+    // Initialize counter event selectors to 0.  They must be implemented.
+    csrw mhpmevent3, zero
+    csrw mhpmevent4, zero
+    csrw mhpmevent5, zero
+    csrw mhpmevent6, zero
+    csrw mhpmevent7, zero
+    csrw mhpmevent8, zero
+    csrw mhpmevent9, zero
+    csrw mhpmevent10, zero
+    csrw mhpmevent11, zero
+    csrw mhpmevent12, zero
+    csrw mhpmevent13, zero
+    csrw mhpmevent14, zero
+    csrw mhpmevent15, zero
+    csrw mhpmevent16, zero
+    csrw mhpmevent17, zero
+    csrw mhpmevent18, zero
+    csrw mhpmevent19, zero
+    csrw mhpmevent20, zero
+    csrw mhpmevent21, zero
+    csrw mhpmevent22, zero
+    csrw mhpmevent23, zero
+    csrw mhpmevent24, zero
+    csrw mhpmevent25, zero
+    csrw mhpmevent26, zero
+    csrw mhpmevent27, zero
+    csrw mhpmevent28, zero
+    csrw mhpmevent29, zero
+    csrw mhpmevent30, zero
+    csrw mhpmevent31, zero
+    // mhpmevent*h high-half CSRs only exist on RV32 with Sscofpmf; otherwise
+    // accessing them is reserved.
+    #if __riscv_xlen == 32
+      #ifdef SSCOFPMF_SUPPORTED
+      csrw mhpmevent3h, zero
+      csrw mhpmevent4h, zero
+      csrw mhpmevent5h, zero
+      csrw mhpmevent6h, zero
+      csrw mhpmevent7h, zero
+      csrw mhpmevent8h, zero
+      csrw mhpmevent9h, zero
+      csrw mhpmevent10h, zero
+      csrw mhpmevent11h, zero
+      csrw mhpmevent12h, zero
+      csrw mhpmevent13h, zero
+      csrw mhpmevent14h, zero
+      csrw mhpmevent15h, zero
+      csrw mhpmevent16h, zero
+      csrw mhpmevent17h, zero
+      csrw mhpmevent18h, zero
+      csrw mhpmevent19h, zero
+      csrw mhpmevent20h, zero
+      csrw mhpmevent21h, zero
+      csrw mhpmevent22h, zero
+      csrw mhpmevent23h, zero
+      csrw mhpmevent24h, zero
+      csrw mhpmevent25h, zero
+      csrw mhpmevent26h, zero
+      csrw mhpmevent27h, zero
+      csrw mhpmevent28h, zero
+      csrw mhpmevent29h, zero
+      csrw mhpmevent30h, zero
+      csrw mhpmevent31h, zero
       #endif
+    #endif
 
-      // Enable access to standard state from lower privilege modes.
-      // mstateen0.SE0 = 1: Enable access to hstateen0, hstateen0h, and sstateen0
-      // mstateen0.ENVCFG = 1: Enable access to henvcfg, henvcfgh, and senvcfg
-      // mstateen0.CSRIND = 1: Enable access to supervisor indirect CSR state
-      // mstateen0.AIA = 1: Enable access to Ssaia advanced interrupt architecture state
-      // mstateen0.IMSIC = 1: Enable access to IMSIC state
-      // mstateen0.CONTEXT = 1: Enable access to supervisor and hypervisor context registers
-      // mstateen0.P1P13 = 1: Enable access to hedelegh
-      // mstateen0.SRMCFG = 1: Enable access to srmcfg for Ssqosid
-      // mstateen0.CTR = 1: Enable access to control transfer record state
-      // mstateen0.JVT = 1: Enable access to jvt for Zcmt
-      // mstateen0.FCSR = 1: Enable access to floating-point CSRs for Zfinx
-      // Keep custom state and reserved bits disabled.
-      #ifdef SMSTATEEN_SUPPORTED
-        #if __riscv_xlen == 64
-          LI(t0, MSTATEEN_HSTATEEN | MSTATEEN0_HENVCFG | MSTATEEN0_CSRIND | MSTATEEN0_AIA | \
-                 MSTATEEN0_IMSIC | MSTATEEN0_HCONTEXT | MSTATEEN0_PRIV113 | MSTATEEN0_PRIV114 | \
-                 MSTATEEN0_CTR | MSTATEEN0_JVT | MSTATEEN0_FCSR)
-          csrw mstateen0, t0
-        #else    // RV32
-          LI(t0, MSTATEENH_HSTATEEN | MSTATEEN0H_HENVCFG | MSTATEEN0H_CSRIND | MSTATEEN0H_AIA | \
-                 MSTATEEN0H_IMSIC | MSTATEEN0H_HCONTEXT | MSTATEEN0H_PRIV113 | MSTATEEN0H_PRIV114 | \
-                 MSTATEEN0H_CTR)
-          csrw mstateen0h, t0
-          LI(t0, MSTATEEN0_JVT | MSTATEEN0_FCSR)
-          csrw mstateen0, t0
-        #endif
+    #ifdef RVMODEL_MTIMECMP_ADDRESS
+      // Initialize mtimecmp to all 1s so that it does not generate a timer interrupt prematurely
+      LA(t0, RVMODEL_MTIMECMP_ADDRESS)
+      addi t1, zero, -1
+      sw t1, 0(t0)
+      sw t1, 4(t0)
+    #elif !defined(RVTEST_SELFCHECK)
+      // Sail always has a CLINT, and its mtimecmp resets to 0, so park it even if the DUT has no timer.
+      LA(t0, SAIL_MTIMECMP_ADDRESS)
+      addi t1, zero, -1
+      sw t1, 0(t0)
+      sw t1, 4(t0)
+    #endif
+
+    #ifdef RVMODEL_MSIP_ADDRESS
+      // Initialize msip to 0 to avoid generating a software interrupt prematurely
+      LA(t0, RVMODEL_MSIP_ADDRESS)
+      sw zero, 0(t0)
+    #endif
+
+    // make counters accessible to a lower privilege mode if one exists
+    #ifdef U_SUPPORTED
+      li t0, -1
+      csrw mcounteren, t0 // Enable all counters for access from next lower priv mode
+    #endif
+
+    // msseccfg.MLL, MMWP, RLB, USEED, and SSEED reset to defined values.
+    // if Pointer Masking is supported, mseccfg.PMM should be initialized to 0 to turn it off
+    // might as well turn off everything
+    #ifdef SMMPM_SUPPORTED
+      csrw mseccfg, zero
+    #endif
+
+    #ifdef SMRNMI_SUPPORTED
+      // Smrnmi resets with mnstatus.NMIE=0. With NMIE clear, M-mode exceptions
+      // are routed to the RNMI exception vector instead of mtvec. Enable NMIE
+      // so T-SBI ecalls and other M-mode traps use the normal handler.
+      li t0, MNSTATUS_NMIE
+      csrw mnstatus, t0
+    #endif
+
+    #if (UDB_NUM_PMP_ENTRIES > 0) && defined(U_SUPPORTED)
+      // Set up PMP so lower privilege modes can access the full address space.
+      LI(t0, -1)
+      csrw pmpaddr0, t0   // all-ones address gives the largest TOR/NAPOT range
+      #ifdef UDB_PMP_TOR_SUPPORTED
+        csrw pmpcfg0, 0x0F   // configure PMP0 to TOR RWX
+      #elif defined(UDB_PMP_NAPOT_SUPPORTED)
+        csrw pmpcfg0, 0x1F   // configure PMP0 to NAPOT RWX
+      #else
+        #error "PMP initialization requires TOR or NAPOT support"
       #endif
-
-      // Enable all performance counters if they exist.
-      // mcountinhibit is optional and accessing the CSR is reserved
-      // if it is not implemented.
-      #ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
-        csrw mcountinhibit, zero
-      #endif
-
-      // Initialize counter event selectors to 0.  They must be implemented.
-      csrw mhpmevent3, zero
-      csrw mhpmevent4, zero
-      csrw mhpmevent5, zero
-      csrw mhpmevent6, zero
-      csrw mhpmevent7, zero
-      csrw mhpmevent8, zero
-      csrw mhpmevent9, zero
-      csrw mhpmevent10, zero
-      csrw mhpmevent11, zero
-      csrw mhpmevent12, zero
-      csrw mhpmevent13, zero
-      csrw mhpmevent14, zero
-      csrw mhpmevent15, zero
-      csrw mhpmevent16, zero
-      csrw mhpmevent17, zero
-      csrw mhpmevent18, zero
-      csrw mhpmevent19, zero
-      csrw mhpmevent20, zero
-      csrw mhpmevent21, zero
-      csrw mhpmevent22, zero
-      csrw mhpmevent23, zero
-      csrw mhpmevent24, zero
-      csrw mhpmevent25, zero
-      csrw mhpmevent26, zero
-      csrw mhpmevent27, zero
-      csrw mhpmevent28, zero
-      csrw mhpmevent29, zero
-      csrw mhpmevent30, zero
-      csrw mhpmevent31, zero
-      // mhpmevent*h high-half CSRs only exist on RV32 with Sscofpmf; otherwise
-      // accessing them is reserved.
-      #if __riscv_xlen == 32
-        #ifdef SSCOFPMF_SUPPORTED
-        csrw mhpmevent3h, zero
-        csrw mhpmevent4h, zero
-        csrw mhpmevent5h, zero
-        csrw mhpmevent6h, zero
-        csrw mhpmevent7h, zero
-        csrw mhpmevent8h, zero
-        csrw mhpmevent9h, zero
-        csrw mhpmevent10h, zero
-        csrw mhpmevent11h, zero
-        csrw mhpmevent12h, zero
-        csrw mhpmevent13h, zero
-        csrw mhpmevent14h, zero
-        csrw mhpmevent15h, zero
-        csrw mhpmevent16h, zero
-        csrw mhpmevent17h, zero
-        csrw mhpmevent18h, zero
-        csrw mhpmevent19h, zero
-        csrw mhpmevent20h, zero
-        csrw mhpmevent21h, zero
-        csrw mhpmevent22h, zero
-        csrw mhpmevent23h, zero
-        csrw mhpmevent24h, zero
-        csrw mhpmevent25h, zero
-        csrw mhpmevent26h, zero
-        csrw mhpmevent27h, zero
-        csrw mhpmevent28h, zero
-        csrw mhpmevent29h, zero
-        csrw mhpmevent30h, zero
-        csrw mhpmevent31h, zero
-        #endif
-      #endif
-
-      #ifdef RVMODEL_MTIMECMP_ADDRESS
-        // Initialize mtimecmp to all 1s so that it does not generate a timer interrupt prematurely
-        LA(t0, RVMODEL_MTIMECMP_ADDRESS)
-        addi t1, zero, -1
-        sw t1, 0(t0)
-        sw t1, 4(t0)
-      #elif !defined(RVTEST_SELFCHECK)
-        // Sail always has a CLINT, and its mtimecmp resets to 0, so park it even if the DUT has no timer.
-        LA(t0, SAIL_MTIMECMP_ADDRESS)
-        addi t1, zero, -1
-        sw t1, 0(t0)
-        sw t1, 4(t0)
-      #endif
-
-      #ifdef RVMODEL_MSIP_ADDRESS
-        // Initialize msip to 0 to avoid generating a software interrupt prematurely
-        LA(t0, RVMODEL_MSIP_ADDRESS)
-        sw zero, 0(t0)
-      #endif
-
-      // make counters accessible to a lower privilege mode if one exists
-      #ifdef U_SUPPORTED
-        li t0, -1
-        csrw mcounteren, t0 // Enable all counters for access from next lower priv mode
-      #endif
-
-      // msseccfg.MLL, MMWP, RLB, USEED, and SSEED reset to defined values.
-      // if Pointer Masking is supported, mseccfg.PMM should be initialized to 0 to turn it off
-      // might as well turn off everything
-      #ifdef SMMPM_SUPPORTED
-        csrw mseccfg, zero
-      #endif
-
-      #ifdef SMRNMI_SUPPORTED
-        // Smrnmi resets with mnstatus.NMIE=0. With NMIE clear, M-mode exceptions
-        // are routed to the RNMI exception vector instead of mtvec. Enable NMIE
-        // so T-SBI ecalls and other M-mode traps use the normal handler.
-        li t0, MNSTATUS_NMIE
-        csrw mnstatus, t0
-      #endif
-
-      #if (UDB_NUM_PMP_ENTRIES > 0) && defined(U_SUPPORTED)
-        // Set up PMP so lower privilege modes can access the full address space.
-        LI(t0, -1)
-        csrw pmpaddr0, t0   // all-ones address gives the largest TOR/NAPOT range
-        #ifdef UDB_PMP_TOR_SUPPORTED
-          csrw pmpcfg0, 0x0F   // configure PMP0 to TOR RWX
-        #elif defined(UDB_PMP_NAPOT_SUPPORTED)
-          csrw pmpcfg0, 0x1F   // configure PMP0 to NAPOT RWX
-        #else
-          #error "PMP initialization requires TOR or NAPOT support"
-        #endif
-        // sfence.vma is required after PMP entries are changed to sync the PMP with the virtual
-        // memory system and any PMP or address translation caches. sfence.vma should not be
-        // performed in a system that does not support virtual memory because it might raise
-        // an illegal instruction.
-        #if defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)
-          csrw satp, zero // Sv BARE mode
-          sfence.vma
-        #endif // SV32 or SV39
-      #endif // PMP
-    #endif // STANDARD_SM_SUPPORTED
-
-  #endif // !RVMODEL_BOOT_TO_MMODE
+      // sfence.vma is required after PMP entries are changed to sync the PMP with the virtual
+      // memory system and any PMP or address translation caches. sfence.vma should not be
+      // performed in a system that does not support virtual memory because it might raise
+      // an illegal instruction.
+      #if defined(SV32_SUPPORTED) || defined(SV39_SUPPORTED)
+        csrw satp, zero // Sv BARE mode
+        sfence.vma
+      #endif // SV32 or SV39
+    #endif // PMP
+  #endif // STANDARD_SM_SUPPORTED
 
   // Init floating-point and vector state if necessary, even if the rest of M-mode is not implemented
   INIT_FLOAT_VECTOR_STATE
@@ -1336,174 +834,169 @@
   // We start in M-mode after initial boot but cannot assume it is standard
   // so access to M-mode features must be through a SBI
 
-  // Run custom RVMODEL flavor if the DUT provides it to override this default boot
-  #ifdef RVMODEL_BOOT_TO_SMODE
-    RVMODEL_BOOT_TO_SMODE
-  #else
-    rvtest_boot_to_smode:
-    // Default implementation assumes standard M-mode
-    // We are in M-mode now at initial boot time
-    // The M-mode boot already set up S, HS, VS trap handlers if applicable.
+  rvtest_boot_to_smode:
+  // Default implementation assumes standard M-mode
+  // We are in M-mode now at initial boot time
+  // The M-mode boot already set up S, HS, VS trap handlers if applicable.
 
-    // Delegate exceptions to S-mode, except those that must be directed to M-mode
-    // medeleg[0] = 1: delegate instruction address misaligned exception
-    // medeleg[1] = 1: delegate instruction access fault exception
-    // medeleg[2] = 1: logically delegate illegal instruction exceptions to S-mode.
-    //                 See RVTEST_SAVE_MEDELEG_ILLEGAL and RVTEST_RESTORE_MEDELEG_ILLEGAL
-    //                 in rvtest_trap_handler.h for details on medeleg[2] emulation.
-    // medeleg[3] = 1: delegate breakpoint exception
-    // medeleg[4] = 1: delegate load address misaligned exception
-    // medeleg[5] = 1: delegate load access fault exception
-    // medeleg[6] = 1: delegate store/AMO address misaligned exception
-    // medeleg[7] = 1: delegate store/AMO access fault exception
-    // medeleg[8] = 1: delegate environment call from U-mode exception
-    // medeleg[9] = 0: do not delegate environment call from S/HS-mode exception because SBI needs to reach M-mode
-    // medeleg[10] = 1: delegate environment call from VS-mode exception
-    // medeleg[11] = 0: do not delegate environment call from M-mode because that makes no sense
-    // medeleg[12] = 1: delegate instruction page fault exception
-    // medeleg[13] = 1: delegate load page fault exception
-    // medeleg[14] = 0: reserved
-    // medeleg[15] = 1: delegate store/AMO page fault exception
-    // medeleg[16] = 0: do not delegate double trap because this is a M-mode feature
-    // medeleg[17] = 0: reserved
-    // medeleg[18] = 1: delegate software check
-    // medeleg[19] = 1: delegate hardware check
-    // medeleg[20] = 1: delegate instruction guest-page fault
-    // medeleg[21] = 1: delegate load guest-page fault
-    // medeleg[22] = 1: delegate virtual instruction
-    // medeleg[23] = 1: delegate store guest-page fault
-    // higher bits are reserved or custom
-    li t0, 0x0FCB5FF
-    csrw medeleg, t0
+  // Delegate exceptions to S-mode, except those that must be directed to M-mode
+  // medeleg[0] = 1: delegate instruction address misaligned exception
+  // medeleg[1] = 1: delegate instruction access fault exception
+  // medeleg[2] = 1: logically delegate illegal instruction exceptions to S-mode.
+  //                 See RVTEST_SAVE_MEDELEG_ILLEGAL and RVTEST_RESTORE_MEDELEG_ILLEGAL
+  //                 in rvtest_trap_handler.h for details on medeleg[2] emulation.
+  // medeleg[3] = 1: delegate breakpoint exception
+  // medeleg[4] = 1: delegate load address misaligned exception
+  // medeleg[5] = 1: delegate load access fault exception
+  // medeleg[6] = 1: delegate store/AMO address misaligned exception
+  // medeleg[7] = 1: delegate store/AMO access fault exception
+  // medeleg[8] = 1: delegate environment call from U-mode exception
+  // medeleg[9] = 0: do not delegate environment call from S/HS-mode exception because SBI needs to reach M-mode
+  // medeleg[10] = 1: delegate environment call from VS-mode exception
+  // medeleg[11] = 0: do not delegate environment call from M-mode because that makes no sense
+  // medeleg[12] = 1: delegate instruction page fault exception
+  // medeleg[13] = 1: delegate load page fault exception
+  // medeleg[14] = 0: reserved
+  // medeleg[15] = 1: delegate store/AMO page fault exception
+  // medeleg[16] = 0: do not delegate double trap because this is a M-mode feature
+  // medeleg[17] = 0: reserved
+  // medeleg[18] = 1: delegate software check
+  // medeleg[19] = 1: delegate hardware check
+  // medeleg[20] = 1: delegate instruction guest-page fault
+  // medeleg[21] = 1: delegate load guest-page fault
+  // medeleg[22] = 1: delegate virtual instruction
+  // medeleg[23] = 1: delegate store guest-page fault
+  // higher bits are reserved or custom
+  li t0, 0x0FCB5FF
+  csrw medeleg, t0
 
-    // Delegate supervisor interrupts to S-mode. Do not delege M-mode interrupts.
-    // mideleg.SSIP = 1: delegate supervisor software interrupts
-    // mideleg.STIP = 1: delegate supervisor timer interrupts
-    // mideleg.SEIP = 1: delegate supervisor external interrupts
-    // mideleg.VSSIP = 1: delegate virtual supervisor software interrupts if applicable
-    // mideleg.VSTIP = 1: delegate virtual supervisor timer interrupts if applicable
-    // mideleg.VSEIP = 1: delegate virtual supervisor external interrupts if applicable
-    // mideleg.LCOFIP = 1: delegate counter overflow interrupts if applicable
-    // mideleg.SGEIP = 1: delegate supervisor guest external interrupts if applicable
-    // mideleg.MSIP = 0: don't delegate machine software interrupts
-    // mideleg.MTIP = 0: don't delegate machine timer interrupts
-    // mideleg.MEIP = 0: don't delegate machine external interrupts
-    li t0, 0x3666
-    csrw mideleg, t0
+  // Delegate supervisor interrupts to S-mode. Do not delege M-mode interrupts.
+  // mideleg.SSIP = 1: delegate supervisor software interrupts
+  // mideleg.STIP = 1: delegate supervisor timer interrupts
+  // mideleg.SEIP = 1: delegate supervisor external interrupts
+  // mideleg.VSSIP = 1: delegate virtual supervisor software interrupts if applicable
+  // mideleg.VSTIP = 1: delegate virtual supervisor timer interrupts if applicable
+  // mideleg.VSEIP = 1: delegate virtual supervisor external interrupts if applicable
+  // mideleg.LCOFIP = 1: delegate counter overflow interrupts if applicable
+  // mideleg.SGEIP = 1: delegate supervisor guest external interrupts if applicable
+  // mideleg.MSIP = 0: don't delegate machine software interrupts
+  // mideleg.MTIP = 0: don't delegate machine timer interrupts
+  // mideleg.MEIP = 0: don't delegate machine external interrupts
+  li t0, 0x3666
+  csrw mideleg, t0
 
-    // Enable necessary state for access from lower privilege modes
-    // sstateen0.JVT = 1: Enable jvt for Zcmt
-    // sstateen0.FCSR = 1: Enable access to floating-point CSRs for Zfinx
-    // Keep custom state and reserved bits disabled.
-    #ifdef SSSTATEEN_SUPPORTED
-      li t0, SSTATEEN0_JVT | SSTATEEN0_FCSR
-      csrs sstateen0, t0 // enable access from lower privilege mode
-    #endif
-
-    // Initialize S-mode CSRs
-
-    // make counters accessible to a lower privilege mode if one exists
-    li t0, -1
-    csrw scounteren, t0 // Enable all counters for access from next lower priv mode
-
-    // Disable all privileged environment configuration, and enable unprivileged configuration
-    // Privileged tests that want to use these features should turn them on
-    // Unprivileged tests don't make SBI calls so the features should already be enabled
-    // senvcfg.PMM = 00: Disable Smnpm pointer masking at next lower privilege mode (RV64 only)
-    // senvcfg.SSE = 0: Disable Zicfiss shadow stacks
-    // senvcfg.LPE = 0: Disable Zicfilp landing pads
-    // senvcfg.FIOM = 0: Disable Fence of I/O Implies Memory
-    // senvcfg.CBZE = 1: Enable Zicboz cache block zero instructions
-    // senvcfg.CBCFE = 1: Enable Zicbom cache block clean/flush instructions
-    // senvcfg.CBIE = 11: Enable Zicbom cache block invalidate instructions to perform invalidate operation
-    #ifdef S1P12P0_OR_LATER_SUPPORTED
-      li t0, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE
-      csrw senvcfg, t0
-    #endif
-
-    #ifdef H_SUPPORTED
-      // Initialize HS-mode CSRs.
-      // hstatus: every field zero except VSXL = 64 on RV64.
-      // Tests that need other values set them themselves.
-      LI(t0, HSTATUS_SPV | HSTATUS_SPVP | HSTATUS_HU | HSTATUS_VGEIN | \
-             HSTATUS_VTVM | HSTATUS_VTW | HSTATUS_VTSR | HSTATUS_VSBE)
-      csrc hstatus, t0
-      #if __riscv_xlen == 64
-        csrr t1, hstatus
-        LI(t0, ~HSTATUS_VSXL)
-        and t1, t1, t0
-        LI(t0, 0x0000000200000000)  // VSXL = 2
-        or t1, t1, t0
-        csrw hstatus, t1
-      #endif
-
-      // vsstatus: every field zero except UXL = 64 on RV64 and FS/VS dirty when supported.
-      li t0, 0
-      #if __riscv_xlen == 64
-        LI(t0, 0x0000000200000000)  // UXL = 2
-      #endif
-      #ifdef F_SUPPORTED
-        LI(t1, SSTATUS_FS)
-        or t0, t0, t1
-      #endif
-      #ifdef ZVL32B_SUPPORTED
-        LI(t1, SSTATUS_VS)
-        or t0, t0, t1
-      #endif
-      csrw vsstatus, t0
-
-      csrw htimedelta, zero
-      #if __riscv_xlen == 32
-        csrw htimedeltah, zero
-      #endif
-
-      // No pending virtual interrupts and no guest external interrupts enabled.
-      // hedeleg and hideleg are saved and cleared by RVTEST_TRAP_PROLOG S.
-      csrw hvip, zero
-      csrw hgeie, zero
-
-      // Make counters accessible from VS/VU-mode
-      li t0, -1
-      csrw hcounteren, t0
-
-      // henvcfg mirrors senvcfg: unprivileged configuration enabled, privileged features disabled.
-      #ifdef S1P12P0_OR_LATER_SUPPORTED
-        li t0, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE
-        csrw henvcfg, t0
-      #endif
-
-      // Enable access to standard state from VS/VU-mode, matching mstateen0 above.
-      // hstateen0.SE0 = 1: Enable access to sstateen0
-      // hstateen0.ENVCFG = 1: Enable access to senvcfg
-      // hstateen0.CSRIND = 1: Enable access to supervisor indirect CSR state
-      // hstateen0.AIA = 1: Enable access to Ssaia advanced interrupt architecture state
-      // hstateen0.IMSIC = 1: Enable access to IMSIC state
-      // hstateen0.SCONTEXT = 1: Enable access to scontext
-      // hstateen0.CTR = 1: Enable access to control transfer record state
-      // hstateen0.JVT = 1: Enable access to jvt for Zcmt
-      // hstateen0.FCSR = 1: Enable access to floating-point CSRs for Zfinx
-      // Keep custom state and reserved bits disabled. hstateen0 has no P1P13 or SRMCFG
-      // bit; that state is M-level only. A bit whose feature is not implemented reads
-      // as zero, so enabling the whole set costs nothing on a smaller hart.
-      #ifdef SSSTATEEN_SUPPORTED
-        #if __riscv_xlen == 64
-          LI(t0, HSTATEEN_SSTATEEN | HSTATEEN0_SENVCFG | HSTATEEN0_CSRIND | HSTATEEN0_AIA | \
-                 HSTATEEN0_IMSIC | HSTATEEN0_SCONTEXT | HSTATEEN0_CTR | HSTATEEN0_JVT | \
-                 HSTATEEN0_FCSR)
-          csrw hstateen0, t0
-        #else    // RV32
-          LI(t0, HSTATEENH_SSTATEEN | HSTATEEN0H_SENVCFG | HSTATEEN0H_CSRIND | HSTATEEN0H_AIA | \
-                 HSTATEEN0H_IMSIC | HSTATEEN0H_SCONTEXT | HSTATEEN0H_CTR)
-          csrw hstateen0h, t0
-          LI(t0, HSTATEEN0_JVT | HSTATEEN0_FCSR)
-          csrw hstateen0, t0
-        #endif
-      #endif
-    #endif // H_SUPPORTED
-
-    // Boot into S-mode
-    RVTEST_TSBI_GOTO_SMODE
+  // Enable necessary state for access from lower privilege modes
+  // sstateen0.JVT = 1: Enable jvt for Zcmt
+  // sstateen0.FCSR = 1: Enable access to floating-point CSRs for Zfinx
+  // Keep custom state and reserved bits disabled.
+  #ifdef SSSTATEEN_SUPPORTED
+    li t0, SSTATEEN0_JVT | SSTATEEN0_FCSR
+    csrs sstateen0, t0 // enable access from lower privilege mode
   #endif
+
+  // Initialize S-mode CSRs
+
+  // make counters accessible to a lower privilege mode if one exists
+  li t0, -1
+  csrw scounteren, t0 // Enable all counters for access from next lower priv mode
+
+  // Disable all privileged environment configuration, and enable unprivileged configuration
+  // Privileged tests that want to use these features should turn them on
+  // Unprivileged tests don't make SBI calls so the features should already be enabled
+  // senvcfg.PMM = 00: Disable Smnpm pointer masking at next lower privilege mode (RV64 only)
+  // senvcfg.SSE = 0: Disable Zicfiss shadow stacks
+  // senvcfg.LPE = 0: Disable Zicfilp landing pads
+  // senvcfg.FIOM = 0: Disable Fence of I/O Implies Memory
+  // senvcfg.CBZE = 1: Enable Zicboz cache block zero instructions
+  // senvcfg.CBCFE = 1: Enable Zicbom cache block clean/flush instructions
+  // senvcfg.CBIE = 11: Enable Zicbom cache block invalidate instructions to perform invalidate operation
+  #ifdef S1P12P0_OR_LATER_SUPPORTED
+    li t0, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE
+    csrw senvcfg, t0
+  #endif
+
+  #ifdef H_SUPPORTED
+    // Initialize HS-mode CSRs.
+    // hstatus: every field zero except VSXL = 64 on RV64.
+    // Tests that need other values set them themselves.
+    LI(t0, HSTATUS_SPV | HSTATUS_SPVP | HSTATUS_HU | HSTATUS_VGEIN | \
+           HSTATUS_VTVM | HSTATUS_VTW | HSTATUS_VTSR | HSTATUS_VSBE)
+    csrc hstatus, t0
+    #if __riscv_xlen == 64
+      csrr t1, hstatus
+      LI(t0, ~HSTATUS_VSXL)
+      and t1, t1, t0
+      LI(t0, 0x0000000200000000)  // VSXL = 2
+      or t1, t1, t0
+      csrw hstatus, t1
+    #endif
+
+    // vsstatus: every field zero except UXL = 64 on RV64 and FS/VS dirty when supported.
+    li t0, 0
+    #if __riscv_xlen == 64
+      LI(t0, 0x0000000200000000)  // UXL = 2
+    #endif
+    #ifdef F_SUPPORTED
+      LI(t1, SSTATUS_FS)
+      or t0, t0, t1
+    #endif
+    #ifdef ZVL32B_SUPPORTED
+      LI(t1, SSTATUS_VS)
+      or t0, t0, t1
+    #endif
+    csrw vsstatus, t0
+
+    csrw htimedelta, zero
+    #if __riscv_xlen == 32
+      csrw htimedeltah, zero
+    #endif
+
+    // No pending virtual interrupts and no guest external interrupts enabled.
+    // hedeleg and hideleg are saved and cleared by RVTEST_TRAP_PROLOG S.
+    csrw hvip, zero
+    csrw hgeie, zero
+
+    // Make counters accessible from VS/VU-mode
+    li t0, -1
+    csrw hcounteren, t0
+
+    // henvcfg mirrors senvcfg: unprivileged configuration enabled, privileged features disabled.
+    #ifdef S1P12P0_OR_LATER_SUPPORTED
+      li t0, HENVCFG_CBIE | HENVCFG_CBCFE | HENVCFG_CBZE
+      csrw henvcfg, t0
+    #endif
+
+    // Enable access to standard state from VS/VU-mode, matching mstateen0 above.
+    // hstateen0.SE0 = 1: Enable access to sstateen0
+    // hstateen0.ENVCFG = 1: Enable access to senvcfg
+    // hstateen0.CSRIND = 1: Enable access to supervisor indirect CSR state
+    // hstateen0.AIA = 1: Enable access to Ssaia advanced interrupt architecture state
+    // hstateen0.IMSIC = 1: Enable access to IMSIC state
+    // hstateen0.SCONTEXT = 1: Enable access to scontext
+    // hstateen0.CTR = 1: Enable access to control transfer record state
+    // hstateen0.JVT = 1: Enable access to jvt for Zcmt
+    // hstateen0.FCSR = 1: Enable access to floating-point CSRs for Zfinx
+    // Keep custom state and reserved bits disabled. hstateen0 has no P1P13 or SRMCFG
+    // bit; that state is M-level only. A bit whose feature is not implemented reads
+    // as zero, so enabling the whole set costs nothing on a smaller hart.
+    #ifdef SSSTATEEN_SUPPORTED
+      #if __riscv_xlen == 64
+        LI(t0, HSTATEEN_SSTATEEN | HSTATEEN0_SENVCFG | HSTATEEN0_CSRIND | HSTATEEN0_AIA | \
+               HSTATEEN0_IMSIC | HSTATEEN0_SCONTEXT | HSTATEEN0_CTR | HSTATEEN0_JVT | \
+               HSTATEEN0_FCSR)
+        csrw hstateen0, t0
+      #else    // RV32
+        LI(t0, HSTATEENH_SSTATEEN | HSTATEEN0H_SENVCFG | HSTATEEN0H_CSRIND | HSTATEEN0H_AIA | \
+               HSTATEEN0H_IMSIC | HSTATEEN0H_SCONTEXT | HSTATEEN0H_CTR)
+        csrw hstateen0h, t0
+        LI(t0, HSTATEEN0_JVT | HSTATEEN0_FCSR)
+        csrw hstateen0, t0
+      #endif
+    #endif
+  #endif // H_SUPPORTED
+
+  // Boot into S-mode
+  RVTEST_TSBI_GOTO_SMODE
 .endm
 
 /************************************ RVTEST_BOOT_TO_U_MODE ********************************/
@@ -1512,14 +1005,9 @@
 .macro RVTEST_BOOT_TO_UMODE
   // We arrive here in S-mode if S_SUPPORTED, else in M-mode.
 
-  // Run custom RVMODEL flavor if the DUT provides it to override this default boot
-  #ifdef RVMODEL_BOOT_TO_UMODE
-    RVMODEL_BOOT_TO_UMODE
-  #else
-    rvtest_boot_to_umode:
-    // Boot into U-mode
-    RVTEST_TSBI_GOTO_UMODE
-  #endif
+  rvtest_boot_to_umode:
+  // Boot into U-mode
+  RVTEST_TSBI_GOTO_UMODE
   nop
 .endm
 
@@ -1531,7 +1019,7 @@
     // Additional setup that applies even without standard M-mode
     // mstatus.FS = 11: Set floating-point state to dirty if supported (F or Zfinx)
     // mstatus.VS = 11: Set vector state to dirty if supported (V)
-    // If mstatus is not writable at boot time, use a custom RVMODEL_BOOT_TO_MMODE to set up the necessary state
+    // If mstatus is not writable at boot time, RVMODEL_BOOT must set up the necessary state
     // for floating-point and vector
     #if defined(F_SUPPORTED) || defined(ZFINX_SUPPORTED)
       li t0, MSTATUS_FS

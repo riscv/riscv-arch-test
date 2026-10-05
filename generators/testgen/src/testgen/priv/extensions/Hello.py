@@ -37,7 +37,7 @@ def _boot(test_data: TestData) -> list[str]:
     """
     reg = test_data.int_regs.get_registers(1)[0]
     lines = [
-        comment_banner("Hello: boot", "Reaching here proves boot, the entry point and act_link.ld"),
+        comment_banner("Hello: boot", "Reaching here proves boot, the entry point and the linker script"),
         test_data.add_testcase("rvmodel_dut_boot", "cp_boot", _CG),
         f"LI(x{reg}, 0xC0FFEE)",
         write_sigupd(reg, test_data),

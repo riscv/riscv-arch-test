@@ -119,14 +119,13 @@ def validate_udb_config(udb_config_file: Path, marker: Path) -> None:
 
 def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int, verbose: bool) -> None:
     """Generate every DUT-derived file (extensions.txt, rvtest_config.{h,svh},
-    rvmodel_macros.svh) for every config, in parallel, using the same
-    `build()` DAG executor as the main pipeline.
+    dut_environment.h, rvmodel_macros.svh) for every config, in parallel, using
+    the same `build()` DAG executor as the main pipeline.
 
     Per config we emit:
       - a `validate` BuildTask whose output is a sentinel marker;
       - one BuildTask per UDB-derived file, with the marker in `deps` so
-        validation must succeed before any UDB generator runs;
-      - a BuildTask for `rvmodel_macros.svh`, which has no UDB dependency.
+        validation must succeed before any generator runs.
 
     Staleness, parallel scheduling, the transient progress widget and the
     failure-skips-dependents behaviour are all handled by `build()`.
@@ -177,17 +176,13 @@ def prepare_dut_outputs(configs: list[Config], workdir: Path, jobs: int, verbose
         for out, action in udb_outputs:
             tasks.append(BuildTask(outputs=(out,), action=action, extra_inputs=(src,), deps=(marker,)))
 
-        # rvmodel_macros.svh derives from the DUT's rvmodel_macros.h, not
-        # from UDB, so it has no validate dep.
+        # rvmodel_macros.svh mirrors the dut_environment block for coverage.
         tasks.append(
             BuildTask(
                 outputs=(config_dir / "rvmodel_macros.svh",),
-                action=PythonAction(generate_rvmodel_svh, (cfg.dut_include_dir, config_dir)),
-                extra_inputs=(
-                    (cfg.dut_include_dir / "rvmodel_macros.h",)
-                    if (cfg.dut_include_dir / "rvmodel_macros.h").exists()
-                    else ()
-                ),
+                action=PythonAction(generate_rvmodel_svh, (src, config_dir)),
+                extra_inputs=(src,),
+                deps=(marker,),
             )
         )
 

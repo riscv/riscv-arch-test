@@ -8,11 +8,12 @@
 
 """Turn the config's dut_environment block into a C header.
 
-These are DUT-specific values (device addresses, interrupt timing) the test body
-bakes into certified code, as opposed to the DUT code behind the RVMODEL_* macros.
-They come from the config, not the customer's private rvmodel_macros.h, because
-the reference model needs the same addresses to produce a matching signature - so
-they were never really private.
+These are DUT-specific values (device addresses, interrupt timing, and whether
+the DUT has a standard M-mode) that test objects bake into their code, as opposed
+to the DUT code behind the RVMODEL_* macros, which only the driver library sees.
+They come from the config, not rvmodel_macros.h, because the reference model
+needs the same values to produce a matching signature, and because test objects
+are built without rvmodel_macros.h.
 
 UDB accepts an unknown top-level block but udb-gen won't emit it, so we do it here.
 """
@@ -28,6 +29,7 @@ from ruamel.yaml import YAML
 # instead of silently leaving a constant undefined.
 _INT_KEYS: tuple[str, ...] = (
     "RVMODEL_ACCESS_FAULT_ADDRESS",
+    "RVMODEL_MSIP_ADDRESS",
     "RVMODEL_MTIME_ADDRESS",
     "RVMODEL_MTIMECMP_ADDRESS",
     "RVMODEL_INTERRUPT_LATENCY",
@@ -35,8 +37,15 @@ _INT_KEYS: tuple[str, ...] = (
     "RVMODEL_MAX_CYCLES_PER_TIMER_TICK",
 )
 
-# Boolean flags: emitted as a bare #define when true, omitted when false.
-_FLAG_KEYS: tuple[str, ...] = ("STANDARD_SM_SUPPORTED",)
+# Every config needs these; check_defines.h would stop each test on its own otherwise.
+_REQUIRED_KEYS: tuple[str, ...] = ("RVMODEL_INTERRUPT_LATENCY", "RVMODEL_TIMER_INT_SOON_DELAY")
+
+# Boolean flags: emitted as a bare #define of the mapped name when true, omitted when false.
+_FLAG_KEYS: dict[str, str] = {
+    "STANDARD_SM_SUPPORTED": "STANDARD_SM_SUPPORTED",
+    # The DUT's driver provides RVMODEL_INVISIBLE_TRAP_HANDLER (see rvtest_driver.h).
+    "INVISIBLE_TRAP_HANDLER": "RVTEST_DUT_INVISIBLE_TRAP_HANDLER",
+}
 
 _GUARD = "_ACT_DUT_ENVIRONMENT_H"
 
@@ -56,9 +65,10 @@ def read_dut_environment(udb_config_file: Path) -> dict[str, object]:
 
 
 def _int_lines(name: str, value: object) -> list[str]:
-    """Emit one integer constant plus an agreement check. Kit builds have no
-    rvmodel_macros.h so the config wins; normal builds keep the DUT header but
-    #error if it disagrees, catching a reference model built for a different map."""
+    """Emit one integer constant plus an agreement check. Test objects never see
+    rvmodel_macros.h, so the config is the only source there; the driver build
+    sees both and #errors if they disagree, catching a stale value left in the
+    DUT's header."""
     if isinstance(value, bool) or not isinstance(value, int):
         raise TypeError(f"dut_environment.{name} must be an integer, got {value!r}")
     cfg_name = f"ACT_CFG_{name}"
@@ -78,6 +88,12 @@ def _int_lines(name: str, value: object) -> list[str]:
 def generate_dut_environment_header(udb_config_file: Path, output_file: Path) -> None:
     """Write dut_environment.h for one config."""
     block = read_dut_environment(udb_config_file)
+    missing = [key for key in _REQUIRED_KEYS if key not in block]
+    if missing:
+        raise ValueError(
+            f"{udb_config_file} has no {', '.join(missing)} in its dut_environment block. Test objects "
+            "are built without rvmodel_macros.h, so device addresses and timings belong in the config."
+        )
 
     lines = [
         "// Auto-generated from the UDB config's dut_environment block by act (do not edit)",
@@ -88,20 +104,12 @@ def generate_dut_environment_header(udb_config_file: Path, output_file: Path) ->
         "",
     ]
 
-    if not block:
-        lines += [
-            "// This config has no dut_environment block, so every constant still comes",
-            "// from the DUT's rvmodel_macros.h. Certification-kit builds require the",
-            "// block; normal builds are unaffected.",
-            "",
-        ]
-
     for name in _INT_KEYS:
         if name in block:
             lines += _int_lines(name, block[name])
 
-    for name in _FLAG_KEYS:
-        if block.get(name):
+    for key, name in _FLAG_KEYS.items():
+        if block.get(key):
             lines += [f"#ifndef {name}", f"  #define {name}", "#endif", ""]
 
     lines += [f"#endif // {_GUARD}", ""]

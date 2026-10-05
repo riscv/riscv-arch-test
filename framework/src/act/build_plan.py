@@ -4,12 +4,15 @@
 # Jordan Carlin jcarlin@hmc.edu 11 March 2026
 # SPDX-License-Identifier: Apache-2.0
 #
-# Construct a list[BuildTask] DAG that mirrors the compilation pipeline
-# previously expressed as generated Makefiles.
+# Construct a list[BuildTask] DAG for the driver-based build: certified test
+# objects that never see rvmodel_macros.h, a driver library per config, and the
+# links that join them.
 ##################################
 
+import hashlib
 import importlib.resources
 from collections import defaultdict
+from dataclasses import dataclass
 from pathlib import Path
 
 import pyjson5
@@ -114,69 +117,170 @@ def _ref_model_sig_cmd(
 
 
 # ---------------------------------------------------------------------------
+# Driver library
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class DriverBuild:
+    """Driver objects for one config, keyed by -mabi.
+
+    ``ref`` is assembled against sail_macros.h and linked into the reference
+    model's ELFs. ``dut`` is assembled against the DUT's rvmodel_macros.h; it is
+    empty when the config supplies no rvmodel_macros.h, and the build then stops
+    at the certified objects.
+    """
+
+    ref: dict[str, Path]
+    dut: dict[str, Path]
+
+
+def mabi_for(xlen: int, e_ext: bool) -> str:
+    """ABI every test and driver object of this XLEN/base is built with."""
+    return f"{'i' if xlen == 32 else ''}lp{xlen}{'e' if e_ext else ''}"
+
+
+def gen_driver_tasks(
+    config: Config,
+    xlen: int,
+    e_exts: set[bool],
+    env_dir: Path,
+    header_dir: Path,
+    out_dir: Path,
+    toolchain: Toolchain,
+    signature_compile_flags: tuple[str, ...],
+    rvmodel_dir: Path | None,
+    env_files: tuple[Path, ...],
+    header_files: tuple[Path, ...],
+) -> tuple[list[BuildTask], DriverBuild]:
+    """Assemble rvmodel_driver.S once per ABI, for the reference model and, when
+    rvmodel_macros.h is available, for the DUT."""
+    tasks: list[BuildTask] = []
+    ref: dict[str, Path] = {}
+    dut: dict[str, Path] = {}
+    source = env_dir / "rvmodel_driver.S"
+    dut_headers: tuple[Path, ...] = ()
+    if rvmodel_dir is not None:
+        dut_headers = tuple(sorted(p.absolute() for p in rvmodel_dir.iterdir() if p.suffix == ".h"))
+
+    for e_ext in sorted(e_exts):
+        mabi = mabi_for(xlen, e_ext)
+        march = toolchain.march_flags(
+            xlen, f"rv{xlen}{'e' if e_ext else 'i'}_zicsr_zifencei", assembly=True, e_ext=e_ext
+        )
+        common = [
+            *toolchain.compile_prefix(xlen),
+            "-c",
+            "-O0",
+            "-g",
+            "-mcmodel=medany",
+            "-nostdlib",
+            *march,
+            f"-mabi={mabi}",
+            f"-DXLEN={xlen}",
+            "-DTEST_FLEN=32",
+            f"-I{env_dir}",
+            f"-I{header_dir.absolute()}",
+        ]
+        variants: list[tuple[str, list[str], tuple[Path, ...]]] = [("ref", list(signature_compile_flags), ())]
+        if rvmodel_dir is not None:
+            variants.append(("dut", ["-DRVTEST_SELFCHECK", f"-I{rvmodel_dir.absolute()}"], dut_headers))
+        for variant, flags, extra_headers in variants:
+            obj = out_dir / "driver" / variant / mabi / "rvmodel_driver.o"
+            tasks.append(
+                BuildTask(
+                    outputs=(obj,),
+                    extra_inputs=(source, *env_files, *header_files, *extra_headers),
+                    action=SubprocessAction(cmd=[*common, *flags, "-o", str(obj), str(source)]),
+                    label=f"{variant} driver ({config.name}, {mabi})",
+                )
+            )
+            (ref if variant == "ref" else dut)[mabi] = obj
+    return tasks, DriverBuild(ref=ref, dut=dut)
+
+
+# ---------------------------------------------------------------------------
 # Per-test task generators
 # ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class TestOutputs:
+    """What one test produces: its certified object, and its ELF when linked."""
+
+    name: Path  # e.g. priv/Hello/Hello_boot-00
+    obj: Path
+    results: Path | None  # golden signature, for the provenance digest
+    elf: Path | None
+    march: str
+    mabi: str
+    flen: str
+
+
+def write_sigdigest_header(results: Path, out: Path) -> None:
+    """Emit `#define RVCP_SIG_DIGEST` holding the sha256 of the golden signatures."""
+    digest = hashlib.sha256(results.read_bytes()).hexdigest()
+    out.write_text(f'#define RVCP_SIG_DIGEST "{digest}"\n')
 
 
 def gen_compile_tasks(
     test_name: Path,
     test_metadata: TestMetadata,
-    base_dir: Path,
+    out_dir: Path,
+    header_dir: Path,
     env_dir: Path,
     xlen: int,
     config: Config,
     toolchain: Toolchain,
+    drivers: DriverBuild,
     signature_compile_flags: tuple[str, ...] = (),
     compile_inputs: tuple[Path, ...] = (),
     c_runtime_sources: tuple[Path, ...] = (),
     ref_model_inputs: tuple[Path, ...] = (),
+    kit_stamp: Path | None = None,
     debug: bool = False,
     fast: bool = False,
     enable_experimental_extensions: bool = False,
-) -> list[BuildTask]:
+) -> tuple[list[BuildTask], TestOutputs]:
     """Generate BuildTasks for the compilation pipeline of a single test.
 
-    Signature tests build through the reference-model signature pipeline:
-        add.S -> add.sig.elf -> add.sig (ref model) -> add.results (sig_modify) -> add.elf
-    Tests with NEEDS_SIGNATURE: false compile directly to the final ELF.
+    Every test is built into a certified object that never sees rvmodel_macros.h:
+        add.S -> add.sig.o + reference driver -> add.sig.elf -> add.sig (ref model)
+              -> add.results -> add.o (expected signature baked in)
+    and, when the DUT driver exists, linked into the ELF that runs on the DUT:
+        add.o + DUT driver -> add.elf
+    Tests with NEEDS_SIGNATURE: false skip the reference-model steps.
 
     Args:
         test_name: Name of the test.
         test_metadata: Metadata for the test.
-        base_dir: Base directory for the build.
+        out_dir: Directory for this build's outputs (build/, objects/, elfs/).
+        header_dir: Directory with the config's generated headers.
         env_dir: Directory that contains shared test-environment headers.
         xlen: XLEN (32 or 64).
         config: Configuration object.
         toolchain: Toolchain used to resolve compiler ISA flags for this test.
+        drivers: Driver objects to link against.
         compile_inputs: Shared inputs for compilation.
         c_runtime_sources: Runtime sources compiled into C tests.
         ref_model_inputs: Shared inputs for the reference model (e.g. sail.json for Sail).
+        kit_stamp: Header force-included into the certified object (act-package only).
         debug: Whether to generate debug output (signature objdump and trace files).
         fast: Whether to disable objdump generation for faster builds.
     """
     tasks: list[BuildTask] = []
 
     # Paths
-    build_dir = base_dir / "build"
-    elf_dir = base_dir / "elfs"
+    build_dir = out_dir / "build"
+    sig_obj = build_dir / test_name.with_suffix(".sig.o")
     sig_elf = build_dir / test_name.with_suffix(".sig.elf")
     sig_file = build_dir / test_name.with_suffix(".sig")
     result_file = build_dir / test_name.with_suffix(".results")
+    digest_file = build_dir / test_name.with_suffix(".sigdigest.h")
     sig_trace_file = build_dir / test_name.with_suffix(".sig.trace")
     sig_log_file = build_dir / test_name.with_suffix(".sig.log")
-    final_elf = elf_dir / test_name.with_suffix(".elf")
-
-    compile_prefix = [
-        *toolchain.compile_prefix(xlen),
-        f"-I{config.dut_include_dir.absolute()}",
-        f"-T{config.linker_script.absolute()}",
-        "-O0",
-        "-g",
-        "-mcmodel=medany",
-        "-nostdlib",
-        f"-I{env_dir}",
-        f"-I{base_dir.absolute()}",
-    ]
+    obj = out_dir / "objects" / test_name.with_suffix(".o")
+    final_elf = out_dir / "elfs" / test_name.with_suffix(".elf")
 
     # Metadata
     march_flags = toolchain.march_flags(
@@ -187,42 +291,70 @@ def gen_compile_tasks(
     )
     test_flen = test_metadata.flen
     test_path = test_metadata.test_path
-    mabi = f"{'i' if xlen == 32 else ''}lp{xlen}{'e' if test_metadata.e_ext else ''}"
+    mabi = mabi_for(xlen, test_metadata.e_ext)
     c_compile_flags = (
         ["-ffreestanding", "-fno-builtin", "-msmall-data-limit=0", "-std=gnu99"] if test_metadata.is_c_test else []
     )
 
-    # Compilation sources and inputs
+    # Compilation sources and inputs. A C test and its runtime are partially linked
+    # (-r) into one relocatable object, so every test is exactly one certified object.
     test_sources = [str(test_path)]
     if test_metadata.is_c_test:
         test_sources = [str(source) for source in c_runtime_sources] + test_sources
     test_inputs = (test_path, *compile_inputs)
 
+    object_prefix = [
+        *toolchain.compile_prefix(xlen),
+        "-r" if test_metadata.is_c_test else "-c",
+        "-O0",
+        "-g",
+        "-mcmodel=medany",
+        "-nostdlib",
+        f"-I{env_dir}",
+        f"-I{header_dir.absolute()}",
+        *c_compile_flags,
+        *march_flags,
+        f"-mabi={mabi}",
+        f"-DXLEN={xlen}",
+        f"-DTEST_FLEN={test_flen}",
+        f'-DTEST_FILE="{test_name.name}"',
+    ]
+    link_prefix = [
+        *toolchain.compile_prefix(xlen),
+        f"-T{config.linker_script.absolute()}",
+        "-nostdlib",
+        "-mcmodel=medany",
+        *march_flags,
+        f"-mabi={mabi}",
+    ]
+    link_inputs = (config.linker_script.absolute(),)
+
     if test_metadata.needs_signature:
-        # 1. sig.elf – compile with -DSIGNATURE
-        sig_elf_cmd = [
-            *compile_prefix,
-            *c_compile_flags,
-            "-o",
-            str(sig_elf),
-            *march_flags,
-            f"-mabi={mabi}",
-            "-DSIGNATURE",
-            *signature_compile_flags,
-            f"-DTEST_FLEN={test_flen}",
-            f'-DTEST_FILE="{test_name.name}"',
-            *test_sources,
-        ]
+        # 1. sig.o - the test object in signature-generation mode
         tasks.append(
             BuildTask(
-                outputs=(sig_elf,),
+                outputs=(sig_obj,),
                 extra_inputs=test_inputs,
-                action=SubprocessAction(cmd=sig_elf_cmd),
+                action=SubprocessAction(
+                    cmd=[*object_prefix, "-DSIGNATURE", *signature_compile_flags, "-o", str(sig_obj), *test_sources]
+                ),
                 intermediate=True,
             )
         )
 
-        # 1a. sig.elf.objdump (optional, debug only)
+        # 2. sig.elf - linked against the reference model's driver
+        ref_driver = drivers.ref[mabi]
+        tasks.append(
+            BuildTask(
+                outputs=(sig_elf,),
+                deps=(sig_obj, ref_driver),
+                extra_inputs=link_inputs,
+                action=SubprocessAction(cmd=[*link_prefix, "-o", str(sig_elf), str(sig_obj), str(ref_driver)]),
+                intermediate=True,
+            )
+        )
+
+        # 2a. sig.elf.objdump (optional, debug only)
         if debug and config.objdump_exe is not None:
             objdump_file = Path(f"{sig_elf}.objdump")
             tasks.append(
@@ -236,7 +368,7 @@ def gen_compile_tasks(
                 )
             )
 
-        # 2. sig – run reference model
+        # 3. sig - run reference model
         ref_model_cmd = _ref_model_sig_cmd(
             config, sig_elf, sig_file, sig_trace_file, xlen, debug, enable_experimental_extensions
         )
@@ -251,7 +383,7 @@ def gen_compile_tasks(
             )
         )
 
-        # 2a. trap report (optional, debug only)
+        # 3a. trap report (optional, debug only)
         if debug:
             trap_report_file = Path(f"{sig_file}.trap_report")
             # Derive nm executable from objdump executable (e.g. riscv64-unknown-elf-objdump -> riscv64-unknown-elf-nm)
@@ -269,7 +401,7 @@ def gen_compile_tasks(
                 )
             )
 
-        # 3. results – process signature file
+        # 4. results - process signature file, and its digest for the provenance line
         tasks.append(
             BuildTask(
                 outputs=(result_file,),
@@ -278,48 +410,76 @@ def gen_compile_tasks(
                 intermediate=True,
             )
         )
+        tasks.append(
+            BuildTask(
+                outputs=(digest_file,),
+                deps=(result_file,),
+                action=PythonAction(fn=write_sigdigest_header, args=(result_file, digest_file)),
+                intermediate=True,
+            )
+        )
 
-    # Non-signature tests start here
-    # 4. final.elf – compile with -DRVTEST_SELFCHECK
-    final_elf_cmd = [
-        *compile_prefix,
-        *c_compile_flags,
-        "-o",
-        str(final_elf),
-        *march_flags,
-        f"-mabi={mabi}",
+    # 5. certified object - expected signature baked in, no rvmodel_macros.h.
+    # Non-signature tests start here.
+    obj_cmd = [
+        *object_prefix,
         "-DRVTEST_SELFCHECK",
-        *([f'-DSIGNATURE_FILE="{result_file}"'] if test_metadata.needs_signature else ["-DRVTEST_NOSIG"]),
-        f"-DXLEN={xlen}",
-        f"-DTEST_FLEN={test_flen}",
-        f'-DTEST_FILE="{test_name.name}"',
+        *(
+            [f'-DSIGNATURE_FILE="{result_file}"', "-include", str(digest_file)]
+            if test_metadata.needs_signature
+            else ["-DRVTEST_NOSIG"]
+        ),
+        *(["-include", str(kit_stamp)] if kit_stamp is not None else []),
+        "-o",
+        str(obj),
         *test_sources,
     ]
     tasks.append(
         BuildTask(
-            outputs=(final_elf,),
-            extra_inputs=test_inputs,
-            deps=(result_file,) if test_metadata.needs_signature else (),
-            action=SubprocessAction(cmd=final_elf_cmd),
+            outputs=(obj,),
+            extra_inputs=(*test_inputs, *((kit_stamp,) if kit_stamp is not None else ())),
+            deps=(result_file, digest_file) if test_metadata.needs_signature else (),
+            action=SubprocessAction(cmd=obj_cmd),
         )
     )
 
-    # 4a. final.elf.objdump (optional, not in fast mode)
-    if not fast and config.objdump_exe is not None:
-        objdump_file = Path(f"{final_elf}.objdump")
-        objdump_flags = _OBJDUMP_FLAGS_DEBUG if debug else _OBJDUMP_FLAGS_COMMON
+    # 6. final.elf - the certified object linked against the DUT's driver
+    dut_driver = drivers.dut.get(mabi)
+    if dut_driver is not None:
         tasks.append(
             BuildTask(
-                outputs=(objdump_file,),
-                deps=(final_elf,),
-                action=SubprocessAction(
-                    cmd=[str(config.objdump_exe), *objdump_flags, str(final_elf)],
-                    stdout_file=objdump_file,
-                ),
+                outputs=(final_elf,),
+                deps=(obj, dut_driver),
+                extra_inputs=link_inputs,
+                action=SubprocessAction(cmd=[*link_prefix, "-o", str(final_elf), str(obj), str(dut_driver)]),
             )
         )
 
-    return tasks
+        # 6a. final.elf.objdump (optional, not in fast mode)
+        if not fast and config.objdump_exe is not None:
+            objdump_file = Path(f"{final_elf}.objdump")
+            objdump_flags = _OBJDUMP_FLAGS_DEBUG if debug else _OBJDUMP_FLAGS_COMMON
+            tasks.append(
+                BuildTask(
+                    outputs=(objdump_file,),
+                    deps=(final_elf,),
+                    action=SubprocessAction(
+                        cmd=[str(config.objdump_exe), *objdump_flags, str(final_elf)],
+                        stdout_file=objdump_file,
+                    ),
+                )
+            )
+
+    outputs = TestOutputs(
+        name=test_name.with_suffix(""),
+        obj=obj,
+        results=result_file if test_metadata.needs_signature else None,
+        elf=final_elf if dut_driver is not None else None,
+        march=test_metadata.march.replace("${XLEN}", str(xlen)),
+        mabi=mabi,
+        flen=test_flen,
+    )
+    return tasks, outputs
 
 
 def gen_rvvi_tasks(
@@ -541,6 +701,15 @@ def gen_coverage_tasks(
 # ---------------------------------------------------------------------------
 
 
+def find_rvmodel_dir(config: Config, override: Path | None = None) -> Path | None:
+    """Directory holding the DUT's rvmodel_macros.h, or None when there is none.
+
+    Without it the build stops at the certified objects.
+    """
+    candidate = override if override is not None else config.dut_include_dir
+    return candidate.absolute() if (candidate / "rvmodel_macros.h").is_file() else None
+
+
 def generate_build_plan(
     config: Config,
     xlen: int,
@@ -555,64 +724,99 @@ def generate_build_plan(
     verbose: bool = False,
     dry_run: bool = False,
     enable_experimental_extensions: bool = False,
-) -> list[BuildTask]:
-    """Build the full DAG of tasks for a single config."""
+    rvmodel_dir: Path | None = None,
+    out_dir: Path | None = None,
+    kit_stamp: Path | None = None,
+) -> tuple[list[BuildTask], list[TestOutputs]]:
+    """Build the full DAG of tasks for a single config.
+
+    Args:
+        rvmodel_dir: Directory with the DUT's rvmodel_macros.h. When None, the
+            build produces the certified objects but no ELFs.
+        out_dir: Where build/, objects/, elfs/ and driver/ go (default: workdir/<config>).
+        kit_stamp: Header force-included into every certified object (act-package).
+    """
     if coverage_enabled and config.ref_model_type != RefModelType.SAIL:
         raise ValueError(
             "Coverage generation is only supported with the Sail reference model, "
             f"but ref_model_type={config.ref_model_type.value} was selected for "
             f"config '{config.name}'. Switch back to Sail or drop --coverage."
         )
+    if coverage_enabled and rvmodel_dir is None:
+        raise ValueError(
+            f"Coverage runs the linked ELFs, but config '{config.name}' has no rvmodel_macros.h "
+            f"in {config.dut_include_dir}, so the build stops at the certified objects."
+        )
 
     tasks: list[BuildTask] = []
+    outputs: list[TestOutputs] = []
 
-    config_wkdir = workdir / config.name
+    header_dir = workdir / config.name
+    config_wkdir = out_dir if out_dir is not None else header_dir
     config_coverage_dir = config_wkdir / "coverage"
     config_report_dir = config_wkdir / "reports"
 
     coverage_targets: defaultdict[Path, list[Path]] = defaultdict(list)
     toolchain = Toolchain(config.compiler_exe, config.compiler_type)
 
-    # Collect shared file dependencies that affect all compilations.
-    # Any change to env headers, DUT headers, or the linker script should trigger recompilation.
+    # Collect shared file dependencies that affect all compilations. Test objects
+    # depend on the env and generated headers only; rvmodel_macros.h affects the
+    # DUT driver, and the linker script affects the links.
     env_dir = tests_dir / "env"
     env_files = tuple(sorted(p.absolute() for p in env_dir.iterdir() if p.is_file()))
     c_runtime_sources = tuple((env_dir / name).absolute() for name in ("c_test_start.S", "c_test_support.c"))
-    dut_headers = tuple(sorted(p.absolute() for p in config.dut_include_dir.iterdir() if p.suffix == ".h"))
-    udb_headers = tuple(sorted(p.absolute() for p in config_wkdir.iterdir() if p.suffix == ".h"))
-    compile_inputs = (*env_files, *dut_headers, *udb_headers, config.linker_script.absolute())
+    udb_headers = tuple(sorted(p.absolute() for p in header_dir.iterdir() if p.suffix == ".h"))
+    compile_inputs = (*env_files, *udb_headers)
 
     # Sail config affects reference model output (Spike has no equivalent file).
     ref_model_inputs: tuple[Path, ...] = ()
-    # sail_macros.h is included by every test, so the platform defines are needed
-    # whatever the reference model is; only the model's own inputs are Sail-specific.
+    # sail_macros.h is included by every signature build, so the platform defines are
+    # needed whatever the reference model is; only the model's own inputs are Sail-specific.
     sail_config = config.dut_include_dir / "sail.json"
     signature_compile_flags = _sail_platform_defines(sail_config)
     if config.ref_model_type == RefModelType.SAIL:
         ref_model_inputs = (sail_config.absolute(),)
 
+    driver_tasks, drivers = gen_driver_tasks(
+        config,
+        xlen,
+        {metadata.e_ext for metadata in selected_tests.values()},
+        env_dir,
+        header_dir,
+        config_wkdir,
+        toolchain,
+        signature_compile_flags,
+        rvmodel_dir,
+        env_files,
+        udb_headers,
+    )
+    tasks.extend(driver_tasks)
+
     for test_name_str, test_metadata in sorted(selected_tests.items()):
         test_name = Path(test_name_str)
 
         # Compile test
-        tasks.extend(
-            gen_compile_tasks(
-                test_name,
-                test_metadata,
-                config_wkdir,
-                env_dir,
-                xlen,
-                config,
-                toolchain,
-                signature_compile_flags,
-                compile_inputs,
-                c_runtime_sources,
-                ref_model_inputs,
-                debug,
-                fast,
-                enable_experimental_extensions,
-            )
+        test_tasks, test_outputs = gen_compile_tasks(
+            test_name,
+            test_metadata,
+            config_wkdir,
+            header_dir,
+            env_dir,
+            xlen,
+            config,
+            toolchain,
+            drivers,
+            signature_compile_flags,
+            compile_inputs,
+            c_runtime_sources,
+            ref_model_inputs,
+            kit_stamp,
+            debug,
+            fast,
+            enable_experimental_extensions,
         )
+        tasks.extend(test_tasks)
+        outputs.append(test_outputs)
 
         # Coverage trace generation
         if coverage_enabled:
@@ -640,7 +844,7 @@ def generate_build_plan(
                 coverpoint_dir,
                 config_coverage_dir,
                 config_report_dir,
-                config_wkdir,
+                header_dir,
                 tests_dir / "env",
                 coverage_simulator,
                 verbose,
@@ -649,4 +853,4 @@ def generate_build_plan(
             )
         )
 
-    return tasks
+    return tasks, outputs

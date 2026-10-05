@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: S
+source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=335048477#gid=335048477
+coverpoints:
+  - name: cp_scsr_access
+    description: csr read, write all 1s, write all 0s, set all 1s, clear all 1s, write back initial value of each register below
+    rules:
+      - csrrs and csrrc to each bit
+  - name: cp_scsrwalk
+    goal: Walking 1s of legal supervisor CSRs
+    description: "Set and clear each bit of each writable S-mode CSR to exercise bitfields: sstatus, scause, sie, stvec, scounteren, senvcfg, sscratch, sip.  Iterations that write a reserved senvcfg.CBIE (0b10) or senvcfg.PMM (0b01) value check the other bits exactly and only check that the field reads back a legal value.  sepc and stval are not tested because it is hard to express what values are legal."
+    rules:
+      - Illegal Instruction
+  - name: cp_csr_ro
+    description: Write read-only CSRs (C00-EFF)
+    rules:
+      - Turning on satp.mode without having page tables will hang the system
+  - name: cp_satp
+    goal: Read satp
+    description: Read satp
+    expectation: Reads when 0, illegal instruction when 1.  Value is unpredictable because it is not reset and has WARL fields that might not even support Bare.
+  - name: cp_ucsr_from_s
+    description: In supervisor mode, read/write/set/clear from each U-mode CSR if F/V are supported
+  - name: cp_csrr_insufficient_priv
+    description: Read Machine CSRS 300-3FF, 700-7FF, B00-BFF, F000-FFF, excluding 7AA (mscontext)
+  - name: cp_scause_write
+    goal: |-
+      Write scause values
+      (WLRL)
+    description: |-
+      Write scause values:
+      with interrupt = 1: 0-15
+      with interrupt = 0: 0-64
+  - name: cp_sstatus_sd_write
+    goal: |-
+      Writing to the CSR field
+      (WARL)
+    description: Write 1 and 0 to SD with FS/VS/XS all 0.  Write cross-product of all bits of SD/ FS/ VS/XS.  128 bins of writes.
+    rules:
+      - Illegal instruction exception
+  - name: cp_sprivinst
+    description: Execute ecall and ebreak and mret and and sfence.vma in supervisor mode
+    bins: |-
+      Changes affecting coverpoints:
+      moved scsr accesses from M to Sm
+      duplicated cp_sret_s to Sm and stripped TSR out of the S version.
+    rules:
+      - sepc should be pointing two instructions ahead.
+  - name: cp_sret_s
+    description: Execute sret in supervisor mode with cross-product of all values of sstatus.SPP/SPIE/SIE.  Return to supervisor mode after each sret.
+    rules:
+      - sepc should be pointing two instructions ahead.
+  - heading: SXL tested with EndianS
+  - heading: "*** if other supervisor extensions are supported, ifdef them in to run in M-mode, such as sstc to test access to stimecmp."

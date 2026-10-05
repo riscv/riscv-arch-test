@@ -23,15 +23,9 @@ Machine-mode tests of the pmpcfg and pmpaddr CSRs (WARL fields, locking, grain, 
 Also aligned `ld` and `sd` partly matched by an entry, and misaligned loads and stores inside a granule or partly in a locked region without permissions.
 The 64-entry coverpoints need `NUM_PMP_ENTRIES` = 64.
 
-[[t-PMPSm-coverpoints]]
-.PMPSm Coverpoints
-
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1474055416#gid=1474055416[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/PMPSm.adoc[]
 
 include::norm/PMPSm_norm_rules.adoc[]
-
 
 ==== PMPS
 
@@ -39,15 +33,9 @@ PMP enforcement on S-mode accesses, which does not depend on the L bit, and on M
 Also checks that the PMP CSRs trap when accessed from S-mode, that an S-mode access matching no PMP entry faults, and that a misaligned S-mode access partly in a region faults when the rest matches no entry.
 Runs when S is implemented.
 
-[[t-PMPS-coverpoints]]
-.PMPS Coverpoints
-
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1908943019#gid=1908943019[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/PMPS.adoc[]
 
 include::norm/PMPS_norm_rules.adoc[]
-
 
 ==== PMPU
 
@@ -55,12 +43,7 @@ PMP enforcement on U-mode accesses, which does not depend on the L bit, and on M
 Also checks that the PMP CSRs trap when accessed from U-mode, that a U-mode access matching no PMP entry faults, and that a misaligned U-mode access partly in a region faults when the rest matches no entry.
 Runs when U is implemented.
 
-[[t-PMPU-coverpoints]]
-.PMPU Coverpoints
-
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=2072825600#gid=2072825600[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/PMPU.adoc[]
 
 include::norm/PMPU_norm_rules.adoc[]
 
@@ -69,41 +52,25 @@ include::norm/PMPU_norm_rules.adoc[]
 Floating-point loads and stores against locked entries, and misaligned ones inside a 16-byte granule partly matched by an entry, from M-mode.
 Runs when F is implemented.
 
-[[t-PMPF-coverpoints]]
-.PMPF Coverpoints
-
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1472001893#gid=1472001893[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/PMPF.adoc[]
 
 include::norm/PMPF_norm_rules.adoc[]
-
 
 ==== PMPZca
 
 Compressed loads and stores against locked entries, misaligned ones inside a 16-byte granule partly matched by an entry, and 32-bit and 16-bit instruction fetches at PMP region boundaries, from M-mode.
 Runs when Zca is implemented; Zcb, Zcf and Zcd add their loads and stores.
 
-[[t-PMPZca-coverpoints]]
-.PMPZca Coverpoints
-
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1336315481#gid=1336315481[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/PMPZca.adoc[]
 
 include::norm/PMPZca_norm_rules.adoc[]
-
 
 ==== PMPZicbo
 
 Cache-block zero, management and prefetch instructions against locked entries, from M-mode.
 The cbo tests run when Zicbom and Zicboz are implemented, and the prefetch tests when Zicbop is implemented.
 
-[[t-PMPZicbo-coverpoints]]
-.PMPZicbo Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1958410505#gid=1958410505[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/PMPZicbo.adoc[]
 
 include::norm/PMPZicbo_norm_rules.adoc[]
 
@@ -113,15 +80,9 @@ Every AMO against locked entries, from M-mode; an AMO needs both R and W.
 Also aligned `.d` AMOs, and misaligned AMOs inside a 16-byte granule, partly matched by an entry.
 Runs when Zaamo is implemented.
 
-[[t-PMPZaamo-coverpoints]]
-.PMPZaamo Coverpoints
-
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=343093009#gid=343093009[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/PMPZaamo.adoc[]
 
 include::norm/PMPZaamo_norm_rules.adoc[]
-
 
 ==== PMPZalrsc
 
@@ -129,15 +90,9 @@ LR and SC against locked entries, from M-mode.
 Also aligned `lr.d` and `sc.d` partly matched by an entry; the `sc.d` has no reservation and still faults.
 Runs when Zalrsc is implemented.
 
-[[t-PMPZalrsc-coverpoints]]
-.PMPZalrsc Coverpoints
-
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=613653829#gid=613653829[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/PMPZalrsc.adoc[]
 
 include::norm/PMPZalrsc_norm_rules.adoc[]
-
 
 ==== PMPZacas
 
@@ -145,11 +100,6 @@ Aligned `amocas.d` and `amocas.q` partly matched by an entry, and misaligned `am
 An aligned AMO is one memory operation even when it is wider than XLEN, so `amocas.d` on RV32 is included.
 Runs when Zacas is implemented.
 
-[[t-PMPZacas-coverpoints]]
-.PMPZacas Coverpoints
-
-,===
-https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/PMPZacas.adoc[]
 
 include::norm/PMPZacas_norm_rules.adoc[]

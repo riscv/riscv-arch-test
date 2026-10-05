@@ -25,6 +25,7 @@ from testgen.priv.extensions.InterruptsCommon import (
     guard_symbol,
     int_coverpoint,
     int_macro,
+    label_coverpoint,
     machine_ints,
     mode_enter,
     mode_exit,
@@ -76,9 +77,9 @@ def _generate_cp_trigger_sm(
     for int_type in [*machine_ints, *supervisor_ints, *reg_ints, *sstc_ints]:
         macro = int_macro[int_type]
         guard = guard_symbol(int_type)
-        cp = int_coverpoint.get(int_type, "cp_trigger")
         for mideleg in [0, -1]:
             delegstr = "zeros" if mideleg == 0 else "ones"
+            cp = label_coverpoint(suite, int_coverpoint.get(int_type, "cp_trigger"), priv, int_type, mideleg == -1)
             # mideleg only exists with S-mode. Without it the mideleg = zeros cases still run and just
             # skip the write, while the mideleg = ones cases are meaningless and are left out entirely.
             case_open = ["#ifdef S_SUPPORTED // only test delegation if S_SUPPORTED"] if mideleg == -1 else []
@@ -158,7 +159,12 @@ def _generate_cp_write_stip_sstc(
         for stip, stip_macro in [(0, "CLR"), (1, "SET")]:
             tc.code += [
                 f"RVTEST_{stimecmp_macro}_SSTC_INT_{priv} # stimecmp = {stimecmp}",
-                test_data.add_testcase(f"priv_{priv}_stimecmp_{stimecmp}_STIP_{stip}", coverpoint, COVERGROUP),
+                # RVTEST_SET_STIME_INT writes mip.STIP with csrs, RVTEST_CLR_STIME_INT with csrc
+                test_data.add_testcase(
+                    f"priv_{priv}_stimecmp_{stimecmp}_STIP_{stip}",
+                    f"{coverpoint}_{'csrrs' if stip else 'csrrc'}",
+                    COVERGROUP,
+                ),
                 f"RVTEST_{stip_macro}_STIME_INT_{priv} # Write mip.STIP = {stip}",
                 f"csrr x{tmp_reg}, mip # mip.STIP = 1 only when stimecmp = 0s",
                 f"andi x{tmp_reg}, x{tmp_reg}, 0x20 # STIP",

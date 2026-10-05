@@ -126,6 +126,15 @@ normative_rule_definitions:
   - name: mie_std_enc_img
     coverpoint: ["InterruptsSm_cg/{cp_enable_one, cp_priority_mie}"]
 
+  - name: mideleg_enc_img
+    coverpoint:
+      ["InterruptsSm_cg/cp_trigger", "InterruptsSm_cg/cp_priority_mideleg"]
+  # csr:mideleg[] holds trap delegation bits for individual interrupts, with the layout of
+  # bits matching those in the csr:mip[] register
+  - name: mideleg_enc_txt
+    coverpoint:
+      ["InterruptsSm_cg/cp_trigger", "InterruptsSm_cg/cp_priority_mideleg"]
+
   # If interrupt i can become pending but bit i in mip is read-only, the
   # implementation must provide some other mechanism for clearing the pending
   # interrupt.
@@ -216,6 +225,18 @@ normative_rule_definitions:
   - name: mip_seip_acc
     coverpoint: ["InterruptsSm_cg/cp_trigger_reg_mip_seip"]
 
+  # When mip is read with a CSR instruction, the value of the SEIP bit returned in
+  # the rd destination register is the logical-OR of the software-writable bit and
+  # the interrupt signal from the interrupt controller
+  - name: mip_seip_rdcsr
+    coverpoint: ["InterruptsSm_cg/cp_trigger_reg"]
+
+  # the signal from the interrupt controller is not used to calculate the value
+  # written to SEIP. Only the software-writable SEIP bit participates in the
+  # read-modify-write sequence of a CSRRS or CSRRC instruction.
+  - name: mip_seip_wrcsr
+    coverpoint: ["InterruptsSm_cg/cp_trigger_reg"]
+
   # Supervisor-level external interrupts are made pending based on the logical-OR of
   # the software-writable SEIP bit and the signal from the external interrupt
   # controller.
@@ -295,6 +316,15 @@ normative_rule_definitions:
       [
         "InterruptsSm_cg/{cp_priority_mip, cp_priority_mie, cp_priority_mip_tsbi, cp_priority_mie_tsbi}",
       ]
+
+  # Delegated interrupts result in the interrupt being masked at the delegator
+  # privilege level. For example, if the supervisor timer interrupt (STI) is
+  # delegated to S-mode by setting mideleg[5], STIs will not be taken when executing
+  # in M-mode. By contrast, if mideleg[5] is clear, STIs can be taken in any mode
+  # and regardless of current mode will transfer control to M-mode.
+  - name: trap_del_intr_priv_lvl
+    coverpoint:
+      ["InterruptsSm_cg/cp_trigger", "InterruptsSm_cg/cp_priority_mideleg"]
 
   # Interrupts to M-mode take priority over any interrupts to lower privilege modes.
   - name: intr_m_mode_highest_pri

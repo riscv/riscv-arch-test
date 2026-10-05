@@ -1,4 +1,4 @@
-    cp_imm_edges_6bit : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+    cp_uimm_6bit_v : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins b_0 = {0};
         bins b_1 = {1};
         bins b_2 = {2};

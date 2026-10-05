@@ -11,8 +11,9 @@
 # SsstrictS: Sail traps on siselect/stopi accesses that Whisper permits with mstateen0 enabled.
 # Sdtrig* not yet implemented in Sail (https://github.com/riscv/sail-riscv/issues/222)
 # Svnapot: Whisper accepts N=1 on superpage leaf PTEs instead of page faulting (https://github.com/tenstorrent/whisper/issues/98)
+# Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)
 ci_enabled: true
-exclude_extensions: "SsstrictSm,SsstrictS,Smstateen,SdtrigSm,SdtrigS,SdtrigU,Svnapot"
+exclude_extensions: "SsstrictSm,SsstrictS,Smstateen,SdtrigSm,SdtrigS,SdtrigU,Svnapot,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm"
 exclude_configs:
   - whisper-rv32-max-spike-ref
   - whisper-rv64-max-spike-ref

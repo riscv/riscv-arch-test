@@ -24,7 +24,7 @@ The DUT also needs to know how to boot the core, terminate a test with a success
 
 Unified Database allows _partially-_ and _fully-configured descriptions_.  A profile is an example of a partially configured description because it has a mix of required and optional extensions, and does not specify parameter values for most of the extensions.  A DUT needs to have a fully configured description including precisely which versions of which extensions are supported and what parameter values are implemented, so that a simulator can exactly match its behavior.
 
-The <<Framework,certification framework>> requires a fully-configured UDB description of the DUT and RVMODEL macros for the DUT.
+The <<abstraction-layer,certification framework>> requires a fully-configured UDB description of the DUT and RVMODEL macros for the DUT.
 It uses UDB to produce supplementary configuration files including:
 
 * JSON file configuring the RISC-V Sail reference model to match the DUT
@@ -64,6 +64,7 @@ Unimplemented opcodes (except in the custom space) and instructions accessing no
 [[t-behavior-normative-rules]]
 .I Normative Rules Regarding Behaviors
 [cols="1, 4" options=header]
+[%autowidth]
 |===
 |Spec Section|Normative Rule
 |Unpriv 1.7|The term UNSPECIFIED refers to a behavior or value that is intentionally unconstrained.
@@ -90,6 +91,7 @@ Instructions and CSRs in the custom encoding space are never tested because the 
 [[t-bitfield-normative-rules]]
 .I Normative Rules Regarding Bitfields
 [cols="1, 4" options=header]
+[%autowidth]
 |===
 |Spec Section|Normative Rule
 |Privileged 2.3|Some whole read/write fields are reserved for future use. Software should ignore the values read from

@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SmF
+source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=29805079#gid=29805079
+coverpoints:
+  - name: cp_fcsr_access
+    goal: |-
+      Writing to the CSR field
+      (WARL)
+    description: Write 0s and 1s to fcsr, frm, fflags cross with mstatus.FS init/clean/dirty
+  - name: cp_mstatus_FS_transition
+    goal: |-
+      Writing to the CSR field
+      (WARL)
+    description: Each different type of floating-point instruction crossed with four values of FS
+    rules:
+      - check FS becomes dirty where appropriate
+  - heading: Tests run in M mode

@@ -9,7 +9,7 @@
 
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.SscofpmfCommon import MACRO_CHECKS, stop_counter
+from testgen.priv.extensions.SscofpmfCommon import MACRO_CHECKS
 from testgen.priv.extensions.SscofpmfInhibit import generate_xinh_inhibits_tests
 from testgen.priv.extensions.SscofpmfOverflow import (
     generate_lcofip_hw_only_tests,
@@ -19,6 +19,7 @@ from testgen.priv.extensions.SscofpmfOverflow import (
 from testgen.priv.extensions.SscofpmfScountovf import (
     MCOUNTEREN_OF_PATTERNS,
     SHADOW_PATTERNS,
+    boot_of_state,
     generate_scountovf_mcounteren_tests,
     generate_scountovf_shadow_tests,
     generate_sscofpmf_access_tests,
@@ -67,16 +68,15 @@ def generate_sscofpmf_suite(test_data: TestData, mode: str) -> list[TestChunk]:
     tc.code.extend(generate_lcofip_hw_only_tests(test_data, mode))
     test_chunks.append(test_data.end_test_chunk())
 
-    # One file per OF pattern. Each starts from reset, so it writes all of mhpmevent3..31.
+    if mode == "U":  # scountovf is not accessible from U, so the scountovf tests are S-only
+        return test_chunks
+
+    # One file per OF pattern. Each starts from boot, where every OF bit is 0.
     for of_name in MCOUNTEREN_OF_PATTERNS:
         tc = test_data.begin_test_chunk(split_name=f"mcounteren_{of_name}")
         tc.code.extend(MACRO_CHECKS)
-        tc.code.extend(stop_counter(mode))
-        tc.code.extend(generate_scountovf_mcounteren_tests(test_data, mode, unknown_of_state(), [of_name]))
+        tc.code.extend(generate_scountovf_mcounteren_tests(test_data, mode, boot_of_state(), [of_name]))
         test_chunks.append(test_data.end_test_chunk())
-
-    if mode == "U":  # scountovf is not accessible from U, so the access and shadow tests are S-only
-        return test_chunks
 
     tc = test_data.begin_test_chunk(split_name="access")
     tc.code.extend(MACRO_CHECKS)
@@ -86,7 +86,6 @@ def generate_sscofpmf_suite(test_data: TestData, mode: str) -> list[TestChunk]:
     for split_name, patterns in SHADOW_PATTERNS.items():
         tc = test_data.begin_test_chunk(split_name=split_name)
         tc.code.extend(MACRO_CHECKS)
-        tc.code.extend(stop_counter(mode))
-        tc.code.extend(generate_scountovf_shadow_tests(test_data, mode, unknown_of_state(), patterns))
+        tc.code.extend(generate_scountovf_shadow_tests(test_data, mode, boot_of_state(), patterns))
         test_chunks.append(test_data.end_test_chunk())
     return test_chunks

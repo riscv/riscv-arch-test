@@ -147,14 +147,3 @@ def prime_counter_overflow(r_val: int, r_hval: int, r_temp: int, r_addr: int, pr
         f"LA(x{r_addr}, scratch)",
         f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_val})",
     ]
-
-
-def stop_counter(mode: str) -> list[str]:
-    """Stop counter 3 so it cannot overflow and set OF in a test file that starts from reset."""
-    return [
-        csr_access("csrw RVMODEL_MHPMEVENT, zero", mode),
-        "#if __riscv_xlen == 32",
-        csr_access("csrw CSR_MHPMEVENT3H, zero", mode),
-        "#endif",
-        "",
-    ]

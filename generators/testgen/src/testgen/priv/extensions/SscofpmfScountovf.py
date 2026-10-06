@@ -18,8 +18,14 @@ NUM_OF_BITS = 29  # mhpmevent3..31
 
 
 def unknown_of_state() -> list[int | None]:
-    """OF state for write_of_pattern() before any pattern is written."""
+    """OF state for write_of_pattern() when earlier tests in the file may have changed OF."""
     return [None] * NUM_OF_BITS
+
+
+def boot_of_state() -> list[int | None]:
+    """OF state for write_of_pattern() at the start of a test file: rvtest_setup.h clears
+    mhpmevent3..31, and the RV32 high halves that hold OF, at every boot."""
+    return [0] * NUM_OF_BITS
 
 
 def write_of_pattern(

@@ -22,4 +22,4 @@
 #   Issue filed (https://solvnetplus.synopsys.com/s/case/500WQ000025qNCkYAM/pointer-masking-should-be-disabled-when-mxr1)
 #
 ci_enabled: false
-exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,Svnapot,SscofpmfSm,SscofpmfS,SscofpmfU"
+exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,Svnapot,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,SscofpmfSm,SscofpmfS,SscofpmfU"

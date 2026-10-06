@@ -9,7 +9,8 @@ ci_enabled: true
 # Sscofpmf*: spike hardwires mhpmcounter3..31 to 0 but keeps mhpmevent3..31 writable
 #   (https://github.com/riscv-software-src/riscv-isa-sim/issues/2370). Sail's
 #   writable_hpm_counters makes both or neither writable, so no reference config matches.
-exclude_extensions: "Smstateen,SdtrigSm,SdtrigS,SdtrigU,SscofpmfSm,SscofpmfS,SscofpmfU"
+# Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)
+exclude_extensions: "Smstateen,SdtrigSm,SdtrigS,SdtrigU,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,SscofpmfSm,SscofpmfS,SscofpmfU"
 install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"
 shards: 1

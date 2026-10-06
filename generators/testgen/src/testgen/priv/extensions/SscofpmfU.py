@@ -8,7 +8,8 @@
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.SscofpmfCommon import MACRO_CHECKS, _csr_access, generate_sscofpmf_suite
+from testgen.priv.extensions.SscofpmfCommon import MACRO_CHECKS, csr_access
+from testgen.priv.extensions.SscofpmfSuite import generate_sscofpmf_suite
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -32,10 +33,10 @@ def _generate_lcofi_sip_u_tests(test_data: TestData) -> list[str]:
             "Sample point is the T-SBI delegate's sret back to U (sstatus.SPP=0).\n",
         ),
         "",
-        _csr_access("csrw sie, zero      # disable all S-mode interrupts", "U"),
-        _csr_access("csrw RVMODEL_MHPMEVENT, zero", "U"),
+        csr_access("csrw sie, zero      # disable all S-mode interrupts", "U"),
+        csr_access("csrw RVMODEL_MHPMEVENT, zero", "U"),
         f"LI(x{r_val}, {hex(SIE_BIT)})",
-        _csr_access(f"csrc sstatus, x{r_val}   # sstatus.SIE = 0 ", "U"),
+        csr_access(f"csrc sstatus, x{r_val}   # sstatus.SIE = 0 ", "U"),
     ]
 
     for lcofip in [0, 1]:
@@ -50,12 +51,12 @@ def _generate_lcofi_sip_u_tests(test_data: TestData) -> list[str]:
 
             lines.append(f"LI(x{r_val}, {hex(LCOFI_BIT)})")
             if lcofip:
-                lines.append(_csr_access(f"csrs sip, x{r_val}   # sip.LCOFIP = 1", "U"))
+                lines.append(csr_access(f"csrs sip, x{r_val}   # sip.LCOFIP = 1", "U"))
             else:
                 lines.extend(
                     [
-                        _csr_access("csrw RVMODEL_MHPMCOUNTER, zero   # no overflow", "U"),
-                        _csr_access(f"csrc sip, x{r_val}   # sip.LCOFIP = 0", "U"),
+                        csr_access("csrw RVMODEL_MHPMCOUNTER, zero   # no overflow", "U"),
+                        csr_access(f"csrc sip, x{r_val}   # sip.LCOFIP = 0", "U"),
                     ]
                 )
 
@@ -63,12 +64,12 @@ def _generate_lcofi_sip_u_tests(test_data: TestData) -> list[str]:
                 [
                     f"LI(x{r_temp}, {hex(LCOFI_BIT)})",
                     test_data.add_testcase(binname, coverpoint, covergroup),
-                    _csr_access(f"{'csrs' if lcofie else 'csrc'} sie, x{r_temp}   # sie.LCOFIE = {lcofie}", "U"),
+                    csr_access(f"{'csrs' if lcofie else 'csrc'} sie, x{r_temp}   # sie.LCOFIE = {lcofie}", "U"),
                     "",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
                     "",
-                    (_csr_access(f"csrc sip, x{r_temp}   # clear LCOFIP", "U") if lcofip else ""),
-                    _csr_access("csrw sie, zero        # clear LCOFIE", "U"),
+                    (csr_access(f"csrc sip, x{r_temp}   # clear LCOFIP", "U") if lcofip else ""),
+                    csr_access("csrw sie, zero        # clear LCOFIE", "U"),
                 ]
             )
 
@@ -76,12 +77,12 @@ def _generate_lcofi_sip_u_tests(test_data: TestData) -> list[str]:
         [
             "",
             f"LI(x{r_temp}, {hex(LCOFI_BIT)})",
-            _csr_access(f"csrc sip, x{r_temp}      # clear LCOFIP", "U"),
-            _csr_access(f"csrc sie, x{r_temp}      # clear LCOFIE", "U"),
+            csr_access(f"csrc sip, x{r_temp}      # clear LCOFIP", "U"),
+            csr_access(f"csrc sie, x{r_temp}      # clear LCOFIE", "U"),
             f"LI(x{r_val}, {hex(SIE_BIT)})",
-            _csr_access(f"csrc sstatus, x{r_val}   # clear sstatus.SIE", "U"),
-            _csr_access("csrw RVMODEL_MHPMCOUNTER, zero", "U"),
-            _csr_access("csrw RVMODEL_MHPMEVENT, zero", "U"),
+            csr_access(f"csrc sstatus, x{r_val}   # clear sstatus.SIE", "U"),
+            csr_access("csrw RVMODEL_MHPMCOUNTER, zero", "U"),
+            csr_access("csrw RVMODEL_MHPMEVENT, zero", "U"),
         ]
     )
 
@@ -96,7 +97,7 @@ def _generate_lcofi_sip_u_tests(test_data: TestData) -> list[str]:
 def make_sscofpmfu(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the SscofpmfU performance-counter-overflow testsuite."""
     test_chunks: list[TestChunk] = []
-    tc = test_data.begin_test_chunk()
+    tc = test_data.begin_test_chunk(split_name="interrupt")
     tc.code.extend(MACRO_CHECKS)
     tc.code.extend(_generate_lcofi_sip_u_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())

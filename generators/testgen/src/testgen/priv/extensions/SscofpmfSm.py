@@ -8,7 +8,8 @@
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.SscofpmfCommon import MACRO_CHECKS, generate_sscofpmf_suite, prime_counter_overflow
+from testgen.priv.extensions.SscofpmfCommon import MACRO_CHECKS, prime_counter_overflow
+from testgen.priv.extensions.SscofpmfSuite import generate_sscofpmf_suite
 from testgen.priv.registry import add_priv_test_generator
 
 

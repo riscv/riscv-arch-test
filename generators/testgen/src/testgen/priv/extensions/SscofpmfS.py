@@ -10,10 +10,10 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.SscofpmfCommon import (
     MACRO_CHECKS,
-    _csr_access,
-    generate_sscofpmf_suite,
+    csr_access,
     prime_counter_overflow,
 )
+from testgen.priv.extensions.SscofpmfSuite import generate_sscofpmf_suite
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -37,7 +37,7 @@ def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
         ),
         "",
         "csrw sie, zero      # disable all S-mode interrupts",
-        _csr_access("csrw RVMODEL_MHPMEVENT, zero", "S"),
+        csr_access("csrw RVMODEL_MHPMEVENT, zero", "S"),
         f"LI(x{r_val}, {hex(SIE_BIT)})",
         f"csrs sstatus, x{r_val}   # sstatus.SIE = 1 (fixed)",
     ]
@@ -58,7 +58,7 @@ def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
             else:
                 lines.extend(
                     [
-                        _csr_access("csrw RVMODEL_MHPMCOUNTER, zero   # keep counter clear -- no overflow", "S"),
+                        csr_access("csrw RVMODEL_MHPMCOUNTER, zero   # keep counter clear -- no overflow", "S"),
                         f"csrc sip, x{r_val}   # explicitly hold sip.LCOFIP = 0 (touch it so it samples)",
                     ]
                 )
@@ -86,8 +86,8 @@ def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
             f"csrc sie, x{r_temp}      # clear LCOFIE",
             f"LI(x{r_val}, {hex(SIE_BIT)})",
             f"csrc sstatus, x{r_val}   # clear sstatus.SIE",
-            _csr_access("csrw RVMODEL_MHPMCOUNTER, zero", "S"),
-            _csr_access("csrw RVMODEL_MHPMEVENT, zero", "S"),
+            csr_access("csrw RVMODEL_MHPMCOUNTER, zero", "S"),
+            csr_access("csrw RVMODEL_MHPMEVENT, zero", "S"),
         ]
     )
 
@@ -122,7 +122,7 @@ def _generate_lcofip_priority_s_tests(test_data: TestData) -> list[str]:
         ),
         "",
         "csrw sie, zero      # disable all S-mode interrupts",
-        _csr_access("csrw RVMODEL_MHPMEVENT, zero", "S"),
+        csr_access("csrw RVMODEL_MHPMEVENT, zero", "S"),
         f"csrsi sstatus, {hex(SIE_BIT)}   # sstatus.SIE = 1",
     ]
 
@@ -169,7 +169,7 @@ def _generate_lcofip_priority_s_tests(test_data: TestData) -> list[str]:
                 "",
                 f"LI(x{r_temp}, -1)",
                 test_data.add_testcase(binname, coverpoint, covergroup),
-                _csr_access(f"csrs sie, x{r_temp}   # sie = all 1s: competing interrupt fires first, then LCOFI", "S"),
+                csr_access(f"csrs sie, x{r_temp}   # sie = all 1s: competing interrupt fires first, then LCOFI", "S"),
                 "",
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
                 f"csrr x{r_temp2}, sip   # sample point for lcofip priority outcome",
@@ -201,11 +201,11 @@ def _generate_lcofip_priority_s_tests(test_data: TestData) -> list[str]:
         [
             "",
             f"csrci sstatus, {hex(SIE_BIT)}   # sstatus.SIE = 0",
-            _csr_access("csrw RVMODEL_MHPMEVENT, zero   # stop counting, clear OF", "S"),
+            csr_access("csrw RVMODEL_MHPMEVENT, zero   # stop counting, clear OF", "S"),
             "#if __riscv_xlen == 32",
-            _csr_access("csrw CSR_MHPMEVENT3H, zero", "S"),
+            csr_access("csrw CSR_MHPMEVENT3H, zero", "S"),
             "#endif",
-            _csr_access("csrw RVMODEL_MHPMCOUNTER, zero", "S"),
+            csr_access("csrw RVMODEL_MHPMCOUNTER, zero", "S"),
         ]
     )
 
@@ -223,7 +223,7 @@ def _generate_lcofip_priority_s_tests(test_data: TestData) -> list[str]:
 def make_sscofpmfs(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the SscofpmfS performance-counter-overflow testsuite."""
     test_chunks: list[TestChunk] = []
-    tc = test_data.begin_test_chunk()
+    tc = test_data.begin_test_chunk(split_name="interrupt")
     tc.code.extend(MACRO_CHECKS)
     tc.code.extend(_generate_lcofi_sip_s_tests(test_data))
     tc.code.extend(_generate_lcofip_priority_s_tests(test_data))

@@ -6,7 +6,6 @@
     // x16-31 is reserved and in this implementation will
     // raise an illegal instruction exception.
     "E": false,
-    "writable_misa": true,
     // Whether a `mhpmcounter` increments if the event it is counting
     // was generated during a write to its corresponding `mhpmevent`
     // CSR (which could change the monitored event).
@@ -509,12 +508,15 @@
   },
   "extensions": {
     "M": {
+      "mutable_misa": true,
       "supported": true
     },
     "A": {
+      "mutable_misa": true,
       "supported": true
     },
     "F": {
+      "mutable_misa": true,
       "supported": true,
       // When to set mstatus[FS] and mstatus[SD] to 1, as a result of fflags
       // being set. There are three options:
@@ -528,9 +530,14 @@
       "fflags_dirty_policy": "Fflags_Dirty_Precise"
     },
     "D": {
+      "mutable_misa": true,
       "supported": true
     },
+    "C": {
+      "mutable_misa": true
+    },
     "V": {
+      "mutable_misa": true,
       // `support_level` must be one of the below strings:
       // . "Disabled" for no vector extension support
       // . "Integer" for Zve*x support
@@ -584,9 +591,11 @@
       }
     },
     "B": {
+      "mutable_misa": true,
       "supported": true
     },
     "S": {
+      "mutable_misa": true,
       "supported": false,
       "interrupts": {
         "software": { "supported": false },
@@ -595,10 +604,12 @@
       }
     },
     "U": {
+      "mutable_misa": true,
       "supported": false
     },
 
     "H": {
+      "mutable_misa": true,
       "supported": false,
       "geilen": 63,
       "guest_page_fault_writes_htval": true,

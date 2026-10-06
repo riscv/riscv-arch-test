@@ -5,7 +5,6 @@
   "base": {
     "xlen": 32,
     "E": false,
-    "writable_misa": false,
     // Whether a `mhpmcounter` increments if the event it is counting
     // was generated during a write to its corresponding `mhpmevent`
     // CSR (which could change the monitored event).
@@ -371,19 +370,27 @@
   },
   "extensions": {
     "M": {
+      "mutable_misa": false,
       "supported": true
     },
     "A": {
+      "mutable_misa": false,
       "supported": false
     },
     "F": {
+      "mutable_misa": false,
       "supported": false,
       "fflags_dirty_policy": "Fflags_Dirty_Precise"
     },
     "D": {
+      "mutable_misa": false,
       "supported": false
     },
+    "C": {
+      "mutable_misa": false
+    },
     "V": {
+      "mutable_misa": false,
       "support_level": "Disabled",
       "vlen_exp": 7,
       "elen_exp": 6,
@@ -423,9 +430,11 @@
       }
     },
     "B": {
+      "mutable_misa": false,
       "supported": false
     },
     "S": {
+      "mutable_misa": false,
       "supported": false,
       "interrupts": {
         "software": { "supported": false },
@@ -434,10 +443,12 @@
       }
     },
     "U": {
+      "mutable_misa": false,
       "supported": false
     },
 
     "H": {
+      "mutable_misa": false,
       "supported": false,
       "geilen": 31,
       "guest_page_fault_writes_htval": true,

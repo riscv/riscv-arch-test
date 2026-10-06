@@ -6,7 +6,6 @@
     // x16-31 is reserved and in this implementation will
     // raise an illegal instruction exception.
     "E": false,
-    "writable_misa": false,
     // The precision of the HPM counter, upto 64 bits.
     "hpmcounter_width_bits": 64,
     // The width of the `mhpmevent` CSRs, upto 64 bits, if Sscofpmf is
@@ -474,12 +473,15 @@
   },
   "extensions": {
     "M": {
+      "mutable_misa": false,
       "supported": true
     },
     "A": {
+      "mutable_misa": false,
       "supported": true
     },
     "F": {
+      "mutable_misa": false,
       "supported": true,
       // When to set mstatus[FS] and mstatus[SD] to 1, as a result of fflags
       // being set. There are three options:
@@ -493,9 +495,14 @@
       "fflags_dirty_policy": "Fflags_Dirty_Precise"
     },
     "D": {
+      "mutable_misa": false,
       "supported": true
     },
+    "C": {
+      "mutable_misa": false
+    },
     "V": {
+      "mutable_misa": false,
       // `support_level` must be one of the below strings:
       // . "Disabled" for no vector extension support
       // . "Integer" for Zve*x support
@@ -549,9 +556,11 @@
       }
     },
     "B": {
+      "mutable_misa": false,
       "supported": true
     },
     "S": {
+      "mutable_misa": false,
       "supported": false,
       "interrupts": {
         "software": { "supported": false },
@@ -560,10 +569,12 @@
       }
     },
     "U": {
+      "mutable_misa": false,
       "supported": false
     },
 
     "H": {
+      "mutable_misa": false,
       "supported": false,
       "geilen": 31,
       // Whether a trap into M or HS mode caused by the specified exception

@@ -63,6 +63,38 @@ def mstateen0_bit(bit: tuple[str, str], value: int) -> list[str]:
     ]
 
 
+def set_stateen_state(test_data: TestData) -> list[str]:
+    """Enable only SE0, ENVCFG, JVT and FCSR (with Zfinx) in mstateen0 and hstateen0.
+
+    Boot enables every standard mstateen0 bit and the matching hstateen0 bits.  The reference model lacks several of
+    those features (indirect CSRs, AIA, IMSIC, CTR), so on a hart that has them the hstateen0 walks and reads would see
+    writable bits that read as zero in the reference.  These suites therefore start from the state they control.
+    """
+    tmp_reg = test_data.int_regs.get_register()
+    lines = [
+        "#if __riscv_xlen == 64",
+        "RVTEST_TSBI_CSR_WRITE(CSR_MSTATEEN0, MSTATEEN_HSTATEEN | MSTATEEN0_HENVCFG | MSTATEEN0_JVT)",
+        "#else",
+        "RVTEST_TSBI_CSR_WRITE(CSR_MSTATEEN0, MSTATEEN0_JVT)",
+        "RVTEST_TSBI_CSR_WRITE(CSR_MSTATEEN0H, MSTATEENH_HSTATEEN | MSTATEEN0H_HENVCFG)",
+        "#endif",
+        "#ifdef ZFINX_SUPPORTED",
+        "RVTEST_TSBI_CSR_SET(CSR_MSTATEEN0, MSTATEEN0_FCSR)",
+        "#endif",
+        "#if __riscv_xlen == 64",
+        f"LI(x{tmp_reg}, HSTATEEN_SSTATEEN | HSTATEEN0_SENVCFG | HSTATEEN0_JVT | HSTATEEN0_FCSR)",
+        f"csrw hstateen0, x{tmp_reg}",
+        "#else",
+        f"LI(x{tmp_reg}, HSTATEEN0_JVT | HSTATEEN0_FCSR)",
+        f"csrw hstateen0, x{tmp_reg}",
+        f"LI(x{tmp_reg}, HSTATEENH_SSTATEEN | HSTATEEN0H_SENVCFG)",
+        f"csrw hstateen0h, x{tmp_reg}",
+        "#endif",
+    ]
+    test_data.int_regs.return_register(tmp_reg)
+    return lines
+
+
 def read_csrs(
     test_data: TestData,
     csrs: list[str],

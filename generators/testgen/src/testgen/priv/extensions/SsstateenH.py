@@ -17,7 +17,13 @@ from testgen.asm.csr import csr_walk_test
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.StateenHCommon import HSTATEEN0_ENVCFG, HSTATEEN0_SE0, hstateen0_bit, read_csrs
+from testgen.priv.extensions.StateenHCommon import (
+    HSTATEEN0_ENVCFG,
+    HSTATEEN0_SE0,
+    hstateen0_bit,
+    read_csrs,
+    set_stateen_state,
+)
 from testgen.priv.registry import add_priv_test_generator
 
 STATEEN123 = [
@@ -167,7 +173,14 @@ def make_ssstateenh(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
 
     tc = test_data.new_test_chunk(test_chunks, "hs")
-    tc.code.extend([*_hstateen0_walk(test_data), *_gate_tests(test_data, "hs"), *_stateen123_tests(test_data, "hs")])
+    tc.code.extend(
+        [
+            *set_stateen_state(test_data),
+            *_hstateen0_walk(test_data),
+            *_gate_tests(test_data, "hs"),
+            *_stateen123_tests(test_data, "hs"),
+        ]
+    )
 
     tc = test_data.new_test_chunk(test_chunks, "vs")
     tc.code.extend(

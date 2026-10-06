@@ -32,6 +32,7 @@ from testgen.priv.extensions.StateenHCommon import (
     hstateen0_bit,
     mstateen0_bit,
     read_in_mode,
+    set_stateen_state,
 )
 from testgen.priv.registry import add_priv_test_generator
 
@@ -106,8 +107,8 @@ def _mode_tests(test_data: TestData, mode: str) -> list[str]:
 def _hstateen0_roz_tests(test_data: TestData) -> list[str]:
     """Walk hstateen0 (and hstateen0h) with only mstateen0.SE0 set and with every mstateen0 bit set.
 
-    Afterwards mstateen0 and hstateen0 are set as at boot, because the walks leave the hstateen0 bits whose mstateen0
-    bit was 0 unspecified.
+    Afterwards mstateen0 and hstateen0 are set to the suite's starting state, because the walks leave the hstateen0
+    bits whose mstateen0 bit was 0 unspecified.
     """
     covergroup = _covergroup("hs")
     lines = []
@@ -140,30 +141,7 @@ def _hstateen0_roz_tests(test_data: TestData) -> list[str]:
                 "#endif",
             ]
         )
-    tmp_reg = test_data.int_regs.get_register()
-    lines.extend(
-        [
-            "#if __riscv_xlen == 64",
-            "RVTEST_TSBI_CSR_WRITE(CSR_MSTATEEN0, MSTATEEN_HSTATEEN | MSTATEEN0_HENVCFG | MSTATEEN0_JVT)",
-            "#else",
-            "RVTEST_TSBI_CSR_WRITE(CSR_MSTATEEN0, MSTATEEN0_JVT)",
-            "RVTEST_TSBI_CSR_WRITE(CSR_MSTATEEN0H, MSTATEENH_HSTATEEN | MSTATEEN0H_HENVCFG)",
-            "#endif",
-            "#ifdef ZFINX_SUPPORTED",
-            "RVTEST_TSBI_CSR_SET(CSR_MSTATEEN0, MSTATEEN0_FCSR)",
-            "#endif",
-            "#if __riscv_xlen == 64",
-            f"LI(x{tmp_reg}, HSTATEEN_SSTATEEN | HSTATEEN0_SENVCFG | HSTATEEN0_JVT | HSTATEEN0_FCSR)",
-            f"csrw hstateen0, x{tmp_reg}",
-            "#else",
-            f"LI(x{tmp_reg}, HSTATEEN0_JVT | HSTATEEN0_FCSR)",
-            f"csrw hstateen0, x{tmp_reg}",
-            f"LI(x{tmp_reg}, HSTATEENH_SSTATEEN | HSTATEEN0H_SENVCFG)",
-            f"csrw hstateen0h, x{tmp_reg}",
-            "#endif",
-        ]
-    )
-    test_data.int_regs.return_register(tmp_reg)
+    lines.extend(set_stateen_state(test_data))
     return lines
 
 
@@ -177,7 +155,7 @@ def make_smstateenh(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
 
     tc = test_data.new_test_chunk(test_chunks, "hs")
-    tc.code.extend([*_mode_tests(test_data, "hs"), *_hstateen0_roz_tests(test_data)])
+    tc.code.extend([*set_stateen_state(test_data), *_mode_tests(test_data, "hs"), *_hstateen0_roz_tests(test_data)])
 
     for mode in ("vs", "vu"):
         tc = test_data.new_test_chunk(test_chunks, mode)

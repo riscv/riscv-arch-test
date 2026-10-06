@@ -176,8 +176,8 @@ def write_sigupd_v_len(
         f"# Check if v{params.vd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg}, x{temp_reg2}, and x{temp_reg3} are a temp regs.",
         f"# v{vtmp} will hold the signature result, v{mtmp3}, v{mtmp2}, and v{mtmp} are temporary mask registers holding the masks to aid error detection. v{vs1} was VS1 in the instruction",
         f"# under test and is used to compute the evl for vcompress, v{mask_reg} is the register holding the mask for the instruction under test. In order the flags are: mask_producing,",
-        f"# masked and vcompress. VDSEW={vdsew}, signature lmul = {max(1, lmul)}, a flag for if the destinitation register is used as a scalar vector register, and a flag to force the",
-        "# instruction to be tail and mask agnostic when the spec permits it.",
+        f"# masked and vcompress. VDSEW={vdsew}, signature lmul = {max(1, lmul)}, a flag for if the destination register is used as a scalar vector register, and a flag to force the",
+        "# instruction to be tail and mask agnostic.",
     ]
 
     if segments != 1:

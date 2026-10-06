@@ -601,7 +601,9 @@
         1: ;\
             /* Check tail elements mismatches */                                                                        \
             vmand.mm    _VTMP, _VTMP, _MTMP      ;   /* VTMP[i] = tail && (vd != sig) → mismatch with signature */      \
-            beqz        _LINK_REG, 2f            ;   /* If vta==0 (undisturbed), skip agnostic all 1s comparison */    \
+            .if (_FORCE_TA_MA_FLAG == 0); \
+                beqz        _LINK_REG, 2f        ;   /* If vta==0 (undisturbed), skip agnostic all 1s comparison */    \
+            .endif; \
             vmand.mm    _VTMP, _VTMP, _MTMP2     ;   /* VTMP[i] = signature mismatch && all 1s mismatch */              \
         2: ;\
         .endif; \
@@ -796,7 +798,9 @@
         1: ;\
             /* Check tail elements mismatches */                                                                        \
             nop                                  ;                                                                      \
-            nop                                  ;                                                                      \
+            .if (_FORCE_TA_MA_FLAG == 0); \
+                nop                              ;                                                                      \
+            .endif; \
             nop                                  ;                                                                      \
         2:  ;\
         .endif ;\

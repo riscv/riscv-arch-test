@@ -2492,17 +2492,9 @@ skp_\__MODE__\()tval:
         sv_\__MODE__\()Mtval2:
         csrr    T3, CSR_MTVAL2
         TRAP_SIGUPD(T4, T3, 4, sv_\__MODE__\()Mtval2, sv_Mtval2_str) // write word 4: mtval2
-        #ifdef IMPRECISE_ACCESS_FAULT_XTVAL
-        csrr    T2, CSR_XCAUSE                        // the Addr. Offset field of a transformed
-        LI(     T6, CAUSE_LOAD_ACCESS)                //   mtinst follows the imprecise xtval, so
-        beq     T2, T6, skp_\__MODE__\()Mtinst          //   don't record it either
-        LI(     T6, CAUSE_STORE_ACCESS)
-        beq     T2, T6, skp_\__MODE__\()Mtinst
-        #endif
         sv_\__MODE__\()Mtinst:
         csrr    T3, CSR_MTINST
         TRAP_SIGUPD_ZERO_OK(T4, T3, 5, sv_\__MODE__\()Mtinst, sv_Mtinst_str) // write word 5: mtinst
-        skp_\__MODE__\()Mtinst:
       #endif
   .else
     .ifnc \__MODE__ , V
@@ -2510,17 +2502,9 @@ skp_\__MODE__\()tval:
         sv_\__MODE__\()Htval2:
         csrr    T3, CSR_HTVAL
         TRAP_SIGUPD(T4, T3, 4, sv_\__MODE__\()Htval2, sv_Htval2_str) // write word 4: htval
-        #ifdef IMPRECISE_ACCESS_FAULT_XTVAL
-        csrr    T2, CSR_XCAUSE                        // the Addr. Offset field of a transformed
-        LI(     T6, CAUSE_LOAD_ACCESS)                //   htinst follows the imprecise xtval, so
-        beq     T2, T6, skp_\__MODE__\()Htinst          //   don't record it either
-        LI(     T6, CAUSE_STORE_ACCESS)
-        beq     T2, T6, skp_\__MODE__\()Htinst
-        #endif
         sv_\__MODE__\()Htinst:
         csrr    T3, CSR_HTINST
         TRAP_SIGUPD_ZERO_OK(T4, T3, 5, sv_\__MODE__\()Htinst, sv_Htinst_str) // write word 5: htinst
-        skp_\__MODE__\()Htinst:
       #endif
     .endif
   .endif

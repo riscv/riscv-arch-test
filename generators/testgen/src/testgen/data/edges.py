@@ -25,6 +25,9 @@ class IMMEDIATE_EDGES:
     # 6-bit signed immediate (compressed instructions)
     imm_6bit = (0, 1, 2, 3, 4, 8, 16, 30, 31, -32, -31, -2, -1)
 
+    # 6-bit unsigned immediate (vector instructions, values surround SEW boundaries)
+    imm_6bit_u = (0, 1, 2, 3, 4, 7, 8, 9, 15, 16, 17, 30, 31, 32, 33, 62, 63)
+
     # 12-bit signed immediate (I-type, S-type)
     imm_12bit = (0, 1, 2, 3, 4, 8, 16, 32, 64, 128, 256, 512, 1023, 1024, 1795, 2047, -2048, -2047, -2, -1)
 
@@ -465,27 +468,37 @@ class VECTOR_EDGES:
     vls_edges = ("zero_emul8", "random_within_2vlmax")
 
     vf_edges = (
-        "vs_edge_f_pos0",
-        "vs_edge_f_neg0",
-        "vs_edge_f_pos1",
-        "vs_edge_f_neg1",
-        "vs_edge_f_posminnorm",
-        "vs_edge_f_negmaxnorm",
-        "vs_edge_f_posinfinity",
-        "vs_edge_f_neginfinity",
-        "vs_edge_f_pos0p5",
-        "vs_edge_f_pos1p5",
-        "vs_edge_f_neg2",
-        "vs_edge_f_pi",
-        "vs_edge_f_twoToEmax",
-        "vs_edge_f_onePulp",
-        "vs_edge_f_largestsubnorm",
-        "vs_edge_f_negSubnormLeadingOne",
-        "vs_edge_f_min_subnorm",
-        "vs_edge_f_canonicalQNaN",
-        "vs_edge_f_negNoncanonicalQNaN",
-        "vs_edge_f_sNaN_payload1",
+        "pos0",
+        "neg0",
+        "pos1",
+        "neg1",
+        "posminnorm",
+        "negmaxnorm",
+        "posinfinity",
+        "neginfinity",
+        "pos0p5",
+        "pos1p5",
+        "neg2",
+        "pi",
+        "twoToEmax",
+        "onePulp",
+        "largestsubnorm",
+        "negSubnormLeadingOne",
+        "min_subnorm",
+        "canonicalQNaN",
+        "negNoncanonicalQNaN",
+        "sNaN_payload1",
     )
+
+    v_crypto_edges = (
+        "zero",
+        "ones",
+        "walkeven",
+        "walkodd",
+        "random",
+    )
+
+    v_aes_edges = tuple(f"aes_subbytes_{i}" for i in range(16))
 
     f32: ClassVar = {
         "pos0": 0x00000000,  # 0
@@ -633,6 +646,14 @@ class VECTOR_EDGES:
                         conflict = True
                         break
             return random_val
+        aes_match = re.match(r"aes_subbytes_(\d+)", edge)
+        if aes_match:
+            index = int(aes_match.group(1))
+            val = 0
+            i = index * 16
+            for j in range(16):
+                val += (i + j) << (j * 8)
+            return val
         raise ValueError(f"Unknown edge: {edge}")
 
 
@@ -739,6 +760,9 @@ def get_vector_edge(edge: str, suffix: str, sew: int) -> int:
 
     if suffix == "f_bf16":
         return VECTOR_EDGES.bf16[edge]
+
+    if "f_" in suffix:
+        raise ValueError(f"Unknown Floating Point Edge, {suffix}")
 
     if suffix == "eew1":
         return VECTOR_EDGES.edge_value(edge, 8)

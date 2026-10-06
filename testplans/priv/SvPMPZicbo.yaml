@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SvPMPZicbo
+source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=2094227073#gid=2094227073
+coverpoints:
+  - heading: "General Test Environment (SvPMPZicbo):\n- Boots to M-mode (PMP programming). Unchanged by the T-SBI conversion. Run for every supported translation mode: Sv32 on RV32; Sv39, Sv48 and Sv57 on RV64, as selected by the UDB configuration."
+  - name: cp_PA_PMP_rw_unset_cbo_s
+    goal: Verify PMP applies to CBOs on the translated physical address from S-mode
+    description: "S-mode: valid leaf PTE with PTE.U=0 at every page-table level (4 KiB page and each superpage size of the Sv mode); PMP entry 0 removes R and W from the translated physical page. Execute Zicbom (cbo.clean/flush/inval) or Zicboz (cbo.zero) on va_data."
+    expectation: Store/AMO access fault (mcause = 7).
+    bins: |-
+      PTE_s x PageType_d x PMP_perm x cbo_ins x store_acc_fault x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: cbm_unperm_fault cbz_unperm_fault
+    rules:
+      - "[norm:cbm_unperm_fault] [norm:cbz_unperm_fault]"
+  - name: cp_PA_PMP_rw_unset_cbo_u
+    goal: Verify PMP applies to CBOs on the translated physical address from U-mode
+    description: "U-mode: valid leaf PTE with PTE.U=1 at every page-table level (4 KiB page and each superpage size of the Sv mode); PMP entry 0 removes R and W from the translated physical page. Execute Zicbom (cbo.clean/flush/inval) or Zicboz (cbo.zero) on va_data."
+    expectation: Store/AMO access fault (mcause = 7).
+    bins: |-
+      PTE_u x PageType_d x PMP_perm x cbo_ins x store_acc_fault x mode {U-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: cbm_unperm_fault cbz_unperm_fault
+    rules:
+      - "[norm:cbm_unperm_fault] [norm:cbz_unperm_fault]"
+  - name: cp_PTE_PMP_rw_unset_cbo_s
+    goal: Verify PMP applies to the page-table read made by a CBO from S-mode
+    description: "S-mode: PMP entry 0 removes R from the page table used by the walk, at each level. Execute Zicbom or Zicboz on va_data."
+    expectation: Store/AMO access fault (mcause = 7).
+    bins: |-
+      PTE_s x PageType_d x PMP_perm x cbo_ins x store_acc_fault x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: cbp_unperm_translate pmp_check_pagetable_access
+    rules:
+      - "[norm:cbp_unperm_translate] [norm:pmp_check_pagetable_access]"
+  - name: cp_PTE_PMP_rw_unset_cbo_u
+    goal: Verify PMP applies to the page-table read made by a CBO from U-mode
+    description: "U-mode: PMP entry 0 removes R from the page table used by the walk, at each level. Execute Zicbom or Zicboz on va_data."
+    expectation: Store/AMO access fault (mcause = 7).
+    bins: |-
+      PTE_u x PageType_d x PMP_perm x cbo_ins x store_acc_fault x mode {U-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: cbp_unperm_translate pmp_check_pagetable_access
+    rules:
+      - "[norm:cbp_unperm_translate] [norm:pmp_check_pagetable_access]"

@@ -97,6 +97,8 @@ def generate_all_tests(
     else:
         for ext in extensions.split(","):
             ext = ext.strip()
+            if not ext:
+                continue
             if ext in available_unpriv_extensions:
                 unpriv_ext_list.append(ext)
             elif ext in available_priv_extensions:

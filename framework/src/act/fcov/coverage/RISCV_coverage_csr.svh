@@ -943,6 +943,15 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_64
       "type" : val = (val >> 60) & 64'hf;
 `endif
+      // mcontrol6 fields
+      "chain" : val = (val >> 11) & 'h1;
+      "execute" : val = (val >> 2) & 'h1;
+      "load" : val = val & 'h1;
+      "m" : val = (val >> 6) & 'h1;
+      "match" : val = (val >> 7) & 'hf;
+      "select" : val = (val >> 21) & 'h1;
+      "size" : val = (val >> 16) & 'h7;
+      "store" : val = (val >> 1) & 'h1;
       default: val = 0; // Todo: error
     endcase
   end

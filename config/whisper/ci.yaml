@@ -2,7 +2,7 @@
 # Jordan Carlin jcarlin@hmc.edu April 2026
 # CI configuration for Whisper simulator
 
-# SsstrictSm: Sail 0.14.1 lacks Smaia and Smrnmi, whose CSRs Whisper implements; Whisper also
+# SsstrictSm: Sail 0.15 lacks Smaia and Smrnmi, whose CSRs Whisper implements; Whisper also
 #   exposes CSRs that do not exist on the configured hart (ssp without Zicfiss, S-level AIA CSRs
 #   without S-mode, hidelegh without H, RV32 mhpmevent<n>h without Sscofpmf)
 # Smstateen: Whisper's mstateen0/0h writable mask ignores the configured extensions (RV32 P1P13

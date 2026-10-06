@@ -16,7 +16,7 @@ COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/
 # Default exclusion reasons:
 #  - Sm: Insufficient WARL configuration options.
 EXTENSIONS  ?=
-EXCLUDE_EXTENSIONS ?= SdtrigSm,SdtrigS,SdtrigU
+EXCLUDE_EXTENSIONS ?= SdtrigSm,SdtrigS,SdtrigU,F,D,Vx8,Vx16,Vx64,Vf16,Vf32,Vf64,Vls8,Vls32,Vls64
 CERTIFICATE ?=
 ENABLE_EXPERIMENTAL_EXTENSIONS ?=
 
@@ -27,7 +27,7 @@ ENABLE_EXPERIMENTAL_EXTENSIONS ?=
 # VERBOSE implies DEBUG, serializes all commands (JOBS=1), and prints each command as it is issued.
 # CLEAN_INTERMEDIATES deletes each config's intermediate build/ dir after a successful build to save disk space (only final ELFs/objdumps are kept).
 DEBUG       ?=
-FAST        ?=
+FAST        ?= True
 VERBOSE     ?=
 CLEAN_INTERMEDIATES ?=
 

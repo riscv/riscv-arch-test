@@ -25,9 +25,8 @@ covergroup = "ZicntrSm_cg"
     "ZicntrSm",
     required_extensions=[
         "Sm",
-        "U",
         "Zicntr",
-    ],  # don't bother to generate if U is not supported, because it would be empty
+    ],
     march_extensions=["Zicntr", "Zihpm", "Zawrs", "Zalrsc"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )

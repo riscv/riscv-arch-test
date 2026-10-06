@@ -20,9 +20,6 @@ Counteren = Literal["ones", "zeros"]
 
 _COUNTERS = ["cycle", "time", "instret"]
 
-# a0-a2 are clobbered by T-SBI, ecall and the interrupt macros
-_MACRO_CLOBBERED = {10, 11, 12}
-
 
 def _access_counter(
     test_data: TestData, covergroup: str, coverpoint: str, bin_prefix: str, read_reg: int, i: int
@@ -169,18 +166,6 @@ def counter_inc_inaccessible_tests(test_data: TestData, covergroup: str, mode: M
     return lines
 
 
-def _alloc(test_data: TestData, count: int) -> list[int]:
-    """Allocate count registers outside a0-a2, which T-SBI and the interrupt macros clobber."""
-    regs: list[int] = []
-    rejected: list[int] = []
-    while len(regs) < count:
-        reg = test_data.int_regs.get_register()
-        (rejected if reg in _MACRO_CLOBBERED else regs).append(reg)
-    if rejected:
-        test_data.int_regs.return_registers(rejected)
-    return regs
-
-
 def _counter_prep(test_data: TestData, mode: Mode) -> list[str]:
     """Start the counters and, in U-mode, make them readable."""
     lines = [
@@ -189,7 +174,7 @@ def _counter_prep(test_data: TestData, mode: Mode) -> list[str]:
         "#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED",
     ]
     if mode == "U":
-        (r_tmp,) = _alloc(test_data, 1)
+        (r_tmp,) = test_data.int_regs.get_registers(1)
         lines += [f"LI(x{r_tmp}, -1)", *_set_counterens(f"x{r_tmp}", mode)]
         test_data.int_regs.return_registers([r_tmp])
     return lines
@@ -206,7 +191,7 @@ def _instret_case(
     cleanup: list[str] | None = None,
 ) -> list[str]:
     """Read the counter before and after body and sigupd the delta."""
-    r_before, r_after, r_diff = _alloc(test_data, 3)
+    r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
     counter = "instret" if mode == "U" else "minstret"
     lines = [
         *(setup or []),
@@ -226,10 +211,10 @@ def _instret_case(
 def _instret_wait_case(test_data: TestData, covergroup: str, name: str, mode: Mode, wait: str) -> list[str]:
     """Delta around a wait instruction (wfi, wrs.nto or wrs.sto) that a timer interrupt ends."""
     csr = "instret" if mode == "U" else "minstret"
-    r_before, r_after, r_diff = _alloc(test_data, 3)
-    r_count, r_addr = _alloc(test_data, 2)
+    r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
+    r_count, r_addr = test_data.int_regs.get_registers(2)
     reserve = wait.startswith("wrs")
-    r_rsv = _alloc(test_data, 1) if reserve else []
+    r_rsv = test_data.int_regs.get_registers(1) if reserve else []
 
     trip = [
         *([f"lr.w x{r_after}, (x{r_rsv[0]})  # retake the reservation"] if reserve else []),
@@ -276,7 +261,7 @@ def instret_retire_tests(test_data: TestData, covergroup: str, mode: Mode) -> li
     csr = "instret" if mode == "U" else "minstret"
     lines = _counter_prep(test_data, mode)
 
-    (r_tmp,) = _alloc(test_data, 1)
+    (r_tmp,) = test_data.int_regs.get_registers(1)
     lines += [
         comment_banner("cp_instret_delta", f"{csr} delta around add in {mode}-mode"),
         "",
@@ -285,7 +270,7 @@ def instret_retire_tests(test_data: TestData, covergroup: str, mode: Mode) -> li
     test_data.int_regs.return_registers([r_tmp])
 
     if mode == "M":
-        r_save, r_mask = _alloc(test_data, 2)
+        r_save, r_mask = test_data.int_regs.get_registers(2)
         lines += [
             comment_banner("cp_instret_delta", "minstret delta around mret (MPP = M)"),
             "",
@@ -309,7 +294,7 @@ def instret_retire_tests(test_data: TestData, covergroup: str, mode: Mode) -> li
         test_data.int_regs.return_registers([r_save, r_mask])
 
         # sret returns to U-mode, so T-SBI goes back to M before minstret is read
-        r_save, r_tmp = _alloc(test_data, 2)
+        r_save, r_tmp = test_data.int_regs.get_registers(2)
         lines += [
             "#ifdef S_SUPPORTED",
             comment_banner("cp_instret_delta", "minstret delta around sret (SPP = U, T-SBI back to M)"),
@@ -368,7 +353,7 @@ def instret_exception_tests(test_data: TestData, covergroup: str, mode: Mode) ->
         "#endif // UDB_TIME_CSR_IMPLEMENTED",
     ]
 
-    r_addr, r_tmp = _alloc(test_data, 2)
+    r_addr, r_tmp = test_data.int_regs.get_registers(2)
     lines += [
         "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
         comment_banner("cp_instret_delta", f"Load access fault in {mode}-mode: {csr} delta recorded"),
@@ -407,7 +392,7 @@ def instret_interrupt_tests(test_data: TestData, covergroup: str, mode: Mode) ->
     csr = "instret" if mode == "U" else "minstret"
     lines = _counter_prep(test_data, mode)
     if mode == "U":
-        (r_tmp,) = _alloc(test_data, 1)
+        (r_tmp,) = test_data.int_regs.get_registers(1)
         lines += [f"LI(x{r_tmp}, 0x200000)", csr_access(f"csrc mstatus, x{r_tmp}  # mstatus.TW = 0", mode)]
         test_data.int_regs.return_registers([r_tmp])
 
@@ -433,7 +418,7 @@ def instret_interrupt_tests(test_data: TestData, covergroup: str, mode: Mode) ->
     ]
 
     if mode == "M":
-        (r_tmp,) = _alloc(test_data, 1)
+        (r_tmp,) = test_data.int_regs.get_registers(1)
         lines += [
             comment_banner("cp_instret_delta", "wfi with timer interrupt pending and MIE = 0: no trap."),
             "",

@@ -159,4 +159,3 @@ coverpoints:
       - pmp_misaligned_access_behavior
       - pmp_full_match_required
       - pmp_no_entry_match
-      - mtval_vaddr_wr_misaligned_addr

@@ -41,3 +41,5 @@ coverpoints:
       - pma_mag_op_within
       - pma_mag_insts
       - mcause_exccode_st_sc_amo
+  - heading: Not yet implemented in ACT4 (no coverpoint or test yet)
+  - goal: "Open item: with Zabha, the halfword AMOs (amo*.h, and amocas.h with Zacas) are in the misaligned atomicity granule's instruction set. Add them to cp_misaligned_mag16, 1 byte below the middle of the granule."

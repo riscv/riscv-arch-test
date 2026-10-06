@@ -432,9 +432,9 @@ coverpoints:
       - pmp_misaligned_access_behavior
       - pmp_full_match_required
       - pmp_rwx_check
-      - mtval_vaddr_wr_misaligned_addr
   - heading: Not yet implemented in ACT4 (no coverpoint or test yet)
   - goal: "Open item from the original plan: add mstatus.MXR to cp_cfg_R and cp_cfg_W."
   - goal: "Open item from the original plan: add a check of the default (background) region."
   - goal: "Open item from the original plan: add a check of different region types in combination."
   - goal: "Open item from the original plan: a misaligned instruction or data access that spans a 4 KiB page boundary and translates to two physical pages, one outside the PMP region. Belongs in SvPMP."
+  - goal: "Open item: no ACT configuration has G = 1 (PMP_GRANULARITY = 3), so CI runs the G <= 1 rows (cp_misaligned_mag16, PMPZacas cp_partial_match_q) only at G = 0. Add a G = 1 configuration."

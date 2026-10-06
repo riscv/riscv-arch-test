@@ -132,4 +132,7 @@ normative_rule_definitions:
   # access-fault, page-fault, or hardware-error exception, then mtval will contain the
   # virtual address of the portion of the access that caused the fault.
   - name: mtval_vaddr_wr_misaligned_addr
-    coverpoint: ["PMPU_cg/cp_misaligned_partial"]
+    coverpoint:
+      [
+        "TODO: cp_misaligned_partial does not record mtval (IMPRECISE_ACCESS_FAULT_XTVAL); check that it holds the address of a faulting portion of the access",
+      ]

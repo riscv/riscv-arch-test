@@ -34,3 +34,5 @@ coverpoints:
       - pma_mag_op_within
       - pma_mag_insts
       - mcause_exccode_st_sc_amo
+  - heading: Not yet implemented in ACT4 (no coverpoint or test yet)
+  - goal: "Open item: no ACT configuration has G = 1 (PMP_GRANULARITY = 3), so CI runs the G <= 1 rows (cp_misaligned_mag16, PMPZacas cp_partial_match_q) only at G = 0. Add a G = 1 configuration."

@@ -10,7 +10,13 @@
 
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.ZicntrCommon import counter_inc_inaccessible_tests, counteren_walk_tests
+from testgen.priv.extensions.ZicntrCommon import (
+    counter_inc_inaccessible_tests,
+    counteren_walk_tests,
+    instret_exception_tests,
+    instret_interrupt_tests,
+    instret_retire_tests,
+)
 from testgen.priv.registry import add_priv_test_generator
 
 covergroup = "ZicntrU_cg"
@@ -19,7 +25,7 @@ covergroup = "ZicntrU_cg"
 @add_priv_test_generator(
     "ZicntrU",
     required_extensions=["U", "Zicntr"],
-    march_extensions=["Zicntr", "Zihpm"],
+    march_extensions=["Zicntr", "Zihpm", "Zawrs", "Zalrsc"],
 )
 def make_zicntru(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZicntrU coverpoints"""
@@ -37,5 +43,8 @@ def make_zicntru(test_data: TestData) -> list[TestChunk]:
         )
     )
     tc.code.extend(counter_inc_inaccessible_tests(test_data, covergroup, "U"))
+    tc.code.extend(instret_retire_tests(test_data, covergroup, "U"))  # add
+    tc.code.extend(instret_exception_tests(test_data, covergroup, "U"))
+    tc.code.extend(instret_interrupt_tests(test_data, covergroup, "U"))
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

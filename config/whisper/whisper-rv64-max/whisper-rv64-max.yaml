@@ -176,7 +176,7 @@ params:
   # Zicntr params
   TIME_CSR_IMPLEMENTED: false
   # U params
-  WFI_U_MODE: true
+  WFI_U_MODE: false
   MUTABLE_MISA_U: true
   U_MODE_ENDIANNESS: dynamic
   UXLEN: [64]

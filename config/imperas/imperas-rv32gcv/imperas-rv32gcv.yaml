@@ -29,12 +29,7 @@ implemented_extensions:
   - { name: Ssaia, version: "= 1.0.0" }
   - { name: Ssccfg, version: "= 1.0.0" }
   - { name: Ssccptr, version: "= 1.0.0" }
-  # Sscofpmf is not claimed yet. Imperas implements mhpmevent3 with writable OF and xINH bits
-  # but hardwires mhpmcounter3 to zero. Sail 0.14.1 cannot describe that hart: writable_hpm_counters
-  # makes an event register and its counter both writable or both read-only zero, and Sail does
-  # not count HPM events (sail-riscv #1733). imperas.ic and sail.json keep Sscofpmf enabled so
-  # both models agree on LCOFIP and scountovf; claim it here once Sail can model this hart.
-  # - { name: Sscofpmf, version: "= 1.0.0" }
+  - { name: Sscofpmf, version: "= 1.0.0" }
   - { name: Sscounterenw, version: "= 1.0.0" }
   - { name: Sscsrind, version: "= 1.0.0" }
   - { name: Ssctr, version: "= 1.0.0" }

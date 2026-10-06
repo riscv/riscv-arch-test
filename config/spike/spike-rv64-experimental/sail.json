@@ -464,13 +464,13 @@
   },
   "extensions": {
     "M": {
-      "supported": true
+      "supported": false
     },
     "A": {
-      "supported": true
+      "supported": false
     },
     "F": {
-      "supported": true,
+      "supported": false,
       // When to set mstatus[FS] and mstatus[SD] to 1, as a result of fflags
       // being set. There are three options:
       //
@@ -483,7 +483,7 @@
       "fflags_dirty_policy": "Fflags_Dirty_Precise"
     },
     "D": {
-      "supported": true
+      "supported": false
     },
     "V": {
       // `support_level` must be one of the below strings:
@@ -497,12 +497,12 @@
       // For e.g. Zve32x and Zve32f require `elen_exp` >= 5,
       // Zve64x, Zve64f, and Zve64d require `elen_exp` >= 6,
       // and V requires `elen_exp` >= 6 and `vlen_exp` >= 7.
-      "support_level": "Full",
+      "support_level": "Disabled",
       // `vlen_exp` and `elen_exp` should be between 3 and 16,
       // inclusive.  If `support_level` is `"Disabled"`, then these
       // should be left as 3 (or any other legal value).
-      "vlen_exp": 7,
-      "elen_exp": 6,
+      "vlen_exp": 3,
+      "elen_exp": 3,
       "reserved_behavior": {
         // This determines how to handle attempts by vsetvli, vsetivli,
         // and vsetvl to set an unsupported or reserved vtype.
@@ -539,7 +539,7 @@
       }
     },
     "B": {
-      "supported": true
+      "supported": false
     },
     "S": {
       "supported": true,
@@ -554,7 +554,7 @@
     },
 
     "H": {
-      "supported": true,
+      "supported": false,
       "geilen": 63,
       "guest_page_fault_writes_htval": true,
       "hgatp_modes": {
@@ -566,14 +566,14 @@
       "vsatp_modes": { "Sv32": false, "Sv39": true, "Sv48": true, "Sv57": true }
     },
 
-    "Sha": { "supported": true },
-    "Shcounterenw": { "supported": true },
-    "Shgatpa": { "supported": true },
-    "Shtvala": { "supported": true },
-    "Shvsatpa": { "supported": true },
-    "Shvstvala": { "supported": true },
-    "Shvstvecd": { "supported": true },
-    "Sstvecd": { "supported": true },
+    "Sha": { "supported": false },
+    "Shcounterenw": { "supported": false },
+    "Shgatpa": { "supported": false },
+    "Shtvala": { "supported": false },
+    "Shvsatpa": { "supported": false },
+    "Shvstvala": { "supported": false },
+    "Shvstvecd": { "supported": false },
+    "Sstvecd": { "supported": false },
     "Svukte": { "supported": false },
     "Zilx": { "supported": false },
     "Zibi": {
@@ -583,76 +583,76 @@
     // If you enable this you also need to ensure `platform.cache_block_size_exp`
     // is 6, otherwise you will get a config validation error.
     "Zic64b": {
-      "supported": true
+      "supported": false
     },
     "Zicbom": {
-      "supported": true
+      "supported": false
     },
     "Zicbop": {
-      "supported": true
+      "supported": false
     },
     "Zicboz": {
-      "supported": true
+      "supported": false
     },
     "Ziccamoa": {
-      "supported": true
+      "supported": false
     },
     "Ziccamoc": {
-      "supported": true
+      "supported": false
     },
     "Ziccif": {
-      "supported": true
+      "supported": false
     },
     "Zicclsm": {
-      "supported": true
+      "supported": false
     },
     "Ziccrse": {
-      "supported": true
+      "supported": false
     },
     "Zicfilp": {
-      "supported": true
+      "supported": false
     },
     "Zicfiss": {
-      "supported": true
+      "supported": false
     },
     "Zicond": {
-      "supported": true
+      "supported": false
     },
     "Zicntr": {
-      "supported": true
+      "supported": false
     },
     "Zicsr": {
       "supported": true
     },
     "Zifencei": {
-      "supported": true
+      "supported": false
     },
     "Zihintntl": {
-      "supported": true
+      "supported": false
     },
     "Zihintpause": {
-      "supported": true
+      "supported": false
     },
     "Zihpm": {
-      "supported": true
+      "supported": false
     },
     "Zimop": {
-      "supported": true
+      "supported": false
     },
     "Zmmul": {
-      "supported": true
+      "supported": false
     },
     "Zaamo": {
-      "supported": true
+      "supported": false
     },
     "Zabha": {
-      "supported": true
+      "supported": false
     },
     "Zacas": {
-      "supported": true
+      "supported": false
     },
     "Zalrsc": {
-      "supported": true
+      "supported": false
     },
     // This extension just asserts that each memory region has a MAG
     // PMA of at least 16 bytes.  If you enable this you also need to ensure
@@ -660,10 +660,10 @@
     // cacheable main memory region is >= 4, otherwise you will get a
     // config validation error.
     "Zama16b": {
-      "supported": true
+      "supported": false
     },
     "Zawrs": {
-      "supported": true,
+      "supported": false,
       // Whether `WRS.NTO` and `WRS.STO` behave as NOPS.  If they do
       // not, see above note for `platform.max_time_to_wait`.  If
       // Zawrs is not supported, these `is_nop` fields need to be
@@ -676,16 +676,16 @@
       }
     },
     "Zfa": {
-      "supported": true
+      "supported": false
     },
     "Zfbfmin": {
-      "supported": true
+      "supported": false
     },
     "Zfh": {
-      "supported": true
+      "supported": false
     },
     "Zfhmin": {
-      "supported": true
+      "supported": false
     },
     "Zfinx": {
       "supported": false
@@ -694,52 +694,52 @@
       "supported": false
     },
     "Zca": {
-      "supported": true
+      "supported": false
     },
     "Zcf": {
       "supported": false
     },
     "Zcd": {
-      "supported": true
+      "supported": false
     },
     "Zcb": {
-      "supported": true
+      "supported": false
     },
     "Zcmop": {
-      "supported": true
+      "supported": false
     },
     "Zba": {
-      "supported": true
+      "supported": false
     },
     "Zbb": {
-      "supported": true
+      "supported": false
     },
     "Zbs": {
-      "supported": true
+      "supported": false
     },
     "Zbc": {
-      "supported": true
+      "supported": false
     },
     "Zbkb": {
-      "supported": true
+      "supported": false
     },
     "Zbkc": {
-      "supported": true
+      "supported": false
     },
     "Zbkx": {
-      "supported": true
+      "supported": false
     },
     "Zknd": {
-      "supported": true
+      "supported": false
     },
     "Zkne": {
-      "supported": true
+      "supported": false
     },
     "Zknh": {
-      "supported": true
+      "supported": false
     },
     "Zkr": {
-      "supported": true,
+      "supported": false,
       // If Zkr is not supported, these fields need to be present but
       // their boolean values are ignored.
       "sseed_reset_value": false,
@@ -748,13 +748,13 @@
       "useed_read_only_zero": false
     },
     "Zksed": {
-      "supported": true
+      "supported": false
     },
     "Zksh": {
-      "supported": true
+      "supported": false
     },
     "Zkt": {
-      "supported": true
+      "supported": false
     },
     "Zhinx": {
       "supported": false
@@ -766,96 +766,96 @@
       "supported": false
     },
     "Zvfbfmin": {
-      "supported": true
+      "supported": false
     },
     "Zvfbfwma": {
-      "supported": true
+      "supported": false
     },
     "Zvfh": {
-      "supported": true
+      "supported": false
     },
     "Zvfhmin": {
-      "supported": true
+      "supported": false
     },
     "Zvbb": {
-      "supported": true
+      "supported": false
     },
     "Zvbc": {
-      "supported": true
+      "supported": false
     },
     "Zvkb": {
-      "supported": true
+      "supported": false
     },
     "Zvkg": {
-      "supported": true
+      "supported": false
     },
     "Zvkned": {
-      "supported": true
+      "supported": false
     },
     "Zvknha": {
-      "supported": true
+      "supported": false
     },
     "Zvknhb": {
-      "supported": true
+      "supported": false
     },
     "Zvksed": {
-      "supported": true
+      "supported": false
     },
     "Zvksh": {
-      "supported": true
+      "supported": false
     },
     "Zvkt": {
-      "supported": true
+      "supported": false
     },
     "Ssccptr": {
-      "supported": true
+      "supported": false
     },
     "Sscofpmf": {
-      "supported": true
+      "supported": false
     },
     "Sscounterenw": {
-      "supported": true
+      "supported": false
     },
     "Sstc": {
-      "supported": true
+      "supported": false
     },
     // Enabling Sstvala requires that the exceptions specified in the extension
     // have their appropriate settings under `base.xtval_nonzero`.
     "Sstvala": {
-      "supported": true
+      "supported": false
     },
     "Svade": {
-      "supported": true
+      "supported": false
     },
     "Svadu": {
-      "supported": true
+      "supported": false
     },
     "Svinval": {
-      "supported": true
+      "supported": false
     },
     "Svrsw60t59b": {
       "supported": false
     },
     "Svnapot": {
-      "supported": true
+      "supported": false
     },
     "Ssnpm": {
-      "supported": true,
+      "supported": false,
       "supported_pmlen_7": true,
       "supported_pmlen_16": true
     },
     "Smnpm": {
-      "supported": true,
+      "supported": false,
       "supported_pmlen_7": true,
       "supported_pmlen_16": true
     },
     "Smmpm": {
-      "supported": true,
+      "supported": false,
       "supported_pmlen_7": true,
       "supported_pmlen_16": true
     },
     "Smcntrpmf": {
-      "supported": true
+      "supported": false
     },
     "Svbare": {
       "supported": true,
@@ -868,23 +868,23 @@
       "supported": true
     },
     "Sv48": {
-      "supported": true
+      "supported": false
     },
     "Sv57": {
-      "supported": true
+      "supported": false
     },
     "Stateen": {
       "Smstateen": {
-        "supported": true
+        "supported": false
       },
       "Ssstateen": {
-        "supported": true
+        "supported": false
       },
       "C_readonly_zero": true,
       "SE0_readonly_zero": false
     },
     "Ssqosid": {
-      "supported": true,
+      "supported": false,
       // These lengths should be between 1 and 12, inclusive.
       // If Ssqosid is not supported, this should be left as 1
       // (or any other legal value).
@@ -892,10 +892,10 @@
       "mcid_length": 12
     },
     "Svpbmt": {
-      "supported": true
+      "supported": false
     },
     "Svvptc": {
-      "supported": true
+      "supported": false
     }
   }
 }

@@ -54,9 +54,7 @@ def _full_test_dict(exclude: str) -> dict[str, TestMetadata]:
 
 
 @cache
-def _selected_suite_weights(
-    config_file: Path, exclude: str, workdir: Path, enable_experimental_extensions: bool
-) -> tuple[tuple[str, int], ...]:
+def _selected_suite_weights(config_file: Path, exclude: str, workdir: Path) -> tuple[tuple[str, int], ...]:
     """Return selected suite weights for a config using ACT's selection path.
 
     Uses the same selection pipeline as the act CLI (prepare_configs_and_select_tests).
@@ -65,18 +63,12 @@ def _selected_suite_weights(
 
     The cache key includes ``exclude`` because ACT applies exclusions before
     test selection; the same config can legitimately produce different
-    suite weights when simulator-level exclusions differ. Similarly, the cache
-    key must include ``enable_experimental_extensions`` because it can change test selection.
-    The selected test set is small enough that per-file ``stat`` calls are cheap, and this
+    suite weights when simulator-level exclusions differ. The selected test
+    set is small enough that per-file ``stat`` calls are cheap, and this
     keeps the weighting tied exactly to ACT's selected tests.
     """
     ((_, _, selected_tests),) = prepare_configs_and_select_tests(
-        [config_file],
-        None,
-        _full_test_dict(exclude),
-        workdir,
-        validate_tools=False,
-        enable_experimental_extensions=enable_experimental_extensions,
+        [config_file], None, _full_test_dict(exclude), workdir, validate_tools=False
     )
     weights: dict[str, int] = {}
     for test_name in selected_tests:
@@ -183,7 +175,6 @@ def discover_configs(config_dir: Path, workdir: Path | None = None) -> list[dict
         apt_packages = sim_config.get("apt_packages", "")
         setup_script = sim_config.get("setup_script", "")
         exclude_configs: set[str] = set(sim_config.get("exclude_configs", []))
-        experimental_configs: set[str] = set(sim_config.get("experimental_configs", []))
         # Number of CI runners to split each config across. Defaults to 1
         # (no sharding). Slow simulators / configs benefit from a higher
         # value — the testsuites are split into N bin-packed shards and
@@ -231,15 +222,12 @@ def discover_configs(config_dir: Path, workdir: Path | None = None) -> list[dict
 
             run_cmd = run_cmd_file.read_text().strip()
             config_file = run_cmd_file.parent / "test_config.yaml"
-            enable_experimental_extensions = config_name in experimental_configs
 
             shards = config_shards.get(config_name, default_shards)
             if shards < 1:
                 raise ValueError(f"{sim_ci_yaml}: 'config_shards[{config_name}]' must be >= 1, got {shards}")
 
-            suite_weights = _selected_suite_weights(
-                config_file, exclude_extensions, workdir, enable_experimental_extensions
-            )
+            suite_weights = _selected_suite_weights(config_file, exclude_extensions, workdir)
             shard_lists = _shard_assignments(suite_weights, shards)
 
             for shard_index in range(shards):
@@ -253,7 +241,6 @@ def discover_configs(config_dir: Path, workdir: Path | None = None) -> list[dict
                         "config_file": str(config_file),
                         "run_cmd": run_cmd,
                         "exclude_extensions": exclude_extensions,
-                        "enable_experimental_extensions": "True" if enable_experimental_extensions else "",
                         "install_script": install_script,
                         "apt_packages": apt_packages,
                         "setup_script": setup_script,

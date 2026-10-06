@@ -155,7 +155,6 @@ jobs:
         env:
           MATRIX_EXCLUDE_EXTENSIONS: ${{ matrix.exclude_extensions }}
           MATRIX_CONFIG_FILE: ${{ matrix.config_file }}
-          ENABLE_EXPERIMENTAL_EXTENSIONS: ${{ matrix.enable_experimental_extensions }}
         run: |
           FAST=True \
           EXTENSIONS="${MATRIX_EXTENSIONS}" \
@@ -177,6 +176,80 @@ jobs:
         with:
           name: ${{ matrix.config }}${{ matrix.shard_suffix }}-logs
           path: work/${{ matrix.config }}/logs
+
+  spike-rv64-experimental:
+    name: Spike (experimental extensions)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up tools
+        uses: $/.github/actions/setup-tools
+        with:
+          install-architecture-tools: "true"
+
+      - name: Read Spike exclusions
+        id: spike-config
+        run: |
+          exclude_extensions="$(ruby -ryaml -e 'print YAML.load_file("config/spike/ci.yaml").fetch("exclude_extensions", "")')"
+          echo "exclude_extensions=${exclude_extensions}" >> "$GITHUB_OUTPUT"
+
+      - name: Install runtime dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y device-tree-compiler libboost-regex-dev libboost-system-dev
+
+      - name: Compute simulator cache key
+        id: spike-cache-key
+        run: |
+          hash="$(sha256sum .github/scripts/install-spike.sh)"
+          echo "key=spike-${hash:0:12}" >> "$GITHUB_OUTPUT"
+
+      - name: Restore cached simulator
+        id: cache-restore
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ${{ github.workspace }}/spike
+          key: ${{ steps.spike-cache-key.outputs.key }}
+
+      - name: Install simulator
+        if: steps.cache-restore.outputs.cache-hit != 'true'
+        run: bash .github/scripts/install-spike.sh "${GITHUB_WORKSPACE}/spike"
+
+      - name: Save cached simulator
+        if: steps.cache-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ${{ github.workspace }}/spike
+          key: ${{ steps.spike-cache-key.outputs.key }}
+
+      - name: Add simulator to PATH
+        run: echo "$GITHUB_WORKSPACE/spike/bin" >> "$GITHUB_PATH"
+
+      - name: Build ELFs
+        env:
+          SPIKE_EXCLUDE_EXTENSIONS: ${{ steps.spike-config.outputs.exclude_extensions }}
+        run: |
+          FAST=True \
+          ENABLE_EXPERIMENTAL_EXTENSIONS=True \
+          EXCLUDE_EXTENSIONS="${SPIKE_EXCLUDE_EXTENSIONS}" \
+          CONFIG_FILES=config/spike/spike-rv64-experimental/test_config.yaml \
+          make elfs --jobs "$(nproc)"
+
+      - name: Run tests
+        run: |
+          ./run_tests.py "$(cat config/spike/spike-rv64-experimental/run_cmd.txt)" \
+            work/spike-rv64-experimental/elfs
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: spike-rv64-experimental-logs
+          path: work/spike-rv64-experimental/logs
 
   vector-testgen:
     name: Vector Testgen
@@ -307,6 +380,7 @@ jobs:
       [
         lint,
         regress,
+        spike-rv64-experimental,
         vector-testgen,
         check-tests,
         python-versions,

@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: EndianF
+source: https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=1999049510#gid=1999049510
+coverpoints:
+  - name: cp_endianness_f
+    goal: Read from memory in an endian fashion
+    description: Write 0x0102030405060708 to scratch. For each endianness, flw from scratch, and fsw back to scratch. For D, also fld and fsd.
+    notes: |-
+      restore endianness to normal afterward
+      MBE
+      when mstatus.MPRV=0

@@ -464,21 +464,21 @@ covergroup ZicntrH_cg with function sample(ins_t ins);
 
 
     `ifdef UDB_MXLEN_64
-    cp_htimedelta: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedelta", "htimedelta")[63:0]} {
-        bins htimedelta_zero  = {64'h0};
-        bins htimedelta_2p30  = {64'h0000000040000000};     //  2^30
-        bins htimedelta_2p60  = {64'h1000000000000000};     //  2^60
-        bins htimedelta_n2p30 = {64'hFFFFFFFFC0000000};     // -2^30
-        bins htimedelta_n2p60 = {64'hF000000000000000};     // -2^60
-    }
+        cp_htimedelta: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedelta", "htimedelta")[63:0]} {
+            bins htimedelta_zero  = {64'h0};
+            bins htimedelta_2p30  = {64'h0000000040000000};     //  2^30
+            bins htimedelta_2p60  = {64'h1000000000000000};     //  2^60
+            bins htimedelta_n2p30 = {64'hFFFFFFFFC0000000};     // -2^30
+            bins htimedelta_n2p60 = {64'hF000000000000000};     // -2^60
+        }
     `else
-    cp_htimedelta: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedeltah", "htimedeltah")[31:0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedelta", "htimedelta")[31:0]} {
-        bins htimedeltah_zero = {{32'h0}, {32'h0}};
-        bins htimedeltah_2p30 = {{32'h0}, {32'h40000000}};            //  2^30
-        bins htimedeltah_2p60 = {{32'h10000000}, {32'h0}};             // 2^60
-        bins htimedeltah_n2p30 = {{32'hFFFFFFFF}, {32'hC0000000}};    // -2^30
-        bins htimedeltah_n2p60 = {{32'hF0000000}, {32'h0}};           // -2^60
-    }
+        cp_htimedelta: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedeltah", "htimedeltah")[31:0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedelta", "htimedelta")[31:0]} {
+            bins htimedeltah_zero = {{32'h0}, {32'h0}};
+            bins htimedeltah_2p30 = {{32'h0}, {32'h40000000}};            //  2^30
+            bins htimedeltah_2p60 = {{32'h10000000}, {32'h0}};             // 2^60
+            bins htimedeltah_n2p30 = {{32'hFFFFFFFF}, {32'hC0000000}};    // -2^30
+            bins htimedeltah_n2p60 = {{32'hF0000000}, {32'h0}};           // -2^60
+        }
     `endif
 
 

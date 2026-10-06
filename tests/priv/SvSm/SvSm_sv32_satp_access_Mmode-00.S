@@ -33,21 +33,21 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 main:
-  li a0, 1
-  csrw satp, a0
+  LI(a1, SATP_MODE_SV32 << 31)
+  LI(a2, 1 << 22)
+  csrw satp, a1
 SvSm_cg_cp_satp_access_m_csrw:
   # Read satp into x14 and check against expected.
   RVTEST_SIGUPD_CSR_READ(satp, x14, SvSm_cg_cp_satp_access_m_csrw, SvSm_cg_cp_satp_access_m_csrw_str)
-  li a0, 2
-  csrs satp, a0
+  csrs satp, a2
 SvSm_cg_cp_satp_access_m_csrs:
   # Read satp into x14 and check against expected.
   RVTEST_SIGUPD_CSR_READ(satp, x14, SvSm_cg_cp_satp_access_m_csrs, SvSm_cg_cp_satp_access_m_csrs_str)
-  li a0, 1
-  csrc satp, a0
+  csrc satp, a2
 SvSm_cg_cp_satp_access_m_csrc:
   # Read satp into x14 and check against expected.
   RVTEST_SIGUPD_CSR_READ(satp, x14, SvSm_cg_cp_satp_access_m_csrc, SvSm_cg_cp_satp_access_m_csrc_str)
+  csrw satp, zero
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END

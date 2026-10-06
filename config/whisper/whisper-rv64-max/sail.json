@@ -95,7 +95,7 @@
       // not exist.
       "delegatable_bits": {
         "len": 64,
-        "value": "0x0000_0000_000c_b3FF"
+        "value": "0x0000_0000_00fc_b7ff"
       }
     },
     "mideleg": {
@@ -516,7 +516,7 @@
     },
 
     "H": {
-      "supported": false,
+      "supported": true,
       "geilen": 63,
       "guest_page_fault_writes_htval": true,
       "hgatp_modes": {
@@ -804,17 +804,17 @@
     "Ssnpm": {
       "supported": true,
       "supported_pmlen_7": true,
-      "supported_pmlen_16": false
+      "supported_pmlen_16": true
     },
     "Smnpm": {
       "supported": true,
       "supported_pmlen_7": true,
-      "supported_pmlen_16": false
+      "supported_pmlen_16": true
     },
     "Smmpm": {
       "supported": true,
       "supported_pmlen_7": true,
-      "supported_pmlen_16": false
+      "supported_pmlen_16": true
     },
     "Smcntrpmf": {
       "supported": true

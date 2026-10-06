@@ -420,11 +420,7 @@ class VectorRegisterFile(RegisterFile):
             exclude_regs: A list of registers not to use
             reg_range: A list of registers specifically to use
         """
-        registers_available_to_lmul = set()
-        for register in range(0, 32, lmul):
-            group = set(range(register, register + (lmul * segments)))
-            if len(self.reg_list & group) == len(group):
-                registers_available_to_lmul.add(register)
+        registers_available_to_lmul = set(self.free_registers(lmul, segments))
 
         reg_range_set = set(reg_range) if reg_range is not None else set(self.reg_list)
         reg_range_set &= registers_available_to_lmul

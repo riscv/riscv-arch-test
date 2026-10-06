@@ -15,7 +15,7 @@ from functools import cache
 from testgen.constants import ELEN_MAX, MIN_SEW_MIN
 
 
-@dataclass
+@dataclass(frozen=True)
 class VectorInstructionInfo:
     """
     Information about individual vector instructions derived from instruction names.

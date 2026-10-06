@@ -3781,4 +3781,7 @@ def readTestplans(priv=False):
                     for effew in ["32", "64"]:
                         testplans[arch + effew] = tp
                     del testplans[arch]
+                if (arch == "Zvbc"):
+                    testplans["Zvbc64"] = tp
+                    del testplans[arch]
     return testplans

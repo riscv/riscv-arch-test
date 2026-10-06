@@ -2108,6 +2108,7 @@
     failure_diag_type:                         # 0=none, 1=bad reconstructed LREG, 2=bad expected pointer
         .word 0
 #if defined(F_SUPPORTED) && CONFIG_FLEN > UDB_MXLEN
+    .balign 8                                    # stored with 64-bit stores
     failing_value_upper:
         .fill 2, 4, 0xfeedf00dbaaaaaad
     expected_value_upper:
@@ -2118,6 +2119,7 @@
         .fill 1, 4, 0xfeedf00d
     failing_index:                               # element index of first mismatch
         .fill 1, 4, 0xbaaaaaad
+    .balign 8                                    # failing_vl and failing_vtype are stored with SREG
     failing_vl:                                  # vl at point of failure
         .fill 2, 4, 0xfeedf00d
     failing_vtype:                               # vtype at point of failure

@@ -22,16 +22,27 @@ certificate, and the https://github.com/riscv/riscv-arch-test[riscv-arch-test] r
 that contains information about how to use and contribute to the tests.
 
 include::intro.adoc[]
+
 include::cert.adoc[]
+
 include::profiles.adoc[]
+
 include::strategy.adoc[]
+
 include::req.adoc[]
+
 include::abstraction.adoc[]
+
 include::coverage.adoc[]
+
 include::ref.adoc[]
 
 include::unpriv.adoc[]
+
 include::priv.adoc[]
+
 include::nonisa.adoc[]
+
 include::params.adoc[]
+
 include::examples.adoc[]

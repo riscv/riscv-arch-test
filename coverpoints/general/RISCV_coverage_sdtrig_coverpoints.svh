@@ -12,13 +12,13 @@
 //   Debug Trigger coverpoints common to SdtrigSm, SdtrigS, SdtrigU
 //
 ///////////////////////////////////////////
-`ifndef UDB_NUM_TRIGGERS
-    `define UDB_NUM_TRIGGERS 2
+`ifndef UDB_SDTRIG_NUM_TRIGGERS
+    `define UDB_SDTRIG_NUM_TRIGGERS 2
 `endif
 
 triggernum: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tselect", "tselect") {
     type_option.weight = 0;
-    bins all_triggers[] = {[0:`UDB_NUM_TRIGGERS-1]};
+    bins all_triggers[] = {[0:`UDB_SDTRIG_NUM_TRIGGERS-1]};
 }
 csrr: coverpoint ins.current.insn {
     type_option.weight = 0;

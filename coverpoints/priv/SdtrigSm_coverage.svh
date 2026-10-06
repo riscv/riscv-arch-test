@@ -74,7 +74,7 @@ covergroup SdtrigSm_mcontrol6_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_sdtrig_coverpoints.svh"
 
     triggernum_chain: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tselect", "tselect") {
-        bins chained_pair[] = {[1:`UDB_NUM_TRIGGERS-1]};
+        bins chained_pair[] = {[1:`UDB_SDTRIG_NUM_TRIGGERS-1]};
     }
     tdata1_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "m")[0] {
         bins disabled = {1'b0};

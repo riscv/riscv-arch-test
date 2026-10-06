@@ -1734,5 +1734,6 @@ function void zaamo_sample(int hart, int issue, ins_t ins);
             Zaamo_amoxor_d_cg.sample(ins);
         end
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

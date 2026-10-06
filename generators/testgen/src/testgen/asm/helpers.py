@@ -8,6 +8,7 @@
 
 """Assembly generation helpers for test code."""
 
+from functools import lru_cache
 from typing import Literal
 
 from testgen.constants import INDENT
@@ -69,6 +70,7 @@ def lrsc_retry_loop(label: str, counter_reg: int, sc_rd: int) -> tuple[list[str]
     return opening, closing
 
 
+@lru_cache(maxsize=4096)
 def to_hex(value: int, bits: int) -> str:
     """
     Convert an integer to a hex string for assembly output.

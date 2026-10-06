@@ -99,34 +99,52 @@
 // transforms the wrong instruction is caught. Sail writes zero on every trap, so
 // nothing is compared against a Sail reference until sail-riscv#1982 adds the
 // option to write the transformed instruction.
-// Both compile modes emit the same number of instructions so the signature and
-// self-check ELFs have identical code layout.
+// Each pass path executes five instructions. Both compile modes also emit the
+// same number of instructions so the signature and self-check ELFs have identical code layout.
 #ifdef RVTEST_SELFCHECK
   #define TRAP_SIGUPD_ZERO_OK(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR) \
     LREG _TMPREG, _OFF*REGWIDTH(T1)                             ;\
-    beq  _TMPREG, _R, 2f                                        ;\
+    beq  _TMPREG, _R, 1f                                        ;\
     beqz _R, 2f                                                 ;\
-    beqz _TMPREG, 2f                                            ;\
+    beqz _TMPREG, 3f                                            ;\
     mv   T1, _R                                                 ;\
     mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
     jal  T2, failedtest_trap_x7_x9                              ;\
     RVTEST_WORD_PTR _INST_PTR                                   ;\
     RVTEST_WORD_PTR _STR_PTR                                    ;\
     .word CSR_XEPC                                              ;\
-    2:                                                          ;
+    1:                                                          ;\
+    nop                                                         ;\
+    nop                                                         ;\
+    j    4f                                                     ;\
+    2:                                                          ;\
+    nop                                                         ;\
+    j    4f                                                     ;\
+    3:                                                          ;\
+    j    4f                                                     ;\
+    4:                                                          ;
 #else
   #define TRAP_SIGUPD_ZERO_OK(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR) \
     SREG _R, _OFF*REGWIDTH(T1)                                  ;\
-    beq  x0, x0, 2f                                             ;\
+    beq  x0, x0, 1f                                             ;\
     beqz _R, 2f                                                 ;\
-    nop                                                         ;\
+    beqz _TMPREG, 3f                                            ;\
     mv   T1, _R                                                 ;\
     mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
     jal  T2, failedtest_trap_x7_x9                              ;\
     RVTEST_WORD_PTR _INST_PTR                                   ;\
     RVTEST_WORD_PTR _STR_PTR                                    ;\
     .word CSR_XEPC                                              ;\
-    2:                                                          ;
+    1:                                                          ;\
+    nop                                                         ;\
+    nop                                                         ;\
+    j    4f                                                     ;\
+    2:                                                          ;\
+    nop                                                         ;\
+    j    4f                                                     ;\
+    3:                                                          ;\
+    j    4f                                                     ;\
+    4:                                                          ;
 #endif
 
 // RVTEST_SIGUPD_FFLAGS(sigptr, linkreg, tempreg, instptr, strptr)

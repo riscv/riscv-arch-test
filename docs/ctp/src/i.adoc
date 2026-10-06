@@ -8,6 +8,7 @@ include::{testplansdir}/I.adoc[]
 [[t-I-modified-coverpoints]]
 .I Modified Coverpoints
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Modified Coverpoint|Bins|Definition
 |cp_rs1_nx0|31|The rs1 register number, excluding x0.  Used by loads, stores, and `jalr`, whose address would otherwise be the immediate alone, which might not be accessible.

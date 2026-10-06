@@ -111,6 +111,10 @@
   #ifndef RVMODEL_CLR_MEXT_INT_M
     #define RVMODEL_CLR_MEXT_INT_M RVMODEL_CLR_MEXT_INT
   #endif
+
+  #ifndef RVMODEL_SET_MEXT_INT_M
+    #define RVMODEL_SET_MEXT_INT_M RVMODEL_SET_MEXT_INT
+  #endif
 #endif
 
 #ifdef RVMODEL_SET_MSW_INT
@@ -131,6 +135,12 @@
   #ifndef RVMODEL_CLR_SEXT_INT_M
     #ifdef RVMODEL_CLR_SEXT_INT
       #define RVMODEL_CLR_SEXT_INT_M RVMODEL_CLR_SEXT_INT
+    #endif
+  #endif
+
+  #ifndef RVMODEL_SET_SEXT_INT_M
+    #ifdef RVMODEL_SET_SEXT_INT
+      #define RVMODEL_SET_SEXT_INT_M RVMODEL_SET_SEXT_INT
     #endif
   #endif
 

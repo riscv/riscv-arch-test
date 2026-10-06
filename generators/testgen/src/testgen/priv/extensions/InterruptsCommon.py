@@ -34,8 +34,43 @@ int_bit = machine_ints | supervisor_ints | reg_ints | sstc_ints | vs_ints
 int_guard = {"MIP_SEIP": "UDB_SEI_INTR_IMPL", "MIP_SSIP": "UDB_SSI_INTR_IMPL", "SIP_SSIP": "UDB_SSI_INTR_IMPL"}
 int_guard |= {"LCOFI": "SSCOFPMF_SUPPORTED", "SIP_LCOFIP": "SSCOFPMF_SUPPORTED"}
 int_guard |= {name: "SSTC_SUPPORTED" for name in sstc_ints}
-int_coverpoint = {name: "cp_trigger_reg" for name in reg_ints}
+# sip.LCOFIP writes land in the plain cp_trigger cross; the other register writes have their own crosses.
+int_coverpoint = {
+    "MIP_SEIP": "cp_trigger_reg_mip_seip",
+    "MIP_SSIP": "cp_trigger_reg_mip_ssip",
+    "SIP_SSIP": "cp_trigger_reg_sip_ssip",
+}
 int_coverpoint |= {name: "cp_trigger_sti_sstc" for name in sstc_ints}
+
+
+def label_coverpoint(
+    suite: "InterruptSuite", coverpoint: str, priv: str, int_type: str = "", delegated: bool = False
+) -> str:
+    """Coverpoint a testcase label names: ``coverpoint``, or its ``_tsbi`` twin when the coverage model
+    records the case on the T-SBI xret back to the test (the interrupt is raised through T-SBI because
+    ``priv`` cannot reach its pending bit). Mirrors the tsbi ignore_bins of <suite>_coverage.svh.
+    """
+    lower = priv != suite.boot
+    if suite.boot == "M":  # InterruptsSm
+        tsbi = {
+            "cp_trigger": (lower and int_type in ("MSI", "MTI"))
+            or (priv == "U" and int_type in ("STI", "LCOFI", "SIP_LCOFIP"))
+            or (priv == "S" and int_type in ("LCOFI", "SIP_LCOFIP") and not delegated),
+            "cp_trigger_sti_sstc": priv == "U" and int_type == "SSTC_STCE1",
+            "cp_enable_one": lower and int_type in ("MSI", "MTI", "STI", "LCOFI"),
+            "cp_priority_mip": lower,
+            "cp_priority_mie": lower,
+            "cp_priority_mideleg": lower,
+        }
+    else:  # InterruptsS
+        tsbi = {
+            "cp_trigger": priv == "U" and int_type in ("STI", "LCOFI", "SIP_LCOFIP"),
+            "cp_trigger_sti_sstc": priv == "U" and int_type == "SSTC_STCE1",
+            "cp_enable_one": int_type in ("STI", "LCOFI"),
+            "cp_priority_sip": lower,
+            "cp_priority_sie": lower,
+        }
+    return f"{coverpoint}_tsbi" if tsbi.get(coverpoint, False) else coverpoint
 
 
 def guard_symbol(int_type: str) -> str:
@@ -44,6 +79,8 @@ def guard_symbol(int_type: str) -> str:
 
 
 # RVTEST_SET/CLR_<name>_INT_<priv> macro name (tests/env/utils.h) for each interrupt type.
+# M-mode cases emit RVTEST_SET_*_INT_M alongside RVTEST_CLR_*_INT_M so the platform
+# _M hooks (raw csrw, no T-SBI) are used for both raise and claim.
 int_macro = {"MEI": "MEXT", "MTI": "MTIME", "MSI": "MSW", "SEI": "SEXT", "STI": "STIME", "SSI": "SSW"}
 int_macro |= {name: name for name in ["LCOFI", *reg_ints, *sstc_ints]}
 # The same for the VS-level interrupts, which drive hvip.  Only the H suites raise them.  HS-mode writes hvip
@@ -120,13 +157,13 @@ def generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite:
     """Raise each interrupt with only its enable bit set, then with every enable bit but its own."""
 
     ######################################
-    coverpoint = "cp_enable"
+    banner = "cp_enable_one / cp_enable_zero"
     ######################################
     ie = suite.ie
     status = suite.status
     tc = test_data.new_test_chunk(test_chunks, f"enable_{priv}")
     tc.section_header = comment_banner(
-        coverpoint,
+        banner,
         f"Enable each interrupt in {priv} mode with {status['csr']}.{status['field']} = 1, {ie} = only/others",
     )
     tmp_reg = test_data.int_regs.get_register()
@@ -144,7 +181,11 @@ def generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite:
                 f"csrs {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = 1",
                 f"LI(x{tmp_reg}, {ie_val})",
                 f"csrw {ie}, x{tmp_reg} # {ie} = {int_type} {enable}",
-                test_data.add_testcase(f"priv_{priv}_{int_type}_{ie}_{enable}", coverpoint, suite.covergroup),
+                test_data.add_testcase(
+                    f"priv_{priv}_{int_type}_{ie}_{enable}",
+                    label_coverpoint(suite, "cp_enable_one", priv, int_type) if enable == "only" else "cp_enable_zero",
+                    suite.covergroup,
+                ),
                 *mode_enter(suite, priv),
                 f"RVTEST_SET_{macro}_INT_{priv} # Set the interrupt",
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
@@ -242,7 +283,7 @@ def generate_cp_priority(
                 *mode_enter(suite, priv),
                 *_raise(raised, pair, "SET", priv),
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait until every raised interrupt is pending",
-                test_data.add_testcase(bin_name, coverpoint, suite.covergroup),
+                test_data.add_testcase(bin_name, label_coverpoint(suite, coverpoint, priv), suite.covergroup),
                 csr_access(f"csrr x{check_reg}, {suite.ip}", priv),
                 f"LI(x{tmp_reg}, {raised_mask:#x})",
                 f"and x{check_reg}, x{check_reg}, x{tmp_reg} # raised interrupts that are pending",
@@ -315,7 +356,12 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
                 f"{enablecmd} {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = {enable}",
                 f"LI(x{tmp_reg}, {ie_mask:#x})",
                 f"csrw {suite.ie}, x{tmp_reg} # {suite.ie}.{ie_name} = 1",
-                test_data.add_testcase(f"priv_{priv}_tw_{tw}_{status['field']}_{enable}", coverpoint, suite.covergroup),
+                test_data.add_testcase(
+                    f"priv_{priv}_tw_{tw}_{status['field']}_{enable}",
+                    # InterruptsSm records M-mode WFI in cp_wfi_m
+                    "cp_wfi_m" if priv == "M" else coverpoint,
+                    suite.covergroup,
+                ),
                 *mode_enter(suite, priv),
                 # Below M-mode the SOON macro reaches the timer through T-SBI traps; RVMODEL_TIMER_INT_SOON_DELAY
                 # is sized so the interrupt cannot fire before those return and the trap count is sampled.
@@ -384,7 +430,9 @@ def generate_cp_wfi_timeout(
             for ie in [0, 1]:
                 enablecmd = "csrs" if enable == 1 else "csrc"
                 label = test_data.add_testcase(
-                    f"priv_{priv}_tw_{tw}_{status['field']}_{enable}_{ie_name}_{ie}", coverpoint, suite.covergroup
+                    f"priv_{priv}_tw_{tw}_{status['field']}_{enable}_{ie_name}_{ie}",
+                    coverpoint if tw == 1 else "cp_wfi_timeout_tw_zero",
+                    suite.covergroup,
                 )
                 tc.code += [
                     *(

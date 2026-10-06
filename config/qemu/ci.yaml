@@ -29,7 +29,8 @@ ci_enabled: true
 # Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
 # H and every other hypervisor suite except ZicntrHSm, Shcounterenw, Shvstvecd, Shvsatpa and Shgatpa:
 #    mstatus.MPV and GVA are read-only from M-mode (QEMU commit 18645f1957, v11.1.0), so mret
-#    never enters VS/VU (https://gitlab.com/qemu-project/qemu/-/work_items/4588). QEMU 11.1.1 also:
+#    never enters VS/VU (https://gitlab.com/qemu-project/qemu/-/work_items/4588,
+#    https://gitlab.com/qemu-project/qemu/-/issues/4620). QEMU 11.1.1 also:
 #    - lets every vsstatus bit be written (https://gitlab.com/qemu-project/qemu/-/work_items/4589)
 #    - keeps vsepc[0] (https://gitlab.com/qemu-project/qemu/-/work_items/4420)
 #    - passes vsip bit 2 through to hvip.VSSIP (https://gitlab.com/qemu-project/qemu/-/work_items/4590)
@@ -59,7 +60,18 @@ ci_enabled: true
 #     (https://gitlab.com/qemu-project/qemu/-/work_items/4488), and mstatush.MPELP is not
 #     writable (https://gitlab.com/qemu-project/qemu/-/work_items/4220). ZicfilpSm passes on
 #     qemu-rv64-max, but exclusions apply to every QEMU config.
-exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H,HSm,ExceptionsH,ExceptionsHSm,ExceptionsHF,ExceptionsHV,InterruptsH,InterruptsHSm,SstcH,SstcHSm,ZicntrH,SvinvalH,SvinvalHSm,Shvstvala,Shtvala,SvH,SvHSm,PMPH,SvHZicbo,SvHZicboSm,SmcntrpmfH,SsstateenH,SmstateenH,SsnpmH,ZicfilpH,ZicfilpSm"
+# Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : QEMU CBOs do not fault on inaccessible addresses in bare mode, shifting trap signatures;
+# same issue as ExceptionsZicboU/S and SvZicbo (https://gitlab.com/qemu-project/qemu/-/work_items/3501).
+exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H,HSm,ExceptionsH,ExceptionsHSm,ExceptionsHF,ExceptionsHV,InterruptsH,InterruptsHSm,SstcH,SstcHSm,ZicntrH,SvinvalH,SvinvalHSm,Shvstvala,Shtvala,SvH,SvHSm,PMPH,SvHZicbo,SvHZicboSm,SmcntrpmfH,SsstateenH,SmstateenH,SsnpmH,ZicfilpH,ZicfilpSm,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm"
+# qemu-rv32-mu, qemu-rv64-mu: U-mode cbo.zero/clean/flush/inval raise illegal-instruction without S-mode
+#   because check_zicbo_envcfg() also requires senvcfg, which does not exist
+#   (https://gitlab.com/qemu-project/qemu/-/work_items/4596)
+# qemu-rv64-m, qemu-rv64-mu: mstatus.SXL/UXL read as 64-bit when S/U are not implemented
+#   (https://gitlab.com/qemu-project/qemu/-/work_items/4456)
+exclude_configs:
+  - qemu-rv32-mu
+  - qemu-rv64-m
+  - qemu-rv64-mu
 install_script: ".github/scripts/install-qemu.sh"
 apt_packages: "libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build"
 shards: 1

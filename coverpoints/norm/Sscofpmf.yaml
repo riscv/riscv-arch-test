@@ -27,11 +27,9 @@ normative_rule_definitions:
       ["{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_of_set_on_overflow}"]
 
   - name: count_overflow_trigger
+    # Representative coverpoints; also SscofpmfU_cg/{cp_overflow_hw_only, cp_lcofip_hw_only}
     coverpoint:
-      [
-        "{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_overflow_hw_only}",
-        "{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_lcofip_hw_only}",
-      ]
+      ["{SscofpmfSm_cg,SscofpmfS_cg}/{cp_overflow_hw_only, cp_lcofip_hw_only}"]
 
   - name: scountovf_op
     coverpoint: ["{SscofpmfSm_cg,SscofpmfS_cg}/{cp_scountovf_shadow}"]

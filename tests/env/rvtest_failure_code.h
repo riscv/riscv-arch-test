@@ -1036,7 +1036,7 @@
     1:
         la x7, sv_Mtinst_str
         bne x6, x7, 1f
-        li x8, 7                                     # subtype: mtinst
+        li x8, 7                                     # subtype: xtinst
         li x9, 0
         j trap_diag_field_identified
     1:
@@ -1080,7 +1080,7 @@
     1:
         la x7, sv_Htinst_str
         bne x6, x7, 1f
-        li x8, 7                                     # subtype: trap instruction (htinst here)
+        li x8, 7                                     # subtype: xtinst (htinst here)
         li x9, 1                                     # mode: S/HS
         j trap_diag_field_identified
     1:
@@ -2115,6 +2115,7 @@
     failure_diag_type:                         # 0=none, 1=bad reconstructed LREG, 2=bad expected pointer
         .word 0
 #if defined(F_SUPPORTED) && CONFIG_FLEN > UDB_MXLEN
+    .balign 8                                    # stored with 64-bit stores
     failing_value_upper:
         .fill 2, 4, 0xfeedf00dbaaaaaad
     expected_value_upper:
@@ -2125,6 +2126,7 @@
         .fill 1, 4, 0xfeedf00d
     failing_index:                               # element index of first mismatch
         .fill 1, 4, 0xbaaaaaad
+    .balign 8                                    # failing_vl and failing_vtype are stored with SREG
     failing_vl:                                  # vl at point of failure
         .fill 2, 4, 0xfeedf00d
     failing_vtype:                               # vtype at point of failure
@@ -2142,14 +2144,15 @@
     //==========================================================================
     .p2align 4
     trap_diag_subtype:                           # 0=unknown, 1=vect, 2=cause, 3=epc, 4=tval,
-                                                 # 5=xip, 6=mtval2/htval, 7=mtinst/htinst,
-                                                 # 8=intID, 9=offset
+                                                 # 5=xip, 6=mtval2, 7=xtinst, 8=intID, 9=offset
         .word 0
     trap_diag_mode:                              # 0=M, 1=S, 2=HS, 3=VS
         .word 0
     trap_diag_fail_str_ptr:                      # saved failure string pointer for dispatch
         .fill 2, 4, 0
     csr_context_ret_addr:                        # return address save slot for failedtest_print_csr_context
+        .fill 2, 4, 0
+    rvtest_trap_prolog_error:                    # failure string pointer if trap setup failed
         .fill 2, 4, 0
     # The four saved_x* slots hold the trapping mode's xEPC/xCAUSE/xTVAL/xSTATUS,
     # snapshotted by the trap handler before trap signature word 0
@@ -2337,6 +2340,10 @@
         .string "\nRVCP: DEBUG INFORMATION FOLLOWS\n"
     abortstr:
         .string "\"The trap handler aborted the test before normal completion!\"";
+    trap_vector_overlap_str:
+        .string "RVCP: Fixed trap vector overlaps the test image. Change the linker script to reserve space for the trap handler outside the test image.\n"
+    trap_vector_copy_failed_str:
+        .string "RVCP: Cannot write the fixed trap vector. Reserve writable memory for the trap handler.\n"
     trap_sig_overflowstr:
         #ifdef RVTEST_SELFCHECK
             .string "\nRVCP: Trap signature overflow in self-check mode. DUT generated too many traps.     \n"
@@ -2538,7 +2545,7 @@
     trap_diag_field_tval2_str:
         .string "MTVAL2/HTVAL (trap signature word 4, hypervisor)\n"
     trap_diag_field_tinst_str:
-        .string "MTINST/HTINST (trap signature word 5, hypervisor)\n"
+        .string "XTINST (trap signature word 5, hypervisor)\n"
     trap_diag_field_intid_str:
         .string "External Interrupt ID (trap signature word 3)\n"
     trap_diag_field_unknown_str:

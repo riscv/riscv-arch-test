@@ -171,7 +171,9 @@ def make_offset_lsbs(instr_name: str, instr_type: str, test_data: TestData) -> l
                     f"{instr_name} x{params.rs1} # jump",
                     f"addi x{params.temp_reg}, x{params.temp_reg}, -4  # should not execute; branch not taken",
                     ".p2align 2",
-                    f"{label}:{' c.nop' if rs1_lsbs >= 2 else ''}",
+                    f"{label}: c.addi x{params.temp_reg}, 1 # reached only if rs1[1] was dropped"
+                    if rs1_lsbs >= 2
+                    else f"{label}:",
                     f"addi x{params.temp_reg}, x{params.temp_reg}, 2 # should execute; branch taken",
                     f"{INDENT}# check jump taken",
                     write_sigupd(params.temp_reg, test_data),

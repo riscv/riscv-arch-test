@@ -7,9 +7,7 @@ normative_rule_definitions:
   # current operating state.
   - name: sstatus
     coverpoint:
-      [
-        "S_scsr_cg/cp_scsr_access/sstatus TODO: should xstatus not exercise all bits because of WPRI?",
-      ]
+      ["S_scsr_cg/cp_scsr_access/sstatus", "S_scsr_cg/cp_scsrwalk/sstatus"]
 
   # The SPP bit indicates the privilege level at which a hart was executing before
   # entering supervisor mode. When a trap is taken, SPP is set to 0 if the trap originated
@@ -28,7 +26,7 @@ normative_rule_definitions:
   # user-mode, the value in SIE is ignored, and supervisor-level interrupts are enabled.
   # The supervisor can disable individual interrupt sources using the sie CSR.
   - name: sstatus_sie
-    coverpoint: ["InterruptsS_cg/{cp_priority_mie_s, cp_user_mti}"]
+    coverpoint: ["InterruptsS_cg/{cp_trigger, cp_enable_zero}"]
 
   # The SPIE bit indicates whether supervisor interrupts were enabled prior to trapping
   # into supervisor mode. When a trap is taken into supervisor mode, SPIE is set to SIE,
@@ -37,7 +35,10 @@ normative_rule_definitions:
   - name: sstatus_spie
     coverpoint:
       [
-        "InterruptsS_cg/cp_user_mti, ExceptionsSm_cg/cp_medeleg_msu_illegalinstruction, S_sprivinst_cg/cp_sret_s, Sm_mprivinst_cg/cp_sret_s",
+        "InterruptsS_cg/cp_trigger_tsbi",
+        "ExceptionsSm_cg/cp_medeleg_msu_illegalinstruction",
+        "S_sprivinst_cg/cp_sret_s",
+        "Sm_mprivinst_cg/cp_sret_s",
       ]
 
   # The sstatus register is a subset of the mstatus register.
@@ -47,26 +48,30 @@ normative_rule_definitions:
   # The UXL field controls the value of XLEN for U-mode, termed UXLEN, which may differ
   # from the value of XLEN for S-mode, termed SXLEN. The encoding of UXL is the same as
   # that of the MXL field of misa, shown in .
+  # Ssu64xl sets UXL=2 and runs a 64-bit load in U-mode. ACT does not run U-mode with UXLEN < SXLEN.
   - name: sstatus_uxl
-    coverpoint: ["OUT-OF-SCOPE"]
+    coverpoint: ["Ssu64xl_cg/cp_ssu64xl"]
 
   # When SXLEN=32, the UXL field does not exist, and UXLEN=32. When SXLEN=64, it is
   # a WARL field that encodes the current value of UXLEN. In particular, an
   # implementation may make UXL be a read-only field whose value always ensures that
   # UXLEN=SXLEN.
+  # S writes UXL=1 and UXL=2 from S-mode on RV64 and checks the legalized value.
   - name: sstatus_uxl_sz
-    coverpoint: ["OUT-OF-SCOPE"]
+    coverpoint: ["S_sstatus_cg/cp_sxlen_ge_uxlen"]
 
   # If UXLEN≠SXLEN, instructions executed in the narrower mode must ignore source
   # register operand bits above the configured XLEN, and must sign-extend results to
   # fill the widest supported XLEN in the destination register.
   - name: sstatus_uxl_behavior
-    coverpoint: ["OUT-OF-SCOPE"]
+    coverpoint:
+      ["Not tested: ACT does not run U-mode with UXLEN different from SXLEN"]
 
   # If UXLEN < SXLEN, user-mode instruction-fetch addresses and load and store effective
   # addresses are taken modulo 2^UXLEN.
   - name: sstatus_uxl_addr_modulo
-    coverpoint: ["XLEN-dependent behavior not tested; single XLEN assumed"]
+    coverpoint:
+      ["Not tested: ACT does not run U-mode with UXLEN different from SXLEN"]
 
   # Some HINT instructions are encoded as integer computational instructions that
   # overwrite their destination register with its current value, e.g., c.addi x8, 0.
@@ -75,7 +80,8 @@ normative_rule_definitions:
   # whether bits SXLEN..XLEN of the destination register are unchanged or are
   # overwritten with copies of bit XLEN-1.
   - name: hint_sxlen
-    coverpoint: ["OUT-OF-SCOPE"]
+    coverpoint:
+      ["Not tested: ACT does not run U-mode with UXLEN different from SXLEN"]
 
   # SUM is read-only 0 if satp.MODE is read-only 0.
   - name: sstatus_sum_satp_mode
@@ -84,7 +90,7 @@ normative_rule_definitions:
   # The stvec register is an SXLEN-bit read/write register that holds trap vector
   # configuration, consisting of a vector base address (BASE) and a vector mode (MODE).
   - name: stvec
-    coverpoint: ["S_scsr_cg/cp_scsr_access"]
+    coverpoint: ["S_scsr_cg/{cp_stvec_vaddr_pc, cp_stvec_vaddr_scratch}"]
 
   # Figure: Supervisor trap vector base address (stvec) register.
   - name: stvec_img
@@ -110,7 +116,11 @@ normative_rule_definitions:
   # used as an address, the lower two bits are filled with zeroes to obtain an
   # XLEN-bit address that is always aligned on a 4-byte boundary.
   - name: stvec_sz_base
-    coverpoint: ["ExceptionsS_cg/cp_stvec"]
+    coverpoint:
+      [
+        "S_scsr_cg/{cp_stvec_vaddr_walk1, cp_stvec_vaddr_walk0}",
+        "ExceptionsS_cg/cp_stvec",
+      ]
 
   # Value|Name|Description === 0 1 ≥2|Direct Vectored|All exceptions set pc to BASE.
   # Asynchronous interrupts set pc to BASE+4×cause. Reserved ===
@@ -127,14 +137,14 @@ normative_rule_definitions:
   # corresponds with bit i in both sip and sie. Bits 15:0 are allocated to standard
   # interrupt causes only, while bits 16 and above are designated for platform use.
   - name: sip_sie
-    coverpoint: ["S_scsr_cg/cp_scsrwalk, InterruptsS_cg/cp_priority_mip_s"]
+    coverpoint: ["S_scsr_cg/cp_scsrwalk", "InterruptsS_cg/cp_priority_sip"]
 
   # An interrupt i will trap to S-mode if both of the following are true: (a) either
   # the current privilege mode is S and the SIE bit in the sstatus register is set,
   # or the current privilege mode has less privilege than S-mode; and (b) bit i is
   # set in both sip and sie.
   - name: sie_sip_supervisor_strap
-    coverpoint: ["InterruptsS_cg/{cp_priority_both_s, cp_user_mti}"]
+    coverpoint: ["InterruptsS_cg/{cp_trigger, cp_enable_one, cp_enable_zero}"]
 
   # These conditions for an interrupt trap to occur must be evaluated in a bounded
   # amount of time from when an interrupt becomes, or ceases to be, pending in sip,
@@ -160,12 +170,12 @@ normative_rule_definitions:
   # the implementation must provide some other mechanism for clearing the pending
   # interrupt (which may involve a call to the execution environment).
   - name: sip_op
-    coverpoint: ["InterruptsS_cg/cp_trigger_ssi_sip"]
+    coverpoint: ["InterruptsS_cg/cp_trigger_reg_sip_ssip"]
 
   # A bit in sie must be writable if the corresponding interrupt can ever become
   # pending. Bits of sie that are not writable are read-only zero.
   - name: sie_acc
-    coverpoint: ["S_scsr_cg/cp_scsrwalk/sie, InterruptsS_cg/cp_priority_both_s"]
+    coverpoint: ["S_scsr_cg/cp_scsrwalk/sie", "InterruptsS_cg/cp_priority_sie"]
 
   # The standard portions (bits 15:0) of registers sip and sie are formatted as
   # shown in Figures and respectively.
@@ -177,7 +187,7 @@ normative_rule_definitions:
   # set and cleared by the execution environment, typically through a platform-specific
   # interrupt controller.
   - name: sip_seip_sie_seie
-    coverpoint: ["S_scsr_cg/cp_scsrwalk/sip, InterruptsS_cg/cp_trigger_sei"]
+    coverpoint: ["S_scsr_cg/cp_scsrwalk/sip", "InterruptsS_cg/cp_trigger"]
 
   # Bits sip.STIP and sie.STIE are the interrupt-pending and interrupt-enable bits for
   # supervisor-level timer interrupts. If implemented, STIP is read-only in sip. When the
@@ -187,7 +197,11 @@ normative_rule_definitions:
   # generated by stimecmp, is set by writing stimecmp with a value that is less than or
   # equal to time, and is cleared by writing stimecmp with a value greater than time.
   - name: sip_stip_sie_stie
-    coverpoint: ["S_scsr_cg/cp_scsrwalk/sip, InterruptsS_cg/cp_trigger_sti"]
+    coverpoint:
+      [
+        "S_scsr_cg/cp_scsrwalk/sip",
+        "InterruptsS_cg/{cp_trigger, cp_trigger_sti_sstc}",
+      ]
   # A supervisor timer interrupt becomes pending, as reflected in the STIP bit in the mip
   # and sip registers whenever time contains a value greater than or equal to stimecmp,
   # treating the values as unsigned integers. If the result of this comparison changes, it
@@ -196,7 +210,8 @@ normative_rule_definitions:
   # result of writing stimecmp. The interrupt will be taken based on the standard
   # interrupt enable and delegation rules.
   - name: mip_sip_stip_op
-    coverpoint: ["S_scsr_cg/cp_scsrwalk/sip, InterruptsS_cg/cp_trigger_sti"]
+    coverpoint:
+      ["S_scsr_cg/cp_scsrwalk/sip", "InterruptsS_cg/cp_trigger_sti_sstc"]
 
   # Bits sip.SSIP and sie.SSIE are the interrupt-pending and interrupt-enable bits for
   # supervisor-level software interrupts. If implemented, SSIP is writable in sip and may
@@ -204,7 +219,8 @@ normative_rule_definitions:
   - name: sip_ssip_sie_ssie
     coverpoint:
       [
-        "S_scsr_cg/cp_scsrwalk/sip, InterruptsS_cg/cp_trigger_ssi, InterruptsS_cg/cp_trigger_ssi_sip",
+        "S_scsr_cg/cp_scsrwalk/sip",
+        "InterruptsS_cg/{cp_trigger, cp_trigger_reg_sip_ssip}",
       ]
 
   # Each standard interrupt type (SEI, STI, SSI, or LCOFI) might not be implemented, in
@@ -220,14 +236,14 @@ normative_rule_definitions:
   # Multiple simultaneous interrupts destined for supervisor mode are handled in the
   # following decreasing priority order: SEI, SSI, STI, LCOFI.
   - name: sip_sie_priority_bit_order
-    coverpoint: ["InterruptsS_cg/cp_priority_mip"]
+    coverpoint: ["InterruptsS_cg/{cp_priority_sip, cp_priority_sie}"]
 
   # The implementation must provide a facility for scheduling timer interrupts in
   # terms of the real-time counter, time.
   - name: supervisor_timer_scheduling
     coverpoint:
       [
-        "InterruptsSm_cg/cp_trigger_sti_sstc when Sstc implemented. Too vague if handled by software setting STIP.",
+        "OUT-OF-SCOPE: too vague if handled by software setting STIP. Tested by InterruptsS_cg/cp_trigger_sti_sstc when Sstc implemented",
       ]
 
   # The sscratch CSR is an SXLEN-bit read/write register, dedicated for use by the
@@ -246,7 +262,7 @@ normative_rule_definitions:
   # it appears to be 0. This masking occurs also for the implicit read by the SRET
   # instruction. Though masked, sepc[1] remains writable when IALIGN=32.
   - name: sepc_op_mask_ialign32
-    coverpoint: ["OUT-OF-SCOPE"]
+    coverpoint: ["Not tested: ACT does not switch IALIGN by writing misa"]
 
   # sepc is a WARL register that must be able to hold all valid virtual addresses.
   # It need not be capable of holding all possible invalid addresses. Prior to
@@ -262,7 +278,7 @@ normative_rule_definitions:
   # explicitly written by software.
   - name: sepc_op_trap_write
     coverpoint:
-      ["ExceptionsS_cg/cp_illegal_instruction, InterruptsS_cg/cp_interrupts_s"]
+      ["ExceptionsS_cg/cp_illegal_instruction", "InterruptsS_cg/cp_trigger"]
 
   # The scause CSR is an SXLEN-bit read-write register formatted as shown in . When a trap
   # is taken into S-mode, scause is written with a code indicating the event that caused
@@ -271,7 +287,9 @@ normative_rule_definitions:
   - name: scause
     coverpoint:
       [
-        "S_scsr_cg/cp_scsr_access/scause, ExceptionsS_cg/cp_illegal_instruction, InterruptsS_cg/cp_interrupts_s",
+        "S_scause_cg/{cp_scause_write_exception, cp_scause_write_interrupt}",
+        "ExceptionsS_cg/cp_illegal_instruction",
+        "InterruptsS_cg/cp_trigger",
       ]
 
   # The Interrupt bit in the scause register is set if the trap was caused by an
@@ -283,7 +301,9 @@ normative_rule_definitions:
   - name: scause_interrupt
     coverpoint:
       [
-        "S_scause_cg/cp_scause_write_{interrupt, exception}, ExceptionsS_cg/cp_illegal_instruction, InterruptsS_cg/cp_interrupts_s",
+        "S_scause_cg/cp_scause_write_{interrupt, exception}",
+        "ExceptionsS_cg/cp_illegal_instruction",
+        "InterruptsS_cg/cp_trigger",
       ]
 
   # The Exception Code is a WLRL field.
@@ -307,11 +327,12 @@ normative_rule_definitions:
   # Reserved Software check Hardware error Reserved Designated for custom use Reserved
   # Designated for custom use Reserved ===
   - name: scause_exccode_enc_tbl
-    # Representative coverpoints; also the other ExceptionsS_cg trap coverpoints and InterruptsS_cg
+    # Representative coverpoints; also the other delegated ExceptionsS_cg trap coverpoints and InterruptsS_cg.
+    # Not cp_ecall_s: ecall from S traps to M.
     coverpoint:
       [
         "S_scause_cg/{cp_scause_write_exception, cp_scause_write_interrupt}",
-        "ExceptionsS_cg/{cp_illegal_instruction, cp_ecall_s}",
+        "ExceptionsS_cg/{cp_illegal_instruction, cp_breakpoint}",
       ]
 
   # The stval CSR is an SXLEN-bit read-write register formatted as shown in . When a trap
@@ -323,7 +344,10 @@ normative_rule_definitions:
   # event that caused the exception.
   - name: stval
     coverpoint:
-      ["S_scsr_cg/cp_scsr_access/stval, ExceptionsS_cg/cp_illegal_instruction"]
+      [
+        "S_scsr_cg/cp_scsr_access/stval",
+        "ExceptionsS_cg/cp_illegal_instruction",
+      ]
 
   # If stval is written with a nonzero value when a breakpoint, address-misaligned,
   # access-fault, page-fault, or hardware-error exception occurs on an instruction
@@ -354,8 +378,9 @@ normative_rule_definitions:
   # instructions, then stval will contain the virtual address of the portion of the
   # instruction that caused the fault, while sepc will point to the beginning of the
   # instruction.
+  # Needs a 32-bit instruction on a Zca hart whose upper half lies in a page that faults.
   - name: stval_faulting_address_variable_instr
-    coverpoint: ["OUT-OF-SCOPE variable-length instructions"]
+    coverpoint: [""]
 
   # The stval register can optionally also be used to return the faulting
   # instruction bits on an illegal-instruction exception (sepc points to the
@@ -370,13 +395,15 @@ normative_rule_definitions:
   - name: stval_op_illegal_instr_format
     coverpoint:
       [
-        "ExceptionsZc_cg/cp_illegal_instruction, SsstrictS_comp_instr_cg/cp_compressed00",
+        "ExceptionsZc_cg/cp_illegal_instruction",
+        "SsstrictS_comp_instr_cg/cp_compressed00",
       ]
 
   # For other traps, stval is set to zero, but a future standard may redefine
   # stval’s setting for other traps.
+  # ecall from S traps to M, so it does not show this; a delegated ecall from U is not recorded.
   - name: stval_op_other_traps
-    coverpoint: ["ExceptionsS_cg/cp_ecall_s, InterruptsS_cg/cp_interrupts_s"]
+    coverpoint: ["InterruptsS_cg/cp_trigger"]
 
   # stval is a WARL register that must be able to hold all valid virtual addresses
   # and the value 0. It need not be capable of holding all possible invalid
@@ -388,7 +415,7 @@ normative_rule_definitions:
   # Prior to writing stval, implementations may convert an invalid address into some
   # other invalid address that stval is capable of holding.
   - name: stval_inv_addr_conv
-    coverpoint: ["Definition, checked through UDB"]
+    coverpoint: ["Not tested: the tests write only valid addresses to stval"]
 
   # If the feature to return the faulting instruction bits is implemented, stval must
   # also be able to hold all values less than 2^N, where N is the smaller of SXLEN and
@@ -405,6 +432,7 @@ normative_rule_definitions:
   # executed in U-mode are modified so the requirement to order accesses to device I/O
   # implies also the requirement to order main memory accesses. details the modified
   # interpretation of FENCE instruction bits PI, PO, SI, and SO in U-mode when FIOM=1.
+  # The access test shows FIOM is writable; the ordering it adds is not observable on one hart.
   - name: senvcfg_fiom
     coverpoint: ["S_scsr_cg/cp_scsr_access/senvcfg"]
 
@@ -412,7 +440,10 @@ normative_rule_definitions:
   # region ordered as device I/O has its aq and/or rl bit set, then that instruction
   # is ordered as though it accesses both device I/O and memory.
   - name: senvcfg_fiom_op_atomic
-    coverpoint: ["OUT-OF-SCOPE"]
+    coverpoint:
+      [
+        "Not tested: I/O ordering is not observable in single-hart signature tests",
+      ]
 
   # If satp.MODE is read-only zero (always Bare), the implementation may make FIOM
   # read-only zero.
@@ -424,7 +455,10 @@ normative_rule_definitions:
   # SO|Successor device input and memory reads (SR implied) Successor device output and
   # memory writes (SW implied) ===
   - name: senvcfg_fiom_fence_presuc_op
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
+    coverpoint:
+      [
+        "Not tested: I/O ordering is not observable in single-hart signature tests",
+      ]
 
   # When the Zicboz extension is not implemented, CBZE is read-only zero.
   - name: senvcfg_cbze_rdonly0
@@ -487,13 +521,14 @@ normative_rule_definitions:
   # (e.g., reset) set the register to a legal value. These fields are labeled WLRL
   # in the register descriptions.
   - name: Zicsr_wlrl
-    coverpoint: ["S_scsr_cg/cp_scsr_access scause"]
+    coverpoint:
+      ["S_scause_cg/{cp_scause_write_exception, cp_scause_write_interrupt}"]
 
   # Implementations are permitted but not required to raise an illegal-instruction
   # exception if an instruction attempts to write a non-supported value to a WLRL
   # field.
   - name: Zicsr_wlrl_exception
-    coverpoint: ["Not tested - no wrong answer"]
+    coverpoint: ["Not tested: the exception is optional, so no result is wrong"]
 
   # Implementations will not raise an exception on writes of unsupported values to a
   # WARL field.
@@ -527,7 +562,7 @@ normative_rule_definitions:
     coverpoint: ["S_sprivinst_cg/cp_sret_s"]
 
   - name: sret_ill_inst_exc_rst
-    coverpoint: ["TODO"]
+    coverpoint: ["Sm_mprivinst_cg/cp_sret_s"]
 
   - name: xret_op
     coverpoint: ["S_sprivinst_cg/cp_sret_s"]

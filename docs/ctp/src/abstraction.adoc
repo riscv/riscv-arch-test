@@ -1,3 +1,4 @@
+[[abstraction-layer]]
 == Abstraction Layer
 
 *** separate this into parts required for all test suites including TT vs. parts required only for ACT4
@@ -140,7 +141,7 @@ If a macro needs machine mode privileges to perform its function but might be ca
 
 Because profiles such as RVA23 do not require portable M-mode, the test suites go through weird and wonderful gymnastics to avoid directly using M-mode for supervisor and user-level features. This is described further in the RVA23 Certification Requirement Document. Thus, tests are divided into machine and non-machine tests.
 
-Machine test suites are usually but not always suffixed with Sm.  They boot to M-mode and test M-mode features as defined in the privileged ISA manual. They can freely switch privilege modes within tests, such as to check traps from a lower privilege mode into M-mode.  Examples include Sm, InterruptsSm, ExceptionsSm, PMPZca, and Smstateen. Machine test suites are not part of the certification tests for RVA23 or other profiles that do not require M-mode.
+Machine test suites are usually but not always suffixed with Sm.  They boot to M-mode and test M-mode features as defined in the privileged ISA manual. They can freely switch privilege modes within tests, such as to check traps from a lower privilege mode into M-mode.  Examples include <<t-Sm-coverpoints,Sm>>, <<t-InterruptsSm-coverpoints,InterruptsSm>>, <<t-ExceptionsSm-coverpoints,ExceptionsSm>>, <<t-PMPZca-coverpoints,PMPZca>>, and <<t-Smstateen-coverpoints,Smstateen>>. Machine test suites are not part of the certification tests for RVA23 or other profiles that do not require M-mode.
 
 Non-machine tests boot to S or U mode.  They only access M-mode features via the T-SBI.  They can switch privilege modes within tests, but never enter M-mode except via T-SBI calls that manipulate state and return to the calling mode.  They expect all other traps to be delegated to supervisor level (or below) if supervisor exists.
 
@@ -279,6 +280,7 @@ The SBI is invoked with the `ecall` instruction.  The operation is passed in `a0
 |TSBI_SW|0x00c5a023|SW a2, 0(a1) - Store word to physical address in `a1` with machine-mode privileges.  Used to write memory-mapped I/O.
 |TSBI_SWP4|0x00c5a223|SW a2, 4(a1) - Store word to physical address in `a1`+4 with machine-mode privileges.  Used to write memory-mapped I/O.
 |TSBI_SD|0x00c5b023|SD a2, 0(a1) - Store doubleword to physical address in `a1` with machine-mode privileges.  Used to write memory-mapped I/O.  RV64 only
+|TSBI_SFENCE_VMA|0x12000073|SFENCE.VMA x0, x0 - Flushes the address-translation caches.  Used by a U-mode test that sets `satp` with TSBI_CSR_WRITE and cannot execute `sfence.vma` itself.  Requires S-mode.
 |===
 
 For example, an S-mode program can request setting `mstatus.TVM` with a CSR_SET call corresponding to `csrrs x0, mstatus, a1` (`a0` = 0x3005a073) with `a1` containing a 1 in bit 20 (the `TVM` bit) and all other bits 0. The ACT trap handler implements this using an instruction table. If a custom M-mode does not implement `mstatus.TVM`, it must emulate the behavior in some other way. Similarly, S-mode can read `mip` to `a0` with a CSR_READ call corresponding to `csrrs a0, mip, x0` (`a0` = 0x34402573).
@@ -312,6 +314,7 @@ The following macros are defined for developer convenience to access the T-SBI a
 * RVTEST_TSBI_CSR_WRITE(csr, imm)
 * RVTEST_TSBI_CSR_WRITE_A1(csr): write value in `a1`
 * RVTEST_TSBI_CSR_READ(csr): returns value in `a0`
+* RVTEST_TSBI_SFENCE_VMA
 +
 `csr` is the 12-bit CSR number (e.g. `CSR_MIP` from `encoding.h`) and `imm` is a constant that the macro loads into `a1` with `li` before the call.
 * RVTEST_TSBI_GOTO_MMODE

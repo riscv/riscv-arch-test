@@ -343,7 +343,7 @@ def _format_trap_report(entries: list[TrapEntry], test_name: str, xlen: int) -> 
         if entry.int_id is not None:
             lines.append(f"  IntID:   {_format_hex(entry.int_id, xlen)}")
         if entry.mtval2 is not None:
-            # Words 4 and 5 are mtval2 and mtinst in an M-mode entry, htval and htinst in an S/HS one.
+            # Word 4 is mtval2 in an M-mode entry and htval in an S/HS one.
             label = "MTVAL2" if entry.mode == "M" else "HTVAL "
             lines.append(f"  {label}:  {_format_hex(entry.mtval2, xlen)}")
         if entry.xtinst is not None:

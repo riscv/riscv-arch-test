@@ -477,13 +477,15 @@
 //   _SCALAR_DST_FLAG - 1 if only element 0 is written (vmv.s.x, reductions); 0 otherwise.
 //                    When 1, the saved vl is overridden to 1 so only element 0 is treated
 //                    as active and elements 1..VLMAX-1 receive the tail-agnostic relaxation.
+//   _FORCE_TA_MA_FLAG - Forces instruction under test to be checked as if tail and mask agnostic
 //   _INST_PTR      - Label of instruction under test
 //   _STR_PTR       - Label to descriptive string
 //   Note: _VTMP, _MTMP, _MTMP2 cannot be v0 since v0 should be saved to preserve its mask value (in case the instruction under test is masked)
 
 #ifdef RVTEST_SELFCHECK
     #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR,  \
-        _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR) \
+        _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _FORCE_TA_MA_FLAG, \
+        _INST_PTR, _STR_PTR) \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
@@ -587,10 +589,12 @@
             vmxor.mm _MTMP2, _MTMP2, _VR;   /* _MTMP2[i] = (vlmax_calculation[i] != _VR[i]) */                                             \
             vmand.mm _VTMP, _VTMP, _MTMP2 ; /* VTMP[i] = signature mismatch (vlmax) && signature mismatch (normal) && all ones mismatch */ \
         .else; \
-            /* Extract and check vta policy */                                                                          \
-            srli        _LINK_REG, _TEMP_REG2, 6 ;   /* vta = vtype[6] */                                               \
-            andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
-            beqz        _LINK_REG, 1f            ;   /* If vta==0 (undisturbed), skip agnostic relaxation */            \
+            /* Extract and check vta policy, don't check policy if forced to be agnostic */                                 \
+            .if (_FORCE_TA_MA_FLAG == 0); \
+                srli        _LINK_REG, _TEMP_REG2, 6 ;   /* vta = vtype[6] */                                               \
+                andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
+                beqz        _LINK_REG, 1f            ;   /* If vta==0 (undisturbed), skip agnostic relaxation */            \
+            .endif; \
             /* Data vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
             vmseq.vi    _MTMP2, _VR, -1          ;   /* MTMP2[i] = (VR[i] == -1) */                                     \
             vmandn.mm   _MTMP2, _VTMP, _MTMP2    ;   /* MTMP2[i] = tail && !(VR[i] == -1) → mismatch with all 1s */     \
@@ -609,10 +613,12 @@
         .else; \
             /* Build mask inactive mask */                                                                              \
             vmandn.mm   _VTMP, _MTMP3, _MASK_REG        ;   /* VTMP = base && (v0 == 0) = inactive */                      \
-            /* Extract and check vma policy */                                                                          \
-            srli        _LINK_REG, _TEMP_REG2, 7 ;   /* vma = vtype[7] */                                               \
-            andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
-            beqz        _LINK_REG, 3f            ;   /* If vma==0 (undisturbed), skip agnostic relaxation */            \
+            /* Extract and check vma policy, and don't check if forced to be agnostic */                                   \
+            .if (_FORCE_TA_MA_FLAG == 0); \
+                srli        _LINK_REG, _TEMP_REG2, 7 ;   /* vma = vtype[7] */                                               \
+                andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
+                beqz        _LINK_REG, 3f            ;   /* If vma==0 (undisturbed), skip agnostic relaxation */            \
+            .endif; \
             .if (_MASKPROD_FLAG == 1); \
                 /* Mask vector mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                \
                 vmand.mm     _MTMP2, _VR, _VR        ;    /* MTMP2[i] = (VR[i] == 1), vmv.v.v traps */                  \
@@ -625,9 +631,11 @@
         3: \
             /* Check inactive element mismatches */                                                                     \
             vmand.mm    _VTMP, _VTMP, _MTMP      ;   /* VTMP[i] = inactive && (vd != sig) → mismatch with signature */  \
-            srli        _LINK_REG, _TEMP_REG2, 7 ;   /* vma = vtype[7] */                                               \
-            andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
-            beqz        _LINK_REG, 4f            ;   /* If vma==0 (undisturbed), skip agnostic all 1s comparison */     \
+            .if (_FORCE_TA_MA_FLAG == 0); \
+                srli        _LINK_REG, _TEMP_REG2, 7 ;   /* vma = vtype[7] */                                               \
+                andi        _LINK_REG, _LINK_REG, 1  ;                                                                      \
+                beqz        _LINK_REG, 4f            ;   /* If vma==0 (undisturbed), skip agnostic all 1s comparison */     \
+            .endif; \
             vmand.mm    _VTMP, _VTMP, _MTMP2     ;   /* VTMP[i] = signature mismatch && all 1s mismatch */              \
         4:                                                                                                              \
             vfirst.m    _LINK_REG, _VTMP         ;   /* Find first active mismatch index; -1 if none */                 \
@@ -685,7 +693,8 @@
         .option pop
 #else
     #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR,  \
-        _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR) \
+        _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _FORCE_TA_MA_FLAG, \
+        _INST_PTR, _STR_PTR) \
         .option push                         ;                                                                      \
         .option norvc                        ;                                                                      \
         /* Save architecture state of instruction under test (vl and vtype) */                                      \
@@ -776,9 +785,11 @@
             nop; \
         .else ;\
             /* Extract and check vta policy */                                                                          \
-            nop                                  ;                                                                      \
-            nop                                  ;                                                                      \
-            nop                                  ;                                                                      \
+            .if (_FORCE_TA_MA_FLAG == 0); \
+                nop                                  ;                                                                      \
+                nop                                  ;                                                                      \
+                nop                                  ;                                                                      \
+            .endif; \
             /* Data vector tail agnostic(vta == 1) handling: all 1s in agnostic element is also legal */                \
             nop                                  ;                                                                      \
             nop                                  ;                                                                      \
@@ -798,9 +809,11 @@
             /* Build mask inactive mask */                                                                              \
             nop                                  ;                                                                      \
             /* Extract and check vma policy */                                                                          \
-            nop                                  ;                                                                      \
-            nop                                  ;                                                                      \
-            nop                                  ;                                                                      \
+            .if (_FORCE_TA_MA_FLAG == 0); \
+                nop                                  ;                                                                      \
+                nop                                  ;                                                                      \
+                nop                                  ;                                                                      \
+            .endif; \
             .if (_MASKPROD_FLAG == 1); \
                 /* Mask vector mask agnostic(vma == 1) handling: all 1s in agnostic element is also legal */                \
                 nop                                  ;                                                                      \
@@ -813,9 +826,11 @@
         3: ; \
             /* Check inactive element mismatches */                                                                     \
             nop                                  ;                                                                      \
-            nop                                  ;                                                                      \
-            nop                                  ;                                                                      \
-            nop                                  ;                                                                      \
+            .if (_FORCE_TA_MA_FLAG == 0); \
+                nop                                  ;                                                                      \
+                nop                                  ;                                                                      \
+                nop                                  ;                                                                      \
+            .endif; \
             nop                                  ;                                                                      \
         4: ; \
             nop                                  ;                                                                      \

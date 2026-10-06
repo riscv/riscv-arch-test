@@ -455,6 +455,18 @@ def generate_random_vector_params(
             )
         randomization_count = randomization_count + 1
 
+    # "When source and destination registers overlap and have different EEW, the instruction is mask- and tail-agnostic,
+    #  regardless of the setting of the vta and vma bits in vtype."
+    if instr_type_config.required_params is not None and "vd" in instr_type_config.required_params:
+        source_dest_different_eew = {
+            ("vd", reg)
+            for reg in ["vs1", "vs2"]
+            if info.get_size_multiplier("vd", sew, widened_regs) != info.get_size_multiplier(reg, sew, widened_regs)
+        }
+        params.vd_different_eew_overlap = has_invalid_overlap(
+            params, info, source_dest_different_eew, lmul, sew, scalar_vector_regs, mask_vector_regs, widened_regs
+        )
+
     ####################################################################################
     # Randomize the instruction data & take vector registers from the register file
     ####################################################################################

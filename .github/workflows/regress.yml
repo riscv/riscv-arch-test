@@ -191,12 +191,6 @@ jobs:
         with:
           install-architecture-tools: "true"
 
-      - name: Read Spike exclusions
-        id: spike-config
-        run: |
-          exclude_extensions="$(ruby -ryaml -e 'print YAML.load_file("config/spike/ci.yaml").fetch("exclude_extensions", "")')"
-          echo "exclude_extensions=${exclude_extensions}" >> "$GITHUB_OUTPUT"
-
       - name: Install runtime dependencies
         run: |
           sudo apt-get update
@@ -230,14 +224,12 @@ jobs:
         run: echo "$GITHUB_WORKSPACE/spike/bin" >> "$GITHUB_PATH"
 
       - name: Build ELFs
-        env:
-          SPIKE_EXCLUDE_EXTENSIONS: ${{ steps.spike-config.outputs.exclude_extensions }}
         run: |
           FAST=True \
           ENABLE_EXPERIMENTAL_EXTENSIONS=True \
-          EXCLUDE_EXTENSIONS="${SPIKE_EXCLUDE_EXTENSIONS}" \
+          EXTENSIONS=I \
           CONFIG_FILES=config/spike/spike-rv64-experimental/test_config.yaml \
-          make elfs --jobs "$(nproc)"
+          make elfs
 
       - name: Run tests
         run: |

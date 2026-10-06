@@ -77,7 +77,7 @@ def run_act(
     ] = CoverageSimulator.QUESTA,
     enable_experimental_extensions: Annotated[
         bool,
-        typer.Option(help="Enable tests for experimental extensions", envvar="ENABLE_EXPERIMENTAL_EXTENSIONS"),
+        typer.Option(help="Enable tests for experimental extensions"),
     ] = False,
 ) -> None:
 

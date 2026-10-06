@@ -58,7 +58,7 @@
 - Keep expected architectural behavior explicit. Each generated testcase must map to meaningful functional coverage.
 - The framework installs trap handlers for unprivileged tests when standard machine mode is available. Unexpected traps fail the test.
 - Privileged tests should boot into their intended mode. Use T-SBI calls for operations that require a higher privilege level. Use `tsbi_call()` for supported CSR or memory instructions and `RVTEST_TSBI_GOTO_*` for mode changes.
-- Allocate registers through `TestData` register allocators. Do not hard-code or separately exclude registers already reserved by the framework. Framework routines and T-SBI can clobber `ra` and `a0` through `a2`.
+- Allocate registers through `TestData` register allocators. Do not hard-code or separately exclude registers already reserved by the framework. Framework routines and T-SBI can clobber `ra` and `a0` through `a2`, so `generate/priv.py` removes them from the privileged-test pool so they are never allocated.
 - In generated assembly, use Python loops to emit repeated code. Avoid assembly loops so testcase labels and debug strings stay unique.
 - Do not use the target-dependent `.align` directive in assembly. Use `.p2align` or `.balign`.
 - Do not use the `la` or `li` pseduoinstructions. Use the `LA()` and `LI()` macros.
@@ -68,7 +68,6 @@
 
 - `test_config.yaml` references the UDB configuration, linker script, DUT include directory, compiler, and reference model. Paths are relative to `test_config.yaml`.
 - Audit every field copied from another DUT. The UDB configuration, `sail.json`, linker script, and DUT behavior must agree. For example, mismatched `mtvec` modes or alignment can break trap-handler setup.
-- Use a nonzero `TEST_BASE`. If a DUT starts at address zero, use a runner boot stub to jump to the test image.
 - Keep `.text.rvmodel` after `.data` in linker scripts. Otherwise, DUT and reference-model ELFs can assign different addresses to test data. If the ELF base changes, update the memory map in `sail.json`.
 - `run_cmd.txt` contains one command. `run_tests.py` appends the ELF path. Use `{debug:...}` for debug-only arguments, `__TRACEFILE__` for a separate trace, and `__SUMMARYFILE__` for redirected console summaries.
 - CI discovers matrices from `config/*/ci.yaml` and `run_cmd.txt`. Run `make tests` before `.github/scripts/ci_config.py` because generated tests determine shard weights.

@@ -55,6 +55,7 @@ function string disassemble (logic [31:0] instrRaw);
   automatic bit        [5:0]  uimm     = instr[25:20];
   automatic bit        [1:0]  bs       = instr[31:30];
   automatic bit        [4:0]  uimm5    = instr[19:15];
+  automatic bit        [5:0]  uimm6_v  = {instr[26], instr[19:15]};
   automatic bit signed [4:0]  imm5     = instr[19:15];
 
   // Compressed immediates
@@ -1437,7 +1438,7 @@ function string disassemble (logic [31:0] instrRaw);
     VROL_VX:     $sformat(decoded, "vrol.vx %s, %s, %s%s", vd, vs2, rs1, vm);
     VROR_VV:     $sformat(decoded, "vror.vv %s, %s, %s%s", vd, vs2, vs1, vm);
     VROR_VX:     $sformat(decoded, "vror.vx %s, %s, %s%s", vd, vs2, rs1, vm);
-    VROR_VI:     $sformat(decoded, "vror.vi %s, %s, %0d%s", vd, vs2, uimm5, vm);
+    VROR_VI:     $sformat(decoded, "vror.vi %s, %s, %0d%s", vd, vs2, uimm6_v, vm);
     VWSLL_VV:    $sformat(decoded, "vwsll.vv %s, %s, %s%s", vd, vs2, vs1, vm);
     VWSLL_VX:    $sformat(decoded, "vwsll.vx %s, %s, %s%s", vd, vs2, rs1, vm);
     VWSLL_VI:    $sformat(decoded, "vwsll.vi %s, %s, %0d%s", vd, vs2, uimm5, vm);

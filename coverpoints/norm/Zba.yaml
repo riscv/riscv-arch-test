@@ -2,13 +2,30 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
+  # RV32|RV64|Mnemonic|Instruction ===
+  # |✓|add.uw rd, rs1, rs2|¶✓|✓|sh1add rd, rs1, rs2|¶|✓|sh1add.uw rd, rs1, rs2|
+  # ¶✓|✓|sh2add rd, rs1, rs2|¶|✓|sh2add.uw rd, rs1, rs2|¶✓|✓|sh3add rd, rs1, rs2|
+  # ¶|✓|sh3add.uw rd, rs1, rs2|¶|✓|slli.uw rd, rs1, imm| ===
+  - name: Zba_insns_tbl
+    # Representative coverpoints; also cp_asm_count of Zba_sh{1,2,3}add_uw_cg and Zba_slli_uw_cg
+    coverpoint:
+      [
+        "{Zba_sh1add_cg, Zba_sh2add_cg, Zba_sh3add_cg, Zba_add_uw_cg}/cp_asm_count",
+      ]
+
   - name: bitmanip_rv32_rv64
     coverpoint: ["Zba_sh1add_cg/cr_rs1_rs2_edges"]
 
   - name: bitmanip_uw_suffix_semantics
-    coverpoint: ["Zba_add_uw_cg/cr_rs1_rs2_edges"]
+    # Representative coverpoints; also Zba_sh2add_uw_cg and Zba_sh3add_uw_cg
+    coverpoint:
+      [
+        "{Zba_add_uw_cg, Zba_sh1add_uw_cg}/cr_rs1_rs2_edges",
+        "Zba_slli_uw_cg/cr_rs1_imm_edges_uimm",
+      ]
 
-  - name: zba_slli_uw_function
+  # Operation
+  - name: slli-uw_op
     coverpoint: ["Zba_slli_uw_cg/cr_rs1_imm_edges_uimm"]
 
   - name: sh1add_enc
@@ -17,10 +34,10 @@ normative_rule_definitions:
   - name: sh1add_op
     coverpoint: ["Zba_sh1add_cg/cr_rs1_rs2_edges"]
 
-  - name: sh1add_uw_enc
+  - name: sh1add-uw_enc
     coverpoint: ["Zba_sh1add_uw_cg/cr_rs1_rs2_edges"]
 
-  - name: sh1add_uw_op
+  - name: sh1add-uw_op
     coverpoint: ["Zba_sh1add_uw_cg/cr_rs1_rs2_edges"]
 
   - name: sh2add_enc
@@ -29,10 +46,10 @@ normative_rule_definitions:
   - name: sh2add_op
     coverpoint: ["Zba_sh2add_cg/cr_rs1_rs2_edges"]
 
-  - name: sh2add_uw_enc
+  - name: sh2add-uw_enc
     coverpoint: ["Zba_sh2add_uw_cg/cr_rs1_rs2_edges"]
 
-  - name: sh2add_uw_op
+  - name: sh2add-uw_op
     coverpoint: ["Zba_sh2add_uw_cg/cr_rs1_rs2_edges"]
 
   - name: sh3add_enc
@@ -41,20 +58,17 @@ normative_rule_definitions:
   - name: sh3add_op
     coverpoint: ["Zba_sh3add_cg/cr_rs1_rs2_edges"]
 
-  - name: sh3add_uw_enc
+  - name: sh3add-uw_enc
     coverpoint: ["Zba_sh3add_uw_cg/cr_rs1_rs2_edges"]
 
-  - name: sh3add_uw_op
+  - name: sh3add-uw_op
     coverpoint: ["Zba_sh3add_uw_cg/cr_rs1_rs2_edges"]
 
-  - name: add_uw_enc
+  - name: add-uw_enc
     coverpoint: ["Zba_add_uw_cg/cr_rs1_rs2_edges"]
 
-  - name: add_uw_op
+  - name: add-uw_op
     coverpoint: ["Zba_add_uw_cg/cr_rs1_rs2_edges"]
 
-  - name: slli_uw_enc
-    coverpoint: ["Zba_slli_uw_cg/cr_rs1_imm_edges_uimm"]
-
-  - name: slli_uw_op
+  - name: slli-uw_enc
     coverpoint: ["Zba_slli_uw_cg/cr_rs1_imm_edges_uimm"]

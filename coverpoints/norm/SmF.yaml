@@ -1,59 +1,77 @@
-# Normative rule to coverpoint mappings
-# Generated from riscv-isa-manual normative rule definitions
+# Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
-  # The FS field encodes the status of the floating-point unit state, including the
-  # floating-point registers f0–f31 and the CSRs fcsr, frm, and fflags.
+  # although CSRs and instructions are associated with one privilege level, they are
+  # also accessible at all higher privilege levels.
+  - name: Zicsr_higher_priv
+    coverpoint: ["SmF_cg/cp_fcsr_access"]
+  # The csr::[fs] field encodes the status of the floating-point unit state, including
+  # the floating-point registers f0&amp;#8205;&amp;#8211;&amp;#8205;f31 and the CSRs
+  # csr:fcsr[], csr:frm[], and csr:fflags[].
   - name: mstatus_fs_op
     coverpoint: ["SmF_cg/cp_mstatus_FS_transition"]
-
-  # When an extension's status is set to Off, any instruction that attempts to read
-  # or write the corresponding state will cause an illegal-instruction exception.
+  # Status|FS and VS Meaning|XS Meaning === 0|Off|All off¶1|Initial|None dirty or clean,
+  # some on¶2|Clean|None dirty, some clean¶3|Dirty|Some dirty ===
+  - name: mstatus_fs_vs_xs_enc
+    coverpoint: ["SmF_cg/cp_mstatus_FS_transition"]
+  # If the ext:f[] extension is implemented, the csr::[fs] field shall not be read-only
+  # zero.
+  - name: mstatus_fs_acc1
+    # FS is written with each value and read back
+    coverpoint: ["SmF_cg/cp_mstatus_FS_transition"]
+  # summarizes whether either the csr::[fs], csr::[vs], or csr::[xs] fields signal the
+  # presence of some dirty state that will require saving extended user context to
+  # memory.
+  - name: mstatus_sd_summary_op
+    # Every mstatus read records SD; V configurations boot with VS=Dirty, so SD=1 throughout there
+    coverpoint: ["SmF_cg/cp_mstatus_FS_transition"]
+  # When an extension's status is set to Off, any instruction that attempts to read or
+  # write the corresponding state will cause an illegal-instruction exception.
   - name: mstatus_fs_vs_xs_off_op
-    coverpoint: ["SmF_cg/cp_mstatus_FS_transition, SmF_cg/cp_fcsr_access"]
-
-  # When the status is Clean, the corresponding state is potentially different from
-  # the initial value, but matches the last value stored on a context swap.
+    coverpoint: ["SmF_cg/{cp_mstatus_FS_transition, cp_fcsr_access}"]
+  # When the status is Initial, the corresponding state should have an initial constant
+  # value.
+  - name: mstatus_fs_vs_xs_initial_op
+    coverpoint:
+      [
+        "Not tested: the initial constant value is not specified and software can change it",
+      ]
+  # When the status is Clean, the corresponding state is potentially different from the
+  # initial value, but matches the last value stored on a context swap.
   - name: mstatus_fs_vs_xs_clean_op
-    coverpoint: ["untested because this is controlled by software"]
-
+    coverpoint:
+      [
+        "Not tested: whether the state matches the last context save depends on software",
+      ]
   # When the status is Dirty, the corresponding state has potentially been modified
   # since the last context save.
   - name: mstatus_fs_vs_xs_dirty_op
-    coverpoint: ["SmF_cg/cp_mstatus_FS_transition, SmF_cg/cp_fcsr_access"]
-
-  # The status fields will also be updated during execution of instructions,
-  # regardless of privilege mode.
-  - name: mstatus_fs_vs_xs_update_indep_priv
-    coverpoint: ["SmF_cg/cp_mstatus_FS_transition, SmF_cg/cp_fcsr_access"]
-
-  # Changing the setting of FS has no effect on the contents of the floating-point
-  # register state. In particular, setting FS=Off does not destroy the state, nor
-  # does setting FS=Initial clear the contents.
-  - name: mstatus_fs_wr
-    coverpoint: ["TODO"]
-
+    coverpoint: ["SmF_cg/{cp_mstatus_FS_transition, cp_fcsr_access}"]
   # Implementations may choose to track the dirtiness of the floating-point register
   # state imprecisely by reporting the state to be dirty even when it has not been
   # modified. On some implementations, some instructions that do not mutate the
   # floating-point state may cause the state to transition from Initial or Clean to
   # Dirty.
   - name: mstatus_fs_imprecise
-    coverpoint: ["Untestable"]
-
-  # dirtiness might not be tracked at all, in which case the valid FS states are Off
-  # and Dirty, and an attempt to set FS to Initial or Clean causes it to be set to
+    # Instructions that need not modify FP state run only at FS=Off and FS=Dirty, where imprecise
+    # dirtiness tracking cannot change the result
+    coverpoint: ["SmF_cg/cp_mstatus_FS_transition_nondeterministic"]
+  # dirtiness might not be tracked at all, in which case the valid FS states are Off and
+  # Dirty, and an attempt to set csr::[fs] to Initial or Clean causes it to be set to
   # Dirty.
   - name: mstatus_fs_no_dirty_track
-    coverpoint: ["SmF_cg/cp_mstatus_FS_transition, SmF_cg/cp_fcsr_access"]
-
-  # If an instruction explicitly or implicitly writes a floating-point register or
-  # the fcsr but does not alter its contents, and FS=Initial or FS=Clean, it is
-  # implementation-defined whether FS transitions to Dirty.
+    coverpoint: ["SmF_cg/cp_mstatus_FS_transition"]
+  # If an instruction explicitly or implicitly writes a floating-point register or the
+  # csr:fcsr[] but does not alter its contents, and csr::[fs]=Initial or
+  # csr::[fs]=Clean, it is implementation-defined whether FS transitions to Dirty.
   - name: mstatus_fs_no_change_dirty
-    coverpoint: ["Untestable"]
-
-  # although CSRs and instructions are associated with one privilege level, they are
-  # also accessible at all higher privilege levels.
-  - name: Zicsr_higher_priv
-    coverpoint: ["SmF_cg/cp_fcsr_access"]
+    coverpoint:
+      [
+        "Not tested: implementation-defined whether FS becomes Dirty when the contents do not change",
+      ]
+  # The csr::[sd] bit is read-only and is set when either the csr::[fs], csr::[vs], or
+  # csr::[xs] bits encode a Dirty state (i.e., csr::[sd]=(csr::[fs]==0b11 OR
+  # csr::[xs]==0b11 OR csr::[vs]==0b11)).
+  - name: mstatus_sd_formula
+    # Every mstatus read records SD; V configurations boot with VS=Dirty, so SD=1 throughout there
+    coverpoint: ["SmF_cg/cp_mstatus_FS_transition"]

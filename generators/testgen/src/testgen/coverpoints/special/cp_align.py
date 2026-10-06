@@ -30,6 +30,7 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
     for alignment in alignments:
         if instr_type == "L":
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], immval=alignment)
+            params.temp_reg = test_data.int_regs.get_register(exclude_regs=[0, 2])
             assert params.rs1 is not None, "rs1 must be provided for L-type instruction"
             assert params.rd is not None, "rd must be provided for L-type instruction"
             assert params.immval is not None and params.temp_val is not None and params.temp_reg is not None, (

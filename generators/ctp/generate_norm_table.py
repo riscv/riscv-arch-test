@@ -33,7 +33,7 @@ import os
 import re
 import sys
 import urllib.request
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -168,6 +168,36 @@ def find_normative_rules(data: dict[str, Any] | list[dict[str, Any]]) -> list[di
     raise ValueError("Could not locate normative rules list in JSON")
 
 
+def iter_rules(rules_list: list[dict[str, Any]]) -> Iterator[tuple[str, list[dict[str, Any]], str]]:
+    """Yield (rule name, tags, chapter) for each normative rule in the JSON.
+
+    Each norm: tag in the ISA manual is one normative rule, named by the tag without
+    the norm: prefix. The manual's JSON has one entry per tag with the tag's text on the
+    entry. Older JSON had one entry per rule definition with the rule's tags in a "tags"
+    list; each of those tags (except context tags) is yielded once as a rule of its own,
+    so coverpoint files keyed by tag names resolve against either form.
+    """
+    seen: set[str] = set()
+    for entry in rules_list:
+        if not isinstance(entry, dict):
+            continue
+        chapter = entry.get("chapter_name") or entry.get("def_filename") or "unknown"
+        if "tags" in entry or "tag" in entry:
+            tags = entry.get("tags") or entry.get("tag") or []
+            for tg in [tags] if isinstance(tags, dict) else tags:
+                if not isinstance(tg, dict) or not tg.get("name") or tg.get("context"):
+                    continue
+                name = str(tg["name"]).removeprefix("norm:")
+                if name not in seen:
+                    seen.add(name)
+                    yield name, [tg], chapter
+        elif entry.get("name") and entry["name"] not in seen:
+            name = str(entry["name"])
+            seen.add(name)
+            tag = {"name": f"norm:{name}", "text": entry.get("text", ""), "tag_filename": entry.get("tag_filename", "")}
+            yield name, [tag], chapter
+
+
 def extract_rule_text(tags: dict[str, Any] | list[Any] | None) -> str:
     """Extract text from tags structure (dict, list, or mixed)."""
     if not tags:
@@ -193,11 +223,14 @@ def split_name_list(val: str | list[str] | None) -> list[str]:
     """Split name(s) into a list, handling various formats."""
     if not val:
         return []
+    if isinstance(val, list):
+        return [n for v in val for n in split_name_list(v)]
     s = str(val).strip().strip("\"'")
     # Remove list brackets if present
     if s.startswith("[") and s.endswith("]"):
         s = s[1:-1]
-    return [p.strip() for p in s.split(",") if p.strip()] if "," in s else [s]
+    parts = s.split(",") if "," in s else [s]
+    return [p.strip().strip("\"'") for p in parts if p.strip().strip("\"'")]
 
 
 def extract_names_from_item(item: dict[str, Any]) -> list[str]:
@@ -400,6 +433,54 @@ def pick_cover_for_name(coverpoint: str | list[str] | None, names: list[str], id
     return coverpoint
 
 
+# Inline macros defined by riscv-isa-manual's src/lib/macros.rb.  The normative rule text is
+# extracted from the manual's sources with these macros unexpanded, and the CTP build does not load
+# that extension, so expand them here the way the manual renders them:
+#   insn:foo[]         FOO           insn:foo[bar,baz]   FOO bar, baz
+#   ext:zoo[]          `Zoo`         csr:foo[]           `foo`
+#   csr:foo[bar]       `foo.BAR`     csr::[bar]          `BAR`
+#   qty:16[KiB]        16 KiB (non-breaking space)
+# The *link forms are cross-references inside the manual; the rule text is already one link to the
+# manual, and links cannot nest, so they render like their plain forms.
+_ENTITY_SPLIT_RE = re.compile(r"(&#?\w+;)")
+_ISA_MANUAL_MACRO_RE = re.compile(r"\b(insn|insnlink|ext|extlink|csr|csrlink|qty|xref):([^\[\s]*)\[([^\]]*)\]")
+
+
+def expand_isa_manual_macros(text: str) -> str:
+    """Expand the riscv-isa-manual inline macros in rule text into plain AsciiDoc."""
+
+    def expand(m: re.Match[str]) -> str:
+        kind, name, arg = m.group(1), m.group(2), m.group(3)
+        args = [a.strip() for a in arg.split(",")] if arg.strip() else []
+        if kind in ("insn", "insnlink"):
+            # Uppercase the mnemonic but not any HTML entities in it, e.g. the angle brackets of
+            # vmv<nr>r.v, which the manual's JSON carries double-escaped as &amp;#60; and &amp;#62;
+            name = name.replace("&amp;", "&")
+            mnemonic = "".join(t if t.startswith("&") else t.upper() for t in _ENTITY_SPLIT_RE.split(name))
+            return mnemonic + ("\u00a0" + ",\u00a0".join(args) if args else "")
+        if kind in ("ext", "extlink"):
+            return f"`{name.capitalize()}`"
+        if kind in ("csr", "csrlink"):
+            parts = ([] if name in ("", ":") else [name.lower()]) + ([args[0].upper()] if args else [])
+            return "`" + ".\u2060".join(parts) + "`"
+        if kind == "qty":
+            return name + "\u00a0" + (args[0] if args else "")
+        if kind == "xref":
+            return name
+        return m.group(0)
+
+    return _ISA_MANUAL_MACRO_RE.sub(expand, text)
+
+
+# Cross-references inside rule text point at ISA-manual anchors that do not exist in the CTP, and
+# asciidoctor resolves even the entity-escaped form, so render them as their link text (or the anchor name).
+_XREF_RE = re.compile(r"(?:&lt;|<){2}([^,&<>]+?)(?:,([^&<>]+?))?(?:&gt;|>){2}")
+
+
+def plain_xrefs(text: str) -> str:
+    return _XREF_RE.sub(lambda m: (m.group(2) or m.group(1)).strip(), text)
+
+
 def truncate_rule_text(text: str) -> str:
     """Return rule text without truncation."""
     return text
@@ -580,51 +661,37 @@ def main() -> None:
     json_links_map = {}
     json_names = set()
     json_def_map = {}
-    for entry in rules_list:
-        if not isinstance(entry, dict):
-            continue
-        name = entry.get("name")
-        if not name:
-            continue
+    for name, tags, chapter in iter_rules(rules_list):
         json_names.add(name)
-        tags = entry.get("tags") or entry.get("tag") or []
         # Build ASCIIDoc linked text for tags associated with this rule.
         # The link should apply to the tagged text (tag['text']) and the
         # tag 'name' (e.g. 'norm:...') should not be printed.
         linked_text_parts = []
-        UNPRIV_BASE = "https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html"
-        PRIV_BASE = "https://riscv.github.io/riscv-isa-manual/snapshot/privileged/index.html"
+        # The ISA manual publishes the unprivileged and privileged volumes as a single document.
+        SPEC_BASE = "https://riscv.github.io/riscv-isa-manual/snapshot/spec/index.html"
         tags_iter = [tags] if isinstance(tags, dict) else list(tags) if tags is not None else []
         for tg in tags_iter:
             if not isinstance(tg, dict):
                 continue
             tag_name = tg.get("name")
-            tag_fn = tg.get("tag_filename", "") or ""
             tag_text = tg.get("text") or ""
             if not tag_name:
                 continue
-            # choose privileged or unprivileged base URL based on filename
-            # do a case-insensitive check and test for 'unprivileged' first
-            tag_fn_l = (tag_fn or "").lower()
-            if "unprivileged" in tag_fn_l:
-                base = UNPRIV_BASE
-            elif "privileged" in tag_fn_l:
-                base = PRIV_BASE
-            else:
-                base = UNPRIV_BASE
             # assemble URL with fragment pointing to the tag name
             # Percent-encode the fragment to produce a safe URL fragment.
             # Use urllib.parse.quote with an empty 'safe' to encode reserved
             # characters (e.g., ':') so the fragment is valid when embedded in
             # a link target.
             frag = quote(str(tag_name), safe="")
-            url = f"{base}#{frag}"
+            url = f"{SPEC_BASE}#{frag}"
             # Prepare display text: collapse whitespace and remove surrounding newlines
             disp = " ".join(str(tag_text).split())
+            disp = expand_isa_manual_macros(disp)
             # Strip asciidoctor image macros (e.g. image:path/stem-xxx.svg[...])
             # that reference pre-rendered math from the ISA manual build.
             # These images don't exist in the CTP build context.
             disp = re.sub(r"image:[^\[]*\[[^\]]*\]", "[math expression]", disp)
+            disp = plain_xrefs(disp)
             # Replace any vertical bar '|' with the HTML entity '&#124;'
             # instead of truncating. This preserves more of the text while
             # preventing Asciidoc table column parsing from being broken by
@@ -696,15 +763,16 @@ def main() -> None:
             # (which previously required the 'a|' marker).
             raw_text = extract_rule_text(tags) or ""
             text = " ".join(str(raw_text).split())
+            text = expand_isa_manual_macros(text)
+            text = plain_xrefs(text)
             # Replace any literal '|' characters with the HTML entity
             # to avoid breaking Asciidoc table parsing.
             if "|" in text:
                 text = text.replace("|", "&#124;")
             json_text_map[name] = text
             json_links_map[name] = []
-        # capture def_filename for later grouping in reports
-        def_fn = entry.get("def_filename") or entry.get("def_file") or entry.get("definition_filename")
-        json_def_map[name] = def_fn or "unknown"
+        # capture the chapter for later grouping in reports
+        json_def_map[name] = chapter
 
     # If args.yaml is a directory, process every .yaml/.yml file inside
     if yaml_path.is_dir():
@@ -768,9 +836,9 @@ def main() -> None:
             report_lines.append("")
 
         # Now list JSON-only names organized by def_filename (chapter)
-        report_lines.append("Names present in JSON but missing from any YAML (organized by def_filename):")
+        report_lines.append("Names present in JSON but missing from any YAML (organized by chapter):")
         if missing_in_yaml:
-            # group by def_filename
+            # group by chapter
             chapter_map = {}
             for name in missing_in_yaml:
                 chapter = json_def_map.get(name, "unknown") or "unknown"

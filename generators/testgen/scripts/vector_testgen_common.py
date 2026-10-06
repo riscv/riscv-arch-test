@@ -1664,6 +1664,10 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
           fp_exts_str += "_Zvfh"
         ext_parts_no_I = fp_exts + ext_parts_no_I
         ext_str_no_I = fp_exts_str + ext_str_no_I
+      # Reserved vector encodings trap only on harts with Ssstrict, as in the scalar Ssstrict
+      # suites. Ssstrict has no assembler meaning, so -march is unchanged.
+      if test.startswith("SsstrictV"):
+        ext_parts_no_I = ext_parts_no_I + ['Ssstrict']
       march = f"rv{xlen}i{ext_str_no_I}".lower()
     else:
       matched_alias = None
@@ -1768,7 +1772,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
                                      f"#define RVTEST_SEW {sew}\n"
                                      f"#define VDSEW {vdsew}\n"
                                      + (f"\n{getPrivExtraDefines(sew)}" if priv else "")
-                                     + ("\n#define TRAP_SIGUPD_COUNT 50000" if test.startswith("SsstrictV") else "")))
+                                     + ("\n#define TRAP_SIGUPD_COUNT 12500" if test.startswith("SsstrictV") else "")))
 
 
     )

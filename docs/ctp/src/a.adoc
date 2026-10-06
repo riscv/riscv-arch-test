@@ -13,6 +13,17 @@ This section exercises unprivileged tests that will not trap.  Privileged tests 
 .Zaamo Instruction Coverpoints
 include::{testplansdir}/Zaamo.adoc[]
 
+[[t-Zaamo-coverpoint-definitions]]
+.Zaamo Coverpoint Definitions
+[cols="2, 1, 4" options=header]
+|===
+|Coverpoint|Bins|Definition
+3+^|cp_custom_amo_aqrl coverpoints
+|cp_custom_aqrl|4|none, aq, rl, aqrl
+3+^|cr_memval_rs2_edges coverpoints (amomin, amomax, amominu, amomaxu)
+|cr_memval_rs2_edges|cp_memval bins x cp_rs2_edges bins|Cross of the standard memory-value and rs2 edge coverpoints
+|===
+
 include::norm/Zaamo_norm_rules.adoc[]
 
 [NOTE]
@@ -29,17 +40,20 @@ include::{testplansdir}/Zalrsc.adoc[]
 [[t-Zalrsc-coverpoint-definitions]]
 .Zalrsc Coverpoint Definitions
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Coverpoint|Bins|Definition
 3+^|cp_custom_lr coverpoints
 |cp_custom_aqrl|3|none, aq, aqrl
 |cp_custom_rd_edges|3|rd_value = 0, 1, -1
 3+^|cp_custom_sc coverpoints
-|cp_custom_aqrl|3|none, rl, aqrl
-|cp_custom_sc_after_sc|2|sc followed by sc
-|cp_custom_sc_lr|2|lr followed by sc that fails and passes, sc pairs with most recent lr
-|cp_custom_sc_addresses|32*2|lr followed by sc at address of 8, ..., 248 offset from lr address.  For RV64, exercise both lr.d and lr.w
+|cp_custom_aqrl|3|none, rl, aqrl. Each sc is retried in a constrained LR/SC loop of up to 100 attempts.
+|cp_custom_sc_after_sc|2|sc followed by sc. The lr and both sc are retried, up to 100 attempts, until the first sc succeeds; the second sc must fail. This is not a constrained LR/SC loop, because the second sc follows the LR/SC sequence.
+|cp_custom_sc_lr|2|lr followed by sc that fails and passes, sc pairs with most recent lr. The passing sc is retried in a constrained LR/SC loop of up to 100 attempts.
+|cp_custom_sc_addresses|32*2|lr followed by sc at address of 8, ..., 248 offset from lr address.  For RV64, exercise both lr.d and lr.w. The sc may succeed if the reservation set includes its address, so it is retried up to 100 times. This is not a constrained LR/SC loop, because the sc and lr addresses differ.
 |===
+
+A single LR/SC pair may fail spuriously, and only a constrained LR/SC loop is guaranteed to succeed eventually. Therefore, every sc test that can succeed retries its lr/sc pair up to 100 times, including the standard register and value coverpoints of sc.w and sc.d.
 
 include::norm/Zalrsc_norm_rules.adoc[]
 
@@ -47,4 +61,4 @@ The spec imposes no requirements on reservation set form, including alignment, N
 
 TODO: On implementations that support the C extension, compressed forms of the
 I instructions permitted inside constrained LR/SC sequences, as
-described in <<sec:lrscseq>>, are also permitted.
+described in https://riscv.github.io/riscv-isa-manual/snapshot/spec/index.html#sec:lrscseq[the ISA manual], are also permitted.

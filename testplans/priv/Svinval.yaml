@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Svinval
+source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1207540560#gid=1207540560
+coverpoints:
+  - heading: "General Test Environment (Svinval):\n- T-SBI suite: boots to S-mode; the U-mode case uses RVTEST_TSBI_GOTO_UMODE / _SMODE. mstatus.TVM=0."
+  - name: cr_svinival
+    goal: Verify the Svinval instructions in S-mode and U-mode with mstatus.TVM=0
+    description: "S-mode: execute sfence.w.inval, sinval.vma x0, x0, sfence.inval.ir and sfence.vma x0, x0. Switch to U-mode with RVTEST_TSBI_GOTO_UMODE and execute the same four instructions."
+    expectation: "S-mode: all four execute without exception. U-mode: illegal-instruction exception (scause = 2) for each."
+    bins: |-
+      cp_instr x cp_priv x cp_tvm
+      = 8 bins on RV64, 8 on RV32
+    id: Svinval_sinval_vma_invalidates_same_as_sfence_vma Svinval_sfence_w_inval_orders_before_sinval_vma Svinval_sequence_rs1_rs2 Svinval_illegal_instruction_u_mode Svinval_sfence_w_inval_inval_u_mode Svinval_sfence_w_inval_inval_s_vs_mode
+    rules:
+      - "[norm:Svinval_sinval_vma_invalidates_same_as_sfence_vma] [norm:Svinval_sfence_w_inval_orders_before_sinval_vma] [norm:Svinval_sequence_rs1_rs2] [norm:Svinval_illegal_instruction_u_mode] [norm:Svinval_sfence_w_inval_inval_u_mode] [norm:Svinval_sfence_w_inval_inval_s_vs_mode]"

@@ -53,11 +53,20 @@
 `ifdef EXCEPTIONSSV_COVERAGE
   `include "ExceptionsSv_coverage.svh"
 `endif
+`ifdef EXCEPTIONSSVSM_COVERAGE
+  `include "ExceptionsSvSm_coverage.svh"
+`endif
 `ifdef EXCEPTIONSSVZAAMO_COVERAGE
   `include "ExceptionsSvZaamo_coverage.svh"
 `endif
+`ifdef EXCEPTIONSSVZAAMOSM_COVERAGE
+  `include "ExceptionsSvZaamoSm_coverage.svh"
+`endif
 `ifdef EXCEPTIONSSVZALRSC_COVERAGE
   `include "ExceptionsSvZalrsc_coverage.svh"
+`endif
+`ifdef EXCEPTIONSSVZALRSCSM_COVERAGE
+  `include "ExceptionsSvZalrscSm_coverage.svh"
 `endif
 `ifdef EXCEPTIONSU_COVERAGE
   `include "ExceptionsU_coverage.svh"
@@ -109,6 +118,12 @@
 `endif
 `ifdef I_COVERAGE
   `include "I_coverage.svh"
+`endif
+`ifdef INTERRUPTSS_COVERAGE
+  `include "InterruptsS_coverage.svh"
+`endif
+`ifdef INTERRUPTSSM_COVERAGE
+  `include "InterruptsSm_coverage.svh"
 `endif
 `ifdef M_COVERAGE
   `include "M_coverage.svh"
@@ -176,8 +191,14 @@
 `ifdef SMNPMS_COVERAGE
   `include "SmnpmS_coverage.svh"
 `endif
+`ifdef SMNPMSSM_COVERAGE
+  `include "SmnpmSSm_coverage.svh"
+`endif
 `ifdef SMNPMU_COVERAGE
   `include "SmnpmU_coverage.svh"
+`endif
+`ifdef SMNPMUSM_COVERAGE
+  `include "SmnpmUSm_coverage.svh"
 `endif
 `ifdef SMSTATEEN_COVERAGE
   `include "Smstateen_coverage.svh"
@@ -200,6 +221,9 @@
 `ifdef SSNPM_COVERAGE
   `include "Ssnpm_coverage.svh"
 `endif
+`ifdef SSNPMSM_COVERAGE
+  `include "SsnpmSm_coverage.svh"
+`endif
 `ifdef SSSTATEEN_COVERAGE
   `include "Ssstateen_coverage.svh"
 `endif
@@ -214,6 +238,12 @@
 `endif
 `ifdef SSSTRICTV_COVERAGE
   `include "SsstrictV_coverage.svh"
+`endif
+`ifdef SSTC_COVERAGE
+  `include "Sstc_coverage.svh"
+`endif
+`ifdef SSTCSM_COVERAGE
+  `include "SstcSm_coverage.svh"
 `endif
 `ifdef SSTVALA_COVERAGE
   `include "Sstvala_coverage.svh"
@@ -236,6 +266,9 @@
 `ifdef SVPMPZICBO_COVERAGE
   `include "SvPMPZicbo_coverage.svh"
 `endif
+`ifdef SVSM_COVERAGE
+  `include "SvSm_coverage.svh"
+`endif
 `ifdef SVZICBO_COVERAGE
   `include "SvZicbo_coverage.svh"
 `endif
@@ -251,11 +284,17 @@
 `ifdef SVBARE_COVERAGE
   `include "Svbare_coverage.svh"
 `endif
+`ifdef SVBARESM_COVERAGE
+  `include "SvbareSm_coverage.svh"
+`endif
 `ifdef SVINVAL_COVERAGE
   `include "Svinval_coverage.svh"
 `endif
 `ifdef SVINVALH_COVERAGE
   `include "SvinvalH_coverage.svh"
+`endif
+`ifdef SVINVALSM_COVERAGE
+  `include "SvinvalSm_coverage.svh"
 `endif
 `ifdef SVNAPOT_COVERAGE
   `include "Svnapot_coverage.svh"

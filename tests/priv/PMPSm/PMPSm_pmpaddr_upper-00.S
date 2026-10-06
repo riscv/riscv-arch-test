@@ -58,7 +58,7 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-PMPSm_cp_pmpaddr_upper_zero_all_ones_str: .string "\"test: 25; cg: PMPSm; cp: cp_pmpaddr_upper_zero; bin: all_ones\""
+PMPSm_cp_pmpaddr_upper_zero_all_ones_str: .string "\"test: 21; cg: PMPSm; cp: cp_pmpaddr_upper_zero; bin: all_ones\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

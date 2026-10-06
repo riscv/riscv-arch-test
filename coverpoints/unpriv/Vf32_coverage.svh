@@ -65,7 +65,6 @@ covergroup Vf32_vfadd_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -411,7 +410,6 @@ covergroup Vf32_vfadd_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -930,7 +928,6 @@ covergroup Vf32_vfcvt_f_x_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -1161,7 +1158,6 @@ covergroup Vf32_vfcvt_f_xu_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -1906,7 +1902,6 @@ covergroup Vf32_vfcvt_x_f_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -2172,7 +2167,6 @@ covergroup Vf32_vfcvt_xu_f_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -2450,7 +2444,6 @@ covergroup Vf32_vfdiv_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -2806,7 +2799,6 @@ covergroup Vf32_vfdiv_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -3130,7 +3122,6 @@ covergroup Vf32_vfmacc_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -3474,7 +3465,6 @@ covergroup Vf32_vfmacc_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -3794,7 +3784,6 @@ covergroup Vf32_vfmadd_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -4138,7 +4127,6 @@ covergroup Vf32_vfmadd_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -5934,7 +5922,6 @@ covergroup Vf32_vfmsac_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -6278,7 +6265,6 @@ covergroup Vf32_vfmsac_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -6598,7 +6584,6 @@ covergroup Vf32_vfmsub_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -6942,7 +6927,6 @@ covergroup Vf32_vfmsub_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -7262,7 +7246,6 @@ covergroup Vf32_vfmul_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -7614,7 +7597,6 @@ covergroup Vf32_vfmul_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -8082,7 +8064,7 @@ covergroup Vf32_vfmv_f_s_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -8250,7 +8232,7 @@ covergroup Vf32_vfmv_s_f_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -8373,7 +8355,7 @@ covergroup Vf32_vfmv_v_f_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges {
         // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
     }
 
@@ -8448,7 +8430,6 @@ covergroup Vf32_vfncvt_f_f_w_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -8521,7 +8502,7 @@ covergroup Vf32_vfncvt_f_f_w_cg with function sample(ins_t ins);
     }
 
     // Overflow flag set after execution (fflags bit 2 = OF)
-    fflags_of: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0][2] {
+    fflags_of: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[2] {
         bins overflow = {1'b1};
     }
 
@@ -8535,27 +8516,20 @@ covergroup Vf32_vfncvt_f_f_w_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
     `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -8796,7 +8770,6 @@ covergroup Vf32_vfncvt_f_x_w_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -8858,27 +8831,20 @@ covergroup Vf32_vfncvt_f_x_w_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
     `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -9086,7 +9052,6 @@ covergroup Vf32_vfncvt_f_xu_w_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -9148,27 +9113,20 @@ covergroup Vf32_vfncvt_f_xu_w_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
     `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -9482,7 +9440,7 @@ covergroup Vf32_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
     }
 
     // Overflow flag set after execution (fflags bit 2 = OF)
-    fflags_of: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0][2] {
+    fflags_of: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[2] {
         bins overflow = {1'b1};
     }
 
@@ -9496,27 +9454,20 @@ covergroup Vf32_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
     `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -9811,27 +9762,20 @@ covergroup Vf32_vfncvt_rtz_x_f_w_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
     `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -10126,27 +10070,20 @@ covergroup Vf32_vfncvt_rtz_xu_f_w_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
     `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -10389,7 +10326,6 @@ covergroup Vf32_vfncvt_x_f_w_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -10451,27 +10387,20 @@ covergroup Vf32_vfncvt_x_f_w_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
     `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -10714,7 +10643,6 @@ covergroup Vf32_vfncvt_xu_f_w_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -10776,27 +10704,20 @@ covergroup Vf32_vfncvt_xu_f_w_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
     `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -11053,7 +10974,6 @@ covergroup Vf32_vfnmacc_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -11397,7 +11317,6 @@ covergroup Vf32_vfnmacc_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -11717,7 +11636,6 @@ covergroup Vf32_vfnmadd_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -12061,7 +11979,6 @@ covergroup Vf32_vfnmadd_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -12381,7 +12298,6 @@ covergroup Vf32_vfnmsac_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -12725,7 +12641,6 @@ covergroup Vf32_vfnmsac_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -13045,7 +12960,6 @@ covergroup Vf32_vfnmsub_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -13389,7 +13303,6 @@ covergroup Vf32_vfnmsub_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -13717,7 +13630,6 @@ covergroup Vf32_vfrdiv_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -14041,7 +13953,6 @@ covergroup Vf32_vfrec7_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -15125,7 +15036,6 @@ covergroup Vf32_vfredosum_vs_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -15602,7 +15512,6 @@ covergroup Vf32_vfredusum_vs_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -15924,7 +15833,6 @@ covergroup Vf32_vfrsqrt7_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -16367,7 +16275,6 @@ covergroup Vf32_vfrsub_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -18543,7 +18450,6 @@ covergroup Vf32_vfsqrt_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -18811,7 +18717,6 @@ covergroup Vf32_vfsub_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -19153,7 +19058,6 @@ covergroup Vf32_vfsub_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -19459,7 +19363,6 @@ covergroup Vf32_vfwadd_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -19851,7 +19754,6 @@ covergroup Vf32_vfwadd_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -20317,7 +20219,6 @@ covergroup Vf32_vfwadd_wf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -20325,27 +20226,20 @@ covergroup Vf32_vfwadd_wf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
     `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -20674,7 +20568,6 @@ covergroup Vf32_vfwadd_wv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -20682,27 +20575,20 @@ covergroup Vf32_vfwadd_wv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
     `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -21979,7 +21865,6 @@ covergroup Vf32_vfwcvt_x_f_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -22250,7 +22135,6 @@ covergroup Vf32_vfwcvt_xu_f_v_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -22521,7 +22405,6 @@ covergroup Vf32_vfwmacc_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -22846,7 +22729,6 @@ covergroup Vf32_vfwmacc_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -23167,7 +23049,6 @@ covergroup Vf32_vfwmsac_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -23492,7 +23373,6 @@ covergroup Vf32_vfwmsac_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -23811,7 +23691,6 @@ covergroup Vf32_vfwmul_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -24201,7 +24080,6 @@ covergroup Vf32_vfwmul_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -24641,7 +24519,6 @@ covergroup Vf32_vfwnmacc_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -24966,7 +24843,6 @@ covergroup Vf32_vfwnmacc_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -25287,7 +25163,6 @@ covergroup Vf32_vfwnmsac_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -25612,7 +25487,6 @@ covergroup Vf32_vfwnmsac_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -25959,7 +25833,6 @@ covergroup Vf32_vfwredosum_vs_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -26493,7 +26366,6 @@ covergroup Vf32_vfwredusum_vs_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -26928,7 +26800,6 @@ covergroup Vf32_vfwsub_vf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -27320,7 +27191,6 @@ covergroup Vf32_vfwsub_vv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -27786,7 +27656,6 @@ covergroup Vf32_vfwsub_wf_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -27794,27 +27663,20 @@ covergroup Vf32_vfwsub_wf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
     `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -28143,7 +28005,6 @@ covergroup Vf32_vfwsub_wv_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -28151,27 +28012,20 @@ covergroup Vf32_vfwsub_wv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
 `ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
         `endif
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
     `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM32
             bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
             bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+        `endif
+    `endif
     }
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////

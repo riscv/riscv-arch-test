@@ -15068,9 +15068,8 @@ covergroup Vf32_vfredosum_vs_cg with function sample(ins_t ins);
 `else
         `ifdef D_SUPPORTED
         vs1_0_qNAN : coverpoint
-                (get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val) inside {
-                        [64'h7FF8_0000_0000_0000:64'h7FFF_FFFF_FFFF_FFFF]
-                })
+                (get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val) >= 64'h7FF8_0000_0000_0000
+                 && get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val) <= 64'h7FFF_FFFF_FFFF_FFFF)
         {
                 bins posQNaN = {1};
         }
@@ -26053,9 +26052,8 @@ covergroup Vf32_vfwredosum_vs_cg with function sample(ins_t ins);
 `else
         `ifdef D_SUPPORTED
         vs1_0_qNAN : coverpoint
-                (get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val) inside {
-                        [64'h7FF8_0000_0000_0000:64'h7FFF_FFFF_FFFF_FFFF]
-                })
+                (get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val) >= 64'h7FF8_0000_0000_0000
+                 && get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val) <= 64'h7FFF_FFFF_FFFF_FFFF)
         {
                 bins posQNaN = {1};
         }

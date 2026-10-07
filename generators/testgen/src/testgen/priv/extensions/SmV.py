@@ -17,6 +17,9 @@ from testgen.priv.registry import add_priv_test_generator
 _CG = "SmV_cg"
 
 _VS_MASK = 3 << 9  # mstatus.VS = bits [10:9]
+# LMUL = 1 before the vmv.v.i v1/v2 setup: an earlier testcase leaves LMUL = 2, where v1 is a
+# misaligned register group (a reserved encoding) that only harts with Ssstrict must trap.
+_VSET_M1 = "vsetivli x0, 1, e32, m1, tu, mu"
 
 
 def _check_vset(rd_reg: int, check_reg: int, test_data: TestData) -> list[str]:
@@ -124,6 +127,7 @@ def _gen_mstatus_vs_dirty(test_data: TestData, temp_reg: int) -> list[str]:
     ]
     for vs in (1, 2):
         lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
+        lines.append(_VSET_M1)
         lines.append("vmv.v.i v1, 1")
         lines.append("vmv.v.i v2, 2")
         lines.extend(_set_vs(vs=vs, temp_reg=temp_reg))
@@ -151,6 +155,7 @@ def _gen_mstatus_vs_off(test_data: TestData, temp_reg: int) -> list[str]:
         ),
     ]
     lines.extend(_set_vs(vs=3, temp_reg=temp_reg))
+    lines.append(_VSET_M1)
     lines.append("vmv.v.i v1, 1")
     lines.append("vmv.v.i v2, 2")
     # Ensure misa.V set (best effort)

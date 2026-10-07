@@ -158,6 +158,8 @@
   #endif
 #endif
 
+#endif // STANDARD_SM_SUPPORTED || S_SUPPORTED
+
 ##### Sscofpmf #####
 #ifdef SSCOFPMF_SUPPORTED
   #if !defined(RVMODEL_HPM_COUNTER) || !defined(RVMODEL_MHPMEVENT_VAL) || !defined(RVMODEL_MHPMEVENT_CODE)

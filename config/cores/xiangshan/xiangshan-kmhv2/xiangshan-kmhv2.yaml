@@ -100,7 +100,7 @@ implemented_extensions:
   - { name: S, version: "= 1.13.0" }
   - { name: H, version: "= 1.0.0" }
   # Smrnmi is implemented but not declared: ACT then writes mnstatus at boot, which the Sail
-  # reference model (0.14.1) does not implement, so the reference and the DUT would take different
+  # reference model (0.15) does not implement, so the reference and the DUT would take different
   # boot traps. The emulator's default flash image already sets mnstatus.NMIE before jumping to the
   # test, which is the state ACT establishes.
   #   https://github.com/OpenXiangShan/difftest/blob/3729300ae233816d332d057f170472ebe35147b0/src/test/csrc/common/flash.cpp#L64-L74

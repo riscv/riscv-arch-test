@@ -12,8 +12,7 @@ ci_enabled: false
 # riscv/riscv-arch-test#2649, #2655, #2657 and #2658: 3564 of 3631 tests pass; every remaining failure
 # is in one of these suites.
 #   S, Sm             menvcfg.FIOM and senvcfg.FIOM are read-only zero although satp.MODE is not
-#                     always Bare (norm:menvcfg_fiom_rdonly0_ok); NewCSR/CSRBundles.scala L79. Sm also
-#                     writes 16 (double trap) to mcause, which Sail 0.14.1 does not model (no Smdbltrp).
+#                     always Bare (norm:menvcfg_fiom_rdonly0_ok); NewCSR/CSRBundles.scala L79.
 #   Zicntr            Counter reads are not ordered after older instructions (norm:csr_access_order):
 #                     two instret reads 8 instructions apart differ by 0-21. Counters are missing from
 #                     CSROoORead.waitForwardInOrderCsrReadList.

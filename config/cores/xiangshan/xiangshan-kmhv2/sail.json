@@ -1,17 +1,45 @@
 // Sail reference-model configuration for XiangShan Kunminghu V2 (KunminghuV2Config).
 // OpenXiangShan/XiangShan @ e7bab53e66dfb3c4a1d11cf9519b0396f8576cae (kunminghu-v2).
 // Values agree with the UDB configuration in xiangshan-kmhv2.yaml, which cites the source of each.
+// Source paths below are relative to src/main/scala/xiangshan/ (NewCSR/ is backend/fu/NewCSR/).
 // Memory map: RAM at 0x8000_0000 (256 MiB used by the tests); CLINT at 0x3800_0000, as on the DUT.
 // The simple interrupt generator at 0x3805_0000 exists only in the reference model. The DUT's
 // PMA-denied range 0x3900_2000-0x39FF_FFFF (RVMODEL_ACCESS_FAULT_ADDRESS) is in no region.
 // writable_fiom is true because Sail requires FIOM to be writable when Sv39 is supported; on the
 // DUT menvcfg.FIOM is read-only zero.
 {
-  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.14.1/sail_riscv_config_schema.json",
+  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.15/sail_riscv_config_schema.json",
   "base": {
     "xlen": 64,
     "E": false,
-    "writable_misa": false,
+    // Whether a `mhpmcounter` increments if the event it is counting
+    // was generated during a write to its corresponding `mhpmevent`
+    // CSR (which could change the monitored event).
+    // XiangShan selects events with the registered mhpmevent values (NewCSR/NewCSR.scala:1284-1306),
+    // so the writing instruction's events are not counted with the new selector.
+    "hpmcounter_increments_in_self_hpmevent_write": false,
+    // The precision of the HPM counter, upto 64 bits.
+    "hpmcounter_width_bits": 64,
+    // The width of the `mhpmevent` CSRs, upto 64 bits, if Sscofpmf is
+    // not supported.  On RV32 without Sscofpmf, this can be upto 32,
+    // since the `mhpmeventh` CSRs are not accessible.
+    // If Sscofpmf is supported, the `mhpmevent` CSRs are always 64
+    // bits; this value then defines the number, upto 56, of the lowest
+    // bits of the CSRs that are used as the event selector.
+    // XiangShan: the event field is bits 54:0 (OPTYPE2..0 at 54:40, EVENT3..0 at 39:0);
+    // bit 55 is not implemented (NewCSR/MachineLevel.scala:773-787). The OPTYPE fields
+    // are WARL with legal values 0, 1, 2 and 4 (MachineLevel.scala:789-796), which Sail
+    // does not model.
+    "hpmevent_width_bits": 55,
+    // XiangShan: CY, IR and HPM3-31 are writable (NewCSR/MachineLevel.scala:706-710).
+    "mcountinhibit": {
+      // Whether the `mcountinhibit` CSR is implemented.
+      "supported": true,
+      // This bits in this value control whether the corresponding
+      // bits of the CSR are writable.  Note that bit 1 cannot be written
+      // to as it is read-only zero.
+      "writable_bits": { "len": 32, "value": "0xFFFF_FFFD" }
+    },
     "writable_fiom": true,
     "writable_hpm_counters": {
       "len": 32,
@@ -293,23 +321,55 @@
     "instructions_per_tick": 2,
     "wfi_is_nop": false,
     "wfi_available_to_user_mode": false,
-    "max_time_to_wait": 200
+    "max_time_to_wait": 200,
+    // The model can generate the following events that can be tracked
+    // using the HPM counters:
+    // - EV_FENCE
+    // - EV_MISALIGNED_LOAD_EXCEPTION
+    // - EV_MISALIGNED_STORE_EXCEPTION
+    // - EV_TLB_MISS
+    //
+    // An event can be mapped to a selector value, that when written
+    // to the event field of an `mhpmeventNN` CSR, will increment the
+    // corresponding `mhpmcounterNN` CSR as per the specification
+    // (e.g. the `Sscofpmf` extension).
+    //
+    // The selector values need to fit into the event field of an
+    // `mhpmeventNN` CSR. When Sscofpmf is not supported, this field
+    // is `base.hpmevent_width_bits` wide; with Sscofpmf, this field
+    // is the lowest 56 bits of the 64-bit `mhpeventNN` CSR.
+    //
+    // The `event_selectors` list can contain any subset of these
+    // supported events.  Events cannot be repeated in the list, and
+    // the selector values should be unique.  These selector values
+    // are always specified as 64-bit, but their values must fit the
+    // width restrictions mentioned above.
+    "event_selectors": []
   },
   "extensions": {
+    // XiangShan: every misa field is read-only (NewCSR/MachineLevel.scala:610-640).
     "M": {
+      "mutable_misa": false,
       "supported": true
     },
     "A": {
+      "mutable_misa": false,
       "supported": true
     },
     "F": {
+      "mutable_misa": false,
       "supported": true,
       "fflags_dirty_policy": "Fflags_Dirty_Precise"
     },
     "D": {
+      "mutable_misa": false,
       "supported": true
     },
+    "C": {
+      "mutable_misa": false
+    },
     "V": {
+      "mutable_misa": false,
       "support_level": "Full",
       "vlen_exp": 7,
       "elen_exp": 6,
@@ -327,9 +387,11 @@
       }
     },
     "B": {
+      "mutable_misa": false,
       "supported": true
     },
     "S": {
+      "mutable_misa": false,
       "supported": true,
       "interrupts": {
         "software": {
@@ -344,12 +406,32 @@
       }
     },
     "U": {
+      "mutable_misa": false,
       "supported": true
     },
     "H": {
+      "mutable_misa": false,
       "supported": true,
       "geilen": 7,
       "guest_page_fault_writes_htval": true,
+      // Whether a trap into M or HS mode caused by the specified exception
+      // writes the transformed trapping instruction to `mtinst`/`htinst`.
+      // This applies to integer and floating-point loads and stores
+      // (including compressed forms), LR/SC, AMOs, HLV/HLVX/HSV and CBOs.
+      // If false, zero is written instead.
+      // XiangShan writes no transformed instruction: mtinst/htinst hold 0x3000 for a guest-page
+      // fault on an implicit VS-stage PTE access, otherwise 0
+      // (NewCSR/CSREvents/TrapEntryMEvent.scala:141, TrapEntryHSEvent.scala:154).
+      "transformed_instruction": {
+        "load_access_fault": false,
+        "load_address_misaligned": false,
+        "load_guest_page_fault": false,
+        "load_page_fault": false,
+        "samo_access_fault": false,
+        "samo_address_misaligned": false,
+        "samo_guest_page_fault": false,
+        "samo_page_fault": false
+      },
       "hgatp_modes": {
         "Sv32x4": false,
         "Sv39x4": true,
@@ -694,6 +776,61 @@
     },
     "Svvptc": {
       "supported": false
-    }
+    },
+    // Sdtrig, Smdbltrp, Ssdbltrp and Ssstrict are claimed in the UDB configuration.
+    "Sdtrig": {
+      "supported": true,
+      // `breakpoint_reentrancy` must be one of the below strings:
+      // . `Use_tcontrol`: use the `mte` and `mpte` bits in the `tcontrol` CSR (this also makes the `tcontrol` CSR available)
+      // . `Use_interrupt_enables`: use `mstatus.MIE` and the `SIE` bits in `sstatus` and `vsstatus`
+      // . `No_reentrancy_support`: no specific support for reentrancy
+      // Note: `Use_tcontrol` hardwires medeleg[3] to 0, which breaks the
+      // `sbreak` test in `riscv-tests`.
+      // XiangShan: breakpoint exceptions are suppressed in M with mstatus.MIE = 0, and in HS/VS
+      // with SIE = 0 when delegated (NewCSR/NewCSR.scala:1180-1182). There is no tcontrol.
+      "breakpoint_reentrancy": "Use_interrupt_enables",
+      "etrigger": {
+        "supported": false,
+        // A bit set to 1 in this value specifies that the
+        // corresponding exception is supported by the trigger.
+        // Triggers for reserved exceptions are not supported.  This
+        // value is ignored when `etrigger` is not supported.
+        "supported_exceptions": { "len": "xlen", "value": "0" }
+      },
+      "hcontext": { "supported": true },
+      // Triggers
+      // XiangShan implements only mcontrol6 triggers (NewCSR/DebugLevel.scala:223), which Sail
+      // 0.15 does not model; icount, itrigger and etrigger are not implemented.
+      "icount": {
+        "supported": false,
+        "count_hardwired_one": false,
+        // Whether a `tdata1` write to an `icount` trigger with
+        // `count`=1 also makes it pending when that write's instruction
+        // matches the trigger.
+        "self_write_sets_pending": false
+      },
+      "itrigger": {
+        "supported": false,
+        // A bit set to 1 in this value specifies that the
+        // corresponding interrupt is supported by the trigger.
+        // Triggers for reserved interrupts are not supported.  This
+        // value is ignored when `itrigger` is not supported.
+        "supported_interrupts": { "len": "xlen", "value": "0" }
+      },
+      // CSRs
+      // XiangShan: mcontext and hcontext (14 bits) and scontext (32 bits) are implemented
+      // (NewCSR/MachineLevel.scala:438,798-801, HypervisorLevel.scala:188,
+      // SupervisorLevel.scala:179,254-257).
+      "mcontext": { "supported": true },
+      // The number of supported triggers.  This has to be
+      // non-negative, and greater than 0 if Sdtrig is supported.
+      // The model does not support more than 16 triggers.
+      // XiangShan: TriggerNum = 4 (Parameters.scala:912).
+      "num_triggers": 4,
+      "scontext": { "supported": true }
+    },
+    "Smdbltrp": { "supported": true },
+    "Ssdbltrp": { "supported": true },
+    "Ssstrict": { "supported": true }
   }
 }

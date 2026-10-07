@@ -177,11 +177,6 @@ normative_rule_definitions:
     coverpoint:
       ["SmV_cg/cp_sew_lmul_vset_i_vli", "Vf16_vfadd_vf_cg/cr_vl_lmul_sew16"]
 
-  # While it is anticipated the larger vsew[2:0] encodings (100-111) will be used to
-  # encode larger SEW, the encodings are formally reserved at this point.
-  - name: vtype_vsew_rsv
-    coverpoint: [""]
-
   # Implementations must support LMUL integer values of 1, 2, 4, and 8.
   - name: vtype_lmul_val
     coverpoint:

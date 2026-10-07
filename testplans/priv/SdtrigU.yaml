@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SdtrigU
+source: https://docs.google.com/spreadsheets/d/1jvJCSf9vdZ23PEaaYETLxfwZoyq_PzpyJzIB1OhdhcQ/edit?gid=1728421881#gid=1728421881
+description: |
+  Unless otherwise specified, run tests in U-Mode, with tdata1.u = 1
+  mideleg.breakpoint = 1
+  Unless otherwise specified, use SBI Calls to access trigger CSRs
+  All other assumptions are inherited from SdtrigSm
+  Perform all tests defined in SdtrigSm
+  Expectations provided below differ from those in SdtrigSm
+  Note: cp_csr_access_common will trap on privileged registers.
+coverpoints: []

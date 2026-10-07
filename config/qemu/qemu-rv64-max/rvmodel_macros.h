@@ -6,6 +6,10 @@
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
+// Device addresses, interrupt timings and STANDARD_SM_SUPPORTED are in the
+// dut_environment block of the config's UDB yaml. Only the driver library
+// (librvmodel.a) is built from this file; test objects never see it.
+
 #define RVMODEL_DATA_SECTION \
         .pushsection .data,"aw",@progbits;                             \
         .p2align 3; .global _semihost_exit_pass;                          \
@@ -14,24 +18,12 @@
         _semihost_exit_fail: .dword 0x20023; .dword 1;                  \
         .popsection
 
-#define STANDARD_SM_SUPPORTED
-
 ##### STARTUP #####
 
 # Perform boot operations. Can be empty or left undefined unless needed for
 # DUT-specific behavior such as turning on a memory controller or
 # initializing custom state.
 //#define RVMODEL_BOOT
-
-// Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
-// if defined.  For most DUTs, the default should work and this macro
-// should not be defined.  If no M-mode or CSRs are implemented, define this
-// macro as blank to bypass the boot process.  If a nonconforming
-// M-mode is implemented, define this macro to set up the necessary
-// state in a fashion similar to RVTEST_BOOT_TO_MMODE.
-//#define RVMODEL_BOOT_TO_MMODE
-
-
 ##### TERMINATION #####
 
 # QEMU uses semihosting to terminate the simulation.
@@ -156,29 +148,12 @@
   j 1b                       ;/* Loop */             \
 3:
 
-
-##### Access Fault #####
-
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000100
-
-##### Machine Timer #####
-
-#define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
-
-#define RVMODEL_MTIMECMP_ADDRESS 0x02004000 /* Address of mtimecmp CSR */
-
 ##### Machine Interrupts #####
-
-#define RVMODEL_INTERRUPT_LATENCY 10
-
-#define RVMODEL_TIMER_INT_SOON_DELAY 1000
 
 // QEMU virt CLINT runs at 10 MHz; with -icount shift=1 (2 ns/insn) that is ~50 insns/tick.
 // Define a 50x multiplier to convert between timer tick and processor cycle count.
-#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 50
 
 #define CLINT_BASE_ADDRESS 0x02000000
-#define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 
 #define PLIC_BASE_ADDRESS    0x0c000000
 #define PLIC_ENABLE_ADDRESS  0x0c002000
@@ -189,8 +164,6 @@
 #define PLIC_SCLAIM_ADDRESS  0x0c201004
 #define NS16550_BASE_ADDRESS 0x10000000
 #define UART_INT_SRC         10           /* NS16550 interrupt source ID in QEMU virt */
-
-
 
 /* Generates machine external interrupt via PLIC + NS16550 UART transmitter interrupt.
  * The UART throws an interrupt because the THR (Transmit Holding Register) defaults to empty.

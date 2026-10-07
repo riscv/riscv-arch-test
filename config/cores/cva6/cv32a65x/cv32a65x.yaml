@@ -183,3 +183,11 @@ params:
       false,
       false,
     ]
+
+# Device addresses and timings baked into test objects. The objects are built
+# without rvmodel_macros.h, and the reference model needs the same values.
+dut_environment:
+  RVMODEL_INTERRUPT_LATENCY: 10
+  RVMODEL_TIMER_INT_SOON_DELAY: 10000
+  RVMODEL_MAX_CYCLES_PER_TIMER_TICK: 1
+  # Not set: RVMODEL_ACCESS_FAULT_ADDRESS.

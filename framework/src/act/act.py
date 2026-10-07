@@ -8,6 +8,7 @@
 ##################################
 
 import os
+import shutil
 import sys
 from pathlib import Path
 from typing import Annotated
@@ -16,7 +17,7 @@ import typer
 from rich import print as rprint
 
 from act.build import build, prune_empty_dirs
-from act.build_plan import generate_build_plan
+from act.build_plan import find_rvmodel_dir, generate_build_plan
 from act.build_types import BuildTask
 from act.certificate_tests import certificate_exists
 from act.config import CoverageSimulator
@@ -59,6 +60,16 @@ def run_act(
         int,
         typer.Option("--jobs", "-j", help="Parallel build jobs (0 = auto-detect CPU count)"),
     ] = 0,
+    rvmodel_dir: Annotated[
+        Path | None,
+        typer.Option(
+            "--rvmodel-dir",
+            exists=True,
+            file_okay=False,
+            help="Directory with the DUT's rvmodel_macros.h (default: each config's dut_include_dir). "
+            "Without one, the build stops at the certified objects.",
+        ),
+    ] = None,
     *,
     coverage: Annotated[bool, typer.Option(help="Enable coverage generation")] = False,
     debug: Annotated[bool, typer.Option(help="Enable debug output (signature objdump and trace files)")] = False,
@@ -119,6 +130,7 @@ def run_act(
         raise typer.Exit(1) from None
 
     config_names: list[str] = []
+    objects_only: list[str] = []
     tasks: list[BuildTask] = []
 
     # Load all configs and prepare every DUT's generated files
@@ -138,8 +150,15 @@ def run_act(
             raise TypeError(f"MXLEN must be an integer, got {type(mxlen)}: {mxlen!r}")
 
         config_names.append(config.name)
-        tasks.extend(
-            generate_build_plan(
+        config_rvmodel_dir = find_rvmodel_dir(config, rvmodel_dir)
+        if config_rvmodel_dir is None:
+            objects_only.append(config.name)
+            # ELFs left from an earlier build were linked against a driver this
+            # build no longer has; don't leave them around to be run.
+            if not dry_run:
+                shutil.rmtree(workdir / config.name / "elfs", ignore_errors=True)
+        try:
+            config_tasks, _ = generate_build_plan(
                 config,
                 mxlen,
                 selected_tests,
@@ -153,8 +172,12 @@ def run_act(
                 verbose,
                 dry_run,
                 enable_experimental_extensions,
+                rvmodel_dir=config_rvmodel_dir,
             )
-        )
+        except ValueError as e:
+            rprint(f"[bold red]{e}[/]", file=sys.stderr)
+            raise typer.Exit(1) from None
+        tasks.extend(config_tasks)
 
     # Run all tasks to compile ELFs
     result = build(
@@ -185,6 +208,11 @@ def run_act(
                 rprint(f"    - {error.task_name}", file=sys.stderr)
         sys.exit(1)
     rprint(f"[bold green]✓ Build complete:[/] {summary}")
+    for name in objects_only:
+        rprint(
+            f"[yellow]{name}:[/] no rvmodel_macros.h, so the build stopped at the certified objects in "
+            f"{workdir / name / 'objects'}. Pass --rvmodel-dir (RVMODEL_DIR=... with make) to link and run them."
+        )
 
     # Prune empty build directories if requested
     if clean_intermediates and not dry_run:

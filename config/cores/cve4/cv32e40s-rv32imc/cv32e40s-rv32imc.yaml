@@ -203,3 +203,13 @@ params:
       false, # 24..31
     ]
 # end
+
+# Device addresses and timings baked into test objects. The objects are built
+# without rvmodel_macros.h, and the reference model needs the same values.
+dut_environment:
+  RVMODEL_INTERRUPT_LATENCY: 10
+  RVMODEL_TIMER_INT_SOON_DELAY: 10000
+  STANDARD_SM_SUPPORTED: true
+  # Not set: RVMODEL_ACCESS_FAULT_ADDRESS. This DUT does not generate access faults.
+  # Not set: RVMODEL_MTIME_ADDRESS, RVMODEL_MTIMECMP_ADDRESS. MTIME is not implemented on
+  # this DUT.

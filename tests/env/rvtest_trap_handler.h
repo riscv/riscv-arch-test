@@ -130,24 +130,7 @@
 #define DEFAULT_LINK_REG x5                      // link register for test macros (jal return address)
 
 
-#ifndef T1
-  #define T1      x6                             // handler temporary 1
-#endif
-#ifndef T2
-  #define T2      x7                             // handler temporary 2
-#endif
-#ifndef T3
-  #define T3      x8                             // handler temporary 3
-#endif
-#ifndef T4
-  #define T4      x9                             // handler temporary 4
-#endif
-#ifndef T5
-  #define T5      x14                            // handler temporary 5
-#endif
-#ifndef T6
-  #define T6      x15                            // handler temporary 6
-#endif
+// T1..T6 are defined in utils.h (included before this file).
 
 //==============================================================================
 // SECTION 2: ARCHITECTURE CONSTANTS
@@ -2666,6 +2649,17 @@ excpt_\__MODE__\()hndlr_tbl:
 // reference don't affect .text.rvtest size.
 //==============================================================================
 
+// RVTEST_MODEL_INT_CLR0(_DRIVER): interrupt-clear from handler context, for the
+// VS-mode clears, which take no arguments. Calls the driver routine _DRIVER
+// (rvtest_driver.h), which may only touch ra/T2/T5 (T2/T5 are restored by
+// resto_Xrtn) -- a0/a1 are live. ra is spilled to save-area slot 0 around the call,
+// as in the T-SBI CSR_ACCESS dispatch above. The M and S clears reach the DUT
+// through the driver's rvtest_*_int_m / _su routines instead.
+#define RVTEST_MODEL_INT_CLR0(_DRIVER)                          \
+        SREG    ra, trap_sv_off+0*REGWIDTH(sp)                 ;\
+        call    _DRIVER                                        ;\
+        LREG    ra, trap_sv_off+0*REGWIDTH(sp)
+
 .pushsection .text.rvmodel, "ax"
 
 // These routines are placed after .data, which can be larger than the jal range
@@ -2674,8 +2668,9 @@ excpt_\__MODE__\()hndlr_tbl:
 
 // Each routine below clears its interrupt source through the RVTEST_CLR_*_INT
 // flavor for the mode this handler runs in: _M performs the operation directly,
-// _S (S/HS handlers) goes through T-SBI. Both flavors live in rvtest_setup.h and
-// exist only when Sm is supported; without Sm these interrupts are unexpected.
+// _S (S/HS handlers) goes through T-SBI. Both flavors live in the driver
+// (rvtest_driver.h) and exist only when Sm is supported; without Sm these
+// interrupts are unexpected.
 #ifdef STANDARD_SM_SUPPORTED
 
 \__MODE__\()clr_Msw_int:                             // M-mode software interrupt
@@ -2773,17 +2768,17 @@ excpt_\__MODE__\()hndlr_tbl:
 #endif
 
 \__MODE__\()clr_Vsw_int:                             // VS-mode software interrupt
-        RVMODEL_CLR_VSW_INT
+        RVTEST_MODEL_INT_CLR0(rvmodel_clr_vsw_int_h)
         la      T2, resto_\__MODE__\()rtn
         jr      T2
 
 \__MODE__\()clr_Vtmr_int:                            // VS-mode timer interrupt
-        RVMODEL_CLR_VTIMER_INT
+        RVTEST_MODEL_INT_CLR0(rvmodel_clr_vtimer_int_h)
         la      T2, resto_\__MODE__\()rtn
         jr      T2
 
 \__MODE__\()clr_Vext_int:                            // VS-mode external interrupt: clear + save intID
-        RVMODEL_CLR_VEXT_INT
+        RVTEST_MODEL_INT_CLR0(rvmodel_clr_vext_int_h)
         la      T2, resto_\__MODE__\()rtn
         jr      T2
 

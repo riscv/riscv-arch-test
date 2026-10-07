@@ -342,3 +342,14 @@ params:
       true,
       true,
     ]
+
+# Device addresses and timings baked into test objects. The objects are built
+# without rvmodel_macros.h, and the reference model needs the same values.
+dut_environment:
+  RVMODEL_ACCESS_FAULT_ADDRESS: 0x00000000
+  RVMODEL_MSIP_ADDRESS: 0x02000000
+  RVMODEL_MTIME_ADDRESS: 0x0200BFF8
+  RVMODEL_MTIMECMP_ADDRESS: 0x02004000
+  RVMODEL_INTERRUPT_LATENCY: 10
+  RVMODEL_TIMER_INT_SOON_DELAY: 10000
+  STANDARD_SM_SUPPORTED: true

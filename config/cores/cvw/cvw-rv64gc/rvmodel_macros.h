@@ -1,13 +1,15 @@
 #ifndef _RVMODEL_MACROS_H
 #define _RVMODEL_MACROS_H
 
+// Device addresses, interrupt timings and STANDARD_SM_SUPPORTED are in the
+// dut_environment block of the config's UDB yaml. Only the driver library
+// (librvmodel.a) is built from this file; test objects never see it.
+
 #define RVMODEL_DATA_SECTION \
         .pushsection .tohost,"aw",@progbits;                \
         .balign 8; .global tohost; tohost: .dword 0;         \
         .balign 8; .global fromhost; fromhost: .dword 0;     \
         .popsection;
-
-#define STANDARD_SM_SUPPORTED
 
 ##### STARTUP #####
 
@@ -15,15 +17,6 @@
 # DUT-specific behavior such as turning on a memory controller or
 # initializing custom state.
 //#define RVMODEL_BOOT
-
-// Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
-// if defined.  For most DUTs, the default should work and this macro
-// should not be defined.  If no M-mode or CSRs are implemented, define this
-// macro as blank to bypass the boot process.  If a nonconforming
-// M-mode is implemented, define this macro to set up the necessary
-// state in a fashion similar to RVTEST_BOOT_TO_MMODE.
-//#define RVMODEL_BOOT_TO_MMODE
-
 ##### TERMINATION #####
 
 # Terminate test with a pass indication.
@@ -89,14 +82,6 @@
   j 1b                       ;/* Loop */             \
 3:
 
-##### Access Fault #####
-
-#define RVMODEL_ACCESS_FAULT_ADDRESS 0x00000000
-
-##### Interrupt Latency #####
-
-#define RVMODEL_INTERRUPT_LATENCY 10
-
 ##### Machine Timer #####
 
 // Wally's mtime advances one tick per core clock, and the code between arming
@@ -104,17 +89,10 @@
 // RVTEST_GOTO_LOWER_MODE) can take well over 100 cycles on a pipelined core
 // with caches.  With a delay of 100 the timer interrupt fires while still in
 // M-mode with MIE=1, so the trap records MPP=M instead of MPP=U/S.
-#define RVMODEL_TIMER_INT_SOON_DELAY 10000
-
-#define RVMODEL_MTIME_ADDRESS  0x0200BFF8  /* Address of mtime CSR */
-
-#define RVMODEL_MTIMECMP_ADDRESS 0x02004000 /* Address of mtimecmp CSR */
 
 ##### Machine Interrupts #####
 
 #define CLINT_BASE_ADDRESS 0x02000000
-#define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
-
 
 #define PLIC_BASE_ADDRESS    0x0c000000
 #define PLIC_ENABLE_ADDRESS  0x0c002000

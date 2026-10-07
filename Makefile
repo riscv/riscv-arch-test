@@ -3,6 +3,12 @@
 # Modified April 5, 2026
 # SPDX-License-Identifier: Apache-2.0
 
+# Build flow: every test is assembled into a certified object that never sees the DUT's
+# rvmodel_macros.h, with the expected signature from the reference model baked in. When a
+# config supplies rvmodel_macros.h, the driver library is built from it and linked with the
+# objects into ELFs, and the run targets run them on the DUT. Without one, the build stops
+# at the objects (work/<config>/objects), and `make kit` packages them for the DUT owner.
+
 ########## Runtime Options ##########
 # CONFIG_FILES is used as the default input configs when running `make` and will produce elfs in the `work/<config-name>/elfs` directory.
 # COVERAGE_CONFIG_FILES is used as the default input configs when running `make coverage` and will generate coverage reports in addition to the elfs.
@@ -33,6 +39,13 @@ CLEAN_INTERMEDIATES ?=
 
 # COVERAGE_SIMULATOR is only used when collecting coverage (make coverage)
 COVERAGE_SIMULATOR ?= questa # Coverage simulator backend: questa or vcs
+
+# RVMODEL_DIR is a directory holding the DUT's rvmodel_macros.h. It overrides each config's
+# dut_include_dir. When neither has rvmodel_macros.h, the build stops at the certified objects.
+RVMODEL_DIR ?=
+
+# KIT_DIR is where `make kit` writes one certification kit per config in CONFIG_FILES.
+KIT_DIR ?= $(WORKDIR)/kits
 
 # WORKDIR is where all of the generated files are created
 WORKDIR     ?= work
@@ -126,7 +139,8 @@ help:
 	@printf '  make <target> [VAR=value ...]\n\n'
 	@printf '\033[1mCommon targets:\033[0m\n'
 	@printf '  \033[36m%-20s\033[0m %s\n' \
-	  'elfs (default)'      'Generate tests and compile self-checking ELFs for $$(CONFIG_FILES)' \
+	  'elfs (default)'      'Build certified objects for $$(CONFIG_FILES), and link ELFs where rvmodel_macros.h exists' \
+	  'kit'                 'Package the certified objects of each $$(CONFIG_FILES) config into $$(KIT_DIR)' \
 	  'tests'               'Generate assembly test sources only (no toolchain needed)' \
 	  'vector-tests'        'Generate vector test sources' \
 	  'coverage'            'Build with coverage instrumentation for $$(COVERAGE_CONFIG_FILES)' \
@@ -144,11 +158,14 @@ help:
 	  'format'              'ruff format'
 	@printf '\n\033[1mRun targets (auto-discovered from config/**/run_cmd.txt):\033[0m\n'
 	@printf '  Each directory name in a config path becomes a target that builds ELFs and\n'
-	@printf '  runs every config beneath it. Available targets:\n'
+	@printf '  runs every config beneath it. A config without rvmodel_macros.h stops after\n'
+	@printf '  its certified objects. Available targets:\n'
 	@printf '    %s\n' $(ALL_RUN_TARGETS) | fold -s -w 76 | sed 's/^/  /'
 	@printf '\n\033[1mCommon variables:\033[0m\n'
 	@printf '  \033[36m%-20s\033[0m %s\n' \
 	  'CONFIG_FILES'        'Configs for the default elfs target' \
+	  'RVMODEL_DIR'         'Directory with rvmodel_macros.h (default: each config'"'"'s dut_include_dir)' \
+	  'KIT_DIR'             'Output directory for make kit' \
 	  'EXTENSIONS'          'Comma-separated extensions to generate (default: all)' \
 	  'EXCLUDE_EXTENSIONS'  'Comma-separated extensions to skip' \
 	  'CERTIFICATE'         'Only select tests for the specified certificate' \
@@ -166,6 +183,7 @@ help:
 	@printf '  make EXCLUDE_EXTENSIONS=ExceptionsSm # skip an extension\n'
 	@printf '  make CERTIFICATE=RVA23               # build RVA23 tests only\n'
 	@printf '  make coverage                        # coverage build\n'
+	@printf '  make kit CONFIG_FILES=<cfg>/test_config.yaml  # kit for a DUT owner\n'
 
 
 
@@ -185,8 +203,25 @@ elfs: tests
 		$(if $(FAST),--fast) \
 		$(if $(CLEAN_INTERMEDIATES),--clean-intermediates) \
 		$(if $(VERBOSE),--verbose) \
+		$(if $(RVMODEL_DIR),--rvmodel-dir $(RVMODEL_DIR)) \
 		$(if $(COVERAGE),--coverage) \
 		$(if $(COVERAGE),--coverage-simulator $(COVERAGE_SIMULATOR))
+
+# One kit per config: the certified objects, the driver source, the env headers and the
+# config's linker script. The DUT owner links them with ./build_kit.sh.
+.PHONY: kit
+kit: tests
+	@set -e; $(foreach f,$(CONFIG_FILES),\
+	  $(UV_RUN) act-package $(f) \
+		--output $(KIT_DIR)/$(notdir $(patsubst %/,%,$(dir $(f)))) \
+		--workdir $(WORKDIR) \
+		--test-dir $(TESTDIR) \
+		--jobs $(JOBS) \
+		$(if $(EXTENSIONS),--extensions $(EXTENSIONS)) \
+		$(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) \
+		$(if $(CERTIFICATE),--certificate $(CERTIFICATE)) \
+		$(if $(ENABLE_EXPERIMENTAL_EXTENSIONS),--enable-experimental-extensions) \
+		$(if $(VERBOSE),--verbose);)
 
 .PHONY: clean
 clean:
@@ -249,7 +284,7 @@ regression: clean
 	CONFIG_FILES="$(patsubst %/run_cmd.txt,%/test_config.yaml,$(RUN_CMD_FILES))" \
 	$(MAKE) elfs || exit_code=1; \
 	$(foreach f,$(RUN_CMD_FILES),\
-	  ./run_tests.py $(if $(DEBUG),--debug) $(if $(VERBOSE),--verbose) "$$(cat $(f))" $(WORKDIR)/$(notdir $(patsubst %/run_cmd.txt,%,$(f)))/elfs || exit_code=1; ) \
+	  $(call run-config,$(f),$$) || exit_code=1; ) \
 	exit $$exit_code
 
 
@@ -284,6 +319,16 @@ _TARGETS_whisper := $(filter-out $(WHISPER_RUN_TARGET_EXCLUDES),$(_TARGETS_whisp
 ALL_RUN_TARGETS := $(sort $(foreach f,$(RUN_CMD_FILES),\
   $(filter-out config,$(subst /, ,$(patsubst %/run_cmd.txt,%,$(f))))))
 
+# Run one config's ELFs, or say why there are none: a config without rvmodel_macros.h
+# (and no RVMODEL_DIR) stops at its certified objects, so there is nothing to run.
+# $(1) is the run_cmd.txt file; $(2) is the "$" escape for the calling context.
+run-config = elf_dir=$(WORKDIR)/$(notdir $(patsubst %/run_cmd.txt,%,$(1)))/elfs; \
+	if [ -d "$(2)elf_dir" ]; then \
+	  ./run_tests.py $(if $(DEBUG),--debug) $(if $(VERBOSE),--verbose) "$(2)(cat $(1))" "$(2)elf_dir"; \
+	else \
+	  echo "$(notdir $(patsubst %/run_cmd.txt,%,$(1))): no rvmodel_macros.h, so nothing to run; certified objects are in $(WORKDIR)/$(notdir $(patsubst %/run_cmd.txt,%,$(1)))/objects"; \
+	fi
+
 # Each target generates tests, builds ELFs, and runs each config (continuing through failures).
 .PHONY: $(ALL_RUN_TARGETS)
 
@@ -293,7 +338,7 @@ $(1): tests
 	$$(MAKE) elfs
 	@exit_code=0; \
 	$(foreach f,$(_TARGETS_$(1)),\
-	  ./run_tests.py $(if $(DEBUG),--debug) $(if $(VERBOSE),--verbose) "$$$$(cat $(f))" $$(WORKDIR)/$(notdir $(patsubst %/run_cmd.txt,%,$(f)))/elfs || exit_code=1; ) \
+	  $(call run-config,$(f),$$$$) || exit_code=1; ) \
 	exit $$$$exit_code
 endef
 

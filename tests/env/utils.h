@@ -3,6 +3,27 @@
 # Jordan Carlin jcarlin@hmc.edu November 2025
 # SPDX-License-Identifier: BSD-3-Clause
 
+// Temporary-register convention, shared by the trap handler and the driver.
+// #ifndef lets a test override one.
+#ifndef T1
+  #define T1      x6                             // handler temporary 1
+#endif
+#ifndef T2
+  #define T2      x7                             // handler temporary 2
+#endif
+#ifndef T3
+  #define T3      x8                             // handler temporary 3
+#endif
+#ifndef T4
+  #define T4      x9                             // handler temporary 4
+#endif
+#ifndef T5
+  #define T5      x14                            // handler temporary 5
+#endif
+#ifndef T6
+  #define T6      x15                            // handler temporary 6
+#endif
+
 // General utility macros
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
@@ -47,17 +68,12 @@
 // has been written to memory (relocating the trampoline, writing a dynamic
 // instruction to scratch, or storing into an executable PMP region before jumping
 // into it). It is fence.i when the DUT supports Zifencei, otherwise nop (coherent
-// I-cache assumed). A DUT that needs a custom mechanism may predefine RVMODEL_FENCEI
-// (e.g. a JAL to a sync routine) and it is used as-is. Must stay a single instruction
-// (or a JAL) so code size is constant.
-#ifdef   RVMODEL_FENCEI
-  #define RVTEST_FENCEI RVMODEL_FENCEI
+// I-cache assumed). It expands inside the test object, which the reference model
+// runs too, so a DUT-specific mechanism (RVMODEL_FENCEI) is rejected by check_defines.h.
+#ifdef ZIFENCEI_SUPPORTED
+  #define RVTEST_FENCEI fence.i
 #else
-  #ifdef ZIFENCEI_SUPPORTED
-    #define RVTEST_FENCEI fence.i
-  #else
-    #define RVTEST_FENCEI nop
-  #endif
+  #define RVTEST_FENCEI nop
 #endif
 
 // Execute an sfence.vma if supported by the DUT. Primarily used in PMP tests.

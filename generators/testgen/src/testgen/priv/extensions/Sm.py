@@ -624,7 +624,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 21)  # TW:   Timeout Wait
         | (1 << 22)  # TSR:  Trap SRET
         | (1 << 23)  # SPELP: Supervisor Previous Expect Landing Pad
-        | (1 << 24)  # SDT: Supervisor Disable Trap (read-only zero without Ssdbltrp)
+        | (1 << 24)  # SDT: Supervisor Disable Trap
         | (1 << 31)  # SD for RV32 (probably shouldn't be tested for RV64, but seems to work ok)
         | (0 << 32)  # UXL:  User-Mode XLEN not supported by Sail.  Test in xlen suite.
         | (0 << 34)  # SXL:  Supervisor-Mode XLEN  not supported by Sail.  Test in xlen suite.
@@ -633,7 +633,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 38)
         | (1 << 39)
         | (1 << 41)  # MPELP: Machine Previous Expect Landing Pad
-        | (1 << 42)  # MDT: Machine Disable Trap (read-only zero without Smdbltrp)
+        | (1 << 42)  # MDT: Machine Disable Trap
         | (1 << 63)  # SD for RV64
     )
     mseccfg_mask = (
@@ -653,7 +653,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 6)  # CBCFE: Cache Block Clean and Flush Enable
         | (1 << 7)  # CBZE: Cache Block Zero Enable
         | (3 << 32)  # PMM: Pointer Masking
-        | (1 << 59)  # DTE: Double Trap Enable (read-only zero without Ssdbltrp)
+        | (1 << 59)  # DTE: Double Trap Enable
         | (0 << 60)  # Counter Delegation Smcdeleg not supported by Sail; TODO change to 1 when Smcdeleg implemented
         | (1 << 61)  # ADUE: A/D
         | (1 << 62)  # PBMTE: Page-Based Memory Type Enable
@@ -832,10 +832,10 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             f"csrr x{r_status}, mstatus",
             f"LI(x{r_bit}, {1 << 24})",
             f"csrs mstatus, x{r_bit}    # SDT = 1",
-            test_data.add_testcase("csrs_sdt", "cp_mstatus_sdt_dte1", covergroup),
+            test_data.add_testcase("csrs_sdt", "cp_mstatus_sdt_dte", covergroup),
             gen_csr_read_sigupd(r_check, ("mstatus", 1 << 24), test_data, r_bit),
             f"csrc mstatus, x{r_bit}    # SDT = 0",
-            test_data.add_testcase("csrc_sdt", "cp_mstatus_sdt_dte1", covergroup),
+            test_data.add_testcase("csrc_sdt", "cp_mstatus_sdt_dte", covergroup),
             gen_csr_read_sigupd(r_check, ("mstatus", 1 << 24), test_data, r_bit),
             f"csrw mstatus, x{r_status}",
             "#if __riscv_xlen == 64",

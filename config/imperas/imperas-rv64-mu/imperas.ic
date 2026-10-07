@@ -100,7 +100,7 @@
 --override cpu*/Smnpm=48_57 # (Enumeration) (default=48_57) (default) Specify Smnpm implemented modes
 
 # More extensions
---override cpu*/Smdbltrp=T
+--override cpu*/Smdbltrp=F # not claimed: Sail and Imperas legalize an mcause write of 16 differently
 --override cpu*/d_requires_f=T
 
 # PMA Settings

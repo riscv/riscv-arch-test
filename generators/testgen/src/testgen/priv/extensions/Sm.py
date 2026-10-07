@@ -812,6 +812,43 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         )
     )
 
+    # The walk runs with menvcfg.DTE = 0 (set by the boot code), where SDT is read-only zero.
+    # Check that SDT is writable once DTE = 1.
+    tc = test_data.new_test_chunk(test_chunks)
+    r_envcfg, r_status, r_bit, r_check = test_data.int_regs.get_registers(4)
+    tc.code.extend(
+        [
+            "",
+            "#ifdef SSDBLTRP_SUPPORTED",
+            "# mstatus.SDT with menvcfg.DTE = 1",
+            "#if __riscv_xlen == 64",
+            f"csrr x{r_envcfg}, menvcfg",
+            f"LI(x{r_bit}, {1 << 59})",
+            f"csrs menvcfg, x{r_bit}    # DTE = 1",
+            "#else",
+            f"csrr x{r_envcfg}, menvcfgh",
+            f"LI(x{r_bit}, {1 << 27})",
+            f"csrs menvcfgh, x{r_bit}    # DTE = 1",
+            "#endif",
+            f"csrr x{r_status}, mstatus",
+            f"LI(x{r_bit}, {1 << 24})",
+            f"csrs mstatus, x{r_bit}    # SDT = 1",
+            test_data.add_testcase("mstatus_sdt_set_dte1", coverpoint_masked, covergroup),
+            gen_csr_read_sigupd(r_check, ("mstatus", 1 << 24), test_data, r_bit),
+            f"csrc mstatus, x{r_bit}    # SDT = 0",
+            test_data.add_testcase("mstatus_sdt_clear_dte1", coverpoint_masked, covergroup),
+            gen_csr_read_sigupd(r_check, ("mstatus", 1 << 24), test_data, r_bit),
+            f"csrw mstatus, x{r_status}",
+            "#if __riscv_xlen == 64",
+            f"csrw menvcfg, x{r_envcfg}",
+            "#else",
+            f"csrw menvcfgh, x{r_envcfg}",
+            "#endif",
+            "#endif // SSDBLTRP_SUPPORTED",
+        ]
+    )
+    test_data.int_regs.return_registers([r_envcfg, r_status, r_bit, r_check])
+
     for csr in csrm:
         if csr[0] in SM_VADDR_CSRS:
             continue  # skip the virtual-address CSRs; they are walked in addr_csr_tests

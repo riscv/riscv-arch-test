@@ -154,6 +154,19 @@
   #endif
 #endif
 
+##### Sscofpmf #####
+// The S and U suites reach the counter through T-SBI calls encoded at generation time, and
+// the RV32 high halves are named directly, so counter 3 is the only supported choice.
+#ifdef SSCOFPMF_SUPPORTED
+  #if !defined(RVMODEL_MHPMEVENT) || !defined(RVMODEL_MHPMCOUNTER) || \
+      !defined(RVMODEL_MHPMEVENT_VAL) || !defined(RVMODEL_MHPMEVENT_CODE)
+    #error "Sscofpmf is implemented but RVMODEL_MHPMEVENT, RVMODEL_MHPMCOUNTER, RVMODEL_MHPMEVENT_VAL or RVMODEL_MHPMEVENT_CODE is not defined. Define them in rvmodel_macros.h."
+  #endif
+  #if (RVMODEL_MHPMEVENT != CSR_MHPMEVENT3) || (RVMODEL_MHPMCOUNTER != CSR_MHPMCOUNTER3)
+    #error "Sscofpmf tests only support counter 3. Define RVMODEL_MHPMEVENT as CSR_MHPMEVENT3 and RVMODEL_MHPMCOUNTER as CSR_MHPMCOUNTER3 in rvmodel_macros.h."
+  #endif
+#endif
+
 ##### Configuration Limitations #####
 #if UDB_NUM_PMP_ENTRIES > 0
   #ifndef UDB_PMP_NAPOT_SUPPORTED

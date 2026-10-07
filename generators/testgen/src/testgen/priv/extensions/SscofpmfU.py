@@ -8,8 +8,7 @@
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.SscofpmfCommon import MACRO_CHECKS, csr_access
-from testgen.priv.extensions.SscofpmfSuite import generate_sscofpmf_suite
+from testgen.priv.extensions.SscofpmfCommon import csr_access, generate_sscofpmf_suite
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -98,7 +97,6 @@ def make_sscofpmfu(test_data: TestData) -> list[TestChunk]:
     """Generate tests for the SscofpmfU performance-counter-overflow testsuite."""
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk(split_name="interrupt")
-    tc.code.extend(MACRO_CHECKS)
     tc.code.extend(_generate_lcofi_sip_u_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
     test_chunks.extend(generate_sscofpmf_suite(test_data, "U"))

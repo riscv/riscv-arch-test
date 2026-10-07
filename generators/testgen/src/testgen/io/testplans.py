@@ -9,15 +9,11 @@
 """Read testplans for riscv-arch-test test generation."""
 
 import csv
-import re
 from dataclasses import dataclass
 from pathlib import Path
 
 # Optional testplan column naming an extension a row needs beyond its suite's own
 REQUIRED_EXTENSIONS_COLUMN = "REQUIRED_EXTENSIONS"
-
-# Single-letter extensions, which REQUIRED_EXTENSIONS may name although no testplan is named after them
-_SINGLE_LETTER_EXTENSIONS = frozenset("IEMAFDQCBVH")
 
 
 def get_extensions(testplan_dir: Path) -> list[str]:
@@ -81,10 +77,6 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
         "EFFEW32",
         "EFFEW64",
     }
-    known_extensions = _SINGLE_LETTER_EXTENSIONS.union(
-        *(re.findall(r"[A-Z][a-z]*", testplan.stem) for testplan in testplan_path.parent.glob("*.csv"))
-    )
-
     instructions: list[TestPlanData] = []
     with testplan_path.open() as csvfile:
         reader = csv.DictReader(csvfile)
@@ -109,11 +101,6 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                 )
                 raise
             required_extension = (row.get(REQUIRED_EXTENSIONS_COLUMN) or "").strip()
-            if required_extension and required_extension not in known_extensions:
-                raise ValueError(
-                    f"{testplan_path}:{reader.line_num}: unknown extension {required_extension!r} "
-                    f"in {REQUIRED_EXTENSIONS_COLUMN}"
-                )
             rv32 = row["RV32"].strip().lower() == "x"
             rv64 = row["RV64"].strip().lower() == "x"
             sews = []

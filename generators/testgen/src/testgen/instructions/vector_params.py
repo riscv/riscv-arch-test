@@ -41,6 +41,20 @@ def get_register_emul(
     return max(lmul * info.get_size_multiplier(register_name, sew, vector_type_config.widened_regs), 1)
 
 
+def get_register_eew(
+    register_name: str, sew: int, vector_type_config: VectorTypeConfig, info: VectorInstructionInfo
+) -> int:
+    """
+    Helper function to calculate the EEW of a specific register, given its name, the sew, and the type
+    and instruction info
+    """
+
+    if register_name in vector_type_config.mask_regs:
+        return 1
+
+    return int(sew * info.get_size_multiplier(register_name, sew, vector_type_config.widened_regs))
+
+
 def randomize_register(
     register_name: str,
     test_data: TestData,
@@ -454,6 +468,19 @@ def generate_random_vector_params(
                 f'No Overlap constraint "{no_overlap}" cannot be met for instruction "{instruction}" with sew "{sew}" and lmul "{lmul}" after {max_randomization_count} attempts'
             )
         randomization_count = randomization_count + 1
+
+    # "When source and destination registers overlap and have different EEW, the instruction is mask- and tail-agnostic,
+    #  regardless of the setting of the vta and vma bits in vtype."
+    if instr_type_config.required_params is not None and "vd" in instr_type_config.required_params:
+        vd_eew = get_register_eew("vd", sew, instr_type_config.vector_data, info)
+        source_dest_different_eew = {
+            ("vd", reg)
+            for reg in ["vs1", "vs2"]
+            if vd_eew != get_register_eew(reg, sew, instr_type_config.vector_data, info)
+        }
+        params.vd_different_eew_overlap = has_invalid_overlap(
+            params, info, source_dest_different_eew, lmul, sew, scalar_vector_regs, mask_vector_regs, widened_regs
+        )
 
     ####################################################################################
     # Randomize the instruction data & take vector registers from the register file

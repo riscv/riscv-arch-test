@@ -2112,6 +2112,8 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x350) // miselect
         TSBI_CSR_INSTR_TABLE(0x351) // mireg
         TSBI_CSR_INSTR_TABLE(0x35c) // mtopei
+        TSBI_CSR_INSTR_TABLE(0x350) // miselect
+        TSBI_CSR_INSTR_TABLE(0x351) // mireg
         TSBI_CSR_INSTR_TABLE(0x747) // mseccfg
         TSBI_CSR_INSTR_TABLE(0x320) // mcountinhibit
         //TSBI_CSR_INSTR_TABLE(0xB00) // mcycle - shouldn't be changed below M-mode
@@ -2124,6 +2126,11 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x10A) // senvcfg
         TSBI_CSR_INSTR_TABLE(0x144) // sip
         TSBI_CSR_INSTR_TABLE(0x14D) // stimecmp
+        #ifdef SSAIA_SUPPORTED
+        TSBI_CSR_INSTR_TABLE(0x150) // siselect: IMSIC S-file eip0 via csrind
+        TSBI_CSR_INSTR_TABLE(0x151) // sireg
+        TSBI_CSR_INSTR_TABLE(0x15C) // stopei
+        #endif
         #if (UDB_MXLEN==32)
         TSBI_CSR_INSTR_TABLE(0x15D) // stimecmph
         #endif
@@ -2171,6 +2178,12 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x243) // vstval
         TSBI_CSR_INSTR_TABLE(0x244) // vsip
         TSBI_CSR_INSTR_TABLE(0x280) // vsatp
+        TSBI_CSR_INSTR_TABLE(0x24D) // vstimecmp
+        #ifdef SSAIA_SUPPORTED
+        TSBI_CSR_INSTR_TABLE(0x250) // vsiselect: IMSIC VS-file eip0 via csrind
+        TSBI_CSR_INSTR_TABLE(0x251) // vsireg
+        TSBI_CSR_INSTR_TABLE(0x25C) // vstopei
+        #endif
   #if (UDB_MXLEN==32)
         TSBI_CSR_INSTR_TABLE(0x612) // hedelegh
         TSBI_CSR_INSTR_TABLE(0x615) // htimedeltah

@@ -25,7 +25,7 @@ from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig,
 from testgen.instructions.vector import parse_vector_instruction_info
 
 
-def unordered_index_element_generator(element_count: int, sew: int) -> list[int]:
+def unordered_index_element_generator(element_count: int, sew: int, _register: str) -> list[int]:
     # vlmax can take on values of any power of two, from 1 to the power of two exceeding element_count
     # All items in the generated list from [0, vlmax) must be unique mod 2*vlmax for all possible vlmaxes
     # LIMITATIONS: For SEW=8, unique indices are not guaranteed
@@ -141,7 +141,7 @@ def format_vsxseg_like_type(
     if params.maskval:
         setup.extend(prep_mask_v(params.maskval, test_data, params))
 
-    reload_register = random.choice(list(test_data.vec_regs.free_registers(int(max(params.lmul, 1)), segments)))
+    reload_register = random.choice(test_data.vec_regs.free_registers(int(max(params.lmul, 1)), segments))
     params.vd = reload_register
     params.vd_val_pointer = "NOT_A_LABEL"  # Placeholder value that should NOT end up in generated code
     test_data.vec_regs.allocate_operand("vd", reload_register, int(max(params.lmul, 1)) * segments)

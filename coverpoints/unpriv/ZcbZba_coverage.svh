@@ -71,5 +71,6 @@ function void zcbzba_sample(int hart, int issue, ins_t ins);
             ZcbZba_c_zext_w_cg.sample(ins);
         end
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Svbare
+source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1068926144#gid=1068926144
+coverpoints:
+  - heading: "General Test Environment (Svbare):\n- T-SBI suite: boots to S-mode with satp.MODE=Bare; the U-mode case uses RVTEST_TSBI_GOTO_UMODE / _SMODE.\n\nNormative rules without a coverpoint in this suite:\n- SATP_MODE_ROZ_SFENCE_ILLEGAL: Not tested: needs satp.MODE read-only zero (UDB TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY)"
+  - name: cp_satp_bare_load
+    goal: Verify a load with satp.MODE=Bare uses the physical address in S-mode and U-mode
+    description: "S-mode: write satp = 0 and read it back. Load (lw) from the page at the physical address of rvtest_data_1 in S-mode, then in U-mode (RVTEST_TSBI_GOTO_UMODE)."
+    expectation: No fault; the access reaches physical memory untranslated.
+    bins: |-
+      satp_bare x read_acc x mode {S/U-mode}
+      = 2 bins on RV64, 2 on RV32
+    id: satp_mode_op satp_mode_sz satp_mode_acc svbare_satp_mode_bare
+    rules:
+      - "[norm:satp_mode_op] [norm:satp_mode_sz] [norm:satp_mode_acc] [norm:svbare_satp_mode_bare]"
+  - name: cp_satp_bare_store
+    goal: Verify a store with satp.MODE=Bare uses the physical address in S-mode and U-mode
+    description: "S-mode: write satp = 0 and read it back. Store (sw) to the page at the physical address of rvtest_data_1 in S-mode, then in U-mode (RVTEST_TSBI_GOTO_UMODE)."
+    expectation: No fault; the access reaches physical memory untranslated.
+    bins: |-
+      satp_bare x write_acc x mode {S/U-mode}
+      = 2 bins on RV64, 2 on RV32
+    id: satp_mode_op satp_mode_sz satp_mode_acc svbare_satp_mode_bare
+    rules:
+      - "[norm:satp_mode_op] [norm:satp_mode_sz] [norm:satp_mode_acc] [norm:svbare_satp_mode_bare]"
+  - name: cp_satp_bare_exec
+    goal: Verify an instruction fetch with satp.MODE=Bare uses the physical address in S-mode and U-mode
+    description: "S-mode: write satp = 0 and read it back. Jump (jalr) into the page at the physical address of rvtest_data_1 in S-mode, then in U-mode (RVTEST_TSBI_GOTO_UMODE)."
+    expectation: No fault; the access reaches physical memory untranslated.
+    bins: |-
+      satp_bare x exec_acc x mode {S/U-mode}
+      = 2 bins on RV64, 2 on RV32
+    id: satp_mode_op satp_mode_sz satp_mode_acc svbare_satp_mode_bare
+    rules:
+      - "[norm:satp_mode_op] [norm:satp_mode_sz] [norm:satp_mode_acc] [norm:svbare_satp_mode_bare]"

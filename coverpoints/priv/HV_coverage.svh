@@ -37,7 +37,7 @@ covergroup HV_cg with function sample(ins_t ins);
     }
 
     vector_vector_arithmetic_instruction: coverpoint ins.current.insn[14:0] {
-        bins arithmetic_vv_opcode = {15'b000_?????_1010111};
+        wildcard bins arithmetic_vv_opcode = {15'b000_?????_1010111};
     }
 
     cp_vsstatus_vs_set_dirty_arithmetic  : cross std_vec,        vector_vector_arithmetic_instruction,  mstatus_vs_clean, vsstatus_vs_initial_clean;

@@ -27976,7 +27976,7 @@ covergroup Vx8_vrgather_vx_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     vs2_element_zero_nonzero_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[7:0] {
-        wildcard bins sew8      = {[8'b11111111:8'b00000001]};
+        bins sew8      = {[8'h01:8'hFF]};
     }
 
     `ifdef UDB_MXLEN_32
@@ -30661,7 +30661,7 @@ covergroup Vx8_vslidedown_vx_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     vs2_element_zero_nonzero_sew8 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[7:0] {
-        wildcard bins sew8      = {[8'b11111111:8'b00000001]};
+        bins sew8      = {[8'h01:8'hFF]};
     }
 
     `ifdef UDB_MXLEN_32
@@ -45494,6 +45494,7 @@ function void vx8_sample(int hart, int issue, ins_t ins);
             "vxor.vx"     : begin
                 Vx8_vxor_vx_cg.sample(ins);
             end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

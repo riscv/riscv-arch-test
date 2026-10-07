@@ -61,13 +61,3 @@ normative_rule_definitions:
   - name: ntl_trap_behavior
     coverpoint:
       ["Not tested: recommendation with no architecturally visible effect"]
-
-  # Since the NTL instructions are encoded as ADDs, they can be used within LR/SC
-  # loops without voiding the forward-progress guarantee. But, since using other
-  # loads and stores within an LR/SC loop does void the forward-progress guarantee,
-  # the only reason to use an NTL within such a loop is to modify the LR or the SC.
-  - name: ntl_lr_sc_exception
-    coverpoint:
-      [
-        "Not tested: forward progress of LR and SC loops is not observable in one hart",
-      ]

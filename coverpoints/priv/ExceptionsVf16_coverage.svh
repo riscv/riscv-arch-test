@@ -15726,306 +15726,307 @@ function void exceptionsvf16_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
-        "vfadd.vf"     : begin
-            ExceptionsVf16_vfadd_vf_cg.sample(ins);
-        end
-        "vfadd.vv"     : begin
-            ExceptionsVf16_vfadd_vv_cg.sample(ins);
-        end
-        "vfclass.v"     : begin
-            ExceptionsVf16_vfclass_v_cg.sample(ins);
-        end
-        "vfcvt.f.x.v"     : begin
-            ExceptionsVf16_vfcvt_f_x_v_cg.sample(ins);
-        end
-        "vfcvt.f.xu.v"     : begin
-            ExceptionsVf16_vfcvt_f_xu_v_cg.sample(ins);
-        end
-        "vfcvt.rtz.x.f.v"     : begin
-            ExceptionsVf16_vfcvt_rtz_x_f_v_cg.sample(ins);
-        end
-        "vfcvt.rtz.xu.f.v"     : begin
-            ExceptionsVf16_vfcvt_rtz_xu_f_v_cg.sample(ins);
-        end
-        "vfcvt.x.f.v"     : begin
-            ExceptionsVf16_vfcvt_x_f_v_cg.sample(ins);
-        end
-        "vfcvt.xu.f.v"     : begin
-            ExceptionsVf16_vfcvt_xu_f_v_cg.sample(ins);
-        end
-        "vfdiv.vf"     : begin
-            ExceptionsVf16_vfdiv_vf_cg.sample(ins);
-        end
-        "vfdiv.vv"     : begin
-            ExceptionsVf16_vfdiv_vv_cg.sample(ins);
-        end
-        "vfmacc.vf"     : begin
-            ExceptionsVf16_vfmacc_vf_cg.sample(ins);
-        end
-        "vfmacc.vv"     : begin
-            ExceptionsVf16_vfmacc_vv_cg.sample(ins);
-        end
-        "vfmadd.vf"     : begin
-            ExceptionsVf16_vfmadd_vf_cg.sample(ins);
-        end
-        "vfmadd.vv"     : begin
-            ExceptionsVf16_vfmadd_vv_cg.sample(ins);
-        end
-        "vfmax.vf"     : begin
-            ExceptionsVf16_vfmax_vf_cg.sample(ins);
-        end
-        "vfmax.vv"     : begin
-            ExceptionsVf16_vfmax_vv_cg.sample(ins);
-        end
-        "vfmerge.vfm"     : begin
-            ExceptionsVf16_vfmerge_vfm_cg.sample(ins);
-        end
-        "vfmin.vf"     : begin
-            ExceptionsVf16_vfmin_vf_cg.sample(ins);
-        end
-        "vfmin.vv"     : begin
-            ExceptionsVf16_vfmin_vv_cg.sample(ins);
-        end
-        "vfmsac.vf"     : begin
-            ExceptionsVf16_vfmsac_vf_cg.sample(ins);
-        end
-        "vfmsac.vv"     : begin
-            ExceptionsVf16_vfmsac_vv_cg.sample(ins);
-        end
-        "vfmsub.vf"     : begin
-            ExceptionsVf16_vfmsub_vf_cg.sample(ins);
-        end
-        "vfmsub.vv"     : begin
-            ExceptionsVf16_vfmsub_vv_cg.sample(ins);
-        end
-        "vfmul.vf"     : begin
-            ExceptionsVf16_vfmul_vf_cg.sample(ins);
-        end
-        "vfmul.vv"     : begin
-            ExceptionsVf16_vfmul_vv_cg.sample(ins);
-        end
-        "vfmv.f.s"     : begin
-            ExceptionsVf16_vfmv_f_s_cg.sample(ins);
-        end
-        "vfmv.s.f"     : begin
-            ExceptionsVf16_vfmv_s_f_cg.sample(ins);
-        end
-        "vfmv.v.f"     : begin
-            ExceptionsVf16_vfmv_v_f_cg.sample(ins);
-        end
-        "vfncvt.f.x.w"     : begin
-            ExceptionsVf16_vfncvt_f_x_w_cg.sample(ins);
-        end
-        "vfncvt.f.xu.w"     : begin
-            ExceptionsVf16_vfncvt_f_xu_w_cg.sample(ins);
-        end
-        "vfncvt.rod.f.f.w"     : begin
-            ExceptionsVf16_vfncvt_rod_f_f_w_cg.sample(ins);
-        end
-        "vfncvt.rtz.x.f.w"     : begin
-            ExceptionsVf16_vfncvt_rtz_x_f_w_cg.sample(ins);
-        end
-        "vfncvt.rtz.xu.f.w"     : begin
-            ExceptionsVf16_vfncvt_rtz_xu_f_w_cg.sample(ins);
-        end
-        "vfncvt.x.f.w"     : begin
-            ExceptionsVf16_vfncvt_x_f_w_cg.sample(ins);
-        end
-        "vfncvt.xu.f.w"     : begin
-            ExceptionsVf16_vfncvt_xu_f_w_cg.sample(ins);
-        end
-        "vfnmacc.vf"     : begin
-            ExceptionsVf16_vfnmacc_vf_cg.sample(ins);
-        end
-        "vfnmacc.vv"     : begin
-            ExceptionsVf16_vfnmacc_vv_cg.sample(ins);
-        end
-        "vfnmadd.vf"     : begin
-            ExceptionsVf16_vfnmadd_vf_cg.sample(ins);
-        end
-        "vfnmadd.vv"     : begin
-            ExceptionsVf16_vfnmadd_vv_cg.sample(ins);
-        end
-        "vfnmsac.vf"     : begin
-            ExceptionsVf16_vfnmsac_vf_cg.sample(ins);
-        end
-        "vfnmsac.vv"     : begin
-            ExceptionsVf16_vfnmsac_vv_cg.sample(ins);
-        end
-        "vfnmsub.vf"     : begin
-            ExceptionsVf16_vfnmsub_vf_cg.sample(ins);
-        end
-        "vfnmsub.vv"     : begin
-            ExceptionsVf16_vfnmsub_vv_cg.sample(ins);
-        end
-        "vfrdiv.vf"     : begin
-            ExceptionsVf16_vfrdiv_vf_cg.sample(ins);
-        end
-        "vfrec7.v"     : begin
-            ExceptionsVf16_vfrec7_v_cg.sample(ins);
-        end
-        "vfredmax.vs"     : begin
-            ExceptionsVf16_vfredmax_vs_cg.sample(ins);
-        end
-        "vfredmin.vs"     : begin
-            ExceptionsVf16_vfredmin_vs_cg.sample(ins);
-        end
-        "vfredosum.vs"     : begin
-            ExceptionsVf16_vfredosum_vs_cg.sample(ins);
-        end
-        "vfredusum.vs"     : begin
-            ExceptionsVf16_vfredusum_vs_cg.sample(ins);
-        end
-        "vfrsqrt7.v"     : begin
-            ExceptionsVf16_vfrsqrt7_v_cg.sample(ins);
-        end
-        "vfrsub.vf"     : begin
-            ExceptionsVf16_vfrsub_vf_cg.sample(ins);
-        end
-        "vfsgnj.vf"     : begin
-            ExceptionsVf16_vfsgnj_vf_cg.sample(ins);
-        end
-        "vfsgnj.vv"     : begin
-            ExceptionsVf16_vfsgnj_vv_cg.sample(ins);
-        end
-        "vfsgnjn.vf"     : begin
-            ExceptionsVf16_vfsgnjn_vf_cg.sample(ins);
-        end
-        "vfsgnjn.vv"     : begin
-            ExceptionsVf16_vfsgnjn_vv_cg.sample(ins);
-        end
-        "vfsgnjx.vf"     : begin
-            ExceptionsVf16_vfsgnjx_vf_cg.sample(ins);
-        end
-        "vfsgnjx.vv"     : begin
-            ExceptionsVf16_vfsgnjx_vv_cg.sample(ins);
-        end
-        "vfslide1down.vf"     : begin
-            ExceptionsVf16_vfslide1down_vf_cg.sample(ins);
-        end
-        "vfslide1up.vf"     : begin
-            ExceptionsVf16_vfslide1up_vf_cg.sample(ins);
-        end
-        "vfsqrt.v"     : begin
-            ExceptionsVf16_vfsqrt_v_cg.sample(ins);
-        end
-        "vfsub.vf"     : begin
-            ExceptionsVf16_vfsub_vf_cg.sample(ins);
-        end
-        "vfsub.vv"     : begin
-            ExceptionsVf16_vfsub_vv_cg.sample(ins);
-        end
-        "vfwadd.vf"     : begin
-            ExceptionsVf16_vfwadd_vf_cg.sample(ins);
-        end
-        "vfwadd.vv"     : begin
-            ExceptionsVf16_vfwadd_vv_cg.sample(ins);
-        end
-        "vfwadd.wf"     : begin
-            ExceptionsVf16_vfwadd_wf_cg.sample(ins);
-        end
-        "vfwadd.wv"     : begin
-            ExceptionsVf16_vfwadd_wv_cg.sample(ins);
-        end
-        "vfwcvt.f.f.v"     : begin
-            ExceptionsVf16_vfwcvt_f_f_v_cg.sample(ins);
-        end
-        "vfwcvt.f.x.v"     : begin
-            ExceptionsVf16_vfwcvt_f_x_v_cg.sample(ins);
-        end
-        "vfwcvt.f.xu.v"     : begin
-            ExceptionsVf16_vfwcvt_f_xu_v_cg.sample(ins);
-        end
-        "vfwcvt.rtz.x.f.v"     : begin
-            ExceptionsVf16_vfwcvt_rtz_x_f_v_cg.sample(ins);
-        end
-        "vfwcvt.rtz.xu.f.v"     : begin
-            ExceptionsVf16_vfwcvt_rtz_xu_f_v_cg.sample(ins);
-        end
-        "vfwcvt.x.f.v"     : begin
-            ExceptionsVf16_vfwcvt_x_f_v_cg.sample(ins);
-        end
-        "vfwcvt.xu.f.v"     : begin
-            ExceptionsVf16_vfwcvt_xu_f_v_cg.sample(ins);
-        end
-        "vfwmacc.vf"     : begin
-            ExceptionsVf16_vfwmacc_vf_cg.sample(ins);
-        end
-        "vfwmacc.vv"     : begin
-            ExceptionsVf16_vfwmacc_vv_cg.sample(ins);
-        end
-        "vfwmsac.vf"     : begin
-            ExceptionsVf16_vfwmsac_vf_cg.sample(ins);
-        end
-        "vfwmsac.vv"     : begin
-            ExceptionsVf16_vfwmsac_vv_cg.sample(ins);
-        end
-        "vfwmul.vf"     : begin
-            ExceptionsVf16_vfwmul_vf_cg.sample(ins);
-        end
-        "vfwmul.vv"     : begin
-            ExceptionsVf16_vfwmul_vv_cg.sample(ins);
-        end
-        "vfwnmacc.vf"     : begin
-            ExceptionsVf16_vfwnmacc_vf_cg.sample(ins);
-        end
-        "vfwnmacc.vv"     : begin
-            ExceptionsVf16_vfwnmacc_vv_cg.sample(ins);
-        end
-        "vfwnmsac.vf"     : begin
-            ExceptionsVf16_vfwnmsac_vf_cg.sample(ins);
-        end
-        "vfwnmsac.vv"     : begin
-            ExceptionsVf16_vfwnmsac_vv_cg.sample(ins);
-        end
-        "vfwredosum.vs"     : begin
-            ExceptionsVf16_vfwredosum_vs_cg.sample(ins);
-        end
-        "vfwredusum.vs"     : begin
-            ExceptionsVf16_vfwredusum_vs_cg.sample(ins);
-        end
-        "vfwsub.vf"     : begin
-            ExceptionsVf16_vfwsub_vf_cg.sample(ins);
-        end
-        "vfwsub.vv"     : begin
-            ExceptionsVf16_vfwsub_vv_cg.sample(ins);
-        end
-        "vfwsub.wf"     : begin
-            ExceptionsVf16_vfwsub_wf_cg.sample(ins);
-        end
-        "vfwsub.wv"     : begin
-            ExceptionsVf16_vfwsub_wv_cg.sample(ins);
-        end
-        "vmfeq.vf"     : begin
-            ExceptionsVf16_vmfeq_vf_cg.sample(ins);
-        end
-        "vmfeq.vv"     : begin
-            ExceptionsVf16_vmfeq_vv_cg.sample(ins);
-        end
-        "vmfge.vf"     : begin
-            ExceptionsVf16_vmfge_vf_cg.sample(ins);
-        end
-        "vmfgt.vf"     : begin
-            ExceptionsVf16_vmfgt_vf_cg.sample(ins);
-        end
-        "vmfle.vf"     : begin
-            ExceptionsVf16_vmfle_vf_cg.sample(ins);
-        end
-        "vmfle.vv"     : begin
-            ExceptionsVf16_vmfle_vv_cg.sample(ins);
-        end
-        "vmflt.vf"     : begin
-            ExceptionsVf16_vmflt_vf_cg.sample(ins);
-        end
-        "vmflt.vv"     : begin
-            ExceptionsVf16_vmflt_vv_cg.sample(ins);
-        end
-        "vmfne.vf"     : begin
-            ExceptionsVf16_vmfne_vf_cg.sample(ins);
-        end
-        "vmfne.vv"     : begin
-            ExceptionsVf16_vmfne_vv_cg.sample(ins);
-        end
+            "vfadd.vf"     : begin
+                ExceptionsVf16_vfadd_vf_cg.sample(ins);
+            end
+            "vfadd.vv"     : begin
+                ExceptionsVf16_vfadd_vv_cg.sample(ins);
+            end
+            "vfclass.v"     : begin
+                ExceptionsVf16_vfclass_v_cg.sample(ins);
+            end
+            "vfcvt.f.x.v"     : begin
+                ExceptionsVf16_vfcvt_f_x_v_cg.sample(ins);
+            end
+            "vfcvt.f.xu.v"     : begin
+                ExceptionsVf16_vfcvt_f_xu_v_cg.sample(ins);
+            end
+            "vfcvt.rtz.x.f.v"     : begin
+                ExceptionsVf16_vfcvt_rtz_x_f_v_cg.sample(ins);
+            end
+            "vfcvt.rtz.xu.f.v"     : begin
+                ExceptionsVf16_vfcvt_rtz_xu_f_v_cg.sample(ins);
+            end
+            "vfcvt.x.f.v"     : begin
+                ExceptionsVf16_vfcvt_x_f_v_cg.sample(ins);
+            end
+            "vfcvt.xu.f.v"     : begin
+                ExceptionsVf16_vfcvt_xu_f_v_cg.sample(ins);
+            end
+            "vfdiv.vf"     : begin
+                ExceptionsVf16_vfdiv_vf_cg.sample(ins);
+            end
+            "vfdiv.vv"     : begin
+                ExceptionsVf16_vfdiv_vv_cg.sample(ins);
+            end
+            "vfmacc.vf"     : begin
+                ExceptionsVf16_vfmacc_vf_cg.sample(ins);
+            end
+            "vfmacc.vv"     : begin
+                ExceptionsVf16_vfmacc_vv_cg.sample(ins);
+            end
+            "vfmadd.vf"     : begin
+                ExceptionsVf16_vfmadd_vf_cg.sample(ins);
+            end
+            "vfmadd.vv"     : begin
+                ExceptionsVf16_vfmadd_vv_cg.sample(ins);
+            end
+            "vfmax.vf"     : begin
+                ExceptionsVf16_vfmax_vf_cg.sample(ins);
+            end
+            "vfmax.vv"     : begin
+                ExceptionsVf16_vfmax_vv_cg.sample(ins);
+            end
+            "vfmerge.vfm"     : begin
+                ExceptionsVf16_vfmerge_vfm_cg.sample(ins);
+            end
+            "vfmin.vf"     : begin
+                ExceptionsVf16_vfmin_vf_cg.sample(ins);
+            end
+            "vfmin.vv"     : begin
+                ExceptionsVf16_vfmin_vv_cg.sample(ins);
+            end
+            "vfmsac.vf"     : begin
+                ExceptionsVf16_vfmsac_vf_cg.sample(ins);
+            end
+            "vfmsac.vv"     : begin
+                ExceptionsVf16_vfmsac_vv_cg.sample(ins);
+            end
+            "vfmsub.vf"     : begin
+                ExceptionsVf16_vfmsub_vf_cg.sample(ins);
+            end
+            "vfmsub.vv"     : begin
+                ExceptionsVf16_vfmsub_vv_cg.sample(ins);
+            end
+            "vfmul.vf"     : begin
+                ExceptionsVf16_vfmul_vf_cg.sample(ins);
+            end
+            "vfmul.vv"     : begin
+                ExceptionsVf16_vfmul_vv_cg.sample(ins);
+            end
+            "vfmv.f.s"     : begin
+                ExceptionsVf16_vfmv_f_s_cg.sample(ins);
+            end
+            "vfmv.s.f"     : begin
+                ExceptionsVf16_vfmv_s_f_cg.sample(ins);
+            end
+            "vfmv.v.f"     : begin
+                ExceptionsVf16_vfmv_v_f_cg.sample(ins);
+            end
+            "vfncvt.f.x.w"     : begin
+                ExceptionsVf16_vfncvt_f_x_w_cg.sample(ins);
+            end
+            "vfncvt.f.xu.w"     : begin
+                ExceptionsVf16_vfncvt_f_xu_w_cg.sample(ins);
+            end
+            "vfncvt.rod.f.f.w"     : begin
+                ExceptionsVf16_vfncvt_rod_f_f_w_cg.sample(ins);
+            end
+            "vfncvt.rtz.x.f.w"     : begin
+                ExceptionsVf16_vfncvt_rtz_x_f_w_cg.sample(ins);
+            end
+            "vfncvt.rtz.xu.f.w"     : begin
+                ExceptionsVf16_vfncvt_rtz_xu_f_w_cg.sample(ins);
+            end
+            "vfncvt.x.f.w"     : begin
+                ExceptionsVf16_vfncvt_x_f_w_cg.sample(ins);
+            end
+            "vfncvt.xu.f.w"     : begin
+                ExceptionsVf16_vfncvt_xu_f_w_cg.sample(ins);
+            end
+            "vfnmacc.vf"     : begin
+                ExceptionsVf16_vfnmacc_vf_cg.sample(ins);
+            end
+            "vfnmacc.vv"     : begin
+                ExceptionsVf16_vfnmacc_vv_cg.sample(ins);
+            end
+            "vfnmadd.vf"     : begin
+                ExceptionsVf16_vfnmadd_vf_cg.sample(ins);
+            end
+            "vfnmadd.vv"     : begin
+                ExceptionsVf16_vfnmadd_vv_cg.sample(ins);
+            end
+            "vfnmsac.vf"     : begin
+                ExceptionsVf16_vfnmsac_vf_cg.sample(ins);
+            end
+            "vfnmsac.vv"     : begin
+                ExceptionsVf16_vfnmsac_vv_cg.sample(ins);
+            end
+            "vfnmsub.vf"     : begin
+                ExceptionsVf16_vfnmsub_vf_cg.sample(ins);
+            end
+            "vfnmsub.vv"     : begin
+                ExceptionsVf16_vfnmsub_vv_cg.sample(ins);
+            end
+            "vfrdiv.vf"     : begin
+                ExceptionsVf16_vfrdiv_vf_cg.sample(ins);
+            end
+            "vfrec7.v"     : begin
+                ExceptionsVf16_vfrec7_v_cg.sample(ins);
+            end
+            "vfredmax.vs"     : begin
+                ExceptionsVf16_vfredmax_vs_cg.sample(ins);
+            end
+            "vfredmin.vs"     : begin
+                ExceptionsVf16_vfredmin_vs_cg.sample(ins);
+            end
+            "vfredosum.vs"     : begin
+                ExceptionsVf16_vfredosum_vs_cg.sample(ins);
+            end
+            "vfredusum.vs"     : begin
+                ExceptionsVf16_vfredusum_vs_cg.sample(ins);
+            end
+            "vfrsqrt7.v"     : begin
+                ExceptionsVf16_vfrsqrt7_v_cg.sample(ins);
+            end
+            "vfrsub.vf"     : begin
+                ExceptionsVf16_vfrsub_vf_cg.sample(ins);
+            end
+            "vfsgnj.vf"     : begin
+                ExceptionsVf16_vfsgnj_vf_cg.sample(ins);
+            end
+            "vfsgnj.vv"     : begin
+                ExceptionsVf16_vfsgnj_vv_cg.sample(ins);
+            end
+            "vfsgnjn.vf"     : begin
+                ExceptionsVf16_vfsgnjn_vf_cg.sample(ins);
+            end
+            "vfsgnjn.vv"     : begin
+                ExceptionsVf16_vfsgnjn_vv_cg.sample(ins);
+            end
+            "vfsgnjx.vf"     : begin
+                ExceptionsVf16_vfsgnjx_vf_cg.sample(ins);
+            end
+            "vfsgnjx.vv"     : begin
+                ExceptionsVf16_vfsgnjx_vv_cg.sample(ins);
+            end
+            "vfslide1down.vf"     : begin
+                ExceptionsVf16_vfslide1down_vf_cg.sample(ins);
+            end
+            "vfslide1up.vf"     : begin
+                ExceptionsVf16_vfslide1up_vf_cg.sample(ins);
+            end
+            "vfsqrt.v"     : begin
+                ExceptionsVf16_vfsqrt_v_cg.sample(ins);
+            end
+            "vfsub.vf"     : begin
+                ExceptionsVf16_vfsub_vf_cg.sample(ins);
+            end
+            "vfsub.vv"     : begin
+                ExceptionsVf16_vfsub_vv_cg.sample(ins);
+            end
+            "vfwadd.vf"     : begin
+                ExceptionsVf16_vfwadd_vf_cg.sample(ins);
+            end
+            "vfwadd.vv"     : begin
+                ExceptionsVf16_vfwadd_vv_cg.sample(ins);
+            end
+            "vfwadd.wf"     : begin
+                ExceptionsVf16_vfwadd_wf_cg.sample(ins);
+            end
+            "vfwadd.wv"     : begin
+                ExceptionsVf16_vfwadd_wv_cg.sample(ins);
+            end
+            "vfwcvt.f.f.v"     : begin
+                ExceptionsVf16_vfwcvt_f_f_v_cg.sample(ins);
+            end
+            "vfwcvt.f.x.v"     : begin
+                ExceptionsVf16_vfwcvt_f_x_v_cg.sample(ins);
+            end
+            "vfwcvt.f.xu.v"     : begin
+                ExceptionsVf16_vfwcvt_f_xu_v_cg.sample(ins);
+            end
+            "vfwcvt.rtz.x.f.v"     : begin
+                ExceptionsVf16_vfwcvt_rtz_x_f_v_cg.sample(ins);
+            end
+            "vfwcvt.rtz.xu.f.v"     : begin
+                ExceptionsVf16_vfwcvt_rtz_xu_f_v_cg.sample(ins);
+            end
+            "vfwcvt.x.f.v"     : begin
+                ExceptionsVf16_vfwcvt_x_f_v_cg.sample(ins);
+            end
+            "vfwcvt.xu.f.v"     : begin
+                ExceptionsVf16_vfwcvt_xu_f_v_cg.sample(ins);
+            end
+            "vfwmacc.vf"     : begin
+                ExceptionsVf16_vfwmacc_vf_cg.sample(ins);
+            end
+            "vfwmacc.vv"     : begin
+                ExceptionsVf16_vfwmacc_vv_cg.sample(ins);
+            end
+            "vfwmsac.vf"     : begin
+                ExceptionsVf16_vfwmsac_vf_cg.sample(ins);
+            end
+            "vfwmsac.vv"     : begin
+                ExceptionsVf16_vfwmsac_vv_cg.sample(ins);
+            end
+            "vfwmul.vf"     : begin
+                ExceptionsVf16_vfwmul_vf_cg.sample(ins);
+            end
+            "vfwmul.vv"     : begin
+                ExceptionsVf16_vfwmul_vv_cg.sample(ins);
+            end
+            "vfwnmacc.vf"     : begin
+                ExceptionsVf16_vfwnmacc_vf_cg.sample(ins);
+            end
+            "vfwnmacc.vv"     : begin
+                ExceptionsVf16_vfwnmacc_vv_cg.sample(ins);
+            end
+            "vfwnmsac.vf"     : begin
+                ExceptionsVf16_vfwnmsac_vf_cg.sample(ins);
+            end
+            "vfwnmsac.vv"     : begin
+                ExceptionsVf16_vfwnmsac_vv_cg.sample(ins);
+            end
+            "vfwredosum.vs"     : begin
+                ExceptionsVf16_vfwredosum_vs_cg.sample(ins);
+            end
+            "vfwredusum.vs"     : begin
+                ExceptionsVf16_vfwredusum_vs_cg.sample(ins);
+            end
+            "vfwsub.vf"     : begin
+                ExceptionsVf16_vfwsub_vf_cg.sample(ins);
+            end
+            "vfwsub.vv"     : begin
+                ExceptionsVf16_vfwsub_vv_cg.sample(ins);
+            end
+            "vfwsub.wf"     : begin
+                ExceptionsVf16_vfwsub_wf_cg.sample(ins);
+            end
+            "vfwsub.wv"     : begin
+                ExceptionsVf16_vfwsub_wv_cg.sample(ins);
+            end
+            "vmfeq.vf"     : begin
+                ExceptionsVf16_vmfeq_vf_cg.sample(ins);
+            end
+            "vmfeq.vv"     : begin
+                ExceptionsVf16_vmfeq_vv_cg.sample(ins);
+            end
+            "vmfge.vf"     : begin
+                ExceptionsVf16_vmfge_vf_cg.sample(ins);
+            end
+            "vmfgt.vf"     : begin
+                ExceptionsVf16_vmfgt_vf_cg.sample(ins);
+            end
+            "vmfle.vf"     : begin
+                ExceptionsVf16_vmfle_vf_cg.sample(ins);
+            end
+            "vmfle.vv"     : begin
+                ExceptionsVf16_vmfle_vv_cg.sample(ins);
+            end
+            "vmflt.vf"     : begin
+                ExceptionsVf16_vmflt_vf_cg.sample(ins);
+            end
+            "vmflt.vv"     : begin
+                ExceptionsVf16_vmflt_vv_cg.sample(ins);
+            end
+            "vmfne.vf"     : begin
+                ExceptionsVf16_vmfne_vf_cg.sample(ins);
+            end
+            "vmfne.vv"     : begin
+                ExceptionsVf16_vmfne_vv_cg.sample(ins);
+            end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

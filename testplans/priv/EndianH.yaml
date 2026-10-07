@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: EndianH
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=923631685#gid=923631685
+coverpoints:
+  - name: cp_hstatus_vsbe_endianness
+    goal: endianvs
+    description: VSBE
+    expectation: Read from memory in an endian fashion in supervisor mode.
+    bins: Run test in VS mode. For each endianness given by hstatus.VSBE, sd 0x0102030405060708 to scratch, and also write all subwords with sw, sh, sb. For each endianness (independent), ld, lw, lwu, lh, lhu, lb, lbu it back. In RV32, don't need the doubles.
+    id: restore endianness to normal afterward
+    rules:
+      - Check against RM
+      - To be Done
+      - Uncovered
+  - name: cp_mstatus_mprv_vsbe_endianness
+    goal: endianvs
+    description: MPRV, MBE, VSBE
+    expectation: Read from memory in an endian fashion based on MBE and VSBE depending on MPRV.
+    bins: Run test in machine mode. Each endianness is a cross-product of MPRV = 0/1, MPP = 01/11, MPV=0/1, MBE = 0/1, VSBE = 0/1 (32 bins).  For each endianness, sd 0x0102030405060708 to scratch, and also write all subwords with sw, sh, sb. For each endianness (independent), ld, lw, lwu, lh, lhu, lb, lbu it back. In RV32, don't need the doubles.
+    id: restore endianness to normal afterward
+    rules:
+      - Check against RM
+      - To be Done
+      - Uncovered
+  - name: cp_vsstatus_ube_endianness
+    goal: endianvs
+    description: UBE
+    expectation: Read from memory in an endian fashion
+    bins: Run test in VU mode. For each endianness given in vsstatus.UBE, sd 0x0102030405060708 to scratch, and also write all subwords with sw, sh, sb. For each endianness (independent), ld, lw, lwu, lh, lhu, lb, lbu it back.  In RV32, don't need the doubles.
+    id: restore endianness to normal afterward
+    rules:
+      - Check against RM
+      - To be Done
+      - Uncovered
+  - heading: "Note: some implementations may make UBE a read-only copy of hstatus.VSBE, or VSBE a read-only copy of sstatus.SBE, or SBE and MBE might not be writable.  \nOnly run Endian tests if fields are writable."

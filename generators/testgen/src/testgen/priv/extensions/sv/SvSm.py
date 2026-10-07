@@ -56,7 +56,7 @@ def _t_mstatus_mprv(test_data: TestData, test_chunks: list[TestChunk], sv: SvMod
                 ]
             )
         chunk.raw_data.extend(sv_data(sv))
-        chunk.trap_sigupd_count = 10
+        chunk.trap_sigupd_count = 3
         test_chunks.append(test_data.end_test_chunk())
 
 
@@ -157,7 +157,7 @@ def _t_mstatus_sbe(test_data: TestData, sv: SvMode) -> list[TestChunk]:
                 ]
             )
         chunk.raw_data.extend(sv_data(sv))
-        chunk.trap_sigupd_count = 10
+        chunk.trap_sigupd_count = 3
         test_chunks.append(test_data.end_test_chunk())
     return test_chunks
 
@@ -202,7 +202,7 @@ def _t_va_all_zeros(test_data: TestData, test_chunks: list[TestChunk], sv: SvMod
             driver_mode="Mmode",
         )
     chunk.raw_data.extend(sv_data(sv, (0,), data_region_body=VA_ZEROS_DATA))
-    chunk.trap_sigupd_count = 10
+    chunk.trap_sigupd_count = 3
     test_chunks.append(test_data.end_test_chunk())
 
 
@@ -326,5 +326,5 @@ def make_svsm_mstatus_tvm(test_data: TestData) -> list[TestChunk]:
             "RVTEST_TSBI_GOTO_MMODE",
         ]
     )
-    chunk.trap_sigupd_count = 30
+    chunk.trap_sigupd_count = 8
     return [test_data.end_test_chunk()]

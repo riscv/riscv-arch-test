@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: EndianZca
+source: https://docs.google.com/spreadsheets/d/1PtTkGAMFFWfY1mPLnSyZFYkNMGCV6DqEAxtEDrn74kA/edit?gid=547928668#gid=547928668
+coverpoints:
+  - name: cp_endianness_zca
+    goal: Read from memory in an endian fashion
+    description: Write 0x0102030405060708 to scratch. For each endianness, c.lw from scratch, and c.sw back to scratch. For RV64, also c.ld and c.sd.
+    notes: |-
+      restore endianness to normal afterward
+      MBE
+      when mstatus.MPRV=0

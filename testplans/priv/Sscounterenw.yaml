@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Sscounterenw
+source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=316102369#gid=316102369
+coverpoints:
+  - name: cp_scounteren_writable
+    goal: Check scounteren bits are writable
+    description: In S-mode, write walking 1s and walking 0s to scounteren.
+    expectation: Match reference model
+    bins: 2*XLEN
+    rules:
+      - For any hpmcounter that is not read-only zero, the corresponding bit in scounteren must be writable.
+  - heading: Note that this overlaps tests in ZicntrS

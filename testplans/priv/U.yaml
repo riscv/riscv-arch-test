@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: U
+source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1720466356#gid=1720466356
+coverpoints:
+  - name: cp_uprivinst
+    description: Execute ecall and ebreak, mret, uret in user mode
+    rules:
+      - ecall throws environment call.  ebreak throws breakpoint.  mret and sret throw illegal instructions.
+  - name: cp_csrr_insufficient_priv
+    description: Read Machine, Hypervisor, Supervisor CSRS100-3FF, 500-7FF, 900-BFF, D000-FFF
+  - name: cp_csr_ro
+    description: Write User read-only CSRs C00-CFF
+  - heading: Accessing user-mode CSRs such as F, V, Zicntr, Zihpm from machine mode are tested in SmF, SmV, Zicntr, Zihpm and are not tested again here.

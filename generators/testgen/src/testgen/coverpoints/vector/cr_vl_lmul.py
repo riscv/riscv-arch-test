@@ -50,6 +50,10 @@ def make_vl_lmul(instr_name: str, instr_type: str, coverpoint: str, test_data: T
         if egs_match:
             egs = int(egs_match.group(1))
 
+            if egs > 1:
+                # Masks on EGS operands do not work
+                can_mask = False
+
         if "nomask" in suffix:
             can_mask = False
 
@@ -66,9 +70,6 @@ def make_vl_lmul(instr_name: str, instr_type: str, coverpoint: str, test_data: T
 
     lmul_exponents = list(range(min_lmul, max_lmul + 1))
     vl_options = ["vlmax", egs, "random"]
-
-    if egs != 1:
-        raise NotImplementedError("EGS If Defs are Not in cr_vl_lmul.py")
 
     test_chunks = []
     for l in lmul_exponents:

@@ -18,9 +18,13 @@
 #define LEVEL3 0x03
 #define LEVEL4 0x04
 
+// Selector tags for the S-stage/VS-stage translation modes. They are only ever
+// compared for equality, so the values are arbitrary; sv32 is appended rather
+// than placed in order so the RV64 modes keep the values the Sv suite uses.
 #define sv39 0x00
 #define sv48 0x01
 #define sv57 0x02
+#define sv32 0x03
 
 #define CODE code_bgn_off
 #define DATA data_bgn_off

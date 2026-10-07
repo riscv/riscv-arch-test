@@ -32,7 +32,11 @@ ci_enabled: true
 #   SvZicbo       PTE reads are never PMA-checked, so a walk to a faulting address page-faults:
 #                 mmu:dcache_adapters/bsc_mmu_hpdc_adapter.sv#L87-L93
 #   ExceptionsSv  A translated fetch is not PMA-checked: core:datapath/rtl/if_stage_1/rtl/if_stage_1.sv#L139-L141
-exclude_extensions: "F,ZicsrF,ZfaF,ZfaD,Zfhmin,ZfhminD,SmF,Zicntr,ZicntrS,ZicntrU,Zifencei,Sm,S,InterruptsSm,Sv,SvZicbo,ExceptionsSv"
+#   ExceptionsSvZalrsc  LR/SC exception cases under Sv39 deadlock ("200 cycles without a valid commit"), like the Sv hangs
+#   H             hedeleg[10] and hedeleg[23:20] are writable but must be read-only zero: csr:csr_bsc.sv#L1320-L1339;
+#                 an hlv.d page fault in HS mode matches Sail's cause and tval but not the rest of its trap signature
+#                 (status/GVA/htinst; HS-mode trap CSR writes: csr:csr_bsc.sv#L2086-L2099)
+exclude_extensions: "F,ZicsrF,ZfaF,ZfaD,Zfhmin,ZfhminD,SmF,Zicntr,ZicntrS,ZicntrU,Zifencei,Sm,S,InterruptsSm,Sv,SvZicbo,ExceptionsSv,ExceptionsSvZalrsc,H"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler libboost-dev libboost-regex-dev libboost-system-dev"
 install_script: ".github/scripts/install-sargantana.sh"

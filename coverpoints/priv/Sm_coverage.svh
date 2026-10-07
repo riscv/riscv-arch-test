@@ -568,8 +568,6 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         `ifdef SM1P12P0_OR_LATER_SUPPORTED
             ignore_bins menvcfg_not_walked = binsof(mcsrname_masked.menvcfg) &&
                 binsof(walking_ones) intersect {1, [8:31], [34:58]};
-            // CDE (Smcdeleg) is not walked until Sail supports Smcdeleg
-            ignore_bins menvcfg_cde_not_walked = binsof(mcsrname_masked.menvcfg) && binsof(walking_ones) intersect {60};
         `endif
         `ifdef MSECCFG_SUPPORTED
             ignore_bins mseccfg_not_walked = binsof(mcsrname_masked.mseccfg) &&
@@ -581,7 +579,6 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
                     binsof(walking_ones) intersect {[0:5], 8, [11:31]};
                 ignore_bins menvcfgh_not_walked = binsof(mcsrname_masked.menvcfgh) &&
                     binsof(walking_ones) intersect {[2:26]};
-                ignore_bins menvcfgh_cde_not_walked = binsof(mcsrname_masked.menvcfgh) && binsof(walking_ones) intersect {28};
             `endif
             `ifdef MSECCFG_SUPPORTED
                 ignore_bins mseccfgh_not_walked = binsof(mcsrname_masked.mseccfgh) &&

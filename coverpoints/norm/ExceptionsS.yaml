@@ -1,3 +1,76 @@
 # Mapping of normative rules to coverpoints for a test suite
+# The S-mode CSR rules (scause, sepc, stval, stvec) that ExceptionsS exercises are mapped in S.yaml.
 
 normative_rule_definitions:
+  # An instruction-address-misaligned exception is generated on a taken branch or
+  # unconditional jump if the target address is not IALIGN-bit aligned. This
+  # exception is reported on the branch or jump instruction, not on the target
+  # instruction.
+  - name: taken_cti_misaligned_exc
+    coverpoint: ["ExceptionsS_cg/cp_instr_adr_misaligned_{branch, jal, jalr}"]
+
+  - name: branch_misaligned_taken_exception
+    coverpoint: ["ExceptionsS_cg/cp_instr_adr_misaligned_branch"]
+
+  - name: jump_misaligned_exception
+    coverpoint: ["ExceptionsS_cg/cp_instr_adr_misaligned_{jal, jalr}"]
+
+  # No instruction-address-misaligned exception is generated for a conditional
+  # branch that is not taken.
+  - name: cond_br_no_ia_misaligned_exc_not_taken
+    coverpoint: ["ExceptionsS_cg/cp_instr_adr_misaligned_branch_nottaken"]
+
+  - name: branch_misaligned_untaken_exception
+    coverpoint: ["ExceptionsS_cg/cp_instr_adr_misaligned_branch_nottaken"]
+
+  # If an instruction access-fault or instruction page-fault exception occurs on
+  # the target of a jump or taken branch, the exception is reported on the target
+  # instruction, not on the jump or branch instruction.
+  - name: ia_fault_exc_on_target
+    coverpoint: ["ExceptionsS_cg/cp_instr_access_fault"]
+
+  # The EBREAK instruction is used by debuggers to cause control to be transferred back to
+  # a debugging environment. Unless overridden by an external debug environment, EBREAK
+  # raises a breakpoint exception and performs no other operation.
+  - names: [ebreak_debug_env_op, ebreak_debugger_transfer_op]
+    coverpoint: ["ExceptionsS_cg/cp_breakpoint"]
+
+  # ECALL and EBREAK set the receiving mode's epc to the address of the ECALL or EBREAK
+  # instruction itself.
+  - name: ecall_ebreak_epc_value
+    coverpoint: ["ExceptionsS_cg/{cp_ecall_s, cp_breakpoint}"]
+
+  # Naturally aligned loads and stores do not raise an address-misaligned exception.
+  - name: ldst_no_exc_aligned
+    coverpoint: ["ExceptionsS_cg/cp_{load, store}_address_misaligned"]
+
+  # Load and load-reserved instructions generate load exceptions.
+  - name: mcause_exccode_ld_ldrsv
+    coverpoint: ["ExceptionsS_cg/cp_load_access_fault"]
+
+  # Store, store-conditional, and AMO instructions generate store/AMO exceptions.
+  - name: mcause_exccode_st_sc_amo
+    coverpoint: ["ExceptionsS_cg/cp_store_access_fault"]
+
+  # Load/store/AMO address-misaligned exceptions may have either higher or lower
+  # priority than load/store/AMO page-fault and access-fault exceptions.
+  - name: mcause_exccode_priority_misaligned
+    coverpoint: ["ExceptionsS_cg/cp_misaligned_priority"]
+
+  # When a trap is delegated to S-mode, scause, sepc, stval, SPP, SPIE, and SIE are
+  # written. The boot code delegates S-mode exceptions other than ecall from S-mode.
+  - name: trap_del_s_mode_op
+    coverpoint:
+      [
+        "ExceptionsS_cg/{cp_breakpoint, cp_load_access_fault, cp_store_access_fault}",
+      ]
+
+  # When a trap is taken, SPP is set to 0 if the trap originated from user mode, or 1
+  # otherwise.
+  - name: sstatus_spp
+    coverpoint: ["ExceptionsS_cg/{cp_illegal_instruction, cp_breakpoint}"]
+
+  # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to the
+  # value of xIE; xIE is set to 0; and xPP is set to y.
+  - name: mstatus_xpie_xie_xpp_trap_op
+    coverpoint: ["ExceptionsS_cg/{cp_illegal_instruction, cp_breakpoint}"]

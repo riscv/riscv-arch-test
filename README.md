@@ -8,7 +8,7 @@ The ACT4 Framework requires a UDB configuration file specifying the extensions a
 
 RISC-V is highly configurable, such as whether misaligned accesses are allowed or how many PMP registers are implemented. Therefore, the expected results of the tests differ based on the configuration of the DUT. The ACT4 Framework selects the appropriate tests to compile based on the capabilities of the DUT. It then uses the [RISC-V Sail reference model](https://github.com/riscv/sail-riscv), configured to match the DUT, to compute the expected results of each test. These results are then compiled into the final self-checking ELFs.
 
-The Architectural Certification Tests are described in full detail in the [Certification Test Plan](https://riscv.github.io/riscv-arch-test/ctp.html) (CTP). The ACT4 Framework principles of operation are detailed in [LINK COMING SOON]. For details on adding more tests and coverpoints, see the [ACT Developer's Guide](./docs/DeveloperGuide.md).
+The Architectural Certification Tests are described in full detail in the [Certification Test Plan](https://riscv.github.io/riscv-arch-test/ctp.html) (CTP). The ACT4 Framework principles of operation are detailed in [LINK COMING SOON]. For details on adding more tests and coverpoints, see the [ACT Developer's Guide](./docs/DeveloperGuide.md). Learn more about [RVA23 Certification Testing](./docs/RVA23Cert.md).
 
 ## Table of Contents
 
@@ -142,12 +142,12 @@ For more information or if you have issues installing the RISC-V toolchain, refe
 
 #### 4. RISC-V Sail Reference Model
 
-The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.14.1 of the model.
+The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.15 of the model.
 
 To install the sail model:
 
 ```bash
-curl --location https://github.com/riscv/sail-riscv/releases/download/0.14.1/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
+curl --location https://github.com/riscv/sail-riscv/releases/download/0.15/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
 ```
 
 > [!NOTE]
@@ -261,12 +261,14 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 **Interrupt Macros**: Defined if a platform-specific interrupt controller is used to set or clear. MSW and SSW preferably use `msip` and `mip.ssip` rather than a platform-specific controller, but are available to be defined for designs that only support a controller. _M flavors run in machine mode and do not use T-SBI. Others may be invoked from any mode and may need T-SBI if they access memory-mapped I/O that requires machine permissions. If the _M flavor is identical to the regular flavor, it does not need to be defined.
 
 - `RVMODEL_SET_MEXT_INT(_R1, _R2)`
+- `RVMODEL_SET_MEXT_INT_M(_R1, _R2)`
 - `RVMODEL_CLR_MEXT_INT(_R1, _R2)`
 - `RVMODEL_CLR_MEXT_INT_M(_R1, _R2)`
 - `RVMODEL_SET_MSW_INT(_R1, _R2)`
 - `RVMODEL_CLR_MSW_INT(_R1, _R2)`
 - `RVMODEL_CLR_MSW_INT_M(_R1, _R2)`
 - `RVMODEL_SET_SEXT_INT(_R1, _R2)`
+- `RVMODEL_SET_SEXT_INT_M(_R1, _R2)`
 - `RVMODEL_CLR_SEXT_INT(_R1, _R2)`
 - `RVMODEL_CLR_SEXT_INT_M(_R1, _R2)`
 - `RVMODEL_SET_SSW_INT(_R1, _R2)`
@@ -321,12 +323,12 @@ Once all [dependencies](#prerequisites) are installed and the [configuration fil
 Run the following command to generate test assembly files, compile them, and create self-checking ELFs:
 
 ```bash
-CONFIG_FILES=<your_config_directory>/test_config.yaml make --jobs $(nproc)
+CONFIG_FILES=<your_config_directory>/test_config.yaml make
 ```
 
 This will create all of the ELFs that apply to your DUT (based on the provided UDB configuration) in the `$WORKDIR/<config_name>/elfs` directory. These ELFs have the expected results compiled into them and use the provided macros and linker script.
 
-The following variables can be set on the command line to customize the build (e.g., `DEBUG=True CONFIG_FILES=path/to/test_config.yaml make --jobs`):
+The following variables can be set on the command line to customize the build (e.g., `DEBUG=True CONFIG_FILES=path/to/test_config.yaml make`):
 
 | Variable                         | Default                                         | Description                                                                                                                                                                                                                           |
 | -------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -381,6 +383,18 @@ A common source of errors is configuration mismatches, so ensure that:
 - The RISC-V Sail config file matches your UDB configuration and DUT
 - Your `rvmodel_macros.h` macros correctly implement the required functionality
 - Your linker script places code/data at the correct memory addresses
+
+AI is particularly helpful for troubleshooting configuration mismatches, but of course review that the configs it produces match your design intent.
+
+Once the configuration files accurately reflect your design, remaining mismatches may come from:
+
+- DUT errors, in which your DUT does not conform to the specification. Fix it, or disable support for the extension in your config file.
+- ACT errors, such as producing uncompilable tests for a certain configuration, or testing a feature whose behavior should be UNSPECIFIED. [Open an ACT issue](https://github.com/riscv/riscv-arch-test/issues/new).
+- Parameter errors, in which the specification permits one of several behaviors. Your design has one behavior and the reference model expects a different behavior, and the configuration file lacks a parameter to choose the behavior. [Open a request for a new UDB parameter](https://github.com/riscv/riscv-unified-db/issues).
+- Reference errors, in which the expected behavior is well-defined by the spec but is not produced by Sail. [Open a Sail issue](https://github.com/riscv/sail-riscv/issues/new).
+- Specification ambiguities, in which it is unclear whether the DUT behavior is legal or not. [Open an ISA Manual clarification issue](https://github.com/riscv/riscv-isa-manual/issues).
+
+Each of these repositories is maintained by volunteers. If you are seeking commercial support, many companies offer paid design verification services.
 
 #### Debug Flag
 

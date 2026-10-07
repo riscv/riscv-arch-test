@@ -2,11 +2,11 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
-  - name: zbc_clmul_clmulh_results
+  - name: Zbc_clmul_clmulh_results
     coverpoint:
       ["Zbc_clmul_cg/cr_rs1_rs2_edges", "Zbc_clmulh_cg/cr_rs1_rs2_edges"]
 
-  - name: zbc_clmulr_results
+  - name: Zbc_clmulr_results
     coverpoint: ["Zbc_clmulr_cg/cr_rs1_rs2_edges"]
 
   - name: clmul_enc

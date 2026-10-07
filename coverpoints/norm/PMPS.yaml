@@ -2,3 +2,65 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
+  # PMP checks are applied to all accesses whose effective privilege mode is S or U,
+  # including instruction fetches and data accesses in S and U mode, and data
+  # accesses in M-mode when the MPRV bit in mstatus is set and the MPP field in
+  # mstatus contains S or U.
+  - name: pmp_check_priv_modes
+    # Representative coverpoints; also cp_cfg_A_* and cp_mprv_jalr
+    coverpoint: ["PMPS_cg/{cp_cfg_X, cp_cfg_R, cp_mprv_lw, cp_mprv_sw}"]
+
+  # PMP CSRs are only accessible to M-mode.
+  - name: pmp_csr_mode
+    coverpoint: ["PMPS_cg/{cp_pmpaddr_access_s, cp_pmpcfg_access_s}"]
+
+  # The PMP address registers are CSRs named pmpaddr0-pmpaddr63.
+  - name: pmp_addr_registers
+    coverpoint: ["PMPS_cg/cp_pmpaddr_access_s"]
+
+  # If a PMP entry matches all bytes of a memory operation, then the L, R, W, and X
+  # bits determine whether the operation succeeds or fails. If the L bit is set or the
+  # privilege mode of the access is S or U, then the operation succeeds only if the R,
+  # W, or X bit corresponding to the access type is set.
+  - names: [pmp_rwx_check, pmp_cfg_permissions]
+    # S-mode accesses with L = 0 and L = 1
+    coverpoint: ["PMPS_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W}"]
+
+  # When the L bit is clear, any M-mode access matching the PMP entry will succeed;
+  # the R/W/X permissions apply only to S and U modes.
+  - name: pmp_l_bit_m_mode_enforcement
+    # cp_mprv_* covers M-mode accesses with MPRV = 0 and 1 to unlocked entries
+    coverpoint: ["PMPS_cg/{cp_cfg_X, cp_mprv_lw, cp_mprv_sw}"]
+
+  # Failed memory operations generate an instruction, load, or store access-fault
+  # exception.
+  - name: pmp_access_fault_exception
+    coverpoint: ["PMPS_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W}"]
+
+  # Attempting to fetch an instruction from a PMP region that does not have execute
+  # permissions raises an instruction access-fault exception.
+  - name: pmp_exec_fault
+    coverpoint: ["PMPS_cg/{cp_cfg_X, cp_mprv_jalr}"]
+
+  # Attempting to execute a load or load-reserved instruction that accesses a physical
+  # address within a PMP region without read permissions raises a load access-fault
+  # exception.
+  - name: pmp_load_fault
+    coverpoint: ["PMPS_cg/{cp_cfg_R, cp_mprv_lw}"]
+
+  # Attempting to execute a store, store-conditional, AMO, or cache-block zero
+  # instruction which accesses a physical address within a PMP region without write
+  # permissions raises a store access-fault exception.
+  - name: pmp_store_fault
+    coverpoint: ["PMPS_cg/{cp_cfg_W, cp_mprv_sw}"]
+
+  # When A=0, this PMP entry is disabled and matches no addresses.
+  - name: pmp_a_field_off
+    coverpoint:
+      ["PMPS_cg/{cp_cfg_A_off_jalr, cp_cfg_A_off_lw, cp_cfg_A_off_sw}"]
+
+  # The A field encodes the address-matching mode: TOR, NA4, and NAPOT.
+  - names: [pmp_a_field_tor, pmp_a_field_napot_na4]
+    # Representative coverpoints; also the _jalr and _sw variants
+    coverpoint:
+      ["PMPS_cg/{cp_cfg_A_tor_lw, cp_cfg_A_na4_lw, cp_cfg_A_napot_lw}"]

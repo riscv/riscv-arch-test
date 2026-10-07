@@ -275,6 +275,8 @@ covergroup Zvbb32_vandn_vx_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -1435,6 +1437,8 @@ covergroup Zvbb32_vrol_vx_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -1576,10 +1580,6 @@ covergroup Zvbb32_vror_vi_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_imm_5bit_u : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
-        bins uimm[] = {[0:31]}; // 5 bit unsigned immediates for vector instructions
-    }
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -1587,6 +1587,26 @@ covergroup Zvbb32_vror_vi_cg with function sample(ins_t ins);
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
         bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
         bins random         = {mask_random          };
+    }
+
+    cp_uimm_6bit_v : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+        bins b_0 = {0};
+        bins b_1 = {1};
+        bins b_2 = {2};
+        bins b_3 = {3};
+        bins b_4 = {4};
+        bins b_7 = {7};
+        bins b_8 = {8};
+        bins b_9 = {9};
+        bins b_15 = {15};
+        bins b_16 = {16};
+        bins b_17 = {17};
+        bins b_30 = {30};
+        bins b_31 = {31};
+        bins b_32 = {32};
+        bins b_33 = {33};
+        bins b_62 = {62};
+        bins b_63 = {63};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -1666,24 +1686,34 @@ covergroup Zvbb32_vror_vi_cg with function sample(ins_t ins);
     //// end cr_vl_lmul_sew32////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cr_vs2_imm_edges_u
+    // cr_vs2_imm_edges_6bit_u
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_imm_edges_5bit_u : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+    cp_imm_edges_6bit_u : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins b_0 = {0};
         bins b_1 = {1};
         bins b_2 = {2};
+        bins b_3 = {3};
+        bins b_4 = {4};
+        bins b_7 = {7};
+        bins b_8 = {8};
+        bins b_9 = {9};
         bins b_15 = {15};
         bins b_16 = {16};
+        bins b_17 = {17};
         bins b_30 = {30};
         bins b_31 = {31};
+        bins b_32 = {32};
+        bins b_33 = {33};
+        bins b_62 = {62};
+        bins b_63 = {63};
     }
 
-    cr_vs2_imm_edges : cross cp_vs2_edges,cp_imm_edges_5bit_u  iff (ins.trap == 0 )  {
+    cr_vs2_imm_edges : cross cp_vs2_edges,cp_imm_edges_6bit_u  iff (ins.trap == 0 )  {
         // Cross coverage of VS2 edges and 5 bit imm edge values (unsigned)
     }
 
-    //// end cr_vs2_imm_edges////////////////////////////////////////////////
+    //// end cr_vs2_imm_edges_6bit_u ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vtype_agnostic
@@ -1969,6 +1999,8 @@ covergroup Zvbb32_vror_vx_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -2772,6 +2804,8 @@ covergroup Zvbb32_vwsll_vx_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -2918,54 +2952,55 @@ function void zvbb32_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
-        "vandn.vv"     : begin
-            Zvbb32_vandn_vv_cg.sample(ins);
-        end
-        "vandn.vx"     : begin
-            Zvbb32_vandn_vx_cg.sample(ins);
-        end
-        "vbrev.v"     : begin
-            Zvbb32_vbrev_v_cg.sample(ins);
-        end
-        "vbrev8.v"     : begin
-            Zvbb32_vbrev8_v_cg.sample(ins);
-        end
-        "vclz.v"     : begin
-            Zvbb32_vclz_v_cg.sample(ins);
-        end
-        "vcpop.v"     : begin
-            Zvbb32_vcpop_v_cg.sample(ins);
-        end
-        "vctz.v"     : begin
-            Zvbb32_vctz_v_cg.sample(ins);
-        end
-        "vrev8.v"     : begin
-            Zvbb32_vrev8_v_cg.sample(ins);
-        end
-        "vrol.vv"     : begin
-            Zvbb32_vrol_vv_cg.sample(ins);
-        end
-        "vrol.vx"     : begin
-            Zvbb32_vrol_vx_cg.sample(ins);
-        end
-        "vror.vi"     : begin
-            Zvbb32_vror_vi_cg.sample(ins);
-        end
-        "vror.vv"     : begin
-            Zvbb32_vror_vv_cg.sample(ins);
-        end
-        "vror.vx"     : begin
-            Zvbb32_vror_vx_cg.sample(ins);
-        end
-        "vwsll.vi"     : begin
-            Zvbb32_vwsll_vi_cg.sample(ins);
-        end
-        "vwsll.vv"     : begin
-            Zvbb32_vwsll_vv_cg.sample(ins);
-        end
-        "vwsll.vx"     : begin
-            Zvbb32_vwsll_vx_cg.sample(ins);
-        end
+            "vandn.vv"     : begin
+                Zvbb32_vandn_vv_cg.sample(ins);
+            end
+            "vandn.vx"     : begin
+                Zvbb32_vandn_vx_cg.sample(ins);
+            end
+            "vbrev.v"     : begin
+                Zvbb32_vbrev_v_cg.sample(ins);
+            end
+            "vbrev8.v"     : begin
+                Zvbb32_vbrev8_v_cg.sample(ins);
+            end
+            "vclz.v"     : begin
+                Zvbb32_vclz_v_cg.sample(ins);
+            end
+            "vcpop.v"     : begin
+                Zvbb32_vcpop_v_cg.sample(ins);
+            end
+            "vctz.v"     : begin
+                Zvbb32_vctz_v_cg.sample(ins);
+            end
+            "vrev8.v"     : begin
+                Zvbb32_vrev8_v_cg.sample(ins);
+            end
+            "vrol.vv"     : begin
+                Zvbb32_vrol_vv_cg.sample(ins);
+            end
+            "vrol.vx"     : begin
+                Zvbb32_vrol_vx_cg.sample(ins);
+            end
+            "vror.vi"     : begin
+                Zvbb32_vror_vi_cg.sample(ins);
+            end
+            "vror.vv"     : begin
+                Zvbb32_vror_vv_cg.sample(ins);
+            end
+            "vror.vx"     : begin
+                Zvbb32_vror_vx_cg.sample(ins);
+            end
+            "vwsll.vi"     : begin
+                Zvbb32_vwsll_vi_cg.sample(ins);
+            end
+            "vwsll.vv"     : begin
+                Zvbb32_vwsll_vv_cg.sample(ins);
+            end
+            "vwsll.vx"     : begin
+                Zvbb32_vwsll_vx_cg.sample(ins);
+            end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

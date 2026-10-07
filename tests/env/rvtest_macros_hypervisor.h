@@ -10,8 +10,11 @@
 #define sv48x4 0x02
 #define sv57x4 0x03
 
-#define PA  0x0
-#define GPA 0x1
+// Address-space selectors for the macros below. The names are prefixed because
+// this header is included by every test on a DUT that implements H, and short
+// names such as PA collide with assembler macro parameters in other suites.
+#define ADDR_PA  0x0
+#define ADDR_GPA 0x1
 
 
 // Appends 12-bit page offset from PA to VA, and stores it
@@ -30,9 +33,9 @@
     slli t1, t1, __riscv_xlen-PAGE_OFFSET_SHIFT                 ;\
     srli t1, t1, __riscv_xlen-PAGE_OFFSET_SHIFT                 ;\
     or   t0, t0, t1                                             ;\
-    addi a0, a0, 2*sv_area_sz                                   ;\
+    addi a0, a0, 1*sv_area_sz                                   ;\
     SREG t0, _REG_NAME##_bgn_off+1*sv_area_sz(a0)               ;\
-    addi a0, a0, -2*sv_area_sz                                  ;
+    addi a0, a0, -1*sv_area_sz                                  ;
 
 
 // Wrapper macro around G_PTE_SETUP_PA_REG.
@@ -122,6 +125,88 @@
     SREG t0, 0(t1)                                              ;
 
 
+// Same as G_PTE_SETUP_PA_REG, but the guest physical address is in a register too, so a
+// test can derive its mapping windows at run time. The root table of a G-stage mode is
+// four times the size of an ordinary one, which is why its index is two bits wider.
+// t0, t1 and t2 are clobbered; GPA_REG is consumed before any of them is written and
+// PA_REG before t1, so either may be t0 or t1. Neither may be t2.
+#define G_PTE_SETUP_GPA_REG(MODE, PA_REG, PERMS, GPA_REG, LEVEL) ;\
+    .if (MODE == sv32x4)                                        ;\
+        .if (LEVEL == 1)                                        ;\
+            .set VPN_WIDTH, 12                                  ;\
+        .elseif (LEVEL == 0)                                    ;\
+            .set VPN_WIDTH, 10                                  ;\
+        .endif                                                  ;\
+        .set VPN_SHIFT, (LEVEL * 10) + 12                       ;\
+        .set ENTRY_LOG2, 2                                      ;\
+    .else                                                       ;\
+        .set VPN_WIDTH, 9                                       ;\
+        .if (MODE == sv39x4)                                    ;\
+            .if (LEVEL == 2)                                    ;\
+                .set VPN_WIDTH, 11                              ;\
+            .endif                                              ;\
+        .elseif (MODE == sv48x4)                                ;\
+            .if (LEVEL == 3)                                    ;\
+                .set VPN_WIDTH, 11                              ;\
+            .endif                                              ;\
+        .elseif (MODE == sv57x4)                                ;\
+            .if (LEVEL == 4)                                    ;\
+                .set VPN_WIDTH, 11                              ;\
+            .endif                                              ;\
+        .endif                                                  ;\
+        .set VPN_SHIFT, (LEVEL * 9) + 12                        ;\
+        .set ENTRY_LOG2, 3                                      ;\
+    .endif                                                      ;\
+    srli t2, GPA_REG, VPN_SHIFT                                 ;\
+    slli t2, t2, (__riscv_xlen - VPN_WIDTH)                     ;\
+    srli t2, t2, (__riscv_xlen - VPN_WIDTH - ENTRY_LOG2)        ;\
+    srli t0, PA_REG, 12                                         ;\
+    slli t0, t0, 10                                             ;\
+    LI(t1, PERMS)                                               ;\
+    or t0, t0, t1                                               ;\
+    .if (MODE == sv32x4)                                        ;\
+        .if (LEVEL == 1)                                        ;\
+            LA(t1, rvtest_Hroot_pg_tbl)                         ;\
+        .elseif (LEVEL == 0)                                    ;\
+            LA(t1, rvtest_hlvl0_pg_tbl)                         ;\
+        .endif                                                  ;\
+    .else                                                       ;\
+        .if (MODE == sv39x4)                                    ;\
+            .if (LEVEL == 2)                                    ;\
+                LA(t1, rvtest_Hroot_pg_tbl)                     ;\
+            .elseif (LEVEL == 1)                                ;\
+                LA(t1, rvtest_hlvl1_pg_tbl)                     ;\
+            .elseif (LEVEL == 0)                                ;\
+                LA(t1, rvtest_hlvl0_pg_tbl)                     ;\
+            .endif                                              ;\
+        .elseif (MODE == sv48x4)                                ;\
+            .if (LEVEL == 3)                                    ;\
+                LA(t1, rvtest_Hroot_pg_tbl)                     ;\
+            .elseif (LEVEL == 2)                                ;\
+                LA(t1, rvtest_hlvl2_pg_tbl)                     ;\
+            .elseif (LEVEL == 1)                                ;\
+                LA(t1, rvtest_hlvl1_pg_tbl)                     ;\
+            .elseif (LEVEL == 0)                                ;\
+                LA(t1, rvtest_hlvl0_pg_tbl)                     ;\
+            .endif                                              ;\
+        .elseif (MODE == sv57x4)                                ;\
+            .if (LEVEL == 4)                                    ;\
+                LA(t1, rvtest_Hroot_pg_tbl)                     ;\
+            .elseif (LEVEL == 3)                                ;\
+                LA(t1, rvtest_hlvl3_pg_tbl)                     ;\
+            .elseif (LEVEL == 2)                                ;\
+                LA(t1, rvtest_hlvl2_pg_tbl)                     ;\
+            .elseif (LEVEL == 1)                                ;\
+                LA(t1, rvtest_hlvl1_pg_tbl)                     ;\
+            .elseif (LEVEL == 0)                                ;\
+                LA(t1, rvtest_hlvl0_pg_tbl)                     ;\
+            .endif                                              ;\
+        .endif                                                  ;\
+    .endif                                                      ;\
+    add  t1, t1, t2                                             ;\
+    SREG t0, 0(t1)                                              ;
+
+
 // Wrapper macro around VS_PTE_SETUP_ADDR_REG.
 // PERMS and VA must be immediate values while Physical
 // Address must be a label.
@@ -141,17 +226,82 @@
 
 // Wrapper macro around VS_PTE_SETUP_ADDR_REG allowing both
 // Physical and Guest Physical Addresses.
-// If ADDR_TYPE==PA, ADDR must be an address label.
-// if ADDR_TYPE==GPA, ADDR must be an immediate value. Loads
+// If ADDR_TYPE==ADDR_PA, ADDR must be an address label.
+// if ADDR_TYPE==ADDR_GPA, ADDR must be an immediate value. Loads
 // ADDR into a register and passes it to VS_PTE_SETUP_ADDR_REG.
 // PERMS and VA must be immediate values.
 #define VS_PTE_SETUP(MODE, ADDR_TYPE, ADDR, PERMS, VA, LEVEL)   ;\
-    .if (ADDR_TYPE == PA)                                       ;\
+    .if (ADDR_TYPE == ADDR_PA)                                  ;\
         LA(t0, ADDR)                                            ;\
-    .elseif (ADDR_TYPE == GPA)                                  ;\
+    .elseif (ADDR_TYPE == ADDR_GPA)                             ;\
         LI(t0, ADDR)                                            ;\
     .endif                                                      ;\
     VS_PTE_SETUP_ADDR_REG(MODE, t0, PERMS, VA, LEVEL)           ;\
+
+
+// Create a VS-stage page table entry with both the mapped address and the virtual
+// address in registers, so a test can derive its mapping windows at run time instead
+// of hard-coding them. PERMS is an immediate. t0, t1 and t2 are clobbered; VA_REG is
+// consumed before any of them is written and ADDR_REG before t1, so either may be t0
+// or t1. Neither may be t2.
+#define VS_PTE_SETUP_VA_REG(MODE, ADDR_REG, PERMS, VA_REG, LEVEL) ;\
+    .if (MODE == sv32)                                          ;\
+        .set VPN_WIDTH, 10                                      ;\
+        .set VPN_SHIFT, (LEVEL * 10) + 12                       ;\
+        .set ENTRY_LOG2, 2                                      ;\
+    .else                                                       ;\
+        .set VPN_WIDTH, 9                                       ;\
+        .set VPN_SHIFT, (LEVEL * 9) + 12                        ;\
+        .set ENTRY_LOG2, 3                                      ;\
+    .endif                                                      ;\
+    srli t2, VA_REG, VPN_SHIFT                                  ;\
+    slli t2, t2, (__riscv_xlen - VPN_WIDTH)                     ;\
+    srli t2, t2, (__riscv_xlen - VPN_WIDTH - ENTRY_LOG2)        ;\
+    srli t0, ADDR_REG, 12                                       ;\
+    slli t0, t0, 10                                             ;\
+    LI(t1, PERMS)                                               ;\
+    or t0, t0, t1                                               ;\
+    .if (MODE == sv32)                                          ;\
+        .if (LEVEL == 1)                                        ;\
+            LA(t1, rvtest_Vroot_pg_tbl)                         ;\
+        .elseif (LEVEL == 0)                                    ;\
+            LA(t1, rvtest_vlvl0_pg_tbl)                         ;\
+        .endif                                                  ;\
+    .else                                                       ;\
+        .if (MODE == sv39)                                      ;\
+            .if (LEVEL == 2)                                    ;\
+                LA(t1, rvtest_Vroot_pg_tbl)                     ;\
+            .elseif (LEVEL == 1)                                ;\
+                LA(t1, rvtest_vlvl1_pg_tbl)                     ;\
+            .elseif (LEVEL == 0)                                ;\
+                LA(t1, rvtest_vlvl0_pg_tbl)                     ;\
+            .endif                                              ;\
+        .elseif (MODE == sv48)                                  ;\
+            .if (LEVEL == 3)                                    ;\
+                LA(t1, rvtest_Vroot_pg_tbl)                     ;\
+            .elseif (LEVEL == 2)                                ;\
+                LA(t1, rvtest_vlvl2_pg_tbl)                     ;\
+            .elseif (LEVEL == 1)                                ;\
+                LA(t1, rvtest_vlvl1_pg_tbl)                     ;\
+            .elseif (LEVEL == 0)                                ;\
+                LA(t1, rvtest_vlvl0_pg_tbl)                     ;\
+            .endif                                              ;\
+        .elseif (MODE == sv57)                                  ;\
+            .if (LEVEL == 4)                                    ;\
+                LA(t1, rvtest_Vroot_pg_tbl)                     ;\
+            .elseif (LEVEL == 3)                                ;\
+                LA(t1, rvtest_vlvl3_pg_tbl)                     ;\
+            .elseif (LEVEL == 2)                                ;\
+                LA(t1, rvtest_vlvl2_pg_tbl)                     ;\
+            .elseif (LEVEL == 1)                                ;\
+                LA(t1, rvtest_vlvl1_pg_tbl)                     ;\
+            .elseif (LEVEL == 0)                                ;\
+                LA(t1, rvtest_vlvl0_pg_tbl)                     ;\
+            .endif                                              ;\
+        .endif                                                  ;\
+    .endif                                                      ;\
+    add  t1, t1, t2                                             ;\
+    SREG t0, 0(t1)                                              ;
 
 
 // Create a VS-stage page table entry and write it into the appropriate
@@ -230,10 +380,10 @@
 
 // Configure VSATP for the specified translation mode (sv32, sv39,
 // sv48 or sv57) using rvtest_Vroot_pg_tbl as the root page table.
-// PT_ADDR_SPACE may be PA or GPA. Use PA when the root page table
-// is not G-stage translated (hgatp.MODE=Bare), and GPA when
+// PT_ADDR_SPACE may be ADDR_PA or ADDR_GPA. Use ADDR_PA when the root page
+// table is not G-stage translated (hgatp.MODE=Bare), and ADDR_GPA when
 // it is mapped through G-stage translation.
-// If PT_ADDR_SPACE==GPA, gpa_rvtest_Vroot_pg_tbl must be
+// If PT_ADDR_SPACE==ADDR_GPA, gpa_rvtest_Vroot_pg_tbl must be
 // defined as an immediate value containing the Guest Physical
 // Address of the root page table.
 // t0 and t1 are clobbered.
@@ -247,9 +397,9 @@
     .elseif (MODE == sv57)                                      ;\
         LI(t1, (SATP64_MODE) & (SATP_MODE_SV57 << 60))          ;\
     .endif                                                      ;\
-    .if (PT_ADDR_SPACE == PA)                                   ;\
+    .if (PT_ADDR_SPACE == ADDR_PA)                              ;\
         LA(  t0, rvtest_Vroot_pg_tbl)                           ;\
-    .elseif (PT_ADDR_SPACE == GPA)                              ;\
+    .elseif (PT_ADDR_SPACE == ADDR_GPA)                         ;\
         LI(  t0, gpa_rvtest_Vroot_pg_tbl)                       ;\
     .endif                                                      ;\
     srli t0, t0, 12                                             ;\

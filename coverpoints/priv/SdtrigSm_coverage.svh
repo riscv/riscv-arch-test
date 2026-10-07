@@ -10,13 +10,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 `define COVER_SDTRIGSM
+`ifndef UDB_SDTRIG_MASKMAX6
+    `define UDB_SDTRIG_MASKMAX6 63
+`endif
 
 covergroup SdtrigSm_trig_module_reg_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "general/RISCV_coverage_sdtrig_coverpoints.svh"
 
-    type_disabled: coverpoint ins.current.csr[CSR_TDATA1][XLEN-1:XLEN-4] {
+    type_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "type")[3:0] {
         bins disabled = {4'd15};
     }
     tdata1_type_six: coverpoint ins.current.rs1_val[XLEN-1:XLEN-4] {
@@ -32,9 +35,6 @@ covergroup SdtrigSm_trig_module_reg_cg with function sample(ins_t ins);
         bins tdata1 = {CSR_TDATA1};
         bins tdata2 = {CSR_TDATA2};
         bins tdata3 = {CSR_TDATA3};
-    }
-    csr_tdata1: coverpoint ins.current.insn[31:20] {
-        bins tdata1 = {CSR_TDATA1};
     }
     csr_tinfo: coverpoint ins.current.insn[31:20] {
         bins tinfo = {CSR_TINFO};
@@ -54,15 +54,9 @@ covergroup SdtrigSm_trig_module_reg_cg with function sample(ins_t ins);
         bins tdata3 = {CSR_TDATA3};
         bins tinfo  = {CSR_TINFO};
     }
-    csr_access: coverpoint ins.current.insn{
+    csr_access: coverpoint ins.current.insn {
         wildcard bins csrrw0 = {CSRRW} iff (ins.current.rs1_val == '0);
         wildcard bins csrrw1 = {CSRRW} iff (ins.current.rs1_val == '1);
-    }
-    csrr: coverpoint ins.current.insn{
-        wildcard bins csrr = {CSRR};
-    }
-    csrw: coverpoint ins.current.insn{
-        wildcard bins csrw = {CSRW};
     }
 
     // main coverpoints
@@ -74,6 +68,228 @@ covergroup SdtrigSm_trig_module_reg_cg with function sample(ins_t ins);
     cp_tinfo_read_only:       cross priv_mode_m, triggernum, csr_tinfo, csr_access;                         // NTRIG
 endgroup
 
+covergroup SdtrigSm_mcontrol6_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_sdtrig_coverpoints.svh"
+
+    triggernum_chain: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tselect", "tselect") {
+        bins chained_pair[] = {[1:`UDB_SDTRIG_NUM_TRIGGERS-1]};
+    }
+    tdata1_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "m")[0] {
+        bins disabled = {1'b0};
+        bins enabled  = {1'b1};
+    }
+    // a trigger disabled for M-mode or chained to the next one cannot fire on its own
+    tdata1_m_on: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "m")[0] {
+        bins on = {1'b1};
+    }
+    tdata1_chain_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "chain")[0] {
+        bins disabled = {1'b0};
+    }
+    tdata1_xsl_store: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "execute")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "store")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "load")[0]} {
+        bins store = {3'b010};
+    }
+    tdata1_xsl_load_store: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "execute")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "store")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "load")[0]} {
+        bins load_store = {3'b011};
+    }
+    tdata1_xsl_load_store_execute: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "execute")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "store")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "load")[0]} {
+        bins execute = {3'b111};
+    }
+    tdata1_match_cmp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "match")[3:0] {
+        bins equal = {4'd0};
+        `ifdef UDB_SDTRIG_MCONTROL6_MATCH_AVAILABLE
+            bins ge        = {4'd2};
+            bins lt        = {4'd3};
+            bins not_equal = {4'd8};
+        `endif
+    }
+    tdata2_pc: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.pc_rdata) {
+        bins pc   = {1'b1};
+        bins zero = {1'b0} iff (ins.current.csr[CSR_TDATA2] == '0);
+    }
+    tdata2_exec_data: coverpoint ins.current.csr[CSR_TDATA2] {
+        bins addi_hint = {32'h00008013};
+        bins nofire    = {2}; // no instruction in the test has this encoding
+    }
+    tdata2_exec_size: coverpoint ins.current.csr[CSR_TDATA2] {
+        bins addi_hint = {32'h00008013};
+        bins c_nop     = {32'h0001};
+    }
+    store_data_cmp: coverpoint (ins.current.rs2_val == '0       ? 3'd0 :
+                                ins.current.rs2_val == '1       ? 3'd4 :
+                                ins.current.rs2_val == ins.current.csr[CSR_TDATA2] - 1 ? 3'd1 :
+                                ins.current.rs2_val == ins.current.csr[CSR_TDATA2]     ? 3'd2 :
+                                ins.current.rs2_val == ins.current.csr[CSR_TDATA2] + 1 ? 3'd3 : 3'd5) {
+        bins zero  = {3'd0};
+        bins below = {3'd1};
+        bins equal = {3'd2};
+        bins above = {3'd3};
+        bins ones  = {3'd4};
+    }
+    `ifdef UDB_SDTRIG_MCONTROL6_MATCH_AVAILABLE
+        tdata1_match_napot: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "match")[3:0] {
+            bins napot     = {4'd1};
+            bins not_napot = {4'd9};
+        }
+        tdata1_match_mask: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "match")[3:0] {
+            bins mask_low      = {4'd4};
+            bins mask_high     = {4'd5};
+            bins not_mask_low  = {4'd12};
+            bins not_mask_high = {4'd13};
+        }
+        tdata2_napot: coverpoint $clog2(~ins.current.csr[CSR_TDATA2] & (ins.current.csr[CSR_TDATA2] + 1)) iff (ins.current.csr[CSR_TDATA2] != '1) {
+            bins zero_bit[] = {[1:((`UDB_SDTRIG_MASKMAX6 < XLEN-1) ? `UDB_SDTRIG_MASKMAX6 : XLEN-1) - 1]};
+        }
+        store_data_napot: coverpoint ins.current.rs2_val {
+            bins zero           = {'0};
+            wildcard bins other = {'x} iff (ins.current.rs2_val != '0 && ins.current.rs2_val != '1);
+            bins ones           = {'1};
+        }
+        // mask low (match 4) ANDs the low half of the data with tdata2[XLEN-1:XLEN/2] and compares it with tdata2[XLEN/2-1:0];
+        // mask high (match 5) does the same with the high half of the data. For example tdata2 = 0xF0F0_A0B0 and
+        // low-half data 0x0000A0B0 (value), 0x0000A1B2 (differs only outside the mask), 0x0000F0F0 (differs inside the mask),
+        // and 0x0001A0B0 (value with a nonzero, ignored high half); the high-half bins mirror these.
+        `define SDTRIG_DATA_LO     ins.current.rs2_val[XLEN/2-1:0]
+        `define SDTRIG_DATA_HI     ins.current.rs2_val[XLEN-1:XLEN/2]
+        `define SDTRIG_MASK_VALUE  ins.current.csr[CSR_TDATA2][XLEN/2-1:0]
+        `define SDTRIG_MASK_MASK   ins.current.csr[CSR_TDATA2][XLEN-1:XLEN/2]
+        store_data_mask: coverpoint ins.current.rs2_val {
+            bins zero                        = {'0};
+            wildcard bins equal              = {'x} iff (ins.current.rs2_val == ins.current.csr[CSR_TDATA2]);
+            wildcard bins low_value          = {'x} iff (`SDTRIG_DATA_HI == '0 && `SDTRIG_DATA_LO == `SDTRIG_MASK_VALUE);
+            wildcard bins low_unmasked_diff  = {'x} iff (`SDTRIG_DATA_HI == '0 && `SDTRIG_DATA_LO != `SDTRIG_MASK_VALUE && (`SDTRIG_DATA_LO & `SDTRIG_MASK_MASK) == `SDTRIG_MASK_VALUE);
+            wildcard bins low_masked_diff    = {'x} iff (`SDTRIG_DATA_HI == '0 && (`SDTRIG_DATA_LO & `SDTRIG_MASK_MASK) != `SDTRIG_MASK_VALUE);
+            wildcard bins low_value_high_nz  = {'x} iff (`SDTRIG_DATA_LO == `SDTRIG_MASK_VALUE && `SDTRIG_DATA_HI != '0);
+            wildcard bins high_value         = {'x} iff (`SDTRIG_DATA_LO == '0 && `SDTRIG_DATA_HI == `SDTRIG_MASK_VALUE);
+            wildcard bins high_unmasked_diff = {'x} iff (`SDTRIG_DATA_LO == '0 && `SDTRIG_DATA_HI != `SDTRIG_MASK_VALUE && (`SDTRIG_DATA_HI & `SDTRIG_MASK_MASK) == `SDTRIG_MASK_VALUE);
+            wildcard bins high_masked_diff   = {'x} iff (`SDTRIG_DATA_LO == '0 && (`SDTRIG_DATA_HI & `SDTRIG_MASK_MASK) != `SDTRIG_MASK_VALUE);
+            wildcard bins high_value_low_nz  = {'x} iff (`SDTRIG_DATA_HI == `SDTRIG_MASK_VALUE && `SDTRIG_DATA_LO != '0);
+            bins ones                        = {'1};
+        }
+        `undef SDTRIG_DATA_LO
+        `undef SDTRIG_DATA_HI
+        `undef SDTRIG_MASK_VALUE
+        `undef SDTRIG_MASK_MASK
+    `endif
+    store_data_chain: coverpoint (ins.current.rs2_val == ins.current.csr[CSR_TDATA2]) {
+        bins data = {1'b1};
+        bins zero = {1'b0} iff (ins.current.rs2_val == '0);
+    }
+    store_offset: coverpoint ins.current.imm {
+        bins scratch        = {0};
+        bins scratch_plus_8 = {8};
+    }
+    addi_hint: coverpoint ins.current.insn {
+        bins addi_hint = {32'h00008013};
+    }
+    exec_adr_target: coverpoint ins.current.insn {
+        bins add_x0 = {32'h00208033};  // add x0, x1, x2
+    }
+    exec_size_instr: coverpoint ins.current.insn {
+        bins addi_hint = {32'h00008013};
+        `ifdef ZCA_SUPPORTED
+            wildcard bins c_nop = {C_NOP};
+        `endif
+    }
+    sw: coverpoint ins.current.insn {
+        wildcard bins sw = {SW};
+    }
+    lw_sw: coverpoint ins.current.insn {
+        wildcard bins sw = {SW};
+        wildcard bins lw = {LW};
+    }
+    store_xlen: coverpoint ins.current.insn {
+        `ifdef UDB_MXLEN_64
+            wildcard bins sd = {SD};
+        `else
+            wildcard bins sw = {SW};
+        `endif
+    }
+    load_store_instr: coverpoint ins.current.insn {
+        wildcard bins lb  = {LB};
+        wildcard bins lbu = {LBU};
+        wildcard bins lh  = {LH};
+        wildcard bins lhu = {LHU};
+        wildcard bins lw  = {LW};
+        wildcard bins sb  = {SB};
+        wildcard bins sh  = {SH};
+        wildcard bins sw  = {SW};
+        `ifdef UDB_MXLEN_64
+            wildcard bins lwu = {LWU};
+            wildcard bins ld  = {LD};
+            wildcard bins sd  = {SD};
+        `endif
+        `ifdef F_SUPPORTED
+            wildcard bins flw = {FLW};
+            wildcard bins fsw = {FSW};
+        `endif
+        `ifdef D_SUPPORTED
+            wildcard bins fld = {FLD};
+            wildcard bins fsd = {FSD};
+        `endif
+        `ifdef ZFH_SUPPORTED
+            wildcard bins flh = {FLH};
+            wildcard bins fsh = {FSH};
+        `endif
+        `ifdef Q_SUPPORTED
+            wildcard bins flq = {FLQ};
+            wildcard bins fsq = {FSQ};
+        `endif
+        `ifdef ZCA_SUPPORTED
+            wildcard bins c_lw   = {C_LW};
+            wildcard bins c_sw   = {C_SW};
+            wildcard bins c_lwsp = {C_LWSP};
+            wildcard bins c_swsp = {C_SWSP};
+            `ifdef UDB_MXLEN_64
+                wildcard bins c_ld   = {C_LD};
+                wildcard bins c_sd   = {C_SD};
+                wildcard bins c_ldsp = {C_LDSP};
+                wildcard bins c_sdsp = {C_SDSP};
+            `endif
+        `endif
+        `ifdef ZCB_SUPPORTED
+            wildcard bins c_lbu = {C_LBU};
+            wildcard bins c_lh  = {C_LH};
+            wildcard bins c_lhu = {C_LHU};
+            wildcard bins c_sb  = {C_SB};
+            wildcard bins c_sh  = {C_SH};
+        `endif
+        `ifdef ZCF_SUPPORTED
+            `ifdef UDB_MXLEN_32
+                wildcard bins c_flw   = {C_FLW};
+                wildcard bins c_fsw   = {C_FSW};
+                wildcard bins c_flwsp = {C_FLWSP};
+                wildcard bins c_fswsp = {C_FSWSP};
+            `endif
+        `endif
+        `ifdef ZCD_SUPPORTED
+            wildcard bins c_fld   = {C_FLD};
+            wildcard bins c_fsd   = {C_FSD};
+            wildcard bins c_fldsp = {C_FLDSP};
+            wildcard bins c_fsdsp = {C_FSDSP};
+        `endif
+    }
+
+    // main coverpoints
+    cp_sdtrig_mcontrol6_priv_mode: cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_adr, tdata1_xsl_store, tdata2_adr, sw { // NTRIG * 2 m modes
+        ignore_bins no_match = binsof(tdata2_adr.zero);
+    }
+    cp_sdtrig_mcontrol6_execute_adr:     cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_adr, tdata1_xsl, tdata2_pc, exec_adr_target;                                            // NTRIG * 8 xsl * 2 tdata2
+    cp_sdtrig_mcontrol6_load_store_adr:  cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_adr, tdata1_xsl, tdata2_adr, lw_sw;                                                     // NTRIG * 8 xsl * 2 tdata2 * 2 instrs
+    cp_sdtrig_mcontrol6_execute_data:    cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_data, tdata1_xsl, tdata2_exec_data, addi_hint;                                          // NTRIG * 8 xsl * 2 tdata2
+    cp_sdtrig_mcontrol6_load_store_data: cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_data, tdata1_xsl, lw_sw;                                                                // NTRIG * 8 xsl * 2 instrs
+    cp_sdtrig_mcontrol6_execute_size:    cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_select_data, tdata1_xsl_load_store_execute, tdata1_size, tdata2_exec_size, exec_size_instr;               // NTRIG * 7 sizes * 2 tdata2 * 2 instrs
+    cp_sdtrig_mcontrol6_load_store_size: cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_select_adr, tdata1_xsl_load_store, tdata1_size, tdata2_adr, load_store_instr;                  // NTRIG * 7 sizes * 2 tdata2 * instrs
+    cp_sdtrig_mcontrol6_match:           cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_size_any, tdata1_select_data, tdata1_xsl_store, tdata1_match_cmp, store_data_cmp, store_xlen;                   // NTRIG * 4 match * 5 values
+    `ifdef UDB_SDTRIG_MCONTROL6_MATCH_AVAILABLE
+        cp_sdtrig_mcontrol6_match_napot: cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_size_any, tdata1_select_data, tdata1_xsl_store, tdata1_match_napot, tdata2_napot, store_data_napot, store_xlen; // NTRIG * 2 match * (min(maskmax6, XLEN-1) - 1) tdata2 * 3 values
+        cp_sdtrig_mcontrol6_match_mask:  cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_size_any, tdata1_select_data, tdata1_xsl_store, tdata1_match_mask, store_data_mask, store_xlen;                 // NTRIG * 4 match * 11 values
+    `endif
+    cp_sdtrig_mcontrol6_chain_adr:       cross priv_mode_m, triggernum_chain, tdata1_type_mcontrol6, tdata1_m_on, tdata1_select_data, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_xsl_store, store_data_chain, store_offset, sw;                       // (NTRIG-1) * 2 data * 2 adr
+endgroup
+
 function void sdtrigsm_sample(int hart, int issue, ins_t ins);
     SdtrigSm_trig_module_reg_cg.sample(ins);
+    SdtrigSm_mcontrol6_cg.sample(ins);
 endfunction

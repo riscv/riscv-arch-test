@@ -6,11 +6,13 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+import math
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Literal
 
-from testgen.constants import VLEN_MAX
+from testgen.asm.helpers import write_sigupd
+from testgen.constants import INDENT, VLEN_MAX
 from testgen.data.params import InstructionParams, PresetMask
 from testgen.data.random import random_int
 from testgen.data.state import TestData
@@ -40,6 +42,7 @@ def write_sigupd_v(
     widen_vd: bool = False,
     sew_override: int | None = None,
     check_reg: int | None = None,
+    egs: int = 1,
 ) -> list[str]:
     """
     Write a base suite SIGUPD macro, correctly handling the use of a different check instruction for mask producing
@@ -61,16 +64,23 @@ def write_sigupd_v(
     # Count the number of bytes the sigupd macro will consume. This is going to be the size of the element
     # group that we are checking in the first index, plus 4 bytes for padding, and then rounded to the nearest
     # multiple of 8 (+7 & ~8) achieves this. This computation is mirrored in RVTEST_SIGUPD_V_ADVANCE
-    egs = params.egs if params.egs is not None else 1
     max_bytes = vdsew * egs // 8
     test_data.test_chunk.sigupd_count += vector_sigupd_bytes(max_bytes, test_data, vdsew)
 
-    vtmp, mtmp = test_data.vec_regs.get_registers(2, lmul=1, exclude_regs=[0])
-
-    lines = [
-        f"# set SEW={vdsew}, LMUL=1, VL=1 before signature check",
-        f"vsetivli x0, 1, e{vdsew}, m1, tu, mu",
-    ]
+    if egs == 1:
+        lines = [
+            f"# set SEW={vdsew}, LMUL=1, VL=1 before signature check",
+            f"vsetivli x0, 1, e{vdsew}, m1, tu, mu",
+        ]
+        vtmp, mtmp = test_data.vec_regs.get_registers(2, lmul=1, exclude_regs=[0])
+    else:
+        sig_lmul = int(max(params.lmul or 1, 1))
+        lines = [
+            f"# set SEW={vdsew}, LMUL={sig_lmul}, VL={egs} before signature check",
+            f"vsetivli x0, {egs}, e{vdsew}, m{sig_lmul}, tu, mu",
+        ]
+        vtmp = test_data.vec_regs.get_register(lmul=sig_lmul, exclude_regs=[0])
+        mtmp = test_data.vec_regs.get_register(lmul=1, exclude_regs=[0])
 
     if mask_producing:
         lines.extend(
@@ -160,12 +170,14 @@ def write_sigupd_v_len(
     maskprod_flag = 1 if mask_producing else 0
     vcompress_flag = 1 if vcompress else 0
     scalar_dst_flag = 1 if scalar_dest else 0
+    force_ta_ma_flag = 1 if params.vd_different_eew_overlap else 0
 
     lines = [
         f"# Check if v{params.vd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg}, x{temp_reg2}, and x{temp_reg3} are a temp regs.",
         f"# v{vtmp} will hold the signature result, v{mtmp3}, v{mtmp2}, and v{mtmp} are temporary mask registers holding the masks to aid error detection. v{vs1} was VS1 in the instruction",
         f"# under test and is used to compute the evl for vcompress, v{mask_reg} is the register holding the mask for the instruction under test. In order the flags are: mask_producing,",
-        f"# masked and vcompress. VDSEW={vdsew}, signature lmul = {max(1, lmul)}, and finally a flag for if the destinitation register is used as a scalar vector register.",
+        f"# masked and vcompress. VDSEW={vdsew}, signature lmul = {max(1, lmul)}, a flag for if the destination register is used as a scalar vector register, and a flag to force the",
+        "# instruction to be tail and mask agnostic.",
     ]
 
     if segments != 1:
@@ -176,7 +188,7 @@ def write_sigupd_v_len(
     for i in range(segments):
         register_to_check = check_reg + i * int(max(lmul, 1))
         lines.append(
-            f"RVTEST_SIGUPD_V_LEN(x{sig_reg}, x{link_reg}, x{temp_reg}, x{temp_reg2}, x{temp_reg3}, v{vtmp}, v{mtmp3}, v{mtmp2}, v{mtmp}, v{register_to_check}, v{vs1}, v{mask_reg}, {maskprod_flag}, {masked_flag}, {vcompress_flag}, {vdsew}, {int(max(lmul, 1))}, {scalar_dst_flag}, {label}, {label}_str)",
+            f"RVTEST_SIGUPD_V_LEN(x{sig_reg}, x{link_reg}, x{temp_reg}, x{temp_reg2}, x{temp_reg3}, v{vtmp}, v{mtmp3}, v{mtmp2}, v{mtmp}, v{register_to_check}, v{vs1}, v{mask_reg}, {maskprod_flag}, {masked_flag}, {vcompress_flag}, {vdsew}, {int(max(lmul, 1))}, {scalar_dst_flag}, {force_ta_ma_flag}, {label}, {label}_str)",
         )
 
     test_data.int_regs.return_registers([temp_reg2, temp_reg3])
@@ -266,7 +278,9 @@ def prep_base_v(
                 "# Load Vl=Random",
                 f"LI(x{temp_reg}, {randomVl})",
                 f"vsetvli x{vlmax_reg}, x0, e{params.sew}, {flags}",
-                f"remu x{temp_reg}, x{temp_reg}, x{vlmax_reg}",
+                "# VLMAX should be a power of 2, so taking a remainder is simple",
+                f"addi x{vlmax_reg}, x{vlmax_reg}, -1",
+                f"and x{temp_reg}, x{temp_reg}, x{vlmax_reg}",
             ]
         )
 
@@ -511,6 +525,7 @@ class VectorLoad:
     no_fractional_load: bool = False
     segments: int = 1
     only_setup_tail: bool = False
+    egs: int = 1
 
 
 def unpack_register(reg: Literal["vd", "vs1", "vs2", "vs3"], params: InstructionParams) -> tuple[int, str]:
@@ -535,8 +550,9 @@ def unpack_register(reg: Literal["vd", "vs1", "vs2", "vs3"], params: Instruction
             return (params.vs3, params.vs3_val_pointer)
 
 
-def generate_random_vl(params: InstructionParams, test_data: TestData) -> tuple[list[str], str]:
+def generate_random_vl(params: InstructionParams, test_data: TestData, egs: int) -> tuple[list[str], str]:
     assert params.lmul is not None, "LMUL must be set for vector operations"
+    assert params.sew is not None, "SEW must be set for vector operations"
 
     code = []
 
@@ -548,12 +564,25 @@ def generate_random_vl(params: InstructionParams, test_data: TestData) -> tuple[
             "# Load vl=random",
             f"LI(x{temp_reg}, {randomVl})",
             f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, tu, mu",
-            f"remu x{temp_reg}, x{temp_reg}, x{params.temp_reg}",
+            "# VLMAX should be a power of 2, so taking a remainder is simple",
+            f"addi x{params.temp_reg}, x{params.temp_reg}, -1",
+            f"and x{temp_reg}, x{temp_reg}, x{params.temp_reg}",
         ]
     )
-
-    if params.egs != 1 and params.egs is not None:
-        raise NotImplementedError("Handle egs != 1 vl=random")
+    if egs != 1:
+        min_safe_vlen = math.ceil(4 * (params.sew * egs / params.lmul))
+        code.extend(
+            [
+                f"# Ensure vl plays nicely with EGS={egs}",
+                f"andi x{temp_reg}, x{temp_reg}, -{egs}     # Ensure divisibility by EGS={egs}",
+                "# The ori can exceed vlmax if vlen is too small",
+                f"#ifdef ZVL{min_safe_vlen}B_SUPPORTED",
+                f"{INDENT}ori x{temp_reg}, x{temp_reg}, {2 * egs}     # ensure that 2*egs <= vl < VLMAX",
+                "#else",
+                f"{INDENT}ori x{temp_reg}, x{temp_reg}, {egs}       # In this case, it sets egs <= vl <= VLMAX",
+                "#endif",
+            ]
+        )
     else:
         code.append(f"ori x{temp_reg}, x{temp_reg}, 0x2")
 
@@ -587,6 +616,7 @@ def load_vec_regs(regs: list[VectorLoad], params: InstructionParams, test_data: 
     vtype_code: defaultdict[tuple[Literal["vlmax", "random"] | int, int | float, int | float], list[str]] = defaultdict(
         list
     )
+    max_egs = 1
 
     for reg in regs:
         # What needs to happen for a load: Either the tail needs to be deterministically loaded, then the register needs to be loaded at vl
@@ -602,6 +632,8 @@ def load_vec_regs(regs: list[VectorLoad], params: InstructionParams, test_data: 
 
         lmul = params.lmul if reg.lmul is None else reg.lmul
         assert lmul is not None, "lmul must be provided either through VectorLoad.lmul or params.lmul for load_vec_regs"
+
+        max_egs = max(reg.egs, max_egs)
 
         if reg.widen:
             sew *= 2
@@ -643,7 +675,7 @@ def load_vec_regs(regs: list[VectorLoad], params: InstructionParams, test_data: 
 
     random_vl_reg = ""
     if len(random_vtypes) != 0 or params.vl == "random":
-        random_code, random_vl_reg = generate_random_vl(params, test_data)
+        random_code, random_vl_reg = generate_random_vl(params, test_data, max_egs)
         code.extend(random_code)
 
     for vl, sew, lmul in random_vtypes:
@@ -664,7 +696,13 @@ def load_vec_regs(regs: list[VectorLoad], params: InstructionParams, test_data: 
 
 
 def handle_parameter_exclusions(
-    lmul: float, setup: list[str], check: list[str], *, encoded_eew: int | None = None, index_eew: int | None = None
+    lmul: float,
+    setup: list[str],
+    check: list[str],
+    *,
+    encoded_eew: int | None = None,
+    index_eew: int | None = None,
+    min_vlen: int | None = None,
 ) -> None:
     """
     Modifies setup and check in place to ensure that the test is only run if the test is supported by the core. This
@@ -689,6 +727,52 @@ def handle_parameter_exclusions(
     if index_eew is not None:
         parameters_needed.append(f"(MAXINDEXEEW >= {index_eew})")
 
+    if min_vlen is not None and min_vlen > 32:
+        parameters_needed.append(f"defined (ZVL{min_vlen}B_SUPPORTED)")
+
     if parameters_needed:
         setup.insert(0, "#if " + " && ".join(parameters_needed))
         check.append("#endif")
+
+
+def compute_egs_vlen(sew: int, lmul: float, egs: int) -> int:
+    """
+    Determine the minimum VLEN required to execute an instruction at this egs.
+
+    Returns 0 for anything with egs=1
+    """
+
+    if egs == 1:
+        return 0
+
+    return int(egs / lmul * sew)
+
+
+def get_egs_lmul_for_register(reg_num: int, egs: int) -> int:
+    """
+    On implementations with smaller vector registers, LMUL can be required to run EGS instruction. This
+    function fetches the minimum required LMUL to run on all implementations.
+    """
+
+    highest_reasonable_lmul = egs
+
+    for possible_lmul in [highest_reasonable_lmul, 4, 2, 1]:
+        if reg_num % possible_lmul == 0:
+            return possible_lmul
+
+    assert False, "Unreachable"
+
+
+def handle_vector_fp(setup: list[str], check: list[str], frm_val: int, test_data: TestData) -> None:
+    """Modifies Setup, Test, Check in place to ensure that vector-fp tests are run with the correct rounding mode"""
+    setup.append(f"fsrmi {frm_val}")
+    setup.append("fsflagsi 0b00000 # clear all fflags")
+    check.insert(0, write_sigupd(None, test_data, "fflags"))
+
+    # Insert a rounding mode reset inside the test body, (i.e before any #endifs)
+    for i in range(len(check) - 1, -1, -1):
+        if check[i] != "#endif":
+            check.insert(i + 1, "fsrmi 0x0")
+            break
+    else:
+        check.insert(0, "fsrmi 0x0")

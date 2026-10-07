@@ -1664,6 +1664,10 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
           fp_exts_str += "_Zvfh"
         ext_parts_no_I = fp_exts + ext_parts_no_I
         ext_str_no_I = fp_exts_str + ext_str_no_I
+      # Reserved vector encodings trap only on harts with Ssstrict, as in the scalar Ssstrict
+      # suites. Ssstrict has no assembler meaning, so -march is unchanged.
+      if test.startswith("SsstrictV"):
+        ext_parts_no_I = ext_parts_no_I + ['Ssstrict']
       march = f"rv{xlen}i{ext_str_no_I}".lower()
     else:
       matched_alias = None
@@ -1768,7 +1772,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
                                      f"#define RVTEST_SEW {sew}\n"
                                      f"#define VDSEW {vdsew}\n"
                                      + (f"\n{getPrivExtraDefines(sew)}" if priv else "")
-                                     + ("\n#define TRAP_SIGUPD_COUNT 50000" if test.startswith("SsstrictV") else "")))
+                                     + ("\n#define TRAP_SIGUPD_COUNT 12500" if test.startswith("SsstrictV") else "")))
 
 
     )
@@ -2025,20 +2029,20 @@ def writeSIGUPD_V(inst_ptr, vd, sew, avl=1, sig_lmul = None, vs1=0, load_testlin
         writeLine(f"RVTEST_SIGUPD_VLMAX_MASK_PROD(x{sigReg}, x{linkReg}, x{tempReg}, v{vd})")
       elif length_macro:
         scalar_dst_flag = 1 if scalar_dst else 0
-        writeLine(f"# RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR, _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR)")
+        writeLine(f"# RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR, _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _FORCE_TA_MA_FLAG, _INST_PTR, _STR_PTR)")
         if "vcompress" in inst_ptr:
           writeLine(
-            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, v0, 0, {masked_flag}, 1, {sew}, {emul}, 0, {inst_ptr}, {str_ptr})")
+            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, v0, 0, {masked_flag}, 1, {sew}, {emul}, 0, 1, {inst_ptr}, {str_ptr})")
           writeLine(f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
         elif vd_mask:
           writeLine(
-            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, v0, 1, {masked_flag}, 0, 8, {emul}, 0, {inst_ptr}, {str_ptr})")
+            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, v0, 1, {masked_flag}, 0, 8, {emul}, 0, 1, {inst_ptr}, {str_ptr})")
           writeLine(f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
           writeLine("# This is a mask producing operation, so in the tail region, there are 3 valid outputs: undisturbed, all onees, or computed as if vl = vlmax. This means")
           writeLine("# that the next test will be a duplication of the work done in this test, so that a reference model can give an output in the two non-trivial cases.")
         else:
           writeLine(
-            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, v0, 0, {masked_flag}, 0, {sew}, {emul}, {scalar_dst_flag}, {inst_ptr}, {str_ptr})")
+            f"RVTEST_SIGUPD_V_LEN(x{sigReg}, x{linkReg}, x{tempReg}, x{maskReg}, x{tempReg3}, v{vtmp}, v{vtmp3}, v{vtmp2}, v{mtmp}, v{vd}, v{vs1}, v0, 0, {masked_flag}, 0, {sew}, {emul}, {scalar_dst_flag}, 1, {inst_ptr}, {str_ptr})")
           writeLine(f"# Check if v{vd} contains the expected result. x{sigReg} is the signature ptr, x{linkReg} is the link ptr, x{tempReg} is a temp reg.")
       elif is_crypto:
         writeLine(f"vsetivli x0, {egs}, e{sew}, m{sig_lmul}, tu, mu", f"# set SEW={sew}, LMUL={sig_lmul}, VL={egs} before signature check")
@@ -3776,5 +3780,8 @@ def readTestplans(priv=False):
                 if (arch == "Zvknhb"):
                     for effew in ["32", "64"]:
                         testplans[arch + effew] = tp
+                    del testplans[arch]
+                if (arch == "Zvbc"):
+                    testplans["Zvbc64"] = tp
                     del testplans[arch]
     return testplans

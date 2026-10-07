@@ -54,7 +54,6 @@ covergroup Zfbfmin_fcvt_bf16_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -71,10 +70,10 @@ covergroup Zfbfmin_fcvt_bf16_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -137,8 +136,21 @@ covergroup Zfbfmin_fcvt_s_bf16_cg with function sample(ins_t ins);
         bins negmaxnorm       = {32'hc0de_FBFF};
         bins posinfinity      = {32'h4f1a_7C00};
         bins neginfinity      = {32'h0fff_FC00};
-        bins posQNaN          = {[32'hffef_7E00:32'hfeef_7FFF]};
-        bins posSNaN          = {[32'ha1b2_7C01:32'h4fd7_7DFF]};
+        // Any positive quiet/signaling NaN in the low 16 bits with improper boxing
+        wildcard bins posQNaN = {32'b????????????????_0111111?????????};
+        wildcard bins posSNaN = {
+            32'b????????????????_01111101????????,
+            32'b????????????????_011111001???????,
+            32'b????????????????_0111110001??????,
+            32'b????????????????_01111100001?????,
+            32'b????????????????_011111000001????,
+            32'b????????????????_0111110000001???,
+            32'b????????????????_01111100000001??,
+            32'b????????????????_011111000000001?,
+            32'b????????????????_0111110000000001
+        };
+        // A properly NaN-boxed value is not a badNB case, so it must not hit the NaN bins above.
+        ignore_bins nanboxed = {[32'hFFFF_0000:32'hFFFF_FFFF]};
     }
 
     cp_fs1_edges_BF16 : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
@@ -147,10 +159,10 @@ covergroup Zfbfmin_fcvt_s_bf16_cg with function sample(ins_t ins);
         bins neg0             = {32'h8000};
         bins pos1             = {32'h3f80};
         bins neg1             = {32'hbf80};
-        bins pos1p5           = {32'h3fc0};
-        bins neg1p5           = {32'hbfc0};
-        bins pos2             = {32'h4000};
-        bins neg2             = {32'hc000};
+        bins pos2p5           = {32'h4020};
+        bins neg2p5           = {32'hc020};
+        bins pos2prec         = {32'h4380};
+        bins neg2prec         = {32'hc380};
         bins posminnorm       = {32'h0080};
         bins negminnorm       = {32'h8080};
         bins posmaxnorm       = {32'h7f7f};
@@ -263,6 +275,8 @@ covergroup Zfbfmin_fmv_h_x_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -298,8 +312,21 @@ covergroup Zfbfmin_fmv_x_h_cg with function sample(ins_t ins);
         bins negmaxnorm       = {32'hc0de_FBFF};
         bins posinfinity      = {32'h4f1a_7C00};
         bins neginfinity      = {32'h0fff_FC00};
-        bins posQNaN          = {[32'hffef_7E00:32'hfeef_7FFF]};
-        bins posSNaN          = {[32'ha1b2_7C01:32'h4fd7_7DFF]};
+        // Any positive quiet/signaling NaN in the low 16 bits with improper boxing
+        wildcard bins posQNaN = {32'b????????????????_0111111?????????};
+        wildcard bins posSNaN = {
+            32'b????????????????_01111101????????,
+            32'b????????????????_011111001???????,
+            32'b????????????????_0111110001??????,
+            32'b????????????????_01111100001?????,
+            32'b????????????????_011111000001????,
+            32'b????????????????_0111110000001???,
+            32'b????????????????_01111100000001??,
+            32'b????????????????_011111000000001?,
+            32'b????????????????_0111110000000001
+        };
+        // A properly NaN-boxed value is not a badNB case, so it must not hit the NaN bins above.
+        ignore_bins nanboxed = {[32'hFFFF_0000:32'hFFFF_FFFF]};
     }
 
     cp_fs1_edges_H : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
@@ -308,10 +335,10 @@ covergroup Zfbfmin_fmv_x_h_cg with function sample(ins_t ins);
         bins neg0             = {16'h8000};
         bins pos1             = {16'h3C00};
         bins neg1             = {16'hBC00};
-        bins pos1p5           = {16'h3E00};
-        bins neg1p5           = {16'hBE00};
-        bins pos2             = {16'h4000};
-        bins neg2             = {16'hC000};
+        bins pos2p5           = {16'h4100};
+        bins neg2p5           = {16'hC100};
+        bins pos2prec         = {16'h6800};
+        bins neg2prec         = {16'hE800};
         bins posminnorm       = {16'h0400};
         bins negminnorm       = {16'h8400};
         bins posmaxnorm       = {16'h7BFF};
@@ -361,8 +388,21 @@ covergroup Zfbfmin_fsh_cg with function sample(ins_t ins);
         bins negmaxnorm       = {32'hc0de_FBFF};
         bins posinfinity      = {32'h4f1a_7C00};
         bins neginfinity      = {32'h0fff_FC00};
-        bins posQNaN          = {[32'hffef_7E00:32'hfeef_7FFF]};
-        bins posSNaN          = {[32'ha1b2_7C01:32'h4fd7_7DFF]};
+        // Any positive quiet/signaling NaN in the low 16 bits with improper boxing
+        wildcard bins posQNaN = {32'b????????????????_0111111?????????};
+        wildcard bins posSNaN = {
+            32'b????????????????_01111101????????,
+            32'b????????????????_011111001???????,
+            32'b????????????????_0111110001??????,
+            32'b????????????????_01111100001?????,
+            32'b????????????????_011111000001????,
+            32'b????????????????_0111110000001???,
+            32'b????????????????_01111100000001??,
+            32'b????????????????_011111000000001?,
+            32'b????????????????_0111110000000001
+        };
+        // A properly NaN-boxed value is not a badNB case, so it must not hit the NaN bins above.
+        ignore_bins nanboxed = {[32'hFFFF_0000:32'hFFFF_FFFF]};
     }
 
     cp_fs2_edges_H : coverpoint unsigned'(ins.current.fs2_val[15:0])  iff (ins.trap == 0 )  {
@@ -371,10 +411,10 @@ covergroup Zfbfmin_fsh_cg with function sample(ins_t ins);
         bins neg0             = {16'h8000};
         bins pos1             = {16'h3C00};
         bins neg1             = {16'hBC00};
-        bins pos1p5           = {16'h3E00};
-        bins neg1p5           = {16'hBE00};
-        bins pos2             = {16'h4000};
-        bins neg2             = {16'hC000};
+        bins pos2p5           = {16'h4100};
+        bins neg2p5           = {16'hC100};
+        bins pos2prec         = {16'h6800};
+        bins neg2prec         = {16'hE800};
         bins posminnorm       = {16'h0400};
         bins negminnorm       = {16'h8400};
         bins posmaxnorm       = {16'h7BFF};
@@ -446,5 +486,6 @@ function void zfbfmin_sample(int hart, int issue, ins_t ins);
         "fsh"     : begin
             Zfbfmin_fsh_cg.sample(ins);
         end
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

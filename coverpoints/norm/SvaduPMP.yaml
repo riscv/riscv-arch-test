@@ -1,0 +1,14 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  # If the Svadu extension is implemented, the menvcfg.ADUE field is writable.
+  # PMP checks are also applied to page-table accesses for virtual-address translation,
+  # for which the effective privilege mode is S.
+  # SvaduPMP sets ADUE=1 and removes PMP write permission from the page table, so the
+  # hardware A/D update raises an access fault.
+  - names: [Svadu_hw_update_a_d_bits, pmp_check_pagetable_access]
+    # Representative coverpoints; also the other SvaduPMP_cg/{Abit,Dbit}_unset_pmpW_unset crosses
+    coverpoint:
+      [
+        "SvaduPMP_cg/{Abit_unset_pmpW_unset_exec_s, Abit_unset_pmpW_unset_read_s, Abit_unset_pmpW_unset_write_u, Dbit_unset_pmpW_unset_write_s}",
+      ]

@@ -20,6 +20,7 @@ implemented_extensions: # VERIFIED — manual documents these extensions as impl
   - { name: Sm, version: "= 1.11.0" }
 
 params:
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
   # XLEN parameters (VERIFIED)
   MXLEN: 32 # VERIFIED — intro.rst line 72; RV32I base ISA
   #UXLEN: [32] # Why is this a 'Flow Sequence' when MXLEN is an integer?
@@ -74,6 +75,11 @@ params:
   MTVEC_BASE_ALIGNMENT_DIRECT: 256 # VERIFIED — control_status_registers.rst § "Machine Trap-Vector Base Address (mtvec)": same alignment for both modes; bits[7:2] hardwired 0
 
   # Sm params (Section 9 — Sm Parameters)
+  WFI_U_MODE: false
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  WFI_FINITE: true
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true # ASSUMED — exceptions_interrupts.rst § "Exceptions and Interrupts": "core sets mepc to the current program counter" implies synchronous precision
   MARCHID_IMPLEMENTED: true # VERIFIED — control_status_registers.rst § "Machine Architecture ID (marchid)": CSR (0xF12) implemented
   MIMPID_IMPLEMENTED: true # VERIFIED — control_status_registers.rst § "Machine Implementation ID (mimpid)": CSR (0xF13) implemented; core_versions.rst § "cv32e40p_v1.0.0": returns 0x0, deliberate version encoding for this config
@@ -118,6 +124,7 @@ params:
       false,
       false, # 24..31 (unimplemented)
     ]
+  HPM_COUNTER3_WIDTH: 64
   MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN: # VERIFIED — perf_counters.rst § "Controlling the counters from software": bit 0=mcycle, bit 2=minstret, bit X=mhpmcounterX; control_status_registers.rst § "Machine Counter-Inhibit register (mcountinhibit)": non-implemented counters read 0
     [

@@ -11,14 +11,14 @@
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'Sv39', 'Svnapot']
 # # # no param constraints
-# MARCH: rv${XLEN}i_zicsr_zifencei
+# MARCH: rv${XLEN}i_zicsr_zifencei_svnapot
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 28
+#define SIGUPD_COUNT 34
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-#define BOOT_TO_MMODE
+#define BOOT_TO_SMODE
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -34,7 +34,6 @@ RVTEST_BEGIN
 
 
 main:
-  LI(a2, 0x800) // Test signature initialization
 
 // Virtual addresses for code and test regions
 
@@ -48,12 +47,17 @@ main:
   SUPERPAGE_PTE_SETUP_SV39(rvtest_code_begin, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_rvtest_code_begin, LEVEL2)
   sfence.vma
 
-// Set up the code-region save area.
-  csrr a0, mscratch
+// The boot tables identity map the test image, but that mapping is not user
+// accessible, so the code is mapped again at va_rvtest_code_begin. Registering
+// that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
+// to can fetch from.
+  LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL2)
 
   SATP_SETUP_RV64(sv39) // Enable address translation.
   sfence.vma
+
+  LI(a2, 0x800) // Test signature initialization
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
 // PTE.N on a level 2 superpage
@@ -65,7 +69,7 @@ main:
   slli a0, a0, 34
   srli a0, a0, 34
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -83,7 +87,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test1_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test1_store, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test1_store_str)
@@ -102,7 +106,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test1_exec:
   slli a0, a0, 43
   srli a0, a0, 43
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -120,7 +124,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test2_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test2_store, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test2_store_str)
@@ -140,7 +144,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test2_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -158,7 +162,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test3_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test3_store, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test3_store_str)
@@ -178,7 +182,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test3_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -196,7 +200,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test4_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test4_store, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test4_store_str)
@@ -216,7 +220,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test4_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -234,7 +238,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test5_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test5_store, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test5_store_str)
@@ -254,7 +258,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test5_exec:
   slli a0, a0, 52
   srli a0, a0, 52
   add a5, a5, a0
-  RVTEST_GOTO_LOWER_MODE Umode
+  RVTEST_TSBI_GOTO_UMODE
   addi a2, a2, 16
 
 // Store
@@ -272,7 +276,7 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test6_exec:
   jalr ra, a5, 0
   nop
 
-  RVTEST_GOTO_MMODE
+  RVTEST_TSBI_GOTO_SMODE
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test6_store, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test6_store_str)
@@ -280,6 +284,79 @@ Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test6_exec:
   RVTEST_SIGUPD(x2, x5, x4, x13, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test6_load, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test6_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test6_exec, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test6_exec_str)
+
+// PTE.N with the 64 KiB encoding ppn[3:0]=1000 on a level 2 superpage, which is reserved
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  sfence.vma
+
+  LI(a5, (va_data >> 30) << 30)
+  LA(a0, rvtest_data_1)
+  slli a0, a0, 34
+  srli a0, a0, 34
+  add a5, a5, a0
+  RVTEST_TSBI_GOTO_UMODE
+  addi a2, a2, 16
+
+// Store
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test7_store:
+  sw a2, 20(a5)
+  nop
+
+// Load
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test7_load:
+  lw a3, 20(a5)
+  nop
+
+// Execute
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test7_exec:
+  jalr ra, a5, 0
+  nop
+
+  RVTEST_TSBI_GOTO_SMODE
+
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test7_store, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test7_store_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test7_load, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test7_load_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test7_exec, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test7_exec_str)
+
+// PTE.N with the 64 KiB encoding ppn[3:0]=1000 on a level 1 superpage, which is reserved
+  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  sfence.vma
+
+  LI(a5, (va_data >> 21) << 21)
+  LA(a0, rvtest_data_1)
+  slli a0, a0, 43
+  srli a0, a0, 43
+  add a5, a5, a0
+  RVTEST_TSBI_GOTO_UMODE
+  addi a2, a2, 16
+
+// Store
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test8_store:
+  sw a2, 20(a5)
+  nop
+
+// Load
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test8_load:
+  lw a3, 20(a5)
+  nop
+
+// Execute
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test8_exec:
+  jalr ra, a5, 0
+  nop
+
+  RVTEST_TSBI_GOTO_SMODE
+
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test8_store, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test8_store_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test8_load, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test8_load_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test8_exec, Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test8_exec_str)
 
 #endif
 
@@ -313,24 +390,30 @@ rvtest_slvl1_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test1_store_str: .string "\"test: 37; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test1_store\""
-Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test1_load_str: .string "\"test: 38; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test1_load\""
-Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test1_exec_str: .string "\"test: 39; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test1_exec\""
-Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test2_store_str: .string "\"test: 40; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test2_store\""
-Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test2_load_str: .string "\"test: 41; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test2_load\""
-Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test2_exec_str: .string "\"test: 42; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test2_exec\""
-Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test3_store_str: .string "\"test: 43; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test3_store\""
-Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test3_load_str: .string "\"test: 44; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test3_load\""
-Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test3_exec_str: .string "\"test: 45; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test3_exec\""
-Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test4_store_str: .string "\"test: 46; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test4_store\""
-Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test4_load_str: .string "\"test: 47; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test4_load\""
-Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test4_exec_str: .string "\"test: 48; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test4_exec\""
-Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test5_store_str: .string "\"test: 49; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test5_store\""
-Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test5_load_str: .string "\"test: 50; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test5_load\""
-Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test5_exec_str: .string "\"test: 51; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test5_exec\""
-Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test6_store_str: .string "\"test: 52; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test6_store\""
-Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test6_load_str: .string "\"test: 53; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test6_load\""
-Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test6_exec_str: .string "\"test: 54; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test6_exec\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test1_store_str: .string "\"test: 43; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test1_store\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test1_load_str: .string "\"test: 44; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test1_load\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test1_exec_str: .string "\"test: 45; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test1_exec\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test2_store_str: .string "\"test: 46; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test2_store\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test2_load_str: .string "\"test: 47; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test2_load\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test2_exec_str: .string "\"test: 48; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test2_exec\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test3_store_str: .string "\"test: 49; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test3_store\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test3_load_str: .string "\"test: 50; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test3_load\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test3_exec_str: .string "\"test: 51; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test3_exec\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test4_store_str: .string "\"test: 52; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test4_store\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test4_load_str: .string "\"test: 53; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test4_load\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test4_exec_str: .string "\"test: 54; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test4_exec\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test5_store_str: .string "\"test: 55; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test5_store\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test5_load_str: .string "\"test: 56; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test5_load\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test5_exec_str: .string "\"test: 57; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test5_exec\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test6_store_str: .string "\"test: 58; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test6_store\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test6_load_str: .string "\"test: 59; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test6_load\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test6_exec_str: .string "\"test: 60; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test6_exec\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test7_store_str: .string "\"test: 61; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test7_store\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test7_load_str: .string "\"test: 62; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test7_load\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test7_exec_str: .string "\"test: 63; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test7_exec\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test8_store_str: .string "\"test: 64; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test8_store\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test8_load_str: .string "\"test: 65; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test8_load\""
+Svnapot_cp_sv39_Svnapot_reserved_enc_Umode_test8_exec_str: .string "\"test: 66; cg: Svnapot; cp: cp_sv39_Svnapot_reserved_enc_Umode; bin: test8_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

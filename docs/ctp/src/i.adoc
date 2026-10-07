@@ -1,23 +1,31 @@
 
 === I Base Integer Extension
 
-<<t-I-coverpoints>> summarizes the coverpoints for the I extension.  The Type column is used to generate tests with the appropriate operands. An x in the RV32 or RV64 column indicates that the instruction is supported in that XLEN.  The remaining columns refer to coverpoints defined in <<t-unprivileged-coverpoints>>.
+<<t-I-coverpoints>> summarizes the coverpoints for the I extension.  The Type column is used to generate tests with the appropriate operands. An x in the RV32 or RV64 column indicates that the instruction is supported in that XLEN.  The remaining columns refer to coverpoints defined in <<t-unprivileged-coverpoints>>.  An x in a coverpoint column selects that coverpoint.  Any other entry selects a modified coverpoint whose name is the column name followed by an underscore and the entry.  For example, nx0 in the cp_rs1 column selects cp_rs1_nx0.  <<t-I-modified-coverpoints>> defines the modified coverpoints.
 
 include::{testplansdir}/I.adoc[]
 
 [[t-I-modified-coverpoints]]
 .I Modified Coverpoints
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Modified Coverpoint|Bins|Definition
-|cp_rs1_nx0|31|The rs1 register number used in the instruction, excluding x0.  x0 is hardwired to 0, which results in potentially access faults for loads, stores, and jalr.
-|cmp_rd_rs1_nx0|31|See cp_rs1_nx0
-|cp_offset_jalr|6|cp_offset + 2*2 combinations of rs1_val[0] and imm[0] affecting lsb of jalr address
-|cp_uimm_5|32|5-bit unsigned immediate shift amount for {slliw/srliw/sraiw}
+|cp_rs1_nx0|31|The rs1 register number, excluding x0.  Used by loads, stores, and `jalr`, whose address would otherwise be the immediate alone, which might not be accessible.
+|cp_rd_nx0|31|The rd register number, excluding x0.  Used by instructions whose rd = x0 encodings are custom HINTs (see below).
+|cmp_rd_rs1_nx0, cmp_rd_rs2_nx0, cmp_rd_rs1_rs2_nx0|31|cmp_rd_rs1, cmp_rd_rs2, and cmp_rd_rs1_rs2, excluding x0.  Used with cp_rs1_nx0 or cp_rd_nx0.
+|cp_offset_jalr|2 + 4|Expands to two coverpoints for `jalr`.  cp_offset has 2 bins: the target address rs1 + imm is below or above the `pc` of the `jalr`.  cp_offset_lsbs has 4 bins: every combination of rs1[0] and imm[0], because `jalr` clears the least-significant bit of rs1 + imm.
+|cp_imm_edges_branch|8|Branch offsets 4, 8, 16, 2048, 4092, -4, -8, and -4096.  These include the most negative offset and the largest positive multiple of 4.
+|cr_rs1_rs2_edges_offset|12*12*2 (RV32), 18*18*2 (RV64)|Cross-product of rs1 edges, rs2 edges (see <<t-integer-edge-definitions>>) and branch direction (cp_offset) for branches.
+|cr_rs1_imm_edges_uimm|5 + 12*5 (RV32), 10 + 18*10 (RV64)|Expands to cp_imm_edges_uimm and its cross-product with cp_rs1_edges, for `slli`, `srli`, and `srai`.  cp_imm_edges_uimm has the shift amounts 0, 1, 19, 30, and 31, plus 32, 33, 45, 62, and 63 on RV64.
+|cr_rs1_imm_edges_uimmw|5 + 18*5|Expands to cp_imm_edges_uimmw and its cross-product with cp_rs1_edges, for `slliw`, `srliw`, and `sraiw`.  cp_imm_edges_uimmw has the shift amounts 0, 1, 19, 30, and 31.
+|cp_uimm_5|32|5-bit unsigned shift amount for `slliw`, `srliw`, and `sraiw`.
 |cp_imm_edges_20bit|27|20-bit variant of <<t-immediate-edge-definitions>> for `lui` and `auipc`.
-|cp_imm_edges_jal|23|20-bit positive and negative jump offsets for `jal`.  Note that testing the full 20-bit range takes a large amount of program memory, so tests may cover a subset of this range.
-|cp_align_{byte/hword/word}|8/4/2|Alignment of naturally-aligned load/store operand within doubleword in memory
-|cp_custom_fence|3|Test that fence, fence rw,rw, and fence.tso all execute without trapping.
+|cp_imm_edges_jal|24|`jal` offsets of ±2^k^ for k = 2 to 13 (±4 to ±8192).  The J-type offset reaches ±1 MiB, but long jumps take a large amount of program memory, so the bins cover a subset of the range.
+|cp_align_{byte/hword/word}|8/4/2|Position of a naturally aligned byte, halfword, or word access within a doubleword in memory.
+|cp_memval_{byte/hword/word/double}|5|The loaded value in the low 8, 16, 32, or 64 bits of rd is 0, 1, the largest positive value, the most negative value, or all ones.
+|cp_custom_fence_pred_succ|256|Every fence pred and succ set with fm = 0 and rd = rs1 = x0 executes without trapping, including the HINT encodings with pred = 0 or succ = 0.
+|cp_custom_fence_reserved|9|`fence.tso`, fm = `1000` with another pred and succ, a reserved fm value, fences with nonzero rd or rs1, and HINTs with pred = 0 or succ = 0 and nonzero rd or rs1 execute without trapping.
 |===
 
 <<t-I-normative-rules>> summarizes the normative rules in the RV{32/64}I specification and the unprivileged coverpoints that check they have been exercised.  Privileged coverpoints related to integer instructions are described in the relevant parts of Privileged Test Plan such as <<Sm Machine-Mode CSRs and Instructions, Sm>> and <<ExceptionsSm Machine-Mode Exceptions, ExceptionsSm>>. In particular, `ebreak` and `ecall` are only tested in the Privileged test plan because their behavior is UNSPECIFIED without an `mtvec` trap vector CSR. Reserved behaviors are checked in <<Ssstrict>>. Note that the testplans always test the following fundamental capabilities, even if no normative rule is cited:
@@ -29,6 +37,10 @@ include::{testplansdir}/I.adoc[]
 
 include::norm/I_norm_rules.adoc[]
 
-Standard hints are mostly covered by testing integer instructions with rd = `x0`.  `fence` hints are covered by the `cp_custom_fence` coverpoint. Ratified hints such as Zihintpause and Zihintntl are covered in <<Zi*  Additional Unpriv Extensions>>. Semihosting hints are not standardized or tested. Custom hints are not explicitly tested but the corresponding instructions are executed with rd = `x0`.
+HINTs are covered as follows:
 
-include::norm/rv64_norm_rules.adoc[]
+* Standard HINTs encoded as integer computational instructions with rd = `x0` are executed by the x0 bin of cp_rd.  These instructions are `lui`, `auipc`, `addi`, `andi`, `ori`, `xori`, `add`, `sub`, `and`, `or`, `xor`, `sll`, `srl`, and `sra`, plus `addiw`, `addw`, `subw`, `sllw`, `srlw`, and `sraw` on RV64.
+* `fence` HINTs are covered by cp_custom_fence_pred_succ and cp_custom_fence_reserved.
+* Ratified HINTs such as Zihintpause and Zihintntl are covered in <<Zi*  Additional Unpriv Extensions>>.
+* The semihosting markers `slli x0, x0, 31` and `srai x0, x0, 7` are standard HINTs, but they are not tested.
+* Custom HINTs are not tested.  They are the other rd = `x0` encodings of `slti`, `sltiu`, `slli`, `srli`, `srai`, `slt`, and `sltu`, plus `slliw`, `srliw`, and `sraiw` on RV64.  These instructions use cp_rd_nx0 and the cmp_*_nx0 coverpoints, so their tests never write `x0`.

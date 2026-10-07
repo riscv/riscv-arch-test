@@ -26,16 +26,23 @@ normative_rule_definitions:
   # of the base address specified in rs1 and the sign-extended offset encoded in
   # imm[11:0], where imm[4:0] shall equal 0b00000.
   - name: prefetch_operating_block
-    coverpoint: ["Assembler information, not a normative rule"]
+    coverpoint:
+      [
+        "{Zicbop_prefetch_i_cg, Zicbop_prefetch_r_cg, Zicbop_prefetch_w_cg}/cp_custom_prefetch",
+      ]
 
   # A cache-block prefetch instruction is permitted to access the specified cache
   # block whenever a load instruction, store instruction, or instruction fetch is
   # permitted to access the corresponding physical addresses.
   - name: cbp_access
-    coverpoint: ["Zicbop_prefetch_w_cg/cp_custom_prefetch"]
+    coverpoint:
+      [
+        "{Zicbop_prefetch_i_cg, Zicbop_prefetch_r_cg, Zicbop_prefetch_w_cg}/cp_custom_prefetch",
+      ]
 
   # If access to the cache block is not permitted, a cache-block prefetch
   # instruction does not raise any exceptions and shall not access any caches or
   # memory.
   - name: cbp_unperm_noexcep
-    coverpoint: ["Zicbop_prefetch_w_cg/cp_rs1 (x0 bin)"]
+    # PMPZicbo prefetches blocks that PMP denies
+    coverpoint: ["PMPZicbo_cg/{cp_prefetch_i, cp_prefetch_r, cp_prefetch_w}"]

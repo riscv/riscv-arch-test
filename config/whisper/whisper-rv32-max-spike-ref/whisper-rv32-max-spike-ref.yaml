@@ -3,7 +3,7 @@
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: whisper-rv32-max
+name: whisper-rv32-max-spike-ref
 description: rv32 with all non-conflicting extensions enabled
 implemented_extensions:
   - { name: A, version: "= 2.1.0" }
@@ -33,7 +33,7 @@ implemented_extensions:
   - { name: Smctr, version: "= 1.0.0" }
   - { name: Smdbltrp, version: "= 1.0.0" }
   - { name: Smepmp, version: "= 1.0.0" }
-  # - { name: Smrnmi, version: "= 1.0.0" } # Sail does not support this extension yet
+  - { name: Smrnmi, version: "= 1.0.0" } # Sail does not support this extension yet
   - { name: Smstateen, version: "= 1.0.0" }
   - { name: Ssaia, version: "= 1.0.0" }
   - { name: Ssccfg, version: "= 1.0.0" }
@@ -43,7 +43,7 @@ implemented_extensions:
   - { name: Sscsrind, version: "= 1.0.0" }
   - { name: Ssctr, version: "= 1.0.0" }
   - { name: Ssdbltrp, version: "= 1.0.0" }
-  #- { name: Ssqosid, version: "= 1.0.0" }
+  - { name: Ssqosid, version: "= 1.0.0" }
   - { name: Ssstateen, version: "= 1.0.0" }
   - { name: Ssstrict, version: "= 1.0.0" }
   - { name: Sstc, version: "= 1.0.0" }
@@ -138,6 +138,7 @@ implemented_extensions:
   - { name: Zvl64b, version: "= 1.0.0" }
   - { name: Zvl128b, version: "= 1.0.0" }
 params:
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
   # A params
   MISALIGNED_AMO: false
   LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
@@ -168,11 +169,15 @@ params:
   # Zicntr params
   TIME_CSR_IMPLEMENTED: true
   # U params
+  WFI_U_MODE: true
   MUTABLE_MISA_U: true
   U_MODE_ENDIANNESS: dynamic
   UXLEN: [32]
   TRAP_ON_ECALL_FROM_U: true
   # S params
+  SEI_INTR_IMPL: true
+  SSI_INTR_IMPL: true
+  STI_INTR_IMPL: true
   MUTABLE_MISA_S: true
   ASID_WIDTH: 9
   S_MODE_ENDIANNESS: dynamic
@@ -227,12 +232,16 @@ params:
       false,
       false,
     ]
-  STVEC_MODE_DIRECT: true
-  STVEC_MODE_VECTORED: true
+  STVEC_MODES: [0, 1]
+  STVEC_BASE_ALIGNMENT_VECTORED: 4
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
   # Sm params
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  WFI_FINITE: true
   MXLEN: 32
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
@@ -272,11 +281,10 @@ params:
   MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
   NUM_PMP_ENTRIES: 64
   PMP_GRANULARITY: 12
-  NUM_USABLE_PMP_ENTRIES: 16
-  PMP_NA4_SUPPORTED: false # NA4 requires PMP_GRANULARITY==2; whisper granularity is 12
+  NUM_USABLE_PMP_ENTRIES: 64
+  PMP_NA4_SUPPORTED: false
   PMP_NAPOT_SUPPORTED: true
   PMP_TOR_SUPPORTED: true
-  ZAWRS_NTO_IS_NOP: true
   HPM_COUNTER_EN:
     [
       false,
@@ -312,10 +320,19 @@ params:
       false,
       false,
     ]
+  HPM_COUNTER3_WIDTH: 64
+  HPM_COUNTER4_WIDTH: 64
+  HPM_COUNTER5_WIDTH: 64
+  HPM_COUNTER6_WIDTH: 64
+  HPM_COUNTER7_WIDTH: 64
+  HPM_COUNTER8_WIDTH: 64
+  HPM_COUNTER9_WIDTH: 64
+  HPM_COUNTER10_WIDTH: 64
   HPM_EVENTS: [0]
   MCOUNTINHIBIT_IMPLEMENTED: true
   # Whisper's mcountinhibit mask is 0xFFFFFFFD regardless of num_mmode_perf_regs, but UDB requires
   # COUNTINHIBIT_EN[n] to be false whenever HPM_COUNTER_EN[n] is false, so bits 11-31 are listed as false.
+  # TODO: Fix COUNTINHIBIT on all DUTs when UDB fixes this: https://github.com/riscv/riscv-unified-db/issues/2511
   COUNTINHIBIT_EN:
     [
       true,
@@ -415,6 +432,9 @@ params:
   VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR: "additive_identity"
   IMPRECISE_VECTOR_TRAP_SETTABLE: false
   # H params
+  VSEI_INTR_IMPL: false
+  VSSI_INTR_IMPL: false
+  VSTI_INTR_IMPL: true
   MUTABLE_MISA_H: true
   VSXLEN: [32]
   VUXLEN: [32]
@@ -423,8 +443,7 @@ params:
   VU_MODE_ENDIANNESS: little
   GSTAGE_MODE_BARE: true
   VSSTAGE_MODE_BARE: true
-  VSTVEC_MODE_DIRECT: true
-  VSTVEC_MODE_VECTORED: true
+  VSTVEC_MODES: [0, 1]
   HSTATEEN_ENVCFG_TYPE: rw
   IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
   NUM_EXTERNAL_GUEST_INTERRUPTS: 31
@@ -518,8 +537,8 @@ params:
   HSTATEEN_CONTEXT_TYPE: rw
   MCONTEXT_AVAILABLE: true
   # Ssqosid params
-  #MCID_WIDTH: 12
-  #RCID_WIDTH: 12
+  MCID_WIDTH: 12
+  RCID_WIDTH: 12
   # Smstateen params
   MSTATEEN_ENVCFG_TYPE: rw
   MSTATEEN_CONTEXT_TYPE: rw
@@ -532,6 +551,7 @@ params:
   MSTATEEN_IMSIC_TYPE: rw
   HSTATEEN_IMSIC_TYPE: rw
   # Smctr params
+  SCTRDEPTH_DEPTH_LEGAL_VALUES: [16, 32, 64, 128, 256]
   MCTRCTL_CORSWAPINH_IMPLEMENTED: true
   MCTRCTL_CUSTOM_IMPLEMENTED: false
   MCTRCTL_DIRCALLINH_IMPLEMENTED: true
@@ -549,3 +569,5 @@ params:
   MCTRCTL_STE_IMPLEMENTED: true
   MCTRCTL_TKBRINH_IMPLEMENTED: true
   MCTRCTL_TRETINH_IMPLEMENTED: true
+  # Zawrs params
+  ZAWRS_NTO_IS_NOP: true

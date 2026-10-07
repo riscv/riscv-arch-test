@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SsstrictU
+source: https://docs.google.com/spreadsheets/d/1qJsCYdDPaSxNE1R56jsAUyoAiu4OhMlwwAvGysgx790/edit?gid=2127390256#gid=2127390256
+description: |
+  The following CSR accesses and instructions should be exercised in user mode.  All inherently require Zicsr.
+coverpoints:
+  - name: cp_csrr
+    goal: CSR Accesses
+    description: Read all 4096 CSRs from U-mode (CSRR with rd≠x0). Skips user-custom CSRs only (0x800-0x8FF, 0xCC0-0xCFF). All non-user CSRs should raise illegal-instruction from U-mode.
+    expectation: User-level CSRs (cycle, time, instret, hpmcounters, fflags, frm, fcsr, vtype etc.) succeed if enabled; all others trap.
+    bins: One bin per CSR 0x000–0xFFF (excluding user-custom ranges), executed from U-mode
+  - name: cp_csrw_corners
+    goal: CSR Accesses
+    description: "Write all-zeros and all-ones to every CSR from U-mode. Skips user-custom CSRs. Writable user-level CSRs: fflags, frm, fcsr. All others trap."
+    expectation: Only fflags/frm/fcsr accept writes from U-mode; all other writes raise illegal-instruction.
+    bins: "Two bins per CSR: write 0 and write all-ones from U-mode"
+  - name: cp_csrcs
+    goal: CSR Accesses
+    description: CSRRS/CSRRC with rs1=all-ones for every CSR from U-mode.
+    expectation: Same as cp_csrw_corners — only fp CSRs succeed, all others trap.
+    bins: "Two bins per CSR: CSRRS and CSRRC all-ones from U-mode"
+  - name: cp_illegal_instruction
+    goal: Illegal Uncompressed Instructions
+    description: Same encoding sweep as SsstrictSm/S but from U-mode. S-mode and M-mode instructions (SRET, MRET, CSR M/S access) also trap from U-mode.
+    expectation: All reserved encodings and privilege-elevated instructions raise illegal-instruction from U-mode.
+    bins: Same as SsstrictSm cp_illegal_instruction, U-mode priv_mode context
+  - name: cp_illegal_compressed_instruction
+    goal: Illegal Compressed Instructions
+    description: Same compressed quadrant sweep as SsstrictSm/S but from U-mode.
+    expectation: All reserved encodings trap from U-mode.
+    bins: Same as SsstrictSm cp_illegal_compressed_instruction, U-mode context
+  - name: cp_upperreg
+    goal: Instructions using x16-x31 from U-mode
+    description: Same upper-register sweep as SsstrictSm but executed in U-mode.
+    expectation: "If RV32E/RV64E: trap on x16-x31 use. Standard I: succeed. F regs succeed if F supported."
+    bins: Same bins as SsstrictSm cp_upperreg, U-mode context
+  - name: cp_misa_ext_disable
+    goal: Extension bits
+    description: "Same extension disable sweep as SsstrictSm but: disable misa bit from M-mode, switch to U-mode, execute instruction, switch back, re-enable. Extensions: A, B, C, D, F, H, I, M, Q, V."
+    expectation: Each instruction executed in U-mode with misa bit cleared raises illegal-instruction.
+    bins: One bin per extension per {M-mode-disable → U-mode-execute}
+  - name: cp_reserved_frm
+    goal: Reserved FP rounding modes from U-mode
+    description: Same as SsstrictSm cp_reserved_frm but from U-mode. Requires F extension with mstatus.FS≠Off (FP enabled by M-mode before switching).
+    expectation: Same FRM reserved-mode behavior as M/S modes.
+    bins: "8 bins: FRM ∈ {0..7} with FADD.S in U-mode"

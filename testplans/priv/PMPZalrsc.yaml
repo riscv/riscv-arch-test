@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: PMPZalrsc
+source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=613653829#gid=613653829
+coverpoints:
+  - heading: |-
+      General Test Environment (PMPZalrsc):
+      - Runs when Zalrsc and Sm are implemented and NUM_PMP_ENTRIES > 0. M-mode only.
+      - lr.w, sc.w (also lr.d, sc.d on RV64). Each lr is followed by an sc to the same address; when W=1 the pair retries in a constrained LR/SC loop until the sc succeeds.
+      - Standard region and L=1 XWR walk as in PMPSm cp_cfg_X/R/W.
+  - name: cp_cfg_RW
+    goal: Verify that LR needs R and SC needs W.
+    description: Six legal XWR with L=1, one entry each. lr then sc at the start of the region. When R=0 the lr faults, so the sc runs without a reservation.
+    expectation: "lr: load access fault (mcause = 5) when R=0. sc: store/AMO access fault (mcause = 7) when W=0, with or without a reservation; otherwise the sc stores."
+    bins: 6 XWR × 2 instructions = 12 (24 on RV64)
+    rules:
+      - pmp_load_fault
+      - pmp_store_fault
+      - sc_retire_permission
+      - mcause_exccode_ld_ldrsv
+      - mcause_exccode_st_sc_amo
+      - pmp_cfg_permissions
+      - pmp_l_bit_m_mode_enforcement

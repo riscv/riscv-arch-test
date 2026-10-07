@@ -49,7 +49,7 @@ endfunction
 
 function int get_vlmax_params(int hart, int issue, logic[2:0] vsew, logic[2:0] vlmul);
 
-    int vlen = get_csr_val(hart, issue, 0, "vlenb", "vlenb") * 8;
+    int vlen = int'(get_csr_val(hart, issue, 0, "vlenb", "vlenb") * 8);
     int vlen_times_lmul;
     int vlmax;
 
@@ -313,7 +313,8 @@ function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BIT
       for (int idx = 1; idx <= `UDB_VLEN / 8; ++idx) begin
         logic [7:0] elem = val[idx*8-1 -: 8];
 
-        if (signed'(elem) > vlmax*2 | signed'(elem) < -vlmax*2)   all_values_within_range = 1'b0; // if out of range fail coverage
+        if (longint'(signed'(elem)) > longint'(vlmax)*2 |
+            longint'(signed'(elem)) < -(longint'(vlmax)*2)) all_values_within_range = 1'b0;
         if (signed'(elem) < 0)                                    all_values_within_range = 1'b0; // if element is negative and length is less than XLEN then fail coverage as it will be zero extended instead of treated as signed
       end
     end
@@ -324,7 +325,8 @@ function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BIT
       for (int idx = 1; idx <= `UDB_VLEN / 16; ++idx) begin
         logic [15:0] elem = val[idx*16-1 -: 16];
 
-        if (signed'(elem) > vlmax*2 | signed'(elem) < -vlmax*2)   all_values_within_range = 1'b0; // if out of range fail coverage
+        if (longint'(signed'(elem)) > longint'(vlmax)*2 |
+            longint'(signed'(elem)) < -(longint'(vlmax)*2)) all_values_within_range = 1'b0;
         `ifndef COVER_E
         if (signed'(elem) < 0)                                    all_values_within_range = 1'b0; // if element is negative and length is less than XLEN then fail coverage as it will be zero extended instead of treated as signed
         `endif
@@ -337,7 +339,8 @@ function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BIT
       for (int idx = 1; idx <= `UDB_VLEN / 32; ++idx) begin
         logic [31:0] elem = val[idx*32-1 -: 32];
 
-        if (signed'(elem) > vlmax*2 | signed'(elem) < -vlmax*2)   all_values_within_range = 1'b0; // if out of range fail coverage
+        if (longint'(signed'(elem)) > longint'(vlmax)*2 |
+            longint'(signed'(elem)) < -(longint'(vlmax)*2)) all_values_within_range = 1'b0;
         `ifdef UDB_MXLEN_64
         if (signed'(elem) < 0)                                    all_values_within_range = 1'b0; // if element is negative and length is less than XLEN then fail coverage as it will be zero extended instead of treated as signed
         `endif
@@ -350,7 +353,8 @@ function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BIT
       for (int idx = 1; idx <= `UDB_VLEN / 64; ++idx) begin
         logic [63:0] elem = val[idx*64-1 -: 64];
 
-        if (signed'(elem) > vlmax*2 | signed'(elem) < -vlmax*2)   all_values_within_range = 1'b0; // if out of range fail coverage
+        if (longint'(signed'(elem)) > longint'(vlmax)*2 |
+            longint'(signed'(elem)) < -(longint'(vlmax)*2)) all_values_within_range = 1'b0;
       end
     end
     //--------------------------------------------------------------
@@ -368,20 +372,20 @@ function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BIT
 endfunction
 
 function logic[63:0] get_vr_element_zero(int hart, int issue, `VLEN_BITS val);
-    `XLEN_BITS vsew = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew");
+    logic [2:0] vsew = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew")[2:0];
 
     case (vsew)
     `ifdef SEW8_SUPPORTED
-    2'b00:   return {56'b0, val[7:0]};
+    3'b000: return {56'b0, val[7:0]};
     `endif
     `ifdef SEW16_SUPPORTED
-    2'b01:  return {48'b0, val[15:0]};
+    3'b001: return {48'b0, val[15:0]};
     `endif
     `ifdef SEW32_SUPPORTED
-    2'b10:  return {32'b0, val[31:0]};
+    3'b010: return {32'b0, val[31:0]};
     `endif
     `ifdef SEW64_SUPPORTED
-    2'b11:  return val[63:0];
+    3'b011: return val[63:0];
     `endif
     default: begin
       $error("ERROR: SystemVerilog Functional Coverage: Unsupported SEW: %s", vsew);
@@ -395,17 +399,17 @@ endfunction
 // Like get_vr_element_zero but extracts at 2*SEW for widening instructions
 // where the operand (e.g. vs1 accumulator in vfwredosum) is at double width.
 function logic[63:0] get_vr_element_zero_widen(int hart, int issue, `VLEN_BITS val);
-    `XLEN_BITS vsew = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew");
+    logic [2:0] vsew = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew")[2:0];
 
     case (vsew)
     `ifdef SEW8_SUPPORTED
-    2'b00:  return {48'b0, val[15:0]};   // 2*SEW = 16
+    3'b000: return {48'b0, val[15:0]};   // 2*SEW = 16
     `endif
     `ifdef SEW16_SUPPORTED
-    2'b01:  return {32'b0, val[31:0]};   // 2*SEW = 32
+    3'b001: return {32'b0, val[31:0]};   // 2*SEW = 32
     `endif
     `ifdef SEW32_SUPPORTED
-    2'b10:  return val[63:0];            // 2*SEW = 64
+    3'b010: return val[63:0];            // 2*SEW = 64
     `endif
     default: begin
       $error("ERROR: SystemVerilog Functional Coverage: Unsupported SEW for widening: %s", vsew);
@@ -456,17 +460,17 @@ function edge_mask_values_t mask_edges_check(int hart, int issue, `VLEN_BITS mas
   // and previous random-mask tests can leave any value there). Discard the
   // inactive bits before classifying so the edge-value bins are reachable.
   `VLEN_BITS active_mask;
+  `VLEN_BITS one = 'b1;
   if (vlmax >= $bits(mask_val)) begin
     active_mask = mask_val;
   end else begin
-    `VLEN_BITS one = 'b1;
     active_mask = mask_val & ((one << vlmax) - 1);
   end
 
   if      (active_mask == 0)                           return mask_zero;
-  else if (active_mask == ((2 ** (vlmax)) - 1))        return mask_ones;
-  else if (active_mask == ((2 ** (vlmax-1)) - 1))      return mask_vlmaxm1ones;
-  else if (active_mask == ((2 ** (vlmax/2+1)) - 1))    return mask_vlmaxd2p1ones;
+  else if (active_mask == ((one << vlmax) - 1))        return mask_ones;
+  else if (active_mask == ((one << (vlmax-1)) - 1))    return mask_vlmaxm1ones;
+  else if (active_mask == ((one << (vlmax/2+1)) - 1))  return mask_vlmaxd2p1ones;
   else                                                 return mask_random;
 
 endfunction
@@ -481,8 +485,8 @@ typedef enum {
 } vl_t;
 
 function vl_t vl_check(int hart, int issue, int egs = 1);
-  `XLEN_BITS vl = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vl", "vl");
-  `XLEN_BITS vstart = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vstart", "vstart");
+  int vl = int'(get_csr_val(hart, issue, `SAMPLE_BEFORE, "vl", "vl"));
+  int vstart = int'(get_csr_val(hart, issue, `SAMPLE_BEFORE, "vstart", "vstart"));
   int vlmax = get_vtype_vlmax(hart, issue, `SAMPLE_BEFORE);
   bit legal;
   if (vl <= vlmax & vl > vstart) legal = 1'b1; // check legal condition
@@ -509,7 +513,7 @@ typedef enum {
 } vstart_t;
 
 function vstart_t vstart_check(int hart, int issue);
-  `XLEN_BITS vstart = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vstart", "vstart");
+  int vstart = int'(get_csr_val(hart, issue, `SAMPLE_BEFORE, "vstart", "vstart"));
   int vlmax = get_vtype_vlmax(hart, issue, `SAMPLE_BEFORE);
   bit legal;
   if (vstart < vlmax) legal = 1'b1; // check legal condition
@@ -561,7 +565,7 @@ function logic[7:0] shangmi_round_subbyte(logic[127:0] vd, logic[127:0] vs2, int
 endfunction
 
 function int data_overlap(int hart, int issue, bit[2:0] width, `VLEN_BITS val);
-  `XLEN_BITS vl = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vl", "vl");
+  int vl = int'(get_csr_val(hart, issue, `SAMPLE_BEFORE, "vl", "vl"));
   int capped_vl;
   int index_sew;
   bit seen[logic[63:0]];
@@ -577,7 +581,9 @@ function int data_overlap(int hart, int issue, bit[2:0] width, `VLEN_BITS val);
   capped_vl = (vl < `UDB_VLEN / index_sew) ? vl : `UDB_VLEN / index_sew;
 
   for (int i = 0; i < capped_vl; i++) begin
-    logic[63:0] slice = (val >> (i * index_sew)) & ((64'b1 << index_sew) - 1);
+    logic[63:0] shifted = 64'(val >> (i * index_sew));
+    logic[63:0] mask = (64'b1 << index_sew) - 1;
+    logic[63:0] slice = shifted & mask;
     if (seen.exists(slice)) return 1;
     else seen[slice] = 1;
   end

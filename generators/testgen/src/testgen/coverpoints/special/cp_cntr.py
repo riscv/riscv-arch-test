@@ -24,22 +24,34 @@ def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: Test
     if coverpoint == "cp_cntr":
         tc.code.extend(
             [
-                gen_cntr_test(instr_name, "cycle", r1, r2, r3, test_data),
-                gen_cntr_test(instr_name, "time", r1, r2, r3, test_data),
-                gen_cntr_test(instr_name, "instret", r1, r2, r3, test_data),
+                gen_cntr_test(instr_name, "cycle", r1, r2, r3, coverpoint, test_data),
+                gen_cntr_test(instr_name, "time", r1, r2, r3, coverpoint, test_data),
+                gen_cntr_test(instr_name, "instret", r1, r2, r3, coverpoint, test_data),
                 "#if __riscv_xlen == 32\n",
-                gen_cntr_test(instr_name, "cycleh", r1, r2, r3, test_data),
-                gen_cntr_test(instr_name, "timeh", r1, r2, r3, test_data),
-                gen_cntr_test(instr_name, "instreth", r1, r2, r3, test_data),
+                gen_cntr_test(instr_name, "cycleh", r1, r2, r3, coverpoint, test_data),
+                gen_cntr_test(instr_name, "timeh", r1, r2, r3, coverpoint, test_data),
+                gen_cntr_test(instr_name, "instreth", r1, r2, r3, coverpoint, test_data),
                 "#endif\n",
             ]
         )
     elif coverpoint == "cp_cntr_hpm":
-        # hpmcounter3 through hpmcounter31
-        tc.code.extend(gen_cntr_test(instr_name, f"hpmcounter{hpm}", r1, r2, r3, test_data) for hpm in range(3, 32))
+        # hpmcounter3 through hpmcounter31, each guarded by whether the configuration implements
+        # it. Zihpm permits any subset of the counters to be implemented, and accessing one that
+        # is not implemented is implementation-defined: norm:hpm_unimplemented_counter_access says
+        # it "may cause an illegal-instruction exception or may return a constant value". Both
+        # responses are conformant, so no single reference signature can describe them, and only
+        # the counters the configuration implements are read.
+        # UDB_HPM_COUNTER_EN_<n> comes from the HPM_COUNTER_EN parameter of the UDB config.
+        for hpm in range(3, 32):
+            tc.code.append(f"#ifdef UDB_HPM_COUNTER_EN_{hpm}\n")
+            tc.code.append(gen_cntr_test(instr_name, f"hpmcounter{hpm}", r1, r2, r3, coverpoint, test_data))
+            tc.code.append("#endif\n")
         tc.code.append("#if __riscv_xlen == 32\n")
         # hpmcounter3h through hpmcounter31h
-        tc.code.extend(gen_cntr_test(instr_name, f"hpmcounter{hpm}h", r1, r2, r3, test_data) for hpm in range(3, 32))
+        for hpm in range(3, 32):
+            tc.code.append(f"#ifdef UDB_HPM_COUNTER_EN_{hpm}\n")
+            tc.code.append(gen_cntr_test(instr_name, f"hpmcounter{hpm}h", r1, r2, r3, coverpoint, test_data))
+            tc.code.append("#endif\n")
         tc.code.append("#endif\n")
     else:
         raise ValueError(f"Unknown cp_cntr coverpoint variant: {coverpoint} for {instr_name}")
@@ -49,21 +61,21 @@ def make_cntr(instr_name: str, instr_type: str, coverpoint: str, test_data: Test
     return [test_data.end_test_chunk()]
 
 
-def gen_cntr_test(instr_name: str, cntr: str, r1: int, r2: int, r3: int, test_data: TestData) -> str:
+def gen_cntr_test(instr_name: str, cntr: str, r1: int, r2: int, r3: int, coverpoint: str, test_data: TestData) -> str:
     """Generate counter test snippet."""
     mindiff = 1 if cntr in ["instret", "cycle", "time"] else 0  # h registers unlikely to increment
     if cntr != "instret" and not cntr.endswith("h"):
         slt = f"slti x{r1}, x{r1}, {mindiff} # set fail code if difference < {mindiff}"
     else:
         slt = ""  # for minstret, the difference should be exact.  High counters should be exactly zero.
-    lines = [f"# Testcase: cp_cntr ({cntr})"]
+    lines = [f"# Testcase: {coverpoint} ({cntr})"]
     if cntr == "time":
         lines.extend(
             [
                 "# Loop until time increments, or fail if it does not",
                 f"{instr_name} x{r1}, {cntr}, x0 # read {cntr} initial value",
                 f"LI(x{r3}, 2000) # timeout counter to prevent infinite loop if counter doesn't increment",
-                test_data.add_testcase(cntr, "cp_cntr"),
+                test_data.add_testcase(cntr, coverpoint),
                 f"1: {instr_name} x{r2}, {cntr}, x0 # read {cntr} new value",
                 f"addi x{r3}, x{r3}, -1 # decrement timeout counter",
                 f"beqz x{r3}, 2f # if timeout counter reaches zero, fail",
@@ -83,7 +95,7 @@ def gen_cntr_test(instr_name: str, cntr: str, r1: int, r2: int, r3: int, test_da
                 f"addi x{r2}, x{r2}, 1 # delay a bit",
                 f"addi x{r2}, x{r2}, 1 # delay a bit",
                 f"{instr_name} x{r2}, {cntr}, x0",
-                test_data.add_testcase(cntr, "cp_cntr"),
+                test_data.add_testcase(cntr, coverpoint),
                 f"{instr_name} x{r2}, {cntr}, x0 # read again to increase delay a bit more",
             ]
         )

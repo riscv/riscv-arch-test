@@ -43,12 +43,6 @@ normative_rule_definitions:
   - name: trap_unexp_hndl_no_rnmi
     coverpoint: [""]
 
-  # The actions performed by the platform when a hart asserts a critical-error
-  # signal are platform-specific. The range of possible actions include restarting
-  # the affected hart or restarting the entire platform, among others.
-  - name: critical_error
-    coverpoint: [""]
-
   # Prior to writing mnepc, implementations may convert an invalid address into some
   # other invalid address that mnepc is capable of holding.
   - name: mnepc_invalid_convert

@@ -10,9 +10,9 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-import dataclasses
 import math
 import random
+from copy import copy
 from typing import Any, Literal
 
 from testgen.constants import VLEN_MAX
@@ -39,6 +39,20 @@ def get_register_emul(
         return info.whole_registers
 
     return max(lmul * info.get_size_multiplier(register_name, sew, vector_type_config.widened_regs), 1)
+
+
+def get_register_eew(
+    register_name: str, sew: int, vector_type_config: VectorTypeConfig, info: VectorInstructionInfo
+) -> int:
+    """
+    Helper function to calculate the EEW of a specific register, given its name, the sew, and the type
+    and instruction info
+    """
+
+    if register_name in vector_type_config.mask_regs:
+        return 1
+
+    return int(sew * info.get_size_multiplier(register_name, sew, vector_type_config.widened_regs))
 
 
 def randomize_register(
@@ -94,7 +108,7 @@ def randomize_register(
         alignment = max(emul, int(lmul)) if int(lmul) >= 1 else emul
 
         # We can't take the registers from the register file yet because we want to randomly generate valid overlaps
-        return random.choice(list(test_data.vec_regs.free_registers(alignment, segments)))
+        return random.choice(test_data.vec_regs.free_registers(alignment, segments))
 
     if preset is not None:
         return preset  # No need to validate r and f registers
@@ -124,7 +138,7 @@ def randomize_registers(
         info: InstructionInfo object that will aid emul calculation when picking a random registers
         lmul: lmul value for the test. Passed to ensure proper alignment of all registers
     """
-    new_params = dataclasses.replace(preset_params)  # Copies preset_params
+    new_params = copy(preset_params)
 
     if instr_type_config.required_params is None:
         return new_params
@@ -163,7 +177,7 @@ def randomize_registers(
             random_ptr = "vector_ls_random_base"
             new_params.rs1val_pointer = random_ptr
 
-            assert test_data.config.sew is not None, "SEW must be Set For Vector Register Randomization"
+            assert test_data.config.sew is not None, "SEW must be set for vector register randomization"
             if random_ptr not in test_data.vector_labels:
                 test_data.register_vector_data(
                     "vector_ls_random_base",
@@ -177,8 +191,9 @@ def randomize_registers(
 
     if "fs1" in registers:
         new_params.fs1 = randomize_register("fs1", test_data, instr_type_config, lmul, info, new_params.fs1)
-        if new_params.fs1val is not None:
-            new_params.fs1val = random_int(test_data.config.flen)
+        if new_params.fs1val is None:
+            assert test_data.config.sew is not None, "SEW must be set for vector register randomization"
+            new_params.fs1val = random_int(test_data.config.sew, signed=False)
     if "fd" in registers:
         new_params.fd = randomize_register("fd", test_data, instr_type_config, lmul, info, new_params.fd)
 
@@ -254,21 +269,22 @@ def get_occupied_v_registers(
     if register == "v0":
         return [0]
 
-    top_no_overlap = False
-    if register[-4:] == "_top":  # if specifying no overlap with the top of a register
-        top_no_overlap = True  # save for reserved section below
-        register = register[:-4]  # remove "_top" from register name
+    top_no_overlap = register.endswith("_top")
+    if top_no_overlap:  # if specifying no overlap with the top of a register
+        register = register.removesuffix("_top")
 
-    bottom_no_overlap = False
-    if register[-7:] == "_bottom":  # if specifying no overlap with the bottom of a register
-        bottom_no_overlap = True  # save for reserved section below
-        register = register[:-7]  # remove "_bottom" from register name
+    bottom_no_overlap = register.endswith("_bottom")
+    if bottom_no_overlap:  # If specifying no overlap with the bottom of a register
+        register = register.removesuffix("_bottom")
 
-    start_no_overlap = False
-    if register[-6:] == "_start":
+    start_no_overlap = register.endswith("_start")
+    if start_no_overlap:
         # if specifying no overlap with the initial register of a group (single register v)
-        start_no_overlap = True  # save for reserved section below
-        register = register[:-6]  # remove "_start" from register name
+        register = register.removesuffix("_start")
+
+    not_one_no_overlap = register.endswith("_not_one")
+    if not_one_no_overlap:  # Specify no overlap with all but the first register
+        register = register.removesuffix("_not_one")
 
     # We can check that the register that can't overlap is even assigned now that the suffixes have been removed
     if params_dict[register] is None:
@@ -291,6 +307,9 @@ def get_occupied_v_registers(
     if start_no_overlap or single_register or emul < 1:
         start_no_register_overlap = 0
         end_register_no_overlap = 1
+    elif not_one_no_overlap:
+        start_no_register_overlap = 1
+        end_register_no_overlap = emul
     else:
         start_no_register_overlap = smallest_emul if top_no_overlap and smallest_emul >= 1 else 0
         # need to include nfields (there is no bottom or top overlap allowed)
@@ -328,7 +347,7 @@ def has_invalid_overlap(
     """
 
     register_overlap = False
-    params_dict = dataclasses.asdict(params)
+    params_dict = vars(params)
     for no_overlap_set in no_overlap:
         register_type = no_overlap_set[0][0]  # grab either "v" "r" or "f" to get the register type
         registers_occupied = []
@@ -417,12 +436,12 @@ def generate_random_vector_params(
     invalid_overlap = True
     randomization_count = 0
     params = InstructionParams()
-    preset_params_dict = dataclasses.asdict(preset_params)
-    params_dict = dataclasses.asdict(params)
+    preset_params_dict = vars(preset_params)
+    params_dict = vars(params)
 
     while invalid_overlap:
         params = randomize_registers(preset_params, test_data, instr_type_config, info, lmul)
-        params_dict = dataclasses.asdict(params)
+        params_dict = vars(params)
 
         invalid_overlap = has_invalid_overlap(
             params, info, no_overlap, lmul, sew, scalar_vector_regs, mask_vector_regs, widened_regs
@@ -450,6 +469,19 @@ def generate_random_vector_params(
             )
         randomization_count = randomization_count + 1
 
+    # "When source and destination registers overlap and have different EEW, the instruction is mask- and tail-agnostic,
+    #  regardless of the setting of the vta and vma bits in vtype."
+    if instr_type_config.required_params is not None and "vd" in instr_type_config.required_params:
+        vd_eew = get_register_eew("vd", sew, instr_type_config.vector_data, info)
+        source_dest_different_eew = {
+            ("vd", reg)
+            for reg in ["vs1", "vs2"]
+            if vd_eew != get_register_eew(reg, sew, instr_type_config.vector_data, info)
+        }
+        params.vd_different_eew_overlap = has_invalid_overlap(
+            params, info, source_dest_different_eew, lmul, sew, scalar_vector_regs, mask_vector_regs, widened_regs
+        )
+
     ####################################################################################
     # Randomize the instruction data & take vector registers from the register file
     ####################################################################################
@@ -475,7 +507,7 @@ def generate_random_vector_params(
             eew = int(sew * info.get_size_multiplier(register, sew, widened_regs))
             element_count = 1 if suite == "base" else math.ceil(VLEN_MAX * lmul / sew)
             if instr_type_config.vector_data.random_element_generator:
-                elements = instr_type_config.vector_data.random_element_generator(element_count, eew)
+                elements = instr_type_config.vector_data.random_element_generator(element_count, eew, register)
                 test_data.register_vector_data(label, eew, elements=elements)
             else:
                 test_data.register_vector_data(label, eew, random_elements=element_count)
@@ -498,6 +530,10 @@ def generate_random_vector_params(
                 f"Instruction type '{instr_type}' requires immval but has no imm_bits or imm_range configured"
             )
 
+    # All vector floating point instructions use the dyn rounding mode
+    if "vector_fp" in instr_type_config.instruction_class and params.csr_frm_val is None:
+        params.csr_frm_val = random_range(0, 4)
+
     if (
         instr_type_config.required_params is not None
         and "maskval" in instr_type_config.required_params
@@ -516,6 +552,6 @@ def generate_random_vector_params(
     params.sew = sew
     params.vector_suite = suite
     if params.vl is None:
-        params.vl = 1
+        params.vl = instr_type_config.vector_data.egs
 
     return params

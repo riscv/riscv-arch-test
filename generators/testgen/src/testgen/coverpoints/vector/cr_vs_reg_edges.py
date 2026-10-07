@@ -12,6 +12,7 @@ import re
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.coverpoints.vector.helpers import make_and_register_edge_label
 from testgen.data.edges import IMMEDIATE_EDGES, VECTOR_EDGES, get_general_edges
+from testgen.data.random import random_int
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase, get_instruction_type_config
@@ -22,7 +23,7 @@ _KNOWN_REGS = ["vs3", "vs2", "vs1", "vd"]
 
 def _parse_cross_regs(coverpoint: str) -> tuple[str, str]:
     """Parse 'cr_vs2_vs1_edges' -> ('vs2', 'vs1')."""
-    match_pair = re.search(r"cr_(vs\d)_(vs\d)_edges", coverpoint)
+    match_pair = re.search(r"cr_(vs\d)_(vs\d|vd)_edges", coverpoint)
     if not match_pair:
         raise ValueError(f"Cannot parse register pair from coverpoint: {coverpoint}")
 
@@ -48,28 +49,55 @@ def make_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_dat
 
     edges1 = edges2 = VECTOR_EDGES.vx_edges
     suffix1 = suffix2 = "emul1"
-    if coverpoint.endswith("wv"):
-        suffix1 = "emul2"
-    elif coverpoint.endswith("wred"):
-        suffix2 = "emul2"
-    elif coverpoint.endswith("mm"):
-        suffix1 = suffix2 = "eew1"
-    elif coverpoint.endswith("f"):
-        suffix1 = suffix2 = "f"
-        edges1 = edges2 = VECTOR_EDGES.vf_edges
-    elif coverpoint.endswith("f_bf16"):
-        suffix1 = suffix2 = "f_bf16"
-        edges1 = edges2 = VECTOR_EDGES.vf_edges
-    elif coverpoint.endswith("fwv"):
-        suffix1 = "f_emul2"
-        suffix2 = "f"
-        edges1 = edges2 = VECTOR_EDGES.vf_edges
-    elif coverpoint.endswith("fwred"):
-        suffix1 = "f"
-        suffix2 = "f_emul2"
-        edges1 = edges2 = VECTOR_EDGES.vf_edges
-    elif coverpoint.endswith("egs"):
-        raise ValueError("Vector Crypto Edges are not yet implemented")
+    lmul = 1
+
+    # Safely get the variant after cr_*_*_edges
+    coverpoint_suffix = coverpoint[coverpoint.find("edges") + len("edges") :]
+    coverpoint_suffix = coverpoint_suffix[1:] if coverpoint_suffix.startswith("_") else ""
+
+    match coverpoint_suffix:
+        case "":
+            pass  # Nothing needs to be done in the default case
+        case "wv":
+            suffix1 = "emul2"
+        case "wred":
+            suffix2 = "emul2"
+        case "mm":
+            suffix1 = suffix2 = "eew1"
+        case "f":
+            suffix1 = suffix2 = "f"
+            edges1 = edges2 = VECTOR_EDGES.vf_edges
+        case "f_bf16":
+            suffix1 = suffix2 = "f_bf16"
+            edges1 = edges2 = VECTOR_EDGES.vf_edges
+        case "fwv":
+            suffix1 = "f_emul2"
+            suffix2 = "f"
+            edges1 = edges2 = VECTOR_EDGES.vf_edges
+        case "fwred":
+            suffix1 = "f"
+            suffix2 = "f_emul2"
+            edges1 = edges2 = VECTOR_EDGES.vf_edges
+        case "egs4_subbytes":
+            lmul = 4
+            edges1 = VECTOR_EDGES.v_crypto_edges  # VS2 Edges
+            edges2 = VECTOR_EDGES.v_aes_edges  # VD Edges
+            suffix1 = suffix2 = "emul4"
+        case "egs4_subbytes_vs2":
+            lmul = 4
+            edges1 = VECTOR_EDGES.v_aes_edges  # VS2 Edges
+            edges2 = VECTOR_EDGES.v_crypto_edges  # VD Edges
+            suffix1 = suffix2 = "emul4"
+        case "egs4":
+            lmul = 4
+            edges1 = edges2 = VECTOR_EDGES.v_crypto_edges
+            suffix1 = suffix2 = "emul4"
+        case "egs8":
+            lmul = 8
+            edges1 = edges2 = VECTOR_EDGES.v_crypto_edges
+            suffix1 = suffix2 = "emul8"
+        case _:
+            raise ValueError(f"Unknown coverpoint variant: {coverpoint}")
 
     test_chunks = []
     for r1_edge in edges1:
@@ -82,8 +110,8 @@ def make_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_dat
                 test_data,
                 instr_name,
                 instr_type,
-                lmul=1,
-                additional_no_overlap={(r1_name, r2_name)},
+                lmul=lmul,
+                additional_no_overlap={("vs1", "vs2"), ("vd", "vs1"), ("vd", "vs2")},
                 masked=False,
                 suite="base",
                 **{f"{r1_name}_val_pointer": r1_label, f"{r2_name}_val_pointer": r2_label},
@@ -146,6 +174,9 @@ def make_vs2_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_d
 
     config = get_instruction_type_config(instr_type)
     imm_edges = IMMEDIATE_EDGES.imm_5bit if config.imm_signed else IMMEDIATE_EDGES.imm_5bit_u
+    if config.imm_bits == 6:
+        assert config.imm_signed == False, "Only 6-bit unsigned immediates are supported for vector"
+        imm_edges = IMMEDIATE_EDGES.imm_6bit_u
 
     test_chunks = []
     for vs2_edge in vs2_edges:
@@ -157,6 +188,113 @@ def make_vs2_imm_edges(instr_name: str, instr_type: str, coverpoint: str, test_d
             )
             desc = f"{coverpoint} (vs2={vs2_edge}, imm={imm})"
             bin_name = f"cp_vs2_imm_edges_b{vs2_edge}_{imm}"
+
+            tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+
+            test_chunks.append(tc)
+            return_testcase_registers(test_data, params)
+
+    return test_chunks
+
+
+@add_coverpoint_generator("cr_vs2_vd_edges_egs4_subbytes_sm")
+def make_cr_vs2_vd_edges_sm(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    vs2_edges = {
+        "vs_corner_zero": 0,
+        "vs_corner_ones": (1 << 128) - 1,
+        "vs_corner_walkeven": sum(1 << i for i in range(128) if i % 2 == 0),
+        "vs_corner_walkodd": sum(1 << i for i in range(128) if i % 2 == 1),
+        "vs_corner_random": random_int(128, signed=False),
+    }
+
+    test_chunks: list[TestChunk] = []
+
+    for vs2_edge_name, vs2_val in vs2_edges.items():
+        v2 = f"{vs2_edge_name}_subbytes_sm_cross"
+        data = [(vs2_val >> (32 * i)) & (0xFFFF_FFFF) for i in range(4)]
+        test_data.register_vector_data(v2, 32, elements=data)
+
+        for i in range(0, 256, 4):
+            target = 0
+            for j in range(4):
+                target += (i + j) << (j * 8)
+
+            x2 = random_int(32, signed=False)
+            x3 = random_int(32, signed=False)
+
+            rk0 = vs2_val & 0xFFFF_FFFF
+
+            x1 = x2 ^ x3 ^ target ^ rk0
+            v1 = f"vs2_vd_subbytes_sm_cross_vs2_{vs2_edge_name}_vd_{i // 4}"
+            test_data.register_vector_data(v1, 32, elements=[random_int(32, signed=False), x1, x2, x3])
+
+            desc = f"{vs2_edge_name} test {i}"
+            bin_name = f"b{v1}_{v2}"
+            params = generate_random_vector_params(
+                test_data,
+                instr_name,
+                instr_type,
+                lmul=4,
+                vd_val_pointer=v1,
+                vs2_val_pointer=v2,
+                additional_no_overlap={("vd", "vs1"), ("vs2", "vd"), ("vs1", "vs2")},
+            )
+
+            test_chunks.append(
+                format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
+            )
+            return_testcase_registers(test_data, params)
+
+    return test_chunks
+
+
+@add_coverpoint_generator("cr_vs2_fs1_edges")
+def make_vs2_fs1_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
+    """
+    Generate tests crossing edge values for vs2 and fs1. Supports only floating point crosses.
+    """
+
+    sew = test_data.config.sew
+    assert sew is not None, "SEW must be set for vector tests"
+
+    vs2_edges = VECTOR_EDGES.vf_edges
+
+    if coverpoint == "cr_vs2_fs1_edges_wf":
+        suffix = "f_emul2"
+    elif coverpoint == "cr_vs2_fs1_edges_bf16":
+        suffix = "f_bf16"
+    elif coverpoint == "cr_vs2_fs1_edges":
+        suffix = "f"
+    else:
+        raise ValueError(f"Unknown cr_vs2_fs1_edges coverpoint variant {coverpoint}")
+
+    if sew == 16 and suffix != "f_bf16":
+        fs1_edges = VECTOR_EDGES.f16
+    elif sew == 16 and suffix == "f_bf16":
+        fs1_edges = VECTOR_EDGES.bf16
+    elif sew == 32:
+        fs1_edges = VECTOR_EDGES.f32
+    elif sew == 64:
+        fs1_edges = VECTOR_EDGES.f64
+    else:
+        raise ValueError(f"Unsupported SEW ({sew}) for cr_vs2_fs1_edges")
+
+    test_chunks = []
+    for vs2_edge in vs2_edges:
+        vs2_label = make_and_register_edge_label("vs2", vs2_edge, suffix, test_data)
+
+        for fs1_edge_name in fs1_edges:
+            params = generate_random_vector_params(
+                test_data,
+                instr_name,
+                instr_type,
+                lmul=1,
+                fs1val=fs1_edges[fs1_edge_name],
+                vs2_val_pointer=vs2_label,
+                additional_no_overlap={("vd", "vs2")},
+            )
+            desc = f"{coverpoint} (vs2={vs2_edge}, fs1={fs1_edge_name})"
+            bin_name = f"cp_vs2_fs1_edges_b{vs2_edge}_{fs1_edge_name}"
 
             tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, bin_name, coverpoint)
 

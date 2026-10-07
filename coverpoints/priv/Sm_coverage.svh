@@ -220,7 +220,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins marchid    = {CSR_MARCHID};
         bins mimpid     = {CSR_MIMPID};
         bins mhartid    = {CSR_MHARTID};
-        bins mconfigptr = {CSR_MCONFIGPTR};
+        `ifdef SM1P12P0_OR_LATER_SUPPORTED
+            bins mconfigptr = {CSR_MCONFIGPTR};
+        `endif
     }
 
     csraccesses : coverpoint ins.current.insn {
@@ -249,8 +251,8 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             bins mseccfg = {CSR_MSECCFG};
         `endif
         `ifdef UDB_MXLEN_32
-            bins mstatush = {CSR_MSTATUSH};
             `ifdef SM1P12P0_OR_LATER_SUPPORTED
+                bins mstatush = {CSR_MSTATUSH};
                 bins menvcfgh = {CSR_MENVCFGH};
             `endif
             `ifdef MSECCFG_SUPPORTED
@@ -572,9 +574,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
                 binsof(walking_ones) intersect {[0:7], [11:31], [34:63]};
         `endif
         `ifdef UDB_MXLEN_32
-            ignore_bins mstatush_not_walked = binsof(mcsrname_masked.mstatush) &&
-                binsof(walking_ones) intersect {[0:5], 8, [11:31]};
             `ifdef SM1P12P0_OR_LATER_SUPPORTED
+                ignore_bins mstatush_not_walked = binsof(mcsrname_masked.mstatush) &&
+                    binsof(walking_ones) intersect {[0:5], 8, [11:31]};
                 ignore_bins menvcfgh_not_walked = binsof(mcsrname_masked.menvcfgh) &&
                     binsof(walking_ones) intersect {[2:26]};
             `endif

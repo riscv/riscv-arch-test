@@ -43,8 +43,6 @@ normative_rule_definitions:
     coverpoint:
       ["TODO"]
       # pushes (stores) the registers in reg_list to the memory below the stack pointer, and then creates the stack frame by decrementing the stack pointer by stack_adj, including any additional stack space requested by the value of spimm.
-  - name: interrupts_allowed_in_pushpop
-    coverpoint: ["TODO"]
   # csr:jvt[base] is a virtual address, whenever virtual memory is enabled.
   - name: jvt_base_vm
     coverpoint:

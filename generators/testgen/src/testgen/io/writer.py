@@ -106,19 +106,20 @@ def write_test_file(
 
     # Main test body: banner comment before coverpoint sections, 1 blank line between test chunks
     # Apply indent_asm to each line to ensure consistent indentation
-    body = ""
+    body_parts: list[str] = []
     # Re-establish signature/data pointers if the first chunk expects non-default registers
     # (because an earlier file's chunks relocated them via mv)
     reinit = _reinit_pointer_registers(test_chunks[0])
     if reinit:
-        body += reinit + "\n\n"
+        body_parts.append(reinit + "\n\n")
     for i, tc in enumerate(test_chunks):
         if tc.section_header:
             # Banner comment before coverpoint sections
-            body += tc.section_header + "\n\n"
+            body_parts.append(tc.section_header + "\n\n")
         elif i > 0:
-            body += "\n\n"
-        body += "\n".join(indent_asm(line) for line in "\n".join(tc.code).split("\n"))
+            body_parts.append("\n\n")
+        body_parts.append("\n".join(indent_asm(line) for code in tc.code for line in code.split("\n")))
+    body = "".join(body_parts)
 
     # Test footer
     test_data_section = generate_test_data_section(data_values, test_config.xlen, test_config.flen, vdsew)
@@ -136,7 +137,8 @@ def write_test_file(
     test_string = f"{header}\n{body}\n{footer}"
 
     # Write test file if different from existing file. This avoids unnecessary rebuilds.
-    if not test_file.exists() or test_file.read_text() != test_string:
-        test_file.write_text(test_string)
+    test_bytes = test_string.encode()
+    if not test_file.exists() or test_file.read_bytes() != test_bytes:
+        test_file.write_bytes(test_bytes)
 
     return test_file

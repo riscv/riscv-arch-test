@@ -124,7 +124,7 @@ localparam int SUPERVISOR_GUEST_EXTERNAL_INTERRUPT   = 12;
 localparam int COUNTER_OVERFLOW_INTERRUPT            = 13;
 
 function `XLEN_BITS get_csr_val(int hart, int issue, int prev, string name, string field);
-  int addr = get_csr_addr(hart, name);
+  int addr = int'(get_csr_addr(hart, name));
   return get_csr_val_addr(hart, issue, prev, addr, name, field);
 endfunction
 
@@ -205,7 +205,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
     endcase
   end else if (name == "hedeleg") begin
     case(field)
-      "deleg" : val = val & 'hffffffff;
+      "deleg" : val = val & `UDB_MXLEN'(32'hffff_ffff);
       default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
     endcase
   end else if (name == "hgatp") begin
@@ -407,7 +407,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
     endcase
   end else if (name == "medeleg") begin
     case(field)
-      "deleg" : val = val & 'hffffffff;
+      "deleg" : val = val & `UDB_MXLEN'(32'hffff_ffff);
       default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
     endcase
   end else if (name == "menvcfg") begin
@@ -430,10 +430,10 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
     endcase
   end else if (name == "menvcfgh") begin
     case(field)
-      "adue" : val = (val >> 29) & 32'h1;
-      "cde" : val = (val >> 28) & 32'h1;
-      "dte" : val = (val >> 27) & 32'h1;
-      "stce" : val = (val >> 31) & 32'h1;
+      "adue" : val = (val >> 29) & `UDB_MXLEN'(1);
+      "cde" : val = (val >> 28) & `UDB_MXLEN'(1);
+      "dte" : val = (val >> 27) & `UDB_MXLEN'(1);
+      "stce" : val = (val >> 31) & `UDB_MXLEN'(1);
       default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
     endcase
   end else if (name == "mideleg") begin
@@ -813,7 +813,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "OPST" : val = (val >> 30) & 32'h3;
 `endif
 `ifdef UDB_MXLEN_64
-      "entropy" : val = val & 32'hffff;
+      "entropy" : val = val & `UDB_MXLEN'(16'hffff);
 `endif
       default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
     endcase
@@ -894,6 +894,15 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
 `ifdef UDB_MXLEN_64
       "type" : val = (val >> 60) & 64'hf;
 `endif
+      // mcontrol6 fields
+      "chain" : val = (val >> 11) & 'h1;
+      "execute" : val = (val >> 2) & 'h1;
+      "load" : val = val & 'h1;
+      "m" : val = (val >> 6) & 'h1;
+      "match" : val = (val >> 7) & 'hf;
+      "select" : val = (val >> 21) & 'h1;
+      "size" : val = (val >> 16) & 'h7;
+      "store" : val = (val >> 1) & 'h1;
       default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
     endcase
   end else if (name == "textra32") begin

@@ -3000,54 +3000,55 @@ function void zvbb16_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
-        "vandn.vv"     : begin
-            Zvbb16_vandn_vv_cg.sample(ins);
-        end
-        "vandn.vx"     : begin
-            Zvbb16_vandn_vx_cg.sample(ins);
-        end
-        "vbrev.v"     : begin
-            Zvbb16_vbrev_v_cg.sample(ins);
-        end
-        "vbrev8.v"     : begin
-            Zvbb16_vbrev8_v_cg.sample(ins);
-        end
-        "vclz.v"     : begin
-            Zvbb16_vclz_v_cg.sample(ins);
-        end
-        "vcpop.v"     : begin
-            Zvbb16_vcpop_v_cg.sample(ins);
-        end
-        "vctz.v"     : begin
-            Zvbb16_vctz_v_cg.sample(ins);
-        end
-        "vrev8.v"     : begin
-            Zvbb16_vrev8_v_cg.sample(ins);
-        end
-        "vrol.vv"     : begin
-            Zvbb16_vrol_vv_cg.sample(ins);
-        end
-        "vrol.vx"     : begin
-            Zvbb16_vrol_vx_cg.sample(ins);
-        end
-        "vror.vi"     : begin
-            Zvbb16_vror_vi_cg.sample(ins);
-        end
-        "vror.vv"     : begin
-            Zvbb16_vror_vv_cg.sample(ins);
-        end
-        "vror.vx"     : begin
-            Zvbb16_vror_vx_cg.sample(ins);
-        end
-        "vwsll.vi"     : begin
-            Zvbb16_vwsll_vi_cg.sample(ins);
-        end
-        "vwsll.vv"     : begin
-            Zvbb16_vwsll_vv_cg.sample(ins);
-        end
-        "vwsll.vx"     : begin
-            Zvbb16_vwsll_vx_cg.sample(ins);
-        end
+            "vandn.vv"     : begin
+                Zvbb16_vandn_vv_cg.sample(ins);
+            end
+            "vandn.vx"     : begin
+                Zvbb16_vandn_vx_cg.sample(ins);
+            end
+            "vbrev.v"     : begin
+                Zvbb16_vbrev_v_cg.sample(ins);
+            end
+            "vbrev8.v"     : begin
+                Zvbb16_vbrev8_v_cg.sample(ins);
+            end
+            "vclz.v"     : begin
+                Zvbb16_vclz_v_cg.sample(ins);
+            end
+            "vcpop.v"     : begin
+                Zvbb16_vcpop_v_cg.sample(ins);
+            end
+            "vctz.v"     : begin
+                Zvbb16_vctz_v_cg.sample(ins);
+            end
+            "vrev8.v"     : begin
+                Zvbb16_vrev8_v_cg.sample(ins);
+            end
+            "vrol.vv"     : begin
+                Zvbb16_vrol_vv_cg.sample(ins);
+            end
+            "vrol.vx"     : begin
+                Zvbb16_vrol_vx_cg.sample(ins);
+            end
+            "vror.vi"     : begin
+                Zvbb16_vror_vi_cg.sample(ins);
+            end
+            "vror.vv"     : begin
+                Zvbb16_vror_vv_cg.sample(ins);
+            end
+            "vror.vx"     : begin
+                Zvbb16_vror_vx_cg.sample(ins);
+            end
+            "vwsll.vi"     : begin
+                Zvbb16_vwsll_vi_cg.sample(ins);
+            end
+            "vwsll.vv"     : begin
+                Zvbb16_vwsll_vv_cg.sample(ins);
+            end
+            "vwsll.vx"     : begin
+                Zvbb16_vwsll_vx_cg.sample(ins);
+            end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

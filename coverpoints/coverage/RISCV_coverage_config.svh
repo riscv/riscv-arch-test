@@ -71,9 +71,6 @@
 `ifdef EXCEPTIONSU_COVERAGE
   `include "ExceptionsU_coverage.svh"
 `endif
-`ifdef EXCEPTIONSVF_COVERAGE
-  `include "ExceptionsVf_coverage.svh"
-`endif
 `ifdef EXCEPTIONSVF16_COVERAGE
   `include "ExceptionsVf16_coverage.svh"
 `endif

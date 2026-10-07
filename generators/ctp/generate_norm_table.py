@@ -433,6 +433,54 @@ def pick_cover_for_name(coverpoint: str | list[str] | None, names: list[str], id
     return coverpoint
 
 
+# Inline macros defined by riscv-isa-manual's src/lib/macros.rb.  The normative rule text is
+# extracted from the manual's sources with these macros unexpanded, and the CTP build does not load
+# that extension, so expand them here the way the manual renders them:
+#   insn:foo[]         FOO           insn:foo[bar,baz]   FOO bar, baz
+#   ext:zoo[]          `Zoo`         csr:foo[]           `foo`
+#   csr:foo[bar]       `foo.BAR`     csr::[bar]          `BAR`
+#   qty:16[KiB]        16 KiB (non-breaking space)
+# The *link forms are cross-references inside the manual; the rule text is already one link to the
+# manual, and links cannot nest, so they render like their plain forms.
+_ENTITY_SPLIT_RE = re.compile(r"(&#?\w+;)")
+_ISA_MANUAL_MACRO_RE = re.compile(r"\b(insn|insnlink|ext|extlink|csr|csrlink|qty|xref):([^\[\s]*)\[([^\]]*)\]")
+
+
+def expand_isa_manual_macros(text: str) -> str:
+    """Expand the riscv-isa-manual inline macros in rule text into plain AsciiDoc."""
+
+    def expand(m: re.Match[str]) -> str:
+        kind, name, arg = m.group(1), m.group(2), m.group(3)
+        args = [a.strip() for a in arg.split(",")] if arg.strip() else []
+        if kind in ("insn", "insnlink"):
+            # Uppercase the mnemonic but not any HTML entities in it, e.g. the angle brackets of
+            # vmv<nr>r.v, which the manual's JSON carries double-escaped as &amp;#60; and &amp;#62;
+            name = name.replace("&amp;", "&")
+            mnemonic = "".join(t if t.startswith("&") else t.upper() for t in _ENTITY_SPLIT_RE.split(name))
+            return mnemonic + ("\u00a0" + ",\u00a0".join(args) if args else "")
+        if kind in ("ext", "extlink"):
+            return f"`{name.capitalize()}`"
+        if kind in ("csr", "csrlink"):
+            parts = ([] if name in ("", ":") else [name.lower()]) + ([args[0].upper()] if args else [])
+            return "`" + ".\u2060".join(parts) + "`"
+        if kind == "qty":
+            return name + "\u00a0" + (args[0] if args else "")
+        if kind == "xref":
+            return name
+        return m.group(0)
+
+    return _ISA_MANUAL_MACRO_RE.sub(expand, text)
+
+
+# Cross-references inside rule text point at ISA-manual anchors that do not exist in the CTP, and
+# asciidoctor resolves even the entity-escaped form, so render them as their link text (or the anchor name).
+_XREF_RE = re.compile(r"(?:&lt;|<){2}([^,&<>]+?)(?:,([^&<>]+?))?(?:&gt;|>){2}")
+
+
+def plain_xrefs(text: str) -> str:
+    return _XREF_RE.sub(lambda m: (m.group(2) or m.group(1)).strip(), text)
+
+
 def truncate_rule_text(text: str) -> str:
     """Return rule text without truncation."""
     return text
@@ -619,39 +667,31 @@ def main() -> None:
         # The link should apply to the tagged text (tag['text']) and the
         # tag 'name' (e.g. 'norm:...') should not be printed.
         linked_text_parts = []
-        UNPRIV_BASE = "https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/index.html"
-        PRIV_BASE = "https://riscv.github.io/riscv-isa-manual/snapshot/privileged/index.html"
+        # The ISA manual publishes the unprivileged and privileged volumes as a single document.
+        SPEC_BASE = "https://riscv.github.io/riscv-isa-manual/snapshot/spec/index.html"
         tags_iter = [tags] if isinstance(tags, dict) else list(tags) if tags is not None else []
         for tg in tags_iter:
             if not isinstance(tg, dict):
                 continue
             tag_name = tg.get("name")
-            tag_fn = tg.get("tag_filename", "") or ""
             tag_text = tg.get("text") or ""
             if not tag_name:
                 continue
-            # choose privileged or unprivileged base URL based on filename
-            # do a case-insensitive check and test for 'unprivileged' first
-            tag_fn_l = (tag_fn or "").lower()
-            if "unprivileged" in tag_fn_l:
-                base = UNPRIV_BASE
-            elif "privileged" in tag_fn_l:
-                base = PRIV_BASE
-            else:
-                base = UNPRIV_BASE
             # assemble URL with fragment pointing to the tag name
             # Percent-encode the fragment to produce a safe URL fragment.
             # Use urllib.parse.quote with an empty 'safe' to encode reserved
             # characters (e.g., ':') so the fragment is valid when embedded in
             # a link target.
             frag = quote(str(tag_name), safe="")
-            url = f"{base}#{frag}"
+            url = f"{SPEC_BASE}#{frag}"
             # Prepare display text: collapse whitespace and remove surrounding newlines
             disp = " ".join(str(tag_text).split())
+            disp = expand_isa_manual_macros(disp)
             # Strip asciidoctor image macros (e.g. image:path/stem-xxx.svg[...])
             # that reference pre-rendered math from the ISA manual build.
             # These images don't exist in the CTP build context.
             disp = re.sub(r"image:[^\[]*\[[^\]]*\]", "[math expression]", disp)
+            disp = plain_xrefs(disp)
             # Replace any vertical bar '|' with the HTML entity '&#124;'
             # instead of truncating. This preserves more of the text while
             # preventing Asciidoc table column parsing from being broken by
@@ -723,6 +763,8 @@ def main() -> None:
             # (which previously required the 'a|' marker).
             raw_text = extract_rule_text(tags) or ""
             text = " ".join(str(raw_text).split())
+            text = expand_isa_manual_macros(text)
+            text = plain_xrefs(text)
             # Replace any literal '|' characters with the HTML entity
             # to avoid breaking Asciidoc table parsing.
             if "|" in text:

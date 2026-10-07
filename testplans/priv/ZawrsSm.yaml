@@ -1,0 +1,65 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: ZawrsSm
+source: https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=1449589527#gid=1449589527
+notes: |
+  covergroup Zawrs
+coverpoints:
+  - heading: tests for single core
+  - name: cp_wrs_sto_timeout
+    goal: WRS.STO waits till timeout
+    description: |-
+      cross lr instruction to set up reservation.
+      mstatus.TW = {0/1}
+      mstatus.MIE = 0
+      mie=all 0s to disable interrupts
+      Execute WRS.STO in M mode
+    expectation: no exception, next instruction executes normally after WRS.STO finish execution
+    bins: 2 bins
+    rules:
+      - Zawrs_wrs-sto_stall_duration
+  - name: cp_wrs_no_res
+    goal: WRS behaves as nop when no reservation is established
+    description: |-
+      mstatus.TW ={0/1}
+      mstatus.MIE = 0
+      mie=all 0s to disable interrupts
+      Clear all reservation with sc.w, then execute {WRS.STO, WRS.NTO} with no reservation created in M mode
+    expectation: WRS behaves as nop
+    bins: 2 x 2 bins
+  - name: cp_wrs_resume
+    goal: WRS follows the rules of WFI for resuming on interrupts
+    description: |-
+      cross lr instruction to set up reservation.
+      mstatus.TW = {0/1}
+      mstatus.MIE = {0/1}
+      cross with mie.MTIE=1
+      Set up timer to interrupt soon
+      execute {WRS.NTO/WRS.STO} in M mode
+    expectation: WRS resumes when interrupt is pending, MIE should not affect result
+    bins: 2 x 2 x 2 bins
+    rules:
+      - Zawrs_exec_resume_rules
+      - LA(t0, zawrs_resume_trap_handler)
+      - "csrrw t0, mtvec, t0 # save old trap vector"
+      - "1: wrs.nto  # keep doing nto until timeout"
+      - if MIE=0 and mip.MTIP, exit with success
+      - j 1b
+      - "zawrs_resume_trap_handler:"
+      - csrr t1, mcause
+      - SIGUPD t1
+      - "csrw stvec, t0 # restore trap handler"
+      - "done:"
+  - name: cp_wrs_no_mie
+    goal: WRS does not stop when mie = 0 for pending interrupt
+    description: |-
+      cross lr instruction to set up reservation
+      mstatus.MIE = 1
+      mie = all 0s
+      mstatus.TW = 0
+      mip.mtip = {MSIP + MEIP + MTIP}
+      execute WRS.STO in M mode
+    expectation: WRS does not stop when interrupt pending
+    bins: 1 bin
+  - heading: "Can not be tested with single core:"
+  - name: norm
+    status: Zawrs_wrs-nto_stall_exec

@@ -176,10 +176,7 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
         "Zvfhmin": ["Zve32f", "F"],
     }
 
-    if testsuite not in vector_map:
-        return
-
-    mapped = vector_map[testsuite]
+    mapped = vector_map[testsuite] if testsuite in vector_map else [f"Zve{max(sew, 32)}x"]
 
     for zve_ext in ["Zve64x", "Zve64f", "Zve64d"]:
         # All Zve* extensions support all vector load and store instructions (31.1.7. Vector Loads and Stores),

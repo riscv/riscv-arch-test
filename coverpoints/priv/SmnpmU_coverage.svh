@@ -43,12 +43,12 @@
 
     // Main Crosses
     cp_pmlen_masking : cross priv_mode_u, pmm, a_upper_bits, pm_insn;
-    cp_pmlen_misaligned_word: cross priv_mode_u, pm_misalign;
+    cp_pmlen_misaligned_word: cross priv_mode_u, pmm, a_upper_bits, sw_lw_insn, misaligned_addr;
     cp_pmm_jalr: cross priv_mode_u, pmm, a_upper_bits, jalr_insn;
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         // Fault crosses confirm lw/sw executed in U-mode at the illegal address.
-        cp_hardware_csr_writes_fault: cross priv_mode_u, pm_fault;
+        cp_hardware_csr_writes_fault: cross priv_mode_u, pmm, a_upper_bits, sw_lw_insn, illegal_addr;
     `endif
 
 

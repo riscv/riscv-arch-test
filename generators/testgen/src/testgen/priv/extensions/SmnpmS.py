@@ -10,21 +10,26 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZpmCommon import (
     EDGE_CASES,
+    IMAGE_TABLES,
     MODE_GUARDS,
     MODES,
     PMM_CONFIGS,
     SPLITS,
+    build_4k_image_map,
     data_page,
     data_slvl_tables,
     generate_csr_write_tests,
     generate_edge_case_tests,
     generate_instruction_sweep_tests,
     generate_sign_extension_tests,
+    generate_zicfiss_tests,
     map_pm_hi_page,
     satp_clear,
     satp_setup,
     set_mxr,
     set_pmm_field,
+    set_sse,
+    ss_data_page,
 )
 from testgen.priv.registry import add_priv_test_generator
 
@@ -34,7 +39,7 @@ COVERGROUP = "SmnpmS_cg"
 @add_priv_test_generator(
     "SmnpmS",
     required_extensions=["Smnpm", "S"],
-    march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
+    march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz", "Zicfiss"],
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_smnpms(test_data: TestData) -> list[TestChunk]:
@@ -52,7 +57,7 @@ def make_smnpms(test_data: TestData) -> list[TestChunk]:
                     tc.raw_data.append(f"#ifdef {guard}")
                 tc.raw_data.extend(data_page("pm_lo_page"))
                 if mode != "bare":
-                    tc.raw_data.extend([*data_page("pm_hi_page"), *data_slvl_tables(mode)])
+                    tc.raw_data.extend([*data_page("pm_hi_page"), *data_slvl_tables(mode), *ss_data_page(mode)])
                 if guard:
                     tc.raw_data.append(f"#endif // {guard}")
                 tc.code = _smnpms_chunk(mode, pmm, pmlen, label, split, uppers, test_data)
@@ -71,7 +76,17 @@ def _smnpms_chunk(
     prefix = f"{label}_{mode}"
     lines = [] if not guard else [f"#ifdef {guard}"]
     if not is_bare:
-        lines.extend([*map_pm_hi_page(mode, user=False), *satp_setup(mode, test_data)])
+        lines.extend(
+            [
+                *map_pm_hi_page(mode, user=False),
+                # A shadow-stack page needs a 4 KiB leaf, so the identity superpage is split.
+                "#ifdef ZICFISS_SUPPORTED",
+                *build_4k_image_map(mode, IMAGE_TABLES, [], test_data, ss_page_user=False),
+                "#endif // ZICFISS_SUPPORTED",
+                *satp_setup(mode, test_data),
+                *set_sse("menvcfg", True, test_data, tsbi=True),
+            ]
+        )
 
     lines.extend(
         [
@@ -79,6 +94,9 @@ def _smnpms_chunk(
             *generate_instruction_sweep_tests(prefix, test_data, COVERGROUP, uppers),
         ]
     )
+    # A shadow-stack instruction always faults with satp Bare, so pointer masking has nothing to act on.
+    if not is_bare:
+        lines.extend(generate_zicfiss_tests(prefix, test_data, COVERGROUP, uppers))
     if split == EDGE_CASES:
         if not is_bare:
             lines.extend(generate_sign_extension_tests(prefix, mode, test_data, COVERGROUP))
@@ -90,7 +108,7 @@ def _smnpms_chunk(
         )
     lines.extend([*set_pmm_field("menvcfg", 0b00, 0, test_data, tsbi=True), *set_mxr(False, test_data)])
     if not is_bare:
-        lines.extend(satp_clear())
+        lines.extend([*set_sse("menvcfg", False, test_data, tsbi=True), *satp_clear()])
     if guard:
         lines.append(f"#endif // {guard}")
     return lines

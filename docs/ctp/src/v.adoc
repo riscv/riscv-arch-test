@@ -41,7 +41,10 @@ fcov
       priv
         ExceptionsVx_coverage.svh
         ExceptionsVls_coverage.svh
-        ExceptionsVf_coverage.svh
+        ExceptionsVf16_coverage.svh
+        ExceptionsVf32_coverage.svh
+        ExceptionsVf64_coverage.svh
+        ExceptionsVfmin_coverage.svh
         MisalignV_coverage.svh
         SsstrictV_coverage.svh
         SmV_coverage.svh
@@ -278,7 +281,7 @@ include::norm/Zvbb_norm_rules.adoc[]
 
 Zvbc only applies to SEW=64.
 
-include::{testplansdir}/Zvbc64.adoc[]
+include::{testplansdir}/Zvbc.adoc[]
 
 include::norm/Zvbc_norm_rules.adoc[]
 

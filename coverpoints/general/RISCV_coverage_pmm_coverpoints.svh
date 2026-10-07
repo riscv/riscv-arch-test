@@ -126,15 +126,6 @@
             wildcard bins prefetch_w = {PREFETCH_W};
             wildcard bins prefetch_i = {PREFETCH_I};
         `endif
-        // Zicfiss shadow-stack stores and loads
-        `ifdef ZICFISS_SUPPORTED
-            wildcard bins sspush         = {SSPUSH_X1, SSPUSH_X5};
-            wildcard bins c_sspush_x1    = {C_SSPUSH_X1};
-            wildcard bins ssamoswap_w    = {SSAMOSWAP_W};
-            wildcard bins ssamoswap_d    = {SSAMOSWAP_D};
-            wildcard bins sspopchk       = {SSPOPCHK_X1, SSPOPCHK_X5};
-            wildcard bins c_sspopchk_x5  = {C_SSPOPCHK_X5};
-        `endif // ZICFISS_SUPPORTED
         // RVV 1.0 vector stores and loads
         `ifdef ZVL32B_SUPPORTED
             // EEW ≤ 32 (legal on Zve32x / Zvl32b)
@@ -173,6 +164,53 @@
         `endif // ZVE64X_SUPPORTED
     }
 
+    // Zicfiss shadow-stack instructions. They access memory only below M-mode with S-mode implemented,
+    // so only the covergroups that probe from S-mode, or from U-mode under S-mode, cross this coverpoint.
+    `ifdef ZICFISS_SUPPORTED
+        // SSAMOSWAP addresses memory through rs1, so it is crossed with a_upper_bits.
+        pm_ssamoswap_insn: coverpoint ins.current.insn {
+            type_option.weight = 0;
+            wildcard bins ssamoswap_w = {SSAMOSWAP_W};
+            wildcard bins ssamoswap_d = {SSAMOSWAP_D};
+        }
+        // Pushes and pops address memory through ssp, so they are crossed with ssp_upper_bits.
+        pm_ssp_insn: coverpoint ins.current.insn {
+            type_option.weight = 0;
+            wildcard bins sspush_x1   = {SSPUSH_X1};
+            wildcard bins sspush_x5   = {SSPUSH_X5};
+            wildcard bins sspopchk_x1 = {SSPOPCHK_X1};
+            wildcard bins sspopchk_x5 = {SSPOPCHK_X5};
+            `ifdef ZCMOP_SUPPORTED
+                wildcard bins c_sspush_x1   = {C_SSPUSH_X1};
+                wildcard bins c_sspopchk_x5 = {C_SSPOPCHK_X5};
+            `endif // ZCMOP_SUPPORTED
+        }
+        // Tag in bits 63:48 of ssp before the push or pop; same patterns as a_upper_bits.
+        ssp_upper_bits: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp") >> 48) {
+            type_option.weight = 0;
+            bins upper_0000 = {16'h0000};
+            bins upper_0001 = {16'h0001};
+            bins upper_0100 = {16'h0100};
+            bins upper_0200 = {16'h0200};
+            bins upper_8000 = {16'h8000};
+            bins upper_FFFF = {16'hFFFF};
+            bins upper_FE00 = {16'hFE00};
+            bins upper_FF00 = {16'hFF00};
+        }
+        // A shadow-stack instruction always faults with satp Bare, so only translated modes are covered.
+        satp_mode_zicfiss: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
+            type_option.weight = 0;
+            `ifdef SV39_SUPPORTED
+                bins sv39 = {4'b1000};
+            `endif
+            `ifdef SV48_SUPPORTED
+                bins sv48 = {4'b1001};
+            `endif
+            `ifdef SV57_SUPPORTED
+                bins sv57 = {4'b1010};
+            `endif
+        }
+    `endif // ZICFISS_SUPPORTED
     sw_lw_insn:  coverpoint ins.current.insn {
         type_option.weight = 0;
          wildcard bins sw  = {SW};
@@ -229,8 +267,6 @@
         type_option.weight = 0;
         bins misaligned = {[2'b01:2'b11]};
     }
-    // ---- Misalign common cross dimensions ----
-    pm_misalign : cross pmm, a_upper_bits, sw_lw_insn, misaligned_addr;
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         // Exception should write xtval with masked version of pointer.
@@ -238,5 +274,4 @@
             type_option.weight = 0;
             bins is_illegal_base = {`RVMODEL_ACCESS_FAULT_ADDRESS& 48'hFFFF_FFFF_FFFF};
         }
-        pm_fault : cross pmm, a_upper_bits, sw_lw_insn, illegal_addr;
     `endif

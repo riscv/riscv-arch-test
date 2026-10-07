@@ -31,7 +31,7 @@ coverpoints:
       Accesses to trigger CSRs used by any of the implemented triggers must succeed
       At least one trigger must be supported
     description: |-
-      For each of UDB_NUM_TRIGGERS in tselect:
+      For each of UDB_SDTRIG_NUM_TRIGGERS in tselect:
       For i each type in {0-15}
       tdata1.type = i
       For x register in {tdata1,tdata2,tdata3,tinfo,tcontrol,hcontext,mcontext,scontext} if x_AVAILABLE:
@@ -39,7 +39,7 @@ coverpoints:
     expectation: |-
       WARL
       illegal instruction exception on CSR access if it is not implemented by any trigger
-    bins: UDB_NUM_TRIGGERS * 16 types * 9 regs * 6 accesses
+    bins: UDB_SDTRIG_NUM_TRIGGERS * 16 types * 9 regs * 6 accesses
     rules:
       - Sdtrig_csr_mode
       - Sdtrig_num_trigs_ge1
@@ -58,7 +58,7 @@ coverpoints:
       - Sdtrig_breakpoint_delegated
   - name: A Extension
     description: |-
-      Repeat for each of UDB_NUM_TRIGGERS if UDB_SDTRIG_MCONTROL6_SUPPORTED[i]:
+      Repeat for each of UDB_SDTRIG_NUM_TRIGGERS if UDB_SDTRIG_MCONTROL6_SUPPORTED[i]:
       tselect = i
   - name: cp_lrsc_addr
     goal: |-
@@ -129,7 +129,7 @@ coverpoints:
   - heading: "Notes:\nUNSPECIFIED whether failing SC instructions are stores; do not test.\nUNSPECIFIED whether amo's match on data: do not test"
   - name: Combined Accesses
     description: |-
-      Repeat for each of UDB_NUM_TRIGGERS if UDB_SDTRIG_MCONTROL6_SUPPORTED[i]:
+      Repeat for each of UDB_SDTRIG_NUM_TRIGGERS if UDB_SDTRIG_MCONTROL6_SUPPORTED[i]:
       tselect = i
     bins: UDB_VECTOR_SEW
   - name: cp_vector_load_store
@@ -184,7 +184,7 @@ coverpoints:
       - Sdtrig_mult_mem_access
   - name: Cache Operations
     description: |-
-      Repeat for each of UDB_NUM_TRIGGERS if UDB_SDTRIG_MCONTROL6_SUPPORTED[i]:
+      Repeat for each of UDB_SDTRIG_NUM_TRIGGERS if UDB_SDTRIG_MCONTROL6_SUPPORTED[i]:
       tselect = i
     rules:
       - "For all: Sdtrig_caches_stores"
@@ -231,7 +231,7 @@ coverpoints:
   - name: cp_tdata2_translate
     goal: tdata2 can hold valid addresses in all supported translation modes
     description: |-
-      For each of UDB_NUM_TRIGGERS in tselect
+      For each of UDB_SDTRIG_NUM_TRIGGERS in tselect
       Turn on Virtual memory
       CSRW tdata2 = all 0's
       if sv57 supported:
@@ -258,7 +258,7 @@ coverpoints:
   - name: cp_tdata_write
     goal: "Writes to one tdata register must not modify the contents of other tdata registers. Note: type 15 allow any supported value to be written to tdata2/3"
     description: |-
-      For each of UDB_NUM_TRIGGERS in tselect
+      For each of UDB_SDTRIG_NUM_TRIGGERS in tselect
       tdata1.type = 15
       For reg_x  in {tdata1, tdata2, tdata3}:
       Write all register = 0 (mask tdata1.type)
@@ -277,7 +277,7 @@ coverpoints:
   - name: cp_csr_access
     goal: The Trigger Module registers, except scontext, and hcontext, are only accessible in machine and Debug Mode
     description: |-
-      each of UDB_NUM_TRIGGERS in tselect:
+      each of UDB_SDTRIG_NUM_TRIGGERS in tselect:
       For x register in {tdata1,tdata2,tdata3,tinfo} if x_AVAILABLE:
       csr read, write all 1s write back initial value of each register
 
@@ -295,7 +295,7 @@ coverpoints:
   - name: cp_tselect_trigs
     goal: The set of triggers must start at 0 and be contiguous
     description: |-
-      For tselect = 0 to UDB_NUM_TRIGGERS -1
+      For tselect = 0 to UDB_SDTRIG_NUM_TRIGGERS -1
       CSRR tinfo
       check tinfo.info != 1
     expectation: |-
@@ -311,7 +311,7 @@ coverpoints:
   - name: cp_tdata1_mode_hardwired
     goal: Non supported mode bits are hardwired zero
     description: |-
-      For each of UDB_NUM_TRIGGERS in tselect:
+      For each of UDB_SDTRIG_NUM_TRIGGERS in tselect:
       enable all priv bits (tdata1.m/s/u/vs/vu = 11111) with tdata1.type = 6
       CSRR tdata1 and check value written to tdata1.m/s/u/vs/vu
     expectation: Non-supported mode bits read back as zero after writing all-ones
@@ -325,7 +325,7 @@ coverpoints:
   - name: cp_tinfo_read_only
     goal: Writing tinfo has no effect
     description: |-
-      For each of UDB_NUM_TRIGGERS in tselect:
+      For each of UDB_SDTRIG_NUM_TRIGGERS in tselect:
       CSRR tinfo,
       CSRW 0's and 1's to tinfo,
       CSRR tinfo
@@ -344,7 +344,7 @@ coverpoints:
     description: |-
       if UDB_TCONTROL_AVAILABLE
       tcontrol.mte = {0/1}
-      For each of UDB_NUM_TRIGGERS in tselect:
+      For each of UDB_SDTRIG_NUM_TRIGGERS in tselect:
       cause a supported trigger to fire
     expectation: Breakpoint exception when mte = 1 and trigger fires in M-mode
     bins: 2 mte
@@ -379,7 +379,7 @@ coverpoints:
     description: Deprecated and not tested.
   - name: "Mcontrol6 tests: test fire and don't fire for each scenario"
     description: |-
-      Repeat for each of UDB_NUM_TRIGGERS if UDB_SDTRIG_MCONTROL6_SUPPORTED[i]:
+      Repeat for each of UDB_SDTRIG_NUM_TRIGGERS if UDB_SDTRIG_MCONTROL6_SUPPORTED[i]:
       tselect = i
       tdata1 = 0
       write tdata2 and tdata3 as necessary
@@ -395,7 +395,7 @@ coverpoints:
       tdata1.chain = 0 (disabled)
       tdata1.match = 0 (equal)
       Perform an instruction that causes trigger to fire/not fire
-  - name: cp_mcontrol6_priv_mode
+  - name: cp_sdtrig_mcontrol6_priv_mode
     description: |-
       tdata2 = {scratch}
       tdata1.select = 0 (adr)
@@ -407,13 +407,13 @@ coverpoints:
     rules:
       - Sdtrig_mcontrol6_m
     notes: "comments on test results: Exceptions when m.1"
-  - name: cp_mcontrol6_execute_adr
+  - name: cp_sdtrig_mcontrol6_execute_adr
     description: |-
-      tdata2 = {PC address of nop/0}
+      tdata2 = {PC address of add x0, x1, x2/0}
       tdata1.select = 0 (adr)
       tdata1.XSL = 8 combinations
-      perform nop
-    expectation: Breakpoint exception on PC of nop if tdata2 points to it and tdata1.execute = 1
+      perform add x0, x1, x2
+    expectation: Breakpoint exception on PC of add x0, x1, x2 if tdata2 points to it and tdata1.execute = 1
     bins: 2 values * 8 XSL
     rules:
       - Sdtrig_mcontrol6_select_address
@@ -421,7 +421,7 @@ coverpoints:
       - Sdtrig_mcontrol6_store
       - Sdtrig_mcontrol6_load
     notes: "comments on test results: Exceptions on triggers when execute = 1"
-  - name: cp_mcontrol6_load_store_adr
+  - name: cp_sdtrig_mcontrol6_load_store_adr
     description: |-
       tdata2 = {scratch/0}
       tdata1.select = 0 (adr)
@@ -437,12 +437,13 @@ coverpoints:
       - Sdtrig_mcontrol6_store
       - Sdtrig_mcontrol6_load
     notes: "comments on test results: Exceptions when XSL = 2 or 1 when tdata2 = scratch"
-  - name: cp_mcontrol6_execute_data
+  - name: cp_sdtrig_mcontrol6_execute_data
     description: |-
-      tdata2 = {nop opcode/0}
+      tdata2 = {addi x0, x1, 0 opcode (0x00008013)/0x2}
       tdata1.select = 1 (data)
       tdata1.XSL = 8 combinations
-      perform nop
+      perform addi x0, x1, 0
+      (not nop, whose opcode also appears in the test environment's own code; no instruction in the test encodes as 0x2)
     expectation: Breakpoint exception on fetched instruction if tdata2 matches opcode and tdata1.execute = 1
     bins: 2 values * 8 XSL
     rules:
@@ -450,8 +451,8 @@ coverpoints:
       - Sdtrig_mcontrol6_execute
       - Sdtrig_mcontrol6_store
       - Sdtrig_mcontrol6_load
-    notes: "comments on test results: Exceptions when tdata2 = nopcode, and execute = 1"
-  - name: cp_mcontrol6_load_store_data
+    notes: "comments on test results: Exceptions when tdata2 = 0x00008013, and execute = 1"
+  - name: cp_sdtrig_mcontrol6_load_store_data
     description: |-
       tdata2 = {0x12345678/0}
       tdata1.select = 1 (data)
@@ -460,20 +461,20 @@ coverpoints:
     expectation: |-
       Breakpoint exception on LW if access data matches tdata2 and tdata1.load = 1
       Breakpoint exception on SW if access data matches tdata2 and tdata1.store = 1
-    bins: 2 values * 8 XSL * 2 ops
+    bins: 8 XSL * 2 ops (tdata2 values not binned because the data a load reads is not visible to coverage)
     rules:
       - Sdtrig_mcontrol6_select_data
       - Sdtrig_mcontrol6_execute
       - Sdtrig_mcontrol6_store
       - Sdtrig_mcontrol6_load
     notes: "comments on test results: Exceptions when td2 = 0x12345678, and XSL = 1/2/3"
-  - name: cp_mcontrol6_execute_size
+  - name: cp_sdtrig_mcontrol6_execute_size
     description: |-
-      tdata2 = {nop opcode/c.nop opcode}
+      tdata2 = {addi x0, x1, 0 opcode/c.nop opcode}
       tdata1.select = 1 (data)
       tdata1.XSL = 111
       tdata1.size = {0/1/2/3/4/5/6}
-      perform nop
+      perform addi x0, x1, 0
       if ZCA_SUPPORTED
       perform c.nop
     expectation: Breakpoint exception if the size of the instruction matches the trigger size in mcontrol6 and tdata1.execute = 1
@@ -486,8 +487,7 @@ coverpoints:
       - Sdtrig_mcontrol6_size_64bit
       - Sdtrig_mcontrol6_size_128bit
     notes: "comments on test results: Exceptions when td2 = op, size = 0. Note: warls size to zero"
-  - name: cp_mcontrol6_load_store_size
-    goal: Q  not tested currently
+  - name: cp_sdtrig_mcontrol6_load_store_size
     description: |-
       tdata2 = {scratch/0}
       tdata1.select = 0 (adr)
@@ -496,13 +496,13 @@ coverpoints:
       perform {lb/lbu/lh/lhu/lw/sb/sh/sw} to scratch with value 0x12345678
       if RV64 supported, also perform {lwu/ld/sd}
       if F_SUPPORTED, also perform {flw/fsw}
-      if (D_SUPPORTED, also perform {fld/fsd}
-      if (ZFH_SUPPORTED, also perform {flh/fsh}
+      if D_SUPPORTED, also perform {fld/fsd}
+      if ZFH_SUPPORTED, also perform {flh/fsh}
       if Q_SUPPORTED also perform {flq/fsq}
       if ZCA_SUPPORTED, also perform c.{lw/sw/lwsp/swsp}
       if ZCA_SUPPORTED and RV64, also perform c.{ld/sd/ldsp/sdsp}
       if ZCB_SUPPORTED, also perform c.{lbu/lh/lhu/sb/sh}
-      if ZCF_SUPPORTEDand RV32, also perform c.{flw/flwsp/fsw/fswsp}
+      if ZCF_SUPPORTED and RV32, also perform c.{flw/flwsp/fsw/fswsp}
       if ZCD_SUPPORTED, also perform c.{fld/fldsp/fsd/fsdsp}
     expectation: Breakpoint exception if the size of the memory access matches the trigger size in mcontrol6
     bins: 2 values * 7 sizes * up to 39 instructions
@@ -511,7 +511,7 @@ coverpoints:
       - Sdtrig_mcontrol6_size_32bit
       - Sdtrig_mcontrol6_size_64bit
       - Sdtrig_mcontrol6_size_128bit
-  - name: cp_mcontrol6_match
+  - name: cp_sdtrig_mcontrol6_match
     goal: Test boundaries for match conditions
     description: |-
       tdata1.select = 1 (data)
@@ -519,10 +519,10 @@ coverpoints:
       tdata1.match = {0/2/3/8}
       if RV32:
       tdata2 = {0x12345678}
-      perform SW{0x0000000},{0x12345678-1} {0x12345678},{0x12345678+1},{0xFFFFFFFF} to scratch
+      perform SW{0x0},{0x12345678-1} {0x12345678},{0x12345678+1},{0xFFFFFFFF} to scratch
       if RV64:
       tdata2 = {0x123456789ABCDEF0}
-      perform SD{0x0},{0x123456789ABCDEF0-1} {0x123456789ABCDEF0},{0x123456789ABCDEF0+1},{0xFFFFFFFFFFFFFFF} to scratch
+      perform SD{0x0},{0x123456789ABCDEF0-1} {0x123456789ABCDEF0},{0x123456789ABCDEF0+1},{0xFFFFFFFFFFFFFFFF} to scratch
     expectation: Breakpoint exception if the store data meets the condition set by tdata1.match
     bins: 4 matches * 5 ops
     rules:
@@ -537,33 +537,38 @@ coverpoints:
       tdata1.match = {1/9}
       if RV32:
       tdata2 = 0xFFFFFFFF
-      for x in 1:XLEN-1 tdata2[x] = 0
+      for x in 1:min(UDB_SDTRIG_MASKMAX6, XLEN-1)-1 tdata2[x] = 0 (legal NAPOT sizes only)
       perform SW{0x0}, {0x12345678}, {0xFFFFFFFF} to scratch
       if RV64:
       tdata2 = 0xFFFFFFFFFFFFFFFF
-      for x in 1:XLEN-1 tdata2[x] = 0
+      for x in 1:min(UDB_SDTRIG_MASKMAX6, XLEN-1)-1 tdata2[x] = 0 (legal NAPOT sizes only)
       perform SD{0x0}, {0x123456789ABCDEF0},{0xFFFFFFFFFFFFFFFF} to scratch
     expectation: |-
       Breakpoint exception if the store data meets the condition set by tdata1.match
       If bits maskmax6-1:0 are written with all ones then bit maskmax6-1 will be set to 0
-    bins: 2 matches * XLEN values * 3 ops
+    bins: 2 matches * (min(UDB_SDTRIG_MASKMAX6, XLEN-1)-1) values * 3 ops
     rules:
       - Sdtrig_mcontrol6_match_napot
       - Sdtrig_mcontrol6_match_not_napot
-  - name: cp_mcontrol6_match_mask
+  - name: cp_sdtrig_mcontrol6_match_mask
     description: |-
       tdata1.select = 1 (data)
       tdata1.XSL= 010
       tdata1.match = {4/5/12/13}
+      tdata2[XLEN-1:XLEN/2] is the mask and tdata2[XLEN/2-1:0] the value
       if RV32:
       tdata2 = {0xF0F0_A0B0}
-      perform SW{0x0}, *** to scratch
+      perform SW{0x0}, {0xF0F0_A0B0}, {0xFFFFFFFF},
+      low half {0x0000_A0B0}, {0x0000_A1B2}, {0x0000_F0F0}, {0x0001_A0B0},
+      high half {0xA0B0_0000}, {0xA1B2_0000}, {0xF0F0_0000}, {0xA0B0_0001} to scratch
       if RV64:
       tdata2 = {0xF0F0F0F0_A0B0C0D0}
-      perform SD{0x0}, *** to scratch
-      *** depends on high/low
+      perform SD{0x0}, {0xF0F0F0F0_A0B0C0D0}, {0xFFFFFFFFFFFFFFFF},
+      low half {0x00000000_A0B0C0D0}, {0x00000000_A1B2C3D4}, {0x00000000_F0F0F0F0}, {0x00000001_A0B0C0D0},
+      high half {0xA0B0C0D0_00000000}, {0xA1B2C3D4_00000000}, {0xF0F0F0F0_00000000}, {0xA0B0C0D0_00000001} to scratch
+      in each half: the value, differs only outside the mask, differs inside the mask, the value with the other half nonzero
     expectation: Breakpoint exception if the store data meets the condition set by tdata1.match
-    bins: 4 matches * 5 ops
+    bins: 4 matches * 11 values
     rules:
       - Sdtrig_mcontrol6_match_mask_low
       - Sdtrig_mcontrol6_match_mask_high
@@ -571,7 +576,7 @@ coverpoints:
       - Sdtrig_mcontrol6_match_not_mask_high
   - name: MControl6 Chain
     description: |-
-      Repeat for each of UDB_NUM_TRIGGERS if UDB_SDTRIG_MCONTROL6_SUPPORTED[i] and UDB_SDTRIG_MCONTROL6_SUPPORTED[i+1]:
+      Repeat for each of UDB_SDTRIG_NUM_TRIGGERS if UDB_SDTRIG_MCONTROL6_SUPPORTED[i] and UDB_SDTRIG_MCONTROL6_SUPPORTED[i+1]:
       tselect = i
       write tdata2 and tdata3 as necessary
       tdata3 = 0 unless otherwise specified (textra = 0, controls context matching)
@@ -586,7 +591,7 @@ coverpoints:
       tdata1.chain = 0 (disabled)
       tdata1.match = 0 (equal)
       Perform an instruction that causes trigger to fire/not fire
-  - name: cp_mcontrol6_chain_adr
+  - name: cp_sdtrig_mcontrol6_chain_adr
     description: |-
       Trigger i (Tselect = i):
       tdata1.select = 0 (address)
@@ -612,7 +617,7 @@ coverpoints:
   - heading: action other than 0 not tested until those features are supported (e.g. SdtrigSdext/SdtrigTrace)
   - name: "Icount tests: test fire and don't fire for each scenario"
     description: |-
-      Repeat for each of UDB_NUM_TRIGGERS if UDB_SDTRIG_ICOUNT_SUPPORTED[i]:
+      Repeat for each of UDB_SDTRIG_NUM_TRIGGERS if UDB_SDTRIG_ICOUNT_SUPPORTED[i]:
       tselect = i
       tdata1 = 0
       tdata3 = 0 unless otherwise specified (textra = 0, controls context matching)
@@ -676,7 +681,7 @@ coverpoints:
       - Sdtrig_icount_count_zero
   - name: "Itrigger tests: test fire and don't fire for each scenario"
     description: |-
-      Repeat for each of UDB_NUM_TRIGGERS if UDB_SDTRIG_ITRIGGER_SUPPORTED[i]:
+      Repeat for each of UDB_SDTRIG_NUM_TRIGGERS if UDB_SDTRIG_ITRIGGER_SUPPORTED[i]:
       tselect = i
       tdata1 = 0
       tdata3 = 0 unless otherwise specified (textra = 0, controls context matching)
@@ -712,7 +717,7 @@ coverpoints:
       - Sdtrig_itrigger_action0
   - name: "Etrigger tests: test fire and don't fire for each scenario"
     description: |-
-      Repeat for each of UDB_NUM_TRIGGERS if UDB_SDTRIG_ETRIGGER_SUPPORTED[i]:
+      Repeat for each of UDB_SDTRIG_NUM_TRIGGERS if UDB_SDTRIG_ETRIGGER_SUPPORTED[i]:
       tselect = i
       tdata1 = 0
       tdata3 = 0 unless otherwise specified (textra, controls context matching)
@@ -748,7 +753,7 @@ coverpoints:
       - Sdtrig_etrigger_m
   - name: Textra
     description: |-
-      Repeat for each of UDB_NUM_TRIGGERS if UDB_TDATA3_EXISTS[i]:
+      Repeat for each of UDB_SDTRIG_NUM_TRIGGERS if UDB_TDATA3_EXISTS[i]:
       tselect = i
       tdata1 = 0
       tdata1.dmode = 0 (M-mode accessible)
@@ -924,7 +929,7 @@ coverpoints:
       - Sdtrig_textra32_sselect_asid
   - name: cp_smode_fields_hardwired
     description: |-
-      For each of UDB_NUM_TRIGGERS in tselect:
+      For each of UDB_SDTRIG_NUM_TRIGGERS in tselect:
       If TDATA3_EXISTS:
       If S_SUPPORTED = false:
       CSRW textra.svalue = 1

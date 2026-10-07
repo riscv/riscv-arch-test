@@ -59,7 +59,7 @@ def format_vsr_type(
 
     setup = []
 
-    reload_register = random.choice(list(test_data.vec_regs.free_registers(int(max(emul, 1)), segments)))
+    reload_register = random.choice(test_data.vec_regs.free_registers(int(max(emul, 1)), segments))
     params.vd = reload_register
     params.vd_val_pointer = "NOT_A_LABEL"  # Placeholder value that should NOT end up in generated code
     test_data.vec_regs.allocate_operand("vd", reload_register, int(max(emul, 1)) * segments)

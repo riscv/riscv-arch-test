@@ -86,8 +86,15 @@ ZCA_WRITES_SP = [("c.swsp", "lw"), ("c.sdsp", "ld")]
 # Cache-block and prefetch operations use rs1 as their address.
 ZICBOM_OPS = ["cbo.clean", "cbo.flush", "cbo.inval"]
 ZICBOP_OPS = ["prefetch.r", "prefetch.w", "prefetch.i"]
-# TODO: Add the remaining Zicfiss load, store, and AMO instructions.
-ZICFISS_AMOS: list[tuple[str, str]] = []
+# Zicfiss instructions target SS_PAGE , used only by the suites
+# that probe below M-mode under S-mode (Ssnpm, SmnpmS``). AMO entries contain (mnemonic, readback instruction).
+ZICFISS_AMOS = [("ssamoswap.w", "lw"), ("ssamoswap.d", "ld")]
+# Push and pop entries contain (mnemonic, link register, is compressed). They address memory through ssp.
+ZICFISS_PUSHES = [("sspush", 1, False), ("sspush", 5, False), ("c.sspush", 1, True)]
+ZICFISS_POPS = [("sspopchk", 1, False), ("sspopchk", 5, False), ("c.sspopchk", 5, True)]
+SS_PAGE = "pm_ss_page"
+# Tables of the 4 KiB identity map of the test image, which holds the SS_PAGE leaf.
+IMAGE_TABLES = "pm_img_slvl{}_pg_tbl"
 
 # Vector entries contain (instruction, SEW, assembly template).
 VEC_READS = [
@@ -248,6 +255,21 @@ def data_page(label: str, value: int = VALUE_OLD) -> list[str]:
     ]
 
 
+def ss_data_page(image_mode: str | None = None) -> list[str]:
+    """The page probed by the Zicfiss instructions, plus the IMAGE_TABLES pages for *image_mode*."""
+    tables = data_slvl_tables(image_mode, IMAGE_TABLES) if image_mode else []
+    return _ifdef("ZICFISS_SUPPORTED", [*data_page(SS_PAGE), *tables])
+
+
+def set_sse(csr: str, enable: bool, test_data: TestData, tsbi: bool = False) -> list[str]:
+    """Set or clear the shadow-stack enable (SSE) in menvcfg or senvcfg."""
+    op = "csrs" if enable else "csrc"
+    return _ifdef(
+        "ZICFISS_SUPPORTED",
+        [f"# {csr}.SSE = {int(enable)}", *csr_op(op, csr, f"{csr.upper()}_SSE", test_data, tsbi)],
+    )
+
+
 def data_slvl_tables(mode: str, table_label: str = "rvtest_slvl{}_pg_tbl") -> list[str]:
     """Zero-filled page-table pages below the root for *mode*, named by *table_label*."""
     lines: list[str] = []
@@ -269,7 +291,12 @@ def mprv_data_section() -> list[str]:
 
 
 def build_4k_image_map(
-    mode: str, table_label: str, user_ranges: list[tuple[str, str | int]], test_data: TestData
+    mode: str,
+    table_label: str,
+    user_ranges: list[tuple[str, str | int]],
+    test_data: TestData,
+    *,
+    ss_page_user: bool | None = None,
 ) -> list[str]:
     """Map the 2 MiB region containing rvtest_code_begin as 512 identity 4 KiB leaves.
 
@@ -277,6 +304,7 @@ def build_4k_image_map(
     PTE_U when its base lies inside one of *user_ranges*, each a (begin label, end label or byte size)
     pair; everything else, such as the S-mode trap handler, stays supervisor-only.
     All 512 leaves are written supervisor-only first; a second pass sets PTE_U on each range's pages.
+    With Zicfiss, *ss_page_user* also makes SS_PAGE a shadow-stack page (xwr=010), with PTE_U if true.
     """
     tables = [table_label.format(level) for level in SV_MODES[mode].levels_desc[1:]]
     (r0,) = test_data.int_regs.get_registers(1)
@@ -335,6 +363,19 @@ def build_4k_image_map(
                 f"bltu x{s1}, x{s2}, 2b",
             ]
         )
+    if ss_page_user is not None:
+        ss_leaf = [
+            f"# {SS_PAGE}: shadow-stack leaf (xwr=010)",
+            f"LA(x{s1}, {SS_PAGE})",
+            f"sub  x{count}, x{s1}, x{r0}",
+            f"srli x{count}, x{count}, 9             # leaf offset = page index * 8",
+            f"add  x{count}, x{count}, x{r1}",
+            f"srli x{s1}, x{s1}, 12",
+            f"slli x{s1}, x{s1}, 10",
+            f"ori  x{s1}, x{s1}, ({PteFlags(read=False, execute=False, user=ss_page_user)})",
+            f"sd   x{s1}, 0(x{count})",
+        ]
+        lines.extend(_ifdef("ZICFISS_SUPPORTED", ss_leaf))
     test_data.int_regs.return_registers([r0, r1, count, perms, s1, s2])
     return lines
 
@@ -531,6 +572,57 @@ def _probe_amo(
     ]
     test_data.int_regs.return_registers([base_reg, addr, value, result])
     return lines
+
+
+def _probe_ssamoswap(
+    mnemonic: str, readback_mnemonic: str, upper_tag: int, bin_name: str, test_data: TestData, covergroup: str
+) -> list[str]:
+    """Generate one SSAMOSWAP probe on SS_PAGE and record both its result and memory value.
+
+    An ordinary store to a shadow-stack page faults, so the page is seeded with SSAMOSWAP.D
+    through the untagged address.
+    """
+    base_reg, addr, value, result = test_data.int_regs.get_registers(4)
+    lines = [
+        *_tagged_address(base_reg, addr, SS_PAGE, upper_tag),
+        f"LI(x{value}, {hex(VALUE_OLD)})",
+        f"ssamoswap.d x0, x{value}, (x{base_reg})",
+        f"LI(x{value}, {hex(VALUE_NEW)})",
+        f"LI(x{result}, {hex(SENTINEL)})",
+        test_data.add_testcase(bin_name, "cp_pmlen_zicfiss_amo", covergroup),
+        f"{mnemonic} x{result}, x{value}, (x{addr})",
+        write_sigupd(result, test_data),
+        f"{readback_mnemonic} x{result}, 0(x{base_reg})",
+        write_sigupd(result, test_data),
+    ]
+    test_data.int_regs.return_registers([base_reg, addr, value, result])
+    return lines
+
+
+def _probe_ssp(
+    mnemonic: str, link: int, compressed: bool, push: bool, upper_tag: int, bin_name: str, test_data: TestData, cg: str
+) -> list[str]:
+    """Generates a shadow-stack push or pop probe using a tagged ssp, with SSPUSH storing the link register at ssp-8
+    and SSPOPCHK loading and validating it from ssp.
+    Records the resulting ssp on successful access and the memory value for pushes, using x1 or x5 as the link register.
+    """
+    base_reg, addr, value = test_data.int_regs.get_registers(3)
+    lines = [
+        *_tagged_address(base_reg, addr, SS_PAGE, upper_tag),
+        f"LI(x{value}, {hex(VALUE_OLD)})",
+        f"ssamoswap.d x0, x{value}, (x{base_reg})",
+        *([f"addi x{addr}, x{addr}, 8"] if push else []),
+        f"csrw CSR_SSP, x{addr}",
+        f"LI(x{link}, {hex(VALUE_NEW if push else VALUE_OLD)})",
+        test_data.add_testcase(bin_name, "cp_pmlen_zicfiss_ssp", cg),
+        *arch_block([f"{mnemonic} x{link}"], *(("zca", "zcmop") if compressed else ())),
+        f"csrr x{value}, CSR_SSP",
+        write_sigupd(value, test_data),
+    ]
+    if push:
+        lines.extend([f"ld x{value}, 0(x{base_reg})", write_sigupd(value, test_data)])
+    test_data.int_regs.return_registers([base_reg, addr, value])
+    return _ifdef("ZCMOP_SUPPORTED", lines) if compressed else lines
 
 
 def _probe_zacas(mnemonic: str, upper_tag: int, bin_name: str, test_data: TestData, covergroup: str) -> list[str]:
@@ -739,13 +831,6 @@ def generate_instruction_sweep_tests(
         )
         lines.extend(_ifdef("ZCA_SUPPORTED", zca_lines))
 
-        zicfiss = []
-        for mn, rb in ZICFISS_AMOS:
-            zicfiss.extend(
-                _probe_amo(mn, rb, upper, _binname(prefix, upper, mn), test_data, cg, arch_extensions=("zicfiss",))
-            )
-        lines.extend(_ifdef("ZICFISS_SUPPORTED", zicfiss))
-
         for guard, ops in (("ZICBOZ", ["cbo.zero"]), ("ZICBOM", ZICBOM_OPS), ("ZICBOP", ZICBOP_OPS)):
             cbo = []
             for mn in ops:
@@ -764,6 +849,24 @@ def generate_instruction_sweep_tests(
             lines.extend(_ifdef(f"{guard}_SUPPORTED", vector))
 
     return lines
+
+
+def generate_zicfiss_tests(prefix: str, test_data: TestData, cg: str, uppers: list[int]) -> list[str]:
+    """Exercise the Zicfiss shadow-stack instructions through each tagged address pattern.
+
+    They access memory only below M-mode with S-mode implemented, shadow stacks enabled by set_sse,
+    and SS_PAGE mapped as a shadow-stack page.
+    """
+    lines = []
+    for upper in uppers:
+        lines.append(comment_banner(f"{prefix} Zicfiss shadow-stack instructions: tag 0x{upper:04X}"))
+        for mn, rb in ZICFISS_AMOS:
+            lines.extend(_probe_ssamoswap(mn, rb, upper, _binname(prefix, upper, mn), test_data, cg))
+        for push, forms in ((True, ZICFISS_PUSHES), (False, ZICFISS_POPS)):
+            for mn, link, compressed in forms:
+                bin_name = _binname(prefix, upper, f"{mn}_x{link}")
+                lines.extend(_probe_ssp(mn, link, compressed, push, upper, bin_name, test_data, cg))
+    return _ifdef("ZICFISS_SUPPORTED", lines) if lines else []
 
 
 def _load_store_sweep(

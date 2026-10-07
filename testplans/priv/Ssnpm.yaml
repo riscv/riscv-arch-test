@@ -42,10 +42,8 @@ coverpoints:
        If Zicbop: perform {PREFETCH.R, PREFETCH.W, PREFETCH.I} at A, then do a normal load/store at Scratch to observe cache effect.
 
       (VECTOR OPS): If ZVL32b/RVV 1.0,  Reads: {vleXX.v, vlseXX.v, vluxeiXX.v, vloxeiXX.v, vlsegNfXX.v, vl1r.v, vleXXff.v} from A, sigupd. Writes: {vseXX.v, vsseXX.v, vsuxeiXX.v, vsoxeiXX.v, vssegNfXX.v, vs1r.v} to A, read back from scratch sigupd(value) +  record any traps.
-
-      (SHADOW STACK : Zicfiss): Writes/AMOs: SSPUSH/C.SSPUSH at A, then SSPOPCHK/C.SSPOPCHK from scratch to verify. SSAMOSWAP.W/D at A, read back from scratch.
     expectation: "When PMM=10/11: all 8 A patterns whose upper bits fall within PMLEN resolve to scratch , reads return known value_old, write readbacks return known value_new. When PMM=00: masking disabled : only A=0x0000 resolves to scratch; all other patterns either access a different location (returning old/unrelated value) or cause a trap."
-    bins: "3 PMM × 8 address variants × 1 mode (U) × satp supported modes (Bare, Sv39, Sv48, Sv57) × [Base: 4r×4w] + [RV64A if implemented: 9 AMO variants × 2 widths] + [Zacas if implemented: 3] + [Zabha if implemented: 9 AMO variants × 2 widths] + [FP if implemented: per F/D/Q] + [Zca if implemented: 4r×4w regular + 4r×4w SP-relative] + [Zcd if implemented: 1r×1w SP-relative] + [RVV if implemented: vector load/store variants] + [Zicfiss if implemented: SSPUSH, SSPOPCHK, SSAMOSWAP.W/D] + [Zicbom if implemented: CBO.CLEAN, CBO.FLUSH, CBO.INVAL] + [Zicboz if implemented: CBO.ZERO] + [Zicbop if implemented: PREFETCH.R, PREFETCH.W, PREFETCH.I]"
+    bins: "3 PMM × 8 address variants × 1 mode (U) × satp supported modes (Bare, Sv39, Sv48, Sv57) × [Base: 4r×4w] + [RV64A if implemented: 9 AMO variants × 2 widths] + [Zacas if implemented: 3] + [Zabha if implemented: 9 AMO variants × 2 widths] + [FP if implemented: per F/D/Q] + [Zca if implemented: 4r×4w regular + 4r×4w SP-relative] + [Zcd if implemented: 1r×1w SP-relative] + [RVV if implemented: vector load/store variants] + [Zicbom if implemented: CBO.CLEAN, CBO.FLUSH, CBO.INVAL] + [Zicboz if implemented: CBO.ZERO] + [Zicbop if implemented: PREFETCH.R, PREFETCH.W, PREFETCH.I]"
     rules:
       - pm_ignore_upper_bits
       - pm_deterministic_effect
@@ -62,6 +60,49 @@ coverpoints:
       - pmlen_mode_depend
       - pm_ignore_va
       - pm_ignore_pa
+  - name: cp_pmlen_zicfiss_amo
+    goal: Verify that upper PMLEN bits are ignored for the Zicfiss shadow stack AMO instructions when pointer masking is enabled
+    description: |-
+      If pointer masking is enabled, SSAMOSWAP.W/D addresses differing only in upper PMLEN bits access the same shadow stack location.
+      SSAMOSWAP accesses memory only with shadow stacks enabled and an address in a shadow stack page, so Bare mode is not tested: there it always raises a store/AMO access fault.
+
+      Test Environment:
+       If Zicfiss: In S-mode set menvcfg.SSE=1 and senvcfg.SSE=1, and senvcfg.PMM={00 (PMLEN=0), 10(PMLEN=7), 11(PMLEN=16)}.
+       Let A' = ss_page (upper bits = 0x0000), identity-mapped as a user shadow stack page (pte.xwr = 010).
+       Switch to U-mode and execute the following loop:
+      For each PMM in {00, 10, 11} under SAT.MODES = { Sv39, Sv48, Sv57 } :
+      For each A_upper_bits in {0x0000, 0x0001, 0x0100, 0x0200, 0x8000, 0xFFFF, 0xFE00, 0xFF00}:
+      Set A = A' with upper bits replaced by A_upper_bits
+      Place known value_old in ss_page with SSAMOSWAP.D at A' (an ordinary store to a shadow stack page faults).
+      For each of {SSAMOSWAP.W, SSAMOSWAP.D}: swap unique known value_new at A, sigupd(rd), then read back from ss_page (A'), sigupd(value) +  record any traps.
+    expectation: "When PMM=10/11: all A patterns whose upper bits fall within PMLEN resolve to ss_page , rd returns known value_old, readback returns known value_new. When PMM=00: masking disabled : only A=0x0000 resolves to ss_page; all other patterns cause a store/AMO page fault, rd is unchanged and readback returns value_old."
+    bins: "3 PMM × 8 address variants × 1 mode (U) × satp supported modes (Sv39, Sv48, Sv57) × [Zicfiss if implemented: SSAMOSWAP.W, SSAMOSWAP.D]"
+    rules:
+      - pm_ignore_upper_bits
+      - pm_apply_explicit
+      - pm_ignore_va
+  - name: cp_pmlen_zicfiss_ssp
+    goal: Verify that upper PMLEN bits are ignored for the Zicfiss shadow stack push and pop instructions when pointer masking is enabled
+    description: |-
+      SSPUSH and SSPOPCHK address memory through the ssp CSR instead of rs1. If pointer masking is enabled, ssp values differing only in upper PMLEN bits access the same shadow stack location.
+      Pushes and pops access memory only with shadow stacks enabled and an address in a shadow stack page, so Bare mode is not tested: there they always raise a store/AMO access fault.
+
+      Test Environment:
+       If Zicfiss: In S-mode set menvcfg.SSE=1 and senvcfg.SSE=1, and senvcfg.PMM={00 (PMLEN=0), 10(PMLEN=7), 11(PMLEN=16)}.
+       Let A' = ss_page (upper bits = 0x0000), identity-mapped as a user shadow stack page (pte.xwr = 010).
+       Switch to U-mode and execute the following loop:
+      For each PMM in {00, 10, 11} under SAT.MODES = { Sv39, Sv48, Sv57 } :
+      For each A_upper_bits in {0x0000, 0x0001, 0x0100, 0x0200, 0x8000, 0xFFFF, 0xFE00, 0xFF00}:
+      Set A = A' with upper bits replaced by A_upper_bits
+      Place known value_old in ss_page with SSAMOSWAP.D at A'.
+      For each push {SSPUSH x1, SSPUSH x5, C.SSPUSH x1 (if Zcmop)}: set ssp = A + 8 and link register = value_new, push, sigupd(ssp), then read back from ss_page (A'), sigupd(value) +  record any traps.
+      For each pop {SSPOPCHK x1, SSPOPCHK x5, C.SSPOPCHK x5 (if Zcmop)}: set ssp = A and link register = value_old, pop, sigupd(ssp) +  record any traps.
+    expectation: "When PMM=10/11: all A patterns whose upper bits fall within PMLEN resolve to ss_page , a push writes value_new and leaves ssp = A, a pop matches value_old and leaves ssp = A + 8. When PMM=00: masking disabled : only A=0x0000 resolves to ss_page; all other patterns cause a store/AMO page fault, ssp is unchanged and readback returns value_old."
+    bins: "3 PMM × 8 ssp variants × 1 mode (U) × satp supported modes (Sv39, Sv48, Sv57) × [Zicfiss if implemented: SSPUSH x1, SSPUSH x5, SSPOPCHK x1, SSPOPCHK x5] + [Zcmop if implemented: C.SSPUSH x1, C.SSPOPCHK x5]"
+    rules:
+      - pm_ignore_upper_bits
+      - pm_apply_explicit
+      - pm_ignore_va
   - name: |-
       cp_pmm_mxr
       cp_pmm_jalr

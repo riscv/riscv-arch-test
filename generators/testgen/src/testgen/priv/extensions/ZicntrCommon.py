@@ -11,7 +11,7 @@
 from typing import Literal
 
 from testgen.asm.helpers import comment_banner, write_sigupd
-from testgen.asm.tsbi import tsbi_call
+from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
 
 Mode = Literal["M", "S", "U"]
@@ -64,9 +64,7 @@ def _write_counteren(csr: str, operand: str, mode: Mode, comment: str = "") -> s
     instr = f"csrw {csr}, {operand}"
     if comment:
         instr += f"  # {comment}"
-    if mode == "M" or (mode == "S" and csr == "scounteren"):
-        return instr
-    return tsbi_call(instr)
+    return tsbi_call_or_direct(instr, mode)
 
 
 def counteren_walk_tests(

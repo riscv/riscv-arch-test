@@ -11,4 +11,5 @@ notes: |
   - all addresses are physical, Tests executed only in Bare mode .
   - For cp_hardware_csr_write_faults , traps are being handled in M mode and mtval will be checked.
   - drop cp_pmm_mxr because MXR is read-only 0 if S-mode is not supported
+  - drop cp_pmlen_zicfiss_amo and cp_pmlen_zicfiss_ssp because Zicfiss cannot be activated if S-mode is not supported: SSAMOSWAP is illegal in U-mode, and SSPUSH and SSPOPCHK revert to their Zimop/Zcmop behavior and do not access memory.
 coverpoints: []

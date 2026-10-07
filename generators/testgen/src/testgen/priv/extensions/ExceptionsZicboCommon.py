@@ -12,7 +12,7 @@ across different privilege-modes."""
 from typing import NamedTuple
 
 from testgen.asm.helpers import comment_banner, write_sigupd
-from testgen.asm.tsbi import tsbi_call
+from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 
@@ -83,8 +83,7 @@ def _csr_op(op: str, csr: str, reg: int, mode: str) -> str:
     issued directly when ``mode`` has direct access to ``csr``, and routed
     through T-SBI otherwise."""
     instr = f"{op}  {csr}, x{reg}"
-    needs_tsbi = (mode == "U") if csr == "senvcfg" else (mode != "Sm")
-    return tsbi_call(instr) if needs_tsbi else instr
+    return tsbi_call_or_direct(instr, "M" if mode == "Sm" else mode)
 
 
 def _mode_tag(mode: str, cross_senvcfg: bool) -> str:

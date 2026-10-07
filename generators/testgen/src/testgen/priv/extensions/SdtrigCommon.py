@@ -1774,7 +1774,6 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
         )
     )
     origins = ("Sm", "S", "U") if mode == "Sm" else (mode,)
-    x_tval = "mtval" if mode == "Sm" else "stval"
     for origin in origins:
         gated = mode == "Sm" and origin != "Sm"
         if gated:
@@ -1824,8 +1823,6 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                             lines.extend(
                                 [
                                     *_clear_interrupt(cause, mode),
-                                    f"csrr x{t1}, {x_tval}",
-                                    write_sigupd(t1, test_data),
                                     *_read_trigger_hit(t2, trig_num, mode, test_data),
                                     *_disable_trigger(t1, trig_num, mode),
                                 ]

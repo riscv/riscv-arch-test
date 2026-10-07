@@ -511,5 +511,5 @@ endgroup
 
 
 function void zicntrh_sample(int hart, int issue, ins_t ins);
-    ZicntrH_counters_cg.sample(ins);
+    ZicntrH_cg.sample(ins);
 endfunction

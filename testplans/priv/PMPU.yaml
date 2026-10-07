@@ -1,0 +1,147 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: PMPU
+source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=2072825600#gid=2072825600
+notes: |
+  General Test Environment (PMPU):
+  - Runs when U and Sm are implemented and NUM_PMP_ENTRIES > 0. The NA4, NAPOT and TOR test files also need PMP_NA4_SUPPORTED, PMP_NAPOT_SUPPORTED or PMP_TOR_SUPPORTED.
+  - Boots to M-mode and programs the PMP there, then switches to U-mode (RVTEST_TSBI_GOTO_UMODE) for each set of probes and back to M-mode (RVTEST_TSBI_GOTO_MMODE). cp_mprv_* probes run in M-mode.
+  - Background entry, grain, standard region, loads, stores and the fetch probe are as in PMPSm.
+  - Entries under test are unlocked (L=0) unless a row says otherwise: R/W/X apply to U-mode accesses whatever L is.
+coverpoints:
+  - heading: Permission bits
+  - name: cp_cfg_X
+    goal: Verify that X controls U-mode instruction fetch whether or not the entry is locked.
+    description: One standard NAPOT region. Walk the six legal XWR values with L=1, then again with L=0, each in its own entry as in PMPSm cp_cfg_X. jalr to the start of the region from U-mode.
+    expectation: Instruction access fault when X=0, for both L=0 and L=1.
+    bins: 2 L × 6 XWR = 12
+    rules:
+      - pmp_check_priv_modes
+      - pmp_cfg_permissions
+      - pmp_exec_fault
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_access_fault_exception
+  - name: cp_cfg_R
+    goal: Verify that R controls every U-mode load width whether or not the entry is locked.
+    description: Same walk as cp_cfg_X. Every load (lb, lbu, lh, lhu, lw (+ lwu, ld on RV64)) at the start of the region from U-mode.
+    expectation: Load access fault when R=0, for both L=0 and L=1.
+    bins: 2 L × 6 XWR × 5 loads = 60 (84 on RV64)
+    rules:
+      - pmp_check_priv_modes
+      - pmp_cfg_permissions
+      - pmp_load_fault
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_access_fault_exception
+  - name: cp_cfg_W
+    goal: Verify that W controls every U-mode store width whether or not the entry is locked.
+    description: Same walk as cp_cfg_X. Every store (sb, sh, sw (+ sd on RV64)) at the start of the region from U-mode.
+    expectation: Store/AMO access fault when W=0, for both L=0 and L=1.
+    bins: 2 L × 6 XWR × 3 stores = 36 (48 on RV64)
+    rules:
+      - pmp_check_priv_modes
+      - pmp_cfg_permissions
+      - pmp_store_fault
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_access_fault_exception
+  - heading: Address-matching modes
+  - name: |-
+      cp_cfg_A_off_jalr
+      cp_cfg_A_off_lw
+      cp_cfg_A_off_sw
+    goal: Verify that an OFF entry does not match U-mode accesses.
+    description: "Entry 0: L=0, A=OFF, XWR=000, pmpaddr0 = all ones. jalr, lw and sw in the region from U-mode."
+    expectation: All accesses succeed through the background entry.
+    bins: 1 each
+    rules:
+      - pmp_a_field_off
+      - pmp_check_priv_modes
+  - name: |-
+      cp_cfg_A_napot_jalr
+      cp_cfg_A_napot_lw
+      cp_cfg_A_napot_sw
+    goal: Verify that XWR is enforced for U-mode across an unlocked NAPOT region and not outside it.
+    description: PMP_NAPOT_SUPPORTED only. One standard NAPOT region, six legal XWR with L=0. jalr, lw and sw at base-4, base, base+4, the highest word and just past the top, from U-mode.
+    expectation: "Inside the region: access fault when the permission is clear. Outside: the access succeeds."
+    bins: 6 XWR × 5 addresses = 30 each
+    rules:
+      - pmp_napot_encoding_low_bits
+      - pmp_a_field_napot_na4
+      - pmp_check_priv_modes
+      - pmp_rwx_check
+      - pmp_exec_fault
+      - pmp_load_fault
+      - pmp_store_fault
+  - name: |-
+      cp_cfg_A_na4_jalr
+      cp_cfg_A_na4_lw
+      cp_cfg_A_na4_sw
+    goal: Verify that XWR is enforced for U-mode on an unlocked NA4 region and not on its neighbors.
+    description: PMP_NA4_SUPPORTED only. One NA4 region, six legal XWR with L=0. jalr, lw and sw at region-4, region and region+4, from U-mode.
+    expectation: Access fault at the region when the permission is clear. The neighbors succeed.
+    bins: 6 XWR × 3 addresses = 18 each
+    rules:
+      - pmp_a_field_napot_na4
+      - pmp_check_priv_modes
+      - pmp_rwx_check
+      - pmp_exec_fault
+      - pmp_load_fault
+      - pmp_store_fault
+  - name: |-
+      cp_cfg_A_tor_jalr
+      cp_cfg_A_tor_lw
+      cp_cfg_A_tor_sw
+    goal: Verify that XWR is enforced for U-mode across an unlocked TOR region and not outside it.
+    description: PMP_TOR_SUPPORTED only. One TOR region of one grain [bottom, top) from a pair of entries, six legal XWR with L=0. jalr, lw and sw at bottom-4, bottom, top-4 and top, from U-mode.
+    expectation: "Inside the region: access fault when the permission is clear. bottom-4 and top: the access succeeds."
+    bins: 6 XWR × 4 addresses = 24 each
+    rules:
+      - pmp_a_field_tor
+      - pmp_check_priv_modes
+      - pmp_rwx_check
+      - pmp_exec_fault
+      - pmp_load_fault
+      - pmp_store_fault
+  - heading: MPRV
+  - name: |-
+      cp_mprv_jalr
+      cp_mprv_lw
+      cp_mprv_sw
+    goal: Verify that M-mode loads and stores are checked as U-mode when mstatus.MPRV=1 and MPP=U, and that fetches are not.
+    description: "M-mode. Entry 0 over a standard region: L={0,1}, A=NAPOT, XWR={000, 111}. mstatus.MPP = U, MPRV = {0,1}. jalr, lw and sw in the region."
+    expectation: "XWR=111: all succeed. XWR=000: lw and sw fault when MPRV=1 (even with L=0) or when L=1, and succeed when MPRV=0 and L=0. jalr ignores MPRV: it faults only when L=1."
+    bins: "2 MPRV × 2 L × 2 XWR = 8 each. MPP=M is not binned: with MPRV=1 it behaves as MPRV=0."
+    rules:
+      - pmp_check_priv_modes
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_rwx_check
+      - pmp_exec_fault
+      - pmp_load_fault
+      - pmp_store_fault
+  - heading: PMP CSR access
+  - name: cp_pmpaddr_access_u
+    goal: Verify that the pmpaddr CSRs are not accessible from U-mode.
+    description: From U-mode, write all ones to pmpaddr0-63.
+    expectation: Illegal-instruction exception on every write.
+    bins: 64 CSRs
+    rules:
+      - pmp_csr_mode
+      - pmp_addr_registers
+  - name: cp_pmpcfg_access_u
+    goal: Verify that the pmpcfg CSRs are not accessible from U-mode.
+    description: From U-mode, write all ones to pmpcfg0-15.
+    expectation: Illegal-instruction exception on every write.
+    bins: 16 CSRs
+    rules:
+      - pmp_csr_mode
+  - heading: Not yet implemented in ACT4 (no coverpoint or test yet)
+  - name: cp_none
+    goal: Verify that a U-mode access that matches no entry fails when PMP entries are implemented.
+    description: No background entry. Program one entry that covers only the code the probes run from, then jalr, lw and sw from U-mode to an address that no entry matches. (The original plan cleared every entry, which faults on the first U-mode fetch and ends the test.)
+    expectation: Instruction, load or store/AMO access fault.
+    bins: 3 types of access
+    rules:
+      - pmp_no_entry_match
+      - pmp_check_priv_modes
+      - pmp_access_fault_exception

@@ -1015,7 +1015,6 @@
       "num_triggers": 16,
       "scontext": { "supported": false }
     },
-    // Imperas implements Smdbltrp; the boot code clears mstatus[MDT].
     "Smdbltrp": { "supported": true },
     "Ssdbltrp": { "supported": false },
     "Ssstrict": { "supported": true }

@@ -338,12 +338,12 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         // stimecmp written to its minimum or maximum. csr elements are XLEN wide, so on RV32 the
         // 64 bit value is the high and low halves concatenated.
         `ifdef UDB_MXLEN_64
-            stimecmp_max_min: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stimecmp", "") {
+            stimecmp_max_min: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stimecmp", "stimecmp") {
                 bins min = {'0};
                 bins max = {'1};
             }
         `else
-            stimecmp_max_min: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stimecmph", ""), get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stimecmp", "")} {
+            stimecmp_max_min: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stimecmph", "stimecmph"), get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stimecmp", "stimecmp")} {
                 bins min = {'0};
                 bins max = {'1};
             }

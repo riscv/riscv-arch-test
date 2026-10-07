@@ -195,8 +195,7 @@
 
 ##### Sscofpmf #####
 
-#define RVMODEL_MHPMEVENT   CSR_MHPMEVENT3
-#define RVMODEL_MHPMCOUNTER CSR_MHPMCOUNTER3
+#define RVMODEL_HPM_COUNTER 3   // HPM counter used by the Sscofpmf tests (3 to 31)
 #define RVMODEL_MHPMEVENT_VAL  1   // mapped to the Fence event in whisper.json and to EV_FENCE in sail.json
 #define RVMODEL_MHPMEVENT_CODE(_R1, _R2)  \
     fence

@@ -35,7 +35,7 @@ def _generate_lcofi_m_tests(test_data: TestData) -> list[str]:
         "# === M-MODE SETUP ===",
         "csrw mip, zero      # clear all pending (sip may not exist in this suite)",
         "csrw mie, zero      # disable all interrupts",
-        "csrw RVMODEL_MHPMEVENT, zero",
+        "csrw RVTEST_CSR_MHPMEVENT, zero",
         f"LI(x{r_val}, {hex(MIE_BIT)})",
         f"csrs mstatus, x{r_val}   # mstatus.MIE = 1 (fixed)",
         f"LI(x{r_val}, {hex(SIE_BIT)})",
@@ -61,7 +61,7 @@ def _generate_lcofi_m_tests(test_data: TestData) -> list[str]:
                         ]
                     )
                 else:
-                    lines.append("csrw RVMODEL_MHPMCOUNTER, zero   # keep counter clear -- no overflow")
+                    lines.append("csrw RVTEST_CSR_MHPMCOUNTER, zero   # keep counter clear -- no overflow")
 
                 lines.extend(
                     [
@@ -92,8 +92,8 @@ def _generate_lcofi_m_tests(test_data: TestData) -> list[str]:
             f"csrc mideleg, x{r_temp}  # clear mideleg.LCOFI",
             f"LI(x{r_val}, {hex(MIE_BIT | SIE_BIT)})",
             f"csrc mstatus, x{r_val}   # clear mstatus.MIE and mstatus.SIE",
-            "csrw RVMODEL_MHPMCOUNTER, zero",
-            "csrw RVMODEL_MHPMEVENT, zero",
+            "csrw RVTEST_CSR_MHPMCOUNTER, zero",
+            "csrw RVTEST_CSR_MHPMEVENT, zero",
         ]
     )
 
@@ -207,11 +207,11 @@ def _generate_lcofip_priority_sm_tests(test_data: TestData) -> list[str]:
 
     lines.extend(
         [
-            "csrw RVMODEL_MHPMEVENT, zero   # stop counting, clear OF",
+            "csrw RVTEST_CSR_MHPMEVENT, zero   # stop counting, clear OF",
             "#if __riscv_xlen == 32",
-            "csrw CSR_MHPMEVENT3H, zero",
+            "csrw RVTEST_CSR_MHPMEVENTH, zero",
             "#endif",
-            "csrw RVMODEL_MHPMCOUNTER, zero",
+            "csrw RVTEST_CSR_MHPMCOUNTER, zero",
         ]
     )
 

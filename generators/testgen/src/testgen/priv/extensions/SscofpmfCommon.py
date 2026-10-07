@@ -12,50 +12,42 @@ from collections.abc import Callable
 
 from testgen.asm.csr import csr_walk_test
 from testgen.asm.helpers import comment_banner, write_sigupd
-from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 
-_FIXED_TSBI_ALIASES = {
-    "RVMODEL_MHPMEVENT": "0x323",  # mhpmevent3
-    "RVMODEL_MHPMCOUNTER": "0xb03",  # mhpmcounter3
-    "scountovf": "0xda0",
-}
-
-_MHPMEVENT_RE = re.compile(r"\bCSR_MHPMEVENT(\d+)(H)?\b")
-_MHPMCOUNTER_RE = re.compile(r"\bCSR_MHPMCOUNTER(\d+)(H)?\b")
-
-
-def _resolve_tsbi_csr(instr: str) -> str:
-    """Substitute Sscofpmf CSR names/macros with literal hex addresses for tsbi_call()."""
-    for macro, hexaddr in _FIXED_TSBI_ALIASES.items():
-        instr = instr.replace(macro, hexaddr)
-
-    def _sub_mhpmevent(m: re.Match) -> str:
-        n = int(m.group(1))
-        base = 0x720 if m.group(2) else 0x320  # ...H = mhpmeventh (RV32 OF-bit high half)
-        return hex(base + n)
-
-    def _sub_mhpmcounter(m: re.Match) -> str:
-        n = int(m.group(1))
-        base = 0xB80 if m.group(2) else 0xB00  # ...H = mhpmcounterh (RV32 counter high half)
-        return hex(base + n)
-
-    instr = _MHPMEVENT_RE.sub(_sub_mhpmevent, instr)
-    return _MHPMCOUNTER_RE.sub(_sub_mhpmcounter, instr)
-
+_CSR_INSTR_RE = re.compile(r"\s*(csrr|csrw|csrs|csrc)\s+([^,\s]+)\s*,\s*([^,\s#]+)")
 
 _S_ACCESSIBLE_CSRS = ("sip", "sie", "sstatus", "scountovf")
 
 
+def _csr_number(csr: str) -> str:
+    """CSR number for the T-SBI macros: a macro is used as is, and a CSR name becomes its
+    CSR_* macro from encoding.h."""
+    return csr if csr.startswith(("CSR_", "RVTEST_CSR_")) else f"CSR_{csr.upper()}"
+
+
 def csr_access(instr: str, mode: str) -> str:
-    """Direct at Sm, and at S for sip/sie/sstatus/scountovf. Everything else via T-SBI."""
+    """Direct at Sm, and at S for sip/sie/sstatus/scountovf. Everything else is a T-SBI call
+    through the RVTEST_TSBI_CSR macros, which take the value in a1 and return a read in a0."""
     if mode == "Sm":
         return instr
     code = instr.split("#", 1)[0]
     if mode == "S" and any(re.search(rf"\b{name}\b", code) for name in _S_ACCESSIBLE_CSRS):
         return instr
-    return tsbi_call(_resolve_tsbi_csr(instr))
+    match = _CSR_INSTR_RE.match(code)
+    if match is None:
+        raise ValueError(f"Unsupported CSR instruction for T-SBI: {instr}")
+    op, first, second = match.groups()
+    if op == "csrr":
+        lines = [f"RVTEST_TSBI_CSR_READ({_csr_number(second)})", f"mv {first}, a0"]
+    else:
+        tsbi = {
+            "csrw": "RVTEST_TSBI_CSR_WRITE_A1({csr})",
+            "csrs": "RVTEST_TSBI_CSR_ACCESS TSBI_CSR_SET({csr})",
+            "csrc": "RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR({csr})",
+        }[op]
+        lines = [f"mv a1, {second}", tsbi.format(csr=_csr_number(first))]
+    return "\n".join([f"# T-SBI call: {instr.strip()}", *lines])
 
 
 def clear_lcofip(r_tmp: int, priv_mode: str) -> list[str]:
@@ -82,7 +74,7 @@ def clear_lcofip(r_tmp: int, priv_mode: str) -> list[str]:
 HIGHER_MODE_INHIBITS = {"Sm": 0, "S": 1 << 62, "U": (1 << 62) | (1 << 61)}
 HIGHER_MODE_INHIBITS_32 = {mode: bits >> 32 for mode, bits in HIGHER_MODE_INHIBITS.items()}
 
-# On RV32, mhpmevent3h[23:0] holds RVMODEL_MHPMEVENT_VAL[55:32].
+# On RV32, the event high half[23:0] holds RVMODEL_MHPMEVENT_VAL[55:32].
 EVENT_VAL_HI = "(((RVMODEL_MHPMEVENT_VAL) >> 32) & 0xFFFFFF)"
 
 
@@ -101,12 +93,12 @@ def write_event_pattern(r_val: int, r_hval: int, inhibit_pattern: int, priv_mode
     return [
         "#if __riscv_xlen == 32",
         f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
-        csr_access(f"csrw RVMODEL_MHPMEVENT, x{r_val}", priv_mode),
+        csr_access(f"csrw RVTEST_CSR_MHPMEVENT, x{r_val}", priv_mode),
         f"LI(x{r_hval}, {EVENT_VAL_HI} | ({inhibit_pattern} << 26))   # 58-32 = 26",
-        csr_access(f"csrw CSR_MHPMEVENT3H, x{r_hval}", priv_mode),
+        csr_access(f"csrw RVTEST_CSR_MHPMEVENTH, x{r_hval}", priv_mode),
         "#else",
         f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | ({inhibit_pattern} << 58))   # OF starts at 0",
-        csr_access(f"csrw RVMODEL_MHPMEVENT, x{r_val}", priv_mode),
+        csr_access(f"csrw RVTEST_CSR_MHPMEVENT, x{r_val}", priv_mode),
         "#endif",
     ]
 
@@ -115,15 +107,15 @@ def write_counter_all_ones(r_temp: int, priv_mode: str) -> list[str]:
     """Preload the 64-bit counter to all 1s so the next counted event overflows it."""
     return [
         f"LI(x{r_temp}, -1)",
-        csr_access(f"csrw RVMODEL_MHPMCOUNTER, x{r_temp}   # all 1s -> next count overflows", priv_mode),
+        csr_access(f"csrw RVTEST_CSR_MHPMCOUNTER, x{r_temp}   # all 1s -> next count overflows", priv_mode),
         "#if __riscv_xlen == 32",
-        csr_access(f"csrw CSR_MHPMCOUNTER3H, x{r_temp}   # high half must also be all 1s", priv_mode),
+        csr_access(f"csrw RVTEST_CSR_MHPMCOUNTERH, x{r_temp}   # high half must also be all 1s", priv_mode),
         "#endif",
     ]
 
 
 def prime_counter_overflow(r_val: int, r_hval: int, r_temp: int, r_addr: int, priv_mode: str) -> list[str]:
-    """Overflow RVMODEL_MHPMCOUNTER with no inhibits, which sets OF and raises LCOFIP.
+    """Overflow RVTEST_CSR_MHPMCOUNTER with no inhibits, which sets OF and raises LCOFIP.
     Below M the T-SBI round trip is counted too and may supply the wrapping event."""
     return [
         *write_event_pattern(r_val, r_hval, 0, priv_mode),
@@ -147,7 +139,7 @@ def _generate_xinh_inhibits_tests(
     inh_prefix = _INHIBIT_PREFIX[priv_mode]
     coverpoint = f"cp_{inh_prefix}inh_inhibits_{_INHIBIT_MODE_SUFFIX[priv_mode]}"
     inh_bit_pos = _INHIBIT_BIT_POS[priv_mode]
-    inh_bit_pos_32 = inh_bit_pos - 32  # RV32 position within mhpmevent3h
+    inh_bit_pos_32 = inh_bit_pos - 32  # RV32 position within the event high half
 
     r_val, r_temp = test_data.int_regs.get_registers(2, exclude_regs=[0, 31])
 
@@ -175,20 +167,20 @@ def _generate_xinh_inhibits_tests(
                 f"{indent}# Testcase: {inh_prefix}inh = {inh_val}",
                 f"{indent}#if __riscv_xlen == 32",
                 f"{indent}LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
-                f"{indent}{csr_access(f'csrw RVMODEL_MHPMEVENT, x{r_val}', priv_mode)}",
+                f"{indent}{csr_access(f'csrw RVTEST_CSR_MHPMEVENT, x{r_val}', priv_mode)}",
                 f"{indent}LI(x{r_val}, {EVENT_VAL_HI} | {hex(higher_inhibits_32 | (inh_val << inh_bit_pos_32))})",
-                f"{indent}{csr_access(f'csrw CSR_MHPMEVENT3H, x{r_val}', priv_mode)}",
+                f"{indent}{csr_access(f'csrw RVTEST_CSR_MHPMEVENTH, x{r_val}', priv_mode)}",
                 f"{indent}#else",
                 f"{indent}LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | {hex(higher_inhibits | (inh_val << inh_bit_pos))})",
-                f"{indent}{csr_access(f'csrw RVMODEL_MHPMEVENT, x{r_val}', priv_mode)}",
+                f"{indent}{csr_access(f'csrw RVTEST_CSR_MHPMEVENT, x{r_val}', priv_mode)}",
                 f"{indent}#endif",
-                f"{indent}{csr_access('csrw RVMODEL_MHPMCOUNTER, zero', priv_mode)}",
+                f"{indent}{csr_access('csrw RVTEST_CSR_MHPMCOUNTER, zero', priv_mode)}",
                 "",
                 f"{indent}LA(x{r_temp}, scratch)",
                 f"{indent}RVMODEL_MHPMEVENT_CODE(x{r_temp}, x{r_val})",
                 "",
                 f"{indent}{test_data.add_testcase(binname, coverpoint, covergroup)}",
-                f"{indent}{csr_access(f'csrr x{r_temp}, RVMODEL_MHPMCOUNTER', priv_mode)}",
+                f"{indent}{csr_access(f'csrr x{r_temp}, RVTEST_CSR_MHPMCOUNTER', priv_mode)}",
                 # Normalize to nonzero/zero: counter must be nonzero iff xinh=0, regardless of
                 # how many events a given model counted.
                 f"{indent}snez x{r_temp}, x{r_temp}",
@@ -200,10 +192,10 @@ def _generate_xinh_inhibits_tests(
     lines.extend(
         [
             f"{indent}LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
-            f"{indent}{csr_access(f'csrw RVMODEL_MHPMEVENT, x{r_val}', priv_mode)}",
+            f"{indent}{csr_access(f'csrw RVTEST_CSR_MHPMEVENT, x{r_val}', priv_mode)}",
             f"{indent}#if __riscv_xlen == 32",
             f"{indent}LI(x{r_val}, {EVENT_VAL_HI})",
-            f"{indent}{csr_access(f'csrw CSR_MHPMEVENT3H, x{r_val}', priv_mode)}",
+            f"{indent}{csr_access(f'csrw RVTEST_CSR_MHPMEVENTH, x{r_val}', priv_mode)}",
             f"{indent}#endif",
             "",
         ]
@@ -218,10 +210,10 @@ def _generate_xinh_inhibits_tests(
         if priv_mode != "Sm":
             return []
         return [
-            f"{indent}csrw RVMODEL_MHPMCOUNTER, zero",
+            f"{indent}csrw RVTEST_CSR_MHPMCOUNTER, zero",
             f"{indent}LA(x{r_temp}, scratch)",
             f"{indent}RVMODEL_MHPMEVENT_CODE(x{r_temp}, x{r_hval})",
-            f"{indent}csrr x{r_temp}, RVMODEL_MHPMCOUNTER",
+            f"{indent}csrr x{r_temp}, RVTEST_CSR_MHPMCOUNTER",
             f"{indent}snez x{r_temp}, x{r_temp}   # counted iff MINH = 0",
             f"{indent}{write_sigupd(r_temp, test_data)}",
         ]
@@ -233,10 +225,10 @@ def _generate_xinh_inhibits_tests(
             [
                 # The low half keeps RVMODEL_MHPMEVENT_VAL from the write above the loop.
                 f"{indent}LI(x{r_hval}, {EVENT_VAL_HI} | ({combo} << 26))",  # 58-32 = 26
-                f"{indent}{csr_access(f'csrw CSR_MHPMEVENT3H, x{r_hval}', priv_mode)}",
+                f"{indent}{csr_access(f'csrw RVTEST_CSR_MHPMEVENTH, x{r_hval}', priv_mode)}",
                 "",
                 f"{indent}{test_data.add_testcase(binname, coverpoint, covergroup)}",
-                f"{indent}{csr_access(f'csrr x{r_temp}, CSR_MHPMEVENT3H', priv_mode)}",
+                f"{indent}{csr_access(f'csrr x{r_temp}, RVTEST_CSR_MHPMEVENTH', priv_mode)}",
                 # VSINH/VUINH are read-only zero without H, so check them only on an H hart.
                 "#ifndef H_SUPPORTED",
                 f"{indent}LI(x{r_hval}, 0xF3FFFFFF)   # clear bits 27:26 (VSINH/VUINH)",
@@ -253,10 +245,10 @@ def _generate_xinh_inhibits_tests(
         lines.extend(
             [
                 f"{indent}LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | ({combo} << 58))",
-                f"{indent}{csr_access(f'csrw RVMODEL_MHPMEVENT, x{r_val}', priv_mode)}",
+                f"{indent}{csr_access(f'csrw RVTEST_CSR_MHPMEVENT, x{r_val}', priv_mode)}",
                 "",
                 f"{indent}{test_data.add_testcase(binname, coverpoint, covergroup)}",
-                f"{indent}{csr_access(f'csrr x{r_temp}, RVMODEL_MHPMEVENT', priv_mode)}",
+                f"{indent}{csr_access(f'csrr x{r_temp}, RVTEST_CSR_MHPMEVENT', priv_mode)}",
                 # VSINH/VUINH are read-only zero without H, so check them only on an H hart.
                 "#ifndef H_SUPPORTED",
                 f"{indent}LI(x{r_val}, 0xF3FFFFFFFFFFFFFF)   # clear bits 59:58 (VSINH/VUINH)",
@@ -270,11 +262,11 @@ def _generate_xinh_inhibits_tests(
     lines.append(f"{indent}#endif")
     lines.extend(
         [
-            f"{indent}{csr_access('csrw RVMODEL_MHPMEVENT, zero', priv_mode)}",
+            f"{indent}{csr_access('csrw RVTEST_CSR_MHPMEVENT, zero', priv_mode)}",
             f"{indent}#if __riscv_xlen == 32",
-            f"{indent}{csr_access('csrw CSR_MHPMEVENT3H, zero', priv_mode)}",
+            f"{indent}{csr_access('csrw RVTEST_CSR_MHPMEVENTH, zero', priv_mode)}",
             f"{indent}#endif",
-            f"{indent}{csr_access('csrw RVMODEL_MHPMCOUNTER, zero', priv_mode)}",
+            f"{indent}{csr_access('csrw RVTEST_CSR_MHPMCOUNTER, zero', priv_mode)}",
             "",
         ]
     )
@@ -305,14 +297,14 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
 
     def read_event_config_bits() -> list[str]:
         """Read OF and the 5-bit inhibit field into x{r_temp}, masked to those bits:
-        mhpmevent3h[31:26] on RV32 and mhpmevent3[63:58] on RV64."""
+        bits 31:26 of the event high half on RV32 and bits 63:58 of the event CSR on RV64."""
         return [
             "#if __riscv_xlen == 32",
-            csr_access(f"csrr x{r_temp}, CSR_MHPMEVENT3H   # sample point for mhpmevent_of", priv_mode),
+            csr_access(f"csrr x{r_temp}, RVTEST_CSR_MHPMEVENTH   # sample point for mhpmevent_of", priv_mode),
             f"LI(x{r_bool}, 0xFC000000)   # keep only OF + the 5-bit inhibit field (bits 31:26)",
             f"and x{r_temp}, x{r_temp}, x{r_bool}",
             "#else",
-            csr_access(f"csrr x{r_temp}, RVMODEL_MHPMEVENT   # sample point for mhpmevent_of", priv_mode),
+            csr_access(f"csrr x{r_temp}, RVTEST_CSR_MHPMEVENT   # sample point for mhpmevent_of", priv_mode),
             f"LI(x{r_bool}, 0xFC00000000000000)   # keep only OF + the 5-bit inhibit field (bits 63:58)",
             f"and x{r_temp}, x{r_temp}, x{r_bool}",
             "#endif",
@@ -375,7 +367,7 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
                     test_data.add_testcase(binname, coverpoint, covergroup),
                     *read_event_config_bits(),
                     write_sigupd(r_temp, test_data),
-                    f"csrr x{r_temp}, RVMODEL_MHPMCOUNTER   # sample point: did the counter move off all 1s?",
+                    f"csrr x{r_temp}, RVTEST_CSR_MHPMCOUNTER   # sample point: did the counter move off all 1s?",
                     *counted_since_all_ones(r_temp),
                     write_sigupd(r_temp, test_data),
                     "",
@@ -386,11 +378,13 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
             )
 
         else:
-            mhpmcounter_read = f"csrr x{r_temp}, RVMODEL_MHPMCOUNTER   # sample point: did the counter move off all 1s?"
+            mhpmcounter_read = (
+                f"csrr x{r_temp}, RVTEST_CSR_MHPMCOUNTER   # sample point: did the counter move off all 1s?"
+            )
 
             lines.extend(
                 [
-                    f"# RVMODEL_MHPMEVENT/RVMODEL_MHPMCOUNTER writes go via T-SBI from {priv_mode}-mode, per spec",
+                    f"# RVTEST_CSR_MHPMEVENT/RVTEST_CSR_MHPMCOUNTER writes go via T-SBI from {priv_mode}-mode, per spec",
                     test_data.add_testcase(binname, coverpoint, covergroup),
                     *write_event_pattern(r_val, r_hval, inhibit_pattern, priv_mode),
                     *write_counter_all_ones(r_temp, priv_mode),
@@ -450,12 +444,12 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
             csr_access("csrw mie, zero   # disable interrupts", priv_mode),
             "#if __riscv_xlen == 32",
             f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
-            csr_access(f"csrw RVMODEL_MHPMEVENT, x{r_val}", priv_mode),
+            csr_access(f"csrw RVTEST_CSR_MHPMEVENT, x{r_val}", priv_mode),
             f"LI(x{r_hval}, {EVENT_VAL_HI} | {hex(1 << 31)})   # OF = 1, no inhibits",
-            csr_access(f"csrw CSR_MHPMEVENT3H, x{r_hval}", priv_mode),
+            csr_access(f"csrw RVTEST_CSR_MHPMEVENTH, x{r_hval}", priv_mode),
             "#else",
             f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | {hex(1 << 63)})   # OF = 1, no inhibits",
-            csr_access(f"csrw RVMODEL_MHPMEVENT, x{r_val}", priv_mode),
+            csr_access(f"csrw RVTEST_CSR_MHPMEVENT, x{r_val}", priv_mode),
             "#endif",
             *write_counter_all_ones(r_temp, priv_mode),
             *clear_lcofip(r_temp, priv_mode),
@@ -470,7 +464,7 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
             *read_event_config_bits(),
             write_sigupd(r_temp, test_data),
             csr_access(
-                f"csrr x{r_temp}, RVMODEL_MHPMCOUNTER   # sample point: did the counter move off all 1s?", priv_mode
+                f"csrr x{r_temp}, RVTEST_CSR_MHPMCOUNTER   # sample point: did the counter move off all 1s?", priv_mode
             ),
             *counted_since_all_ones(r_temp),
             write_sigupd(r_temp, test_data),
@@ -498,14 +492,14 @@ def _generate_overflow_hw_only_tests(test_data: TestData, priv_mode: str) -> lis
     lines = [
         comment_banner(
             coverpoint,
-            "A software write of RVMODEL_MHPMCOUNTER, however extreme, must never set OF --\n"
+            "A software write of RVTEST_CSR_MHPMCOUNTER, however extreme, must never set OF --\n"
             f"only a hardware counter increment through overflow may. mode = {priv_mode}.",
         ),
         "",
         csr_access("csrw mie, zero   # disable interrupts", priv_mode),
-        csr_access("csrw RVMODEL_MHPMEVENT, zero", priv_mode),
+        csr_access("csrw RVTEST_CSR_MHPMEVENT, zero", priv_mode),
         "#if __riscv_xlen == 32",
-        csr_access("csrw CSR_MHPMEVENT3H, zero   # clear OF and xINH left by earlier tests", priv_mode),
+        csr_access("csrw RVTEST_CSR_MHPMEVENTH, zero   # clear OF and xINH left by earlier tests", priv_mode),
         "#endif",
         # A real overflow in the previous tests leaves LCOFIP pending on a counting hart.
         *clear_lcofip(r_val, priv_mode),
@@ -516,16 +510,16 @@ def _generate_overflow_hw_only_tests(test_data: TestData, priv_mode: str) -> lis
         binname = f"overflow_hw_only_{priv_mode.lower()}_{step_name}"
         lines.extend(
             [
-                f"# Testcase: software write RVMODEL_MHPMCOUNTER = {step_name}, mode = {priv_mode}",
+                f"# Testcase: software write RVTEST_CSR_MHPMCOUNTER = {step_name}, mode = {priv_mode}",
                 f"LI(x{r_val}, {load_val})",
-                csr_access(f"csrw RVMODEL_MHPMCOUNTER, x{r_val}", priv_mode),
+                csr_access(f"csrw RVTEST_CSR_MHPMCOUNTER, x{r_val}", priv_mode),
                 "",
                 test_data.add_testcase(binname, coverpoint, covergroup),
                 "#if __riscv_xlen == 32",
-                csr_access(f"csrr x{r_of}, CSR_MHPMEVENT3H   # sample point -- OF must read 0", priv_mode),
+                csr_access(f"csrr x{r_of}, RVTEST_CSR_MHPMEVENTH   # sample point -- OF must read 0", priv_mode),
                 f"srli x{r_of}, x{r_of}, 31   # OF (bit 31 of the H-half) -> bit 0",
                 "#else",
-                csr_access(f"csrr x{r_of}, RVMODEL_MHPMEVENT   # sample point -- OF must read 0", priv_mode),
+                csr_access(f"csrr x{r_of}, RVTEST_CSR_MHPMEVENT   # sample point -- OF must read 0", priv_mode),
                 f"srli x{r_of}, x{r_of}, 63   # OF (bit 63) -> bit 0",
                 "#endif",
                 write_sigupd(r_of, test_data),
@@ -546,14 +540,14 @@ def _generate_lcofip_hw_only_tests(test_data: TestData, priv_mode: str) -> list[
     r_val, r_temp = test_data.int_regs.get_registers(2, exclude_regs=[0, 31])
 
     def set_of(op: str, desc: str) -> list[str]:
-        """Set or clear OF by software. OF is mhpmevent3h[31] on RV32."""
+        """Set or clear OF by software. OF is bit 31 of the event high half on RV32."""
         return [
             "#if __riscv_xlen == 32",
             f"LI(x{r_val}, {hex(1 << 31)})",
-            csr_access(f"{op} CSR_MHPMEVENT3H, x{r_val}   # {desc}", priv_mode),
+            csr_access(f"{op} RVTEST_CSR_MHPMEVENTH, x{r_val}   # {desc}", priv_mode),
             "#else",
             f"LI(x{r_val}, {hex(1 << 63)})",
-            csr_access(f"{op} RVMODEL_MHPMEVENT, x{r_val}   # {desc}", priv_mode),
+            csr_access(f"{op} RVTEST_CSR_MHPMEVENT, x{r_val}   # {desc}", priv_mode),
             "#endif",
         ]
 

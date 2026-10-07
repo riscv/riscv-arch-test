@@ -142,8 +142,7 @@
 
 ##### Sscofpmf #####
 
-#define RVMODEL_MHPMEVENT   CSR_MHPMEVENT3
-#define RVMODEL_MHPMCOUNTER CSR_MHPMCOUNTER3
+#define RVMODEL_HPM_COUNTER 3   // HPM counter used by the Sscofpmf tests (3 to 31)
 // Selector 1 is mapped to EV_FENCE by base.event_selectors in sail.json. A fence raises
 // the event in every privilege mode and never traps.
 #define RVMODEL_MHPMEVENT_VAL 0x1

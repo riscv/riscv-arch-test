@@ -2248,6 +2248,34 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x33D) // mhpmevent29
         TSBI_CSR_INSTR_TABLE(0x33E) // mhpmevent30
         TSBI_CSR_INSTR_TABLE(0x33F) // mhpmevent31
+        TSBI_CSR_INSTR_TABLE(0xB04) // mhpmcounter4
+        TSBI_CSR_INSTR_TABLE(0xB05) // mhpmcounter5
+        TSBI_CSR_INSTR_TABLE(0xB06) // mhpmcounter6
+        TSBI_CSR_INSTR_TABLE(0xB07) // mhpmcounter7
+        TSBI_CSR_INSTR_TABLE(0xB08) // mhpmcounter8
+        TSBI_CSR_INSTR_TABLE(0xB09) // mhpmcounter9
+        TSBI_CSR_INSTR_TABLE(0xB0A) // mhpmcounter10
+        TSBI_CSR_INSTR_TABLE(0xB0B) // mhpmcounter11
+        TSBI_CSR_INSTR_TABLE(0xB0C) // mhpmcounter12
+        TSBI_CSR_INSTR_TABLE(0xB0D) // mhpmcounter13
+        TSBI_CSR_INSTR_TABLE(0xB0E) // mhpmcounter14
+        TSBI_CSR_INSTR_TABLE(0xB0F) // mhpmcounter15
+        TSBI_CSR_INSTR_TABLE(0xB10) // mhpmcounter16
+        TSBI_CSR_INSTR_TABLE(0xB11) // mhpmcounter17
+        TSBI_CSR_INSTR_TABLE(0xB12) // mhpmcounter18
+        TSBI_CSR_INSTR_TABLE(0xB13) // mhpmcounter19
+        TSBI_CSR_INSTR_TABLE(0xB14) // mhpmcounter20
+        TSBI_CSR_INSTR_TABLE(0xB15) // mhpmcounter21
+        TSBI_CSR_INSTR_TABLE(0xB16) // mhpmcounter22
+        TSBI_CSR_INSTR_TABLE(0xB17) // mhpmcounter23
+        TSBI_CSR_INSTR_TABLE(0xB18) // mhpmcounter24
+        TSBI_CSR_INSTR_TABLE(0xB19) // mhpmcounter25
+        TSBI_CSR_INSTR_TABLE(0xB1A) // mhpmcounter26
+        TSBI_CSR_INSTR_TABLE(0xB1B) // mhpmcounter27
+        TSBI_CSR_INSTR_TABLE(0xB1C) // mhpmcounter28
+        TSBI_CSR_INSTR_TABLE(0xB1D) // mhpmcounter29
+        TSBI_CSR_INSTR_TABLE(0xB1E) // mhpmcounter30
+        TSBI_CSR_INSTR_TABLE(0xB1F) // mhpmcounter31
           #if (UDB_MXLEN==32)
         TSBI_CSR_INSTR_TABLE(0x723) // mhpmevent3h
         TSBI_CSR_INSTR_TABLE(0xB83) // mhpmcounter3h
@@ -2279,6 +2307,34 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x73D) // mhpmevent29h
         TSBI_CSR_INSTR_TABLE(0x73E) // mhpmevent30h
         TSBI_CSR_INSTR_TABLE(0x73F) // mhpmevent31h
+        TSBI_CSR_INSTR_TABLE(0xB84) // mhpmcounter4h
+        TSBI_CSR_INSTR_TABLE(0xB85) // mhpmcounter5h
+        TSBI_CSR_INSTR_TABLE(0xB86) // mhpmcounter6h
+        TSBI_CSR_INSTR_TABLE(0xB87) // mhpmcounter7h
+        TSBI_CSR_INSTR_TABLE(0xB88) // mhpmcounter8h
+        TSBI_CSR_INSTR_TABLE(0xB89) // mhpmcounter9h
+        TSBI_CSR_INSTR_TABLE(0xB8A) // mhpmcounter10h
+        TSBI_CSR_INSTR_TABLE(0xB8B) // mhpmcounter11h
+        TSBI_CSR_INSTR_TABLE(0xB8C) // mhpmcounter12h
+        TSBI_CSR_INSTR_TABLE(0xB8D) // mhpmcounter13h
+        TSBI_CSR_INSTR_TABLE(0xB8E) // mhpmcounter14h
+        TSBI_CSR_INSTR_TABLE(0xB8F) // mhpmcounter15h
+        TSBI_CSR_INSTR_TABLE(0xB90) // mhpmcounter16h
+        TSBI_CSR_INSTR_TABLE(0xB91) // mhpmcounter17h
+        TSBI_CSR_INSTR_TABLE(0xB92) // mhpmcounter18h
+        TSBI_CSR_INSTR_TABLE(0xB93) // mhpmcounter19h
+        TSBI_CSR_INSTR_TABLE(0xB94) // mhpmcounter20h
+        TSBI_CSR_INSTR_TABLE(0xB95) // mhpmcounter21h
+        TSBI_CSR_INSTR_TABLE(0xB96) // mhpmcounter22h
+        TSBI_CSR_INSTR_TABLE(0xB97) // mhpmcounter23h
+        TSBI_CSR_INSTR_TABLE(0xB98) // mhpmcounter24h
+        TSBI_CSR_INSTR_TABLE(0xB99) // mhpmcounter25h
+        TSBI_CSR_INSTR_TABLE(0xB9A) // mhpmcounter26h
+        TSBI_CSR_INSTR_TABLE(0xB9B) // mhpmcounter27h
+        TSBI_CSR_INSTR_TABLE(0xB9C) // mhpmcounter28h
+        TSBI_CSR_INSTR_TABLE(0xB9D) // mhpmcounter29h
+        TSBI_CSR_INSTR_TABLE(0xB9E) // mhpmcounter30h
+        TSBI_CSR_INSTR_TABLE(0xB9F) // mhpmcounter31h
           #endif
         #endif  // SSCOFPMF_SUPPORTED
         .word 0 // sentinel to mark end of table

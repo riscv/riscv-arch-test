@@ -33,7 +33,7 @@ def _generate_lcofi_sip_u_tests(test_data: TestData) -> list[str]:
         ),
         "",
         csr_access("csrw sie, zero      # disable all S-mode interrupts", "U"),
-        csr_access("csrw RVMODEL_MHPMEVENT, zero", "U"),
+        csr_access("csrw RVTEST_CSR_MHPMEVENT, zero", "U"),
         f"LI(x{r_val}, {hex(SIE_BIT)})",
         csr_access(f"csrc sstatus, x{r_val}   # sstatus.SIE = 0 ", "U"),
     ]
@@ -54,7 +54,7 @@ def _generate_lcofi_sip_u_tests(test_data: TestData) -> list[str]:
             else:
                 lines.extend(
                     [
-                        csr_access("csrw RVMODEL_MHPMCOUNTER, zero   # no overflow", "U"),
+                        csr_access("csrw RVTEST_CSR_MHPMCOUNTER, zero   # no overflow", "U"),
                         csr_access(f"csrc sip, x{r_val}   # sip.LCOFIP = 0", "U"),
                     ]
                 )
@@ -80,8 +80,8 @@ def _generate_lcofi_sip_u_tests(test_data: TestData) -> list[str]:
             csr_access(f"csrc sie, x{r_temp}      # clear LCOFIE", "U"),
             f"LI(x{r_val}, {hex(SIE_BIT)})",
             csr_access(f"csrc sstatus, x{r_val}   # clear sstatus.SIE", "U"),
-            csr_access("csrw RVMODEL_MHPMCOUNTER, zero", "U"),
-            csr_access("csrw RVMODEL_MHPMEVENT, zero", "U"),
+            csr_access("csrw RVTEST_CSR_MHPMCOUNTER, zero", "U"),
+            csr_access("csrw RVTEST_CSR_MHPMEVENT, zero", "U"),
         ]
     )
 

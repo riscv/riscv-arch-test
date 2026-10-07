@@ -276,11 +276,10 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 - `RVMODEL_CLR_SSW_INT_M(_R1, _R2)`
 - `RVMODEL_INTERRUPT_LATENCY`
 
-**Sscofpmf Macros**: Required if Sscofpmf is supported. The tests use HPM counter 3 only.
+**Sscofpmf Macros**: Required if Sscofpmf is supported.
 
-- `RVMODEL_MHPMEVENT` (must be `CSR_MHPMEVENT3`)
-- `RVMODEL_MHPMCOUNTER` (must be `CSR_MHPMCOUNTER3`)
-- `RVMODEL_MHPMEVENT_VAL` (event selector written to `mhpmevent3[55:0]`)
+- `RVMODEL_HPM_COUNTER` (index, 3 to 31, of the HPM counter the tests use)
+- `RVMODEL_MHPMEVENT_VAL` (event selector written to bits 55:0 of that counter's `mhpmevent` CSR)
 - `RVMODEL_MHPMEVENT_CODE(_R1, _R2)` (workload that generates at least one selected event)
 
 Complete examples are available for an example DUT ([config/cores/cvw/cvw-rv64gc/rvmodel_macros.h](./config/cores/cvw/cvw-rv64gc/rvmodel_macros.h)) and for the RISC-V Sail reference model ([config/sail/sail-RVA23S64/rvmodel_macros.h](./config/sail/sail-RVA23S64/rvmodel_macros.h)).

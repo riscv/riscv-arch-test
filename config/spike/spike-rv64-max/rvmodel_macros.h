@@ -185,8 +185,7 @@
 ##### Sscofpmf ######
 // No event code counts yet: spike does not increment HPM counters
 // (https://github.com/riscv-software-src/riscv-isa-sim/issues/2370)
-#define RVMODEL_MHPMEVENT   CSR_MHPMEVENT3
-#define RVMODEL_MHPMCOUNTER CSR_MHPMCOUNTER3
+#define RVMODEL_HPM_COUNTER 3   // HPM counter used by the Sscofpmf tests (3 to 31)
 #define RVMODEL_MHPMEVENT_VAL 0x0
 #define RVMODEL_MHPMEVENT_CODE(_R1, _R2) \
     nop

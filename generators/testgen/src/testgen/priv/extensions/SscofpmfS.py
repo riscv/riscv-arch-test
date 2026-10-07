@@ -36,7 +36,7 @@ def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
         ),
         "",
         "csrw sie, zero      # disable all S-mode interrupts",
-        csr_access("csrw RVMODEL_MHPMEVENT, zero", "S"),
+        csr_access("csrw RVTEST_CSR_MHPMEVENT, zero", "S"),
         f"LI(x{r_val}, {hex(SIE_BIT)})",
         f"csrs sstatus, x{r_val}   # sstatus.SIE = 1 (fixed)",
     ]
@@ -57,7 +57,7 @@ def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
             else:
                 lines.extend(
                     [
-                        csr_access("csrw RVMODEL_MHPMCOUNTER, zero   # keep counter clear -- no overflow", "S"),
+                        csr_access("csrw RVTEST_CSR_MHPMCOUNTER, zero   # keep counter clear -- no overflow", "S"),
                         f"csrc sip, x{r_val}   # explicitly hold sip.LCOFIP = 0 (touch it so it samples)",
                     ]
                 )
@@ -85,8 +85,8 @@ def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
             f"csrc sie, x{r_temp}      # clear LCOFIE",
             f"LI(x{r_val}, {hex(SIE_BIT)})",
             f"csrc sstatus, x{r_val}   # clear sstatus.SIE",
-            csr_access("csrw RVMODEL_MHPMCOUNTER, zero", "S"),
-            csr_access("csrw RVMODEL_MHPMEVENT, zero", "S"),
+            csr_access("csrw RVTEST_CSR_MHPMCOUNTER, zero", "S"),
+            csr_access("csrw RVTEST_CSR_MHPMEVENT, zero", "S"),
         ]
     )
 
@@ -121,7 +121,7 @@ def _generate_lcofip_priority_s_tests(test_data: TestData) -> list[str]:
         ),
         "",
         "csrw sie, zero      # disable all S-mode interrupts",
-        csr_access("csrw RVMODEL_MHPMEVENT, zero", "S"),
+        csr_access("csrw RVTEST_CSR_MHPMEVENT, zero", "S"),
         f"csrsi sstatus, {hex(SIE_BIT)}   # sstatus.SIE = 1",
     ]
 
@@ -142,7 +142,7 @@ def _generate_lcofip_priority_s_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"# Testcase: competing interrupt = {other_int}",
-                "# RVMODEL_MHPMEVENT/RVMODEL_MHPMCOUNTER writes go via T-SBI from S-mode, per spec",
+                "# RVTEST_CSR_MHPMEVENT/RVTEST_CSR_MHPMCOUNTER writes go via T-SBI from S-mode, per spec",
                 *prime_counter_overflow(r_val, r_temp2, r_temp, r_addr, "S"),
                 "# the overflow sets OF and raises LCOFIP; sie = 0, so nothing fires yet",
             ]
@@ -198,11 +198,11 @@ def _generate_lcofip_priority_s_tests(test_data: TestData) -> list[str]:
         [
             "",
             f"csrci sstatus, {hex(SIE_BIT)}   # sstatus.SIE = 0",
-            csr_access("csrw RVMODEL_MHPMEVENT, zero   # stop counting, clear OF", "S"),
+            csr_access("csrw RVTEST_CSR_MHPMEVENT, zero   # stop counting, clear OF", "S"),
             "#if __riscv_xlen == 32",
-            csr_access("csrw CSR_MHPMEVENT3H, zero", "S"),
+            csr_access("csrw RVTEST_CSR_MHPMEVENTH, zero", "S"),
             "#endif",
-            csr_access("csrw RVMODEL_MHPMCOUNTER, zero", "S"),
+            csr_access("csrw RVTEST_CSR_MHPMCOUNTER, zero", "S"),
         ]
     )
 

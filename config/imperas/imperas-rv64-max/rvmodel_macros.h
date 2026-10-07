@@ -110,8 +110,7 @@
 
 ##### Sscofpmf #####
 
-#define RVMODEL_MHPMEVENT   CSR_MHPMEVENT3
-#define RVMODEL_MHPMCOUNTER CSR_MHPMCOUNTER3
+#define RVMODEL_HPM_COUNTER 3   // HPM counter used by the Sscofpmf tests (3 to 31)
 // No event code counts: there are no plans for Imperas to support HPM events, so this is
 // not expected to change in the foreseeable future.
 #define RVMODEL_MHPMEVENT_VAL 0x00000000

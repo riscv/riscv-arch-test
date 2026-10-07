@@ -155,16 +155,19 @@
 #endif
 
 ##### Sscofpmf #####
-// The S and U suites reach the counter through T-SBI calls encoded at generation time, and
-// the RV32 high halves are named directly, so counter 3 is the only supported choice.
 #ifdef SSCOFPMF_SUPPORTED
-  #if !defined(RVMODEL_MHPMEVENT) || !defined(RVMODEL_MHPMCOUNTER) || \
-      !defined(RVMODEL_MHPMEVENT_VAL) || !defined(RVMODEL_MHPMEVENT_CODE)
-    #error "Sscofpmf is implemented but RVMODEL_MHPMEVENT, RVMODEL_MHPMCOUNTER, RVMODEL_MHPMEVENT_VAL or RVMODEL_MHPMEVENT_CODE is not defined. Define them in rvmodel_macros.h."
+  #if !defined(RVMODEL_HPM_COUNTER) || !defined(RVMODEL_MHPMEVENT_VAL) || !defined(RVMODEL_MHPMEVENT_CODE)
+    #error "Sscofpmf is implemented but RVMODEL_HPM_COUNTER, RVMODEL_MHPMEVENT_VAL or RVMODEL_MHPMEVENT_CODE is not defined. Define them in rvmodel_macros.h."
   #endif
-  #if (RVMODEL_MHPMEVENT != CSR_MHPMEVENT3) || (RVMODEL_MHPMCOUNTER != CSR_MHPMCOUNTER3)
-    #error "Sscofpmf tests only support counter 3. Define RVMODEL_MHPMEVENT as CSR_MHPMEVENT3 and RVMODEL_MHPMCOUNTER as CSR_MHPMCOUNTER3 in rvmodel_macros.h."
+  #if (RVMODEL_HPM_COUNTER < 3) || (RVMODEL_HPM_COUNTER > 31)
+    #error "RVMODEL_HPM_COUNTER must be an HPM counter index from 3 to 31."
   #endif
+
+  // CSRs of the HPM counter selected by RVMODEL_HPM_COUNTER. The high halves exist only on RV32.
+  #define RVTEST_CSR_MHPMEVENT    (CSR_MHPMEVENT3 + RVMODEL_HPM_COUNTER - 3)
+  #define RVTEST_CSR_MHPMCOUNTER  (CSR_MHPMCOUNTER3 + RVMODEL_HPM_COUNTER - 3)
+  #define RVTEST_CSR_MHPMEVENTH   (CSR_MHPMEVENT3H + RVMODEL_HPM_COUNTER - 3)
+  #define RVTEST_CSR_MHPMCOUNTERH (CSR_MHPMCOUNTER3H + RVMODEL_HPM_COUNTER - 3)
 #endif
 
 ##### Configuration Limitations #####

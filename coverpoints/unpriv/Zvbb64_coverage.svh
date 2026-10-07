@@ -2093,45 +2093,46 @@ function void zvbb64_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
-        "vandn.vv"     : begin
-            Zvbb64_vandn_vv_cg.sample(ins);
-        end
-        "vandn.vx"     : begin
-            Zvbb64_vandn_vx_cg.sample(ins);
-        end
-        "vbrev.v"     : begin
-            Zvbb64_vbrev_v_cg.sample(ins);
-        end
-        "vbrev8.v"     : begin
-            Zvbb64_vbrev8_v_cg.sample(ins);
-        end
-        "vclz.v"     : begin
-            Zvbb64_vclz_v_cg.sample(ins);
-        end
-        "vcpop.v"     : begin
-            Zvbb64_vcpop_v_cg.sample(ins);
-        end
-        "vctz.v"     : begin
-            Zvbb64_vctz_v_cg.sample(ins);
-        end
-        "vrev8.v"     : begin
-            Zvbb64_vrev8_v_cg.sample(ins);
-        end
-        "vrol.vv"     : begin
-            Zvbb64_vrol_vv_cg.sample(ins);
-        end
-        "vrol.vx"     : begin
-            Zvbb64_vrol_vx_cg.sample(ins);
-        end
-        "vror.vi"     : begin
-            Zvbb64_vror_vi_cg.sample(ins);
-        end
-        "vror.vv"     : begin
-            Zvbb64_vror_vv_cg.sample(ins);
-        end
-        "vror.vx"     : begin
-            Zvbb64_vror_vx_cg.sample(ins);
-        end
+            "vandn.vv"     : begin
+                Zvbb64_vandn_vv_cg.sample(ins);
+            end
+            "vandn.vx"     : begin
+                Zvbb64_vandn_vx_cg.sample(ins);
+            end
+            "vbrev.v"     : begin
+                Zvbb64_vbrev_v_cg.sample(ins);
+            end
+            "vbrev8.v"     : begin
+                Zvbb64_vbrev8_v_cg.sample(ins);
+            end
+            "vclz.v"     : begin
+                Zvbb64_vclz_v_cg.sample(ins);
+            end
+            "vcpop.v"     : begin
+                Zvbb64_vcpop_v_cg.sample(ins);
+            end
+            "vctz.v"     : begin
+                Zvbb64_vctz_v_cg.sample(ins);
+            end
+            "vrev8.v"     : begin
+                Zvbb64_vrev8_v_cg.sample(ins);
+            end
+            "vrol.vv"     : begin
+                Zvbb64_vrol_vv_cg.sample(ins);
+            end
+            "vrol.vx"     : begin
+                Zvbb64_vrol_vx_cg.sample(ins);
+            end
+            "vror.vi"     : begin
+                Zvbb64_vror_vi_cg.sample(ins);
+            end
+            "vror.vv"     : begin
+                Zvbb64_vror_vv_cg.sample(ins);
+            end
+            "vror.vx"     : begin
+                Zvbb64_vror_vx_cg.sample(ins);
+            end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

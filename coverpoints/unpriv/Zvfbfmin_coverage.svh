@@ -390,6 +390,7 @@ function void zvfbfmin_sample(int hart, int issue, ins_t ins);
             "vfwcvtbf16.f.f.v"     : begin
                 Zvfbfmin_vfwcvtbf16_f_f_v_cg.sample(ins);
             end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

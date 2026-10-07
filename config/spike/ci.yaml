@@ -4,7 +4,7 @@
 # Shared across all Spike configs
 
 ci_enabled: true
-# Smstateen will be added back once sail starts supporting Sscsrind too
+# Smstateen will be added back once Sail supports Sscsrind, Ssaia and Ssctr
 # Sdtrig* not yet supported in Sail reference (https://github.com/riscv/sail-riscv/issues/222)
 # Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)
 exclude_extensions: "Smstateen,SdtrigSm,SdtrigS,SdtrigU,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm"

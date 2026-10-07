@@ -4,9 +4,7 @@
 
 ci_enabled: true
 # Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
-# Sscofpmf* will be added back in CI once Sail increments HPM counters:
-#   https://github.com/riscv/sail-riscv/issues/1733
-exclude_extensions: "SdtrigSm,SdtrigS,SdtrigU,SscofpmfSm,SscofpmfS,SscofpmfU"
+exclude_extensions: "SdtrigSm,SdtrigS,SdtrigU"
 shards: 1
 config_shards:
   sail-RVA22S64-optional: 2

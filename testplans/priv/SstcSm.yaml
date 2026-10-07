@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SstcSm
+source: https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=2013711018#gid=2013711018
+notes: |
+  * for RV32, also access stimcmph
+coverpoints:
+  - heading: In machine mode
+  - name: cp_machine_tm
+    goal: Access stimecmp
+    description: Read stimecmp with mcounteren.TM = {0/1} * for RV32, also access stimcmph
+    expectation: stimecmp always readable in machine mode
+    check: Check against RM
+    status: To be Done
+    coverage: Uncovered
+  - name: cp_machine_stce
+    goal: Access stimecmp
+    description: Read stimecmp with menvcfg.stce (menvcfgh in RV32) = {0/1} * for RV32, also access stimcmph
+    expectation: stimecmp always readable in machine mode
+    check: Check against RM
+    status: To be Done
+    coverage: Uncovered

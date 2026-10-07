@@ -1,0 +1,7 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: ZkrH
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=443731814#gid=443731814
+notes: |
+  Develop this after baseline entropy CSR tests
+  focus on registers being accessible
+coverpoints: []

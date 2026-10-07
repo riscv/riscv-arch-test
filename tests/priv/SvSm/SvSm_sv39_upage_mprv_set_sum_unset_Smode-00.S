@@ -19,7 +19,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
-#define TRAP_SIGUPD_COUNT 50
+#define TRAP_SIGUPD_COUNT 8
 
 // Include framework macros
 #include "riscv_arch_test.h"

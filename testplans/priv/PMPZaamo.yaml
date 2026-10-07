@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: PMPZaamo
+source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=343093009#gid=343093009
+coverpoints:
+  - heading: |-
+      General Test Environment (PMPZaamo):
+      - Runs when Zaamo and Sm are implemented and NUM_PMP_ENTRIES > 0. M-mode only.
+      - AMOs = amoswap, amoadd, amoxor, amoand, amoor, amomin, amomax, amominu, amomaxu (.w; also .d on RV64).
+      - rd is checked after every AMO, and a later AMO's return value shows whether a faulting AMO wrote memory.
+      - Standard region and L=1 XWR walk as in PMPSm cp_cfg_X/R/W.
+  - name: cp_cfg_RW
+    goal: Verify that an AMO needs both R and W, and otherwise raises a store/AMO access fault without side effects.
+    description: Six legal XWR with L=1, one entry each. Every AMO with rs1 at the start of the region.
+    expectation: "XWR = 011 or 111: the AMO completes. Otherwise: store/AMO access fault (mcause = 7); rd and memory are unchanged."
+    bins: 6 XWR × 9 AMOs = 54 (108 on RV64)
+    rules:
+      - pmp_store_fault
+      - mcause_exccode_st_sc_amo
+      - pmp_violation_precise_trap
+      - pmp_cfg_permissions
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement

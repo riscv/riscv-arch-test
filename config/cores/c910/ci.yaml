@@ -1,0 +1,26 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for the XuanTie OpenC910
+
+# Disabled: too slow for a GitHub runner. Run locally with `make c910-openc910`.
+ci_enabled: false
+
+# Each suite below fails at T-head-Semi/openc910 b91c909. RTL paths are relative to
+# https://github.com/T-head-Semi/openc910/blob/b91c909/C910_RTL_FACTORY/gen_rtl/
+# D, F: fmin/fmax return the canonical NaN for one sNaN operand (vfalu/rtl/ct_fadd_double_dp.v#L2347); FMA misses UF on some tiny results.
+# ZicsrF: FMA misses UF in cp_underflow_after_rounding_fma_s.
+# ExceptionsF, ExceptionsS, ExceptionsSm, ExceptionsU, ExceptionsZc: a load bus error is an imprecise access fault (user manual 5.2.3).
+# ExceptionsSv, ExceptionsSvSm: the same imprecise load fault, and a store bus error raises no fault.
+# ExceptionsZalrsc, ExceptionsSvZalrsc, ExceptionsSvZalrscSm, PMPZalrsc: LR takes store/AMO causes 6, 7 and 15 (lsu/rtl/ct_lsu_ld_dc.v#L1239-L1247).
+# InterruptsSm: ACT raises MSI from S- and U-mode, but the CLINT accepts MSIP writes only from M-mode (clint/rtl/ct_clint_func.v#L216).
+# PMPSm: pmpaddr reads bits 8:0 as 0 in NAPOT mode and keeps bit 9 in OFF mode, against G = 10 (pmp/rtl/ct_pmp_regs.v#L520-L522).
+# Sm: MPP holds the reserved value 2 (cp0/rtl/ct_cp0_regs.v#L1624-L1625); csrw minstret also counts itself; mret keeps MPRV, which Sail cannot model.
+# Sv: xtval keeps VA bits 39:0 (rtu/rtl/ct_rtu_retire.v#L1236-L1239); S-mode fetches from U pages when SUM=1 (mmu/rtl/ct_mmu_iutlb.v#L599).
+#     Sail also cannot run Sv_sv39_VA_all_zeros_Smode, which maps VA 0 over the test image.
+# SvPMP: a page-table read is checked against the access type's PMP permission instead of R (mmu/rtl/ct_mmu_ptw.v#L648-L651).
+# ZicntrS, ZicntrU: minstret counts ECALL, which does not retire (rtu/rtl/ct_rtu_retire.v#L1768-L1769).
+exclude_extensions: "D,F,ExceptionsF,ExceptionsS,ExceptionsSm,ExceptionsSv,ExceptionsSvSm,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,ExceptionsU,ExceptionsZalrsc,ExceptionsZc,InterruptsSm,PMPSm,PMPZalrsc,Sm,Sv,SvPMP,ZicntrS,ZicntrU,ZicsrF"
+
+apt_packages: "autoconf flex bison help2man libfl-dev libelf-dev ccache patch"
+install_script: ".github/scripts/install-c910.sh"
+setup_script: ".github/scripts/setup-c910.sh"

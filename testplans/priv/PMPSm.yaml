@@ -1,0 +1,452 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: PMPSm
+source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1474055416#gid=1474055416
+notes: |
+  General Test Environment (PMPSm):
+  - Runs when Sm is implemented and NUM_PMP_ENTRIES > 0. Boots to M-mode; every access on this sheet is made from M-mode.
+  - Test files are split by UDB parameter: base, RV64 only (MXLEN = 64), PMP_NA4_SUPPORTED, PMP_NAPOT_SUPPORTED and PMP_TOR_SUPPORTED. The NA4 and TOR coverpoints are compiled out when the mode is not supported; the NAPOT ones are not.
+  - Background entry: the highest usable entry (15 of 16, 63 of 64) is L=1, XWR=111, NAPOT over all of memory (TOR up to all ones when NAPOT is not supported), so accesses that match no lower entry succeed. cp_none_* runs before it is set.
+  - Grain g = 2^(G+2) bytes from PMP_GRANULARITY. A standard region is a NAPOT region of max(g, 8) bytes in .data, g-aligned past the code. A TOR region is one grain.
+  - Fetch probe = jalr into the region, which holds a return instruction. Loads = lb, lbu, lh, lhu, lw (+ lwu, ld on RV64). Stores = sb, sh, sw (+ sd on RV64).
+  - Legal XWR = {000, 001, 011, 100, 101, 111}. R=0 with W=1 is reserved and never written.
+  - After every PMP CSR write the tests execute sfence.vma when S-mode is implemented.
+  - Coverpoints compare addresses and pmpaddr values on their low bits (PMP_ADDR_LOWMASK), so bins match wherever .data lands.
+  - Entries 0-14 are the entries below the background entry of a 16-entry PMP; with 64 entries, cp_pmp64_* covers entries 15-62.
+coverpoints:
+  - heading: Permission bits, locked entry
+  - name: cp_cfg_X
+    goal: Verify that X alone controls execute permission when the entry is locked (L=1).
+    description: PMP_NAPOT_SUPPORTED only. One standard NAPOT region. Walk the six legal XWR values with L=1, each in its own entry (XWR=000 in entry 5 down to XWR=111 in entry 0), so the newest entry is the highest-priority match. jalr to the start of the region.
+    expectation: Instruction access fault (mcause = 1) when X=0. The fetch completes when X=1.
+    bins: 6 XWR × jalr = 6
+    rules:
+      - pmp_cfg_permissions
+      - pmp_exec_fault
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_mmode_locking
+      - pmp_access_fault_exception
+  - name: cp_cfg_R
+    goal: Verify that R controls every load width when the entry is locked.
+    description: Same walk as cp_cfg_X. Every load (lb, lbu, lh, lhu, lw (+ lwu, ld on RV64)) at the start of the region.
+    expectation: Load access fault (mcause = 5) when R=0.
+    bins: 6 XWR × 5 loads = 30 (42 on RV64)
+    rules:
+      - pmp_cfg_permissions
+      - pmp_load_fault
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_mmode_locking
+      - pmp_access_fault_exception
+  - name: cp_cfg_W
+    goal: Verify that W controls every store width when the entry is locked.
+    description: Same walk as cp_cfg_X. Every store (sb, sh, sw (+ sd on RV64)) at the start of the region.
+    expectation: Store/AMO access fault (mcause = 7) when W=0.
+    bins: 6 XWR × 3 stores = 18 (24 on RV64)
+    rules:
+      - pmp_cfg_permissions
+      - pmp_store_fault
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_mmode_locking
+      - pmp_access_fault_exception
+  - heading: Permission bits in every entry
+  - name: |-
+      cp_cfg_X0_all
+      cp_cfg_X1_all
+    goal: Verify that X is enforced by each of entries 0-14.
+    description: Entries 0-14 all cover the same standard NAPOT region. Program L=1 and a rolling legal XWR into entries 14 down to 0, one entry at a time (four test files), and jalr to the region after each write. The newest entry is the lowest-numbered match.
+    expectation: "X=0: instruction access fault. X=1: the fetch completes."
+    bins: 15 entries each
+    rules:
+      - pmp_exec_fault
+      - pmp_cfg_permissions
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_entry_priority
+      - pmp_access_fault_exception
+  - name: |-
+      cp_cfg_Rw00_all
+      cp_cfg_Rw10_all
+      cp_cfg_Rw11_all
+    goal: Verify that R is enforced by each of entries 0-14.
+    description: "Same walk as cp_cfg_X0_all. Every load (lb, lbu, lh, lhu, lw (+ lwu, ld on RV64)) after each write. The suffix gives R then W: Rw00 = R0 W0, Rw10 = R1 W0, Rw11 = R1 W1."
+    expectation: Load access fault when R=0.
+    bins: 3 RW values × 15 entries × 5 loads (7 on RV64)
+    rules:
+      - pmp_load_fault
+      - pmp_cfg_permissions
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_entry_priority
+  - name: |-
+      cp_cfg_rW00_all
+      cp_cfg_rW10_all
+      cp_cfg_rW11_all
+    goal: Verify that W is enforced by each of entries 0-14.
+    description: Same walk as cp_cfg_X0_all. Every store (sb, sh, sw (+ sd on RV64)) after each write. The suffix gives R then W, as for cp_cfg_Rw*_all.
+    expectation: Store/AMO access fault when W=0.
+    bins: 3 RW values × 15 entries × 3 stores (4 on RV64)
+    rules:
+      - pmp_store_fault
+      - pmp_cfg_permissions
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_entry_priority
+  - heading: L bit
+  - name: |-
+      cp_cfg_L_access_exec
+      cp_cfg_L_access_read
+      cp_cfg_L_access_write
+    goal: Verify that an unlocked entry (L=0) never restricts an M-mode access.
+    description: "For each of entries 0-14: L=0, A=NAPOT, XWR=000 over a standard region. jalr, lw and sw in the region."
+    expectation: All accesses succeed.
+    bins: 15 entries each
+    rules:
+      - pmp_l_bit_m_mode_enforcement
+      - pmp_rwx_check
+  - name: cp_cfg_L_modify
+    goal: Verify that a locked entry ignores writes to its pmpcfg and pmpaddr, and that a locked TOR entry also protects the preceding pmpaddr.
+    description: "Entry 1: L={0,1}, A={OFF, TOR, NAPOT}, XWR=111, pmpaddr1 = 0x100. Clear pmpaddr1, clear pmpcfg0 (zeroing pmp1cfg), set pmp0cfg.XWR=111 through pmpcfg0, and write all ones to pmpaddr0; read each back. NA4 is not used because it is not selectable when G ≥ 1."
+    expectation: "L=1: pmp1cfg and pmpaddr1 keep their values; pmpaddr0 keeps its value only when entry 1 is TOR; pmp0cfg is always writable. L=0: every write takes effect."
+    bins: 2 L × 3 A × 4 CSR writes = 24 (16 without TOR)
+    rules:
+      - pmp_l_bit_function
+      - pmp_l_bit_write_protection
+      - pmp_locked_until_reset
+      - pmp_mmode_locking
+  - heading: Address-matching mode (A field)
+  - name: |-
+      cp_cfg_A_all_even
+      cp_cfg_A_all_odd
+    goal: Verify that every pmpcfg byte accepts each address-matching mode.
+    description: With L=0 and XWR=000, write A = OFF, TOR, NA4 and NAPOT into every byte of every pmpcfg CSR and read each back. cp_cfg_A_all_odd covers the odd pmpcfg CSRs (RV32 only).
+    expectation: Readback matches the reference model. A supported mode reads back as written. NA4 when G ≥ 1, or a mode the hart does not support, reads back as a legal value of the WARL field.
+    bins: "4 A (fewer without TOR or NA4) × even pmpcfg CSRs (2, or 8 with 64 entries); odd: 4 A × odd pmpcfg CSRs (RV32)"
+    rules:
+      - pmp_a_field_encoding
+      - pmp_na4_select_restriction
+      - pmp_csrs_warl_access
+      - pmp_cfg_rv32_layout
+      - pmp_cfg_rv64_layout
+  - name: |-
+      cp_cfg_A_OFF_all_read
+      cp_cfg_A_OFF_all_write
+      cp_cfg_A_OFF_all_exec
+    goal: Verify that A=OFF disables each of entries 0-14.
+    description: "For each entry: L=1, A=OFF, XWR=000, pmpaddr = a standard region. lw, sw and jalr in the region."
+    expectation: "All accesses succeed: the OFF entry matches nothing and the background entry grants access."
+    bins: 15 entries each
+    rules:
+      - pmp_a_field_off
+      - pmp_a_field_encoding
+  - name: cp_cfg_A_napot_all
+    goal: Verify that A=NAPOT matches exactly its region, in each of entries 0-14.
+    description: "PMP_NAPOT_SUPPORTED only. For each entry: L=1, A=NAPOT, XWR=000 over a standard region. lw 4 bytes below the region, at its base, and just past its top."
+    expectation: Load access fault at the base only. The two accesses outside the region succeed.
+    bins: 15 entries × 3 addresses = 45
+    rules:
+      - pmp_napot_encoding_low_bits
+      - pmp_a_field_napot_na4
+      - pmp_a_field_encoding
+      - pmp_load_fault
+      - pmp_access_fault_exception
+  - name: |-
+      cp_cfg_A_napot_x
+      cp_cfg_A_napot_r
+      cp_cfg_A_napot_w
+    goal: Verify that XWR is enforced across a locked NAPOT region and not outside it.
+    description: PMP_NAPOT_SUPPORTED only. Same walk as cp_cfg_X. jalr, lw and sw at base-4, base, base+4, the highest word, and just past the top.
+    expectation: "Inside the region: access fault when the permission is clear. Outside: the access succeeds."
+    bins: 6 XWR × 5 addresses = 30 each
+    rules:
+      - pmp_napot_encoding_low_bits
+      - pmp_a_field_napot_na4
+      - pmp_rwx_check
+      - pmp_exec_fault
+      - pmp_load_fault
+      - pmp_store_fault
+      - pmp_addr_encoding
+  - name: cp_cfg_A_NA4_all
+    goal: Verify that A=NA4 matches exactly four bytes, in each of entries 0-14.
+    description: "PMP_NA4_SUPPORTED only (G = 0). For each entry: L=1, A=NA4, XWR=000. lw at region-4, region and region+4."
+    expectation: Load access fault at the region only.
+    bins: 15 entries × 3 addresses = 45
+    rules:
+      - pmp_a_field_napot_na4
+      - pmp_granularity
+      - pmp_a_field_encoding
+      - pmp_load_fault
+  - name: |-
+      cp_cfg_A_na4_x
+      cp_cfg_A_na4_r
+      cp_cfg_A_na4_w
+    goal: Verify that XWR is enforced on a locked NA4 region and not on its neighbors.
+    description: PMP_NA4_SUPPORTED only. One NA4 region, six legal XWR with L=1. jalr, lw and sw at region-4, region and region+4.
+    expectation: Access fault at the region when the permission is clear. The neighbors succeed.
+    bins: 6 XWR × 3 addresses = 18 each
+    rules:
+      - pmp_a_field_napot_na4
+      - pmp_rwx_check
+      - pmp_exec_fault
+      - pmp_load_fault
+      - pmp_store_fault
+  - name: |-
+      cp_cfg_A_tor_all0
+      cp_cfg_A_tor_all1
+      cp_cfg_A_tor_all2
+      cp_cfg_A_tor_all3
+      cp_cfg_A_tor_all4
+      cp_cfg_A_tor_all5
+      cp_cfg_A_tor_all6
+      cp_cfg_A_tor_all7
+      cp_cfg_A_tor_all8
+      cp_cfg_A_tor_all9
+      cp_cfg_A_tor_all10
+      cp_cfg_A_tor_all11
+      cp_cfg_A_tor_all12
+      cp_cfg_A_tor_all13
+      cp_cfg_A_tor_all14
+    goal: Verify that A=TOR works in each of entries 0-14, with each region's bottom taken from the preceding pmpaddr.
+    description: PMP_TOR_SUPPORTED only. Program pmpaddr0-14 so that TOR region i spans i+1 grains; region 0 runs from address 0 to pmpaddr0 and holds the code. All L=1, A=TOR; XWR=111 in entry 0, 001 in odd entries and 000 in even entries. lw in the last word of region 0 and at the start of every other region.
+    expectation: "Region 0 and the odd regions: the load succeeds. Even regions 2-14: load access fault."
+    bins: 15 coverpoints × 1 bin
+    rules:
+      - pmp_a_field_tor
+      - pmp_entry_structure
+      - pmp_cfg_rv32_layout
+      - pmp_cfg_rv64_layout
+      - pmp_load_fault
+  - name: |-
+      cp_cfg_A_tor_x
+      cp_cfg_A_tor_r
+      cp_cfg_A_tor_w
+    goal: Verify that XWR is enforced across a locked TOR region and not outside it.
+    description: PMP_TOR_SUPPORTED only. One TOR region of one grain [bottom, top) from a pair of entries (the odd entry is TOR, the even one below it holds the bottom). Six legal XWR with L=1. jalr, lw and sw at bottom-4, bottom, bottom+4, top-4 and top.
+    expectation: "Inside the region: access fault when the permission is clear. bottom-4 and top: the access succeeds."
+    bins: 6 XWR × 5 addresses = 30 each
+    rules:
+      - pmp_a_field_tor
+      - pmp_rwx_check
+      - pmp_exec_fault
+      - pmp_load_fault
+      - pmp_store_fault
+      - pmp_addr_encoding
+  - name: |-
+      cp_cfg_A_tor0_r
+      cp_cfg_A_tor0_w
+      cp_cfg_A_tor0_x
+    goal: Verify that TOR entry 0 uses 0 as its bottom bound.
+    description: "PMP_TOR_SUPPORTED only. Entry 0: L=1, A=TOR, XWR=111, pmpaddr0 = start of the test region, so region 0 is [0, pmpaddr0) and contains the code. lw, sw and jalr at pmpaddr0-4 and pmpaddr0."
+    expectation: "All accesses succeed: pmpaddr0-4 matches entry 0, and pmpaddr0 falls through to the background entry."
+    bins: 2 addresses each
+    rules:
+      - pmp_a_field_tor
+  - name: |-
+      cp_cfg_A_tor_bot_L0_x
+      cp_cfg_A_tor_bot_L0_w
+      cp_cfg_A_tor_bot_L0_r
+      cp_cfg_A_tor_bot_L1_x
+      cp_cfg_A_tor_bot_L1_w
+      cp_cfg_A_tor_bot_L1_r
+    goal: Verify that TOR entry i spans [pmpaddr(i-1), pmpaddr(i)) whatever pmpcfg(i-1) holds.
+    description: "PMP_TOR_SUPPORTED only. Entry 1: L=1, A=TOR, XWR=101. Entry 0: A=OFF, XWR=000, with L=0 (L0 coverpoints) and then L=1 (L1 coverpoints). pmpaddr1 = pmpaddr0 + g. jalr, sw and lw at pmpaddr0-4, pmpaddr0, pmpaddr1-4 and pmpaddr1."
+    expectation: "In the region: jalr and lw succeed, sw raises a store/AMO access fault. Outside: all succeed. Entry 0's L bit does not change the result."
+    bins: 4 addresses each
+    rules:
+      - pmp_a_field_tor
+      - pmp_entry_structure
+      - pmp_store_fault
+      - pmp_rwx_check
+  - name: |-
+      cp_cfg_A_tor_nonoverlap1_x
+      cp_cfg_A_tor_nonoverlap1_w
+      cp_cfg_A_tor_nonoverlap1_r
+      cp_cfg_A_tor_nonoverlap2_x
+      cp_cfg_A_tor_nonoverlap2_w
+      cp_cfg_A_tor_nonoverlap2_r
+      cp_cfg_A_tor_nonoverlap3_x
+      cp_cfg_A_tor_nonoverlap3_w
+      cp_cfg_A_tor_nonoverlap3_r
+    goal: Verify that a TOR entry matches nothing when pmpaddr(i-1) ≥ pmpaddr(i).
+    description: "PMP_TOR_SUPPORTED only. Entry 1: L=1, A=TOR, XWR=000, pmpaddr1 = R. Entry 0: A=OFF, L=0. pmpaddr0 = R (nonoverlap1), R + g (nonoverlap2), all ones (nonoverlap3). jalr, sw and lw at R-4, R and R+4."
+    expectation: All accesses succeed.
+    bins: 3 addresses each
+    rules:
+      - pmp_a_field_tor
+  - heading: Priority and matching
+  - name: |-
+      cp_priority_lw
+      cp_priority_sw
+      cp_priority_jalr
+    goal: Verify that the lowest-numbered matching entry decides the access.
+    description: "PMP_NAPOT_SUPPORTED only. Entries 0-6: L=1, A=NAPOT, seven nested regions with a common base; entry i covers g·2^i bytes. XWR = 000, 101, 011, 100, 001, 111, 000 for entries 0-6. lw, sw and jalr at the last word of each region, which lies in entries i..6 only."
+    expectation: "Each access follows entry i's XWR: access fault when its permission is clear."
+    bins: 7 regions each
+    rules:
+      - pmp_entry_priority
+      - pmp_napot_encoding_low_bits
+      - pmp_rwx_check
+      - pmp_access_fault_exception
+  - name: |-
+      cp_priority_off_lw
+      cp_priority_off_sw
+      cp_priority_off_jalr
+    goal: Verify that OFF entries are skipped and the first matching entry decides.
+    description: "PMP_NAPOT_SUPPORTED only. Entries 0-3, all L=1: entry 0 OFF XWR=000, entry 1 NAPOT XWR=101, entry 2 OFF XWR=000, entry 3 NAPOT XWR=111. pmpaddr0 and pmpaddr2 hold the probed address; entries 1 and 3 cover it. lw, sw and jalr at that address."
+    expectation: jalr and lw succeed; sw raises a store/AMO access fault (entry 1 decides).
+    bins: 1 each
+    rules:
+      - pmp_a_field_off
+      - pmp_entry_priority
+      - pmp_store_fault
+  - name: |-
+      cp_none_lw
+      cp_none_sw
+      cp_none_jalr
+    goal: Verify that an M-mode access that matches no entry succeeds.
+    description: "Before the background entry is set: every pmpcfg.A = OFF and pmpaddr0-15 = 0. lw, sw and jalr."
+    expectation: All accesses succeed.
+    bins: 1 each
+    rules:
+      - pmp_no_entry_match
+      - pmp_a_field_off
+  - heading: Grain
+  - name: |-
+      cp_grain_OFF_to_OFF
+      cp_grain_OFF_to_NAPOT
+      cp_grain_NAPOT_to_OFF
+      cp_grain_NAPOT_to_NAPOT
+      cp_grain_OFF_to_TOR
+      cp_grain_NAPOT_to_TOR
+    goal: Verify that the low pmpaddr bits read back according to G and the current mode, and keep their stored value when the mode changes.
+    description: G ≥ 1 only (compiled out at PMP_GRANULARITY = 2). Write zeros, ones and a checkerboard to pmpaddr0 with pmpcfg0.A = NAPOT or OFF, then change A to OFF, NAPOT or TOR and read pmpaddr0[G-1:0].
+    expectation: "NAPOT: pmpaddr0[G-2:0] read as ones and bit G-1 returns the written value, even if it was written while the entry was OFF. OFF and TOR: pmpaddr0[G-1:0] read as zeros."
+    bins: 6 transitions (4 without TOR); the tests write 3 patterns per transition
+    rules:
+      - pmp_napot_addr_read_mask
+      - pmp_tor_off_addr_read_mask
+      - pmp_addr_retention_on_mode_change
+      - pmp_region_granularity_g
+  - name: |-
+      cp_grain_check_write
+      cp_grain_check_read
+    goal: Verify the grain G seen in pmpaddr0.
+    description: pmpcfg0 = 0. Write all ones to pmpaddr0 and read it back.
+    expectation: Bits G-1:0 read as zero and bit G reads as one, matching PMP_GRANULARITY.
+    bins: 1 each
+    rules:
+      - pmp_region_granularity_g
+      - pmp_granularity
+      - pmp_tor_off_addr_read_mask
+      - pmp_addr_warl
+  - heading: PMP CSR access
+  - name: cp_pmpaddr_upper_zero
+    goal: Verify that pmpaddr bits 63:54 are zero on RV64.
+    description: RV64 only. Write all ones to every implemented pmpaddr CSR and read it back.
+    expectation: Bits 63:54 read as zero.
+    bins: 16 or 64 pmpaddr CSRs
+    rules:
+      - pmp_addr_encoding
+      - pmp_addr_warl
+      - pmp_addr_registers
+      - pmp_csrs_warl_access
+  - name: |-
+      cp_pmpcfg_walk
+      cp_pmpcfg_walk_odd
+      cp_pmpcfg_zero
+    goal: Verify the layout and WARL behavior of the pmpcfg CSRs.
+    description: Write zero, then a walking one through each bit of every implemented pmpcfg CSR (pmpcfg0-15 on RV32, the even pmpcfg CSRs on RV64), and read each back. The walk skips bit 1 (W alone is reserved) and bit 4 (A = NA4) of every byte. cp_pmpcfg_walk_odd and cp_pmpcfg_zero cover the odd CSRs on RV32.
+    expectation: "Readback matches the reference model: bits 6:5 of each byte read as zero, and a one written to bit 7 locks that entry."
+    bins: Walking-one values (24 on RV32, 48 on RV64) × even pmpcfg CSRs; on RV32 also × odd CSRs, plus zero to each odd CSR
+    rules:
+      - pmp_entry_structure
+      - pmp_cfg_rv32_layout
+      - pmp_cfg_rv64_layout
+      - pmp_rwx_warl
+      - pmp_csrs_warl_access
+  - heading: 64 PMP entries
+  - name: |-
+      cp_pmp64_write
+      cp_pmp64_read
+    goal: Verify that entries 15-62 of a 64-entry PMP enforce permissions.
+    description: "NUM_PMP_ENTRIES = 64 and PMP_NAPOT_SUPPORTED only. For each of entries 62 down to 15: L=1, A=NAPOT, XWR=101 over a standard region. sw and lw in the region (the test also issues jalr)."
+    expectation: lw succeeds; sw raises a store/AMO access fault.
+    bins: 48 entries each
+    rules:
+      - pmp_entry_count
+      - pmp_addr_registers
+      - pmp_cfg_rv32_layout
+      - pmp_cfg_rv64_layout
+      - pmp_store_fault
+      - pmp_cfg_permissions
+  - name: cp_pmpcfg_odd_rv64
+    goal: Verify that the odd pmpcfg CSRs are illegal on RV64.
+    description: RV64 only. csrr and csrw each of pmpcfg1, pmpcfg3, …, pmpcfg15 from M-mode.
+    expectation: Illegal-instruction exception (mcause = 2) on every access.
+    bins: 8 CSRs × 2 operations = 16
+    rules:
+      - pmp_cfg_rv64_illegal
+  - name: cp_na4_boundary
+    goal: Verify that an aligned doubleword that only half matches an NA4 entry fails.
+    description: "RV64, PMP_NA4_SUPPORTED only. Entry i: L=1, A=NA4, XWR=111 over the lower or the upper word of an aligned doubleword. ld and sd on the doubleword."
+    expectation: "Load or store/AMO access fault: the entry matches only some bytes of one memory operation."
+    bins: 2 halves × 2 accesses = 4
+    rules:
+      - pmp_full_match_required
+      - pmp_entry_priority
+      - pmp_access_fault_exception
+  - name: cp_tor_boundary
+    goal: Verify that an aligned doubleword that only half matches a TOR entry fails.
+    description: "RV64, G = 0, PMP_TOR_SUPPORTED only. Entry i: L=1, A=TOR, XWR=111, a 4-byte region over the lower or upper word of an aligned doubleword (entry i-1: OFF, pmpaddr(i-1) = pmpaddr(i) - 4). ld and sd on the doubleword."
+    expectation: Load or store/AMO access fault. (The original plan also allowed success for a split access; an aligned doubleword is one memory operation.)
+    bins: 2 halves × 2 accesses = 4
+    rules:
+      - pmp_full_match_required
+      - pmp_entry_priority
+      - pmp_access_fault_exception
+  - name: cp_tor_doubleregionfail
+    goal: Verify that an aligned doubleword split across two TOR entries fails.
+    description: "RV64, G = 0, PMP_TOR_SUPPORTED only. Entries i and i+1: XWR=111, TOR, each covering one word of an aligned doubleword (entry i-1: OFF, pmpaddr at the doubleword). ld and sd on the doubleword."
+    expectation: "Load or store/AMO access fault: no single entry matches all bytes."
+    bins: 2 accesses
+    rules:
+      - pmp_full_match_required
+      - pmp_entry_priority
+      - pmp_access_fault_exception
+  - name: |-
+      cp_misaligned_napot
+      cp_misaligned_na4
+      cp_misaligned_tor
+    goal: Verify that a misaligned load or store that straddles a region boundary is checked byte by byte.
+    description: Standard NAPOT region, NA4 region (G = 0) or one-grain TOR region with L={0,1}, XWR=111. Misaligned lh, lhu, lw, sh, sw (+ lwu, ld, sd on RV64) at each offset straddling the start and the end of the region.
+    expectation: Address-misaligned exception, access fault, or success if the hart splits the access into operations that each match fully. Depends on MISALIGNED_LDST, MISALIGNED_LDST_EXCEPTION_PRIORITY and MISALIGNED_SPLIT_STRATEGY.
+    bins: ~(3 lw + 3 sw + 1 lh + 1 lhu + 1 sh) offsets × 2 ends × 2 L, per mode
+    rules:
+      - pmp_misaligned_access_behavior
+      - pmp_full_match_required
+      - pmp_entry_priority
+      - pmp_access_fault_exception
+  - name: cp_misaligned_off
+    goal: Verify that a misaligned access across an OFF entry's region only sees the background entry.
+    description: Standard region with A=OFF, L={0,1}, XWR=111. The same misaligned accesses as cp_misaligned_napot.
+    expectation: Address-misaligned exception or success; never an access fault.
+    bins: ~(3 lw + 3 sw + 1 lh + 1 lhu + 1 sh) offsets × 2 ends × 2 L
+    rules:
+      - pmp_a_field_off
+      - pmp_misaligned_access_behavior
+  - name: |-
+      cp_misaligned_na4_wrap
+      cp_misaligned_tor_wrap
+    goal: Verify that a doubleword that starts before and ends after a 4-byte region fails.
+    description: RV64, G = 0. A 4-byte NA4 or TOR region with L={0,1}, XWR=111. ld and sd that start 2 bytes before the region and end 2 bytes after it.
+    expectation: Address-misaligned exception or access fault (the entry matches only the middle bytes). Depends on MISALIGNED_LDST and MISALIGNED_LDST_EXCEPTION_PRIORITY.
+    bins: 2 accesses × 2 L, per mode
+    rules:
+      - pmp_full_match_required
+      - pmp_misaligned_access_behavior
+      - pmp_entry_priority
+  - goal: "Open item from the original plan: add mstatus.MXR to cp_cfg_R and cp_cfg_W."
+  - goal: "Open item from the original plan: add a check of the default (background) region."
+  - goal: "Open item from the original plan: add a check of different region types in combination."
+  - goal: "Open item from the original plan: a misaligned instruction or data access that spans a 4 KiB page boundary and translates to two physical pages, one outside the PMP region. Belongs in SvPMP."

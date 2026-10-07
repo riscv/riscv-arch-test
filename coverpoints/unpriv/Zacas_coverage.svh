@@ -468,5 +468,6 @@ function void zacas_sample(int hart, int issue, ins_t ins);
             Zacas_amocas_q_cg.sample(ins);
         end
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

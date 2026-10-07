@@ -17,7 +17,7 @@
 # Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)
 # Sm: mstatus.SPELP is writable without S (https://github.com/tenstorrent/whisper/issues/104)
 ci_enabled: true
-exclude_extensions: "SsstrictSm,SsstrictS,Smstateen,SdtrigSm,SdtrigS,SdtrigU,Svnapot,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,SscofpmfSm,SscofpmfS,SscofpmfU"
+exclude_extensions: "SsstrictSm,SsstrictS,Smstateen,SdtrigSm,SdtrigS,SdtrigU,Svnapot,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,Sm,SscofpmfSm,SscofpmfS,SscofpmfU"
 exclude_configs:
   - whisper-rv32-max-spike-ref
   - whisper-rv64-max-spike-ref

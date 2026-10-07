@@ -4414,5 +4414,6 @@ function void e_sample(int hart, int issue, ins_t ins);
     case (traceDataQ[hart][issue][0].inst_name)
 `ifdef UDB_MXLEN_64
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

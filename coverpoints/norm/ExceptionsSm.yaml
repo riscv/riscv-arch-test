@@ -353,11 +353,6 @@ normative_rule_definitions:
         "Untestable: profile defines no main-memory region without instruction fetch",
       ]
 
-  # the design of a processor or device accessing main memory might support other widths, but must
-  # be able to function with the types supported by the main memory.
-  - name: pma_mm_mandatory_sz
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
-
   # I/O regions can specify which combinations of read, write, or execute accesses to which data
   # widths are supported.
   - name: pma_io_rwx_per_sz
@@ -370,10 +365,6 @@ normative_rule_definitions:
       [
         "TODO: walk a page table at RVMODEL_ACCESS_FAULT_ADDRESS and check for an access fault",
       ]
-
-  # Some platforms might mandate that all of cacheable main memory support all atomic operations
-  - name: pma_cache_mm_all_atomics
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
 
   # Within AMOs, there are four levels of support: AMONone, AMOSwap, AMOLogical, and AMOArithmetic.
   # AMONone indicates that no AMO operations are supported. AMOSwap indicates that only amoswap
@@ -399,11 +390,6 @@ normative_rule_definitions:
   # supported.
   - name: pma_amo_Zacas_levels2
     coverpoint: ["Untestable: no I/O devices defined in profile"]
-
-  # AMOCASW/D/Q require AMOArithmetic-level support as the AMOCAS.W/D/Q instructions require ability
-  # to perform an arithmetic comparison and a swap operation.
-  - name: pma_amo_Zacas_req_arith
-    coverpoint: ["Descriptive spec text with no separately testable behavior"]
 
   # The AMOs specified by the Zabha extension require the same level of support as the corresponding
   # instructions in the Zaamo standard extension or the Zacas extension.
@@ -460,14 +446,6 @@ normative_rule_definitions:
   - name: pma_non_cacheable
     coverpoint: ["Untestable: no non-cacheable PMA region defined in profile"]
 
-  # For implementations with a cacheability-control mechanism, the situation may arise that a
-  # program uncacheably accesses a memory location that is currently cache-resident. In this
-  # situation, the cached copy must be ignored. This constraint is necessary to prevent
-  # more-privileged modes' speculative cache refills from affecting the behavior of less-privileged
-  # modes' uncacheable accesses.
-  - name: uncached_ignores_cached
-    coverpoint: ["Untestable: cache residency is not architecturally visible"]
-
   # Main memory regions are assumed to be idempotent.
   - name: pma_idp_mm
     coverpoint: ["Descriptive spec text with no separately testable behavior"]
@@ -475,11 +453,6 @@ normative_rule_definitions:
   # hardware should always be designed to avoid speculative or redundant accesses to memory regions
   # marked as non-idempotent
   - name: pma_idp_no_spec
-    coverpoint: ["Untestable: no I/O devices defined in profile"]
-
-  # Non-idempotent regions might not support misaligned accesses. Misaligned accesses to such
-  # regions should raise access-fault exceptions rather than address-misaligned exceptions
-  - name: pma_idp_misaligned_exc
     coverpoint: ["Untestable: no I/O devices defined in profile"]
 
   # For non-idempotent regions, implicit reads and writes must not be performed early or

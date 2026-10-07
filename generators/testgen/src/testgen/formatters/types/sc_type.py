@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import load_int_reg, write_sigupd
+from testgen.asm.helpers import load_int_reg, lrsc_retry_loop, write_sigupd
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -33,29 +33,35 @@ def format_sc_type(
 
     lr_insr = "lr.w" if instr_name.endswith(".w") else "lr.d"
 
-    label = test_data.current_testcase_label
-    retry_label = f"{label}_retry"
-    success_label = f"{label}_success"
+    retry_start, retry_end = lrsc_retry_loop(test_data.current_testcase_label, params.temp_reg, params.rd)
+
+    # A failed SC writes rd. When rd is also rs1 or rs2, keep a copy of that operand to restore before each retry.
+    save_reg = None
+    save, restore = [], []
+    if params.rd != 0 and params.rd in (params.rs1, params.rs2):
+        save_reg = test_data.int_regs.get_register(exclude_regs=[0])
+        save = [f"mv x{save_reg}, x{params.rd} # save x{params.rd}, which a failed SC overwrites"]
+        restore = [f"mv x{params.rd}, x{save_reg} # restore x{params.rd} before the LR"]
 
     setup = [
         load_int_reg("rs2", params.rs2, params.rs2val, test_data),
         f"LA(x{params.rs1}, scratch) # rs1 = base address",
-        f"LI(x{params.temp_reg}, 100) # retry counter for constrained LR/SC loop",
-        f"{retry_label}:",
+        *save,
+        *retry_start,
+        *restore,
         f"{lr_insr} x0, (x{params.rs1}) # establish reservation",
     ]
 
     test = [f"{instr_name} x{params.rd}, x{params.rs2}, (x{params.rs1}) # perform operation"]
     check = [
-        f"beqz x{params.rd}, {success_label} # SC succeeded, skip retry",
-        f"addi x{params.temp_reg}, x{params.temp_reg}, -1 # decrement retry count",
-        f"bnez x{params.temp_reg}, {retry_label} # retry LR/SC if not exhausted",
-        f"{success_label}:",
+        *retry_end,
         write_sigupd(params.rd, test_data),
         f"LA(x{params.rs1}, scratch) # reload base address",
         f"LREG x{params.temp_reg}, 0(x{params.rs1}) # load stored value",
         write_sigupd(params.temp_reg, test_data),
     ]
+    if save_reg is not None:
+        test_data.int_regs.return_register(save_reg)
     return (setup, test, check)
 
 

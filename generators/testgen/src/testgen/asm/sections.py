@@ -13,7 +13,7 @@ from testgen.constants import VLEN_MAX
 from testgen.data.random import random_int
 
 
-def generate_test_data_section(data_values: list[int], xlen: int, flen: int) -> str:
+def generate_test_data_section(data_values: list[int], xlen: int, flen: int, vdsew: int) -> str:
     """
     Generate the .data section containing all test values.
 
@@ -28,7 +28,7 @@ def generate_test_data_section(data_values: list[int], xlen: int, flen: int) -> 
     lines: list[str] = []
 
     # Use .word for 32-bit, .dword for 64-bit
-    data_size = max(xlen, flen)
+    data_size = max(xlen, flen, vdsew)
     directive = ".word" if data_size == 32 else ".dword"  # TODO: handle Q extension
 
     for value in data_values:
@@ -69,7 +69,12 @@ def generate_vector_data_section(vector_data_labels: list[tuple[str, list[int], 
             continue
         seen_labels.add(label)
 
-        directives = {8: ".byte", 16: ".short", 32: ".word", 64: ".dword"}
+        # Repack into .dword chunks
+        if eew == 256:
+            data = [(val >> (64 * i)) & (2**64 - 1) for val in data for i in range(4)]
+            eew = 64
+
+        directives = {8: ".byte", 16: ".short", 32: ".word", 64: ".dword", 128: ".octa"}
         directive = directives[eew]
 
         lines.append(f".balign {eew // 8}")

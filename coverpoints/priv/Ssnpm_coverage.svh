@@ -25,8 +25,12 @@
 
     pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm") {
         bins pmm_00_disabled = {2'b00};  // PMLEN = 0, no masking
-        bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
-        bins pmm_11_pmlen16 = {2'b11};   // PMLEN = 16, upper 16 bits masked
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+            bins pmm_10_pmlen7  = {2'b10};   // PMLEN =  7, upper  7 bits masked
+        `endif
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+            bins pmm_11_pmlen16 = {2'b11};   // PMLEN = 16, upper 16 bits masked
+        `endif
     }
 
     //Declare pmm before including the shared PMM coverpoint file so the include can reference it.
@@ -36,20 +40,29 @@
         bins mxr_1 = {1'b1};   // MXR=1: execute-only pages readable
         bins mxr_0 = {1'b0};   // MXR=0: normal permission checks
     }
-    uxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "uxl") {
-        bins uxl_01 = {2'b01};
-    }
+
+    `ifdef UDB_UXLEN_32  // UXL=01 is only reachable when U-mode supports RV32; checked from S-mode
+        uxl_rv32: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "uxl") {
+            bins uxl_01 = {2'b01};
+        }
+    `endif // UDB_UXLEN_32
 
     //Main Crosses
     cp_pmlen_masking : cross priv_mode_u, pmm, satp_mode, a_upper_bits, pm_insn;
-    cp_pmlen_misaligned_word: cross priv_mode_u, pm_misalign;
+    `ifdef ZICFISS_SUPPORTED
+        cp_pmlen_zicfiss_amo : cross priv_mode_u, pmm, satp_mode_zicfiss, a_upper_bits, pm_ssamoswap_insn;
+        cp_pmlen_zicfiss_ssp : cross priv_mode_u, pmm, satp_mode_zicfiss, ssp_upper_bits, pm_ssp_insn;
+    `endif // ZICFISS_SUPPORTED
+    cp_pmlen_misaligned_word: cross priv_mode_u, satp_mode, pmm, a_upper_bits, sw_lw_insn, misaligned_addr;
     cp_pmm_mxr: cross priv_mode_u, pmm, a_upper_bits, mxr_bit, satp_mode, sw_lw_insn;
     cp_pmm_jalr: cross priv_mode_u, pmm, a_upper_bits, mxr_bit, satp_mode, jalr_insn;
-    cp_pmm_uxl_clear: cross pmm, uxl_rv32;
+    `ifdef UDB_UXLEN_32
+        cp_pmm_uxl_clear: cross priv_mode_s, pmm, uxl_rv32;
+    `endif // UDB_UXLEN_32
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         // Fault crosses confirm lw/sw executed in U-mode at the illegal address.
-        cp_hardware_csr_writes_fault: cross priv_mode_u, satp_mode, pm_fault;
+        cp_hardware_csr_writes_fault: cross priv_mode_u, satp_mode, pmm, a_upper_bits, sw_lw_insn, illegal_addr;
     `endif
 
 endgroup

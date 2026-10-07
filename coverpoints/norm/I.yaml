@@ -199,17 +199,9 @@ normative_rule_definitions:
     coverpoint: ["I_fence_cg/{cp_custom_fence_pred_succ}, ordering not tested"]
   - name: fence-tso_op
     coverpoint: ["I_fence_cg/{cp_custom_fence_reserved}, ordering not tested"]
-  - name: fence-tso_ordering_rw_rw_ok
-    coverpoint:
-      ["I_fence_cg/{cp_custom_fence_reserved}, implementation not tested"]
   - name: fence_unused_flds_rsv
     coverpoint:
       ["I_fence_cg/{cp_custom_fence_reserved, cp_custom_fence_pred_succ}"]
-  - name: fence_cons_ok
-    coverpoint:
-      [
-        "I_fence_cg/{cp_custom_fence_reserved, cp_custom_fence_pred_succ}, ordering not tested",
-      ]
   # HINTs designated for standard use: cp_rd includes rd = x0. Use representative
   # coverpoints; the other computational instructions with cp_rd apply too.
   - name: hints_enc
@@ -249,9 +241,6 @@ normative_rule_definitions:
   # An aligned AMO gives rise to a single memory operation that is both a load operation and a
   # store operation simultaneously.
   - name: rvwmo_aligned_amo_memop
-    coverpoint: ["OUT-OF-SCOPE for single hart"]
-  # ISA extensions such as the V extension may give rise to multiple memory operations.
-  - name: rvwmo_V_p_multi_memops
     coverpoint: ["OUT-OF-SCOPE for single hart"]
   # A misaligned load or store instruction may be decomposed into a set of component memory
   # operations of any granularity.

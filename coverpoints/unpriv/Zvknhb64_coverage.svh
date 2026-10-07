@@ -1019,15 +1019,16 @@ function void zvknhb64_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
-        "vsha2ch.vv"     : begin
-            Zvknhb64_vsha2ch_vv_cg.sample(ins);
-        end
-        "vsha2cl.vv"     : begin
-            Zvknhb64_vsha2cl_vv_cg.sample(ins);
-        end
-        "vsha2ms.vv"     : begin
-            Zvknhb64_vsha2ms_vv_cg.sample(ins);
-        end
+            "vsha2ch.vv"     : begin
+                Zvknhb64_vsha2ch_vv_cg.sample(ins);
+            end
+            "vsha2cl.vv"     : begin
+                Zvknhb64_vsha2cl_vv_cg.sample(ins);
+            end
+            "vsha2ms.vv"     : begin
+                Zvknhb64_vsha2ms_vv_cg.sample(ins);
+            end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

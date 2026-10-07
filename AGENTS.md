@@ -56,6 +56,7 @@
 | Privileged generators  | `@add_priv_test_generator("Suite", ...)`     | `generators/testgen/src/testgen/priv/extensions/`  |
 
 - Keep expected architectural behavior explicit. Each generated testcase must map to meaningful functional coverage.
+- Use `ignore_bins` only for bins that are architecturally unreachable. When a test skips a legal case because a reference model or tool does not support it yet, leave the bins in place so coverage reports them as missing until a test hits them.
 - The framework installs trap handlers for unprivileged tests when standard machine mode is available. Unexpected traps fail the test.
 - Privileged tests should boot into their intended mode. Use T-SBI calls for operations that require a higher privilege level. Use `tsbi_call()` for supported CSR or memory instructions and `RVTEST_TSBI_GOTO_*` for mode changes.
 - Allocate registers through `TestData` register allocators. Do not hard-code or separately exclude registers already reserved by the framework. Framework routines and T-SBI can clobber `ra` and `a0` through `a2`, so `generate/priv.py` removes them from the privileged-test pool so they are never allocated.

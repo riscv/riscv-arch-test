@@ -1,0 +1,19 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for the CHIPS Alliance VeeR EL2 core
+
+ci_enabled: true
+
+# Cores-VeeR-EL2 @ 925f3a34, https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/
+#   Sm            mstatus.TW is read-only 0; writes to cycle do not trap: design/dec/el2_dec_tlu_ctl.sv#L2919-L2926
+#   U             mtval lacks the encoding for U-mode mret and CSR privilege traps: design/dec/el2_dec_tlu_ctl.sv#L1889
+#   PMPSm         Testbench: stores never reach instruction memory, so a jump to stored code fetches stale data
+#   PMPU          mtval is 0, not the encoding, for a U-mode CSR privilege trap: design/dec/el2_dec_tlu_ctl.sv#L1889
+#   PMPZca        PMP checks only a fetch's start, missing a non-executable second half: design/el2_veer.sv#L1097
+#   Zifencei      Testbench: stores never reach instruction memory, so fence.i fetches stale code
+#   I             FENCE with a reserved fm raises an illegal instruction: design/dec/decode#L229
+exclude_extensions: "Sm,U,PMPSm,PMPU,PMPZca,Zifencei,I"
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache"
+install_script: ".github/scripts/install-veer-el2.sh"
+setup_script: ".github/scripts/setup-veer-el2.sh"

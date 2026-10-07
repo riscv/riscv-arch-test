@@ -294,7 +294,11 @@ normative_rule_definitions:
   # The M-mode-disable-trap (csr::[mdt]) bit is a WARL field introduced by the
   # ext:smdbltrp[] extension.
   - name: mstatus_mdt_sz_warl
-    coverpoint: ["Sm_mcsr_cg/cp_mcsr_access_masked/mstatus"]
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mcsr_access_masked/mstatus",
+        "Sm_mcsr_cg/cp_mcsrwalk_masked/mstatus",
+      ]
 
   # For RV64 harts, the csr::[sxl] and csr::[uxl] fields are WARL fields that control the
   # value of XLEN for S-mode and U-mode, respectively.
@@ -946,7 +950,7 @@ normative_rule_definitions:
   - name: menvcfg_dte_sdt_rdonly0
     coverpoint:
       [
-        "TODO: check sstatus.SDT and menvcfg.DTE in the Sm walks once Sail supports Ssdbltrp",
+        "TODO: check that SDT and DTE read as zero without Ssdbltrp; the Sm walks check them only with Ssdbltrp",
       ]
 
   # In harts with U-mode, menvcfg must be implemented, but all WARL fields may be read-only zero.

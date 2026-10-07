@@ -1013,10 +1013,7 @@
       "num_triggers": 16,
       "scontext": { "supported": false }
     },
-    // The double trap extensions are not enabled by default because
-    // mstatus[MDT] is reset to 1. Unless the boot code clears it, the
-    // first trap taken will result in an unexpected double trap.
-    "Smdbltrp": { "supported": false },
+    "Smdbltrp": { "supported": true },
     "Ssdbltrp": { "supported": false },
     "Ssstrict": { "supported": false }
   }

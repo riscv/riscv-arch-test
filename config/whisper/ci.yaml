@@ -16,11 +16,10 @@
 # stack page with SUM=0 raises a store/AMO access fault instead of the U/SUM page fault
 # (https://github.com/tenstorrent/whisper/issues/90). Whisper also accesses shadow stack memory at
 # the untranslated virtual address (whisper#92) and gates U-mode ssp access on henvcfg.SSE (whisper#91).
-# Svnapot: Whisper accepts N=1 on superpage leaf PTEs instead of page faulting (https://github.com/tenstorrent/whisper/issues/98)
 # Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)
 # Sm: mstatus.SPELP is writable without S (https://github.com/tenstorrent/whisper/issues/104)
 ci_enabled: true
-exclude_extensions: "SsstrictSm,SsstrictS,Smstateen,SdtrigSm,SdtrigS,SdtrigU,Svnapot,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,Sm,ZicfissU,ZicfissS,ZicfissSm"
+exclude_extensions: "SsstrictSm,SsstrictS,Smstateen,SdtrigSm,SdtrigS,SdtrigU,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,Sm,ZicfissU,ZicfissS,ZicfissSm"
 exclude_configs:
   - whisper-rv32-max-spike-ref
   - whisper-rv64-max-spike-ref

@@ -66,8 +66,10 @@ jobs:
 
       # Generated tests (e.g. priv) are not checked in but count toward the
       # suite weights used for shard bin-packing, so generate them first.
+      # EXCLUDE_EXTENSIONS='' overrides the Makefile's default exclusions, so
+      # each simulator's ci.yaml exclude_extensions decides what CI skips.
       - name: Generate tests
-        run: make tests --jobs "$(nproc)"
+        run: EXCLUDE_EXTENSIONS='' make tests --jobs "$(nproc)"
 
       - name: Discover CI configs
         id: discover
@@ -148,7 +150,7 @@ jobs:
 
       - name: Generate tests and coverpoints
         if: matrix.extensions != ''
-        run: EXTENSIONS="${MATRIX_EXTENSIONS}" make tests --jobs "$(nproc)"
+        run: EXCLUDE_EXTENSIONS='' EXTENSIONS="${MATRIX_EXTENSIONS}" make tests --jobs "$(nproc)"
 
       - name: Build ELFs
         if: matrix.extensions != ''

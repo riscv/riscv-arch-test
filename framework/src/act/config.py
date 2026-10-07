@@ -39,7 +39,7 @@ class RefModelType(str, Enum):
 # ``config/spike/spike-rv{32,64}-max/run_cmd.txt``.
 _SPIKE_ISA: dict[int, str] = {
     32: (
-        "rv32imafdcbv"
+        "rv32imafdcbvh"
         "_zicbom_zicboz_zicbop_zicfilp_zicfiss_zicond_zicsr_zicntr_zicclsm_ziccif"
         "_zifencei_zihintntl_zihintpause_zihpm_zimop"
         "_zabha_zacas_zaamo_zalrsc_zawrs"
@@ -50,6 +50,7 @@ _SPIKE_ISA: dict[int, str] = {
         "_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt"
         "_sscofpmf_smcntrpmf_sstc"
         "_svinval_svade_svadu"
+        "_smstateen_ssqosid_ssdbltrp_zama16b"
     ),
     64: (
         "rv64imafdcbvh"
@@ -63,6 +64,7 @@ _SPIKE_ISA: dict[int, str] = {
         "_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt"
         "_sscofpmf_smcntrpmf_sstc"
         "_svinval_svade_svadu_svnapot_svpbmt"
+        "_smstateen_ssqosid_ssnpm_smmpm_smnpm_ssdbltrp_zama16b"
     ),
 }
 
@@ -168,7 +170,7 @@ class Config(BaseModel):
 
 
 # Minimum required tool versions
-REQUIRED_SAIL_VERSION = "0.14.1"
+REQUIRED_SAIL_VERSION = "0.15"
 REQUIRED_GCC_MAJOR_VERSION = 15
 REQUIRED_CLANG_MAJOR_VERSION = 20
 

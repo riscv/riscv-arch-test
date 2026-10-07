@@ -1,0 +1,111 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: PMPZca
+source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1336315481#gid=1336315481
+coverpoints:
+  - heading: |-
+      General Test Environment (PMPZca):
+      - Runs when Zca and Sm are implemented and NUM_PMP_ENTRIES > 0. Zcb, Zcf and Zcd test files add their instructions; NA4, NAPOT and TOR rows need PMP_NA4_SUPPORTED, PMP_NAPOT_SUPPORTED or PMP_TOR_SUPPORTED. M-mode only.
+      - Loads = c.lw, c.lwsp (+ c.ld, c.ldsp on RV64; c.flw, c.flwsp with Zcf on RV32; c.fld, c.fldsp with Zcd; c.lbu, c.lh, c.lhu with Zcb).
+      - Stores = c.sw, c.swsp (+ c.sd, c.sdsp on RV64; c.fsw, c.fswsp with Zcf on RV32; c.fsd, c.fsdsp with Zcd; c.sb, c.sh with Zcb).
+      - Fetch rows jump with c.jalr to a target that holds a 32-bit ret (jalr x0, 0(ra)) or a 16-bit c.ret. c.jr, c.j and c.jal are not tested; their 32-bit forms are covered in PMPSm.
+      - Standard region and L=1 XWR walk as in PMPSm cp_cfg_X/R/W.
+  - heading: Compressed loads and stores
+  - name: cp_cfg_R
+    goal: Verify that R controls every compressed load when the entry is locked.
+    description: Six legal XWR with L=1, one entry each. Every compressed load at the start of the region.
+    expectation: Load access fault when R=0.
+    bins: 6 XWR × compressed loads. c.lwsp and c.ldsp are ignored in the cross.
+    rules:
+      - pmp_load_fault
+      - pmp_cfg_permissions
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+  - name: cp_cfg_W
+    goal: Verify that W controls every compressed store when the entry is locked.
+    description: Same walk. Every compressed store at the start of the region.
+    expectation: Store/AMO access fault when W=0.
+    bins: 6 XWR × compressed stores
+    rules:
+      - pmp_store_fault
+      - pmp_cfg_permissions
+      - pmp_rwx_check
+      - pmp_l_bit_m_mode_enforcement
+  - heading: 32-bit fetch across a region boundary (IALIGN = 16)
+  - name: cp_misaligned_napot
+    goal: Verify that a 32-bit instruction straddling two NAPOT regions must be fully matched.
+    description: PMP_NAPOT_SUPPORTED only. Three consecutive standard NAPOT regions A, B, C in entries 0-2, all L=1, XWR = 111, 111, 000. A 32-bit ret inside A, inside B, straddling A|B and straddling B|C. c.jalr to each.
+    expectation: "Inside a region: executes. A|B: instruction access fault, or executes if the hart splits the fetch into parcels that each match fully. B|C: instruction access fault (C has X=0). On a fault mepc holds the instruction address and a nonzero mtval holds the address of the faulting portion."
+    bins: 4 addresses
+    rules:
+      - pmp_full_match_required
+      - pmp_entry_priority
+      - pmp_misaligned_access_behavior
+      - pmp_exec_fault
+      - pmp_access_fault_exception
+      - Zca_align16
+      - mepc_varlen_wr
+      - mtval_varlen_wr
+  - name: cp_misaligned_tor
+    goal: Verify that a 32-bit instruction straddling two TOR regions must be fully matched.
+    description: PMP_TOR_SUPPORTED only. Three consecutive one-grain TOR regions in entries 1-3 (entry 0 is OFF and holds the bottom), all L=1, XWR = 111, 111, 000. Same four ret positions as cp_misaligned_napot.
+    expectation: As for cp_misaligned_napot.
+    bins: 4 addresses
+    rules:
+      - pmp_full_match_required
+      - pmp_entry_priority
+      - pmp_misaligned_access_behavior
+      - pmp_exec_fault
+      - pmp_access_fault_exception
+      - Zca_align16
+      - mepc_varlen_wr
+      - mtval_varlen_wr
+  - name: cp_misaligned_na4
+    goal: Verify that a 32-bit instruction straddling two NA4 regions must be fully matched.
+    description: PMP_NA4_SUPPORTED only (G = 0). Three consecutive NA4 regions in entries 0-2, all L=1, XWR = 111, 111, 000. A 32-bit ret straddling the first and second, and the second and third regions. c.jalr to each.
+    expectation: "First|second: instruction access fault, or executes if split. Second|third: instruction access fault."
+    bins: 2 addresses
+    rules:
+      - pmp_full_match_required
+      - pmp_entry_priority
+      - pmp_misaligned_access_behavior
+      - pmp_exec_fault
+      - pmp_access_fault_exception
+      - Zca_align16
+      - mepc_varlen_wr
+      - mtval_varlen_wr
+  - name: cp_misaligned_off
+    goal: Verify that a 32-bit instruction straddling OFF entries' regions only sees the background entry.
+    description: Three consecutive regions in entries 0-2, all L=1, A=OFF, XWR=111. Same four ret positions as cp_misaligned_napot.
+    expectation: "All execute: the background entry matches every byte."
+    bins: 4 addresses
+    rules:
+      - pmp_a_field_off
+      - pmp_misaligned_access_behavior
+  - heading: 16-bit fetch at a region boundary
+  - name: cp_cret_napot
+    goal: Verify that 16-bit instructions at the edges of a NAPOT region execute.
+    description: PMP_NAPOT_SUPPORTED only. One standard NAPOT region in entry 0, L=1, XWR=111. c.ret 2 bytes below the region, at its base, 2 bytes below its top, and at its top. c.jalr to each.
+    expectation: "All execute: each 16-bit fetch lies wholly inside the region or wholly in the background."
+    bins: 4 addresses
+    rules:
+      - pmp_full_match_required
+      - pmp_entry_priority
+      - Zca_align16
+  - name: cp_cret_tor
+    goal: Verify that 16-bit instructions at the edges of a TOR region execute.
+    description: PMP_TOR_SUPPORTED only. One one-grain TOR region in entry 1 (bottom in pmpaddr0), L=1, XWR=111. c.ret at the same four positions as cp_cret_napot.
+    expectation: All execute.
+    bins: 4 addresses
+    rules:
+      - pmp_full_match_required
+      - pmp_entry_priority
+      - Zca_align16
+  - name: cp_cret_na4
+    goal: Verify that 16-bit instructions at the edges of an NA4 region execute.
+    description: PMP_NA4_SUPPORTED only. One NA4 region in entry 0, L=1, XWR=111. c.ret at region-2, region, region+2 and region+4.
+    expectation: All execute.
+    bins: 4 addresses
+    rules:
+      - pmp_full_match_required
+      - pmp_entry_priority
+      - Zca_align16

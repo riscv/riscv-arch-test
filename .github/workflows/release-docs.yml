@@ -26,8 +26,6 @@ jobs:
 
       - name: Set up tools
         uses: $/.github/actions/setup-tools
-        with:
-          udb-gems: "true"
 
       - run: git submodule update --init docs/docs-resources
 

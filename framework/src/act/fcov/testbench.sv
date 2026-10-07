@@ -39,7 +39,7 @@ module testbench;
   string  words[$];
   string  traceFiles[$];
   int     fileNum;
-  int     order;
+  logic [63:0] order;
   int     regNum;
   logic [(XLEN-1):0] xRegVal;
   logic [(FLEN-1):0] fRegVal;
@@ -89,7 +89,7 @@ module testbench;
       $display("Error: Could not open trace file list");
       $finish;
     end
-    while($fgets(listLine, traceFileListHandler)) begin
+    while ($fgets(listLine, traceFileListHandler) != 0) begin
       if (listLine != "" && listLine != "\n" && listLine[0] != "#") begin
         // Strip newline character from the end of the line
         if (listLine[listLine.len()-1] == "\n") begin

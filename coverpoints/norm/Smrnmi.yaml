@@ -9,6 +9,10 @@ normative_rule_definitions:
   - name: sstatus_sdt_clr_mnret
     coverpoint: [""]
 
+  # Additionally, if it is VU, then vsstatus.SDT is also set to 0.
+  - name: vsstatus_sdt_clr_mnret
+    coverpoint: ["TODO: MNRET to VU-mode with Smdbltrp, Ssdbltrp, and H"]
+
   # When the Smrnmi extension is implemented, a trap caused by an RNMI is not
   # considered an unexpected trap irrespective of the state of the MDT bit.
   - name: trap_unexp_rnmi
@@ -39,14 +43,12 @@ normative_rule_definitions:
   - name: trap_unexp_hndl_no_rnmi
     coverpoint: [""]
 
-  # The actions performed by the platform when a hart asserts a critical-error
-  # signal are platform-specific. The range of possible actions include restarting
-  # the affected hart or restarting the entire platform, among others.
-  - name: critical_error
-    coverpoint: [""]
-
   # Prior to writing mnepc, implementations may convert an invalid address into some
   # other invalid address that mnepc is capable of holding.
   - name: mnepc_invalid_convert
     # ["Sm_mcsr_cg/cp_mnepc_vaddr_walk1, Sm_mcsr_cg/cp_mnepc_vaddr_walk0"] once the Sail reference model supports Smrnmi
     coverpoint: [""]
+
+  # If the Smrnmi extension is implemented, the mnstatus.NMIE field is reset to 0.
+  - name: mnstatus_nmie_rst
+    coverpoint: ["TODO: record mnstatus.NMIE before the boot code sets it"]

@@ -24,6 +24,7 @@ include::norm/Zifencei_norm_rules.adoc[]
 [[t-Zifencei-coverpoint-definitions]]
 .Zifencei Coverpoint Definitions
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Coverpoint|Bins|Definition
 |cp_custom_fencei|4|Executes normal `fence.i` and `fence.i` instructions with nonzero rs1, rd, and funct12 fields to verify that they execute without trapping.
@@ -37,7 +38,7 @@ The Zifencei tests must write an instruction to an address, execute `fence.i`, a
 
 Misaligned loads/stores to main memory optionally can be handled in hardware.  When the UDB MISALIGNED_LDST parameter is true, misaligned scalar loads and stores to main memory do not throw an exception.  This parameter is a simplification of the "Access Type PMAs" which could define misaligned behavior on each memory region.
 
-The misaligned family of tests exercises integer, compressed, and single/double/quad-precision floating-point loads/stores.  It uses the new cp_misalign coverpoint defined in <<t-Misaligned-modified-coverpoints>>. It assumes that if these work, then Zfh and Zcb loads/stores will also work correctly.  Misaligned atomics are exercised with {ExceptionsZaamo, ExceptionsZalrsc}/{cp_amo/load/store_address_misaligned}. Misaligned vector load/stores are exercised in <<MisalignV>>.
+The misaligned family of tests exercises integer, compressed, and single/double-precision floating-point loads/stores.  It uses the new cp_misalign and cp_misalign_cross64_{hword/word/double} coverpoints defined in <<t-Misalign-coverpoint-definitions>>. Each instruction is tested at byte offsets 0-8 in two 16-byte windows of the scratch area: one at the start of the 256-byte-aligned scratch area, and one starting 56 bytes in, so that misaligned accesses straddle the 64-byte boundary (and hence any 16-, 32- or 64-byte cache line or bus beat) at scratch+64. Each window is filled with 16 distinct bytes before the accesses. Loads are repeated with the bitwise complement of the pattern so that every width and offset is loaded with both a clear and a set sign bit, checking sign and zero extension. Stores check all 16 bytes of the window. It assumes that if these work, then Zfh and Zcb loads/stores will also work correctly.  Misaligned atomics are exercised with {ExceptionsZaamo, ExceptionsZalrsc}/{cp_amo/load/store_address_misaligned}. Misaligned vector load/stores are exercised in <<MisalignV>>.
 
 include::{testplansdir}/Misalign.adoc[]
 
@@ -51,10 +52,6 @@ include::{testplansdir}/MisalignD.adoc[]
 
 include::norm/MisalignD_norm_rules.adoc[]
 
-//include::{testplansdir}/MisalignQ.adoc[]
-
-include::norm/MisalignQ_norm_rules.adoc[]
-
 include::{testplansdir}/MisalignZca.adoc[]
 
 include::norm/MisalignZca_norm_rules.adoc[]
@@ -62,9 +59,11 @@ include::norm/MisalignZca_norm_rules.adoc[]
 [[t-Misalign-coverpoint-definitions]]
 .Misalign Coverpoint Definitions
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Modified Coverpoint|Bins|Definition
-|cp_misalign|8|All 8 combinations of the three least significant bits of the address.
+|cp_misalign|8|All 8 byte offsets within a doubleword: the three least significant bits of the effective address, on both RV32 and RV64.
+|cp_misalign_cross64_{hword/word/double}|2|Whether a 2-, 4-, or 8-byte access crosses a 64-byte boundary, from effective address bits [5:0].
 |===
 
 ==== Zicclsm Misaligned Loads/Stores
@@ -106,6 +105,7 @@ This rule is checked by the time bin of cp_cntr coverpoint.
 [[t-Zicntr-coverpoint-definition]]
 .Zicntr Coverpoint Definition
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Coverpoint|Bins|Definition
 |cp_cntr|3|Read each of the counters (`cycle`, `time`, `instret`) twice using `csrrs rd, csr, x0` and check that the difference is exactly right for `instret`, or at least 1 for `cycle`, 0 for `time` (`time` may not increment between reads).
@@ -124,20 +124,23 @@ include::norm/Zihpm_norm_rules.adoc[]
 [[t-Zihpm-modified-coverpoints]]
 .Zihpm Coverpoint Definition
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Coverpoint|Bins|Definition
-|cp_cntr_hpm|29|Read each of the HPMs twice and check that the difference is non-negative.  For RV32, also check the high halves of each HPM.
+|cp_cntr_hpm|up to 29 (58 on RV32)|Read each implemented `hpmcounter<n>` twice using `csrrs rd, csr, x0` (and `csrrc`) and check that the difference is non-negative.
+For RV32, also read `hpmcounter<n>h` and check that the difference is exactly 0.
+There is one bin per counter with HPM_COUNTER_EN[n] = True; other counters are not read.
+The boot code writes `mhpmevent<n> = 0` (no event), so the counters are frozen and this is an accessibility check: each read must not trap and the value must be stable.
 |===
 
-Note that this coverpoint assumes that reading hpmcounter* never traps.
+Accessing an unimplemented counter may trap or return a constant value, so those counters are not read.
+The suite assumes that `mcounteren` and `scounteren` allow reads of the implemented counters from U-mode (the boot code sets every bit).
 See https://github.com/riscv/riscv-isa-manual/issues/2558[RISC-V ISA Manual Issue #2558] for discussion.
-There may not be a graceful way to certify Zihpm on an implementation that allows hpmcounter* reads to
-sometimes trap because unprivileged tests should not trap.
 
 [NOTE]
-===
-MCOUNTENABLE_EN, SCOUNTENABLE_EN, HCOUNTENABLE_EN parameters are exercised by ZicsrS/U/H cp_xcounteren_access_y tests (<<t-ZicntrS-coverpoints>>). COUNTINHIBIT_EN is exercised by Sm/cp_inhibit tests (<<t-Sm-coverpoints>>).
-===
+====
+MCOUNTENABLE_EN, SCOUNTENABLE_EN and HCOUNTENABLE_EN are exercised by the ZicntrS/U/H `cp_mcounteren_access_*`, `cp_scounteren_access_*` and `cp_hcounteren_access_*` coverpoints (<<t-ZicntrS-coverpoints>>). COUNTINHIBIT_EN is exercised by the Sm `cp_inhibit_*` coverpoints (<<t-Sm-coverpoints>>).
+====
 
 ==== Zihintpause Pause Hint
 
@@ -170,6 +173,7 @@ The `cbo.zero` instruction zeros a cache line.  The cache line size may vary fro
 [[t-Zicbo-coverpoint-definition]]
 .Zicbo Coverpoint Definition
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Coverpoint|Bins|Definition
 |cp_custom_cbo|65*2|Writes 65 words (260 bytes) of arbitrary data to scratch memory, executes `cbo` instruction at the aligned start of scratch, and then reads back all 260 bytes and stores them to the signature.  The first cache line (often 64 bytes) of data should be zeroed and the rest unchanged.  It repeats this operation with an offset of 255 bytes.  The instruction ignores the offset within a cache line, so for 64-byte lines, this would zero bytes 192-255 and leave the others unchanged.
@@ -198,20 +202,12 @@ include::norm/Zicbop_norm_rules.adoc[]
 
 ==== Za64rs Max 64B Reservation Set
 
-[[t-Za64rs-coverpoints]]
-.Za64rs Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=910803819#gid=910803819[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/Za64rs.adoc[]
 
 include::norm/Za64rs_norm_rules.adoc[]
 
 ==== Zic64bZicboz 64B Cache Block Zero
 
-[[t-Zic64bZicboz-coverpoints]]
-.Zic64bZicboz Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1677990180#gid=1677990180[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/Zic64bZicboz.adoc[]
 
 include::norm/Zic64b_norm_rules.adoc[]

@@ -948,10 +948,7 @@ normative_rule_definitions:
   # When Ssdbltrp is not implemented sstatus.SDT, vsstatus.SDT, and henvcfg.DTE bits are read-only
   # zero.
   - name: menvcfg_dte_sdt_rdonly0
-    coverpoint:
-      [
-        "TODO: check that SDT and DTE read as zero without Ssdbltrp; the Sm walks check them only with Ssdbltrp",
-      ]
+    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk_masked/mstatus"]
 
   # In harts with U-mode, menvcfg must be implemented, but all WARL fields may be read-only zero.
   - name: menvcfg_mandatory_u_mode

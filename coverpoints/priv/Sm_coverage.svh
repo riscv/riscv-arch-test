@@ -565,20 +565,10 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     cp_mcsrwalk_masked :        cross priv_mode_m, mcsrname_masked, csrop, walking_ones {
         ignore_bins mstatus_not_walked = binsof(mcsrname_masked.mstatus) &&
             binsof(walking_ones) intersect {0, 2, 4, 6, [25:30], [32:37], 40, [43:62]};
-        // SDT and MDT belong to the double-trap extensions
-        `ifndef SSDBLTRP_SUPPORTED
-            ignore_bins mstatus_sdt_not_walked = binsof(mcsrname_masked.mstatus) && binsof(walking_ones) intersect {24};
-        `endif
-        `ifndef SMDBLTRP_SUPPORTED
-            ignore_bins mstatus_mdt_not_walked = binsof(mcsrname_masked.mstatus) && binsof(walking_ones) intersect {42};
-        `endif
         `ifdef SM1P12P0_OR_LATER_SUPPORTED
             ignore_bins menvcfg_not_walked = binsof(mcsrname_masked.menvcfg) &&
                 binsof(walking_ones) intersect {1, [8:31], [34:58]};
-            // DTE belongs to Ssdbltrp. CDE (Smcdeleg) is not walked until Sail supports Smcdeleg
-            `ifndef SSDBLTRP_SUPPORTED
-                ignore_bins menvcfg_dte_not_walked = binsof(mcsrname_masked.menvcfg) && binsof(walking_ones) intersect {59};
-            `endif
+            // CDE (Smcdeleg) is not walked until Sail supports Smcdeleg
             ignore_bins menvcfg_cde_not_walked = binsof(mcsrname_masked.menvcfg) && binsof(walking_ones) intersect {60};
         `endif
         `ifdef MSECCFG_SUPPORTED
@@ -589,14 +579,8 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             `ifdef SM1P12P0_OR_LATER_SUPPORTED
                 ignore_bins mstatush_not_walked = binsof(mcsrname_masked.mstatush) &&
                     binsof(walking_ones) intersect {[0:5], 8, [11:31]};
-                `ifndef SMDBLTRP_SUPPORTED
-                    ignore_bins mstatush_mdt_not_walked = binsof(mcsrname_masked.mstatush) && binsof(walking_ones) intersect {10};
-                `endif
                 ignore_bins menvcfgh_not_walked = binsof(mcsrname_masked.menvcfgh) &&
                     binsof(walking_ones) intersect {[2:26]};
-                `ifndef SSDBLTRP_SUPPORTED
-                    ignore_bins menvcfgh_dte_not_walked = binsof(mcsrname_masked.menvcfgh) && binsof(walking_ones) intersect {27};
-                `endif
                 ignore_bins menvcfgh_cde_not_walked = binsof(mcsrname_masked.menvcfgh) && binsof(walking_ones) intersect {28};
             `endif
             `ifdef MSECCFG_SUPPORTED
@@ -605,6 +589,23 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             `endif
         `endif
     }
+    `ifdef SSDBLTRP_SUPPORTED
+        // mstatus.SDT is read-only zero while menvcfg.DTE = 0, as during the walk; check it is writable with DTE = 1
+        mstatus_sdt_write : coverpoint ins.current.insn {
+            wildcard bins csrs_sdt = {CSRS} iff (ins.current.insn[31:20] == CSR_MSTATUS && ins.current.rs1_val[24]);
+            wildcard bins csrc_sdt = {CSRC} iff (ins.current.insn[31:20] == CSR_MSTATUS && ins.current.rs1_val[24]);
+        }
+        `ifdef UDB_MXLEN_32
+            old_menvcfg_dte : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "dte")[0] {
+                bins dte_1 = {1};
+            }
+        `else
+            old_menvcfg_dte : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "dte")[0] {
+                bins dte_1 = {1};
+            }
+        `endif
+        cp_mstatus_sdt_dte1 :   cross priv_mode_m, mstatus_sdt_write, old_menvcfg_dte;
+    `endif
     cp_mtval_zero:              cross priv_mode_m, csrrw, mtval, mtval_zero;
     cp_mepc_vaddr_pc:           cross priv_mode_m, csrrw, mepc, xaddr_pc;
     cp_mepc_vaddr_scratch:      cross priv_mode_m, csrrw, mepc, xaddr_scratch;

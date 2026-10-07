@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['Zca', 'Sm', ['I', 'E']]
+# REQUIRED_EXTENSIONS: ['I', 'Zca', 'Sm']
 # params:
 #   NUM_PMP_ENTRIES: '>0'
 #   PMP_NA4_SUPPORTED: true

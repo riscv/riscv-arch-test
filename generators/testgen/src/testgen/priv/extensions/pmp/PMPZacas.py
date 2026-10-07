@@ -24,7 +24,7 @@ from testgen.priv.extensions.pmp.partial import (
 )
 from testgen.priv.registry import add_priv_test_generator
 
-_EXTENSIONS = [["I", "E"], "Zacas", "Sm"]
+_EXTENSIONS: list[str | list[str]] = ["Zacas", "Sm"]
 _MARCH = ["Zaamo", "Zacas", "Sm"]
 
 _WHY = "the access fails even with L=0."

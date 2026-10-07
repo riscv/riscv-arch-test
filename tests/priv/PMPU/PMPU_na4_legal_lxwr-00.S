@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['U', 'Sm', ['I', 'E']]
+# REQUIRED_EXTENSIONS: ['I', 'U', 'Sm']
 # params:
 #   NUM_PMP_ENTRIES: '>0'
 #   PMP_NA4_SUPPORTED: true

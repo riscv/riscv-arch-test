@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['Zaamo', 'Sm', 'Zama16b', ['I', 'E']]
+# REQUIRED_EXTENSIONS: ['I', 'Zaamo', 'Sm', 'Zama16b']
 # params:
 #   NUM_USABLE_PMP_ENTRIES: '>=16'
 #   PMP_GRANULARITY: '<=3'

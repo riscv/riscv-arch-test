@@ -595,7 +595,7 @@ def _make_grain_chunk(test_data: TestData) -> TestChunk:
             "",
             "RVTEST_PMP_SET_BACKGROUND x4",
             "",
-            "LI(a3, PMP_GRAIN_MASK)",
+            "LI(t3, PMP_GRAIN_MASK)",
             "",
         ]
     )
@@ -613,7 +613,7 @@ def _make_grain_chunk(test_data: TestData) -> TestChunk:
                     f"LI(x6, PMPREGION_{read_mode})",
                     "csrw pmpcfg0, x6",
                     "csrr x7, pmpaddr0",
-                    "and x7, x7, a3",
+                    "and x7, x7, t3",
                     write_sigupd(7, test_data),
                 ]
                 if read_mode == "TOR":
@@ -641,9 +641,9 @@ def _make_grain_check_chunk(test_data: TestData) -> TestChunk:
             "csrw pmpcfg0, x0",
             "LI(x6, -1)",
             "csrw pmpaddr0, x6",
-            "LI(a3, PMP_GRAIN_CHECK_MASK)",
+            "LI(t3, PMP_GRAIN_CHECK_MASK)",
             "csrr x7, pmpaddr0",
-            "and x7, x7, a3",
+            "and x7, x7, t3",
             write_sigupd(7, test_data),
         ]
     )
@@ -899,7 +899,7 @@ def _make_all_entries_chunk(test_data: TestData) -> TestChunk:
 @add_priv_test_generator(
     "PMPSm",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=[["I", "E"], "Sm"],
+    required_extensions=["Sm"],
     params=["NUM_PMP_ENTRIES: '>0'"],
 )
 def make_pmpsm_base(test_data: TestData) -> list[TestChunk]:
@@ -919,7 +919,7 @@ def make_pmpsm_base(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "PMPSm",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=[["I", "E"], "Sm"],
+    required_extensions=["Sm"],
     params=["MXLEN: 64", "NUM_PMP_ENTRIES: '>0'"],
 )
 def make_pmpsm_rv64(test_data: TestData) -> list[TestChunk]:
@@ -933,7 +933,7 @@ def make_pmpsm_rv64(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "PMPSm",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=[["I", "E"], "Sm"],
+    required_extensions=["Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_NA4_SUPPORTED: true"],
 )
 def make_pmpsm_na4(test_data: TestData) -> list[TestChunk]:
@@ -947,7 +947,7 @@ def make_pmpsm_na4(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "PMPSm",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=[["I", "E"], "Sm"],
+    required_extensions=["Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
 )
 def make_pmpsm_napot(test_data: TestData) -> list[TestChunk]:
@@ -964,7 +964,7 @@ def make_pmpsm_napot(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "PMPSm",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=[["I", "E"], "Sm"],
+    required_extensions=["Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
 )
 def make_pmpsm_tor(test_data: TestData) -> list[TestChunk]:
@@ -989,7 +989,7 @@ _LDST = gen_accesses([("ld", None), ("sd", None)])
 @add_priv_test_generator(
     "PMPSm",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=[["I", "E"], "Sm"],
+    required_extensions=["Sm"],
     params=["MXLEN: 64", ENTRIES_PARAM, "PMP_GRANULARITY: 2", "PMP_NA4_SUPPORTED: true", "PMP_NAPOT_SUPPORTED: true"],
 )
 def make_pmpsm_partial_na4(test_data: TestData) -> list[TestChunk]:
@@ -1009,7 +1009,7 @@ def make_pmpsm_partial_na4(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "PMPSm",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=[["I", "E"], "Sm"],
+    required_extensions=["Sm"],
     params=["MXLEN: 64", ENTRIES_PARAM, "PMP_GRANULARITY: 2", "PMP_TOR_SUPPORTED: true"],
 )
 def make_pmpsm_partial_tor(test_data: TestData) -> list[TestChunk]:
@@ -1029,7 +1029,7 @@ def make_pmpsm_partial_tor(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "PMPSm",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=[["I", "E"], "Sm", "Zama16b"],
+    required_extensions=["Sm", "Zama16b"],
     march_extensions=["Sm"],
     params=[ENTRIES_PARAM, "PMP_GRANULARITY: '<=3'", "PMP_TOR_SUPPORTED: true"],
 )
@@ -1051,7 +1051,7 @@ def make_pmpsm_granule(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "PMPSm",
     extra_defines=["#define BOOT_TO_MMODE", IMPRECISE_XTVAL],
-    required_extensions=[["I", "E"], "Sm"],
+    required_extensions=["Sm"],
     params=["MISALIGNED_LDST: true", "NUM_USABLE_PMP_ENTRIES: '>=2'", "PMP_TOR_SUPPORTED: true"],
 )
 def make_pmpsm_misaligned(test_data: TestData) -> list[TestChunk]:

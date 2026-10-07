@@ -34,7 +34,7 @@ from testgen.priv.registry import add_priv_test_generator
 @add_priv_test_generator(
     "PMPZaamo",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=[["I", "E"], "Zaamo", "Sm"],
+    required_extensions=["Zaamo", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'"],
 )
 def make_pmpzaamo(test_data: TestData) -> list[TestChunk]:
@@ -55,7 +55,7 @@ _AMO_GRANULE = granule_accesses(
 @add_priv_test_generator(
     "PMPZaamo",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=[["I", "E"], "Zaamo", "Sm"],
+    required_extensions=["Zaamo", "Sm"],
     params=["MXLEN: 64", ENTRIES_PARAM, "PMP_GRANULARITY: 2", "PMP_NA4_SUPPORTED: true"],
 )
 def make_pmpzaamo_partial_na4(test_data: TestData) -> list[TestChunk]:
@@ -75,7 +75,7 @@ def make_pmpzaamo_partial_na4(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "PMPZaamo",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=[["I", "E"], "Zaamo", "Sm"],
+    required_extensions=["Zaamo", "Sm"],
     params=["MXLEN: 64", ENTRIES_PARAM, "PMP_GRANULARITY: 2", "PMP_TOR_SUPPORTED: true"],
 )
 def make_pmpzaamo_partial_tor(test_data: TestData) -> list[TestChunk]:
@@ -95,7 +95,7 @@ def make_pmpzaamo_partial_tor(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "PMPZaamo",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=[["I", "E"], "Zaamo", "Sm", "Zama16b"],
+    required_extensions=["Zaamo", "Sm", "Zama16b"],
     march_extensions=["Zaamo", "Sm"],
     params=[ENTRIES_PARAM, "PMP_GRANULARITY: '<=3'", "PMP_TOR_SUPPORTED: true"],
 )

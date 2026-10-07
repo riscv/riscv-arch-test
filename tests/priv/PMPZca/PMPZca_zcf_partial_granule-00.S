@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['Zcf', 'Sm', 'Zama16b', 'F', ['I', 'E']]
+# REQUIRED_EXTENSIONS: ['I', 'Zcf', 'Sm', 'Zama16b', 'F']
 # params:
 #   MXLEN: 32
 #   NUM_USABLE_PMP_ENTRIES: '>=16'

@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['Zaamo', 'Sm', ['I', 'E']]
+# REQUIRED_EXTENSIONS: ['I', 'Zaamo', 'Sm']
 # params:
 #   MXLEN: 64
 #   NUM_USABLE_PMP_ENTRIES: '>=16'

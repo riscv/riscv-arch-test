@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['Zalrsc', 'Sm', ['I', 'E']]
+# REQUIRED_EXTENSIONS: ['I', 'Zalrsc', 'Sm']
 # params:
 #   NUM_PMP_ENTRIES: '>0'
 # MARCH: rv${XLEN}i_zicsr_zifencei_zalrsc

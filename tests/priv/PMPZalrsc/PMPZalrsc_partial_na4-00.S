@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['Zalrsc', 'Sm', ['I', 'E']]
+# REQUIRED_EXTENSIONS: ['I', 'Zalrsc', 'Sm']
 # params:
 #   MXLEN: 64
 #   NUM_USABLE_PMP_ENTRIES: '>=16'

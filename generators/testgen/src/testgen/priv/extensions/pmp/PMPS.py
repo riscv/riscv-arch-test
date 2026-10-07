@@ -22,7 +22,7 @@ from testgen.priv.registry import add_priv_test_generator
 @add_priv_test_generator(
     "PMPS",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=[["I", "E"], "S", "Sm"],
+    required_extensions=["S", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'"],
 )
 def make_pmps_base(test_data: TestData) -> list[TestChunk]:
@@ -32,7 +32,7 @@ def make_pmps_base(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "PMPS",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=[["I", "E"], "S", "Sm"],
+    required_extensions=["S", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_NA4_SUPPORTED: true"],
 )
 def make_pmps_na4(test_data: TestData) -> list[TestChunk]:
@@ -42,7 +42,7 @@ def make_pmps_na4(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "PMPS",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=[["I", "E"], "S", "Sm"],
+    required_extensions=["S", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_NAPOT_SUPPORTED: true"],
 )
 def make_pmps_napot(test_data: TestData) -> list[TestChunk]:
@@ -52,7 +52,7 @@ def make_pmps_napot(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "PMPS",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=[["I", "E"], "S", "Sm"],
+    required_extensions=["S", "Sm"],
     params=["NUM_PMP_ENTRIES: '>0'", "PMP_TOR_SUPPORTED: true"],
 )
 def make_pmps_tor(test_data: TestData) -> list[TestChunk]:
@@ -62,7 +62,7 @@ def make_pmps_tor(test_data: TestData) -> list[TestChunk]:
 @add_priv_test_generator(
     "PMPS",
     extra_defines=["#define BOOT_TO_MMODE", IMPRECISE_XTVAL],
-    required_extensions=[["I", "E"], "S", "Sm"],
+    required_extensions=["S", "Sm"],
     params=["MISALIGNED_LDST: true", "NUM_USABLE_PMP_ENTRIES: '>=5'", "PMP_TOR_SUPPORTED: true"],
 )
 def make_pmps_misaligned(test_data: TestData) -> list[TestChunk]:

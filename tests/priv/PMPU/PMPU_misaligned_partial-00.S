@@ -9,7 +9,7 @@
 ///////////////////////////////////////////
 
 ##### START_TEST_CONFIG #####
-# REQUIRED_EXTENSIONS: ['U', 'Sm', ['I', 'E']]
+# REQUIRED_EXTENSIONS: ['I', 'U', 'Sm']
 # params:
 #   MISALIGNED_LDST: true
 #   NUM_USABLE_PMP_ENTRIES: '>=5'

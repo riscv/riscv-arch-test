@@ -443,7 +443,7 @@ def gen_float(test_data: TestData, case: str, coverpoint: str, region: str = "TE
 
 def gen_amo(test_data: TestData, case: str, coverpoint: str, region: str = "TEST_FOR_EXECUTION") -> list[str]:
     operations = tuple((amo, width) for amo in _AMOS for width in ("w", "d"))
-    lines = ["", "LI(a3, RVTEST_PMP_RET_ENCODING)", f"LA(a5, {region})"]
+    lines = ["", "LI(a6, RVTEST_PMP_RET_ENCODING)", f"LA(a5, {region})"]
     for number, (operation, width) in enumerate(operations, start=1):
         if width == "d":
             lines.append("#if __riscv_xlen == 64")
@@ -451,7 +451,7 @@ def gen_amo(test_data: TestData, case: str, coverpoint: str, region: str = "TEST
             "\n".join(
                 [
                     test_data.add_testcase(f"{case}_{number}_{operation}_{width}", coverpoint, test_data.testsuite),
-                    f"{operation}.{width} a4, a3, (a5)",
+                    f"{operation}.{width} a4, a6, (a5)",
                     write_sigupd(14, test_data),
                 ]
             )

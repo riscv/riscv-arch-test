@@ -31,7 +31,7 @@ from testgen.priv.registry import add_priv_test_generator
 @add_priv_test_generator(
     "PMPF",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=[["I", "E"], "F", "Sm"],
+    required_extensions=["F", "Sm"],
     march_extensions=["F", "D", "Zfhmin"],
     params=["NUM_PMP_ENTRIES: '>0'"],
 )
@@ -53,7 +53,7 @@ _FP_GRANULE = granule_accesses(words=[("flw", None), ("fsw", None)], doubles=[("
 @add_priv_test_generator(
     "PMPF",
     extra_defines=["#define BOOT_TO_MMODE"],
-    required_extensions=[["I", "E"], "F", "Sm", "Zama16b"],
+    required_extensions=["F", "Sm", "Zama16b"],
     march_extensions=["F", "D"],
     params=[ENTRIES_PARAM, "PMP_GRANULARITY: '<=3'", "PMP_TOR_SUPPORTED: true"],
 )

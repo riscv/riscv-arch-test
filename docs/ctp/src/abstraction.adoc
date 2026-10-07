@@ -1,3 +1,4 @@
+[[abstraction-layer]]
 == Abstraction Layer
 
 *** separate this into parts required for all test suites including TT vs. parts required only for ACT4
@@ -138,7 +139,7 @@ If a macro needs machine mode privileges to perform its function but might be ca
 
 Because profiles such as RVA23 do not require portable M-mode, the test suites go through weird and wonderful gymnastics to avoid directly using M-mode for supervisor and user-level features. This is described further in the RVA23 Certification Requirement Document. Thus, tests are divided into machine and non-machine tests.
 
-Machine test suites are usually but not always suffixed with Sm.  They boot to M-mode and test M-mode features as defined in the privileged ISA manual. They can freely switch privilege modes within tests, such as to check traps from a lower privilege mode into M-mode.  Examples include Sm, InterruptsSm, ExceptionsSm, PMPZca, and Smstateen. Machine test suites are not part of the certification tests for RVA23 or other profiles that do not require M-mode.
+Machine test suites are usually but not always suffixed with Sm.  They boot to M-mode and test M-mode features as defined in the privileged ISA manual. They can freely switch privilege modes within tests, such as to check traps from a lower privilege mode into M-mode.  Examples include <<t-Sm-coverpoints,Sm>>, <<t-InterruptsSm-coverpoints,InterruptsSm>>, <<t-ExceptionsSm-coverpoints,ExceptionsSm>>, <<t-PMPZca-coverpoints,PMPZca>>, and <<t-Smstateen-coverpoints,Smstateen>>. Machine test suites are not part of the certification tests for RVA23 or other profiles that do not require M-mode.
 
 Non-machine tests boot to S or U mode.  They only access M-mode features via the T-SBI.  They can switch privilege modes within tests, but never enter M-mode except via T-SBI calls that manipulate state and return to the calling mode.  They expect all other traps to be delegated to supervisor level (or below) if supervisor exists.
 
@@ -150,7 +151,7 @@ Therefore, when booting to a non-M privilege mode, the boot code attempts to del
 
 . Check if the trap is a T-SBI call and if so, perform the requested T-SBI function and return from the `ecall`.
 . Call custom firmware, if any exists, to handle invisible traps, as described in the next section.
-. Otherwise, delegate the trap to the S-mode handler via software.  This involves setting up `sstatus`, `sepc`, `scause`, and `stval` with values coming from the machine-mode trap CSRs, setting `sstatus.SPP`, `SIE`, and `SPIE` appropriately, and returning to the S-mode trap handler at `stvec` (possibly vectored).  Traps from VS or VU must also set `htval`, `htinst`, and relevant `hstatus` bits.
+. Otherwise, delegate the trap to the S-mode handler via software.  This involves setting up `sstatus`, `sepc`, `scause`, and `stval` with values coming from the machine-mode trap CSRs, setting `sstatus.SPP`, `SIE`, and `SPIE` appropriately, and returning to the S-mode trap handler at `stvec` (possibly vectored).  Traps from VS or VU must also set `htval`, `htinst`, and relevant `hstatus` bits. A trap from VS or VU that `hedeleg` also delegates goes on to the VS-mode handler instead, through `vsstatus`, `vsepc`, `vscause`, `vstval`, and `vstvec`.
 
 The rvtest_setup.S and rvtest_trap_handler.S files implement the boot code, T-SBI, and machine-mode trap handler using standard M-mode capabilities. In theory, a DUT that does not implement standard M-mode might have to reimplement some or all of this code.  In practice, we have not yet encountered any DUT that cannot use this standard M-mode code.
 
@@ -159,7 +160,7 @@ The rvtest_setup.S and rvtest_trap_handler.S files implement the boot code, T-SB
 
 A DUT can use an invisible trap to emulate an instruction that is not implemented in hardware or has a known bug.
 When invisible traps are enabled, all illegal-instruction exceptions are first sent to M-mode for possible
-emulation before being forwarded to the normal trap handler. Invisible traps are enabled when `RVMODEL_INVISIBLE_TRAP_HANDLER` is defined or `UDB_TIME_CSR_IMPLEMENTED` is false. In the latter case, the framework emulates the `time` and `timeh` CSRs using `mtime`.
+emulation before being forwarded to the normal trap handler. Invisible traps are enabled when `RVMODEL_INVISIBLE_TRAP_HANDLER` is defined or `UDB_TIME_CSR_IMPLEMENTED` is false. In the latter case, the framework emulates the `time` and `timeh` CSRs using `mtime`, adding `htimedelta` in VS and VU and applying the `mcounteren`, `hcounteren`, and `scounteren` checks.
 
 Custom invisible traps implemented using the `RVMODEL_INVISIBLE_TRAP_HANDLER` macro must follow the conventions described below.
 
@@ -176,6 +177,7 @@ The supported return codes in the `_ACTION_REG` are:
   - `0`: The macro did not handle the instruction. Continue with the normal trap handling. `_ACTION_REG` is preset to 0 before `RVMODEL_INVISIBLE_TRAP_HANDLER`.
   - `1`: The macro handled the instruction and wrote all required architectural state. Resume after the instruction.
   - `2`: The macro handled the instruction and needs to write a GPR result. Write `_VALUE_REG` to the GPR whose number is in `_DEST_REG`, then resume after the instruction.
+  - `3`: The instruction raises a virtual-instruction exception, which is taken in HS-mode if `medeleg` delegates it and in M-mode otherwise. Valid only when H is supported.
   - Any other code is invalid and the test will produce an error.
 
 Action 2 must be used to write GPR results because a direct write to a saved GPR would be lost when the trap
@@ -276,6 +278,7 @@ The SBI is invoked with the `ecall` instruction.  The operation is passed in `a0
 |TSBI_SW|0x00c5a023|SW a2, 0(a1) - Store word to physical address in `a1` with machine-mode privileges.  Used to write memory-mapped I/O.
 |TSBI_SWP4|0x00c5a223|SW a2, 4(a1) - Store word to physical address in `a1`+4 with machine-mode privileges.  Used to write memory-mapped I/O.
 |TSBI_SD|0x00c5b023|SD a2, 0(a1) - Store doubleword to physical address in `a1` with machine-mode privileges.  Used to write memory-mapped I/O.  RV64 only
+|TSBI_SFENCE_VMA|0x12000073|SFENCE.VMA x0, x0 - Flushes the address-translation caches.  Used by a U-mode test that sets `satp` with TSBI_CSR_WRITE and cannot execute `sfence.vma` itself.  Requires S-mode.
 |===
 
 For example, an S-mode program can request setting `mstatus.TVM` with a CSR_SET call corresponding to `csrrs x0, mstatus, a1` (`a0` = 0x3005a073) with `a1` containing a 1 in bit 20 (the `TVM` bit) and all other bits 0. The ACT trap handler implements this using an instruction table. If a custom M-mode does not implement `mstatus.TVM`, it must emulate the behavior in some other way. Similarly, S-mode can read `mip` to `a0` with a CSR_READ call corresponding to `csrrs a0, mip, x0` (`a0` = 0x34402573).
@@ -309,6 +312,7 @@ The following macros are defined for developer convenience to access the T-SBI a
 * RVTEST_TSBI_CSR_WRITE(csr, imm)
 * RVTEST_TSBI_CSR_WRITE_A1(csr): write value in `a1`
 * RVTEST_TSBI_CSR_READ(csr): returns value in `a0`
+* RVTEST_TSBI_SFENCE_VMA
 +
 `csr` is the 12-bit CSR number (e.g. `CSR_MIP` from `encoding.h`) and `imm` is a constant that the macro loads into `a1` with `li` before the call.
 * RVTEST_TSBI_GOTO_MMODE

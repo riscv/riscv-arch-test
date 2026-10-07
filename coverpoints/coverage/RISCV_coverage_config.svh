@@ -71,9 +71,6 @@
 `ifdef EXCEPTIONSU_COVERAGE
   `include "ExceptionsU_coverage.svh"
 `endif
-`ifdef EXCEPTIONSVF_COVERAGE
-  `include "ExceptionsVf_coverage.svh"
-`endif
 `ifdef EXCEPTIONSVF16_COVERAGE
   `include "ExceptionsVf16_coverage.svh"
 `endif
@@ -118,6 +115,12 @@
 `endif
 `ifdef I_COVERAGE
   `include "I_coverage.svh"
+`endif
+`ifdef INTERRUPTSS_COVERAGE
+  `include "InterruptsS_coverage.svh"
+`endif
+`ifdef INTERRUPTSSM_COVERAGE
+  `include "InterruptsSm_coverage.svh"
 `endif
 `ifdef M_COVERAGE
   `include "M_coverage.svh"
@@ -185,8 +188,14 @@
 `ifdef SMNPMS_COVERAGE
   `include "SmnpmS_coverage.svh"
 `endif
+`ifdef SMNPMSSM_COVERAGE
+  `include "SmnpmSSm_coverage.svh"
+`endif
 `ifdef SMNPMU_COVERAGE
   `include "SmnpmU_coverage.svh"
+`endif
+`ifdef SMNPMUSM_COVERAGE
+  `include "SmnpmUSm_coverage.svh"
 `endif
 `ifdef SMSTATEEN_COVERAGE
   `include "Smstateen_coverage.svh"
@@ -209,6 +218,9 @@
 `ifdef SSNPM_COVERAGE
   `include "Ssnpm_coverage.svh"
 `endif
+`ifdef SSNPMSM_COVERAGE
+  `include "SsnpmSm_coverage.svh"
+`endif
 `ifdef SSSTATEEN_COVERAGE
   `include "Ssstateen_coverage.svh"
 `endif
@@ -223,6 +235,12 @@
 `endif
 `ifdef SSSTRICTV_COVERAGE
   `include "SsstrictV_coverage.svh"
+`endif
+`ifdef SSTC_COVERAGE
+  `include "Sstc_coverage.svh"
+`endif
+`ifdef SSTCSM_COVERAGE
+  `include "SstcSm_coverage.svh"
 `endif
 `ifdef SSTVALA_COVERAGE
   `include "Sstvala_coverage.svh"

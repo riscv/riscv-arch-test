@@ -84,5 +84,6 @@ function void zicbop_sample(int hart, int issue, ins_t ins);
         "prefetch.w"     : begin
             Zicbop_prefetch_w_cg.sample(ins);
         end
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

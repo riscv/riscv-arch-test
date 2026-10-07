@@ -57,6 +57,7 @@ def _generate_priv_test_entry(
         testsuite=testsuite,
         E_ext=False,
         required_extensions=entry.required_extensions,
+        forbidden_extensions=entry.forbidden_extensions,
         march_extensions=entry.march_extensions,
         extra_params=entry.params,
     )

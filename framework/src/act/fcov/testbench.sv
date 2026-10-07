@@ -39,7 +39,7 @@ module testbench;
   string  words[$];
   string  traceFiles[$];
   int     fileNum;
-  int     order;
+  logic [63:0] order;
   int     regNum;
   logic [(XLEN-1):0] xRegVal;
   logic [(FLEN-1):0] fRegVal;
@@ -89,7 +89,7 @@ module testbench;
       $display("Error: Could not open trace file list");
       $finish;
     end
-    while($fgets(line, traceFileListHandler)) begin
+    while ($fgets(line, traceFileListHandler) != 0) begin
       if (line != "" && line != "\n" && line[0] != "#") begin
         // Strip newline character from the end of the line
         if (line[line.len()-1] == "\n") begin
@@ -111,7 +111,7 @@ module testbench;
 
   // Sample an instruction from the trace file on each clock edge
   // Moves through full list of trace files
-  always_ff @(posedge clk) begin
+  always @(posedge clk) begin
     // Open trace file if needed
     if(traceFileHandler == 0) begin
       fileNum = 0;

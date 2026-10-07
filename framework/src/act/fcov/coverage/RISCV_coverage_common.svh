@@ -952,5 +952,6 @@ function bit [11:0] get_csr_addr(int hart, string s);
     "mhpmcounter29h": return CSR_MHPMCOUNTER29H;
     "mhpmcounter30h": return CSR_MHPMCOUNTER30H;
     "mhpmcounter31h": return CSR_MHPMCOUNTER31H;
+    default: $fatal(1, "get_csr_addr: unknown CSR name %s", s);
   endcase
 endfunction

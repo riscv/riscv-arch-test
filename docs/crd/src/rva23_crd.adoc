@@ -1,4 +1,4 @@
-= RVA23 Certification Requirements Document (rev 0.3)
+= RVA23 Certification Requirements Document (rev 0.4)
 :description: RVA23 CRD (Certificate Requirements Document)
 include::../../common/adoc_common.adoc[]
 
@@ -28,7 +28,7 @@ a| * Do not test traps into M-mode except ecall from S-mode.
 | August 6, 2026
 | 0.3
 a| * Removed "custom M-mode"; made clarifications.
-| September 18, 2026
+| October 6, 2026
 | 0.4
 a| * Editorial and technical review.
 
@@ -58,21 +58,57 @@ Those requirements are defined normatively in the RVA23 Profiles and are unchang
 NOTE: We encourage those who have implemented other base ISAs or extensions to
 run the appropriate https://github.com/riscv/riscv-arch-test[RISC-V ACTs] to help ensure compliance.
 
-The remainder of the document describes requirements for the execution environment and for developers.
+The remainder of the document describes requirements for the device under test, developers, and the execution environment.
 
-== Execution Environment and Test Supervisor Binary Interface (T-SBI)
+== DUT and Developer Requirements
+
+In addition to implementing the RV64I base instruction set and all mandatory extensions of the RVA23 profile,
+the device under test (DUT) must provide the following capabilities to be eligible for RVA23 certification:
+
+* Load an ELF file into memory at a physical address below 0x40_0000_0000 and begin execution (so that identity mapping of SV39 to physical addresses is possible)
+* Initialize to a state in which all privilege modes are little-endian with MXLEN = SXLEN = VSXLEN = UXLEN = 64
+* Trigger and clear SEI and SSI through software, if these interrupts are supported
+* Print characters to a console to report test results
+* Terminate a test with a success or failure code under software control, either via a testbench for RTL or a hardware signal for silicon
+* If the core is multi-core compliant, it must be possible to run tests on multiple cores simultaneously to stress memory ordering and atomicity
 
 Application-processor families, including RVA23, purposefully do not include a
 machine-mode (M-mode) profile as there is no
 intention that M-mode code be portable. Therefore, RVA23 Certification does
-not test M-mode instructions or CSRs.
+not test M-mode instructions or CSRs.  A DUT does not have to implement M-mode
+conforming to the RISC-V Privileged Architecture version 1.13 to be certifiable, but
+the user may have to provide a custom Supervisor Execution Environment (SEE) to
+emulate certain M-mode capabilities, as described in <<Execution Environment and Test Supervisor Binary Interface (T-SBI)>>.
+
+The developer must supply a configuration directory containing the following files.  See the Certification Test Plan (CTP) for more details.
+
+* A Unified Database (UDB) `<dut>.yaml` file describing the DUT's supported extensions and all the parameters required to describe the behavior of these extensions
+* A `link.ld` linker file to place the test code and data in memory
+* A `rvmodel_macros.h` file providing DUT-specific macros to perform functions such as printing a character to the console, terminating a test, and triggering and clearing interrupts
+* A `sail.json` file to configure the reference model to match the expected behavior of the DUT
+* A `run_cmd.txt` file with the command line to run an ELF on the DUT
+* A `test_config.yaml` file supplying paths to the toolchain and other config files
+
+The `rvmodel_macros.h` file may define a RVMODEL_BOOT macro containing custom boot code, such as initializing a PLL or memory controller or custom CSRs.
+
+The user may optionally supply DUT-specific `rvtest_setup.h` and `rvtest_trap_handler.h` files if their M-mode implementation differs from version 1.13 in the RISC-V Privileged Architecture manual in ways that prevent it from running the reference boot and T-SEE implementations, or if an invisible trap handler is needed, such as to emulate an unimplemented instruction via a illegal instruction trap to M-mode.
+
+As the certification tests evolve, anticipated improvements include:
+
+* Allowing the ELF to begin at a physical address at or above 0x40_0000_0000.
+* Automatically generating the `sail.json` configuration file from the `<dut>.yaml`
+* Better hooks to interface with vendor-specific boot code and trap handlers
+* Improved test generation and linking such that a developer can demonstrate their DUT passes tests without disclosing proprietary information.
+
+== Execution Environment and Test Supervisor Binary Interface (T-SBI)
 
 RVA23 certification tests operate within a Test Supervisor Execution Environment (T-SEE) that consists of M-mode code including boot code and a machine-mode trap handler. Certification tests come with a reference T-SEE. Just like with OpenSBI, implementers may modify the reference to handle implementation-specific boot code or to accommodate non-portable M-mode unable to run the reference trap handler.
 
 The Test Supervisor Binary Interface (T-SBI) is a set of calls that allow the lower-privilege tests to request services from the T-SEE, such as accessing protected memory and modifying machine-mode CSRs.  For example, the T-SBI supports RVA23's requirements to make `ecall` to the SEE from S-mode and to provide a means to select PMLEN for Sspm.
 
 The T-SBI interface is especially useful
-for those who have created a customized M-mode that differs substantially from M-mode 1.13
+for those who have created a customized M-mode that differs
+substantially from M-mode 1.13
 as defined in the RISC-V Privileged Architecture.
 
 When the T-SEE receives a trap to M-mode, it invokes the appropriate handler.
@@ -113,8 +149,9 @@ are:
 | `menvcfg` | STCE, PBMTE, ADUE, PMM, CBZE, CBCFE, CBIE, SSE, LPE may be
 controllable to allow testing of the behavior of lower privilege modes with
 these features enabled and disabled. Note that ADUE may be read-only zero
-because Svadu is optional, and that PMM may only be able to hold at least PMLEN=0 and 7
-per the RVA23 profile. CBIE must be able to hold 00 and at least one of 01
+because Svadu is optional. If Sspm is implemened, PMM must be able to
+select at least PMLEN=0 and 7 per the RVA23 profile.
+CBIE must be able to hold 00 and at least one of 01
 and/or 11. CDE, DTE are out of scope because they do not relate to RVA23 features.
 | `mhpmevent*` | Must be writable to trigger Sscofpmf LCOFI
 | `mhpmcounter*` | Must be writable to trigger Sscofpmf LCOFI
@@ -124,7 +161,8 @@ otherwise they are read-only zero.  PMM, MLPE, RLB, MMWP, MML are out of scope
 | `mstateen` | SE0, ENVCFG, CONTEXT may be controllable to allow testing of the
 behavior of lower privilege modes when certain features are disabled. Other
 fields are out of scope because they do not relate to RVA23 features.
-| `medeleg` | Each exception cause except `ecall` from S-mode is delegated to S-mode if the corresponding bit can be written to 1.  Otherwise, a designer-supplied M-mode trap handler intercepts invisible traps and relays the rest to S-mode.
+| `medeleg` | Each exception cause except `ecall` from S-mode is delegated to S-mode if the corresponding bit can be written to 1, unless
+the user supplies an invisible M-mode trap handler to intercept undelegated traps, handle ones meant to be invisible, and relay the rest to S-mode.
 | `mideleg` | SEI, STI, SSI, and LCOFI are delegated to S-mode if the corresponding bit can be written to 1.  Otherwise, the trap handler relays these to S-mode. VSEI, VSTI, VSSI and SGEI (if implemented) are read-only 1 per Priv Spec 22.4.2 because hypervisor is a mandatory part of the profile.
 | `mhartid` | Must be readable to influence the behavior of multicore tests.
 | `mtime` | Must be readable to find the current time to set timer interrupts.
@@ -136,13 +174,13 @@ The T-SEE does not need to access the equivalent of the following M-mode CSRs/fi
 [cols="1,5"]
 |===
 | CSR | Notes
-| `mstatus` | SD, SPELP, MXR, SUM, FS, VS, SPP, SPIE, SIE are accessible from
+| `mstatus` | SD, SPELP, MXR, SUM, FS, VS, SPP, SPIE, SIE, UXL are accessible from
 `sstatus` and should not be tested through `mstatus` for RVA23 certification.
 GVA is accessible from `hstatus` and not tested from `mstatus`.  MPV does not
 affect the behavior of lower privilege modes and therefore does not need to be
-dynamically changed. XS, SDT, MBE, SBE, UBE, SXL, and UXL
-are out of scope for RVA23.  TSR and TVM need to trap into M-mode to serve much
-purpose.
+dynamically changed. XS, SDT, MBE, SBE, UBE, and SXL
+are out of scope for RVA23.  TSR and TVM are problematic when trapping to supervisor
+mode for RVA23 because the enter a trap loop on their own `sret` at the end of the handler.
 | `mie` | SEIE, STIE, SSIE, LCOFIE, and SGEIE are controlled from `sie` or `hie`.
 | `misa` | Not tested because required RVA23 features are not turned off during testing.
 | `mvendorid` | Does not affect the behavior of lower privilege modes.
@@ -178,22 +216,14 @@ interrupts are not in the profile and are not tested.
 | STI | Yes | Mandatory | Sstc is a mandatory part of the profile.
 | SSI | Yes | Optional | "Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented."
 | LCOFI | Yes | Mandatory | Sscofpmf is a mandatory part of the profile.
-| VSEI | Yes | Optional | Same as SEI
-| VSTI | Yes | Mandatory | Sstc is a mandatory part of the profile.
-| VSSI | Yes | Optional | Same as SSI
+| VSEI | Yes | Mandatory | "Bits VSEIP, VSTIP, and VSSIP of  `hvip` are writable."
+| VSTI | Yes | Mandatory | "Bits VSEIP, VSTIP, and VSSIP of  `hvip` are writable."
+| VSSI | Yes | Mandatory | "Bits VSEIP, VSTIP, and VSSIP of  `hvip` are writable."
 | SGEI | Yes | Optional | GEILEN can be 0, in which case SGEI is not implemented.
 | MEI | No | No | Machine-mode interrupts are not in the RVA23 profile.
 | MTI | No | No | Machine-mode interrupts are not in the RVA23 profile.
 | MSI | No | No | Machine-mode interrupts are not in the RVA23 profile.
 |===
-
-== Developer Requirements
-
-The developer must provide:
-
-* DUT configuration information described in the CTP.
-* Custom trap handler, if any, to handle invisible traps.
-* Implementation-specific boot code, as needed.
 
 [appendix]
 == Related Specifications

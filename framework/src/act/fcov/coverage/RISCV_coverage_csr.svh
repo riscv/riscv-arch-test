@@ -124,7 +124,7 @@ localparam int SUPERVISOR_GUEST_EXTERNAL_INTERRUPT   = 12;
 localparam int COUNTER_OVERFLOW_INTERRUPT            = 13;
 
 function `XLEN_BITS get_csr_val(int hart, int issue, int prev, string name, string field);
-  int addr = get_csr_addr(hart, name);
+  int addr = int'(get_csr_addr(hart, name));
   return get_csr_val_addr(hart, issue, prev, addr, name, field);
 endfunction
 
@@ -211,7 +211,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "hedeleg") begin
     case(field)
-      "deleg" : val = val & 'hffffffff;
+      "deleg" : val = val & `UDB_MXLEN'(32'hffff_ffff);
       default: val = 0; // Todo: error
     endcase
   end
@@ -429,7 +429,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "medeleg") begin
     case(field)
-      "deleg" : val = val & 'hffffffff;
+      "deleg" : val = val & `UDB_MXLEN'(32'hffff_ffff);
       default: val = 0; // Todo: error
     endcase
   end
@@ -454,10 +454,10 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
   end
   if (name == "menvcfgh") begin
     case(field)
-      "adue" : val = (val >> 29) & 32'h1;
-      "cde" : val = (val >> 28) & 32'h1;
-      "dte" : val = (val >> 27) & 32'h1;
-      "stce" : val = (val >> 31) & 32'h1;
+      "adue" : val = (val >> 29) & `UDB_MXLEN'(1);
+      "cde" : val = (val >> 28) & `UDB_MXLEN'(1);
+      "dte" : val = (val >> 27) & `UDB_MXLEN'(1);
+      "stce" : val = (val >> 31) & `UDB_MXLEN'(1);
       default: val = 0; // Todo: error
     endcase
   end
@@ -853,7 +853,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "OPST" : val = (val >> 30) & 32'h3;
 `endif
 `ifdef UDB_MXLEN_64
-      "entropy" : val = val & 32'hffff;
+      "entropy" : val = val & `UDB_MXLEN'(16'hffff);
 `endif
       default: val = 0; // Todo: error
     endcase

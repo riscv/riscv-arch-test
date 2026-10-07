@@ -1,0 +1,156 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Svnapot
+source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=331239029#gid=331239029
+coverpoints:
+  - heading: "General Test Environment (Svnapot):\n- T-SBI suite: boots to S-mode (BOOT_TO_SMODE) and drives the test from the boot identity map. The page under test is mapped at va_data. S-mode accesses run from the identity map. U-mode accesses use RVTEST_TSBI_GOTO_UMODE / RVTEST_TSBI_GOTO_SMODE; the handler moves execution to the U-accessible code alias va_rvtest_code_begin (registered with SAVE_AREA_SETUP) and back. menvcfg is written through T-SBI CSR calls. Page faults are delegated to S-mode, so causes are sampled from scause/stval.\n- RV64 only (Sv39, Sv48, Sv57).\n\nNormative rules without a coverpoint in this suite:\n- Svnapot_cache_entries: Not tested\n- Svnapot_hyp_gstage: TODO: test in hypervisor tests"
+  - name: Svnapot_legal_enc_exec_s
+    goal: Verify an instruction fetch through a 64 KiB NAPOT mapping succeeds from S-mode
+    description: "S-mode: sixteen level-0 PTEs with N=1, PPN[3:0]=1000 and PTE.U=0 map a naturally aligned 64 KiB region. Jump (jalr) into the page at offsets 0, 0x2000 and 0xF000 of va_data."
+    expectation: No fault; each access reaches the matching 4 KiB page of the 64 KiB region.
+    bins: |-
+      PTE_RWX_s_i x PTE_Svnapot_i x PTE_N_i x kilopage_i x mode x exec_acc x mode {S-mode}
+      = 3 bins on RV64 (RV64 only)
+    id: Svnapot_depends_Sv39 Svnapot_pte_N Svnapot_range_napot Svnapot_valid_encoding Svnapot_implicit_read_ppn_subst
+    rules:
+      - "[norm:Svnapot_depends_Sv39] [norm:Svnapot_pte_N] [norm:Svnapot_range_napot] [norm:Svnapot_valid_encoding] [norm:Svnapot_implicit_read_ppn_subst]"
+  - name: Svnapot_legal_enc_exec_u
+    goal: Verify an instruction fetch through a 64 KiB NAPOT mapping succeeds from U-mode
+    description: "U-mode: sixteen level-0 PTEs with N=1, PPN[3:0]=1000 and PTE.U=1 map a naturally aligned 64 KiB region. Jump (jalr) into the page at offsets 0, 0x2000 and 0xF000 of va_data."
+    expectation: No fault; each access reaches the matching 4 KiB page of the 64 KiB region.
+    bins: |-
+      PTE_RWX_u_i x PTE_Svnapot_i x PTE_N_i x kilopage_i x mode x exec_acc x mode {U-mode}
+      = 3 bins on RV64 (RV64 only)
+    id: Svnapot_depends_Sv39 Svnapot_pte_N Svnapot_range_napot Svnapot_valid_encoding Svnapot_implicit_read_ppn_subst
+    rules:
+      - "[norm:Svnapot_depends_Sv39] [norm:Svnapot_pte_N] [norm:Svnapot_range_napot] [norm:Svnapot_valid_encoding] [norm:Svnapot_implicit_read_ppn_subst]"
+  - name: Svnapot_legal_enc_read_s
+    goal: Verify a load through a 64 KiB NAPOT mapping succeeds from S-mode
+    description: "S-mode: sixteen level-0 PTEs with N=1, PPN[3:0]=1000 and PTE.U=0 map a naturally aligned 64 KiB region. Load (lw) from the page at offsets 0, 0x2000 and 0xF000 of va_data."
+    expectation: No fault; each access reaches the matching 4 KiB page of the 64 KiB region.
+    bins: |-
+      PTE_RWX_s_d x PTE_Svnapot_d x PTE_N_d x kilopage_d x mode x read_acc x mode {S-mode}
+      = 3 bins on RV64 (RV64 only)
+  - name: Svnapot_legal_enc_read_u
+    goal: Verify a load through a 64 KiB NAPOT mapping succeeds from U-mode
+    description: "U-mode: sixteen level-0 PTEs with N=1, PPN[3:0]=1000 and PTE.U=1 map a naturally aligned 64 KiB region. Load (lw) from the page at offsets 0, 0x2000 and 0xF000 of va_data."
+    expectation: No fault; each access reaches the matching 4 KiB page of the 64 KiB region.
+    bins: |-
+      PTE_RWX_u_d x PTE_Svnapot_d x PTE_N_d x kilopage_d x mode x read_acc x mode {U-mode}
+      = 3 bins on RV64 (RV64 only)
+  - name: Svnapot_legal_enc_write_s
+    goal: Verify a store through a 64 KiB NAPOT mapping succeeds from S-mode
+    description: "S-mode: sixteen level-0 PTEs with N=1, PPN[3:0]=1000 and PTE.U=0 map a naturally aligned 64 KiB region. Store (sw) to the page at offsets 0, 0x2000 and 0xF000 of va_data."
+    expectation: No fault; each access reaches the matching 4 KiB page of the 64 KiB region.
+    bins: |-
+      PTE_RWX_s_d x PTE_Svnapot_d x PTE_N_d x kilopage_d x mode x write_acc x mode {S-mode}
+      = 3 bins on RV64 (RV64 only)
+  - name: Svnapot_legal_enc_write_u
+    goal: Verify a store through a 64 KiB NAPOT mapping succeeds from U-mode
+    description: "U-mode: sixteen level-0 PTEs with N=1, PPN[3:0]=1000 and PTE.U=1 map a naturally aligned 64 KiB region. Store (sw) to the page at offsets 0, 0x2000 and 0xF000 of va_data."
+    expectation: No fault; each access reaches the matching 4 KiB page of the 64 KiB region.
+    bins: |-
+      PTE_RWX_u_d x PTE_Svnapot_d x PTE_N_d x kilopage_d x mode x write_acc x mode {U-mode}
+      = 3 bins on RV64 (RV64 only)
+  - name: Svnapot_reserved_enc_exec_s
+    goal: Verify a reserved NAPOT PPN encoding raises an instruction page fault on an instruction fetch from S-mode
+    description: "S-mode: level-0 PTE with N=1, PTE.U=0 and PPN[3:0] = 0001, 0010, 0100 or 0000. Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_s_i x PTE_Svnapot_reserved_enc_i x PTE_N_i x kilopage_i x mode x exec_acc x ins_page_fault x mode {S-mode}
+      = 12 bins on RV64 (RV64 only)
+    id: Svnapot_reserved_encoding_fault
+    rules:
+      - "[norm:Svnapot_reserved_encoding_fault]"
+  - name: Svnapot_reserved_enc_exec_u
+    goal: Verify a reserved NAPOT PPN encoding raises an instruction page fault on an instruction fetch from U-mode
+    description: "U-mode: level-0 PTE with N=1, PTE.U=1 and PPN[3:0] = 0001, 0010, 0100 or 0000. Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_u_i x PTE_Svnapot_reserved_enc_i x PTE_N_i x kilopage_i x mode x exec_acc x ins_page_fault x mode {U-mode}
+      = 12 bins on RV64 (RV64 only)
+    id: Svnapot_reserved_encoding_fault
+    rules:
+      - "[norm:Svnapot_reserved_encoding_fault]"
+  - name: Svnapot_reserved_enc_read_s
+    goal: Verify a reserved NAPOT PPN encoding raises a load page fault on a load from S-mode
+    description: "S-mode: level-0 PTE with N=1, PTE.U=0 and PPN[3:0] = 0001, 0010, 0100 or 0000. Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_s_d x PTE_Svnapot_reserved_enc_d x PTE_N_d x kilopage_d x mode x read_acc x load_page_fault x mode {S-mode}
+      = 12 bins on RV64 (RV64 only)
+  - name: Svnapot_reserved_enc_read_u
+    goal: Verify a reserved NAPOT PPN encoding raises a load page fault on a load from U-mode
+    description: "U-mode: level-0 PTE with N=1, PTE.U=1 and PPN[3:0] = 0001, 0010, 0100 or 0000. Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_u_d x PTE_Svnapot_reserved_enc_d x PTE_N_d x kilopage_d x mode x read_acc x load_page_fault x mode {U-mode}
+      = 12 bins on RV64 (RV64 only)
+  - name: Svnapot_reserved_enc_write_s
+    goal: Verify a reserved NAPOT PPN encoding raises a store/AMO page fault on a store from S-mode
+    description: "S-mode: level-0 PTE with N=1, PTE.U=0 and PPN[3:0] = 0001, 0010, 0100 or 0000. Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_s_d x PTE_Svnapot_reserved_enc_d x PTE_N_d x kilopage_d x mode x write_acc x store_page_fault x mode {S-mode}
+      = 12 bins on RV64 (RV64 only)
+  - name: Svnapot_reserved_enc_write_u
+    goal: Verify a reserved NAPOT PPN encoding raises a store/AMO page fault on a store from U-mode
+    description: "U-mode: level-0 PTE with N=1, PTE.U=1 and PPN[3:0] = 0001, 0010, 0100 or 0000. Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_u_d x PTE_Svnapot_reserved_enc_d x PTE_N_d x kilopage_d x mode x write_acc x store_page_fault x mode {U-mode}
+      = 12 bins on RV64 (RV64 only)
+  - name: Svnapot_reserved_ppni_exec_s
+    goal: Verify PTE.N on a superpage raises an instruction page fault on an instruction fetch from S-mode
+    description: "S-mode: superpage leaf PTE (level 1 and above) with N=1 and PTE.U=0. Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_s_i x PTE_N_i x PageType_i x exec_acc x ins_page_fault x mode {S-mode}
+      = 5 bins on RV64 (RV64 only)
+  - name: Svnapot_reserved_ppni_exec_u
+    goal: Verify PTE.N on a superpage raises an instruction page fault on an instruction fetch from U-mode
+    description: "U-mode: superpage leaf PTE (level 1 and above) with N=1 and PTE.U=1. Jump (jalr) into the page through va_data."
+    expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_u_i x PTE_N_i x PageType_i x exec_acc x ins_page_fault x mode {U-mode}
+      = 5 bins on RV64 (RV64 only)
+  - name: Svnapot_reserved_ppni_read_s
+    goal: Verify PTE.N on a superpage raises a load page fault on a load from S-mode
+    description: "S-mode: superpage leaf PTE (level 1 and above) with N=1 and PTE.U=0. Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_s_d x PTE_N_d x PageType_d x read_acc x load_page_fault x mode {S-mode}
+      = 5 bins on RV64 (RV64 only)
+  - name: Svnapot_reserved_ppni_read_u
+    goal: Verify PTE.N on a superpage raises a load page fault on a load from U-mode
+    description: "U-mode: superpage leaf PTE (level 1 and above) with N=1 and PTE.U=1. Load (lw) from the page through va_data."
+    expectation: Load page fault (scause = 13); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_u_d x PTE_N_d x PageType_d x read_acc x load_page_fault x mode {U-mode}
+      = 5 bins on RV64 (RV64 only)
+  - name: Svnapot_reserved_ppni_write_s
+    goal: Verify PTE.N on a superpage raises a store/AMO page fault on a store from S-mode
+    description: "S-mode: superpage leaf PTE (level 1 and above) with N=1 and PTE.U=0. Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_s_d x PTE_N_d x PageType_d x write_acc x store_page_fault x mode {S-mode}
+      = 5 bins on RV64 (RV64 only)
+  - name: Svnapot_reserved_ppni_write_u
+    goal: Verify PTE.N on a superpage raises a store/AMO page fault on a store from U-mode
+    description: "U-mode: superpage leaf PTE (level 1 and above) with N=1 and PTE.U=1. Store (sw) to the page through va_data."
+    expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_u_d x PTE_N_d x PageType_d x write_acc x store_page_fault x mode {U-mode}
+      = 5 bins on RV64 (RV64 only)
+  - name: |-
+      Svnapot_reserved_ppni_napot_enc_exec_s
+      Svnapot_reserved_ppni_napot_enc_exec_u
+      Svnapot_reserved_ppni_napot_enc_read_s
+      Svnapot_reserved_ppni_napot_enc_read_u
+      Svnapot_reserved_ppni_napot_enc_write_s
+      Svnapot_reserved_ppni_napot_enc_write_u
+    description: |-
+      Set up a superpage leaf PTE (level i >= 1) with N=1 and the 64 KiB encoding pte.ppn[0][3:0] = 1000, at each superpage level.
+      The encoding is only defined for i = 0, so it is reserved here.
+      Store, load, and execute through the page in supervisor and user mode.
+    check: Store/AMO, load, and instruction page faults
+    notes: "feature: Reserved Encoding"

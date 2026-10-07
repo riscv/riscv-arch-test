@@ -494,7 +494,7 @@ endfunction
 
 
 // CSR address conversion
-function int get_csr_addr(int hart, string s);
+function bit [11:0] get_csr_addr(int hart, string s);
   import RISCV_decode_pkg::*;
   case(s)
     "fflags": return CSR_FFLAGS;

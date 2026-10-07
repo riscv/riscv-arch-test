@@ -120,6 +120,8 @@ def _sew_variants_for(arch: str) -> list[str] | None:
         return ["16", "32", "64"]  # SEW 8 is not supported for vector floating point
     if "Zvknhb" in arch:
         return ["32", "64"]
+    if "Zvbc" in arch:
+        return ["64"]
     return None
 
 
@@ -672,6 +674,7 @@ def _gen_covergroup_samples(
     arch: str,
     has_rv32: bool,
     has_rv64: bool,
+    vector_sample: bool,
 ) -> str:
     """Generate covergroup sample function calls for matching instructions."""
     lines: list[str] = []
@@ -691,6 +694,8 @@ def _gen_covergroup_samples(
                 lines.append(customize_template(templates, "covergroup_sample_vector_widen", arch, instr, effew=effew))
             else:
                 lines.append(customize_template(templates, "covergroup_sample_vector", arch, instr))
+        elif vector_sample:
+            lines.append(customize_template(templates, "covergroup_sample_vector", arch, instr))
         elif arch != "E":  # E currently breaks coverage
             lines.append(customize_template(templates, "covergroup_sample", arch, instr))
 
@@ -773,11 +778,11 @@ def _write_extension_files(
 
     # Covergroup sample functions with the same XLEN ifdef structure
     lines.append(customize_template(templates, sample_header_tmpl, arch, effew=effew))
-    lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, True, True))
+    lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, True, True, use_vector_sample))
     for rv32, rv64, exclude_marker in ((True, False, "RV64"), (False, True, "RV32")):
         if _any_xlen_exclusion(exclude_marker, instr_keys, tp):
             lines.append(customize_template(templates, "RV32" if rv32 else "RV64", arch))
-            lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, rv32, rv64))
+            lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, rv32, rv64, use_vector_sample))
             lines.append(customize_template(templates, "end", arch))
     lines.append(customize_template(templates, sample_end_tmpl, arch))
 

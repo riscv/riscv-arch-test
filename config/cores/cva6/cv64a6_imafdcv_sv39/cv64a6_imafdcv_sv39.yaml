@@ -78,7 +78,7 @@ implemented_extensions:
   # riscv_pkg and then never handled in the csr_regfile read case, so it falls through
   # to read_access_exception; and the Ara SoC has no mtime device to emulate it from
   # (RVMODEL_MTIME_ADDRESS is therefore left undefined in rvmodel_macros.h).
-  # sail.json does declare Zicntr, because Sail only provides mcycle and minstret with it.
+  # sail.json does declare Zicntr, because Sail only provides cycle and instret with it.
   #   Quote: "riscv::CSR_CYCLE: if (CVA6Cfg.RVZicntr) csr_rdata = cycle_q[CVA6Cfg.XLEN-1:0];"
   #   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L674
 

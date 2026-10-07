@@ -971,7 +971,7 @@
       "supported": false
     },
     "Sdtrig": {
-      "supported": false,
+      "supported": true,
       // `breakpoint_reentrancy` must be one of the below strings:
       // . `Use_tcontrol`: use the `mte` and `mpte` bits in the `tcontrol` CSR (this also makes the `tcontrol` CSR available)
       // . `Use_interrupt_enables`: use `mstatus.MIE` and the `SIE` bits in `sstatus` and `vsstatus`
@@ -980,7 +980,7 @@
       // `sbreak` test in `riscv-tests`.
       "breakpoint_reentrancy": "No_reentrancy_support",
       "etrigger": {
-        "supported": false,
+        "supported": true,
         // A bit set to 1 in this value specifies that the
         // corresponding exception is supported by the trigger.
         // Triggers for reserved exceptions are not supported.  This
@@ -990,7 +990,7 @@
       "hcontext": { "supported": false },
       // Triggers
       "icount": {
-        "supported": false,
+        "supported": true,
         "count_hardwired_one": false,
         // Whether a `tdata1` write to an `icount` trigger with
         // `count`=1 also makes it pending when that write's instruction
@@ -998,7 +998,7 @@
         "self_write_sets_pending": false
       },
       "itrigger": {
-        "supported": false,
+        "supported": true,
         // A bit set to 1 in this value specifies that the
         // corresponding interrupt is supported by the trigger.
         // Triggers for reserved interrupts are not supported.  This
@@ -1010,7 +1010,7 @@
       // The number of supported triggers.  This has to be
       // non-negative, and greater than 0 if Sdtrig is supported.
       // The model does not support more than 16 triggers.
-      "num_triggers": 0,
+      "num_triggers": 16,
       "scontext": { "supported": false }
     },
     "Smdbltrp": { "supported": true },

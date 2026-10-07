@@ -137,7 +137,7 @@
 
   "wfi_timeout": 0,
   "mmode_perf_event_map": {
-    "Load": 11
+    "Fence": 1
   },
   "trigger_use_tcontrol": false,
   "trigger_types": [

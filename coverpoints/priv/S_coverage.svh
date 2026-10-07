@@ -66,7 +66,7 @@ covergroup S_scause_cg with function sample(ins_t ins);
             bins b_21_load_guest_page_fault = {21};
             bins b_22_virtual_instruction = {22};
             bins b_23_store_guest_page_fault = {23};
-            bins b_31_24_custom[] = {[31:24]}; // scause must be able to hold 0-31
+            bins b_31_24_custom[] = {[24:31]}; // scause must be able to hold 0-31
         `endif
         //bins b_47_32_reserved = {[47:32]};
         //bins b_63_48_custom = {[63:48]};

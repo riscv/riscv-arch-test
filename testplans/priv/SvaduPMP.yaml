@@ -1,0 +1,85 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SvaduPMP
+source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1645706147#gid=1645706147
+coverpoints:
+  - heading: "General Test Environment (SvaduPMP):\n- Boots to M-mode (PMP programming). Unchanged by the T-SBI conversion. Run for every supported translation mode: Sv32 on RV32; Sv39, Sv48 and Sv57 on RV64, as selected by the UDB configuration."
+  - name: Abit_unset_pmpW_unset_exec_s
+    goal: Verify PMP applies to the hardware PTE.A update of an instruction fetch from S-mode
+    description: "S-mode: menvcfg.ADUE=1; page tables in a PMP region with W=0; leaf PTE with A=0 and PTE.U=0; satp points at each top-level table in turn. Jump (jalr) into the page through va_data."
+    expectation: Instruction access fault (mcause = 1) from the implicit PTE write.
+    bins: |-
+      PTE_Abit_unset_s_i x PageType_i x Svadu_enabled x PMP_pagetable x jalr x ins_acc_fault x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Svadu_hw_update_a_d_bits pmp_check_pagetable_access
+    rules:
+      - "[norm:Svadu_hw_update_a_d_bits] [norm:pmp_check_pagetable_access]"
+  - name: Abit_unset_pmpW_unset_exec_u
+    goal: Verify PMP applies to the hardware PTE.A update of an instruction fetch from U-mode
+    description: "U-mode: menvcfg.ADUE=1; page tables in a PMP region with W=0; leaf PTE with A=0 and PTE.U=1; satp points at each top-level table in turn. Jump (jalr) into the page through va_data."
+    expectation: Instruction access fault (mcause = 1) from the implicit PTE write.
+    bins: |-
+      PTE_Abit_unset_u_i x PageType_i x Svadu_enabled x PMP_pagetable x jalr x ins_acc_fault x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Svadu_hw_update_a_d_bits pmp_check_pagetable_access
+    rules:
+      - "[norm:Svadu_hw_update_a_d_bits] [norm:pmp_check_pagetable_access]"
+  - name: Abit_unset_pmpW_unset_read_s
+    goal: Verify PMP applies to the hardware PTE.A update of a load from S-mode
+    description: "S-mode: menvcfg.ADUE=1; page tables in a PMP region with W=0; leaf PTE with A=0 and PTE.U=0; satp points at each top-level table in turn. Load (lw) from the page through va_data."
+    expectation: Load access fault (mcause = 5) from the implicit PTE write.
+    bins: |-
+      PTE_Abit_unset_s_d x PageType_d x Svadu_enabled x PMP_pagetable x lw x load_acc_fault x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Svadu_hw_update_a_d_bits pmp_check_pagetable_access
+    rules:
+      - "[norm:Svadu_hw_update_a_d_bits] [norm:pmp_check_pagetable_access]"
+  - name: Abit_unset_pmpW_unset_read_u
+    goal: Verify PMP applies to the hardware PTE.A update of a load from U-mode
+    description: "U-mode: menvcfg.ADUE=1; page tables in a PMP region with W=0; leaf PTE with A=0 and PTE.U=1; satp points at each top-level table in turn. Load (lw) from the page through va_data."
+    expectation: Load access fault (mcause = 5) from the implicit PTE write.
+    bins: |-
+      PTE_Abit_unset_u_d x PageType_d x Svadu_enabled x PMP_pagetable x lw x load_acc_fault x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Svadu_hw_update_a_d_bits pmp_check_pagetable_access
+    rules:
+      - "[norm:Svadu_hw_update_a_d_bits] [norm:pmp_check_pagetable_access]"
+  - name: Abit_unset_pmpW_unset_write_s
+    goal: Verify PMP applies to the hardware PTE.A update of a store from S-mode
+    description: "S-mode: menvcfg.ADUE=1; page tables in a PMP region with W=0; leaf PTE with A=0 and PTE.U=0; satp points at each top-level table in turn. Store (sw) to the page through va_data."
+    expectation: Store/AMO access fault (mcause = 7) from the implicit PTE write.
+    bins: |-
+      PTE_Abit_unset_s_d x PageType_d x Svadu_enabled x PMP_pagetable x sw x store_acc_fault x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Svadu_hw_update_a_d_bits pmp_check_pagetable_access
+    rules:
+      - "[norm:Svadu_hw_update_a_d_bits] [norm:pmp_check_pagetable_access]"
+  - name: Abit_unset_pmpW_unset_write_u
+    goal: Verify PMP applies to the hardware PTE.A update of a store from U-mode
+    description: "U-mode: menvcfg.ADUE=1; page tables in a PMP region with W=0; leaf PTE with A=0 and PTE.U=1; satp points at each top-level table in turn. Store (sw) to the page through va_data."
+    expectation: Store/AMO access fault (mcause = 7) from the implicit PTE write.
+    bins: |-
+      PTE_Abit_unset_u_d x PageType_d x Svadu_enabled x PMP_pagetable x sw x store_acc_fault x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Svadu_hw_update_a_d_bits pmp_check_pagetable_access
+    rules:
+      - "[norm:Svadu_hw_update_a_d_bits] [norm:pmp_check_pagetable_access]"
+  - name: Dbit_unset_pmpW_unset_write_s
+    goal: Verify PMP applies to the hardware PTE.D update of a store from S-mode
+    description: "S-mode: menvcfg.ADUE=1; page tables in a PMP region with W=0; leaf PTE with A=1, D=0 and PTE.U=0. Store (sw) through va_data."
+    expectation: Store/AMO access fault (mcause = 7) from the implicit PTE write.
+    bins: |-
+      PTE_Dbit_unset_s_d x PageType_d x Svadu_enabled x PMP_pagetable x sw x store_acc_fault x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Svadu_hw_update_a_d_bits pmp_check_pagetable_access
+    rules:
+      - "[norm:Svadu_hw_update_a_d_bits] [norm:pmp_check_pagetable_access]"
+  - name: Dbit_unset_pmpW_unset_write_u
+    goal: Verify PMP applies to the hardware PTE.D update of a store from U-mode
+    description: "U-mode: menvcfg.ADUE=1; page tables in a PMP region with W=0; leaf PTE with A=1, D=0 and PTE.U=1. Store (sw) through va_data."
+    expectation: Store/AMO access fault (mcause = 7) from the implicit PTE write.
+    bins: |-
+      PTE_Dbit_unset_u_d x PageType_d x Svadu_enabled x PMP_pagetable x sw x store_acc_fault x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: Svadu_hw_update_a_d_bits pmp_check_pagetable_access
+    rules:
+      - "[norm:Svadu_hw_update_a_d_bits] [norm:pmp_check_pagetable_access]"

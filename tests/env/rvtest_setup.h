@@ -1113,6 +1113,17 @@
         #endif
       #endif
 
+      // Disarm the Sstc supervisor timer: stimecmp has no defined reset value, so a test that sets
+      // menvcfg.STCE could otherwise see STI pending before it writes stimecmp itself.
+      // M-mode can write stimecmp whatever menvcfg.STCE is.
+      #ifdef SSTC_SUPPORTED
+        li t0, -1
+        #if __riscv_xlen == 32
+          csrw stimecmph, t0 // upper word first so the split write never arms the timer
+        #endif
+        csrw stimecmp, t0
+      #endif
+
       // Enable access to standard state from lower privilege modes.
       // mstateen0.SE0 = 1: Enable access to hstateen0, hstateen0h, and sstateen0
       // mstateen0.ENVCFG = 1: Enable access to henvcfg, henvcfgh, and senvcfg
@@ -1499,6 +1510,7 @@
       csrs mstatus, t0 // Set VS to dirty to enable vector
       csrr t0, vlenb   // Read VLENB so coverage trace records VLEN/8 (used by vlmax computation)
       csrw vstart, x0  // vstart = 0
+      csrw vcsr, x0    // vxrm = 0 (rnu), vxsat = 0: both have arbitrary values at reset
       #ifdef ZVE32X_SUPPORTED // this should be defined if EEW of 32 is supported
         .option push
         .option arch, RVTEST_VEC_INIT_ARCH

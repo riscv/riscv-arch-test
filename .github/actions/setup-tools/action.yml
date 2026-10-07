@@ -14,7 +14,7 @@ inputs:
   sail-version:
     description: Sail RISC-V version
     required: false
-    default: "0.14.1"
+    default: "0.15"
   riscv-toolchain-version:
     description: RISC-V GCC toolchain version
     required: false
@@ -28,7 +28,7 @@ runs:
   using: composite
   steps:
     - name: Set up mise
-      uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
+      uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5
 
     - name: Cache prek hook environments
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6

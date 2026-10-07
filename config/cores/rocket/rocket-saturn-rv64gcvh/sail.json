@@ -1,9 +1,37 @@
 {
-  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.14.1/sail_riscv_config_schema.json",
+  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.15/sail_riscv_config_schema.json",
   "base": {
     "xlen": 64,
     "E": false,
-    "writable_misa": true,
+    // Whether a `mhpmcounter` increments if the event it is counting
+    // was generated during a write to its corresponding `mhpmevent`
+    // CSR (which could change the monitored event).
+    // Rocket counts the events of the writing instruction with the previous selector
+    // (RocketCore.scala:1215, CSR.scala:1305 in rocket-chip src/main/scala/rocket/), which
+    // Sail cannot express; it does not count them with the new one.
+    "hpmcounter_increments_in_self_hpmevent_write": false,
+    // The precision of the HPM counter, upto 64 bits.
+    // Rocket: hpmWidth = 40 (rocket-chip src/main/scala/rocket/CSR.scala:212).
+    "hpmcounter_width_bits": 40,
+    // The width of the `mhpmevent` CSRs, upto 64 bits, if Sscofpmf is
+    // not supported.  On RV32 without Sscofpmf, this can be upto 32,
+    // since the `mhpmeventh` CSRs are not accessible.
+    // If Sscofpmf is supported, the `mhpmevent` CSRs are always 64
+    // bits; this value then defines the number, upto 56, of the lowest
+    // bits of the CSRs that are used as the event selector.
+    // Rocket: mhpmevent keeps bits 1:0 (event set, 3 sets) and 25:8 (event mask, 18 events in
+    // the largest set): Events.scala:30-35 and RocketCore.scala:178-222 in rocket-chip
+    // src/main/scala/rocket/. Bits 7:2 read 0 on Rocket; Sail models only a low field.
+    "hpmevent_width_bits": 26,
+    // Rocket: CY, IR and HPM3-31 are writable (rocket-chip src/main/scala/rocket/CSR.scala:591,1308).
+    "mcountinhibit": {
+      // Whether the `mcountinhibit` CSR is implemented.
+      "supported": true,
+      // This bits in this value control whether the corresponding
+      // bits of the CSR are writable.  Note that bit 1 cannot be written
+      // to as it is read-only zero.
+      "writable_bits": { "len": 32, "value": "0xFFFF_FFFD" }
+    },
     "writable_fiom": true,
     "writable_hpm_counters": {
       "len": 32,
@@ -439,23 +467,56 @@
     "instructions_per_tick": 2,
     "wfi_is_nop": false,
     "wfi_available_to_user_mode": true,
-    "max_time_to_wait": 200
+    "max_time_to_wait": 200,
+    // The model can generate the following events that can be tracked
+    // using the HPM counters:
+    // - EV_FENCE
+    // - EV_MISALIGNED_LOAD_EXCEPTION
+    // - EV_MISALIGNED_STORE_EXCEPTION
+    // - EV_TLB_MISS
+    //
+    // An event can be mapped to a selector value, that when written
+    // to the event field of an `mhpmeventNN` CSR, will increment the
+    // corresponding `mhpmcounterNN` CSR as per the specification
+    // (e.g. the `Sscofpmf` extension).
+    //
+    // The selector values need to fit into the event field of an
+    // `mhpmeventNN` CSR. When Sscofpmf is not supported, this field
+    // is `base.hpmevent_width_bits` wide; with Sscofpmf, this field
+    // is the lowest 56 bits of the 64-bit `mhpeventNN` CSR.
+    //
+    // The `event_selectors` list can contain any subset of these
+    // supported events.  Events cannot be repeated in the list, and
+    // the selector values should be unique.  These selector values
+    // are always specified as 64-bit, but their values must fit the
+    // width restrictions mentioned above.
+    "event_selectors": []
   },
   "extensions": {
+    // Rocket: misa is writable in M, A, F, D, V and C
+    // (rocket-chip src/main/scala/rocket/CSR.scala:635-641,1259-1266).
     "M": {
+      "mutable_misa": true,
       "supported": true
     },
     "A": {
+      "mutable_misa": true,
       "supported": true
     },
     "F": {
+      "mutable_misa": true,
       "supported": true,
       "fflags_dirty_policy": "Fflags_Dirty_Precise"
     },
     "D": {
+      "mutable_misa": true,
       "supported": true
     },
+    "C": {
+      "mutable_misa": true
+    },
     "V": {
+      "mutable_misa": true,
       "support_level": "Full",
       "vlen_exp": 7,
       "elen_exp": 6,
@@ -473,9 +534,11 @@
       }
     },
     "B": {
+      "mutable_misa": false,
       "supported": false
     },
     "S": {
+      "mutable_misa": false,
       "supported": true,
       "interrupts": {
         "software": {
@@ -490,12 +553,32 @@
       }
     },
     "U": {
+      "mutable_misa": false,
       "supported": true
     },
     "H": {
+      "mutable_misa": false,
       "supported": true,
       "geilen": 0,
       "guest_page_fault_writes_htval": true,
+      // Whether a trap into M or HS mode caused by the specified exception
+      // writes the transformed trapping instruction to `mtinst`/`htinst`.
+      // This applies to integer and floating-point loads and stores
+      // (including compressed forms), LR/SC, AMOs, HLV/HLVX/HSV and CBOs.
+      // If false, zero is written instead.
+      // Rocket writes no transformed instruction: mtinst/htinst hold 0x3000 for a guest-page
+      // fault on an implicit VS-stage PTE access, otherwise 0
+      // (CSR.scala:589,1076,1089 and RocketCore.scala:892 in rocket-chip src/main/scala/rocket/).
+      "transformed_instruction": {
+        "load_access_fault": false,
+        "load_address_misaligned": false,
+        "load_guest_page_fault": false,
+        "load_page_fault": false,
+        "samo_access_fault": false,
+        "samo_address_misaligned": false,
+        "samo_guest_page_fault": false,
+        "samo_page_fault": false
+      },
       "hgatp_modes": {
         "Sv32x4": false,
         "Sv39x4": true,
@@ -578,6 +661,9 @@
     "Zicond": {
       "supported": false
     },
+    // Sail-only: Zicntr is not claimed in the UDB configuration because Rocket has no time CSR,
+    // but Rocket implements cycle and instret (rocket-chip src/main/scala/rocket/CSR.scala:731-732),
+    // which Sail 0.15 makes accessible only with Zicntr. Sail then also allows reads of time.
     "Zicntr": {
       "supported": true
     },
@@ -840,6 +926,53 @@
     },
     "Svvptc": {
       "supported": false
-    }
+    },
+    // Sdtrig, Smdbltrp, Ssdbltrp and Ssstrict are not claimed in the UDB configuration.
+    "Sdtrig": {
+      "supported": false,
+      // `breakpoint_reentrancy` must be one of the below strings:
+      // . `Use_tcontrol`: use the `mte` and `mpte` bits in the `tcontrol` CSR (this also makes the `tcontrol` CSR available)
+      // . `Use_interrupt_enables`: use `mstatus.MIE` and the `SIE` bits in `sstatus` and `vsstatus`
+      // . `No_reentrancy_support`: no specific support for reentrancy
+      // Note: `Use_tcontrol` hardwires medeleg[3] to 0, which breaks the
+      // `sbreak` test in `riscv-tests`.
+      "breakpoint_reentrancy": "No_reentrancy_support",
+      "etrigger": {
+        "supported": false,
+        // A bit set to 1 in this value specifies that the
+        // corresponding exception is supported by the trigger.
+        // Triggers for reserved exceptions are not supported.  This
+        // value is ignored when `etrigger` is not supported.
+        "supported_exceptions": { "len": "xlen", "value": "0" }
+      },
+      "hcontext": { "supported": false },
+      // Triggers
+      "icount": {
+        "supported": false,
+        "count_hardwired_one": false,
+        // Whether a `tdata1` write to an `icount` trigger with
+        // `count`=1 also makes it pending when that write's instruction
+        // matches the trigger.
+        "self_write_sets_pending": false
+      },
+      "itrigger": {
+        "supported": false,
+        // A bit set to 1 in this value specifies that the
+        // corresponding interrupt is supported by the trigger.
+        // Triggers for reserved interrupts are not supported.  This
+        // value is ignored when `itrigger` is not supported.
+        "supported_interrupts": { "len": "xlen", "value": "0" }
+      },
+      // CSRs
+      "mcontext": { "supported": false },
+      // The number of supported triggers.  This has to be
+      // non-negative, and greater than 0 if Sdtrig is supported.
+      // The model does not support more than 16 triggers.
+      "num_triggers": 0,
+      "scontext": { "supported": false }
+    },
+    "Smdbltrp": { "supported": false },
+    "Ssdbltrp": { "supported": false },
+    "Ssstrict": { "supported": false }
   }
 }

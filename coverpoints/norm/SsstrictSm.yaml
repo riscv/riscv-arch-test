@@ -4,11 +4,6 @@
 # RV64 it exercises the high-half CSRs that only exist when XLEN=32.
 
 normative_rule_definitions:
-  # When XLEN>32, an attempt to access a high-half CSR always raises an
-  # illegal-instruction exception.
-  - name: H_illegal_high_half
-    coverpoint: ["SsstrictSm_mcsr_cg/{cp_csrr, cp_csrw_edges, cp_csrcs}"]
-
   # The medelegh register does not exist when XLEN=64.
   - name: medelegh_omit_xlen64
     coverpoint:

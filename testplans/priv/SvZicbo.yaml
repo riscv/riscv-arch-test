@@ -1,0 +1,240 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SvZicbo
+source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=1997311976#gid=1997311976
+coverpoints:
+  - heading: "General Test Environment (SvZicbo):\n- T-SBI suite: boots to S-mode (BOOT_TO_SMODE) and drives the test from the boot identity map. The page under test is mapped at va_data. S-mode accesses run from the identity map. U-mode accesses use RVTEST_TSBI_GOTO_UMODE / RVTEST_TSBI_GOTO_SMODE; the handler moves execution to the U-accessible code alias va_rvtest_code_begin (registered with SAVE_AREA_SETUP) and back. menvcfg is written through T-SBI CSR calls. Page faults are delegated to S-mode, so causes are sampled from scause/stval.\n- menvcfg.CBCFE/CBIE/CBZE are set through T-SBI; U-mode tests also set senvcfg.\n- Run for every supported translation mode: Sv32 on RV32; Sv39, Sv48 and Sv57 on RV64, as selected by the UDB configuration."
+  - name: cp_PTE_rwx_zicbop_s
+    goal: Verify prefetch.i/r/w through a valid mapping execute without exception from S-mode
+    description: "S-mode: RWX leaf PTE with PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute prefetch.i, prefetch.r and prefetch.w on va_data."
+    expectation: No exception; prefetches never fault.
+    bins: |-
+      PTE_RWX_d x PageType_d x zicbop_ins x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: cbp_unperm_translate
+    rules:
+      - "[norm:cbp_unperm_translate]"
+  - name: cp_PTE_rwx_zicbop_u
+    goal: Verify prefetch.i/r/w through a valid mapping execute without exception from U-mode
+    description: "U-mode: RWX leaf PTE with PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute prefetch.i, prefetch.r and prefetch.w on va_data."
+    expectation: No exception; prefetches never fault.
+    bins: |-
+      PTE_RWX_d x PageType_d x zicbop_ins x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: cbp_unperm_translate
+    rules:
+      - "[norm:cbp_unperm_translate]"
+  - name: cp_PTE_inv_cbo_s
+    goal: Verify a CBO through an invalid PTE (V=0) raises a store/AMO page fault from S-mode
+    description: "S-mode: leaf PTE with V=0 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute cbo.clean, cbo.flush and cbo.inval (Zicbom) or cbo.zero (Zicboz) on va_data."
+    expectation: Store/AMO page fault (scause = 15) for every CBO; stval = faulting virtual address.
+    bins: |-
+      PTE_d_inv x PageType_d x store_page_fault x cbo_ins x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: fault_excep_csr
+    rules:
+      - "[norm:fault_excep_csr]"
+  - name: cp_PTE_inv_cbo_u
+    goal: Verify a CBO through an invalid PTE (V=0) raises a store/AMO page fault from U-mode
+    description: "U-mode: leaf PTE with V=0 and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute cbo.clean, cbo.flush and cbo.inval (Zicbom) or cbo.zero (Zicboz) on va_data."
+    expectation: Store/AMO page fault (scause = 15) for every CBO; stval = faulting virtual address.
+    bins: |-
+      PTE_d_inv x PageType_d x store_page_fault x cbo_ins x mode {U-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: fault_excep_csr
+    rules:
+      - "[norm:fault_excep_csr]"
+  - name: cp_PTE_res_rwx_cbo_s
+    goal: Verify a CBO through the reserved encoding W=1, R=0 raises a store/AMO page fault from S-mode
+    description: "S-mode: leaf PTE with W=1, R=0 (with X=1 and with X=0) and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_d_res_rwx x PageType_d x store_page_fault x cbo_ins x mode {S-mode}
+      = 28 bins on RV64, 8 on RV32
+  - name: cp_PTE_res_rwx_cbo_u
+    goal: Verify a CBO through the reserved encoding W=1, R=0 raises a store/AMO page fault from U-mode
+    description: "U-mode: leaf PTE with W=1, R=0 (with X=1 and with X=0) and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_d_res_rwx x PageType_d x store_page_fault x cbo_ins x mode {U-mode}
+      = 28 bins on RV64, 8 on RV32
+  - name: cp_PTE_nonleaf_lvl0_cbo_s
+    goal: Verify a CBO through a level-0 pointer PTE raises a store/AMO page fault from S-mode
+    description: "S-mode: level-0 PTE with V=1, R=W=X=0 and PTE.U=0. Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_nonleaf_lvl0_d x kilo_page x mode x store_page_fault x cbo_ins x mode {S-mode}
+      = 6 bins on RV64, 2 on RV32
+  - name: cp_PTE_nonleaf_lvl0_cbo_u
+    goal: Verify a CBO through a level-0 pointer PTE raises a store/AMO page fault from U-mode
+    description: "U-mode: level-0 PTE with V=1, R=W=X=0 and PTE.U=1. Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_nonleaf_lvl0_d x kilo_page x mode x store_page_fault x cbo_ins x mode {U-mode}
+      = 6 bins on RV64, 2 on RV32
+  - name: cp_PTE_r_set_w_unset_zicbom_s
+    goal: Verify Zicbom CBOs succeed with R=1 and W=0 from S-mode
+    description: "S-mode: RX leaf PTE (R=1, W=0) with PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode), with sstatus.SUM=0 and SUM=1. Execute cbo.clean, cbo.flush and cbo.inval on va_data."
+    expectation: "No exception: Zicbom needs read or write permission."
+    bins: |-
+      PTE_r_set_w_unset_spage_d x PageType_d x cbo_ins x sum_sstatus x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+  - name: cp_PTE_r_set_w_unset_zicbom_u
+    goal: Verify Zicbom CBOs succeed with R=1 and W=0 from U-mode
+    description: "U-mode: RX leaf PTE (R=1, W=0) with PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute cbo.clean, cbo.flush and cbo.inval on va_data."
+    expectation: "No exception: Zicbom needs read or write permission."
+    bins: |-
+      PTE_r_set_w_unset_upage_d x PageType_d x cbo_ins x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+  - name: cp_PTE_rw_unset_zicbom_s
+    goal: Verify Zicbom CBOs raise a store/AMO page fault with R=0 and W=0 from S-mode
+    description: "S-mode: execute-only leaf PTE with PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute cbo.clean, cbo.flush and cbo.inval on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_x_spage_d x PageType_d x store_page_fault x cbo_ins x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: cbm_unperm_fault
+    rules:
+      - "[norm:cbm_unperm_fault]"
+  - name: cp_PTE_rw_unset_zicbom_u
+    goal: Verify Zicbom CBOs raise a store/AMO page fault with R=0 and W=0 from U-mode
+    description: "U-mode: execute-only leaf PTE with PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute cbo.clean, cbo.flush and cbo.inval on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_x_upage_d x PageType_d x store_page_fault x cbo_ins x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: cbm_unperm_fault
+    rules:
+      - "[norm:cbm_unperm_fault]"
+  - name: cp_PTE_w_unset_zicboz_s
+    goal: Verify cbo.zero raises a store/AMO page fault with W=0 from S-mode
+    description: "S-mode: RX leaf PTE (W=0) with PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode), with sstatus.SUM=0 and SUM=1. Execute cbo.zero on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_w_unset_spage_d x PageType_d x store_page_fault x cbo_ins x sum_sstatus x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: cbz_unperm_fault
+    rules:
+      - "[norm:cbz_unperm_fault]"
+  - name: cp_PTE_w_unset_zicboz_u
+    goal: Verify cbo.zero raises a store/AMO page fault with W=0 from U-mode
+    description: "U-mode: RX leaf PTE (W=0) with PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute cbo.zero on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_w_unset_upage_d x PageType_d x store_page_fault x cbo_ins x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: cbz_unperm_fault
+    rules:
+      - "[norm:cbz_unperm_fault]"
+  - name: cp_spage_rwx_cbo_u
+    goal: Verify a U-mode CBO to a supervisor page (U=0) raises a store/AMO page fault
+    description: "U-mode: supervisor RWX leaf PTE (U=0), at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_spage_d x PageType_d x store_page_fault x cbo_ins x mode {U-mode}
+      = 14 bins on RV64, 4 on RV32
+  - name: cp_upage_sumunset_cbo_s
+    goal: Verify an S-mode CBO to a user page (U=1) raises a store/AMO page fault when sstatus.SUM=0
+    description: "S-mode with sstatus.SUM=0: user RWX leaf PTE (U=1), at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_upage_d x PageType_d x store_page_fault x cbo_ins x sum_sstatus x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+  - name: cp_Abit_unset_cbo_s
+    goal: Verify a CBO through a PTE with A=0 raises a store/AMO page fault from S-mode (no hardware A update)
+    description: "S-mode: leaf PTE with A=0 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode); menvcfg.ADUE=0. Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_Abit_unset_d x PageType_d x store_page_fault x cbo_ins x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: cbm_unperm_translate cbz_unperm_translate
+    rules:
+      - "[norm:cbm_unperm_translate] [norm:cbz_unperm_translate]"
+  - name: cp_Abit_unset_cbo_u
+    goal: Verify a CBO through a PTE with A=0 raises a store/AMO page fault from U-mode (no hardware A update)
+    description: "U-mode: leaf PTE with A=0 and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode); menvcfg.ADUE=0. Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_Abit_unset_d x PageType_d x store_page_fault x cbo_ins x mode {U-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: cbm_unperm_translate
+    rules:
+      - "[norm:cbm_unperm_translate]"
+  - name: cp_Dbit_unset_zicbom_s
+    goal: Verify Zicbom CBOs do not check PTE.D from S-mode
+    description: "S-mode: leaf PTE with A=1, D=0 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute cbo.clean, cbo.flush and cbo.inval on va_data."
+    expectation: No exception and D is not set.
+    bins: |-
+      PTE_Dbit_unset_d x PageType_d x cbo_ins x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+  - name: cp_Dbit_unset_zicbom_u
+    goal: Verify Zicbom CBOs do not check PTE.D from U-mode
+    description: "U-mode: leaf PTE with A=1, D=0 and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute cbo.clean, cbo.flush and cbo.inval on va_data."
+    expectation: No exception and D is not set.
+    bins: |-
+      PTE_Dbit_unset_d x PageType_d x cbo_ins x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+  - name: cp_Dbit_unset_zicboz_s
+    goal: Verify cbo.zero through a PTE with D=0 raises a store/AMO page fault from S-mode (no hardware D update)
+    description: "S-mode: leaf PTE with A=1, D=0 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode); menvcfg.ADUE=0. Execute cbo.zero on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_Dbit_unset_d x PageType_d x store_page_fault x cbo_ins x mode {S-mode}
+      = 7 bins on RV64, 2 on RV32
+    id: cbz_unperm_translate
+    rules:
+      - "[norm:cbz_unperm_translate]"
+  - name: cp_Dbit_unset_zicboz_u
+    goal: Verify cbo.zero through a PTE with D=0 raises a store/AMO page fault from U-mode (no hardware D update)
+    description: "U-mode: leaf PTE with A=1, D=0 and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode); menvcfg.ADUE=0. Execute cbo.zero on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_Dbit_unset_d x PageType_d x store_page_fault x cbo_ins x mode {U-mode}
+      = 7 bins on RV64, 2 on RV32
+  - name: cp_misaligned_page_cbo_s
+    goal: Verify a CBO through a misaligned superpage raises a store/AMO page fault from S-mode
+    description: "S-mode: superpage leaf PTE with PTE.U=0 whose PPN has non-zero bits below the superpage size, at each superpage level. Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_RWX_d x misaligned_PPN_d x store_page_fault x cbo_ins x mode {S-mode}
+      = 10 bins on RV64, 2 on RV32
+  - name: cp_misaligned_page_cbo_u
+    goal: Verify a CBO through a misaligned superpage raises a store/AMO page fault from U-mode
+    description: "U-mode: superpage leaf PTE with PTE.U=1 whose PPN has non-zero bits below the superpage size, at each superpage level. Execute the CBOs on va_data."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_RWX_d x misaligned_PPN_d x store_page_fault x cbo_ins x mode {U-mode}
+      = 10 bins on RV64, 2 on RV32
+  - name: cp_PTE_nonleaf_DAU_cbo
+    goal: Verify a CBO with D, A or U set in a non-leaf PTE raises a store/AMO page fault
+    description: "S-mode and U-mode: set D, A or U (one at a time) in the non-leaf PTE above a valid leaf. Execute the CBOs on va_data. Requires privileged spec 1.12 or later."
+    expectation: Store/AMO page fault (scause = 15).
+    bins: |-
+      PTE_DAU_d x PageType_d x store_page_fault x cbo_ins x mode {S/U-mode}
+      = 60 bins on RV64, 12 on RV32
+  - name: cp_leaf_PTE_to_nonexistent_pa_cbo_s
+    goal: Verify a CBO to a non-existent physical address raises a store/AMO access fault from S-mode
+    description: "S-mode: valid leaf PTE with PTE.U=0 pointing at RVMODEL_ACCESS_FAULT_ADDRESS, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute the CBOs on va_data."
+    expectation: Store/AMO access fault (scause = 7); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_d x d_phys_address_nonexistent x PageType_d x store_acc_fault x cbo_ins x mode {S-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: pma_chk_paddr
+    rules:
+      - "[norm:pma_chk_paddr]"
+  - name: cp_leaf_PTE_to_nonexistent_pa_cbo_u
+    goal: Verify a CBO to a non-existent physical address raises a store/AMO access fault from U-mode
+    description: "U-mode: valid leaf PTE with PTE.U=1 pointing at RVMODEL_ACCESS_FAULT_ADDRESS, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute the CBOs on va_data."
+    expectation: Store/AMO access fault (scause = 7); stval = faulting virtual address.
+    bins: |-
+      PTE_RWX_d x d_phys_address_nonexistent x PageType_d x store_acc_fault x cbo_ins x mode {U-mode}
+      = 14 bins on RV64, 4 on RV32
+    id: pma_chk_paddr
+    rules:
+      - "[norm:pma_chk_paddr]"
+  - name: cp_nonleaf_PTE_to_nonexistent_pa_cbo
+    goal: Verify a CBO whose page-table walk reads a non-existent physical address raises a store/AMO access fault
+    description: "S-mode and U-mode: non-leaf PTE pointing at RVMODEL_ACCESS_FAULT_ADDRESS instead of the next page table. Execute the CBOs on va_data."
+    expectation: Store/AMO access fault (scause = 7).
+    bins: |-
+      pointer_PTE_d x d_phys_address_nonexistent x PageType_d x store_acc_fault x cbo_ins x mode {S/U-mode}
+      = 20 bins on RV64, 4 on RV32

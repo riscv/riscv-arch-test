@@ -44484,5 +44484,6 @@ function void ssstrictv_sample(int hart, int issue, ins_t ins);
         "vzext.vf8"     : begin
             SsstrictV_vzext_vf8_cg.sample(ins);
         end
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

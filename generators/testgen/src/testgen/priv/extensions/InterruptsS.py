@@ -23,6 +23,7 @@ from testgen.priv.extensions.InterruptsCommon import (
     guard_symbol,
     int_coverpoint,
     int_macro,
+    label_coverpoint,
     mode_enter,
     mode_exit,
     reg_ints,
@@ -72,7 +73,7 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
             continue
         macro = int_macro[int_type]
         guard = guard_symbol(int_type)
-        cp = int_coverpoint.get(int_type, "cp_trigger")
+        cp = label_coverpoint(suite, int_coverpoint.get(int_type, "cp_trigger"), priv, int_type)
         for mode in [0, 1]:
             for enable in [0, 1]:
                 # stvec.MODE

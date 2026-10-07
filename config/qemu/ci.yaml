@@ -23,8 +23,10 @@ ci_enabled: true
 #        (https://gitlab.com/qemu-project/qemu/-/work_items/4101).
 # SsstrictSm/SsstrictS/SsstrictU: Sail does not implement H, qemu#4200, qemu#4201
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
-# Smstateen: mstateen0.P1P13 is writable on RV64 (https://gitlab.com/qemu-project/qemu/-/work_items/4495);
-#     on RV32 the IMSIC bit is writable although Sail does not model IMSIC
+# Smstateen: mstateen0 bits are writable for state the hart lacks: P1P13 on RV64 and on RV32 without H
+#     (https://gitlab.com/qemu-project/qemu/-/work_items/4495), and ENVCFG, CSRIND, AIA and IMSIC without S
+#     (https://gitlab.com/qemu-project/qemu/-/work_items/4655). On the max configs CSRIND, AIA and IMSIC are
+#     legally writable, but Sail does not model Sscsrind or Ssaia.
 # ZawrsU and ZawrsS fail on qemu due to stval mismatching, filed QEMU issue https://gitlab.com/qemu-project/qemu/-/work_items/4080
 # Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
 # H: mstatus.MPV and mstatus.GVA are read-only zero, so mret never enters VS/VU: a guest's

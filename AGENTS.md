@@ -46,7 +46,7 @@
 - Privileged test generators are under `generators/testgen/src/testgen/priv/extensions/`. They write assembly under `tests/priv/`. Handwritten privileged functional coverage is under `coverpoints/priv/`.
 - A testcase checks one coverpoint bin. A `TestChunk` is an unsplittable group of testcases. A test file is one `.S` or `.c` file. A test suite is one extension directory.
 - Test headers are strict YAML between `START_TEST_CONFIG` and `END_TEST_CONFIG`. Supported keys are `REQUIRED_EXTENSIONS`, `FORBIDDEN_EXTENSIONS`, `MARCH`, `NEEDS_SIGNATURE`, `MIN_HARTS`, and `params`. Unknown keys fail validation.
-- CSV columns start with `Instruction`, `Type`, `RV32`, and `RV64`, followed by coverpoints. `Type` must name a registered formatter. Coverpoint columns must name registered generators. Use `testplans/I.csv` as a reference.
+- CSV columns start with `Instruction`, `Type`, `RV32`, and `RV64`, followed by an optional `REQUIRED_EXTENSIONS` column (see `docs/DeveloperGuide.md`) and the coverpoints. `Type` must name a registered formatter. Coverpoint columns must name registered generators. Use `testplans/I.csv` as a reference.
 - Registry modules are discovered automatically. Use the registry decorators and do not add manual imports. Files with names that start with `_` are not discovered.
 
 | Subsystem              | Decorator                                    | Directory                                          |

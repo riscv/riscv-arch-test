@@ -247,5 +247,6 @@ function void zbkx_sample(int hart, int issue, ins_t ins);
         "xperm8"     : begin
             Zbkx_xperm8_cg.sample(ins);
         end
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

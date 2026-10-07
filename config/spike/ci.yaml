@@ -4,7 +4,7 @@
 # Shared across all Spike configs
 
 ci_enabled: true
-# Smstateen will be added back once sail starts supporting Sscsrind too
+# Smstateen will be added back once Sail supports Sscsrind, Ssaia and Ssctr
 # Sdtrig* not yet supported in Sail reference (https://github.com/riscv/sail-riscv/issues/222)
 # PMPZalrsc: an sc without a reservation is PMP-checked on its first byte only (check_load_reservation
 #   translates with size 1), so an sc.d that a PMP entry matches only in part fails without the

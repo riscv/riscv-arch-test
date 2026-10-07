@@ -9,6 +9,7 @@ notes: |
   Run the same coverpoints as Ssnpm in S-mode except
   - MXR bit is sampled from mstatus csr
   - remove cp_pmm_uxl_clear
+  - cp_pmlen_zicfiss_amo and cp_pmlen_zicfiss_ssp are exactly the same as Ssnpm except only menvcfg.SSE=1 is set (senvcfg.SSE controls U-mode and is not needed in S-mode), and the shadow stack page is a supervisor page.
 coverpoints:
   - heading: "- add the following cp_pm_csr_software_access_* coverpoints"
   - name: cp_pm_csr_software_access

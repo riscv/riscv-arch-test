@@ -73,7 +73,7 @@ function string disassemble (logic [31:0] instrRaw);
   automatic bit signed [8:0]  immCBType     = {instr[12], instr[6:5], instr[2], instr[11:10], instr[4:3], 1'b0};
   automatic bit        [5:0]  immCBpType    = {instr[12], instr[6:2]};
   automatic bit signed [11:0] immCJType     = {instr[12], instr[8], instr[10:9], instr[6], instr[7], instr[2], instr[11], instr[5:3], 1'b0};
-  automatic bit        [8:0]  immCSSType    = {instr[8:7], instr[12:9], 2'b0};
+  automatic bit        [7:0]  immCSSType    = {instr[8:7], instr[12:9], 2'b0};
 
   // Other fields
   automatic bit     [2:0] frm  = instr[14:12];

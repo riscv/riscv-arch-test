@@ -323,5 +323,6 @@ function void zcb_sample(int hart, int issue, ins_t ins);
         "c.zext.b"     : begin
             Zcb_c_zext_b_cg.sample(ins);
         end
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

@@ -133,7 +133,12 @@
     "privileged_isa_version": "Privileged_ISA_1_13"
   },
   "memory": {
-    "physaddr_bits": 48,
+    // XiangShan implements 48 physical address bits (PHYS_ADDR_WIDTH in xiangshan-kmhv2.yaml).
+    // 64 is a workaround: Sail masks the address it reports in xtval for a faulting access to
+    // physaddr_bits, while XiangShan reports the full address, including tag bits that pointer
+    // masking leaves in place. Sail then also lets pmpaddr, satp.PPN and hgatp.PPN hold bits
+    // above the 48 that XiangShan implements; no current test depends on those bits.
+    "physaddr_bits": 64,
     "asidlen": 16,
     "vmidlen": 14,
     "pmp": {

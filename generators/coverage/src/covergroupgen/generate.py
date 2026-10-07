@@ -11,6 +11,7 @@ import csv
 import importlib.resources
 import math
 import re
+from collections import defaultdict
 from dataclasses import dataclass
 from difflib import get_close_matches
 from pathlib import Path
@@ -270,19 +271,15 @@ def _write_if_changed(path: Path, content: str) -> None:
 # Reading testplans and templates
 ##################################
 
-
-# Optional testplan column naming an extension a row needs beyond its suite's own (testgen checks the names)
-REQUIRED_EXTENSIONS_COLUMN = "REQUIRED_EXTENSIONS"
-
 Testplan = dict[tuple[str, str], list[str]]
 
 
 def _parse_testplan_groups(csv_path: Path) -> dict[str, Testplan]:
-    """Parse a testplan CSV into (instruction, type) -> coverpoints, grouped by REQUIRED_EXTENSIONS entry.
+    """Parse a testplan CSV into (instruction, type) -> coverpoints, grouped by ExtraExtension entry.
 
     The "" group holds the rows that need only the suite's own extensions.
     """
-    groups: dict[str, Testplan] = {"": {}}
+    groups: dict[str, Testplan] = defaultdict(dict)
     with csv_path.open() as csvfile:
         for row in csv.DictReader(csvfile):
             if "Instruction" not in row:
@@ -292,7 +289,7 @@ def _parse_testplan_groups(csv_path: Path) -> dict[str, Testplan]:
                 )
             instr = row["Instruction"]
             instr_type = row.get("Type", "")
-            extra_extension = (row.pop(REQUIRED_EXTENSIONS_COLUMN, None) or "").strip()
+            extra_extension = (row.pop("ExtraExtension", "")).strip()
 
             cps: list[str] = []
             del row["Instruction"]
@@ -310,20 +307,15 @@ def _parse_testplan_groups(csv_path: Path) -> dict[str, Testplan]:
                         key = f"{key}_{value}"
                     cps.append(key)
 
-            groups.setdefault(extra_extension, {})[(instr, instr_type)] = cps
+            groups[extra_extension][(instr, instr_type)] = cps
     return groups
-
-
-def _parse_testplan_csv(csv_path: Path) -> Testplan:
-    """Parse a testplan CSV without REQUIRED_EXTENSIONS rows into (instruction, type) -> coverpoints."""
-    return _parse_testplan_groups(csv_path)[""]
 
 
 def read_testplans(testplan_dir: Path) -> tuple[dict[str, Testplan], dict[str, dict[str, Testplan]]]:
     """Read all CSV testplan files.
 
     Returns (testplans, extra_testplans). testplans maps each extension name to the rows that need only
-    that extension; extra_testplans maps an extension name to its rows with a REQUIRED_EXTENSIONS entry,
+    that extension; extra_testplans maps an extension name to its rows with a ExtraExtension entry,
     keyed by that entry. Each CSV file produces one testplan entry keyed by the file's stem (e.g. "I", "Zba").
     Some extensions are expanded:
       - "I" is duplicated as "E"
@@ -615,7 +607,6 @@ def _gen_instrs(
 ) -> tuple[str, str]:
     """Generate covergroup definitions and init content for matching instructions.
 
-    name prefixes the covergroup names: arch, or e.g. "ZfhminD" for rows that also require D.
     Returns (covergroup_content, init_content).
     """
     covergroup_lines: list[str] = []
@@ -714,11 +705,7 @@ def _gen_covergroup_samples(
     extras: dict[str, Testplan],
     vector_sample: bool = False,
 ) -> str:
-    """Generate covergroup sample function calls for matching instructions and REQUIRED_EXTENSIONS rows.
-
-    REQUIRED_EXTENSIONS calls go inside their extension guards in the instruction's case arm. When an
-    instruction's only row is one REQUIRED_EXTENSIONS row, the whole arm is guarded instead.
-    """
+    """Generate covergroup sample function calls for matching instructions and ExtraExtension rows."""
     lines: list[str] = []
     for key in sorted(set(instr_keys).union(*extras.values())):
         instr = key[0]
@@ -801,7 +788,7 @@ def _write_extension_files(
     When *vector* is True the vector-flavored header/sample templates are used,
     an EFFEW substitution is made available in the header, and the instruction
     key list is filtered to the matching SEW. *extras* holds the testplan's
-    REQUIRED_EXTENSIONS rows by extension; their covergroups follow the base
+    ExtraExtension rows by extension; their covergroups follow the base
     covergroups inside `ifdef <EXT>_SUPPORTED guards.
     """
     per_sew = vector or _has_effew_suffix(arch)
@@ -826,7 +813,7 @@ def _write_extension_files(
     init_lines: list[str] = [customize_template(templates, "initheader", arch)]
 
     # Covergroup definitions: common instructions, then RV32-only, then RV64-only;
-    # then the same for each group of REQUIRED_EXTENSIONS rows inside its extension guards
+    # then the same for each group of ExtraExtension rows inside its extension guards
     for extension, group in [("", tp), *sorted(extras.items())]:
         group_keys = instr_keys if not extension else sorted(group.keys())
         name = f"{arch}{extension}"
@@ -948,7 +935,7 @@ def _merge_instruction_testplans(
         for key in _get_sorted_instr_keys(tp, arch):
             if key not in merged:
                 merged[key] = tp[key]
-    # Instructions that appear only in REQUIRED_EXTENSIONS rows
+    # Instructions that appear only in ExtraExtension rows
     for arch in sorted(extra_testplans):
         for _, group in sorted(extra_testplans[arch].items()):
             for key in sorted(group):
@@ -1008,7 +995,7 @@ def _plan_priv_jobs(
     priv_output_dir = output_dir / "priv"
     priv_output_dir.mkdir(parents=True, exist_ok=True)
 
-    priv_plans = {csv_path.stem: _parse_testplan_csv(csv_path) for csv_path in priv_plan_dir.glob("*.csv")}
+    priv_plans = {csv_path.stem: _parse_testplan_groups(csv_path)[""] for csv_path in priv_plan_dir.glob("*.csv")}
 
     # Mirror the unpriv per-SEW expansion for ExceptionsVf so a single
     # ExceptionsVf.csv produces ExceptionsVf{16,32,64} covergroup files (one
@@ -1041,7 +1028,7 @@ def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str =
         test_plans = all_test_plans
 
     templates = read_covergroup_templates()
-    instruction_formats = _parse_testplan_csv(testplan_dir / "coverage" / "instruction_formats.csv")
+    instruction_formats = _parse_testplan_groups(testplan_dir / "coverage" / "instruction_formats.csv")[""]
 
     jobs = _plan_unpriv_jobs(test_plans, output_dir, extra_testplans)
     jobs += _plan_priv_jobs(testplan_dir, output_dir, extensions, exclude)

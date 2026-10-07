@@ -12,9 +12,6 @@ import csv
 from dataclasses import dataclass
 from pathlib import Path
 
-# Optional testplan column naming an extension a row needs beyond its suite's own
-REQUIRED_EXTENSIONS_COLUMN = "REQUIRED_EXTENSIONS"
-
 
 def get_extensions(testplan_dir: Path) -> list[str]:
     """Get the list of extensions from the testplan directory."""
@@ -56,22 +53,19 @@ class TestPlanData:
     rv32: bool
     rv64: bool
     sews_supported: list[int]
+    extra_extension: str
     coverpoints: list[str]
-    required_extension: str = ""
 
 
 def read_testplan(testplan_path: Path) -> list[TestPlanData]:
-    """Read a testplan and return a list of instructions and their associated data (type, coverpoints, etc.).
-
-    A row with a REQUIRED_EXTENSIONS entry needs that extension in addition to the suite's own.
-    """
+    """Read a testplan and return a list of instructions and their associated data (type, coverpoints, etc.)."""
     # Columns that are parsed separately and should not be treated as coverpoints
     non_coverpoint_columns = {
         "Instruction",
         "Type",
         "RV32",
         "RV64",
-        REQUIRED_EXTENSIONS_COLUMN,
+        "ExtraExtension",
         "EFFEW8",
         "EFFEW16",
         "EFFEW32",
@@ -100,7 +94,7 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                     f"Error: 'Type' column missing in testplan {testplan_path}. Make sure you remembered to shrink the CSV."
                 )
                 raise
-            required_extension = (row.get(REQUIRED_EXTENSIONS_COLUMN) or "").strip()
+            extra_extension = (row.get("ExtraExtension", "")).strip()
             rv32 = row["RV32"].strip().lower() == "x"
             rv64 = row["RV64"].strip().lower() == "x"
             sews = []
@@ -127,8 +121,8 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                     rv32=rv32,
                     rv64=rv64,
                     sews_supported=sews,
+                    extra_extension=extra_extension,
                     coverpoints=coverpoints,
-                    required_extension=required_extension,
                 )
             )
     return instructions

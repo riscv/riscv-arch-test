@@ -32,8 +32,8 @@ class TestConfig:
         march_extensions: Optional list of extensions to use for building the march string.
                           If None, march is built from required_extensions.
         extra_params: Optional list of extra parameter requirements for the test.
-        extra_extension: Extension required in addition to the testsuite's own, from a testplan row's
-                         REQUIRED_EXTENSIONS column. It is appended to the file and covergroup name prefix.
+        extra_extension: Extensions required in addition to the testsuite's own, from a testplan row's
+                         ExtraExtension column. It is appended to the file and covergroup name prefix.
     """
 
     xlen: int

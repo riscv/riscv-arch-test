@@ -15726,306 +15726,307 @@ function void exceptionsvf32_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
-        "vfadd.vf"     : begin
-            ExceptionsVf32_vfadd_vf_cg.sample(ins);
-        end
-        "vfadd.vv"     : begin
-            ExceptionsVf32_vfadd_vv_cg.sample(ins);
-        end
-        "vfclass.v"     : begin
-            ExceptionsVf32_vfclass_v_cg.sample(ins);
-        end
-        "vfcvt.f.x.v"     : begin
-            ExceptionsVf32_vfcvt_f_x_v_cg.sample(ins);
-        end
-        "vfcvt.f.xu.v"     : begin
-            ExceptionsVf32_vfcvt_f_xu_v_cg.sample(ins);
-        end
-        "vfcvt.rtz.x.f.v"     : begin
-            ExceptionsVf32_vfcvt_rtz_x_f_v_cg.sample(ins);
-        end
-        "vfcvt.rtz.xu.f.v"     : begin
-            ExceptionsVf32_vfcvt_rtz_xu_f_v_cg.sample(ins);
-        end
-        "vfcvt.x.f.v"     : begin
-            ExceptionsVf32_vfcvt_x_f_v_cg.sample(ins);
-        end
-        "vfcvt.xu.f.v"     : begin
-            ExceptionsVf32_vfcvt_xu_f_v_cg.sample(ins);
-        end
-        "vfdiv.vf"     : begin
-            ExceptionsVf32_vfdiv_vf_cg.sample(ins);
-        end
-        "vfdiv.vv"     : begin
-            ExceptionsVf32_vfdiv_vv_cg.sample(ins);
-        end
-        "vfmacc.vf"     : begin
-            ExceptionsVf32_vfmacc_vf_cg.sample(ins);
-        end
-        "vfmacc.vv"     : begin
-            ExceptionsVf32_vfmacc_vv_cg.sample(ins);
-        end
-        "vfmadd.vf"     : begin
-            ExceptionsVf32_vfmadd_vf_cg.sample(ins);
-        end
-        "vfmadd.vv"     : begin
-            ExceptionsVf32_vfmadd_vv_cg.sample(ins);
-        end
-        "vfmax.vf"     : begin
-            ExceptionsVf32_vfmax_vf_cg.sample(ins);
-        end
-        "vfmax.vv"     : begin
-            ExceptionsVf32_vfmax_vv_cg.sample(ins);
-        end
-        "vfmerge.vfm"     : begin
-            ExceptionsVf32_vfmerge_vfm_cg.sample(ins);
-        end
-        "vfmin.vf"     : begin
-            ExceptionsVf32_vfmin_vf_cg.sample(ins);
-        end
-        "vfmin.vv"     : begin
-            ExceptionsVf32_vfmin_vv_cg.sample(ins);
-        end
-        "vfmsac.vf"     : begin
-            ExceptionsVf32_vfmsac_vf_cg.sample(ins);
-        end
-        "vfmsac.vv"     : begin
-            ExceptionsVf32_vfmsac_vv_cg.sample(ins);
-        end
-        "vfmsub.vf"     : begin
-            ExceptionsVf32_vfmsub_vf_cg.sample(ins);
-        end
-        "vfmsub.vv"     : begin
-            ExceptionsVf32_vfmsub_vv_cg.sample(ins);
-        end
-        "vfmul.vf"     : begin
-            ExceptionsVf32_vfmul_vf_cg.sample(ins);
-        end
-        "vfmul.vv"     : begin
-            ExceptionsVf32_vfmul_vv_cg.sample(ins);
-        end
-        "vfmv.f.s"     : begin
-            ExceptionsVf32_vfmv_f_s_cg.sample(ins);
-        end
-        "vfmv.s.f"     : begin
-            ExceptionsVf32_vfmv_s_f_cg.sample(ins);
-        end
-        "vfmv.v.f"     : begin
-            ExceptionsVf32_vfmv_v_f_cg.sample(ins);
-        end
-        "vfncvt.f.f.w"     : begin
-            ExceptionsVf32_vfncvt_f_f_w_cg.sample(ins);
-        end
-        "vfncvt.f.x.w"     : begin
-            ExceptionsVf32_vfncvt_f_x_w_cg.sample(ins);
-        end
-        "vfncvt.f.xu.w"     : begin
-            ExceptionsVf32_vfncvt_f_xu_w_cg.sample(ins);
-        end
-        "vfncvt.rod.f.f.w"     : begin
-            ExceptionsVf32_vfncvt_rod_f_f_w_cg.sample(ins);
-        end
-        "vfncvt.rtz.x.f.w"     : begin
-            ExceptionsVf32_vfncvt_rtz_x_f_w_cg.sample(ins);
-        end
-        "vfncvt.rtz.xu.f.w"     : begin
-            ExceptionsVf32_vfncvt_rtz_xu_f_w_cg.sample(ins);
-        end
-        "vfncvt.x.f.w"     : begin
-            ExceptionsVf32_vfncvt_x_f_w_cg.sample(ins);
-        end
-        "vfncvt.xu.f.w"     : begin
-            ExceptionsVf32_vfncvt_xu_f_w_cg.sample(ins);
-        end
-        "vfnmacc.vf"     : begin
-            ExceptionsVf32_vfnmacc_vf_cg.sample(ins);
-        end
-        "vfnmacc.vv"     : begin
-            ExceptionsVf32_vfnmacc_vv_cg.sample(ins);
-        end
-        "vfnmadd.vf"     : begin
-            ExceptionsVf32_vfnmadd_vf_cg.sample(ins);
-        end
-        "vfnmadd.vv"     : begin
-            ExceptionsVf32_vfnmadd_vv_cg.sample(ins);
-        end
-        "vfnmsac.vf"     : begin
-            ExceptionsVf32_vfnmsac_vf_cg.sample(ins);
-        end
-        "vfnmsac.vv"     : begin
-            ExceptionsVf32_vfnmsac_vv_cg.sample(ins);
-        end
-        "vfnmsub.vf"     : begin
-            ExceptionsVf32_vfnmsub_vf_cg.sample(ins);
-        end
-        "vfnmsub.vv"     : begin
-            ExceptionsVf32_vfnmsub_vv_cg.sample(ins);
-        end
-        "vfrdiv.vf"     : begin
-            ExceptionsVf32_vfrdiv_vf_cg.sample(ins);
-        end
-        "vfrec7.v"     : begin
-            ExceptionsVf32_vfrec7_v_cg.sample(ins);
-        end
-        "vfredmax.vs"     : begin
-            ExceptionsVf32_vfredmax_vs_cg.sample(ins);
-        end
-        "vfredmin.vs"     : begin
-            ExceptionsVf32_vfredmin_vs_cg.sample(ins);
-        end
-        "vfredosum.vs"     : begin
-            ExceptionsVf32_vfredosum_vs_cg.sample(ins);
-        end
-        "vfredusum.vs"     : begin
-            ExceptionsVf32_vfredusum_vs_cg.sample(ins);
-        end
-        "vfrsqrt7.v"     : begin
-            ExceptionsVf32_vfrsqrt7_v_cg.sample(ins);
-        end
-        "vfrsub.vf"     : begin
-            ExceptionsVf32_vfrsub_vf_cg.sample(ins);
-        end
-        "vfsgnj.vf"     : begin
-            ExceptionsVf32_vfsgnj_vf_cg.sample(ins);
-        end
-        "vfsgnj.vv"     : begin
-            ExceptionsVf32_vfsgnj_vv_cg.sample(ins);
-        end
-        "vfsgnjn.vf"     : begin
-            ExceptionsVf32_vfsgnjn_vf_cg.sample(ins);
-        end
-        "vfsgnjn.vv"     : begin
-            ExceptionsVf32_vfsgnjn_vv_cg.sample(ins);
-        end
-        "vfsgnjx.vf"     : begin
-            ExceptionsVf32_vfsgnjx_vf_cg.sample(ins);
-        end
-        "vfsgnjx.vv"     : begin
-            ExceptionsVf32_vfsgnjx_vv_cg.sample(ins);
-        end
-        "vfslide1down.vf"     : begin
-            ExceptionsVf32_vfslide1down_vf_cg.sample(ins);
-        end
-        "vfslide1up.vf"     : begin
-            ExceptionsVf32_vfslide1up_vf_cg.sample(ins);
-        end
-        "vfsqrt.v"     : begin
-            ExceptionsVf32_vfsqrt_v_cg.sample(ins);
-        end
-        "vfsub.vf"     : begin
-            ExceptionsVf32_vfsub_vf_cg.sample(ins);
-        end
-        "vfsub.vv"     : begin
-            ExceptionsVf32_vfsub_vv_cg.sample(ins);
-        end
-        "vfwadd.vf"     : begin
-            ExceptionsVf32_vfwadd_vf_cg.sample(ins);
-        end
-        "vfwadd.vv"     : begin
-            ExceptionsVf32_vfwadd_vv_cg.sample(ins);
-        end
-        "vfwadd.wf"     : begin
-            ExceptionsVf32_vfwadd_wf_cg.sample(ins);
-        end
-        "vfwadd.wv"     : begin
-            ExceptionsVf32_vfwadd_wv_cg.sample(ins);
-        end
-        "vfwcvt.f.x.v"     : begin
-            ExceptionsVf32_vfwcvt_f_x_v_cg.sample(ins);
-        end
-        "vfwcvt.f.xu.v"     : begin
-            ExceptionsVf32_vfwcvt_f_xu_v_cg.sample(ins);
-        end
-        "vfwcvt.rtz.x.f.v"     : begin
-            ExceptionsVf32_vfwcvt_rtz_x_f_v_cg.sample(ins);
-        end
-        "vfwcvt.rtz.xu.f.v"     : begin
-            ExceptionsVf32_vfwcvt_rtz_xu_f_v_cg.sample(ins);
-        end
-        "vfwcvt.x.f.v"     : begin
-            ExceptionsVf32_vfwcvt_x_f_v_cg.sample(ins);
-        end
-        "vfwcvt.xu.f.v"     : begin
-            ExceptionsVf32_vfwcvt_xu_f_v_cg.sample(ins);
-        end
-        "vfwmacc.vf"     : begin
-            ExceptionsVf32_vfwmacc_vf_cg.sample(ins);
-        end
-        "vfwmacc.vv"     : begin
-            ExceptionsVf32_vfwmacc_vv_cg.sample(ins);
-        end
-        "vfwmsac.vf"     : begin
-            ExceptionsVf32_vfwmsac_vf_cg.sample(ins);
-        end
-        "vfwmsac.vv"     : begin
-            ExceptionsVf32_vfwmsac_vv_cg.sample(ins);
-        end
-        "vfwmul.vf"     : begin
-            ExceptionsVf32_vfwmul_vf_cg.sample(ins);
-        end
-        "vfwmul.vv"     : begin
-            ExceptionsVf32_vfwmul_vv_cg.sample(ins);
-        end
-        "vfwnmacc.vf"     : begin
-            ExceptionsVf32_vfwnmacc_vf_cg.sample(ins);
-        end
-        "vfwnmacc.vv"     : begin
-            ExceptionsVf32_vfwnmacc_vv_cg.sample(ins);
-        end
-        "vfwnmsac.vf"     : begin
-            ExceptionsVf32_vfwnmsac_vf_cg.sample(ins);
-        end
-        "vfwnmsac.vv"     : begin
-            ExceptionsVf32_vfwnmsac_vv_cg.sample(ins);
-        end
-        "vfwredosum.vs"     : begin
-            ExceptionsVf32_vfwredosum_vs_cg.sample(ins);
-        end
-        "vfwredusum.vs"     : begin
-            ExceptionsVf32_vfwredusum_vs_cg.sample(ins);
-        end
-        "vfwsub.vf"     : begin
-            ExceptionsVf32_vfwsub_vf_cg.sample(ins);
-        end
-        "vfwsub.vv"     : begin
-            ExceptionsVf32_vfwsub_vv_cg.sample(ins);
-        end
-        "vfwsub.wf"     : begin
-            ExceptionsVf32_vfwsub_wf_cg.sample(ins);
-        end
-        "vfwsub.wv"     : begin
-            ExceptionsVf32_vfwsub_wv_cg.sample(ins);
-        end
-        "vmfeq.vf"     : begin
-            ExceptionsVf32_vmfeq_vf_cg.sample(ins);
-        end
-        "vmfeq.vv"     : begin
-            ExceptionsVf32_vmfeq_vv_cg.sample(ins);
-        end
-        "vmfge.vf"     : begin
-            ExceptionsVf32_vmfge_vf_cg.sample(ins);
-        end
-        "vmfgt.vf"     : begin
-            ExceptionsVf32_vmfgt_vf_cg.sample(ins);
-        end
-        "vmfle.vf"     : begin
-            ExceptionsVf32_vmfle_vf_cg.sample(ins);
-        end
-        "vmfle.vv"     : begin
-            ExceptionsVf32_vmfle_vv_cg.sample(ins);
-        end
-        "vmflt.vf"     : begin
-            ExceptionsVf32_vmflt_vf_cg.sample(ins);
-        end
-        "vmflt.vv"     : begin
-            ExceptionsVf32_vmflt_vv_cg.sample(ins);
-        end
-        "vmfne.vf"     : begin
-            ExceptionsVf32_vmfne_vf_cg.sample(ins);
-        end
-        "vmfne.vv"     : begin
-            ExceptionsVf32_vmfne_vv_cg.sample(ins);
-        end
+            "vfadd.vf"     : begin
+                ExceptionsVf32_vfadd_vf_cg.sample(ins);
+            end
+            "vfadd.vv"     : begin
+                ExceptionsVf32_vfadd_vv_cg.sample(ins);
+            end
+            "vfclass.v"     : begin
+                ExceptionsVf32_vfclass_v_cg.sample(ins);
+            end
+            "vfcvt.f.x.v"     : begin
+                ExceptionsVf32_vfcvt_f_x_v_cg.sample(ins);
+            end
+            "vfcvt.f.xu.v"     : begin
+                ExceptionsVf32_vfcvt_f_xu_v_cg.sample(ins);
+            end
+            "vfcvt.rtz.x.f.v"     : begin
+                ExceptionsVf32_vfcvt_rtz_x_f_v_cg.sample(ins);
+            end
+            "vfcvt.rtz.xu.f.v"     : begin
+                ExceptionsVf32_vfcvt_rtz_xu_f_v_cg.sample(ins);
+            end
+            "vfcvt.x.f.v"     : begin
+                ExceptionsVf32_vfcvt_x_f_v_cg.sample(ins);
+            end
+            "vfcvt.xu.f.v"     : begin
+                ExceptionsVf32_vfcvt_xu_f_v_cg.sample(ins);
+            end
+            "vfdiv.vf"     : begin
+                ExceptionsVf32_vfdiv_vf_cg.sample(ins);
+            end
+            "vfdiv.vv"     : begin
+                ExceptionsVf32_vfdiv_vv_cg.sample(ins);
+            end
+            "vfmacc.vf"     : begin
+                ExceptionsVf32_vfmacc_vf_cg.sample(ins);
+            end
+            "vfmacc.vv"     : begin
+                ExceptionsVf32_vfmacc_vv_cg.sample(ins);
+            end
+            "vfmadd.vf"     : begin
+                ExceptionsVf32_vfmadd_vf_cg.sample(ins);
+            end
+            "vfmadd.vv"     : begin
+                ExceptionsVf32_vfmadd_vv_cg.sample(ins);
+            end
+            "vfmax.vf"     : begin
+                ExceptionsVf32_vfmax_vf_cg.sample(ins);
+            end
+            "vfmax.vv"     : begin
+                ExceptionsVf32_vfmax_vv_cg.sample(ins);
+            end
+            "vfmerge.vfm"     : begin
+                ExceptionsVf32_vfmerge_vfm_cg.sample(ins);
+            end
+            "vfmin.vf"     : begin
+                ExceptionsVf32_vfmin_vf_cg.sample(ins);
+            end
+            "vfmin.vv"     : begin
+                ExceptionsVf32_vfmin_vv_cg.sample(ins);
+            end
+            "vfmsac.vf"     : begin
+                ExceptionsVf32_vfmsac_vf_cg.sample(ins);
+            end
+            "vfmsac.vv"     : begin
+                ExceptionsVf32_vfmsac_vv_cg.sample(ins);
+            end
+            "vfmsub.vf"     : begin
+                ExceptionsVf32_vfmsub_vf_cg.sample(ins);
+            end
+            "vfmsub.vv"     : begin
+                ExceptionsVf32_vfmsub_vv_cg.sample(ins);
+            end
+            "vfmul.vf"     : begin
+                ExceptionsVf32_vfmul_vf_cg.sample(ins);
+            end
+            "vfmul.vv"     : begin
+                ExceptionsVf32_vfmul_vv_cg.sample(ins);
+            end
+            "vfmv.f.s"     : begin
+                ExceptionsVf32_vfmv_f_s_cg.sample(ins);
+            end
+            "vfmv.s.f"     : begin
+                ExceptionsVf32_vfmv_s_f_cg.sample(ins);
+            end
+            "vfmv.v.f"     : begin
+                ExceptionsVf32_vfmv_v_f_cg.sample(ins);
+            end
+            "vfncvt.f.f.w"     : begin
+                ExceptionsVf32_vfncvt_f_f_w_cg.sample(ins);
+            end
+            "vfncvt.f.x.w"     : begin
+                ExceptionsVf32_vfncvt_f_x_w_cg.sample(ins);
+            end
+            "vfncvt.f.xu.w"     : begin
+                ExceptionsVf32_vfncvt_f_xu_w_cg.sample(ins);
+            end
+            "vfncvt.rod.f.f.w"     : begin
+                ExceptionsVf32_vfncvt_rod_f_f_w_cg.sample(ins);
+            end
+            "vfncvt.rtz.x.f.w"     : begin
+                ExceptionsVf32_vfncvt_rtz_x_f_w_cg.sample(ins);
+            end
+            "vfncvt.rtz.xu.f.w"     : begin
+                ExceptionsVf32_vfncvt_rtz_xu_f_w_cg.sample(ins);
+            end
+            "vfncvt.x.f.w"     : begin
+                ExceptionsVf32_vfncvt_x_f_w_cg.sample(ins);
+            end
+            "vfncvt.xu.f.w"     : begin
+                ExceptionsVf32_vfncvt_xu_f_w_cg.sample(ins);
+            end
+            "vfnmacc.vf"     : begin
+                ExceptionsVf32_vfnmacc_vf_cg.sample(ins);
+            end
+            "vfnmacc.vv"     : begin
+                ExceptionsVf32_vfnmacc_vv_cg.sample(ins);
+            end
+            "vfnmadd.vf"     : begin
+                ExceptionsVf32_vfnmadd_vf_cg.sample(ins);
+            end
+            "vfnmadd.vv"     : begin
+                ExceptionsVf32_vfnmadd_vv_cg.sample(ins);
+            end
+            "vfnmsac.vf"     : begin
+                ExceptionsVf32_vfnmsac_vf_cg.sample(ins);
+            end
+            "vfnmsac.vv"     : begin
+                ExceptionsVf32_vfnmsac_vv_cg.sample(ins);
+            end
+            "vfnmsub.vf"     : begin
+                ExceptionsVf32_vfnmsub_vf_cg.sample(ins);
+            end
+            "vfnmsub.vv"     : begin
+                ExceptionsVf32_vfnmsub_vv_cg.sample(ins);
+            end
+            "vfrdiv.vf"     : begin
+                ExceptionsVf32_vfrdiv_vf_cg.sample(ins);
+            end
+            "vfrec7.v"     : begin
+                ExceptionsVf32_vfrec7_v_cg.sample(ins);
+            end
+            "vfredmax.vs"     : begin
+                ExceptionsVf32_vfredmax_vs_cg.sample(ins);
+            end
+            "vfredmin.vs"     : begin
+                ExceptionsVf32_vfredmin_vs_cg.sample(ins);
+            end
+            "vfredosum.vs"     : begin
+                ExceptionsVf32_vfredosum_vs_cg.sample(ins);
+            end
+            "vfredusum.vs"     : begin
+                ExceptionsVf32_vfredusum_vs_cg.sample(ins);
+            end
+            "vfrsqrt7.v"     : begin
+                ExceptionsVf32_vfrsqrt7_v_cg.sample(ins);
+            end
+            "vfrsub.vf"     : begin
+                ExceptionsVf32_vfrsub_vf_cg.sample(ins);
+            end
+            "vfsgnj.vf"     : begin
+                ExceptionsVf32_vfsgnj_vf_cg.sample(ins);
+            end
+            "vfsgnj.vv"     : begin
+                ExceptionsVf32_vfsgnj_vv_cg.sample(ins);
+            end
+            "vfsgnjn.vf"     : begin
+                ExceptionsVf32_vfsgnjn_vf_cg.sample(ins);
+            end
+            "vfsgnjn.vv"     : begin
+                ExceptionsVf32_vfsgnjn_vv_cg.sample(ins);
+            end
+            "vfsgnjx.vf"     : begin
+                ExceptionsVf32_vfsgnjx_vf_cg.sample(ins);
+            end
+            "vfsgnjx.vv"     : begin
+                ExceptionsVf32_vfsgnjx_vv_cg.sample(ins);
+            end
+            "vfslide1down.vf"     : begin
+                ExceptionsVf32_vfslide1down_vf_cg.sample(ins);
+            end
+            "vfslide1up.vf"     : begin
+                ExceptionsVf32_vfslide1up_vf_cg.sample(ins);
+            end
+            "vfsqrt.v"     : begin
+                ExceptionsVf32_vfsqrt_v_cg.sample(ins);
+            end
+            "vfsub.vf"     : begin
+                ExceptionsVf32_vfsub_vf_cg.sample(ins);
+            end
+            "vfsub.vv"     : begin
+                ExceptionsVf32_vfsub_vv_cg.sample(ins);
+            end
+            "vfwadd.vf"     : begin
+                ExceptionsVf32_vfwadd_vf_cg.sample(ins);
+            end
+            "vfwadd.vv"     : begin
+                ExceptionsVf32_vfwadd_vv_cg.sample(ins);
+            end
+            "vfwadd.wf"     : begin
+                ExceptionsVf32_vfwadd_wf_cg.sample(ins);
+            end
+            "vfwadd.wv"     : begin
+                ExceptionsVf32_vfwadd_wv_cg.sample(ins);
+            end
+            "vfwcvt.f.x.v"     : begin
+                ExceptionsVf32_vfwcvt_f_x_v_cg.sample(ins);
+            end
+            "vfwcvt.f.xu.v"     : begin
+                ExceptionsVf32_vfwcvt_f_xu_v_cg.sample(ins);
+            end
+            "vfwcvt.rtz.x.f.v"     : begin
+                ExceptionsVf32_vfwcvt_rtz_x_f_v_cg.sample(ins);
+            end
+            "vfwcvt.rtz.xu.f.v"     : begin
+                ExceptionsVf32_vfwcvt_rtz_xu_f_v_cg.sample(ins);
+            end
+            "vfwcvt.x.f.v"     : begin
+                ExceptionsVf32_vfwcvt_x_f_v_cg.sample(ins);
+            end
+            "vfwcvt.xu.f.v"     : begin
+                ExceptionsVf32_vfwcvt_xu_f_v_cg.sample(ins);
+            end
+            "vfwmacc.vf"     : begin
+                ExceptionsVf32_vfwmacc_vf_cg.sample(ins);
+            end
+            "vfwmacc.vv"     : begin
+                ExceptionsVf32_vfwmacc_vv_cg.sample(ins);
+            end
+            "vfwmsac.vf"     : begin
+                ExceptionsVf32_vfwmsac_vf_cg.sample(ins);
+            end
+            "vfwmsac.vv"     : begin
+                ExceptionsVf32_vfwmsac_vv_cg.sample(ins);
+            end
+            "vfwmul.vf"     : begin
+                ExceptionsVf32_vfwmul_vf_cg.sample(ins);
+            end
+            "vfwmul.vv"     : begin
+                ExceptionsVf32_vfwmul_vv_cg.sample(ins);
+            end
+            "vfwnmacc.vf"     : begin
+                ExceptionsVf32_vfwnmacc_vf_cg.sample(ins);
+            end
+            "vfwnmacc.vv"     : begin
+                ExceptionsVf32_vfwnmacc_vv_cg.sample(ins);
+            end
+            "vfwnmsac.vf"     : begin
+                ExceptionsVf32_vfwnmsac_vf_cg.sample(ins);
+            end
+            "vfwnmsac.vv"     : begin
+                ExceptionsVf32_vfwnmsac_vv_cg.sample(ins);
+            end
+            "vfwredosum.vs"     : begin
+                ExceptionsVf32_vfwredosum_vs_cg.sample(ins);
+            end
+            "vfwredusum.vs"     : begin
+                ExceptionsVf32_vfwredusum_vs_cg.sample(ins);
+            end
+            "vfwsub.vf"     : begin
+                ExceptionsVf32_vfwsub_vf_cg.sample(ins);
+            end
+            "vfwsub.vv"     : begin
+                ExceptionsVf32_vfwsub_vv_cg.sample(ins);
+            end
+            "vfwsub.wf"     : begin
+                ExceptionsVf32_vfwsub_wf_cg.sample(ins);
+            end
+            "vfwsub.wv"     : begin
+                ExceptionsVf32_vfwsub_wv_cg.sample(ins);
+            end
+            "vmfeq.vf"     : begin
+                ExceptionsVf32_vmfeq_vf_cg.sample(ins);
+            end
+            "vmfeq.vv"     : begin
+                ExceptionsVf32_vmfeq_vv_cg.sample(ins);
+            end
+            "vmfge.vf"     : begin
+                ExceptionsVf32_vmfge_vf_cg.sample(ins);
+            end
+            "vmfgt.vf"     : begin
+                ExceptionsVf32_vmfgt_vf_cg.sample(ins);
+            end
+            "vmfle.vf"     : begin
+                ExceptionsVf32_vmfle_vf_cg.sample(ins);
+            end
+            "vmfle.vv"     : begin
+                ExceptionsVf32_vmfle_vv_cg.sample(ins);
+            end
+            "vmflt.vf"     : begin
+                ExceptionsVf32_vmflt_vf_cg.sample(ins);
+            end
+            "vmflt.vv"     : begin
+                ExceptionsVf32_vmflt_vv_cg.sample(ins);
+            end
+            "vmfne.vf"     : begin
+                ExceptionsVf32_vmfne_vf_cg.sample(ins);
+            end
+            "vmfne.vv"     : begin
+                ExceptionsVf32_vmfne_vv_cg.sample(ins);
+            end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

@@ -599,5 +599,6 @@ function void zmmul_sample(int hart, int issue, ins_t ins);
             Zmmul_mulw_cg.sample(ins);
         end
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

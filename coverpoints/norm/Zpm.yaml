@@ -78,7 +78,14 @@ normative_rule_definitions:
   # MPRV and SPVP affect pointer masking as well, causing the pointer masking
   # settings of the effective privilege mode to be applied.
   - name: pm_mprv_spvp
-    coverpoint: ["Smmpm_cg/cp_pm_mprv"] #TODO: spvp not tested yet because hypervisor support is required
+    #TODO: spvp not tested yet because hypervisor support is required
+    coverpoint:
+      [
+        "Smmpm_cg/cp_pm_mprv_mpp_m",
+        "SsnpmSm_cg/cp_pm_mprv_mpp_u",
+        "SmnpmSSm_cg/cp_pm_mprv_mpp_s",
+        "SmnpmUSm_cg/cp_pm_mprv_mpp_u",
+      ]
 
   # When MXR is in effect at the effective privilege mode where explicit memory
   # access is performed, pointer masking does not apply.
@@ -152,8 +159,7 @@ normative_rule_definitions:
   # Setting UXL/SXL to 1 will clear the corresponding pointer masking
   # configuration bits.
   - name: pm_uxl_clear
-    coverpoint:
-      ["SmnpmS_cg/cp_pmm_sxl_clear", "{SmnpmU_cg, Ssnpm_cg}/cp_pmm_uxl_clear"]
+    coverpoint: ["Ssnpm_cg/cp_pmm_uxl_clear"]
 
   # the supported values of PMLEN may depend on the effective privilege mode. The
   # current standard only defines PMLEN=XLEN-48 and PMLEN=XLEN-57,

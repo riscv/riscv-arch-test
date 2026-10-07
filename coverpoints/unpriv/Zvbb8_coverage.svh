@@ -1640,10 +1640,6 @@ covergroup Zvbb8_vror_vi_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_imm_5bit_u : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
-        bins uimm[] = {[0:31]}; // 5 bit unsigned immediates for vector instructions
-    }
-
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
         bins zero           = {mask_zero            };
@@ -1651,6 +1647,26 @@ covergroup Zvbb8_vror_vi_cg with function sample(ins_t ins);
         bins vlmaxm1ones    = {mask_vlmaxm1ones     };
         bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
         bins random         = {mask_random          };
+    }
+
+    cp_uimm_6bit_v : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+        bins b_0 = {0};
+        bins b_1 = {1};
+        bins b_2 = {2};
+        bins b_3 = {3};
+        bins b_4 = {4};
+        bins b_7 = {7};
+        bins b_8 = {8};
+        bins b_9 = {9};
+        bins b_15 = {15};
+        bins b_16 = {16};
+        bins b_17 = {17};
+        bins b_30 = {30};
+        bins b_31 = {31};
+        bins b_32 = {32};
+        bins b_33 = {33};
+        bins b_62 = {62};
+        bins b_63 = {63};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -1736,24 +1752,34 @@ covergroup Zvbb8_vror_vi_cg with function sample(ins_t ins);
     //// end cr_vl_lmul_sew8////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cr_vs2_imm_edges_u
+    // cr_vs2_imm_edges_6bit_u
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_imm_edges_5bit_u : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
+    cp_imm_edges_6bit_u : coverpoint unsigned'(ins.current.imm)  iff (ins.trap == 0 )  {
         bins b_0 = {0};
         bins b_1 = {1};
         bins b_2 = {2};
+        bins b_3 = {3};
+        bins b_4 = {4};
+        bins b_7 = {7};
+        bins b_8 = {8};
+        bins b_9 = {9};
         bins b_15 = {15};
         bins b_16 = {16};
+        bins b_17 = {17};
         bins b_30 = {30};
         bins b_31 = {31};
+        bins b_32 = {32};
+        bins b_33 = {33};
+        bins b_62 = {62};
+        bins b_63 = {63};
     }
 
-    cr_vs2_imm_edges : cross cp_vs2_edges,cp_imm_edges_5bit_u  iff (ins.trap == 0 )  {
+    cr_vs2_imm_edges : cross cp_vs2_edges,cp_imm_edges_6bit_u  iff (ins.trap == 0 )  {
         // Cross coverage of VS2 edges and 5 bit imm edge values (unsigned)
     }
 
-    //// end cr_vs2_imm_edges////////////////////////////////////////////////
+    //// end cr_vs2_imm_edges_6bit_u ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vtype_agnostic
@@ -3022,54 +3048,55 @@ function void zvbb8_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 0 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
-        "vandn.vv"     : begin
-            Zvbb8_vandn_vv_cg.sample(ins);
-        end
-        "vandn.vx"     : begin
-            Zvbb8_vandn_vx_cg.sample(ins);
-        end
-        "vbrev.v"     : begin
-            Zvbb8_vbrev_v_cg.sample(ins);
-        end
-        "vbrev8.v"     : begin
-            Zvbb8_vbrev8_v_cg.sample(ins);
-        end
-        "vclz.v"     : begin
-            Zvbb8_vclz_v_cg.sample(ins);
-        end
-        "vcpop.v"     : begin
-            Zvbb8_vcpop_v_cg.sample(ins);
-        end
-        "vctz.v"     : begin
-            Zvbb8_vctz_v_cg.sample(ins);
-        end
-        "vrev8.v"     : begin
-            Zvbb8_vrev8_v_cg.sample(ins);
-        end
-        "vrol.vv"     : begin
-            Zvbb8_vrol_vv_cg.sample(ins);
-        end
-        "vrol.vx"     : begin
-            Zvbb8_vrol_vx_cg.sample(ins);
-        end
-        "vror.vi"     : begin
-            Zvbb8_vror_vi_cg.sample(ins);
-        end
-        "vror.vv"     : begin
-            Zvbb8_vror_vv_cg.sample(ins);
-        end
-        "vror.vx"     : begin
-            Zvbb8_vror_vx_cg.sample(ins);
-        end
-        "vwsll.vi"     : begin
-            Zvbb8_vwsll_vi_cg.sample(ins);
-        end
-        "vwsll.vv"     : begin
-            Zvbb8_vwsll_vv_cg.sample(ins);
-        end
-        "vwsll.vx"     : begin
-            Zvbb8_vwsll_vx_cg.sample(ins);
-        end
+            "vandn.vv"     : begin
+                Zvbb8_vandn_vv_cg.sample(ins);
+            end
+            "vandn.vx"     : begin
+                Zvbb8_vandn_vx_cg.sample(ins);
+            end
+            "vbrev.v"     : begin
+                Zvbb8_vbrev_v_cg.sample(ins);
+            end
+            "vbrev8.v"     : begin
+                Zvbb8_vbrev8_v_cg.sample(ins);
+            end
+            "vclz.v"     : begin
+                Zvbb8_vclz_v_cg.sample(ins);
+            end
+            "vcpop.v"     : begin
+                Zvbb8_vcpop_v_cg.sample(ins);
+            end
+            "vctz.v"     : begin
+                Zvbb8_vctz_v_cg.sample(ins);
+            end
+            "vrev8.v"     : begin
+                Zvbb8_vrev8_v_cg.sample(ins);
+            end
+            "vrol.vv"     : begin
+                Zvbb8_vrol_vv_cg.sample(ins);
+            end
+            "vrol.vx"     : begin
+                Zvbb8_vrol_vx_cg.sample(ins);
+            end
+            "vror.vi"     : begin
+                Zvbb8_vror_vi_cg.sample(ins);
+            end
+            "vror.vv"     : begin
+                Zvbb8_vror_vv_cg.sample(ins);
+            end
+            "vror.vx"     : begin
+                Zvbb8_vror_vx_cg.sample(ins);
+            end
+            "vwsll.vi"     : begin
+                Zvbb8_vwsll_vi_cg.sample(ins);
+            end
+            "vwsll.vv"     : begin
+                Zvbb8_vwsll_vv_cg.sample(ins);
+            end
+            "vwsll.vx"     : begin
+                Zvbb8_vwsll_vx_cg.sample(ins);
+            end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

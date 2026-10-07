@@ -40,5 +40,6 @@ function void zfazvfh_sample(int hart, int issue, ins_t ins);
         "fli.h"     : begin
             ZfaZvfh_fli_h_cg.sample(ins);
         end
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

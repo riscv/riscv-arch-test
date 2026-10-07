@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Sm1p13
+source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=294808438#gid=294808438
+coverpoints:
+  - name: cp_medelegh
+    description: |-
+      RV32 only:
+      Write all 1s to medelegh and read back.
+    expectation: Match ref model
+    bins: "1"
+    rules:
+      - Sm_mcsr_cg/cp_mcsr_access
+  - name: |-
+      cp_mxlen_ro
+
+      Note : Already covered in cp_misa_mxl
+    goal: misa.MXL is read only
+    description: Write all U,S,M values of misa.MXL and read back
+    expectation: Read back M-mode
+    bins: "3"
+    rules:
+      - Sm_mcsr_cg/cp_misa_mxl
+  - name: |-
+      cp_misa_b
+      cp_misa_v
+    goal: misa.B and misa.V are correct
+    description: read, set, and clear, readback misa.B and misa.V
+    bins: "5"
+    rules:
+      - Sm_mcsr_cg/{cp_misa_b, cp_misa.v}
+  - name: |-
+      cp_mcause
+
+      Note : Already covered in cp_mcause_write_exception/
+    goal: mcause accepts sofware-check and hardware error
+    description: Write mcause = 18, 19, read back
+    expectation: Match ref model
+    bins: "2"
+    rules:
+      - Sm_mcause_cg/cp_mcause_write_exception
+  - name: cp_msip
+    goal: msip write is reflected in mip.MSIP
+    description: |-
+      Write {all 1s, all 0s} to memory-mapped msip register if it exists.  Read back.  Wait and then read mip.MSIP.
+      RVMODEL_MSIP_ADDRESS is undefined if msip does not exist (such as when mip.MSIP is read-only zero).
+    expectation: Match ref model
+    bins: "2"
+    rules:
+      - Sm_mcsr_cg/cp_msip
+  - heading: "Notes:"
+  - heading: "NOTE : It's tests and coverage files are under the S.py and S_coverage.svh respectvely with the guard of  `ifdef SM1P13_SUPPORTED"
+  - heading: LCOFI tested in Sscofpmf test plan
+  - heading: VS-mode counter overflow tested in Shlcofideleg
+  - heading: Hints with MXLEN > XLEN not tested
+  - heading: Hardware errors tested with Smrnmi
+  - heading: Software-check exceptions tested with Zicfilp and Zicfiss
+  - heading: hedelegh tested with hypervisor
+  - name: cp_misaligned_atomicity_granule_pma is tested with Zama16b

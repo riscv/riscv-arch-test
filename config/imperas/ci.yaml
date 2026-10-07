@@ -18,6 +18,8 @@
 #   https://solvnetplus.synopsys.com/s/case/500WQ00002AsSN9YAN/svnapot-n1-accepted-on-superpage-leaf-ptes-instead-of-raising-a-page-fault
 # - Svadu: the fault test hits the same Svnapot bug
 #   https://solvnetplus.synopsys.com/s/case/500WQ00002AsSN9YAN/svnapot-n1-accepted-on-superpage-leaf-ptes-instead-of-raising-a-page-fault
+# - Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm:Imperas still applies pointer masking when MXR is set, contradicting the spec rule.
+#   Issue filed (https://solvnetplus.synopsys.com/s/case/500WQ000025qNCkYAM/pointer-masking-should-be-disabled-when-mxr1)
 #
 ci_enabled: false
-exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,Svnapot,Svadu"
+exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,Svnapot,Svadu,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm"

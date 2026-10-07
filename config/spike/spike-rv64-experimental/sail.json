@@ -115,7 +115,7 @@
       // not exist.
       "delegatable_bits": {
         "len": 64,
-        "value": "0x0000_0000_00fc_b7fe"
+        "value": "0x0000_0000_000c_b3ff"
       }
     },
     "mideleg": {
@@ -507,15 +507,15 @@
   },
   "extensions": {
     "M": {
-      "mutable_misa": true,
+      "mutable_misa": false,
       "supported": false
     },
     "A": {
-      "mutable_misa": true,
+      "mutable_misa": false,
       "supported": false
     },
     "F": {
-      "mutable_misa": true,
+      "mutable_misa": false,
       "supported": false,
       // When to set mstatus[FS] and mstatus[SD] to 1, as a result of fflags
       // being set. There are three options:
@@ -529,11 +529,14 @@
       "fflags_dirty_policy": "Fflags_Dirty_Precise"
     },
     "D": {
-      "mutable_misa": true,
+      "mutable_misa": false,
       "supported": false
     },
+    "C": {
+      "mutable_misa": false
+    },
     "V": {
-      "mutable_misa": true,
+      "mutable_misa": false,
       // `support_level` must be one of the below strings:
       // . "Disabled" for no vector extension support
       // . "Integer" for Zve*x support
@@ -568,7 +571,7 @@
       // The maximum index EEW for indexed vector addressing mode, as
       // a power of 2.  This must be at least 3 but must not exceed
       // the supported ELEN.
-      "max_index_eew_exp": 6,
+      "max_index_eew_exp": 3,
       "vstart": {
         // The vector specification permits implementations to raise an
         // illegal instruction exception when `vstart` is non-zero for
@@ -587,11 +590,11 @@
       }
     },
     "B": {
-      "mutable_misa": true,
+      "mutable_misa": false,
       "supported": false
     },
     "S": {
-      "mutable_misa": true,
+      "mutable_misa": false,
       "supported": true,
       "interrupts": {
         "software": { "supported": true },
@@ -600,12 +603,12 @@
       }
     },
     "U": {
-      "mutable_misa": true,
+      "mutable_misa": false,
       "supported": true
     },
 
     "H": {
-      "mutable_misa": true,
+      "mutable_misa": false,
       "supported": false,
       "geilen": 63,
       "guest_page_fault_writes_htval": true,

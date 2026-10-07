@@ -196,8 +196,8 @@ covergroup ExceptionsH_cg with function sample(ins_t ins);
         bins tw_disabled = {0};
     }
     // Written before entering VS-mode, so the trap record shows what the exception writes
-    htval_htinst_nonzero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "htval", "") != 0 &&
-                                      get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "htinst", "") != 0) {
+    htval_htinst_nonzero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "htval", "htval") != 0 &&
+                                      get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "htinst", "htinst") != 0) {
         bins nonzero = {1};
     }
 

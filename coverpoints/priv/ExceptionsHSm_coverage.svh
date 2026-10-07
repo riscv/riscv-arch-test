@@ -131,8 +131,8 @@ covergroup ExceptionsHSm_cg with function sample(ins_t ins);
         bins tsr_enabled = {1};
     }
     // Written before entering VS-mode, so the trap record shows what the exception writes
-    mtval2_mtinst_nonzero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mtval2", "") != 0 &&
-                                       get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mtinst", "") != 0) {
+    mtval2_mtinst_nonzero: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mtval2", "mtval2") != 0 &&
+                                       get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mtinst", "mtinst") != 0) {
         bins nonzero = {1};
     }
 

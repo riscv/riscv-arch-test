@@ -578,10 +578,6 @@
         `cover_info("//      Zfh - Enabled");
         `include "Zfh_coverage_init.svh"
     `endif
-    `ifdef COVER_ZFHD
-        `cover_info("//      ZfhD - Enabled");
-        `include "ZfhD_coverage_init.svh"
-    `endif
     `ifdef COVER_ZFHMIN
         `cover_info("//      Zfhmin - Enabled");
         `include "Zfhmin_coverage_init.svh"

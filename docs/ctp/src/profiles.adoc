@@ -60,7 +60,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |MisalignF|Misaligned Float|<<t-MisalignF-coverpoints>>|o||o|o|o
 |MisalignD|Misaligned Double|<<t-MisalignD-coverpoints>>|o||o|o|o
 |Zfh|Half|<<t-Zfh-coverpoints>>|||o|o|o
-|ZfhD|Half-Double Converts|<<t-ZfhD-coverpoints>>|||o|o|o
 |Zfhmin|Half Converts|<<t-Zfhmin-coverpoints>>|||x|o|x
 |ZfaF|Additional Float|<<t-ZfaF-coverpoints>>||||x|x
 |ZfaD|Additional Double|<<t-ZfaD-coverpoints>>||||x|x

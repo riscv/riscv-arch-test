@@ -31,8 +31,7 @@ def indent_asm(line: str) -> str:
 TESTCASES_PER_FILE = 1000
 TESTCASES_PER_PRIV_FILE = 512
 
-# Trap signature allocation, in traps, for a privileged test that sets no count of its own.
-# About twice the largest measured use (Sm_mcsr_walk on RV32 cores, about 780 traps).
+# Default number of traps allocated for a privileged test that does not specify its own count.
 PRIV_TRAP_SIGUPD_COUNT = 1500
 
 # =============================================================================

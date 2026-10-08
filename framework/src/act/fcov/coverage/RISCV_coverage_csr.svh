@@ -997,6 +997,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "sd" : val = (val >> 63) & 64'h1;
 `endif
       "sie" : val = (val >> 1) & 'h1;
+      "spelp" : val = (val >> 23) & 'h1;
       "spie" : val = (val >> 5) & 'h1;
       "spp" : val = (val >> 8) & 'h1;
       "sum" : val = (val >> 18) & 'h1;

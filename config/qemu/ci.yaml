@@ -36,7 +36,15 @@ ci_enabled: true
 #    filed the same day, 4611 through 4617, so this exclusion will be needed for a while.
 # Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : QEMU CBOs do not fault on inaccessible addresses in bare mode, shifting trap signatures;
 # same issue as ExceptionsZicboU/S and SvZicbo (https://gitlab.com/qemu-project/qemu/-/work_items/3501).
-exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm"
+# ZicfilpSm: an RV32 mstatus write clears mstatush.MPELP, so MRET does not restore ELP
+#     (https://gitlab.com/qemu-project/qemu/-/work_items/4488), and mstatush.MPELP is not
+#     writable (https://gitlab.com/qemu-project/qemu/-/work_items/4220).
+# ZicfilpS, ZicfilpU: on RV32 a write to mstateen0 clears mstateen0h.ENVCFG
+#     (https://gitlab.com/qemu-project/qemu/-/issues/4611). Boot writes mstateen0, so an
+#     S-mode access to senvcfg then raises an illegal instruction (cause 2, xtval holding the
+#     csrrc encoding) and the landing-pad tests diverge from the reference on senvcfg.LPE.
+# All three suites pass on qemu-rv64-max, but exclusions apply to every QEMU config.
+exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,ZicfilpSm,ZicfilpS,ZicfilpU"
 # qemu-rv32-mu, qemu-rv64-mu: U-mode cbo.zero/clean/flush/inval raise illegal-instruction without S-mode
 #   because check_zicbo_envcfg() also requires senvcfg, which does not exist
 #   (https://gitlab.com/qemu-project/qemu/-/work_items/4596)

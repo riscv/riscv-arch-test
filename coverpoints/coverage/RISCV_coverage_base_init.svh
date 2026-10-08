@@ -534,13 +534,13 @@
         `cover_info("//      Zcmop - Enabled");
         `include "Zcmop_coverage_init.svh"
     `endif
+    `ifdef COVER_ZFA
+        `cover_info("//      Zfa - Enabled");
+        `include "Zfa_coverage_init.svh"
+    `endif
     `ifdef COVER_ZFAD
         `cover_info("//      ZfaD - Enabled");
         `include "ZfaD_coverage_init.svh"
-    `endif
-    `ifdef COVER_ZFAF
-        `cover_info("//      ZfaF - Enabled");
-        `include "ZfaF_coverage_init.svh"
     `endif
     `ifdef COVER_ZFAZFH
         `cover_info("//      ZfaZfh - Enabled");

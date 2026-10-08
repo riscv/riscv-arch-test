@@ -11,8 +11,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-`define COVER_ZFAF
-covergroup ZfaF_fleq_s_cg with function sample(ins_t ins);
+`define COVER_ZFA
+covergroup Zfa_fleq_s_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "fleq.s"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -106,7 +106,7 @@ covergroup ZfaF_fleq_s_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ZfaF_fli_s_cg with function sample(ins_t ins);
+covergroup Zfa_fli_s_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "fli.s"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -123,7 +123,7 @@ covergroup ZfaF_fli_s_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ZfaF_fltq_s_cg with function sample(ins_t ins);
+covergroup Zfa_fltq_s_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_asm_count : coverpoint ins.ins_str == "fltq.s"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
@@ -217,7 +217,7 @@ covergroup ZfaF_fltq_s_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ZfaF_fmaxm_s_cg with function sample(ins_t ins);
+covergroup Zfa_fmaxm_s_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cmp_fd_fs1 : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.current.fd == ins.current.fs1 & ins.trap == 0 )  {
         // FD and FS1 register (assignment) WAR Hazard
@@ -319,7 +319,7 @@ covergroup ZfaF_fmaxm_s_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ZfaF_fminm_s_cg with function sample(ins_t ins);
+covergroup Zfa_fminm_s_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cmp_fd_fs1 : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.current.fd == ins.current.fs1 & ins.trap == 0 )  {
         // FD and FS1 register (assignment) WAR Hazard
@@ -421,7 +421,7 @@ covergroup ZfaF_fminm_s_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ZfaF_fround_s_cg with function sample(ins_t ins);
+covergroup Zfa_fround_s_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_frm_2 : coverpoint get_frm(ins.ops[2].val)  iff (ins.trap == 0 )  {
         // Floating-point rounding mode in instruction
@@ -494,7 +494,7 @@ covergroup ZfaF_fround_s_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup ZfaF_froundnx_s_cg with function sample(ins_t ins);
+covergroup Zfa_froundnx_s_cg with function sample(ins_t ins);
     option.per_instance = 0;
     cp_frm_2 : coverpoint get_frm(ins.ops[2].val)  iff (ins.trap == 0 )  {
         // Floating-point rounding mode in instruction
@@ -569,29 +569,29 @@ covergroup ZfaF_froundnx_s_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-function void zfaf_sample(int hart, int issue, ins_t ins);
+function void zfa_sample(int hart, int issue, ins_t ins);
 
     case (traceDataQ[hart][issue][0].inst_name)
         "fleq.s"     : begin
-            ZfaF_fleq_s_cg.sample(ins);
+            Zfa_fleq_s_cg.sample(ins);
         end
         "fli.s"     : begin
-            ZfaF_fli_s_cg.sample(ins);
+            Zfa_fli_s_cg.sample(ins);
         end
         "fltq.s"     : begin
-            ZfaF_fltq_s_cg.sample(ins);
+            Zfa_fltq_s_cg.sample(ins);
         end
         "fmaxm.s"     : begin
-            ZfaF_fmaxm_s_cg.sample(ins);
+            Zfa_fmaxm_s_cg.sample(ins);
         end
         "fminm.s"     : begin
-            ZfaF_fminm_s_cg.sample(ins);
+            Zfa_fminm_s_cg.sample(ins);
         end
         "fround.s"     : begin
-            ZfaF_fround_s_cg.sample(ins);
+            Zfa_fround_s_cg.sample(ins);
         end
         "froundnx.s"     : begin
-            ZfaF_froundnx_s_cg.sample(ins);
+            Zfa_froundnx_s_cg.sample(ins);
         end
         default: ; // a case needs at least one item, and some configurations select none
     endcase

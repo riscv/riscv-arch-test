@@ -64,11 +64,9 @@ include::norm/Zfhmin_norm_rules.adoc[]
 
 ==== Zfa Additional FP
 
-Tests for Zfa for single-precision floating-point are called ZfaF.
+include::{testplansdir}/Zfa.adoc[]
 
-include::{testplansdir}/ZfaF.adoc[]
-
-include::norm/ZfaF_norm_rules.adoc[]
+include::norm/Zfa_norm_rules.adoc[]
 
 
 

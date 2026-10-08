@@ -403,11 +403,11 @@
     `ifdef COVER_ZCMOP
         zcmop_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_ZFA
+        zfa_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_ZFAD
         zfad_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZFAF
-        zfaf_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZFAZFH
         zfazfh_sample(hart, issue, ins);

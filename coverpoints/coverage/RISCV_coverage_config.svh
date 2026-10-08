@@ -404,11 +404,11 @@
 `ifdef ZCMOP_COVERAGE
   `include "Zcmop_coverage.svh"
 `endif
+`ifdef ZFA_COVERAGE
+  `include "Zfa_coverage.svh"
+`endif
 `ifdef ZFAD_COVERAGE
   `include "ZfaD_coverage.svh"
-`endif
-`ifdef ZFAF_COVERAGE
-  `include "ZfaF_coverage.svh"
 `endif
 `ifdef ZFAZFH_COVERAGE
   `include "ZfaZfh_coverage.svh"

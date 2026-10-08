@@ -44,7 +44,7 @@ def load_csv_with_coverpoints(csv_path: Path) -> dict[str, list[tuple[str, list[
     Load instruction names and coverpoint data from a CSV testplan file.
 
     Returns a dict mapping each instruction name to a (ExtraExtension, coverpoints) pair for each
-    of its rows; a row with an ExtraExtension entry maps to the covergroup <suite><ext>_<instr>_cg.
+    of its rows; a row with an ExtraExtension entry maps to the covergroup <suite><ext>..._<instr>_cg.
     Excludes columns that:
     - Start with 'cmp'
     - Contain 'edges' unless they start with 'cr' OR no cr*edges coverpoint exists
@@ -114,7 +114,7 @@ def load_csv_with_coverpoints(csv_path: Path) -> dict[str, list[tuple[str, list[
                 else:
                     coverpoints.append(f"{col_name}_{cell_value}")
 
-            extra_extension = (row.get("ExtraExtension") or "").strip()
+            extra_extension = "".join(ext.strip() for ext in (row.get("ExtraExtension") or "").split(":"))
             data.setdefault(instr, []).append((extra_extension, coverpoints))
 
     return data

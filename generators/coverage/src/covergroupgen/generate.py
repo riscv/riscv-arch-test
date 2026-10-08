@@ -289,7 +289,7 @@ def _parse_testplan_groups(csv_path: Path) -> dict[str, Testplan]:
                 )
             instr = row["Instruction"]
             instr_type = row.get("Type", "")
-            extra_extension = (row.pop("ExtraExtension", "")).strip()
+            extra_extension = ":".join(ext.strip() for ext in row.pop("ExtraExtension", "").split(":") if ext.strip())
 
             cps: list[str] = []
             del row["Instruction"]
@@ -682,8 +682,15 @@ def _gen_instrs(
 
 
 def _guard(extension: str, content: str) -> str:
-    """Wrap content in `ifdef <EXTENSION>_SUPPORTED, or return it unchanged when extension is empty."""
-    return f"`ifdef {extension.upper()}_SUPPORTED\n{content}`endif\n" if extension else content
+    """Wrap content in `ifdef <EXT>_SUPPORTED for each extension of a colon-separated ExtraExtension entry."""
+    for ext in reversed(extension.split(":") if extension else []):
+        content = f"`ifdef {ext.upper()}_SUPPORTED\n{content}`endif\n"
+    return content
+
+
+def _extra_name(arch: str, extension: str) -> str:
+    """Name prefix for an ExtraExtension group: the suite followed by its extensions, e.g. ZfaZfhD for Zfh:D."""
+    return arch + extension.replace(":", "")
 
 
 def _gen_sample_arm(templates: dict[str, str], instr: str, calls: list[str]) -> str:
@@ -717,7 +724,7 @@ def _gen_covergroup_samples(
         if extra_rows:
             base_calls = [customize_template(templates, "covergroup_case_sample", arch, instr)] if key in tp else []
             extra_calls = {
-                ext: customize_template(templates, "covergroup_case_sample", f"{arch}{ext}", instr)
+                ext: customize_template(templates, "covergroup_case_sample", _extra_name(arch, ext), instr)
                 for ext in extra_rows
             }
             if not base_calls and len(extra_calls) == 1:
@@ -816,7 +823,7 @@ def _write_extension_files(
     # then the same for each group of ExtraExtension rows inside its extension guards
     for extension, group in [("", tp), *sorted(extras.items())]:
         group_keys = instr_keys if not extension else sorted(group.keys())
-        name = f"{arch}{extension}"
+        name = _extra_name(arch, extension)
         instr_content, init_content = _gen_instrs(group_keys, templates, group, arch, True, True, name)
         group_lines, group_init_lines = [instr_content], [init_content]
 

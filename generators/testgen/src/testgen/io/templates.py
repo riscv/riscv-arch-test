@@ -111,14 +111,14 @@ def canonicalize_extensions(
         required_extensions: If provided, use these extensions instead of parsing from testsuite.
         sew: Optional. Used in vector suites to determine the base extension
         instr_name: Optional. Used in vector suites to determine whether or not an instruction is part of a base extension
-        extra_extension: Optional. Extension a testplan row requires beyond the testsuite's own.
+        extra_extension: Optional. Colon-separated extensions a testplan row requires beyond the testsuite's own.
     """
     # Use required_extensions if provided, otherwise parse from testsuite name
     ext_components = (
         required_extensions.copy() if required_extensions is not None else re.findall(r"[A-Z][a-z]*", testsuite)
     )
     if extra_extension:
-        ext_components.append(extra_extension)
+        ext_components.extend(extra_extension.split(":"))
 
     # Extract parameters
     params: list[str] = []

@@ -9,7 +9,7 @@ Unprivileged tests exercise every instruction using every applicable source and 
 
 The unprivileged test plan is written to be easily reviewed by a human, and to be automatically converted to machine-readable coverpoints and tests.
 It is defined with spreadsheets in comma-separated value (CSV) format.
-A testplan may have an ExtraExtension column.  A non-empty entry names an extension that the row requires in addition to the testplan's own, such as D in <<t-Zfhmin-coverpoints>>.  The row's tests are in the testplan's test suite directory, but they run only on configurations that also implement that extension.  Its tests and covergroups are named after the testplan followed by the extension, such as ZfhminD-fcvt.d.h-00.S and ZfhminD_fcvt_d_h_cg, and the covergroups are compiled only when the extension is supported.
+A testplan may have an ExtraExtension column.  A non-empty entry names one or more extensions, separated by colons, that the row requires in addition to the testplan's own, such as D in <<t-Zfhmin-coverpoints>> or Zfh:D in <<t-Zfa-coverpoints>>.  The row's tests are in the testplan's test suite directory, but they run only on configurations that also implement those extensions.  Its tests and covergroups are named after the testplan followed by the extensions, such as ZfhminD-fcvt.d.h-00.S and ZfhminD_fcvt_d_h_cg, and the covergroups are compiled only when the extensions are supported.
 
 === Unprivileged Tests
 

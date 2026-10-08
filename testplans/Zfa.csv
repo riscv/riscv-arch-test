@@ -31,3 +31,10 @@ fminm.h,FR,x,x,Zfh,x,,,,,,x,x,x,H,H,x,x,,v,,H,S_H,S_H,S_H
 fround.h,FI,x,x,Zfh,x,,,,,,x,,x,H,,x,,2,v,x,,S_H,S_H,
 froundnx.h,FI,x,x,Zfh,x,,,,,,x,,x,H,,x,,2,vn,x,,S_H,S_H,
 fli.h,FLI,x,x,Zvfh,x,fli,,,,,,,x,,,,,,,,,S_H,,
+fleq.h,FC,x,x,Zfh:D,,,,,,,,,,,,,,,,,,,D_H,D_H
+fli.h,FLI,x,x,Zfh:D,,,,,,,,,,,,,,,,,,D_H,,
+fltq.h,FC,x,x,Zfh:D,,,,,,,,,,,,,,,,,,,D_H,D_H
+fmaxm.h,FR,x,x,Zfh:D,,,,,,,,,,,,,,,,,,D_H,D_H,D_H
+fminm.h,FR,x,x,Zfh:D,,,,,,,,,,,,,,,,,,D_H,D_H,D_H
+fround.h,FI,x,x,Zfh:D,,,,,,,,,,,,,,,,,,D_H,D_H,
+froundnx.h,FI,x,x,Zfh:D,,,,,,,,,,,,,,,,,,D_H,D_H,

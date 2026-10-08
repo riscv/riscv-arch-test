@@ -1439,51 +1439,53 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
             "mcontrol6 mask-low / mask-high match types",
         )
     )
-    # TODO: follow the test plan: xsl=0b010, tdata2 = 0xF0F0_A0B0 (RV64 0xF0F0F0F0_A0B0C0D0) and its 11 data values.
-    # With tdata2 = 0x12345678 the value has bits outside the mask, so match 4/5 can never fire.
+    # tdata2[XLEN-1:XLEN/2] is the mask and tdata2[XLEN/2-1:0] the value. In each half the data is the value,
+    # differs only outside the mask, differs inside the mask, and the value with the other half nonzero.
+    mask_cases = (
+        (
+            32,
+            "sw",
+            0xF0F0_A0B0,
+            (0x0000_0000, 0xF0F0_A0B0, 0xFFFF_FFFF)
+            + (0x0000_A0B0, 0x0000_A1B2, 0x0000_F0F0, 0x0001_A0B0)
+            + (0xA0B0_0000, 0xA1B2_0000, 0xF0F0_0000, 0xA0B0_0001),
+        ),
+        (
+            64,
+            "sd",
+            0xF0F0F0F0_A0B0C0D0,
+            (0x00000000_00000000, 0xF0F0F0F0_A0B0C0D0, 0xFFFFFFFF_FFFFFFFF)
+            + (0x00000000_A0B0C0D0, 0x00000000_A1B2C3D4, 0x00000000_F0F0F0F0, 0x00000001_A0B0C0D0)
+            + (0xA0B0C0D0_00000000, 0xA1B2C3D4_00000000, 0xF0F0F0F0_00000000, 0xA0B0C0D0_00000001),
+        ),
+    )
     for trig_num in range(UDB_NUM_TRIGGERS):
         lines.append(f"\n#ifdef UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
-        lines.extend(_xsl_ifdefs(0b011))
+        lines.extend(_xsl_ifdefs(0b010))
         lines.append("\n#ifdef UDB_SDTRIG_MCONTROL6_MATCH_AVAILABLE")
         for match in (4, 5, 12, 13):  # 4: mask low, 5: mask high, 12: not mask low, 13: not mask high
             lines.append(f"\n# Match = {match}")
-            lines.append("#if __riscv_xlen == 32")
-            for data in (0x00000000, 0x12345678, 0xFFFF5678, 0x1234FFFF, 0xFFFFFFFF):
-                binname = f"RV32_trig_num_{trig_num}_match_{match}_data_{data}"
-                tdata2 = 0x12345678
+            for xlen, store, tdata2, store_values in mask_cases:
                 lines.extend(
                     [
-                        _add_tc(test_data, binname, coverpoint, covergroup),
-                        *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=0b011, match=match, select=1),
+                        f"#if __riscv_xlen == {xlen}",
+                        *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=0b010, match=match, select=1),
                         f"LA(x{addr_reg}, scratch)",
-                        f"LI(x{data_reg}, {data})",
-                        f"sw x{data_reg}, 0(x{addr_reg})",
-                        "nop # spacer (data match fires after)",
                     ]
                 )
-            lines.append("#else // XLEN == 64")
-            for data in (
-                0x0000000000000000,
-                0x123456789ABCDEF0,
-                0xFFFFFFFF9ABCDEF0,
-                0x12345678FFFFFFFF,
-                0xFFFFFFFFFFFFFFFF,
-            ):
-                binname = f"RV64_trig_num_{trig_num}_match_{match}_data_{data}"
-                tdata2 = 0x123456789ABCDEF0
-                lines.extend(
-                    [
-                        _add_tc(test_data, binname, coverpoint, covergroup),
-                        *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=0b011, match=match, select=1),
-                        f"LA(x{addr_reg}, scratch)",
-                        f"LI(x{data_reg}, {data})",
-                        f"sd x{data_reg}, 0(x{addr_reg})",
-                        "nop # spacer (data match fires after)",
-                    ]
-                )
-            lines.append("#endif")
+                for data in store_values:
+                    binname = f"RV{xlen}_trig_num_{trig_num}_match_{match}_data_{data:x}"
+                    lines.extend(
+                        [
+                            _add_tc(test_data, binname, coverpoint, covergroup),
+                            f"LI(x{data_reg}, 0x{data:x})",
+                            f"{store} x{data_reg}, 0(x{addr_reg})",
+                            "nop # spacer (data match fires after)",
+                        ]
+                    )
+                lines.append("#endif // __riscv_xlen")
         lines.append("#endif // UDB_SDTRIG_MCONTROL6_MATCH_AVAILABLE")
-        lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_AVAILABLE"] * len(_xsl_ifdefs(0b011)))
+        lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_AVAILABLE"] * len(_xsl_ifdefs(0b010)))
         lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.append(f"#endif // UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
 

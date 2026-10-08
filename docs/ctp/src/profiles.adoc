@@ -53,9 +53,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |D|Double|<<t-D-coverpoints>>|o||x|x|x
 |ZicsrF|Float CSRs|<<t-ZicsrF-coverpoints>>|o||x|x|x
 |Misalign|Misaligned Load/Store|<<t-Misalign-coverpoints>>|o|o|o|o|o
-|MisalignZca|Misaligned Compressed|<<t-MisalignZca-coverpoints>>|o|o|o|o|o
-|MisalignF|Misaligned Float|<<t-MisalignF-coverpoints>>|o||o|o|o
-|MisalignD|Misaligned Double|<<t-MisalignD-coverpoints>>|o||o|o|o
 |Zfh|Half|<<t-Zfh-coverpoints>>|||o|o|o
 |Zfhmin|Half Converts|<<t-Zfhmin-coverpoints>>|||x|o|x
 |Zfa|Additional Float|<<t-Zfa-coverpoints>>||||x|x

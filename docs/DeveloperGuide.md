@@ -84,7 +84,7 @@ test suite
 
 - **Test file**: A complete `.S` assembly file that is compiled into a self-checking ELF. Each test file contains one or more test chunks. When an instruction has many testcases (e.g., hundreds of register/immediate combinations), the framework splits the chunks across multiple test files using `TESTCASES_PER_FILE` as the limit. Test files are named like `I-add-00.S`, `I-add-01.S`, etc., where the suffix indicates the file index. Privileged tests use the same length-based splitting (limit `TESTCASES_PER_PRIV_FILE`) and can additionally be split into named groups — see [Splitting Privileged Tests](#splitting-privileged-tests).
 
-- **Test suite**: All test files in a given directory. Each test suite corresponds to one extension or combination of extensions (e.g., `I`, `Zcb`, `MisalignD`, `ExceptionsSm`) and maps to a single coverage file. Unprivileged test suites contain one or more test files per instruction. For privileged tests, a test suite contains one or more test files covering all coverpoints for that feature — a single file unless splitting kicks in.
+- **Test suite**: All test files in a given directory. Each test suite corresponds to one extension or combination of extensions (e.g., `I`, `Zcb`, `Misalign`, `ExceptionsSm`) and maps to a single coverage file. Unprivileged test suites contain one or more test files per instruction. For privileged tests, a test suite contains one or more test files covering all coverpoints for that feature — a single file unless splitting kicks in.
 
 ## Test YAML Header
 

@@ -81,10 +81,7 @@ RVA23_TEST_SUITES = frozenset(
         "Zvksh32",
         # Misaligned access tests
         "Misalign",
-        "MisalignD",
-        "MisalignF",
         "MisalignV",
-        "MisalignZca",
         ### Priv Tests
         "U",
         "S",

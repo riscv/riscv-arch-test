@@ -78,7 +78,7 @@
     atomic_funct3 : coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b0101111) {
         // Check all 8 types of atomic funct3; only funct3 = 2 is legal, and only when A supported
     }
-    atomic_funct7 : coverpoint {ins.current.insn[31:27], ins.current.insn[12]} iff (ins.current.insn[6:0] == 7'b0101111 & ins.current.insn[14:13] == 3'b01) {
+    atomic_funct7 : coverpoint {ins.current.insn[31:27], ins.current.insn[12]} iff (ins.current.insn[6:0] == 7'b0101111 & ins.current.insn[14:13] == 2'b01) {
         // Check all 32 flavors of atomics * 2 w/d
         wildcard ignore_bins ssamoswap = {6'b01001?}; // ssamoswap can cause amo access-fault exception
     }

@@ -408,7 +408,7 @@ coverpoints:
       tdata1.chain = 0 (disabled)
       tdata1.match = 0 (equal)
       Perform an instruction that causes trigger to fire/not fire
-  - name: cp_sdtrig_mcontrol6_priv_mode
+  - name: cp_mcontrol6_priv_mode
     description: |-
       tdata2 = {scratch}
       tdata1.select = 0 (adr)
@@ -420,7 +420,7 @@ coverpoints:
     rules:
       - Sdtrig_mcontrol6_m
     notes: "comments on test results: Exceptions when m.1"
-  - name: cp_sdtrig_mcontrol6_execute_adr
+  - name: cp_mcontrol6_execute_adr
     description: |-
       tdata2 = {PC address of add x0, x1, x2/0}
       tdata1.select = 0 (adr)
@@ -434,7 +434,7 @@ coverpoints:
       - Sdtrig_mcontrol6_store
       - Sdtrig_mcontrol6_load
     notes: "comments on test results: Exceptions on triggers when execute = 1"
-  - name: cp_sdtrig_mcontrol6_load_store_adr
+  - name: cp_mcontrol6_load_store_adr
     description: |-
       tdata2 = {scratch/scratch+8/0}
       tdata1.select = 0 (adr)
@@ -450,7 +450,7 @@ coverpoints:
       - Sdtrig_mcontrol6_store
       - Sdtrig_mcontrol6_load
     notes: "comments on test results: Exceptions when XSL = 2 or 1 when tdata2 = scratch"
-  - name: cp_sdtrig_mcontrol6_execute_data
+  - name: cp_mcontrol6_execute_data
     description: |-
       tdata2 = {addi x0, x1, 0 opcode (0x00008013)/0x2}
       tdata1.select = 1 (data)
@@ -465,7 +465,7 @@ coverpoints:
       - Sdtrig_mcontrol6_store
       - Sdtrig_mcontrol6_load
     notes: "comments on test results: Exceptions when tdata2 = 0x00008013, and execute = 1"
-  - name: cp_sdtrig_mcontrol6_load_store_data
+  - name: cp_mcontrol6_load_store_data
     description: |-
       tdata2 = {random value}
       tdata1.select = 1 (data)
@@ -481,7 +481,7 @@ coverpoints:
       - Sdtrig_mcontrol6_store
       - Sdtrig_mcontrol6_load
     notes: "comments on test results: Exceptions when td2 = the stored value, and XSL = 1/2/3"
-  - name: cp_sdtrig_mcontrol6_execute_size
+  - name: cp_mcontrol6_execute_size
     description: |-
       tdata2 = {addi x0, x1, 0 opcode/c.nop opcode}
       tdata1.select = 1 (data)
@@ -500,7 +500,7 @@ coverpoints:
       - Sdtrig_mcontrol6_size_64bit
       - Sdtrig_mcontrol6_size_128bit
     notes: "comments on test results: Exceptions when td2 = op, size = 0. Note: warls size to zero"
-  - name: cp_sdtrig_mcontrol6_load_store_size
+  - name: cp_mcontrol6_load_store_size
     description: |-
       tdata2 = {scratch/0}
       tdata1.select = 0 (adr)
@@ -526,7 +526,7 @@ coverpoints:
       - Sdtrig_mcontrol6_size_64bit
       - Sdtrig_mcontrol6_size_128bit
     notes: Sizes 4 (48-bit) and 6 (128-bit) are not tested
-  - name: cp_sdtrig_mcontrol6_match
+  - name: cp_mcontrol6_match
     goal: Test boundaries for match conditions
     description: |-
       tdata1.select = 1 (data)
@@ -545,7 +545,7 @@ coverpoints:
       - Sdtrig_mcontrol6_match_ge
       - Sdtrig_mcontrol6_match_lt
       - Sdtrig_mcontrol6_match_not_equal
-  - name: cp_sdtrig_mcontrol6_match_napot
+  - name: cp_mcontrol6_match_napot
     description: |-
       tdata1.select = 1 (data)
       tdata1.XSL= 010
@@ -565,7 +565,7 @@ coverpoints:
     rules:
       - Sdtrig_mcontrol6_match_napot
       - Sdtrig_mcontrol6_match_not_napot
-  - name: cp_sdtrig_mcontrol6_match_mask
+  - name: cp_mcontrol6_match_mask
     description: |-
       tdata1.select = 1 (data)
       tdata1.XSL= 010
@@ -606,7 +606,7 @@ coverpoints:
       tdata1.chain = 0 (disabled)
       tdata1.match = 0 (equal)
       Perform an instruction that causes trigger to fire/not fire
-  - name: cp_sdtrig_mcontrol6_chain_adr
+  - name: cp_mcontrol6_chain_adr
     description: |-
       Trigger i (Tselect = i):
       tdata1.select = 0 (address)

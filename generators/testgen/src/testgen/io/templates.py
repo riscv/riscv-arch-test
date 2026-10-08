@@ -53,7 +53,9 @@ def insert_header_template(
     required_extensions = (
         None if required_extensions is None else [ext for ext in required_extensions if isinstance(ext, str)]
     )
-    ext_components, params = canonicalize_extensions(testsuite, xlen, E_ext, required_extensions, sew, instr_name)
+    ext_components, params = canonicalize_extensions(
+        testsuite, xlen, E_ext, required_extensions, sew, instr_name, test_config.extra_extension
+    )
     extension_requirements = [*ext_components, *alternative_extensions]
     flat_ext_components = ext_components + [ext for alternatives in alternative_extensions for ext in alternatives]
     if test_config.extra_params:
@@ -98,6 +100,7 @@ def canonicalize_extensions(
     required_extensions: list[str] | None = None,
     sew: int | None = None,
     instr_name: str | None = None,
+    extra_extension: str = "",
 ) -> tuple[list[str], list[str]]:
     """Canonicalize extension string.
 
@@ -108,11 +111,14 @@ def canonicalize_extensions(
         required_extensions: If provided, use these extensions instead of parsing from testsuite.
         sew: Optional. Used in vector suites to determine the base extension
         instr_name: Optional. Used in vector suites to determine whether or not an instruction is part of a base extension
+        extra_extension: Optional. Extension a testplan row requires beyond the testsuite's own.
     """
     # Use required_extensions if provided, otherwise parse from testsuite name
     ext_components = (
         required_extensions.copy() if required_extensions is not None else re.findall(r"[A-Z][a-z]*", testsuite)
     )
+    if extra_extension:
+        ext_components.append(extra_extension)
 
     # Extract parameters
     params: list[str] = []
@@ -144,7 +150,7 @@ def canonicalize_extensions(
             # Our tests run some vector tests with the test SEW as a suffix. These suffixes are not part of
             # extension names, so they need to be dropped from the extensions list
             no_sew_suffix = re.sub(r"\d+$", "", testsuite)
-            if no_sew_suffix in ext_components:
+            if no_sew_suffix in ext_components and no_sew_suffix.startswith("V"):
                 ext_components.remove(no_sew_suffix)
 
     ext_components = list(dict.fromkeys(ext_components))  # Remove duplicates while preserving order
@@ -168,15 +174,15 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
         "Vls32": ["Zve32x"],
         "Vx64": ["Zve64x"],
         "Vls64": ["Zve64x"],
-        "Vf16": ["Zvfh"],
-        "Vf32": ["Zve32f"],
-        "Vf64": ["Zve64d"],
+        "Vf16": ["Zvfh", "Zfhmin", "F"],
+        "Vf32": ["Zve32f", "F"],
+        "Vf64": ["Zve64d", "F", "D"],
+        "Zvfbfmin": ["Zve32f"],
+        "Zvfbfwma": ["Zve32f", "Zfbfmin", "F"],
+        "Zvfhmin": ["Zve32f", "F"],
     }
 
-    if testsuite not in vector_map:
-        return
-
-    mapped = vector_map[testsuite]
+    mapped = vector_map[testsuite] if testsuite in vector_map else [f"Zve{max(sew, 32)}x"]
 
     for zve_ext in ["Zve64x", "Zve64f", "Zve64d"]:
         # All Zve* extensions support all vector load and store instructions (31.1.7. Vector Loads and Stores),
@@ -190,11 +196,13 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
         # EEW=64 in Zve64*.
         if zve_ext in mapped and instr_name.startswith("vmulh") and sew == 64:
             mapped.remove(zve_ext)
+            mapped.append("V")
 
         # All Zve* extensions support all vector fixed-point arithmetic instructions (31.1.12. Vector Fixed-Point
         # Arithmetic Instructions), except that vsmul.vv and vsmul.vx are not included in EEW=64 in Zve64*.
         if zve_ext in mapped and instr_name.startswith("vsmul") and sew == 64:
             mapped.remove(zve_ext)
+            mapped.append("V")
 
         # All Zve* extensions support all vector permutation instructions (31.1.16. Vector Permutation Instructions),
         # except that Zve32x and Zve64x do not include those with floating-point operands, and Zve64f does not include
@@ -206,12 +214,18 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
             and sew == 64
         ):
             mapped.remove(zve_ext)
+            mapped.append("V")
 
     if "Zve32x" in mapped and instr_name.startswith(("vw", "vn")) and sew == 32:
         # Zve32x allows for an ELEN of 32, so a widening instruction at sew = 32 would widen to an eew of 64, which
         # requires Zve64x.
         mapped.remove("Zve32x")
         mapped.append("Zve64x")
+
+    if "Zve32f" in mapped and instr_name.startswith(("vfw", "vfncvt")) and sew == 32:
+        # Same logic for floating point
+        mapped.remove("Zve32f")
+        mapped.append("Zve64f")
 
     if "Zve32x" in mapped and "64" in instr_name:
         # This is an unsupported EEW (happens for vle64.v)

@@ -60,7 +60,7 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
         bins b_13_load_page_fault = {13};
         //bins b_14_reserved = {14};
         bins b_15_store_page_fault = {15};
-        `ifdef SMDBLTRP_SUPPORTED
+        `ifdef SSDBLTRP_SUPPORTED
             bins b_16_double_trap = {16}; // never delegated to S mode
         `endif
         //bins b_17_reserved = {17};
@@ -586,6 +586,19 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             `endif
         `endif
     }
+    `ifdef SSDBLTRP_SUPPORTED
+        // mstatus.SDT is read-only zero while menvcfg.DTE = 0 (the walks, after boot) and writable with DTE = 1
+        mstatus_sdt_write : coverpoint ins.current.insn {
+            wildcard bins csrs_sdt = {CSRS} iff (ins.current.insn[31:20] == CSR_MSTATUS && ins.current.rs1_val[24]);
+            wildcard bins csrc_sdt = {CSRC} iff (ins.current.insn[31:20] == CSR_MSTATUS && ins.current.rs1_val[24]);
+        }
+        `ifdef UDB_MXLEN_32
+            old_menvcfg_dte : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "dte")[0];
+        `else
+            old_menvcfg_dte : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "dte")[0];
+        `endif
+        cp_mstatus_sdt_dte :    cross priv_mode_m, mstatus_sdt_write, old_menvcfg_dte;
+    `endif
     cp_mtval_zero:              cross priv_mode_m, csrrw, mtval, mtval_zero;
     cp_mepc_vaddr_pc:           cross priv_mode_m, csrrw, mepc, xaddr_pc;
     cp_mepc_vaddr_scratch:      cross priv_mode_m, csrrw, mepc, xaddr_scratch;

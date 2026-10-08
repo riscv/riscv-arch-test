@@ -1,0 +1,13 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for the lowRISC Ibex core
+
+ci_enabled: true
+
+# lowRISC/ibex e9f5534; paths are under https://github.com/lowRISC/ibex/blob/e9f5534/
+#   PMPSm  Testbench never faults a fetch; a jump to address 0 runs RAM: examples/simple_system/rtl/ibex_simple_system.sv#L134
+exclude_extensions: "PMPSm"
+
+apt_packages: "autoconf flex bison help2man libfl-dev libelf-dev ccache python3-venv"
+install_script: ".github/scripts/install-ibex.sh"
+setup_script: ".github/scripts/setup-ibex.sh"

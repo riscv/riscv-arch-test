@@ -169,7 +169,7 @@ class Config(BaseModel):
 
 
 # Minimum required tool versions
-REQUIRED_SAIL_VERSION = "0.14.1"
+REQUIRED_SAIL_VERSION = "0.15"
 REQUIRED_GCC_MAJOR_VERSION = 15
 REQUIRED_CLANG_MAJOR_VERSION = 20
 

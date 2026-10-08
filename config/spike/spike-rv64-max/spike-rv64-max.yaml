@@ -4,7 +4,7 @@ $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
 name: spike-rv64-max
-description: rv64 with all non-conflicting extensions enabled
+description: rv64 with all non-conflicting & non-experimental extensions enabled
 implemented_extensions:
   - { name: A, version: "= 2.1.0" }
   - { name: B, version: "= 1.0.0" }
@@ -31,6 +31,7 @@ implemented_extensions:
   - { name: Smcntrpmf, version: "= 1.0.0" }
   - { name: Smcsrind, version: "= 1.0.0" }
   - { name: Smctr, version: "= 1.0.0" }
+  - { name: Smdbltrp, version: "= 1.0.0" }
   - { name: Smepmp, version: "= 1.0.0" }
   - { name: Smmpm, version: "= 1.0.0" }
   - { name: Smnpm, version: "= 1.0.0" }
@@ -159,24 +160,21 @@ params:
   LRSC_FAIL_ON_VA_SYNONYM: false
   LRSC_MISALIGNED_BEHAVIOR: "always raise access fault"
   LRSC_FAIL_ON_NON_EXACT_LRSC: true
-  MUTABLE_MISA_A: false
+  MUTABLE_MISA_A: true
   # M params
-  MUTABLE_MISA_M: false
+  MUTABLE_MISA_M: true
   # F params
-  MUTABLE_MISA_F: false
+  MUTABLE_MISA_F: true
   HW_MSTATUS_FS_DIRTY_UPDATE: precise
   MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
   # D params
-  MUTABLE_MISA_D: false
+  MUTABLE_MISA_D: true
   # Q params
-  MUTABLE_MISA_Q: false
+  MUTABLE_MISA_Q: true
   # C params
-  MUTABLE_MISA_C: false
+  MUTABLE_MISA_C: true
   # B params
   MUTABLE_MISA_B: true
-  # V params
-  #MUTABLE_MISA_V: false
-  #HW_MSTATUS_VS_DIRTY_UPDATE: precise
   # CBO params
   CACHE_BLOCK_SIZE: 64
   FORCE_UPGRADE_CBO_INVAL_TO_FLUSH: false
@@ -436,7 +434,7 @@ params:
       true,
     ]
   # Vector params
-  MUTABLE_MISA_V: false
+  MUTABLE_MISA_V: true
   VLEN: 128
   ELEN: 64
   FOLLOW_VTYPE_RESET_RECOMMENDATION: true
@@ -467,7 +465,7 @@ params:
   VSEI_INTR_IMPL: false
   VSSI_INTR_IMPL: false
   VSTI_INTR_IMPL: true
-  MUTABLE_MISA_H: false
+  MUTABLE_MISA_H: true
   VSXLEN: [64]
   VUXLEN: [64]
   VMID_WIDTH: 14

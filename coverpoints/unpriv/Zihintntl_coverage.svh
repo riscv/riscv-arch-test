@@ -63,5 +63,6 @@ function void zihintntl_sample(int hart, int issue, ins_t ins);
         "ntl.s1"     : begin
             Zihintntl_ntl_s1_cg.sample(ins);
         end
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

@@ -41755,6 +41755,7 @@ function void vls32_sample(int hart, int issue, ins_t ins);
             "vsuxseg8ei8.v"     : begin
                 Vls32_vsuxseg8ei8_v_cg.sample(ins);
             end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

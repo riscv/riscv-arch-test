@@ -202,6 +202,7 @@
 #define TSBI_GOTO_VSMODE    0x00000004
 #define TSBI_GOTO_VUMODE    0x00000005
 #define TSBI_ECALL_TEST     0x00000073
+#define TSBI_SFENCE_VMA     0x12000073           // sfence.vma x0, x0: flush address-translation caches
 #define TSBI_LW             0x0005a503
 #define TSBI_LWP4           0x0045a503
 #define TSBI_LD             0x0005b503
@@ -223,14 +224,6 @@
 //   encoding = 0x30002573  (CSR=0x300, rs1=x0=0, funct3=010, rd=a0=x10)
 
 #define TSBI_RESERVED_RET   (-1)                 // return value for unrecognized operations
-
-#ifndef _VA_SZ_
-  #if UDB_MXLEN==32
-    #define _VA_SZ_ 32                           // RV32: 32-bit virtual address
-  #else
-    #define _VA_SZ_ 57                           // RV64: default to Sv57 (largest standard VA)
-  #endif
-#endif
 
 //==============================================================================
 // SECTION 5: MODE ENCODING CONSTANTS
@@ -756,6 +749,16 @@
   .option pop
 .endm
 
+// Execute sfence.vma x0, x0 via T-SBI, for a U-mode test that has set satp through
+// TSBI_CSR_WRITE and cannot execute sfence.vma itself. Runs in the S-mode handler when
+// one exists, otherwise in the M-mode handler. Clobbers a0.
+.macro RVTEST_TSBI_SFENCE_VMA
+  .option push
+  .option norvc
+  li   a0, TSBI_SFENCE_VMA
+  ecall
+  .option pop
+.endm                                         // trap to handler; handler executes sfence.vma
 .macro RVTEST_TSBI_LW
   .option push
   .option norvc                                  // ensure consistent code size
@@ -1139,7 +1142,7 @@
 //    - xSCRATCH with pointer to this mode's save area
 //    - Timer comparator to max value (prevent premature timer interrupts)
 //    - xEDELEG saved and cleared (prevent delegation during init)
-//    - xSATP saved and set to identity-mapped page table (if not M-mode)
+//    - xSATP saved and cleared to MODE=Bare (if not M-mode)
 //    - xTVEC pointed to trampoline (or trampoline copied to xTVEC target)
 //
 //  Parameters:
@@ -1215,9 +1218,13 @@ init_\__MODE__\()edeleg:
     #endif
   .endif
 
-//---------- Save and set xSATP (non-M-mode only) ----------
+//---------- Save and clear xSATP (non-M-mode only) ----------
+// Translation stays off (MODE=Bare) for the duration of the test.  The prolog runs in
+// M-mode before rvtest_identity_map has filled rvtest_\__MODE__\()root_pg_tbl, so enabling
+// translation here would fault on the first fetch after the boot mret.  Suites that need
+// paging (Sv*) program xsatp themselves.
 init_\__MODE__\()satp:
-.ifnc \__MODE__ , M                      // if HS, S or VS mode **FIXME: fixed offset frm trapreg_sv?
+.ifnc \__MODE__ , M                      // if HS, S or VS mode
         // Bare with a nonzero PPN is UNSPECIFIED, so write the whole CSR as zero.
         csrrw   T4, CSR_XSATP, x0                 // xSATP = 0, old value in T4
         SREG    T4, xsatp_sv_off(T1)              // save old xSATP in save area
@@ -1425,8 +1432,8 @@ rvtest_\__MODE__\()prolog_done:
 .option rvc             // temporarily allow compress to allow c.nop alignment
 // Ensure that trampoline is on a boundary that satisfies the relevant xTVEC
 // WARL BASE alignment. M-mode uses mtvec; S-mode and HS-mode use stvec.
-// VS-mode keeps the legacy mtvec-based over-alignment until UDB exposes a
-// separate vstvec BASE alignment parameter.
+// VS-mode also uses the stvec alignment (vstvec is the VS-mode alias of
+// stvec) until UDB exposes a separate vstvec BASE alignment parameter.
 .ifc \__MODE__,M
 .balign 64
 #ifdef UDB_MTVEC_BASE_ALIGNMENT_VECTORED
@@ -1856,6 +1863,8 @@ tsbi_\__MODE__\()dispatch:
         andi    T2, a0, 0x7F                       // T2 = a0[6:0]
         LI(     T4, 0x73)                           // T4 = SYSTEM opcode
         bne     T2, T4, tsbi_\__MODE__\()reserved   // not SYSTEM -> reserved
+        LI(     T4, TSBI_SFENCE_VMA)                // sfence.vma is legal in S-mode: execute it locally
+        beq     a0, T4, tsbi_\__MODE__\()instr_dispatch
         srli    T2, a0, 12                          // T2 = a0[14:12]
         andi    T2, T2, 0x7                         // T2 = funct3
         beqz    T2, tsbi_\__MODE__\()reserved       // funct3==0 -> not CSR -> reserved
@@ -1987,7 +1996,7 @@ tsbi_\__MODE__\()csr_access:
         bne     T2, T4, 11f                         // S/U CSR -> handle locally below
         j       tsbi_\__MODE__\()forward_to_m       // M-mode CSR -> forward to the M-mode handler
 11:
-        // S-mode or U-mode CSR: find and execute the approved instruction locally.
+        // S-mode or U-mode CSR, or sfence.vma: find and execute the approved instruction locally.
         j       tsbi_\__MODE__\()instr_dispatch
 
 .endif  // --------- END S-MODE T-SBI DISPATCH ---------
@@ -2103,6 +2112,8 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x350) // miselect
         TSBI_CSR_INSTR_TABLE(0x351) // mireg
         TSBI_CSR_INSTR_TABLE(0x35c) // mtopei
+        TSBI_CSR_INSTR_TABLE(0x350) // miselect
+        TSBI_CSR_INSTR_TABLE(0x351) // mireg
         TSBI_CSR_INSTR_TABLE(0x747) // mseccfg
         TSBI_CSR_INSTR_TABLE(0x320) // mcountinhibit
         //TSBI_CSR_INSTR_TABLE(0xB00) // mcycle - shouldn't be changed below M-mode
@@ -2115,6 +2126,11 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x10A) // senvcfg
         TSBI_CSR_INSTR_TABLE(0x144) // sip
         TSBI_CSR_INSTR_TABLE(0x14D) // stimecmp
+        #ifdef SSAIA_SUPPORTED
+        TSBI_CSR_INSTR_TABLE(0x150) // siselect: IMSIC S-file eip0 via csrind
+        TSBI_CSR_INSTR_TABLE(0x151) // sireg
+        TSBI_CSR_INSTR_TABLE(0x15C) // stopei
+        #endif
         #if (UDB_MXLEN==32)
         TSBI_CSR_INSTR_TABLE(0x15D) // stimecmph
         #endif
@@ -2162,6 +2178,12 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x243) // vstval
         TSBI_CSR_INSTR_TABLE(0x244) // vsip
         TSBI_CSR_INSTR_TABLE(0x280) // vsatp
+        TSBI_CSR_INSTR_TABLE(0x24D) // vstimecmp
+        #ifdef SSAIA_SUPPORTED
+        TSBI_CSR_INSTR_TABLE(0x250) // vsiselect: IMSIC VS-file eip0 via csrind
+        TSBI_CSR_INSTR_TABLE(0x251) // vsireg
+        TSBI_CSR_INSTR_TABLE(0x25C) // vstopei
+        #endif
   #if (UDB_MXLEN==32)
         TSBI_CSR_INSTR_TABLE(0x612) // hedelegh
         TSBI_CSR_INSTR_TABLE(0x615) // htimedeltah
@@ -2188,6 +2210,10 @@ tsbi_instr_table:
                 sd a2, 0(a1)
                 ret
         #endif  // RV64
+        #ifdef S_SUPPORTED
+                sfence.vma                       // TSBI_SFENCE_VMA
+                ret
+        #endif  // S_SUPPORTED
         .word 0 // sentinel to mark end of table
 
 .endif

@@ -27580,7 +27580,7 @@ covergroup Vx16_vrgather_vx_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     vs2_element_zero_nonzero_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[15:0] {
-        wildcard bins sew16     = {[16'b1111111_11111111:16'b00000000_00000001]};
+        bins sew16     = {[16'h0001:16'hFFFF]};
     }
 
     `ifdef UDB_MXLEN_32
@@ -30653,7 +30653,7 @@ covergroup Vx16_vslidedown_vx_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     vs2_element_zero_nonzero_sew16 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[15:0] {
-        wildcard bins sew16     = {[16'b1111111_11111111:16'b00000000_00000001]};
+        bins sew16     = {[16'h0001:16'hFFFF]};
     }
 
     `ifdef UDB_MXLEN_32
@@ -45497,6 +45497,7 @@ function void vx16_sample(int hart, int issue, ins_t ins);
             "vzext.vf2"     : begin
                 Vx16_vzext_vf2_cg.sample(ins);
             end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

@@ -163,7 +163,20 @@ coverpoints:
       - Sdtrig_mult_mem_access
   - name: cp_vector_mask
     goal: Masked vector operations do not match
-    description: WIP
+    description: |-
+      if ZVL32B_SUPPORTED
+      tdata2 = {scratch+8}
+      tdata1.select = 0 (adr)
+      tdata1.XSL = {010/001}
+      Vsetivli x0, 9, e{8/16/32/64}, m1, ta, mu
+      v0 = mask with the element at scratch+8 {active/inactive}
+      Perform v{l/s}e{8/16/32/64}.v to scratch, v0.t
+    expectation: |-
+      Breakpoint exception when the element at tdata2 is active
+      No breakpoint exception when the element at tdata2 is masked off
+    bins: 2 mask states * 4 SEW * 2 ops
+    rules:
+      - Sdtrig_mult_mem_access
   - name: cp_cm_pop_push
     goal: Accesses match as if happened individually
     description: |-
@@ -423,14 +436,14 @@ coverpoints:
     notes: "comments on test results: Exceptions on triggers when execute = 1"
   - name: cp_sdtrig_mcontrol6_load_store_adr
     description: |-
-      tdata2 = {scratch/0}
+      tdata2 = {scratch/scratch+8/0}
       tdata1.select = 0 (adr)
       tdata1.XSL = 8 combinations
-      perform {SW/ LW 0x12345678} to scratch
+      perform {SW/ LW 0x12345678} to scratch + {0/8}
     expectation: |-
       Breakpoint exception on LW if access address matches tdata2 and tdata1.load = 1
       Breakpoint exception on SW if access address matches tdata2 and tdata1.store = 1
-    bins: 2 addresses * 8 XSL * 2 ops
+    bins: 3 addresses * 8 XSL * 2 ops * 2 offsets
     rules:
       - Sdtrig_mcontrol6_select_address
       - Sdtrig_mcontrol6_execute
@@ -498,19 +511,20 @@ coverpoints:
       if F_SUPPORTED, also perform {flw/fsw}
       if D_SUPPORTED, also perform {fld/fsd}
       if ZFH_SUPPORTED, also perform {flh/fsh}
-      if Q_SUPPORTED also perform {flq/fsq}
       if ZCA_SUPPORTED, also perform c.{lw/sw/lwsp/swsp}
       if ZCA_SUPPORTED and RV64, also perform c.{ld/sd/ldsp/sdsp}
       if ZCB_SUPPORTED, also perform c.{lbu/lh/lhu/sb/sh}
       if ZCF_SUPPORTED and RV32, also perform c.{flw/flwsp/fsw/fswsp}
       if ZCD_SUPPORTED, also perform c.{fld/fldsp/fsd/fsdsp}
     expectation: Breakpoint exception if the size of the memory access matches the trigger size in mcontrol6
-    bins: 2 values * 7 sizes * up to 39 instructions
+    bins: 2 values * 7 sizes * up to 34 instructions
     rules:
+      - Sdtrig_mcontrol6_size_8bit
       - Sdtrig_mcontrol6_size_16bit
       - Sdtrig_mcontrol6_size_32bit
       - Sdtrig_mcontrol6_size_64bit
       - Sdtrig_mcontrol6_size_128bit
+    notes: "Q loads and stores (flq/fsq) are not tested due to lack of support"
   - name: cp_sdtrig_mcontrol6_match
     goal: Test boundaries for match conditions
     description: |-

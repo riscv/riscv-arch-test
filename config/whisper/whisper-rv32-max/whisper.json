@@ -34,7 +34,8 @@
           "rsrv",
           "idempotent",
           "misal_ok",
-          "mag16"
+          "mag16",
+          "cacheable"
         ],
         "high": "0x3ffffffff",
         "low": "0x80000000"
@@ -46,9 +47,6 @@
   },
 
   "csr": {
-    "misa": { "reset": "0x4034112f" }, // acdfimsuv + B (bit 1). Whisper only derives misa from the
-    // ISA string under --newlib/--linux, so set it explicitly.
-    // TODO: delete misa override in all whisper configs when https://github.com/tenstorrent/whisper/issues/48 merged
     "vstart": {
       "mask": "0xff",
       "poke_mask": "0xff"
@@ -58,12 +56,12 @@
       "poke_mask": "0x80fe7faa"
     },
     "mie": {
-      "mask": "0x2aaa", // ensuring that all non writable bits remain as read only 0
-      "poke_mask": "0x2aaa"
+      "mask": "0x3eee", // as above, plus the VS bits (2, 6, 10) and SGEIE (12) that H adds
+      "poke_mask": "0x3eee"
     },
     "mip": {
-      "mask": "0x2222", // determines what bits of mip can be set by M-mode software [SEIP, STIP, SSIP]
-      "poke_mask": "0x2aaa" //determines what bits of mip can be set by simulator injecting external events
+      "mask": "0x2226", // M-mode software writable [SEIP, STIP, SSIP] plus VSSIP, which aliases hvip.VSSIP
+      "poke_mask": "0x3eee" //determines what bits of mip can be set by simulator injecting external events
     },
     "mideleg": {
       "mask": "0x3666" // determines what bits of mideleg can be set by M-mode software [SEIP, STIP, SSIP]
@@ -137,5 +135,36 @@
     "update_whole_mask": true
   },
 
-  "wfi_timeout": 200
+  "wfi_timeout": 0,
+  "trigger_use_tcontrol": false,
+  "trigger_types": [
+    "none",
+    "disabled",
+    "mcontrol6",
+    "icount",
+    "itrigger",
+    "etrigger"
+  ],
+  "triggers": [
+    {
+      "reset": [0, 0, 0, "0x8078"],
+      "mask": ["0xf9ffffff", "0xffffffff", "0x0", 0],
+      "poke_mask": ["0xf9ffffff", "0xffffffff", "0x0", 0]
+    },
+    {
+      "reset": [0, 0, 0, "0x8078"],
+      "mask": ["0xf9ffffff", "0xffffffff", "0x0", 0],
+      "poke_mask": ["0xf9ffffff", "0xffffffff", "0x0", 0]
+    },
+    {
+      "reset": [0, 0, 0, "0x8078"],
+      "mask": ["0xf9ffffff", "0xffffffff", "0x0", 0],
+      "poke_mask": ["0xf9ffffff", "0xffffffff", "0x0", 0]
+    },
+    {
+      "reset": [0, 0, 0, "0x8078"],
+      "mask": ["0xf9ffffff", "0xffffffff", "0x0", 0],
+      "poke_mask": ["0xf9ffffff", "0xffffffff", "0x0", 0]
+    }
+  ]
 }

@@ -12,13 +12,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_EXCEPTIONSVX
-`define COVER_EXCEPTIONSVXCUSTOMEFFEW
-`ifdef UDB_ELEN_EFFEW
-    `define SEW_EFFEW_EQ_ELEN
-`endif
-`ifdef UDB_ELEN_TWOEFFEW
-    `define SEW_EFFEW_EQ_ELEN_DIV_2
-`endif
 covergroup ExceptionsVx_vaadd_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     //////////////////////////////////////////////////////////////////////////////////
@@ -8755,5 +8748,6 @@ function void exceptionsvx_sample(int hart, int issue, ins_t ins);
         "vzext.vf8"     : begin
             ExceptionsVx_vzext_vf8_cg.sample(ins);
         end
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

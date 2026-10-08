@@ -16,8 +16,8 @@ from testgen.instructions.params import generate_random_params
 
 @add_coverpoint_generator("cp_sbox")
 def make_cp_sbox(instr_name: str, instr_type: str, coverpoint: str, test_data: TestData) -> list[TestChunk]:
-    """Generate tests to exercise sbox."""
-    if coverpoint == "cp_sbox":
+    """Generate tests to exercise sbox. The _rs1 variant is for instructions whose sbox input is rs1."""
+    if coverpoint in ("cp_sbox", "cp_sbox_rs1"):
         sbox_vals = range(256)
     else:
         raise ValueError(f"Unknown cp_sbox coverpoint variant: {coverpoint} for {instr_name}")

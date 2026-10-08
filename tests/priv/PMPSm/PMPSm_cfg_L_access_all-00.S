@@ -47,13 +47,8 @@ RVTEST_BEGIN
   .endr
 
 #define REGIONSTART TEST_FOR_EXECUTION
-#if UDB_PMP_GRANULARITY != 2
-#define PMP_MASK        ~((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
-#define PMP_REGION_SIZE ((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
-#else
-#define PMP_MASK        ~0
-#define PMP_REGION_SIZE 0
-#endif
+#define PMP_REGION_SIZE (((1 << (UDB_PMP_GRANULARITY - 2)) - 1) >> 1)
+#define PMP_MASK        ~PMP_REGION_SIZE
 
 // PMP configuration 0: M-mode access succeeds when every PMP entry is off
   RVTEST_SFENCE_VMA_IF_SUPPORTED
@@ -602,54 +597,54 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMPSm_cp_none_all_off_1_jalr_str: .string "\"test: 135; cg: PMPSm; cp: cp_none; bin: all_off_1_jalr\""
-PMPSm_cp_none_all_off_2_sw_str: .string "\"test: 136; cg: PMPSm; cp: cp_none; bin: all_off_2_sw\""
-PMPSm_cp_none_all_off_3_lw_str: .string "\"test: 137; cg: PMPSm; cp: cp_none; bin: all_off_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry14_1_jalr_str: .string "\"test: 138; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry14_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry14_2_sw_str: .string "\"test: 139; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry14_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry14_3_lw_str: .string "\"test: 140; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry14_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry13_1_jalr_str: .string "\"test: 141; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry13_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry13_2_sw_str: .string "\"test: 142; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry13_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry13_3_lw_str: .string "\"test: 143; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry13_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry12_1_jalr_str: .string "\"test: 144; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry12_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry12_2_sw_str: .string "\"test: 145; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry12_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry12_3_lw_str: .string "\"test: 146; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry12_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry11_1_jalr_str: .string "\"test: 147; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry11_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry11_2_sw_str: .string "\"test: 148; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry11_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry11_3_lw_str: .string "\"test: 149; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry11_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry10_1_jalr_str: .string "\"test: 150; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry10_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry10_2_sw_str: .string "\"test: 151; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry10_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry10_3_lw_str: .string "\"test: 152; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry10_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry9_1_jalr_str: .string "\"test: 153; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry9_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry9_2_sw_str: .string "\"test: 154; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry9_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry9_3_lw_str: .string "\"test: 155; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry9_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry8_1_jalr_str: .string "\"test: 156; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry8_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry8_2_sw_str: .string "\"test: 157; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry8_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry8_3_lw_str: .string "\"test: 158; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry8_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry7_1_jalr_str: .string "\"test: 159; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry7_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry7_2_sw_str: .string "\"test: 160; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry7_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry7_3_lw_str: .string "\"test: 161; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry7_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry6_1_jalr_str: .string "\"test: 162; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry6_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry6_2_sw_str: .string "\"test: 163; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry6_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry6_3_lw_str: .string "\"test: 164; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry6_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry5_1_jalr_str: .string "\"test: 165; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry5_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry5_2_sw_str: .string "\"test: 166; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry5_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry5_3_lw_str: .string "\"test: 167; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry5_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry4_1_jalr_str: .string "\"test: 168; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry4_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry4_2_sw_str: .string "\"test: 169; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry4_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry4_3_lw_str: .string "\"test: 170; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry4_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry3_1_jalr_str: .string "\"test: 171; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry3_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry3_2_sw_str: .string "\"test: 172; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry3_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry3_3_lw_str: .string "\"test: 173; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry3_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry2_1_jalr_str: .string "\"test: 174; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry2_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry2_2_sw_str: .string "\"test: 175; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry2_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry2_3_lw_str: .string "\"test: 176; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry2_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry1_1_jalr_str: .string "\"test: 177; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry1_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry1_2_sw_str: .string "\"test: 178; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry1_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry1_3_lw_str: .string "\"test: 179; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry1_3_lw\""
-PMPSm_cp_cfg_L_access_all_entry0_1_jalr_str: .string "\"test: 180; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry0_1_jalr\""
-PMPSm_cp_cfg_L_access_all_entry0_2_sw_str: .string "\"test: 181; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry0_2_sw\""
-PMPSm_cp_cfg_L_access_all_entry0_3_lw_str: .string "\"test: 182; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry0_3_lw\""
+PMPSm_cp_none_all_off_1_jalr_str: .string "\"test: 99; cg: PMPSm; cp: cp_none; bin: all_off_1_jalr\""
+PMPSm_cp_none_all_off_2_sw_str: .string "\"test: 100; cg: PMPSm; cp: cp_none; bin: all_off_2_sw\""
+PMPSm_cp_none_all_off_3_lw_str: .string "\"test: 101; cg: PMPSm; cp: cp_none; bin: all_off_3_lw\""
+PMPSm_cp_cfg_L_access_all_entry14_1_jalr_str: .string "\"test: 102; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry14_1_jalr\""
+PMPSm_cp_cfg_L_access_all_entry14_2_sw_str: .string "\"test: 103; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry14_2_sw\""
+PMPSm_cp_cfg_L_access_all_entry14_3_lw_str: .string "\"test: 104; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry14_3_lw\""
+PMPSm_cp_cfg_L_access_all_entry13_1_jalr_str: .string "\"test: 105; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry13_1_jalr\""
+PMPSm_cp_cfg_L_access_all_entry13_2_sw_str: .string "\"test: 106; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry13_2_sw\""
+PMPSm_cp_cfg_L_access_all_entry13_3_lw_str: .string "\"test: 107; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry13_3_lw\""
+PMPSm_cp_cfg_L_access_all_entry12_1_jalr_str: .string "\"test: 108; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry12_1_jalr\""
+PMPSm_cp_cfg_L_access_all_entry12_2_sw_str: .string "\"test: 109; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry12_2_sw\""
+PMPSm_cp_cfg_L_access_all_entry12_3_lw_str: .string "\"test: 110; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry12_3_lw\""
+PMPSm_cp_cfg_L_access_all_entry11_1_jalr_str: .string "\"test: 111; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry11_1_jalr\""
+PMPSm_cp_cfg_L_access_all_entry11_2_sw_str: .string "\"test: 112; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry11_2_sw\""
+PMPSm_cp_cfg_L_access_all_entry11_3_lw_str: .string "\"test: 113; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry11_3_lw\""
+PMPSm_cp_cfg_L_access_all_entry10_1_jalr_str: .string "\"test: 114; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry10_1_jalr\""
+PMPSm_cp_cfg_L_access_all_entry10_2_sw_str: .string "\"test: 115; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry10_2_sw\""
+PMPSm_cp_cfg_L_access_all_entry10_3_lw_str: .string "\"test: 116; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry10_3_lw\""
+PMPSm_cp_cfg_L_access_all_entry9_1_jalr_str: .string "\"test: 117; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry9_1_jalr\""
+PMPSm_cp_cfg_L_access_all_entry9_2_sw_str: .string "\"test: 118; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry9_2_sw\""
+PMPSm_cp_cfg_L_access_all_entry9_3_lw_str: .string "\"test: 119; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry9_3_lw\""
+PMPSm_cp_cfg_L_access_all_entry8_1_jalr_str: .string "\"test: 120; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry8_1_jalr\""
+PMPSm_cp_cfg_L_access_all_entry8_2_sw_str: .string "\"test: 121; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry8_2_sw\""
+PMPSm_cp_cfg_L_access_all_entry8_3_lw_str: .string "\"test: 122; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry8_3_lw\""
+PMPSm_cp_cfg_L_access_all_entry7_1_jalr_str: .string "\"test: 123; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry7_1_jalr\""
+PMPSm_cp_cfg_L_access_all_entry7_2_sw_str: .string "\"test: 124; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry7_2_sw\""
+PMPSm_cp_cfg_L_access_all_entry7_3_lw_str: .string "\"test: 125; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry7_3_lw\""
+PMPSm_cp_cfg_L_access_all_entry6_1_jalr_str: .string "\"test: 126; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry6_1_jalr\""
+PMPSm_cp_cfg_L_access_all_entry6_2_sw_str: .string "\"test: 127; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry6_2_sw\""
+PMPSm_cp_cfg_L_access_all_entry6_3_lw_str: .string "\"test: 128; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry6_3_lw\""
+PMPSm_cp_cfg_L_access_all_entry5_1_jalr_str: .string "\"test: 129; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry5_1_jalr\""
+PMPSm_cp_cfg_L_access_all_entry5_2_sw_str: .string "\"test: 130; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry5_2_sw\""
+PMPSm_cp_cfg_L_access_all_entry5_3_lw_str: .string "\"test: 131; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry5_3_lw\""
+PMPSm_cp_cfg_L_access_all_entry4_1_jalr_str: .string "\"test: 132; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry4_1_jalr\""
+PMPSm_cp_cfg_L_access_all_entry4_2_sw_str: .string "\"test: 133; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry4_2_sw\""
+PMPSm_cp_cfg_L_access_all_entry4_3_lw_str: .string "\"test: 134; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry4_3_lw\""
+PMPSm_cp_cfg_L_access_all_entry3_1_jalr_str: .string "\"test: 135; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry3_1_jalr\""
+PMPSm_cp_cfg_L_access_all_entry3_2_sw_str: .string "\"test: 136; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry3_2_sw\""
+PMPSm_cp_cfg_L_access_all_entry3_3_lw_str: .string "\"test: 137; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry3_3_lw\""
+PMPSm_cp_cfg_L_access_all_entry2_1_jalr_str: .string "\"test: 138; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry2_1_jalr\""
+PMPSm_cp_cfg_L_access_all_entry2_2_sw_str: .string "\"test: 139; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry2_2_sw\""
+PMPSm_cp_cfg_L_access_all_entry2_3_lw_str: .string "\"test: 140; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry2_3_lw\""
+PMPSm_cp_cfg_L_access_all_entry1_1_jalr_str: .string "\"test: 141; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry1_1_jalr\""
+PMPSm_cp_cfg_L_access_all_entry1_2_sw_str: .string "\"test: 142; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry1_2_sw\""
+PMPSm_cp_cfg_L_access_all_entry1_3_lw_str: .string "\"test: 143; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry1_3_lw\""
+PMPSm_cp_cfg_L_access_all_entry0_1_jalr_str: .string "\"test: 144; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry0_1_jalr\""
+PMPSm_cp_cfg_L_access_all_entry0_2_sw_str: .string "\"test: 145; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry0_2_sw\""
+PMPSm_cp_cfg_L_access_all_entry0_3_lw_str: .string "\"test: 146; cg: PMPSm; cp: cp_cfg_L_access_all; bin: entry0_3_lw\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

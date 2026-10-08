@@ -28,7 +28,6 @@ implemented_extensions:
   - { name: Sm, version: "= 1.13.0" }
   - { name: Smaia, version: "= 1.0.0" }
   - { name: Smcdeleg, version: "= 1.0.0" }
-  - { name: Smcntrpmf, version: "= 1.0.0" }
   - { name: Smcsrind, version: "= 1.0.0" }
   - { name: Smctr, version: "= 1.0.0" }
   - { name: Smdbltrp, version: "= 1.0.0" }
@@ -40,14 +39,13 @@ implemented_extensions:
   - { name: Ssaia, version: "= 1.0.0" }
   - { name: Ssccfg, version: "= 1.0.0" }
   - { name: Ssccptr, version: "= 1.0.0" }
-  - { name: Sscofpmf, version: "= 1.0.0" }
+  # - { name: Sscofpmf, version: "= 1.0.0" } # Imperas implements no HPM counters, which Sscofpmf requires
   - { name: Sscounterenw, version: "= 1.0.0" }
   - { name: Sscsrind, version: "= 1.0.0" }
   - { name: Ssctr, version: "= 1.0.0" }
   - { name: Ssdbltrp, version: "= 1.0.0" }
   - { name: Ssnpm, version: "= 1.0.0" }
   - { name: Sspm, version: "= 1.0.0" }
-  - { name: Ssqosid, version: "= 1.0.0" }
   - { name: Ssstateen, version: "= 1.0.0" }
   - { name: Ssstrict, version: "= 1.0.0" }
   - { name: Sstc, version: "= 1.0.0" }
@@ -156,6 +154,7 @@ implemented_extensions:
   - { name: Zvl512b, version: "= 1.0.0" }
 
 params:
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
   # A params
   MISALIGNED_AMO: false
   LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
@@ -186,11 +185,15 @@ params:
   # Zicntr params
   TIME_CSR_IMPLEMENTED: true
   # U params
+  WFI_U_MODE: false
   MUTABLE_MISA_U: false
   U_MODE_ENDIANNESS: dynamic
   UXLEN: [64]
   TRAP_ON_ECALL_FROM_U: true
   # S params
+  SEI_INTR_IMPL: true
+  SSI_INTR_IMPL: true
+  STI_INTR_IMPL: true
   MUTABLE_MISA_S: false
   ASID_WIDTH: 16
   S_MODE_ENDIANNESS: dynamic
@@ -215,35 +218,35 @@ params:
       true,
       true,
       true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
   STVEC_MODES: [0, 1]
   STVEC_BASE_ALIGNMENT_VECTORED: 4
@@ -251,6 +254,10 @@ params:
   TRAP_ON_ECALL_FROM_S: true
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
   # Sm params
+  MEI_INTR_IMPL: false
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  WFI_FINITE: true
   MXLEN: 64
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
@@ -299,107 +306,106 @@ params:
       false,
       false,
       false,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
-  HPM_EVENTS: [0]
   MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
     [
       true,
       false,
       true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
   MCOUNTENABLE_EN:
     [
       true,
       true,
       true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
   # Vector params
   MUTABLE_MISA_V: false
@@ -430,6 +436,9 @@ params:
   VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR: "additive_identity"
   IMPRECISE_VECTOR_TRAP_SETTABLE: false
   # H params
+  VSEI_INTR_IMPL: false
+  VSSI_INTR_IMPL: false
+  VSTI_INTR_IMPL: true
   MUTABLE_MISA_H: false
   VSXLEN: [64]
   VUXLEN: [64]
@@ -441,7 +450,7 @@ params:
   VSTVEC_MODES: [0, 1]
   HSTATEEN_ENVCFG_TYPE: rw
   IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
-  NUM_EXTERNAL_GUEST_INTERRUPTS: 63
+  NUM_EXTERNAL_GUEST_INTERRUPTS: 6
   REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION: true
   REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION: true
   REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT: true
@@ -487,35 +496,35 @@ params:
       true,
       true,
       true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
   # Zicfilp params
   REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK: true
@@ -536,10 +545,9 @@ params:
   HSTATEEN_CONTEXT_TYPE: rw
   MCONTEXT_AVAILABLE: true
   # Pointer masking params
-  PMLEN: 17
-  # Ssqosid params
-  MCID_WIDTH: 12
-  RCID_WIDTH: 12
+  SUPPORTED_PMLEN_SMMPM: [0, 7, 16]
+  SUPPORTED_PMLEN_SMNPM: [0, 7, 16]
+  SUPPORTED_PMLEN_SSNPM: [0, 7, 16]
   # Smstateen params
   MSTATEEN_ENVCFG_TYPE: rw
   MSTATEEN_CONTEXT_TYPE: rw
@@ -552,6 +560,7 @@ params:
   MSTATEEN_IMSIC_TYPE: rw
   HSTATEEN_IMSIC_TYPE: rw
   # Smctr params
+  SCTRDEPTH_DEPTH_LEGAL_VALUES: [16, 32, 64, 128, 256]
   MCTRCTL_CORSWAPINH_IMPLEMENTED: true
   MCTRCTL_CUSTOM_IMPLEMENTED: false
   MCTRCTL_DIRCALLINH_IMPLEMENTED: true

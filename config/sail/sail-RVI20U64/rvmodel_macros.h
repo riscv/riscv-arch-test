@@ -21,11 +21,11 @@
 
 // Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
 // if defined.  For most DUTs, the default should work and this macro
-// should not be defined.  If no M-mode or CSRs are implemented, define this
-// macro as blank to bypass the boot process.  If a nonconforming
+// should not be defined.  If the DUT has no standard M-mode CSRs, do not
+// define STANDARD_SM_SUPPORTED.  If a nonconforming
 // M-mode is implemented, define this macro to set up the necessary
 // state in a fashion similar to RVTEST_BOOT_TO_MMODE.
-#define RVMODEL_BOOT_TO_MMODE
+//#define RVMODEL_BOOT_TO_MMODE
 
 ##### TERMINATION #####
 
@@ -96,7 +96,7 @@
 // Interrupt latency configuration
 #define RVMODEL_INTERRUPT_LATENCY 10
 
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
+#define RVMODEL_TIMER_INT_SOON_DELAY 5000
 
 // TODO: need to implement external interrupts in SAIL
 #define RVMODEL_MEXT_ADDRESS  0x80000000  /* Address of a memory mapped machine external interrupt generator */

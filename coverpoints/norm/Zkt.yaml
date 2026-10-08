@@ -2,8 +2,8 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
-  - name: zkt_optional_instr
-    coverpoint: ["Definition, not tested"]
+  - name: Zkt_optional_instr
+    coverpoint: ["Definition, checked through UDB"]
 
-  - name: zkt_impl_must_constant_latency
-    coverpoint: ["TODO"]
+  - name: Zkt_impl_must_constant_latency
+    coverpoint: ["Not tested: microarchitectural timing"]

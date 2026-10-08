@@ -47,13 +47,8 @@ RVTEST_BEGIN
   .endr
 
 #define REGIONSTART TEST_FOR_EXECUTION
-#if UDB_PMP_GRANULARITY != 2
-#define PMP_MASK        ~((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
-#define PMP_REGION_SIZE ((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
-#else
-#define PMP_MASK        ~0
-#define PMP_REGION_SIZE 0
-#endif
+#define PMP_REGION_SIZE (((1 << (UDB_PMP_GRANULARITY - 2)) - 1) >> 1)
+#define PMP_MASK        ~PMP_REGION_SIZE
 
   RVTEST_PMP_SET_BACKGROUND x4
 
@@ -581,51 +576,51 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMPSm_cp_cfg_A_off_all_entry14_1_jalr_str: .string "\"test: 90; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry14_1_jalr\""
-PMPSm_cp_cfg_A_off_all_entry14_2_sw_str: .string "\"test: 91; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry14_2_sw\""
-PMPSm_cp_cfg_A_off_all_entry14_3_lw_str: .string "\"test: 92; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry14_3_lw\""
-PMPSm_cp_cfg_A_off_all_entry13_1_jalr_str: .string "\"test: 93; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry13_1_jalr\""
-PMPSm_cp_cfg_A_off_all_entry13_2_sw_str: .string "\"test: 94; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry13_2_sw\""
-PMPSm_cp_cfg_A_off_all_entry13_3_lw_str: .string "\"test: 95; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry13_3_lw\""
-PMPSm_cp_cfg_A_off_all_entry12_1_jalr_str: .string "\"test: 96; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry12_1_jalr\""
-PMPSm_cp_cfg_A_off_all_entry12_2_sw_str: .string "\"test: 97; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry12_2_sw\""
-PMPSm_cp_cfg_A_off_all_entry12_3_lw_str: .string "\"test: 98; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry12_3_lw\""
-PMPSm_cp_cfg_A_off_all_entry11_1_jalr_str: .string "\"test: 99; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry11_1_jalr\""
-PMPSm_cp_cfg_A_off_all_entry11_2_sw_str: .string "\"test: 100; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry11_2_sw\""
-PMPSm_cp_cfg_A_off_all_entry11_3_lw_str: .string "\"test: 101; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry11_3_lw\""
-PMPSm_cp_cfg_A_off_all_entry10_1_jalr_str: .string "\"test: 102; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry10_1_jalr\""
-PMPSm_cp_cfg_A_off_all_entry10_2_sw_str: .string "\"test: 103; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry10_2_sw\""
-PMPSm_cp_cfg_A_off_all_entry10_3_lw_str: .string "\"test: 104; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry10_3_lw\""
-PMPSm_cp_cfg_A_off_all_entry9_1_jalr_str: .string "\"test: 105; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry9_1_jalr\""
-PMPSm_cp_cfg_A_off_all_entry9_2_sw_str: .string "\"test: 106; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry9_2_sw\""
-PMPSm_cp_cfg_A_off_all_entry9_3_lw_str: .string "\"test: 107; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry9_3_lw\""
-PMPSm_cp_cfg_A_off_all_entry8_1_jalr_str: .string "\"test: 108; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry8_1_jalr\""
-PMPSm_cp_cfg_A_off_all_entry8_2_sw_str: .string "\"test: 109; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry8_2_sw\""
-PMPSm_cp_cfg_A_off_all_entry8_3_lw_str: .string "\"test: 110; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry8_3_lw\""
-PMPSm_cp_cfg_A_off_all_entry7_1_jalr_str: .string "\"test: 111; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry7_1_jalr\""
-PMPSm_cp_cfg_A_off_all_entry7_2_sw_str: .string "\"test: 112; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry7_2_sw\""
-PMPSm_cp_cfg_A_off_all_entry7_3_lw_str: .string "\"test: 113; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry7_3_lw\""
-PMPSm_cp_cfg_A_off_all_entry6_1_jalr_str: .string "\"test: 114; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry6_1_jalr\""
-PMPSm_cp_cfg_A_off_all_entry6_2_sw_str: .string "\"test: 115; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry6_2_sw\""
-PMPSm_cp_cfg_A_off_all_entry6_3_lw_str: .string "\"test: 116; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry6_3_lw\""
-PMPSm_cp_cfg_A_off_all_entry5_1_jalr_str: .string "\"test: 117; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry5_1_jalr\""
-PMPSm_cp_cfg_A_off_all_entry5_2_sw_str: .string "\"test: 118; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry5_2_sw\""
-PMPSm_cp_cfg_A_off_all_entry5_3_lw_str: .string "\"test: 119; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry5_3_lw\""
-PMPSm_cp_cfg_A_off_all_entry4_1_jalr_str: .string "\"test: 120; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry4_1_jalr\""
-PMPSm_cp_cfg_A_off_all_entry4_2_sw_str: .string "\"test: 121; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry4_2_sw\""
-PMPSm_cp_cfg_A_off_all_entry4_3_lw_str: .string "\"test: 122; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry4_3_lw\""
-PMPSm_cp_cfg_A_off_all_entry3_1_jalr_str: .string "\"test: 123; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry3_1_jalr\""
-PMPSm_cp_cfg_A_off_all_entry3_2_sw_str: .string "\"test: 124; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry3_2_sw\""
-PMPSm_cp_cfg_A_off_all_entry3_3_lw_str: .string "\"test: 125; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry3_3_lw\""
-PMPSm_cp_cfg_A_off_all_entry2_1_jalr_str: .string "\"test: 126; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry2_1_jalr\""
-PMPSm_cp_cfg_A_off_all_entry2_2_sw_str: .string "\"test: 127; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry2_2_sw\""
-PMPSm_cp_cfg_A_off_all_entry2_3_lw_str: .string "\"test: 128; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry2_3_lw\""
-PMPSm_cp_cfg_A_off_all_entry1_1_jalr_str: .string "\"test: 129; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry1_1_jalr\""
-PMPSm_cp_cfg_A_off_all_entry1_2_sw_str: .string "\"test: 130; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry1_2_sw\""
-PMPSm_cp_cfg_A_off_all_entry1_3_lw_str: .string "\"test: 131; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry1_3_lw\""
-PMPSm_cp_cfg_A_off_all_entry0_1_jalr_str: .string "\"test: 132; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry0_1_jalr\""
-PMPSm_cp_cfg_A_off_all_entry0_2_sw_str: .string "\"test: 133; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry0_2_sw\""
-PMPSm_cp_cfg_A_off_all_entry0_3_lw_str: .string "\"test: 134; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry0_3_lw\""
+PMPSm_cp_cfg_A_off_all_entry14_1_jalr_str: .string "\"test: 54; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry14_1_jalr\""
+PMPSm_cp_cfg_A_off_all_entry14_2_sw_str: .string "\"test: 55; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry14_2_sw\""
+PMPSm_cp_cfg_A_off_all_entry14_3_lw_str: .string "\"test: 56; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry14_3_lw\""
+PMPSm_cp_cfg_A_off_all_entry13_1_jalr_str: .string "\"test: 57; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry13_1_jalr\""
+PMPSm_cp_cfg_A_off_all_entry13_2_sw_str: .string "\"test: 58; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry13_2_sw\""
+PMPSm_cp_cfg_A_off_all_entry13_3_lw_str: .string "\"test: 59; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry13_3_lw\""
+PMPSm_cp_cfg_A_off_all_entry12_1_jalr_str: .string "\"test: 60; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry12_1_jalr\""
+PMPSm_cp_cfg_A_off_all_entry12_2_sw_str: .string "\"test: 61; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry12_2_sw\""
+PMPSm_cp_cfg_A_off_all_entry12_3_lw_str: .string "\"test: 62; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry12_3_lw\""
+PMPSm_cp_cfg_A_off_all_entry11_1_jalr_str: .string "\"test: 63; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry11_1_jalr\""
+PMPSm_cp_cfg_A_off_all_entry11_2_sw_str: .string "\"test: 64; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry11_2_sw\""
+PMPSm_cp_cfg_A_off_all_entry11_3_lw_str: .string "\"test: 65; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry11_3_lw\""
+PMPSm_cp_cfg_A_off_all_entry10_1_jalr_str: .string "\"test: 66; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry10_1_jalr\""
+PMPSm_cp_cfg_A_off_all_entry10_2_sw_str: .string "\"test: 67; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry10_2_sw\""
+PMPSm_cp_cfg_A_off_all_entry10_3_lw_str: .string "\"test: 68; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry10_3_lw\""
+PMPSm_cp_cfg_A_off_all_entry9_1_jalr_str: .string "\"test: 69; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry9_1_jalr\""
+PMPSm_cp_cfg_A_off_all_entry9_2_sw_str: .string "\"test: 70; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry9_2_sw\""
+PMPSm_cp_cfg_A_off_all_entry9_3_lw_str: .string "\"test: 71; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry9_3_lw\""
+PMPSm_cp_cfg_A_off_all_entry8_1_jalr_str: .string "\"test: 72; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry8_1_jalr\""
+PMPSm_cp_cfg_A_off_all_entry8_2_sw_str: .string "\"test: 73; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry8_2_sw\""
+PMPSm_cp_cfg_A_off_all_entry8_3_lw_str: .string "\"test: 74; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry8_3_lw\""
+PMPSm_cp_cfg_A_off_all_entry7_1_jalr_str: .string "\"test: 75; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry7_1_jalr\""
+PMPSm_cp_cfg_A_off_all_entry7_2_sw_str: .string "\"test: 76; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry7_2_sw\""
+PMPSm_cp_cfg_A_off_all_entry7_3_lw_str: .string "\"test: 77; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry7_3_lw\""
+PMPSm_cp_cfg_A_off_all_entry6_1_jalr_str: .string "\"test: 78; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry6_1_jalr\""
+PMPSm_cp_cfg_A_off_all_entry6_2_sw_str: .string "\"test: 79; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry6_2_sw\""
+PMPSm_cp_cfg_A_off_all_entry6_3_lw_str: .string "\"test: 80; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry6_3_lw\""
+PMPSm_cp_cfg_A_off_all_entry5_1_jalr_str: .string "\"test: 81; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry5_1_jalr\""
+PMPSm_cp_cfg_A_off_all_entry5_2_sw_str: .string "\"test: 82; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry5_2_sw\""
+PMPSm_cp_cfg_A_off_all_entry5_3_lw_str: .string "\"test: 83; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry5_3_lw\""
+PMPSm_cp_cfg_A_off_all_entry4_1_jalr_str: .string "\"test: 84; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry4_1_jalr\""
+PMPSm_cp_cfg_A_off_all_entry4_2_sw_str: .string "\"test: 85; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry4_2_sw\""
+PMPSm_cp_cfg_A_off_all_entry4_3_lw_str: .string "\"test: 86; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry4_3_lw\""
+PMPSm_cp_cfg_A_off_all_entry3_1_jalr_str: .string "\"test: 87; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry3_1_jalr\""
+PMPSm_cp_cfg_A_off_all_entry3_2_sw_str: .string "\"test: 88; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry3_2_sw\""
+PMPSm_cp_cfg_A_off_all_entry3_3_lw_str: .string "\"test: 89; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry3_3_lw\""
+PMPSm_cp_cfg_A_off_all_entry2_1_jalr_str: .string "\"test: 90; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry2_1_jalr\""
+PMPSm_cp_cfg_A_off_all_entry2_2_sw_str: .string "\"test: 91; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry2_2_sw\""
+PMPSm_cp_cfg_A_off_all_entry2_3_lw_str: .string "\"test: 92; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry2_3_lw\""
+PMPSm_cp_cfg_A_off_all_entry1_1_jalr_str: .string "\"test: 93; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry1_1_jalr\""
+PMPSm_cp_cfg_A_off_all_entry1_2_sw_str: .string "\"test: 94; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry1_2_sw\""
+PMPSm_cp_cfg_A_off_all_entry1_3_lw_str: .string "\"test: 95; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry1_3_lw\""
+PMPSm_cp_cfg_A_off_all_entry0_1_jalr_str: .string "\"test: 96; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry0_1_jalr\""
+PMPSm_cp_cfg_A_off_all_entry0_2_sw_str: .string "\"test: 97; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry0_2_sw\""
+PMPSm_cp_cfg_A_off_all_entry0_3_lw_str: .string "\"test: 98; cg: PMPSm; cp: cp_cfg_A_off_all; bin: entry0_3_lw\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

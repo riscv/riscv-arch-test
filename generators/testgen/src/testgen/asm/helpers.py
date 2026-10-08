@@ -8,6 +8,7 @@
 
 """Assembly generation helpers for test code."""
 
+from functools import lru_cache
 from typing import Literal
 
 from testgen.constants import INDENT
@@ -37,6 +38,39 @@ def comment_banner(title: str, description: str | None = None) -> str:
     return "\n".join(lines)
 
 
+def arch_block(lines: list[str], *extensions: str) -> list[str]:
+    """Enable *extensions* around *lines*, or return *lines* unchanged if none are given."""
+    if not extensions:
+        return lines
+    adds = ", ".join(f"+{e.lower()}" for e in extensions)
+    return [".option push", f".option arch, {adds}", *lines, ".option pop"]
+
+
+def lrsc_retry_loop(label: str, counter_reg: int, sc_rd: int) -> tuple[list[str], list[str]]:
+    """Return the lines that open and close a constrained LR/SC loop.
+
+    A single LR/SC pair may fail spuriously; only a constrained LR/SC loop is guaranteed to succeed eventually.
+    Put the opening lines directly before the LR and the closing lines directly after the SC. The loop retries
+    the pair up to 100 times until the SC writes 0 to ``sc_rd``. ``label`` must be unique, such as the testcase label.
+    Code between the LR and the SC must be base I instructions other than loads, stores, backward jumps and taken
+    backward branches, JALR, FENCE, and SYSTEM.
+    """
+    retry_label = f"{label}_retry"
+    success_label = f"{label}_success"
+    opening = [
+        f"LI(x{counter_reg}, 100) # retry counter for constrained LR/SC loop",
+        f"{retry_label}:",
+    ]
+    closing = [
+        f"beqz x{sc_rd}, {success_label} # SC succeeded, skip retry",
+        f"addi x{counter_reg}, x{counter_reg}, -1 # decrement retry count",
+        f"bnez x{counter_reg}, {retry_label} # retry LR/SC if not exhausted",
+        f"{success_label}:",
+    ]
+    return opening, closing
+
+
+@lru_cache(maxsize=4096)
 def to_hex(value: int, bits: int) -> str:
     """
     Convert an integer to a hex string for assembly output.
@@ -76,7 +110,11 @@ def load_float_reg(
 
 
 def write_sigupd(
-    check_reg: int | None, test_data: TestData, sig_type: Literal["int", "fflags", "float"] = "int"
+    check_reg: int | None,
+    test_data: TestData,
+    sig_type: Literal["int", "fflags", "float"] = "int",
+    *,
+    label: str | None = None,
 ) -> str:
     """
     Generate assembly for SIGUPD and increment sigupd_count.
@@ -86,7 +124,7 @@ def write_sigupd(
     link_reg = test_data.int_regs.link_reg
     temp_reg = test_data.int_regs.temp_reg
     fp_temp_reg = test_data.float_regs.temp_reg
-    label = test_data.current_testcase_label
+    label = label or test_data.current_testcase_label
     if sig_type == "int":
         if check_reg is None:
             raise ValueError("check_reg must be provided for int sig_type")

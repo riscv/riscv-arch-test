@@ -39,16 +39,17 @@ def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def load_csv_with_coverpoints(csv_path: Path) -> dict[str, dict[str, str | list[str]]]:
+def load_csv_with_coverpoints(csv_path: Path) -> dict[str, list[tuple[str, list[str]]]]:
     """
     Load instruction names and coverpoint data from a CSV testplan file.
 
-    Returns a dict mapping instruction names to dicts with 'row' and 'coverpoints' keys.
+    Returns a dict mapping each instruction name to a (REQUIRED_EXTENSIONS, coverpoints) pair for each
+    of its rows; a row with a REQUIRED_EXTENSIONS entry maps to the covergroup <suite><ext>_<instr>_cg.
     Excludes columns that:
     - Start with 'cmp'
     - Contain 'edges' unless they start with 'cr' OR no cr*edges coverpoint exists
     """
-    data = {}
+    data: dict[str, list[tuple[str, list[str]]]] = {}
     with csv_path.open("r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
 
@@ -58,7 +59,7 @@ def load_csv_with_coverpoints(csv_path: Path) -> dict[str, dict[str, str | list[
 
         # Build the list of data columns to evaluate for coverpoints.
         # Always exclude metadata/header columns even if cp_asm_count is missing.
-        meta_cols = {"Instruction", "Type", "RV32", "RV64", "cp_asm_count"}
+        meta_cols = {"Instruction", "Type", "RV32", "RV64", "REQUIRED_EXTENSIONS", "cp_asm_count"}
         data_columns = [c for c in reader.fieldnames if c not in meta_cols]
 
         for row in reader:
@@ -113,7 +114,8 @@ def load_csv_with_coverpoints(csv_path: Path) -> dict[str, dict[str, str | list[
                 else:
                     coverpoints.append(f"{col_name}_{cell_value}")
 
-            data[instr] = {"row": row, "coverpoints": coverpoints}
+            extra_extension = (row.get("REQUIRED_EXTENSIONS") or "").strip()
+            data.setdefault(instr, []).append((extra_extension, coverpoints))
 
     return data
 
@@ -141,13 +143,13 @@ def find_rule_in_json(rule_name: str, json_data: dict[str, Any]) -> dict[str, An
 
 
 def generate_yaml_content(
-    csv_base_name: str, instr_data: dict[str, dict[str, str | list[str]]], json_data: dict[str, Any]
+    csv_base_name: str, instr_data: dict[str, list[tuple[str, list[str]]]], json_data: dict[str, Any]
 ) -> str:
     """
     Generate YAML content for the given instructions.
 
     For each instruction, if a corresponding rule exists in the JSON,
-    create a YAML entry with the rule name and text comments from tags.
+    create a YAML entry with the rule name and the rule's text as comments.
     The coverpoint is generated based on CSV columns.
     """
     yaml_lines = [
@@ -156,30 +158,31 @@ def generate_yaml_content(
         "normative_rule_definitions:",
     ]
 
-    for instruction, data in instr_data.items():
+    for instruction, rows in instr_data.items():
         rule_name = normalize_instruction_name(instruction)
         rule = find_rule_in_json(rule_name, json_data)
 
         if rule:
             yaml_lines.append(f"  - name: {rule_name}")
 
-            # Add comments from tags
-            tags = rule.get("tags", [])
-            for tag in tags:
-                text = tag.get("text", "")
+            # Add comments from the rule's text (older JSON kept it in a list of tags)
+            texts = [rule["text"]] if "text" in rule else [tag.get("text", "") for tag in rule.get("tags", [])]
+            for text in texts:
                 if text:
                     # Format multi-line text as YAML comments
                     yaml_lines.extend(f"    # {line}" for line in text.split("\n"))
 
-            # Generate coverpoint from CSV data
-            coverpoints = data.get("coverpoints", [])
-            if coverpoints:
-                # Format: <file>_<instr>_cg/{points}
-                # instr uses underscores instead of dashes
-                instr_with_underscore = instruction.replace(".", "_")
-                points_str = ", ".join(coverpoints)
-                cp_str = f"{csv_base_name}_{instr_with_underscore}_cg/{{{points_str}}}"
-                yaml_lines.append(f'    coverpoint: ["{cp_str}"]')
+            # Generate coverpoints from CSV data
+            # Format: <file>[<ext>]_<instr>_cg/{points}
+            # instr uses underscores instead of dashes
+            instr_with_underscore = instruction.replace(".", "_")
+            cp_strs = [
+                f'"{csv_base_name}{extension}_{instr_with_underscore}_cg/{{{", ".join(cps)}}}"'
+                for extension, cps in rows
+                if cps
+            ]
+            if cp_strs:
+                yaml_lines.append(f"    coverpoint: [{', '.join(cp_strs)}]")
             else:
                 yaml_lines.append("    coverpoint: [TODO]")
 

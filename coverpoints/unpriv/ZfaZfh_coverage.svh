@@ -19,10 +19,13 @@ covergroup ZfaZfh_fleq_h_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_v : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -41,8 +44,21 @@ covergroup ZfaZfh_fleq_h_cg with function sample(ins_t ins);
         bins negmaxnorm       = {32'hc0de_FBFF};
         bins posinfinity      = {32'h4f1a_7C00};
         bins neginfinity      = {32'h0fff_FC00};
-        bins posQNaN          = {[32'hffef_7E00:32'hfeef_7FFF]};
-        bins posSNaN          = {[32'ha1b2_7C01:32'h4fd7_7DFF]};
+        // Any positive quiet/signaling NaN in the low 16 bits with improper boxing
+        wildcard bins posQNaN = {32'b????????????????_0111111?????????};
+        wildcard bins posSNaN = {
+            32'b????????????????_01111101????????,
+            32'b????????????????_011111001???????,
+            32'b????????????????_0111110001??????,
+            32'b????????????????_01111100001?????,
+            32'b????????????????_011111000001????,
+            32'b????????????????_0111110000001???,
+            32'b????????????????_01111100000001??,
+            32'b????????????????_011111000000001?,
+            32'b????????????????_0111110000000001
+        };
+        // A properly NaN-boxed value is not a badNB case, so it must not hit the NaN bins above.
+        ignore_bins nanboxed = {[32'hFFFF_0000:32'hFFFF_FFFF]};
     }
 
     cp_fs1_edges_H : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
@@ -51,10 +67,10 @@ covergroup ZfaZfh_fleq_h_cg with function sample(ins_t ins);
         bins neg0             = {16'h8000};
         bins pos1             = {16'h3C00};
         bins neg1             = {16'hBC00};
-        bins pos1p5           = {16'h3E00};
-        bins neg1p5           = {16'hBE00};
-        bins pos2             = {16'h4000};
-        bins neg2             = {16'hC000};
+        bins pos2p5           = {16'h4100};
+        bins neg2p5           = {16'hC100};
+        bins pos2prec         = {16'h6800};
+        bins neg2prec         = {16'hE800};
         bins posminnorm       = {16'h0400};
         bins negminnorm       = {16'h8400};
         bins posmaxnorm       = {16'h7BFF};
@@ -91,8 +107,21 @@ covergroup ZfaZfh_fleq_h_cg with function sample(ins_t ins);
         bins negmaxnorm       = {32'hc0de_FBFF};
         bins posinfinity      = {32'h4f1a_7C00};
         bins neginfinity      = {32'h0fff_FC00};
-        bins posQNaN          = {[32'hffef_7E00:32'hfeef_7FFF]};
-        bins posSNaN          = {[32'ha1b2_7C01:32'h4fd7_7DFF]};
+        // Any positive quiet/signaling NaN in the low 16 bits with improper boxing
+        wildcard bins posQNaN = {32'b????????????????_0111111?????????};
+        wildcard bins posSNaN = {
+            32'b????????????????_01111101????????,
+            32'b????????????????_011111001???????,
+            32'b????????????????_0111110001??????,
+            32'b????????????????_01111100001?????,
+            32'b????????????????_011111000001????,
+            32'b????????????????_0111110000001???,
+            32'b????????????????_01111100000001??,
+            32'b????????????????_011111000000001?,
+            32'b????????????????_0111110000000001
+        };
+        // A properly NaN-boxed value is not a badNB case, so it must not hit the NaN bins above.
+        ignore_bins nanboxed = {[32'hFFFF_0000:32'hFFFF_FFFF]};
     }
 
     cp_fs2_edges_H : coverpoint unsigned'(ins.current.fs2_val[15:0])  iff (ins.trap == 0 )  {
@@ -101,10 +130,10 @@ covergroup ZfaZfh_fleq_h_cg with function sample(ins_t ins);
         bins neg0             = {16'h8000};
         bins pos1             = {16'h3C00};
         bins neg1             = {16'hBC00};
-        bins pos1p5           = {16'h3E00};
-        bins neg1p5           = {16'hBE00};
-        bins pos2             = {16'h4000};
-        bins neg2             = {16'hC000};
+        bins pos2p5           = {16'h4100};
+        bins neg2p5           = {16'hC100};
+        bins pos2prec         = {16'h6800};
+        bins neg2prec         = {16'hE800};
         bins posminnorm       = {16'h0400};
         bins negminnorm       = {16'h8400};
         bins posmaxnorm       = {16'h7BFF};
@@ -164,10 +193,13 @@ covergroup ZfaZfh_fltq_h_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_v : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -186,8 +218,21 @@ covergroup ZfaZfh_fltq_h_cg with function sample(ins_t ins);
         bins negmaxnorm       = {32'hc0de_FBFF};
         bins posinfinity      = {32'h4f1a_7C00};
         bins neginfinity      = {32'h0fff_FC00};
-        bins posQNaN          = {[32'hffef_7E00:32'hfeef_7FFF]};
-        bins posSNaN          = {[32'ha1b2_7C01:32'h4fd7_7DFF]};
+        // Any positive quiet/signaling NaN in the low 16 bits with improper boxing
+        wildcard bins posQNaN = {32'b????????????????_0111111?????????};
+        wildcard bins posSNaN = {
+            32'b????????????????_01111101????????,
+            32'b????????????????_011111001???????,
+            32'b????????????????_0111110001??????,
+            32'b????????????????_01111100001?????,
+            32'b????????????????_011111000001????,
+            32'b????????????????_0111110000001???,
+            32'b????????????????_01111100000001??,
+            32'b????????????????_011111000000001?,
+            32'b????????????????_0111110000000001
+        };
+        // A properly NaN-boxed value is not a badNB case, so it must not hit the NaN bins above.
+        ignore_bins nanboxed = {[32'hFFFF_0000:32'hFFFF_FFFF]};
     }
 
     cp_fs1_edges_H : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
@@ -196,10 +241,10 @@ covergroup ZfaZfh_fltq_h_cg with function sample(ins_t ins);
         bins neg0             = {16'h8000};
         bins pos1             = {16'h3C00};
         bins neg1             = {16'hBC00};
-        bins pos1p5           = {16'h3E00};
-        bins neg1p5           = {16'hBE00};
-        bins pos2             = {16'h4000};
-        bins neg2             = {16'hC000};
+        bins pos2p5           = {16'h4100};
+        bins neg2p5           = {16'hC100};
+        bins pos2prec         = {16'h6800};
+        bins neg2prec         = {16'hE800};
         bins posminnorm       = {16'h0400};
         bins negminnorm       = {16'h8400};
         bins posmaxnorm       = {16'h7BFF};
@@ -236,8 +281,21 @@ covergroup ZfaZfh_fltq_h_cg with function sample(ins_t ins);
         bins negmaxnorm       = {32'hc0de_FBFF};
         bins posinfinity      = {32'h4f1a_7C00};
         bins neginfinity      = {32'h0fff_FC00};
-        bins posQNaN          = {[32'hffef_7E00:32'hfeef_7FFF]};
-        bins posSNaN          = {[32'ha1b2_7C01:32'h4fd7_7DFF]};
+        // Any positive quiet/signaling NaN in the low 16 bits with improper boxing
+        wildcard bins posQNaN = {32'b????????????????_0111111?????????};
+        wildcard bins posSNaN = {
+            32'b????????????????_01111101????????,
+            32'b????????????????_011111001???????,
+            32'b????????????????_0111110001??????,
+            32'b????????????????_01111100001?????,
+            32'b????????????????_011111000001????,
+            32'b????????????????_0111110000001???,
+            32'b????????????????_01111100000001??,
+            32'b????????????????_011111000000001?,
+            32'b????????????????_0111110000000001
+        };
+        // A properly NaN-boxed value is not a badNB case, so it must not hit the NaN bins above.
+        ignore_bins nanboxed = {[32'hFFFF_0000:32'hFFFF_FFFF]};
     }
 
     cp_fs2_edges_H : coverpoint unsigned'(ins.current.fs2_val[15:0])  iff (ins.trap == 0 )  {
@@ -246,10 +304,10 @@ covergroup ZfaZfh_fltq_h_cg with function sample(ins_t ins);
         bins neg0             = {16'h8000};
         bins pos1             = {16'h3C00};
         bins neg1             = {16'hBC00};
-        bins pos1p5           = {16'h3E00};
-        bins neg1p5           = {16'hBE00};
-        bins pos2             = {16'h4000};
-        bins neg2             = {16'hC000};
+        bins pos2p5           = {16'h4100};
+        bins neg2p5           = {16'hC100};
+        bins pos2prec         = {16'h6800};
+        bins neg2prec         = {16'hE800};
         bins posminnorm       = {16'h0400};
         bins negminnorm       = {16'h8400};
         bins posmaxnorm       = {16'h7BFF};
@@ -300,10 +358,13 @@ covergroup ZfaZfh_fmaxm_h_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_v : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -326,8 +387,21 @@ covergroup ZfaZfh_fmaxm_h_cg with function sample(ins_t ins);
         bins negmaxnorm       = {32'hc0de_FBFF};
         bins posinfinity      = {32'h4f1a_7C00};
         bins neginfinity      = {32'h0fff_FC00};
-        bins posQNaN          = {[32'hffef_7E00:32'hfeef_7FFF]};
-        bins posSNaN          = {[32'ha1b2_7C01:32'h4fd7_7DFF]};
+        // Any positive quiet/signaling NaN in the low 16 bits with improper boxing
+        wildcard bins posQNaN = {32'b????????????????_0111111?????????};
+        wildcard bins posSNaN = {
+            32'b????????????????_01111101????????,
+            32'b????????????????_011111001???????,
+            32'b????????????????_0111110001??????,
+            32'b????????????????_01111100001?????,
+            32'b????????????????_011111000001????,
+            32'b????????????????_0111110000001???,
+            32'b????????????????_01111100000001??,
+            32'b????????????????_011111000000001?,
+            32'b????????????????_0111110000000001
+        };
+        // A properly NaN-boxed value is not a badNB case, so it must not hit the NaN bins above.
+        ignore_bins nanboxed = {[32'hFFFF_0000:32'hFFFF_FFFF]};
     }
 
     cp_fs1_edges_H : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
@@ -336,10 +410,10 @@ covergroup ZfaZfh_fmaxm_h_cg with function sample(ins_t ins);
         bins neg0             = {16'h8000};
         bins pos1             = {16'h3C00};
         bins neg1             = {16'hBC00};
-        bins pos1p5           = {16'h3E00};
-        bins neg1p5           = {16'hBE00};
-        bins pos2             = {16'h4000};
-        bins neg2             = {16'hC000};
+        bins pos2p5           = {16'h4100};
+        bins neg2p5           = {16'hC100};
+        bins pos2prec         = {16'h6800};
+        bins neg2prec         = {16'hE800};
         bins posminnorm       = {16'h0400};
         bins negminnorm       = {16'h8400};
         bins posmaxnorm       = {16'h7BFF};
@@ -376,8 +450,21 @@ covergroup ZfaZfh_fmaxm_h_cg with function sample(ins_t ins);
         bins negmaxnorm       = {32'hc0de_FBFF};
         bins posinfinity      = {32'h4f1a_7C00};
         bins neginfinity      = {32'h0fff_FC00};
-        bins posQNaN          = {[32'hffef_7E00:32'hfeef_7FFF]};
-        bins posSNaN          = {[32'ha1b2_7C01:32'h4fd7_7DFF]};
+        // Any positive quiet/signaling NaN in the low 16 bits with improper boxing
+        wildcard bins posQNaN = {32'b????????????????_0111111?????????};
+        wildcard bins posSNaN = {
+            32'b????????????????_01111101????????,
+            32'b????????????????_011111001???????,
+            32'b????????????????_0111110001??????,
+            32'b????????????????_01111100001?????,
+            32'b????????????????_011111000001????,
+            32'b????????????????_0111110000001???,
+            32'b????????????????_01111100000001??,
+            32'b????????????????_011111000000001?,
+            32'b????????????????_0111110000000001
+        };
+        // A properly NaN-boxed value is not a badNB case, so it must not hit the NaN bins above.
+        ignore_bins nanboxed = {[32'hFFFF_0000:32'hFFFF_FFFF]};
     }
 
     cp_fs2_edges_H : coverpoint unsigned'(ins.current.fs2_val[15:0])  iff (ins.trap == 0 )  {
@@ -386,10 +473,10 @@ covergroup ZfaZfh_fmaxm_h_cg with function sample(ins_t ins);
         bins neg0             = {16'h8000};
         bins pos1             = {16'h3C00};
         bins neg1             = {16'hBC00};
-        bins pos1p5           = {16'h3E00};
-        bins neg1p5           = {16'hBE00};
-        bins pos2             = {16'h4000};
-        bins neg2             = {16'hC000};
+        bins pos2p5           = {16'h4100};
+        bins neg2p5           = {16'hC100};
+        bins pos2prec         = {16'h6800};
+        bins neg2prec         = {16'hE800};
         bins posminnorm       = {16'h0400};
         bins negminnorm       = {16'h8400};
         bins posmaxnorm       = {16'h7BFF};
@@ -436,10 +523,13 @@ covergroup ZfaZfh_fminm_h_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_v : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -462,8 +552,21 @@ covergroup ZfaZfh_fminm_h_cg with function sample(ins_t ins);
         bins negmaxnorm       = {32'hc0de_FBFF};
         bins posinfinity      = {32'h4f1a_7C00};
         bins neginfinity      = {32'h0fff_FC00};
-        bins posQNaN          = {[32'hffef_7E00:32'hfeef_7FFF]};
-        bins posSNaN          = {[32'ha1b2_7C01:32'h4fd7_7DFF]};
+        // Any positive quiet/signaling NaN in the low 16 bits with improper boxing
+        wildcard bins posQNaN = {32'b????????????????_0111111?????????};
+        wildcard bins posSNaN = {
+            32'b????????????????_01111101????????,
+            32'b????????????????_011111001???????,
+            32'b????????????????_0111110001??????,
+            32'b????????????????_01111100001?????,
+            32'b????????????????_011111000001????,
+            32'b????????????????_0111110000001???,
+            32'b????????????????_01111100000001??,
+            32'b????????????????_011111000000001?,
+            32'b????????????????_0111110000000001
+        };
+        // A properly NaN-boxed value is not a badNB case, so it must not hit the NaN bins above.
+        ignore_bins nanboxed = {[32'hFFFF_0000:32'hFFFF_FFFF]};
     }
 
     cp_fs1_edges_H : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
@@ -472,10 +575,10 @@ covergroup ZfaZfh_fminm_h_cg with function sample(ins_t ins);
         bins neg0             = {16'h8000};
         bins pos1             = {16'h3C00};
         bins neg1             = {16'hBC00};
-        bins pos1p5           = {16'h3E00};
-        bins neg1p5           = {16'hBE00};
-        bins pos2             = {16'h4000};
-        bins neg2             = {16'hC000};
+        bins pos2p5           = {16'h4100};
+        bins neg2p5           = {16'hC100};
+        bins pos2prec         = {16'h6800};
+        bins neg2prec         = {16'hE800};
         bins posminnorm       = {16'h0400};
         bins negminnorm       = {16'h8400};
         bins posmaxnorm       = {16'h7BFF};
@@ -512,8 +615,21 @@ covergroup ZfaZfh_fminm_h_cg with function sample(ins_t ins);
         bins negmaxnorm       = {32'hc0de_FBFF};
         bins posinfinity      = {32'h4f1a_7C00};
         bins neginfinity      = {32'h0fff_FC00};
-        bins posQNaN          = {[32'hffef_7E00:32'hfeef_7FFF]};
-        bins posSNaN          = {[32'ha1b2_7C01:32'h4fd7_7DFF]};
+        // Any positive quiet/signaling NaN in the low 16 bits with improper boxing
+        wildcard bins posQNaN = {32'b????????????????_0111111?????????};
+        wildcard bins posSNaN = {
+            32'b????????????????_01111101????????,
+            32'b????????????????_011111001???????,
+            32'b????????????????_0111110001??????,
+            32'b????????????????_01111100001?????,
+            32'b????????????????_011111000001????,
+            32'b????????????????_0111110000001???,
+            32'b????????????????_01111100000001??,
+            32'b????????????????_011111000000001?,
+            32'b????????????????_0111110000000001
+        };
+        // A properly NaN-boxed value is not a badNB case, so it must not hit the NaN bins above.
+        ignore_bins nanboxed = {[32'hFFFF_0000:32'hFFFF_FFFF]};
     }
 
     cp_fs2_edges_H : coverpoint unsigned'(ins.current.fs2_val[15:0])  iff (ins.trap == 0 )  {
@@ -522,10 +638,10 @@ covergroup ZfaZfh_fminm_h_cg with function sample(ins_t ins);
         bins neg0             = {16'h8000};
         bins pos1             = {16'h3C00};
         bins neg1             = {16'hBC00};
-        bins pos1p5           = {16'h3E00};
-        bins neg1p5           = {16'hBE00};
-        bins pos2             = {16'h4000};
-        bins neg2             = {16'hC000};
+        bins pos2p5           = {16'h4100};
+        bins neg2p5           = {16'hC100};
+        bins pos2prec         = {16'h6800};
+        bins neg2prec         = {16'hE800};
         bins posminnorm       = {16'h0400};
         bins negminnorm       = {16'h8400};
         bins posmaxnorm       = {16'h7BFF};
@@ -572,10 +688,13 @@ covergroup ZfaZfh_fround_h_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_v : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
     }
 
     cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
@@ -585,7 +704,6 @@ covergroup ZfaZfh_fround_h_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -608,8 +726,21 @@ covergroup ZfaZfh_fround_h_cg with function sample(ins_t ins);
         bins negmaxnorm       = {32'hc0de_FBFF};
         bins posinfinity      = {32'h4f1a_7C00};
         bins neginfinity      = {32'h0fff_FC00};
-        bins posQNaN          = {[32'hffef_7E00:32'hfeef_7FFF]};
-        bins posSNaN          = {[32'ha1b2_7C01:32'h4fd7_7DFF]};
+        // Any positive quiet/signaling NaN in the low 16 bits with improper boxing
+        wildcard bins posQNaN = {32'b????????????????_0111111?????????};
+        wildcard bins posSNaN = {
+            32'b????????????????_01111101????????,
+            32'b????????????????_011111001???????,
+            32'b????????????????_0111110001??????,
+            32'b????????????????_01111100001?????,
+            32'b????????????????_011111000001????,
+            32'b????????????????_0111110000001???,
+            32'b????????????????_01111100000001??,
+            32'b????????????????_011111000000001?,
+            32'b????????????????_0111110000000001
+        };
+        // A properly NaN-boxed value is not a badNB case, so it must not hit the NaN bins above.
+        ignore_bins nanboxed = {[32'hFFFF_0000:32'hFFFF_FFFF]};
     }
 
     cp_fs1_edges_H : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
@@ -618,10 +749,10 @@ covergroup ZfaZfh_fround_h_cg with function sample(ins_t ins);
         bins neg0             = {16'h8000};
         bins pos1             = {16'h3C00};
         bins neg1             = {16'hBC00};
-        bins pos1p5           = {16'h3E00};
-        bins neg1p5           = {16'hBE00};
-        bins pos2             = {16'h4000};
-        bins neg2             = {16'hC000};
+        bins pos2p5           = {16'h4100};
+        bins neg2p5           = {16'hC100};
+        bins pos2prec         = {16'h6800};
+        bins neg2prec         = {16'hE800};
         bins posminnorm       = {16'h0400};
         bins negminnorm       = {16'h8400};
         bins posmaxnorm       = {16'h7BFF};
@@ -664,12 +795,15 @@ covergroup ZfaZfh_froundnx_h_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_vn : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_vn : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
-        wildcard bins NX   = (5'b????0 => 5'b????1);
-        wildcard bins NX1  = (5'b????1 => 5'b????1);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+        wildcard bins NX   = {10'b????0_????1};
+        wildcard bins NX1  = {10'b????1_????1};
     }
 
     cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
@@ -679,7 +813,6 @@ covergroup ZfaZfh_froundnx_h_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -702,8 +835,21 @@ covergroup ZfaZfh_froundnx_h_cg with function sample(ins_t ins);
         bins negmaxnorm       = {32'hc0de_FBFF};
         bins posinfinity      = {32'h4f1a_7C00};
         bins neginfinity      = {32'h0fff_FC00};
-        bins posQNaN          = {[32'hffef_7E00:32'hfeef_7FFF]};
-        bins posSNaN          = {[32'ha1b2_7C01:32'h4fd7_7DFF]};
+        // Any positive quiet/signaling NaN in the low 16 bits with improper boxing
+        wildcard bins posQNaN = {32'b????????????????_0111111?????????};
+        wildcard bins posSNaN = {
+            32'b????????????????_01111101????????,
+            32'b????????????????_011111001???????,
+            32'b????????????????_0111110001??????,
+            32'b????????????????_01111100001?????,
+            32'b????????????????_011111000001????,
+            32'b????????????????_0111110000001???,
+            32'b????????????????_01111100000001??,
+            32'b????????????????_011111000000001?,
+            32'b????????????????_0111110000000001
+        };
+        // A properly NaN-boxed value is not a badNB case, so it must not hit the NaN bins above.
+        ignore_bins nanboxed = {[32'hFFFF_0000:32'hFFFF_FFFF]};
     }
 
     cp_fs1_edges_H : coverpoint unsigned'(ins.current.fs1_val[15:0])  iff (ins.trap == 0 )  {
@@ -712,10 +858,10 @@ covergroup ZfaZfh_froundnx_h_cg with function sample(ins_t ins);
         bins neg0             = {16'h8000};
         bins pos1             = {16'h3C00};
         bins neg1             = {16'hBC00};
-        bins pos1p5           = {16'h3E00};
-        bins neg1p5           = {16'hBE00};
-        bins pos2             = {16'h4000};
-        bins neg2             = {16'hC000};
+        bins pos2p5           = {16'h4100};
+        bins neg2p5           = {16'hC100};
+        bins pos2prec         = {16'h6800};
+        bins neg2prec         = {16'hE800};
         bins posminnorm       = {16'h0400};
         bins negminnorm       = {16'h8400};
         bins posmaxnorm       = {16'h7BFF};
@@ -762,5 +908,6 @@ function void zfazfh_sample(int hart, int issue, ins_t ins);
         "froundnx.h"     : begin
             ZfaZfh_froundnx_h_cg.sample(ins);
         end
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

@@ -21,21 +21,33 @@
 `endif
 covergroup Zvfbfmin_vfncvtbf16_f_f_w_cg with function sample(ins_t ins);
     option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
     cp_asm_count : coverpoint ins.ins_str == "vfncvtbf16.f.f.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_voun : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_voun : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
-        wildcard bins OF   = (5'b??0?? => 5'b??1??);
-        wildcard bins OF1  = (5'b??1?? => 5'b??1??);
-        wildcard bins UF   = (5'b???0? => 5'b???1?);
-        wildcard bins UF1  = (5'b???1? => 5'b???1?);
-        wildcard bins NX   = (5'b????0 => 5'b????1);
-        wildcard bins NX1  = (5'b????1 => 5'b????1);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+        wildcard bins OF   = {10'b??0??_??1??};
+        wildcard bins OF1  = {10'b??1??_??1??};
+        wildcard bins UF   = {10'b???0?_???1?};
+        wildcard bins UF1  = {10'b???1?_???1?};
+        wildcard bins NX   = {10'b????0_????1};
+        wildcard bins NX1  = {10'b????1_????1};
     }
 
     cp_csr_frm_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "frm")  iff (ins.trap == 0 )  {
@@ -45,8 +57,31 @@ covergroup Zvfbfmin_vfncvtbf16_f_f_w_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
+
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfncvt_rup_overflow_bf16
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // SEW = 16 (destination is 16-bit bf16, source is 32-bit single)
+    vtype_sew_16: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") {
+        bins e16 = {1};
+    }
+
+    // Rounding mode = RUP (round up, frm=3)
+    // (sample after because fcsr doesn't update in the sail trace when we set frm)
+    frm_rup: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "frm") {
+        bins rup = {3};
+    }
+
+    // Overflow flag set after execution (fflags bit 2 = OF)
+    fflags_of: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[2] {
+        bins overflow = {1'b1};
+    }
+
+    cp_custom_vfncvt_rup_overflow: cross std_vec, vtype_sew_16, frm_rup, fflags_of;
+
+//// end cp_custom_vfncvt_rup_overflow_bf16 ///////////////////////////////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -194,10 +229,13 @@ covergroup Zvfbfmin_vfwcvtbf16_f_f_v_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_v : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
     }
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
@@ -352,6 +390,7 @@ function void zvfbfmin_sample(int hart, int issue, ins_t ins);
             "vfwcvtbf16.f.f.v"     : begin
                 Zvfbfmin_vfwcvtbf16_f_f_v_cg.sample(ins);
             end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

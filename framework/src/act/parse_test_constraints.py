@@ -50,6 +50,7 @@ class TestMetadata(BaseModel):
     forbidden_extensions: frozenset[str] = Field(alias="FORBIDDEN_EXTENSIONS", default_factory=frozenset)
     march: str = Field(alias="MARCH", pattern=r"rv(?:32|64|\$\{XLEN\})[ieg].*")
     needs_signature: bool = Field(alias="NEEDS_SIGNATURE", default=True)
+    min_harts: int = Field(alias="MIN_HARTS", default=1, ge=1)
     params: dict[str, int | bool | str] = Field(default_factory=dict)
 
     model_config = {"extra": "forbid", "frozen": True}
@@ -176,11 +177,11 @@ def generate_test_dict(tests_dir: Path, extensions: str, exclude: str = "") -> d
 
     extension_list: list[str] = []
     if extensions != "all":
-        extension_list.extend(ext.strip() for ext in extensions.split(","))
+        extension_list.extend(ext.strip() for ext in extensions.split(",") if ext.strip())
 
     exclude_list: list[str] = []
     if exclude:
-        exclude_list.extend(ext.strip() for ext in exclude.split(","))
+        exclude_list.extend(ext.strip() for ext in exclude.split(",") if ext.strip())
 
     test_list: dict[str, TestMetadata] = {}
 

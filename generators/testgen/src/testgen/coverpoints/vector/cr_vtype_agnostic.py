@@ -50,6 +50,9 @@ def make_vtype_agnostic(instr_name: str, instr_type: str, coverpoint: str, test_
         if egs_match:
             egs = int(egs_match.group(1))
 
+            if egs > 1:
+                masked = False
+
         if "nomask" in suffix:
             masked = False
 

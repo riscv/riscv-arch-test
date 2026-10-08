@@ -47,6 +47,8 @@ covergroup ZcbM_c_mul_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -57,7 +59,7 @@ covergroup ZcbM_c_mul_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs1p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
+    cp_rs1_p : coverpoint ins.get_gpr_c_reg(ins.current.rs1)  iff (ins.trap == 0 )  {
         // RS1 register assignment
     }
 
@@ -85,6 +87,8 @@ covergroup ZcbM_c_mul_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -95,7 +99,7 @@ covergroup ZcbM_c_mul_cg with function sample(ins_t ins);
         `endif
     }
 
-    cp_rs2p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
+    cp_rs2_p : coverpoint ins.get_gpr_c_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
         // RS2 register assignment
     }
 
@@ -111,5 +115,6 @@ function void zcbm_sample(int hart, int issue, ins_t ins);
         "c.mul"     : begin
             ZcbM_c_mul_cg.sample(ins);
         end
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

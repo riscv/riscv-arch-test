@@ -2,13 +2,18 @@
 # Jordan Carlin jcarlin@hmc.edu April 2026
 # CI configuration for Whisper simulator
 
-# SsstrictSm, SsstrictS, SsstrictU excluded because of sail-riscv#1882, sail-riscv#1880
-#   Should be fixed in Sail 0.14
-# Smstateen Sail does not yet support 1P13 bit
-# ExceptionsSvZalrsc: Whisper reports page faults where Sail expects access faults.
-# Sdtrig* not yet implemented in Sail
+# SsstrictSm: Sail 0.15 lacks Smaia and Smrnmi, whose CSRs Whisper implements; Whisper also
+#   exposes CSRs that do not exist on the configured hart (ssp without Zicfiss, S-level AIA CSRs
+#   without S-mode, hidelegh without H, RV32 mhpmevent<n>h without Sscofpmf)
+# Smstateen: Whisper's mstateen0/0h writable mask ignores the configured extensions (RV32 P1P13
+#   without H; ENVCFG, CSRIND, AIA, IMSIC, CONTEXT and SRMCFG on the -mu configs); Sail lacks the
+#   Sdtrig CONTEXT bit (rv64-max)
+# SsstrictS: Sail traps on siselect/stopi accesses that Whisper permits with mstateen0 enabled.
+# Sdtrig* not yet implemented in Sail (https://github.com/riscv/sail-riscv/issues/222)
+# Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)
+# Sm: mstatus.SPELP is writable without S (https://github.com/tenstorrent/whisper/issues/104)
 ci_enabled: true
-exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,ExceptionsSvZalrsc,Smstateen,SdtrigSm,SdtrigS,SdtrigU"
+exclude_extensions: "SsstrictSm,SsstrictS,Smstateen,SdtrigSm,SdtrigS,SdtrigU,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,Sm"
 exclude_configs:
   - whisper-rv32-max-spike-ref
   - whisper-rv64-max-spike-ref

@@ -34,13 +34,15 @@ covergroup PMPU_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
     bins beyond_top  = {(`PMP_REGION_START + 4) & `PMP_ADDR_LOWMASK};  // Access beyond top of region
   }
 
-  // if range is from `PMP_REGION_START to `PMP_REGION_START + `g
-  addr_offset_tor: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
-    bins at_base    = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};           // Access exactly at the region base
-    bins below_base    = {(`PMP_REGION_START - 4) & `PMP_ADDR_LOWMASK};         // Access 4 bytes below the base
-    bins at_top      = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};    // Access exactly at top of range
-    bins highest_word = {(`PMP_REGION_START + `g_tor - 4) & `PMP_ADDR_LOWMASK}; // Access at the last word in region
-  }
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    // if range is from `PMP_REGION_START to `PMP_REGION_START + `g
+    addr_offset_tor: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+      bins at_base    = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};           // Access exactly at the region base
+      bins below_base    = {(`PMP_REGION_START - 4) & `PMP_ADDR_LOWMASK};         // Access 4 bytes below the base
+      bins at_top      = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};    // Access exactly at top of range
+      bins highest_word = {(`PMP_REGION_START + `g_tor - 4) & `PMP_ADDR_LOWMASK}; // Access at the last word in region
+    }
+  `endif
 
   exec_instr: coverpoint ins.current.insn {
     wildcard bins jalr = {JALR};
@@ -76,14 +78,13 @@ covergroup PMPU_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
 
 //-------------------------------------------------------
 
-  standard_region: coverpoint (ins.current.csr[CSR_PMPADDR0] & `PMP_PMPADDR_LOWMASK) {
+  standard_region: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0") & `PMP_PMPADDR_LOWMASK) {
     bins standard_region = {`STANDARD_REGION & `PMP_PMPADDR_LOWMASK};
   }
 
-  // addr_in_region (PMP_REGION_START-based) doesn't apply here: entry0 is configured
-  // via standard_region (pmpaddr0 == STANDARD_REGION, i.e. a NAPOT match at
-  // PMP_NAPOT_REGION_START), so the access under test for cp_mprv_* must target that
-  // same NAPOT-safe address, not the plain PMP_REGION_START other crosses use.
+  // Accesses to a NAPOT region that the tests place at PMP_NAPOT_REGION_START (cp_cfg_X/R/W and
+  // cp_mprv_*). That base is g_napot-aligned, so the 8-byte ld/sd probes are naturally aligned at
+  // every grain; PMP_REGION_START is only 4-byte aligned at PMP_GRANULARITY 2.
   addr_in_napot_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
     bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
   }
@@ -197,16 +198,16 @@ covergroup PMPU_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
     wildcard bins csrrw  = {CSRRW};
   }
 
-  mprv_mstatus: coverpoint ins.prev.csr[CSR_MSTATUS][17]{
+  mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0]{
     bins set   = {1};
     bins unset = {0};
   }
 
-  mpp_mstatus: coverpoint ins.prev.csr[CSR_MSTATUS][12:11] {
+  mpp_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
     bins U_mode = {2'b00};
   }
 
-  lxwr: coverpoint ins.current.csr[CSR_PMPCFG0][7:0] {
+  lxwr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[7:0] {
     bins cfg_1000 = {8'b10011000};
     bins cfg_1111 = {8'b10011111};
     bins cfg_0000 = {8'b00011000};
@@ -214,7 +215,7 @@ covergroup PMPU_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
   }
 
   // pmpcfg_i.L = 0, pmpcfg_i.A = OFF, pmpcfg_i.XWR = 000, pmpaddr_i = all 1s
-  cfg_A_off: coverpoint {ins.current.csr[CSR_PMPCFG0][7:0],ins.current.csr[CSR_PMPADDR0]} {
+  cfg_A_off: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[7:0],get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0")} {
     bins region_off = {8'b00000000,{(`EFFECTIVE_PMPADDR + 1){1'b1}}};
   }
 
@@ -228,7 +229,7 @@ covergroup PMPU_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
     wildcard bins napot_lwxr_0111 = {54'b00011111????????????????????????????????????????_?????1};
   }
 
-  `ifdef UDB_PMP_GRANULARITY_2
+  `ifdef UDB_PMP_NA4_SUPPORTED
     // pmpcfg_i.L = 0, pmpcfg_i.A = NA4, all legal pmpcfg_i.XWR, pmpaddr_i = `NON_STANDARD_REGION
     cfg_A_na4: coverpoint {pmpcfg[0],pmpcfg[1],pmpcfg[2],pmpcfg[3],pmpcfg[4],pmpcfg[5],pmp_hit[5:0]} {
       wildcard bins na4_lwxr_0000 = {54'b????????????????????????????????????????00010000_100000};
@@ -240,21 +241,23 @@ covergroup PMPU_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
     }
   `endif
 
-  // pmpcfg_i.L = 0, pmpcfg_i.A = TOR, all legal pmpcfg_i.XWR, pmpaddr_i = `NON_STANDARD_REGION + `g, pmpaddr_i-1 = `NON_STANDARD_REGION
-  cfg_A_tor: coverpoint {pmpcfg[1],pmpcfg[3],pmpcfg[5],pmpcfg[7],pmpcfg[9],pmpcfg[11],pmp_hit[11:0]} {
-    wildcard bins tor_lwxr_0000 = {60'b????????????????????????????????????????00001000_?10000000000};
-    wildcard bins tor_lwxr_0001 = {60'b????????????????????????????????00001001????????_???100000000};
-    wildcard bins tor_lwxr_0011 = {60'b????????????????????????00001011????????????????_?????1000000};
-    wildcard bins tor_lwxr_0100 = {60'b????????????????00001100????????????????????????_???????10000};
-    wildcard bins tor_lwxr_0101 = {60'b????????00001101????????????????????????????????_?????????100};
-    wildcard bins tor_lwxr_0111 = {60'b00001111????????????????????????????????????????_???????????1};
-  }
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    // pmpcfg_i.L = 0, pmpcfg_i.A = TOR, all legal pmpcfg_i.XWR, pmpaddr_i = `NON_STANDARD_REGION + `g, pmpaddr_i-1 = `NON_STANDARD_REGION
+    cfg_A_tor: coverpoint {pmpcfg[1],pmpcfg[3],pmpcfg[5],pmpcfg[7],pmpcfg[9],pmpcfg[11],pmp_hit[11:0]} {
+      wildcard bins tor_lwxr_0000 = {60'b????????????????????????????????????????00001000_?10000000000};
+      wildcard bins tor_lwxr_0001 = {60'b????????????????????????????????00001001????????_???100000000};
+      wildcard bins tor_lwxr_0011 = {60'b????????????????????????00001011????????????????_?????1000000};
+      wildcard bins tor_lwxr_0100 = {60'b????????????????00001100????????????????????????_???????10000};
+      wildcard bins tor_lwxr_0101 = {60'b????????00001101????????????????????????????????_?????????100};
+      wildcard bins tor_lwxr_0111 = {60'b00001111????????????????????????????????????????_???????????1};
+    }
+  `endif
 
 //-------------------------------------------------------
 
-  cp_cfg_X: cross priv_mode_u, legal_lxwr, exec_instr, addr_in_region ;
-  cp_cfg_R: cross priv_mode_u, legal_lxwr, read_instr, addr_in_region ;
-  cp_cfg_W: cross priv_mode_u, legal_lxwr, write_instr, addr_in_region ;
+  cp_cfg_X: cross priv_mode_u, legal_lxwr, exec_instr, addr_in_napot_region ;
+  cp_cfg_R: cross priv_mode_u, legal_lxwr, read_instr, addr_in_napot_region ;
+  cp_cfg_W: cross priv_mode_u, legal_lxwr, write_instr, addr_in_napot_region ;
 
   cp_cfg_A_off_jalr: cross priv_mode_u, cfg_A_off, exec_instr, addr_in_region ;
   cp_cfg_A_off_lw: cross priv_mode_u, cfg_A_off, read_instr_lw, addr_in_region ;
@@ -265,17 +268,19 @@ covergroup PMPU_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
   cp_cfg_A_napot_lw: cross priv_mode_u, cfg_A_napot, read_instr_lw, addr_offset_napot ;
   cp_cfg_A_napot_sw: cross priv_mode_u, cfg_A_napot, write_instr_sw, addr_offset_napot ;
 
-  `ifdef UDB_PMP_GRANULARITY_2
+  `ifdef UDB_PMP_NA4_SUPPORTED
     // Access at start of address, that address - 4, just beyond top of the region.
     cp_cfg_A_na4_jalr: cross priv_mode_u, cfg_A_na4, exec_instr, addr_offset_na4 ;
     cp_cfg_A_na4_lw: cross priv_mode_u, cfg_A_na4, read_instr_lw, addr_offset_na4 ;
     cp_cfg_A_na4_sw: cross priv_mode_u, cfg_A_na4, write_instr_sw, addr_offset_na4 ;
   `endif
 
-  // Access at address, address-4, address-g, address-g-4.
-  cp_cfg_A_tor_jalr: cross priv_mode_u, cfg_A_tor, exec_instr, addr_offset_tor ;
-  cp_cfg_A_tor_lw: cross priv_mode_u, cfg_A_tor, read_instr_lw, addr_offset_tor ;
-  cp_cfg_A_tor_sw: cross priv_mode_u, cfg_A_tor, write_instr_sw, addr_offset_tor ;
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    // Access at address, address-4, address-g, address-g-4.
+    cp_cfg_A_tor_jalr: cross priv_mode_u, cfg_A_tor, exec_instr, addr_offset_tor ;
+    cp_cfg_A_tor_lw: cross priv_mode_u, cfg_A_tor, read_instr_lw, addr_offset_tor ;
+    cp_cfg_A_tor_sw: cross priv_mode_u, cfg_A_tor, write_instr_sw, addr_offset_tor ;
+  `endif
 
   cp_mprv_jalr: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, exec_instr, standard_region, addr_in_napot_region ;
   cp_mprv_lw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, read_instr_lw, standard_region, addr_in_napot_region ;
@@ -297,7 +302,7 @@ function void pmpu_sample(int hart, int issue, ins_t ins);
   `ifdef UDB_MXLEN_32
       // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
       for (int i = 0; i < 16; i++) begin
-          logic [31:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + i];
+          logic [31:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + i, "pmpcfg", "pmpcfg");
           pmpcfg[i*4 + 0] = cfg_word[7:0];
           pmpcfg[i*4 + 1] = cfg_word[15:8];
           pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -306,7 +311,7 @@ function void pmpu_sample(int hart, int issue, ins_t ins);
   `elsif UDB_MXLEN_64
       // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-        logic [63:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + 2*i];
+        logic [63:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 2*i, "pmpcfg", "pmpcfg");
         pmpcfg[i*8 + 0] = cfg_word[7:0];
         pmpcfg[i*8 + 1] = cfg_word[15:8];
         pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -320,69 +325,69 @@ function void pmpu_sample(int hart, int issue, ins_t ins);
 
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = ins.current.csr[CSR_PMPADDR0 + j];
+    pmpaddr[j] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0 + j, "pmpaddr", "pmpaddr");
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
     pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) || ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
-  pack_pmpaddr = {  ins.current.csr[CSR_PMPADDR15]
-           ,ins.current.csr[CSR_PMPADDR14]
-           ,ins.current.csr[CSR_PMPADDR13]
-           ,ins.current.csr[CSR_PMPADDR12]
-           ,ins.current.csr[CSR_PMPADDR11]
-           ,ins.current.csr[CSR_PMPADDR10]
-           ,ins.current.csr[CSR_PMPADDR9]
-           ,ins.current.csr[CSR_PMPADDR8]
-           ,ins.current.csr[CSR_PMPADDR7]
-           ,ins.current.csr[CSR_PMPADDR6]
-           ,ins.current.csr[CSR_PMPADDR5]
-           ,ins.current.csr[CSR_PMPADDR4]
-           ,ins.current.csr[CSR_PMPADDR3]
-           ,ins.current.csr[CSR_PMPADDR2]
-           ,ins.current.csr[CSR_PMPADDR1]
-           ,ins.current.csr[CSR_PMPADDR0]
+  pack_pmpaddr = {  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr15", "pmpaddr15")
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr14", "pmpaddr14")
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr13", "pmpaddr13")
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr12", "pmpaddr12")
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr11", "pmpaddr11")
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr10", "pmpaddr10")
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr9", "pmpaddr9")
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr8", "pmpaddr8")
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr7", "pmpaddr7")
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr6", "pmpaddr6")
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr5", "pmpaddr5")
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr4", "pmpaddr4")
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr3", "pmpaddr3")
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr2", "pmpaddr2")
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr1", "pmpaddr1")
+           ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0")
           };
 
   `ifdef UDB_MXLEN_32
     pmpcfg_a =  {
-          ins.current.csr[CSR_PMPCFG3][28:27],
-          ins.current.csr[CSR_PMPCFG3][20:19],
-          ins.current.csr[CSR_PMPCFG3][12:11],
-          ins.current.csr[CSR_PMPCFG3][4:3],
-          ins.current.csr[CSR_PMPCFG2][28:27],
-          ins.current.csr[CSR_PMPCFG2][20:19],
-          ins.current.csr[CSR_PMPCFG2][12:11],
-          ins.current.csr[CSR_PMPCFG2][4:3],
-          ins.current.csr[CSR_PMPCFG1][28:27],
-          ins.current.csr[CSR_PMPCFG1][20:19],
-          ins.current.csr[CSR_PMPCFG1][12:11],
-          ins.current.csr[CSR_PMPCFG1][4:3],
-          ins.current.csr[CSR_PMPCFG0][28:27],
-          ins.current.csr[CSR_PMPCFG0][20:19],
-          ins.current.csr[CSR_PMPCFG0][12:11],
-          ins.current.csr[CSR_PMPCFG0][4:3]
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp15cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp14cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp13cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp12cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp7cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp6cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp5cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp4cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_a")[1:0]
           };
   `endif
   `ifdef UDB_MXLEN_64
     pmpcfg_a =  {
-          ins.current.csr[CSR_PMPCFG2][60:59],
-          ins.current.csr[CSR_PMPCFG2][52:51],
-          ins.current.csr[CSR_PMPCFG2][44:43],
-          ins.current.csr[CSR_PMPCFG2][36:35],
-          ins.current.csr[CSR_PMPCFG2][28:27],
-          ins.current.csr[CSR_PMPCFG2][20:19],
-          ins.current.csr[CSR_PMPCFG2][12:11],
-          ins.current.csr[CSR_PMPCFG2][4:3],
-          ins.current.csr[CSR_PMPCFG0][60:59],
-          ins.current.csr[CSR_PMPCFG0][52:51],
-          ins.current.csr[CSR_PMPCFG0][44:43],
-          ins.current.csr[CSR_PMPCFG0][36:35],
-          ins.current.csr[CSR_PMPCFG0][28:27],
-          ins.current.csr[CSR_PMPCFG0][20:19],
-          ins.current.csr[CSR_PMPCFG0][12:11],
-          ins.current.csr[CSR_PMPCFG0][4:3]
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp15cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp14cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp13cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp12cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp7cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp6cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp5cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp4cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_a")[1:0]
           };
   `endif
   PMPU_cg.sample(ins, pack_pmpaddr, pmpcfg_a, pmpcfg, pmp_hit);

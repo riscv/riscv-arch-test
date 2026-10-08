@@ -7,6 +7,11 @@
 #ifndef DERIVED_CONFIG_H
 #define DERIVED_CONFIG_H
 
+// Emulate time/timeh reads from mtime.
+#if defined(ZICNTR_SUPPORTED) && !defined(UDB_TIME_CSR_IMPLEMENTED)
+  #define RVTEST_EMULATE_TIME_CSR
+#endif
+
 // MAXINDEXEEW: maximum supported index element width for indexed vector load/store.
 // UDB exposes one of:
 //   UDB_VECTOR_LS_INDEX_MAX_EEW_XLEN     -> MAXINDEXEEW = MXLEN

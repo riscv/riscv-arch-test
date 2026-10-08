@@ -10,6 +10,9 @@
 
 `define COVER_PMPSM
 `define PMP_NAPOT_PRIORITY_REGION_START ((`PMP_REGION_START & ~(64*`g_napot - 1)) + 64*`g_napot)
+// The priority tests write pmpaddr while the entry is OFF, which reads (and traces) pmpaddr[G-1:0]
+// as 0 at granularity G >= 1, so compare those registers on bits >= G only.
+`define PMP_PMPADDR_GRAINMASK (`PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)
 
 covergroup PMPSm_cg with function sample(
                     ins_t ins,
@@ -42,13 +45,15 @@ covergroup PMPSm_cg with function sample(
     bins just_beyond  = {(`PMP_NAPOT_REGION_START+`g_napot) & `PMP_ADDR_LOWMASK};
   }
 
-  address_offsets_tor: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
-    bins at_base      = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
-    bins below_base   = {(`PMP_REGION_START-4) & `PMP_ADDR_LOWMASK};
-    bins above_base   = {(`PMP_REGION_START+4) & `PMP_ADDR_LOWMASK};
-    bins just_beyond  = {(`PMP_REGION_START+`g_tor) & `PMP_ADDR_LOWMASK};
-    bins highest_word  = {(`PMP_REGION_START +`g_tor-4) & `PMP_ADDR_LOWMASK};
-  }
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    address_offsets_tor: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+      bins at_base      = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
+      bins below_base   = {(`PMP_REGION_START-4) & `PMP_ADDR_LOWMASK};
+      bins above_base   = {(`PMP_REGION_START+4) & `PMP_ADDR_LOWMASK};
+      bins just_beyond  = {(`PMP_REGION_START+`g_tor) & `PMP_ADDR_LOWMASK};
+      bins highest_word  = {(`PMP_REGION_START +`g_tor-4) & `PMP_ADDR_LOWMASK};
+    }
+  `endif
 
   address_offsets_napot: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
     bins at_base      = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
@@ -58,7 +63,7 @@ covergroup PMPSm_cg with function sample(
     bins highest_word  = {(`PMP_NAPOT_REGION_START +`g_napot-4) & `PMP_ADDR_LOWMASK};
   }
 
-  `ifdef UDB_PMP_GRANULARITY_2
+  `ifdef UDB_PMP_NA4_SUPPORTED
     addr_offset_cp_cfg_A_na4: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
       bins at_base     = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
       bins just_beyond = {(`PMP_REGION_START+4) & `PMP_ADDR_LOWMASK};
@@ -66,10 +71,12 @@ covergroup PMPSm_cg with function sample(
     }
   `endif
 
-  addr_offset_cp_cfg_A_tor0: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
-    bins at_base      = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
-    bins below_base   = {(`PMP_REGION_START-4) & `PMP_ADDR_LOWMASK};
-  }
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    addr_offset_cp_cfg_A_tor0: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+      bins at_base      = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};
+      bins below_base   = {(`PMP_REGION_START-4) & `PMP_ADDR_LOWMASK};
+    }
+  `endif
 
   exec_instr: coverpoint ins.current.insn {
     wildcard bins jalr = {JALR};
@@ -116,166 +123,168 @@ covergroup PMPSm_cg with function sample(
   }
 
 //-------------------------------------------------------
-  // Addresses for TOR regions moving up by g*i. Masked to low bits (see
-  // PMP_ADDR_LOWMASK) so they match wherever .data landed for this test's code
-  // size, same rationale as addr_in_region/address_offsets_tor above.
-  addr_for_tor_all_region0: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
-    bins address = {(`PMP_REGION_START-4) & `PMP_ADDR_LOWMASK}; // Region with XWR-111 for test to be executed.
-  }
-  // Access at the start of the region
-  addr_for_tor_all_region1: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
-    bins address = {(`PMP_REGION_START) & `PMP_ADDR_LOWMASK};
-  }
-  addr_for_tor_all_region2: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
-    bins address = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};
-  }
-  addr_for_tor_all_region3: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
-    bins address = {(`PMP_REGION_START + 3*`g_tor) & `PMP_ADDR_LOWMASK};
-  }
-  addr_for_tor_all_region4: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
-    bins address = {(`PMP_REGION_START + 6*`g_tor) & `PMP_ADDR_LOWMASK};
-  }
-  addr_for_tor_all_region5: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
-    bins address = {(`PMP_REGION_START + 10*`g_tor) & `PMP_ADDR_LOWMASK};
-  }
-  addr_for_tor_all_region6: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
-    bins address = {(`PMP_REGION_START + 15*`g_tor) & `PMP_ADDR_LOWMASK};
-  }
-  addr_for_tor_all_region7: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
-    bins address = {(`PMP_REGION_START + 21*`g_tor) & `PMP_ADDR_LOWMASK};
-  }
-  addr_for_tor_all_region8: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
-    bins address = {(`PMP_REGION_START + 28*`g_tor) & `PMP_ADDR_LOWMASK};
-  }
-  addr_for_tor_all_region9: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
-    bins address = {(`PMP_REGION_START + 36*`g_tor) & `PMP_ADDR_LOWMASK};
-  }
-  addr_for_tor_all_region10: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
-    bins address = {(`PMP_REGION_START + 45*`g_tor) & `PMP_ADDR_LOWMASK};
-  }
-  addr_for_tor_all_region11: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
-    bins address = {(`PMP_REGION_START + 55*`g_tor) & `PMP_ADDR_LOWMASK};
-  }
-  addr_for_tor_all_region12: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
-    bins address = {(`PMP_REGION_START + 66*`g_tor) & `PMP_ADDR_LOWMASK};
-  }
-  addr_for_tor_all_region13: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
-    bins address = {(`PMP_REGION_START + 78*`g_tor) & `PMP_ADDR_LOWMASK};
-  }
-  addr_for_tor_all_region14: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
-    bins address = {(`PMP_REGION_START + 91*`g_tor) & `PMP_ADDR_LOWMASK};
-  }
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    // Addresses for TOR regions moving up by g*i. Masked to low bits (see
+    // PMP_ADDR_LOWMASK) so they match wherever .data landed for this test's code
+    // size, same rationale as addr_in_region/address_offsets_tor above.
+    addr_for_tor_all_region0: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+      bins address = {(`PMP_REGION_START-4) & `PMP_ADDR_LOWMASK}; // Region with XWR-111 for test to be executed.
+    }
+    // Access at the start of the region
+    addr_for_tor_all_region1: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+      bins address = {(`PMP_REGION_START) & `PMP_ADDR_LOWMASK};
+    }
+    addr_for_tor_all_region2: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+      bins address = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};
+    }
+    addr_for_tor_all_region3: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+      bins address = {(`PMP_REGION_START + 3*`g_tor) & `PMP_ADDR_LOWMASK};
+    }
+    addr_for_tor_all_region4: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+      bins address = {(`PMP_REGION_START + 6*`g_tor) & `PMP_ADDR_LOWMASK};
+    }
+    addr_for_tor_all_region5: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+      bins address = {(`PMP_REGION_START + 10*`g_tor) & `PMP_ADDR_LOWMASK};
+    }
+    addr_for_tor_all_region6: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+      bins address = {(`PMP_REGION_START + 15*`g_tor) & `PMP_ADDR_LOWMASK};
+    }
+    addr_for_tor_all_region7: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+      bins address = {(`PMP_REGION_START + 21*`g_tor) & `PMP_ADDR_LOWMASK};
+    }
+    addr_for_tor_all_region8: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+      bins address = {(`PMP_REGION_START + 28*`g_tor) & `PMP_ADDR_LOWMASK};
+    }
+    addr_for_tor_all_region9: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+      bins address = {(`PMP_REGION_START + 36*`g_tor) & `PMP_ADDR_LOWMASK};
+    }
+    addr_for_tor_all_region10: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+      bins address = {(`PMP_REGION_START + 45*`g_tor) & `PMP_ADDR_LOWMASK};
+    }
+    addr_for_tor_all_region11: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+      bins address = {(`PMP_REGION_START + 55*`g_tor) & `PMP_ADDR_LOWMASK};
+    }
+    addr_for_tor_all_region12: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+      bins address = {(`PMP_REGION_START + 66*`g_tor) & `PMP_ADDR_LOWMASK};
+    }
+    addr_for_tor_all_region13: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+      bins address = {(`PMP_REGION_START + 78*`g_tor) & `PMP_ADDR_LOWMASK};
+    }
+    addr_for_tor_all_region14: coverpoint((ins.current.rs1_val+ ins.current.imm) & `PMP_ADDR_LOWMASK){
+      bins address = {(`PMP_REGION_START + 91*`g_tor) & `PMP_ADDR_LOWMASK};
+    }
 
-  // TOR regions increasing size by g*i. pmpaddr comparisons masked to
-  // PMP_PMPADDR_LOWMASK (PMP_ADDR_LOWMASK >> 2) for the same reason.
-  pmpaddr_for_tor_region0: coverpoint ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK))  {
-    bins region_setup  = {1};
-  }
-  pmpaddr_for_tor_region1: coverpoint (((pmpaddr[1] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 1*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK)))  {
-    bins region_setup  = {1};
-  }
-  pmpaddr_for_tor_region2: coverpoint (((pmpaddr[2] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 3*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[1] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 1*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
-    bins region_setup  = {1};
-  }
-  pmpaddr_for_tor_region3: coverpoint (((pmpaddr[3] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 6*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[2] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 3*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
-    bins region_setup  = {1};
-  }
-  pmpaddr_for_tor_region4: coverpoint (((pmpaddr[4] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 10*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[3] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 6*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK))) {
-    bins region_setup  = {1};
-  }
-  pmpaddr_for_tor_region5: coverpoint (((pmpaddr[5] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 15*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[4] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 10*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
-    bins region_setup  = {1};
-  }
-  pmpaddr_for_tor_region6: coverpoint (((pmpaddr[6] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 21*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[5] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 15*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
-    bins region_setup  = {1};
-  }
-  pmpaddr_for_tor_region7: coverpoint (((pmpaddr[7] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 28*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[6] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 21*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
-    bins region_setup  = {1};
-  }
-  pmpaddr_for_tor_region8: coverpoint (((pmpaddr[8] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 36*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[7] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 28*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
-    bins region_setup  = {1};
-  }
-  pmpaddr_for_tor_region9: coverpoint (((pmpaddr[9] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 45*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[8] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 36*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
-    bins region_setup  = {1};
-  }
-  pmpaddr_for_tor_region10: coverpoint (((pmpaddr[10] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 55*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[9] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 45*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
-    bins region_setup  = {1};
-  }
-  pmpaddr_for_tor_region11: coverpoint (((pmpaddr[11] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 66*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[10] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 55*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
-    bins region_setup  = {1};
-  }
-  pmpaddr_for_tor_region12: coverpoint (((pmpaddr[12] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 78*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[11] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 66*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
-    bins region_setup  = {1};
-  }
-  pmpaddr_for_tor_region13: coverpoint (((pmpaddr[13] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 91*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[12] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 78*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
-    bins region_setup  = {1};
-  }
-  pmpaddr_for_tor_region14: coverpoint (((pmpaddr[14] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 105*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[13] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 91*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
-    bins region_setup  = {1};
-  }
+    // TOR regions increasing size by g*i. pmpaddr comparisons masked to
+    // PMP_PMPADDR_LOWMASK (PMP_ADDR_LOWMASK >> 2) for the same reason.
+    pmpaddr_for_tor_region0: coverpoint ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK))  {
+      bins region_setup  = {1};
+    }
+    pmpaddr_for_tor_region1: coverpoint (((pmpaddr[1] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 1*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK)))  {
+      bins region_setup  = {1};
+    }
+    pmpaddr_for_tor_region2: coverpoint (((pmpaddr[2] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 3*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[1] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 1*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
+      bins region_setup  = {1};
+    }
+    pmpaddr_for_tor_region3: coverpoint (((pmpaddr[3] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 6*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[2] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 3*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
+      bins region_setup  = {1};
+    }
+    pmpaddr_for_tor_region4: coverpoint (((pmpaddr[4] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 10*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[3] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 6*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK))) {
+      bins region_setup  = {1};
+    }
+    pmpaddr_for_tor_region5: coverpoint (((pmpaddr[5] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 15*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[4] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 10*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
+      bins region_setup  = {1};
+    }
+    pmpaddr_for_tor_region6: coverpoint (((pmpaddr[6] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 21*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[5] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 15*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
+      bins region_setup  = {1};
+    }
+    pmpaddr_for_tor_region7: coverpoint (((pmpaddr[7] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 28*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[6] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 21*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
+      bins region_setup  = {1};
+    }
+    pmpaddr_for_tor_region8: coverpoint (((pmpaddr[8] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 36*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[7] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 28*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
+      bins region_setup  = {1};
+    }
+    pmpaddr_for_tor_region9: coverpoint (((pmpaddr[9] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 45*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[8] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 36*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
+      bins region_setup  = {1};
+    }
+    pmpaddr_for_tor_region10: coverpoint (((pmpaddr[10] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 55*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[9] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 45*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
+      bins region_setup  = {1};
+    }
+    pmpaddr_for_tor_region11: coverpoint (((pmpaddr[11] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 66*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[10] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 55*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
+      bins region_setup  = {1};
+    }
+    pmpaddr_for_tor_region12: coverpoint (((pmpaddr[12] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 78*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[11] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 66*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
+      bins region_setup  = {1};
+    }
+    pmpaddr_for_tor_region13: coverpoint (((pmpaddr[13] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 91*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[12] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 78*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
+      bins region_setup  = {1};
+    }
+    pmpaddr_for_tor_region14: coverpoint (((pmpaddr[14] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 105*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) && ((pmpaddr[13] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START + 91*`g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)))  {
+      bins region_setup  = {1};
+    }
 
-  //15 configurations, with  pmpcfg.L = 1, pmpcfg.A = TOR, pmpcfg.XWR=00(i%2)
+    //15 configurations, with  pmpcfg.L = 1, pmpcfg.A = TOR, pmpcfg.XWR=00(i%2)
 
-  // Region from 0 to PMP_REGION_START needs XWR Permissions for test to be exexcuted.
-  RWXL_i111_pmp0cfg: coverpoint { pmpcfg[0]} {
-    bins pmp0cfg_wrx111  = {8'b10001111};
-  }
+    // Region from 0 to PMP_REGION_START needs XWR Permissions for test to be exexcuted.
+    RWXL_i111_pmp0cfg: coverpoint { pmpcfg[0]} {
+      bins pmp0cfg_wrx111  = {8'b10001111};
+    }
 
-  RWXL_i001_pmp1cfg: coverpoint pmpcfg[1] {
-    bins pmp1cfg_xwr001  = {8'b10001001};
-  }
+    RWXL_i001_pmp1cfg: coverpoint pmpcfg[1] {
+      bins pmp1cfg_xwr001  = {8'b10001001};
+    }
 
-  RWXL_i001_pmp2cfg: coverpoint pmpcfg[2] {
-    bins pmp2cfg_xwr000  = {8'b10001000};
-  }
+    RWXL_i001_pmp2cfg: coverpoint pmpcfg[2] {
+      bins pmp2cfg_xwr000  = {8'b10001000};
+    }
 
-  RWXL_i001_pmp3cfg: coverpoint pmpcfg[3] {
-    bins pmp3cfg_xwr001  = {8'b10001001};
-  }
+    RWXL_i001_pmp3cfg: coverpoint pmpcfg[3] {
+      bins pmp3cfg_xwr001  = {8'b10001001};
+    }
 
-  RWXL_i001_pmp4cfg: coverpoint pmpcfg[4] {
-    bins pmp4cfg_xwr000  = {8'b10001000};
-  }
+    RWXL_i001_pmp4cfg: coverpoint pmpcfg[4] {
+      bins pmp4cfg_xwr000  = {8'b10001000};
+    }
 
-  RWXL_i001_pmp5cfg: coverpoint pmpcfg[5] {
-    bins pmp5cfg_xwr001  = {8'b10001001};
-  }
+    RWXL_i001_pmp5cfg: coverpoint pmpcfg[5] {
+      bins pmp5cfg_xwr001  = {8'b10001001};
+    }
 
-  RWXL_i001_pmp6cfg: coverpoint pmpcfg[6] {
-    bins pmp6cfg_xwr000  = {8'b10001000};
-  }
+    RWXL_i001_pmp6cfg: coverpoint pmpcfg[6] {
+      bins pmp6cfg_xwr000  = {8'b10001000};
+    }
 
-  RWXL_i001_pmp7cfg: coverpoint pmpcfg[7] {
-    bins pmp7cfg_xwr001  = {8'b10001001};
-  }
+    RWXL_i001_pmp7cfg: coverpoint pmpcfg[7] {
+      bins pmp7cfg_xwr001  = {8'b10001001};
+    }
 
-  RWXL_i001_pmp8cfg: coverpoint pmpcfg[8] {
-    bins pmp8cfg_xwr000  = {8'b10001000};
-  }
+    RWXL_i001_pmp8cfg: coverpoint pmpcfg[8] {
+      bins pmp8cfg_xwr000  = {8'b10001000};
+    }
 
-  RWXL_i001_pmp9cfg: coverpoint pmpcfg[9] {
-    bins pmp9cfg_xwr001  = {8'b10001001};
-  }
+    RWXL_i001_pmp9cfg: coverpoint pmpcfg[9] {
+      bins pmp9cfg_xwr001  = {8'b10001001};
+    }
 
-  RWXL_i001_pmp10cfg: coverpoint pmpcfg[10] {
-    bins pmp10cfg_xwr000  = {8'b10001000};
-  }
+    RWXL_i001_pmp10cfg: coverpoint pmpcfg[10] {
+      bins pmp10cfg_xwr000  = {8'b10001000};
+    }
 
-  RWXL_i001_pmp11cfg: coverpoint pmpcfg[11] {
-    bins pmp11cfg_xwr001  = {8'b10001001};
-  }
+    RWXL_i001_pmp11cfg: coverpoint pmpcfg[11] {
+      bins pmp11cfg_xwr001  = {8'b10001001};
+    }
 
-  RWXL_i001_pmp12cfg: coverpoint pmpcfg[12] {
-    bins pmp0cfg_xwr000  = {8'b10001000};
-  }
+    RWXL_i001_pmp12cfg: coverpoint pmpcfg[12] {
+      bins pmp0cfg_xwr000  = {8'b10001000};
+    }
 
-  RWXL_i001_pmp13cfg: coverpoint pmpcfg[13] {
-    bins pmp0cfg_xwr001  = {8'b10001001};
-  }
+    RWXL_i001_pmp13cfg: coverpoint pmpcfg[13] {
+      bins pmp0cfg_xwr001  = {8'b10001001};
+    }
 
-  RWXL_i001_pmp14cfg: coverpoint pmpcfg[14] {
-    bins pmp0cfg_xwr000  = {8'b10001000};
-  }
+    RWXL_i001_pmp14cfg: coverpoint pmpcfg[14] {
+      bins pmp0cfg_xwr000  = {8'b10001000};
+    }
+  `endif
 
 //-------------------------------------------------------
 
@@ -297,7 +306,7 @@ covergroup PMPSm_cg with function sample(
     wildcard bins OFF14 = {105'b00????????????????????????????_1??????????????_0??????????????_00????????????????????????????_100000000000000};
   }
 
-  `ifdef UDB_PMP_GRANULARITY_2
+  `ifdef UDB_PMP_NA4_SUPPORTED
     pmpcfgA_NA4: coverpoint {pmpcfg_a,pmpcfg_l,pmpcfg_x,pmpcfg_wr,pmp_hit} {
       wildcard bins NA40  = {105'b????????????????????????????10_??????????????1_??????????????0_????????????????????????????00_??????????????1};
       wildcard bins NA41  = {105'b??????????????????????????10??_?????????????1?_?????????????0?_??????????????????????????00??_?????????????10};
@@ -336,25 +345,27 @@ covergroup PMPSm_cg with function sample(
   }
 //-------------------------------------------------------
   `ifndef UDB_PMP_GRANULARITY_2
-    pmpcfg0_A_mode_was_OFF: coverpoint {ins.prev.csr[CSR_PMPCFG0]} {
+    pmpcfg0_A_mode_was_OFF: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmpcfg0")} {
       wildcard bins OFF = {8'b00000???};
     }
 
-    pmpcfg0_A_mode_was_NAPOT: coverpoint {ins.prev.csr[CSR_PMPCFG0]} {
+    pmpcfg0_A_mode_was_NAPOT: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmpcfg0")} {
       wildcard bins OFF = {8'b00011???};
     }
 
-    pmpcfg0_A_mode_is_OFF: coverpoint {ins.current.csr[CSR_PMPCFG0]} {
+    pmpcfg0_A_mode_is_OFF: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")} {
       wildcard bins OFF = {8'b00000???};
     }
 
-    pmpcfg0_A_mode_is_NAPOT: coverpoint {ins.current.csr[CSR_PMPCFG0]} {
+    pmpcfg0_A_mode_is_NAPOT: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")} {
       wildcard bins OFF = {8'b00011???};
     }
 
-    pmpcfg0_A_mode_is_TOR: coverpoint {ins.current.csr[CSR_PMPCFG0]} {
-      wildcard bins OFF = {8'b00001???};
-    }
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      pmpcfg0_A_mode_is_TOR: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")} {
+        wildcard bins OFF = {8'b00001???};
+      }
+    `endif
   `endif
 
   pmpcfg_for_cp_grain_check: coverpoint pmpcfg[0] {
@@ -366,82 +377,86 @@ covergroup PMPSm_cg with function sample(
   }
 
   csrw_to_pmpaddr0: coverpoint ins.current.insn {
-    wildcard bins csrrw  = {32'b001110110000_?????_001_?????_1110011}; // A write is being performed to pmpaddr[0]
+    wildcard bins csrrw  = {CSRRW} iff (ins.current.insn[31:20] == CSR_PMPADDR0); // A write is being performed to pmpaddr[0]
   }
 
   csrr_to_pmpaddr0: coverpoint ins.current.insn {
-    wildcard bins csrr  = {32'b001110110000_00000_010_?????_1110011}; // A read is being performed to pmpaddr[0]
+    wildcard bins csrr  = {CSRR} iff (ins.current.insn[31:20] == CSR_PMPADDR0); // A read is being performed to pmpaddr[0]
   }
 
 //-------------------------------------------------------
 
-  pmpcfg_for_tor0: coverpoint {pmpcfg[0]} {
-    wildcard bins pmp0cfg_xwr111  = {8'b10001111}; //L=1,A=TOR,XWR=111
-  }
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    pmpcfg_for_tor0: coverpoint {pmpcfg[0]} {
+      wildcard bins pmp0cfg_xwr111  = {8'b10001111}; //L=1,A=TOR,XWR=111
+    }
 
-  pmpcfg_tor_bot_L0: coverpoint ({pmpcfg[1],pmpcfg[0]}) {
-    bins pmp_cfg_tor1 =  {16'b10001101_00000000}; //L=0 for pmpcfg0 and L=1 for pmpcfg1.A=TOR,XWR=101 and 000 respectively
-  }
+    pmpcfg_tor_bot_L0: coverpoint ({pmpcfg[1],pmpcfg[0]}) {
+      bins pmp_cfg_tor1 =  {16'b10001101_00000000}; //L=0 for pmpcfg0 and L=1 for pmpcfg1.A=TOR,XWR=101 and 000 respectively
+    }
 
-  pmpcfg_tor_bot_L1: coverpoint ({pmpcfg[1],pmpcfg[0]}) {
-    bins pmp_cfg_tor1 =  {16'b10001101_10000000}; //L=1 for pmpcfg0 and L=1 for pmpcfg1.A=TOR,XWR=101 and 000 respectively
-  }
+    pmpcfg_tor_bot_L1: coverpoint ({pmpcfg[1],pmpcfg[0]}) {
+      bins pmp_cfg_tor1 =  {16'b10001101_10000000}; //L=1 for pmpcfg0 and L=1 for pmpcfg1.A=TOR,XWR=101 and 000 respectively
+    }
 
-  pmp_addr_for_tor_bot: coverpoint (((pmpaddr[1] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START+`g_tor)>>2) & `PMP_PMPADDR_LOWMASK)) &&
-                                    ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START>>2) & `PMP_PMPADDR_LOWMASK))) {
-    bins range = {1};
-  }
+    pmp_addr_for_tor_bot: coverpoint (((pmpaddr[1] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START+`g_tor)>>2) & `PMP_PMPADDR_LOWMASK)) &&
+                                      ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START>>2) & `PMP_PMPADDR_LOWMASK))) {
+      bins range = {1};
+    }
 
-  pmp_addr_for_tor0: coverpoint (pmpaddr[0] & `PMP_PMPADDR_LOWMASK) {
-    bins range = {`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK};
-  }
+    pmp_addr_for_tor0: coverpoint (pmpaddr[0] & `PMP_PMPADDR_LOWMASK) {
+      bins range = {`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK};
+    }
 
-  addr_for_tor_bot: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
-    bins pmpaddr0_4 = {(((`NON_STANDARD_REGION)<<2)-4) & `PMP_ADDR_LOWMASK}; //pmpaddr0-4
-    bins pmpaddr0   = {((`NON_STANDARD_REGION)<<2) & `PMP_ADDR_LOWMASK}; //pmpaddr0
-    bins pmpaddr1_4 = {((`PMP_REGION_START+`g_tor)-4) & `PMP_ADDR_LOWMASK}; //pmpaddr1-4 NOTE: PMP_REGION_START>>2 => NON_STANDARD_REGION (pmp encoded address)
-    bins pmpaddr1   = {(`PMP_REGION_START+`g_tor) & `PMP_ADDR_LOWMASK};
-  }
+    addr_for_tor_bot: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+      bins pmpaddr0_4 = {(((`NON_STANDARD_REGION)<<2)-4) & `PMP_ADDR_LOWMASK}; //pmpaddr0-4
+      bins pmpaddr0   = {((`NON_STANDARD_REGION)<<2) & `PMP_ADDR_LOWMASK}; //pmpaddr0
+      bins pmpaddr1_4 = {((`PMP_REGION_START+`g_tor)-4) & `PMP_ADDR_LOWMASK}; //pmpaddr1-4 NOTE: PMP_REGION_START>>2 => NON_STANDARD_REGION (pmp encoded address)
+      bins pmpaddr1   = {(`PMP_REGION_START+`g_tor) & `PMP_ADDR_LOWMASK};
+    }
 
-  pmp_addr_for_tor_nonoverlap1: coverpoint (((pmpaddr[1] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START>>2) & `PMP_PMPADDR_LOWMASK)) &&
-                                            ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START>>2) & `PMP_PMPADDR_LOWMASK))) { // pmpaddr0 == pmpaddr1.
-    bins range1 = {1};
-  }
+    pmp_addr_for_tor_nonoverlap1: coverpoint (((pmpaddr[1] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START>>2) & `PMP_PMPADDR_LOWMASK)) &&
+                                              ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START>>2) & `PMP_PMPADDR_LOWMASK))) { // pmpaddr0 == pmpaddr1.
+      bins range1 = {1};
+    }
 
-  pmp_addr_for_tor_nonoverlap2: coverpoint (((pmpaddr[1] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START>>2) & `PMP_PMPADDR_LOWMASK)) &&
-                                            ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START+`g_tor)>>2) & `PMP_PMPADDR_LOWMASK))) { // pmpaddr0 >= pmpaddr1.
-    bins range2 = {1};
-  }
+    pmp_addr_for_tor_nonoverlap2: coverpoint (((pmpaddr[1] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START>>2) & `PMP_PMPADDR_LOWMASK)) &&
+                                              ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK)==(((`PMP_REGION_START+`g_tor)>>2) & `PMP_PMPADDR_LOWMASK))) { // pmpaddr0 >= pmpaddr1.
+      bins range2 = {1};
+    }
 
-  // pmpaddr[0] here is compared against an all-ones value, not a region address, so it needs no mask.
-  pmp_addr_for_tor_nonoverlap3: coverpoint (((pmpaddr[1] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START>>2) & `PMP_PMPADDR_LOWMASK)) &&
-                                            (pmpaddr[0]==({$bits(pmpaddr[0][`EFFECTIVE_PMPADDR:0]){1'b1}} & `READ_ZERO_MASK))) { // pmpaddr0 >= pmpaddr1.
-    bins range3 = {1};
-  }
+    // pmpaddr[0] here is compared against an all-ones value, not a region address, so it needs no mask.
+    pmp_addr_for_tor_nonoverlap3: coverpoint (((pmpaddr[1] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START>>2) & `PMP_PMPADDR_LOWMASK)) &&
+                                              (pmpaddr[0]==({$bits(pmpaddr[0][`EFFECTIVE_PMPADDR:0]){1'b1}} & `READ_ZERO_MASK))) { // pmpaddr0 >= pmpaddr1.
+      bins range3 = {1};
+    }
 
-  pmpcfg_tor_nonoverlap: coverpoint {pmpcfg[1],pmpcfg[0]} {
-    bins pmp_cfg_tor1 =  {16'b10001000_00000000}; //L=1 for pmpcfg1 and L=0 for pmpcfg0,A=TOR for cf1 and A=OFF for 0,XWR=000(both)
-  }
+    pmpcfg_tor_nonoverlap: coverpoint {pmpcfg[1],pmpcfg[0]} {
+      bins pmp_cfg_tor1 =  {16'b10001000_00000000}; //L=1 for pmpcfg1 and L=0 for pmpcfg0,A=TOR for cf1 and A=OFF for 0,XWR=000(both)
+    }
 
-  addr_for_tor_nonoverlap: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
-    bins addr1 = {((`NON_STANDARD_REGION)<<2) & `PMP_ADDR_LOWMASK}; //pmpaddr1
-    bins addr2 = {(((`NON_STANDARD_REGION)<<2)+4) & `PMP_ADDR_LOWMASK}; //pmpaddr1+4
-    bins addr3 = {(((`NON_STANDARD_REGION)<<2)-4) & `PMP_ADDR_LOWMASK}; //pmpaddr1-4
-  }
+    addr_for_tor_nonoverlap: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+      bins addr1 = {((`NON_STANDARD_REGION)<<2) & `PMP_ADDR_LOWMASK}; //pmpaddr1
+      bins addr2 = {(((`NON_STANDARD_REGION)<<2)+4) & `PMP_ADDR_LOWMASK}; //pmpaddr1+4
+      bins addr3 = {(((`NON_STANDARD_REGION)<<2)-4) & `PMP_ADDR_LOWMASK}; //pmpaddr1-4
+    }
+  `endif
 
 //-------------------------------------------------------
 
   //6 legal combinations for XRW
 
-  // Configuration for pairs of pmpaddr ((11,10),(9,8),(7,6),(5,4),(3,2),(1,0)) for Default TOR.
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    // Configuration for pairs of pmpaddr ((11,10),(9,8),(7,6),(5,4),(3,2),(1,0)) for Default TOR.
     legal_RWX_L_TOR: coverpoint {pmpcfg_l[11:0], pmpcfg_a[23:0], pmpcfg_x[11:0], pmpcfg_wr[23:0], pmp_hit[11:0]} { // pmpcfg.RWX = legal combinations, pmpcfg.L = 1 and pmpcfg.A = 1
-    wildcard bins pmp1cfg_lxwr_1000  = {84'b1???????????_01??????????????????????_0???????????_00??????????????????????_?1??????????};
-    wildcard bins pmp1cfg_lxwr_1001  = {84'b??1?????????_????01??????????????????_??0?????????_????01??????????????????_???1????????};
-    wildcard bins pmp0cfg_lxwr_1011  = {84'b????1???????_????????01??????????????_????0???????_????????11??????????????_?????1??????};
-    wildcard bins pmp0cfg_lxwr_1100  = {84'b??????1?????_????????????01??????????_??????1?????_????????????00??????????_???????1????};
-    wildcard bins pmp0cfg_lxwr_1101  = {84'b????????1???_????????????????01??????_????????1???_????????????????01??????_?????????1??};
-    wildcard bins pmp0cfg_lxwr_1111  = {84'b??????????1?_????????????????????01??_??????????1?_????????????????????11??_???????????1};
-  }
+      wildcard bins pmp1cfg_lxwr_1000  = {84'b1???????????_01??????????????????????_0???????????_00??????????????????????_?1??????????};
+      wildcard bins pmp1cfg_lxwr_1001  = {84'b??1?????????_????01??????????????????_??0?????????_????01??????????????????_???1????????};
+      wildcard bins pmp0cfg_lxwr_1011  = {84'b????1???????_????????01??????????????_????0???????_????????11??????????????_?????1??????};
+      wildcard bins pmp0cfg_lxwr_1100  = {84'b??????1?????_????????????01??????????_??????1?????_????????????00??????????_???????1????};
+      wildcard bins pmp0cfg_lxwr_1101  = {84'b????????1???_????????????????01??????_????????1???_????????????????01??????_?????????1??};
+      wildcard bins pmp0cfg_lxwr_1111  = {84'b??????????1?_????????????????????01??_??????????1?_????????????????????11??_???????????1};
+    }
+  `endif
 
     legal_RWX_L_NAPOT: coverpoint {pmpcfg_l[5:0], pmpcfg_a[11:0], pmpcfg_x[5:0], pmpcfg_wr[11:0], pmp_hit[5:0]} { // pmpcfg.RWX = legal combinations, pmpcfg.L = 1 and pmpcfg.A = 3
     wildcard bins pmp1cfg_lxwr_1000  = {42'b1?????_11??????????_0?????_00??????????_100000};
@@ -454,7 +469,7 @@ covergroup PMPSm_cg with function sample(
 
   //-------------------------------------------------------
 
-  `ifdef UDB_PMP_GRANULARITY_2
+  `ifdef UDB_PMP_NA4_SUPPORTED
     legal_RWX_L_NA4: coverpoint {pmpcfg_l[5:0], pmpcfg_a[11:0], pmpcfg_x[5:0], pmpcfg_wr[11:0], pmp_hit[5:0]} { // pmpcfg.RWX = legal combinations, pmpcfg.L = 1 and pmpcfg.A = 2'b10
       wildcard bins pmp1cfg_lxwr_1000  = {42'b1?????_10??????????_0?????_00??????????_100000};
       wildcard bins pmp1cfg_lxwr_1001  = {42'b?1????_??10????????_?0????_??01????????_?10000};
@@ -586,14 +601,16 @@ covergroup PMPSm_cg with function sample(
    we need to check from tests and logs that pmpcfg and pmpaddr are unwritable when
    L = 1, and write to pmpaddr of previous region in case of TOR is also ignored.*/
 
-  pmp_region: coverpoint ins.prev.csr[CSR_PMPCFG0][12:11] {
+  pmp_region: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmp1cfg_a")[1:0] {
     bins OFF   = {0};
-    bins TOR   = {1};
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      bins TOR   = {1};
+    `endif
     bins NAPOT = {3};
   }
 
   // L = {0/1} pmp_region_1 and check the writes on pmp_region_1 and pmp_region_0
-  lock_checking: coverpoint ins.prev.csr[CSR_PMPCFG0][15] {
+  lock_checking: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "pmpcfg0", "pmp1cfg_l")[0] {
     bins locked_region = {1};
     bins unlocked_region = {0};
   }
@@ -621,25 +638,21 @@ covergroup PMPSm_cg with function sample(
     `ifdef UDB_MXLEN_32
       wildcard bins walking_ones_0  = {32'b00000000000000000000000000000001};
       wildcard bins walking_ones_2  = {32'b00000000000000000000000000000100};
-      wildcard bins walking_ones_3  = {32'b00000000000000000000000000001000};
       wildcard bins walking_ones_4  = {32'b00000000000000000000000000100000};
       wildcard bins walking_ones_5  = {32'b00000000000000000000000001000000};
       wildcard bins walking_ones_6  = {32'b00000000000000000000000010000000};
       wildcard bins walking_ones_7  = {32'b00000000000000000000000100000000};
       wildcard bins walking_ones_9  = {32'b00000000000000000000010000000000};
-      wildcard bins walking_ones_10 = {32'b00000000000000000000100000000000};
       wildcard bins walking_ones_11 = {32'b00000000000000000010000000000000};
       wildcard bins walking_ones_12 = {32'b00000000000000000100000000000000};
       wildcard bins walking_ones_13 = {32'b00000000000000001000000000000000};
       wildcard bins walking_ones_14 = {32'b00000000000000010000000000000000};
       wildcard bins walking_ones_16 = {32'b00000000000001000000000000000000};
-      wildcard bins walking_ones_17 = {32'b00000000000010000000000000000000};
       wildcard bins walking_ones_18 = {32'b00000000001000000000000000000000};
       wildcard bins walking_ones_19 = {32'b00000000010000000000000000000000};
       wildcard bins walking_ones_20 = {32'b00000000100000000000000000000000};
       wildcard bins walking_ones_21 = {32'b00000001000000000000000000000000};
       wildcard bins walking_ones_23 = {32'b00000100000000000000000000000000};
-      wildcard bins walking_ones_24 = {32'b00001000000000000000000000000000};
       wildcard bins walking_ones_25 = {32'b00100000000000000000000000000000};
       wildcard bins walking_ones_26 = {32'b01000000000000000000000000000000};
       wildcard bins walking_ones_27 = {32'b10000000000000000000000000000000};
@@ -647,49 +660,41 @@ covergroup PMPSm_cg with function sample(
     `ifdef UDB_MXLEN_64
       wildcard bins walking_ones_0  = {64'b0000000000000000000000000000000000000000000000000000000000000001};
       wildcard bins walking_ones_2  = {64'b0000000000000000000000000000000000000000000000000000000000000100};
-      wildcard bins walking_ones_3  = {64'b0000000000000000000000000000000000000000000000000000000000001000};
       wildcard bins walking_ones_4  = {64'b0000000000000000000000000000000000000000000000000000000000100000};
       wildcard bins walking_ones_5  = {64'b0000000000000000000000000000000000000000000000000000000001000000};
       wildcard bins walking_ones_6  = {64'b0000000000000000000000000000000000000000000000000000000010000000};
       wildcard bins walking_ones_7  = {64'b0000000000000000000000000000000000000000000000000000000100000000};
       wildcard bins walking_ones_9  = {64'b0000000000000000000000000000000000000000000000000000010000000000};
-      wildcard bins walking_ones_10 = {64'b0000000000000000000000000000000000000000000000000000100000000000};
       wildcard bins walking_ones_11 = {64'b0000000000000000000000000000000000000000000000000010000000000000};
       wildcard bins walking_ones_12 = {64'b0000000000000000000000000000000000000000000000000100000000000000};
       wildcard bins walking_ones_13 = {64'b0000000000000000000000000000000000000000000000001000000000000000};
       wildcard bins walking_ones_14 = {64'b0000000000000000000000000000000000000000000000010000000000000000};
       wildcard bins walking_ones_16 = {64'b0000000000000000000000000000000000000000000001000000000000000000};
-      wildcard bins walking_ones_17 = {64'b0000000000000000000000000000000000000000000010000000000000000000};
       wildcard bins walking_ones_18 = {64'b0000000000000000000000000000000000000000001000000000000000000000};
       wildcard bins walking_ones_19 = {64'b0000000000000000000000000000000000000000010000000000000000000000};
       wildcard bins walking_ones_20 = {64'b0000000000000000000000000000000000000000100000000000000000000000};
       wildcard bins walking_ones_21 = {64'b0000000000000000000000000000000000000001000000000000000000000000};
       wildcard bins walking_ones_23 = {64'b0000000000000000000000000000000000000100000000000000000000000000};
-      wildcard bins walking_ones_24 = {64'b0000000000000000000000000000000000001000000000000000000000000000};
       wildcard bins walking_ones_25 = {64'b0000000000000000000000000000000000100000000000000000000000000000};
       wildcard bins walking_ones_26 = {64'b0000000000000000000000000000000001000000000000000000000000000000};
       wildcard bins walking_ones_27 = {64'b0000000000000000000000000000000010000000000000000000000000000000};
       wildcard bins walking_ones_28 = {64'b0000000000000000000000000000000100000000000000000000000000000000};
       wildcard bins walking_ones_30 = {64'b0000000000000000000000000000010000000000000000000000000000000000};
-      wildcard bins walking_ones_31 = {64'b0000000000000000000000000000100000000000000000000000000000000000};
       wildcard bins walking_ones_32 = {64'b0000000000000000000000000010000000000000000000000000000000000000};
       wildcard bins walking_ones_33 = {64'b0000000000000000000000000100000000000000000000000000000000000000};
       wildcard bins walking_ones_34 = {64'b0000000000000000000000001000000000000000000000000000000000000000};
       wildcard bins walking_ones_35 = {64'b0000000000000000000000010000000000000000000000000000000000000000};
       wildcard bins walking_ones_37 = {64'b0000000000000000000001000000000000000000000000000000000000000000};
-      wildcard bins walking_ones_38 = {64'b0000000000000000000010000000000000000000000000000000000000000000};
       wildcard bins walking_ones_39 = {64'b0000000000000000001000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_40 = {64'b0000000000000000010000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_41 = {64'b0000000000000000100000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_42 = {64'b0000000000000001000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_44 = {64'b0000000000000100000000000000000000000000000000000000000000000000};
-      wildcard bins walking_ones_45 = {64'b0000000000001000000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_46 = {64'b0000000000100000000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_47 = {64'b0000000001000000000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_48 = {64'b0000000010000000000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_49 = {64'b0000000100000000000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_51 = {64'b0000010000000000000000000000000000000000000000000000000000000000};
-      wildcard bins walking_ones_52 = {64'b0000100000000000000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_53 = {64'b0010000000000000000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_54 = {64'b0100000000000000000000000000000000000000000000000000000000000000};
       wildcard bins walking_ones_55 = {64'b1000000000000000000000000000000000000000000000000000000000000000};
@@ -857,13 +862,21 @@ covergroup PMPSm_cg with function sample(
   rs1_val_for_pmpcfg_A: coverpoint ins.current.rs1_val {
     bins OFF = {0};
     `ifdef UDB_MXLEN_32
-      bins TOR   = {32'b00001000000010000000100000001000};
-      bins NA4   = {32'b00010000000100000001000000010000};
+      `ifdef UDB_PMP_TOR_SUPPORTED
+        bins TOR   = {32'b00001000000010000000100000001000};
+      `endif
+      `ifdef UDB_PMP_NA4_SUPPORTED
+        bins NA4   = {32'b00010000000100000001000000010000};
+      `endif
       bins NAPOT = {32'b00011000000110000001100000011000};
     `endif
     `ifdef UDB_MXLEN_64
-      bins TOR   = {64'b0000100000001000000010000000100000001000000010000000100000001000};
-      bins NA4   = {64'b0001000000010000000100000001000000010000000100000001000000010000};
+      `ifdef UDB_PMP_TOR_SUPPORTED
+        bins TOR   = {64'b0000100000001000000010000000100000001000000010000000100000001000};
+      `endif
+      `ifdef UDB_PMP_NA4_SUPPORTED
+        bins NA4   = {64'b0001000000010000000100000001000000010000000100000001000000010000};
+      `endif
       bins NAPOT = {64'b0001100000011000000110000001100000011000000110000001100000011000};
     `endif
   }
@@ -878,15 +891,16 @@ covergroup PMPSm_cg with function sample(
   // 7 overlapping NAPOT regions all based at PMP_NAPOT_PRIORITY_REGION_START, with
   // sizes g_napot, 2x, 4x, 8x, 16x, 32x, 64x. The base is aligned to the
   // largest region size so every NAPOT entry is naturally aligned.
-  // pmpaddr[i] = (PMP_NAPOT_PRIORITY_REGION_START >> 2) | ((1<<i) * g_napot/8 - 1)
+  // pmpaddr[i] = (PMP_NAPOT_PRIORITY_REGION_START >> 2) | ((1<<i) * g_napot/8 - 1),
+  // compared on bits >= G because each is written while its entry is OFF.
   napot_priority_regions: coverpoint (
-                   ((pmpaddr[6] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (64*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                   ((pmpaddr[5] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (32*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                   ((pmpaddr[4] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (16*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                   ((pmpaddr[3] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 8*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                   ((pmpaddr[2] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 4*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                   ((pmpaddr[1] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 2*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                   ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 1*(2**`k)-1)) & `PMP_PMPADDR_LOWMASK))
+                   ((pmpaddr[6] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (64*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[5] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (32*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[4] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | (16*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[3] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 8*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[2] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 4*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[1] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 2*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                   ((pmpaddr[0] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_PRIORITY_REGION_START >> 2) | ( 1*(2**`k)-1)) & `PMP_PMPADDR_GRAINMASK))
                    ) {
     bins napot_regions = {1};
   }
@@ -912,11 +926,12 @@ covergroup PMPSm_cg with function sample(
 
   // pmpaddr0 and pmpaddr2 are OFF but set to the access address (PMP_NAPOT_REGION_START >> 2),
   // verifying they are ignored. pmpaddr1 and pmpaddr3 are NAPOT covering PMP_NAPOT_REGION_START.
+  // All four are written while OFF, so they are compared on bits >= G.
   first_four_pmp_entries: coverpoint (
-                    ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK) == ((`PMP_NAPOT_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK)) &&
-                    ((pmpaddr[1] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_REGION_START >> 2) | ((2**`k)-1)) & `PMP_PMPADDR_LOWMASK)) &&
-                    ((pmpaddr[2] & `PMP_PMPADDR_LOWMASK) == ((`PMP_NAPOT_REGION_START >> 2) & `PMP_PMPADDR_LOWMASK)) &&
-                    ((pmpaddr[3] & `PMP_PMPADDR_LOWMASK) == (((`PMP_NAPOT_REGION_START >> 2) | ((2**`k)-1)) & `PMP_PMPADDR_LOWMASK))
+                    ((pmpaddr[0] & `PMP_PMPADDR_GRAINMASK) == ((`PMP_NAPOT_REGION_START >> 2) & `PMP_PMPADDR_GRAINMASK)) &&
+                    ((pmpaddr[1] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_REGION_START >> 2) | ((2**`k)-1)) & `PMP_PMPADDR_GRAINMASK)) &&
+                    ((pmpaddr[2] & `PMP_PMPADDR_GRAINMASK) == ((`PMP_NAPOT_REGION_START >> 2) & `PMP_PMPADDR_GRAINMASK)) &&
+                    ((pmpaddr[3] & `PMP_PMPADDR_GRAINMASK) == (((`PMP_NAPOT_REGION_START >> 2) | ((2**`k)-1)) & `PMP_PMPADDR_GRAINMASK))
                     ) {
     bins pmp_entries = {1};
   }
@@ -969,7 +984,7 @@ covergroup PMPSm_cg with function sample(
   cp_cfg_A_napot_r : cross priv_mode_m, legal_RWX_L_NAPOT, address_offsets_napot, read_instr_lw;
   cp_cfg_A_napot_w : cross priv_mode_m, legal_RWX_L_NAPOT, address_offsets_napot, write_instr_sw;
 
-  `ifdef UDB_PMP_GRANULARITY_2
+  `ifdef UDB_PMP_NA4_SUPPORTED
     cp_cfg_A_NA4_all: cross priv_mode_m, pmpcfgA_NA4, read_instr_lw, addr_offset_cp_cfg_A_na4 ;
 
     cp_cfg_A_na4_x : cross priv_mode_m, legal_RWX_L_NA4, addr_offset_cp_cfg_A_na4, exec_instr ;
@@ -977,49 +992,51 @@ covergroup PMPSm_cg with function sample(
     cp_cfg_A_na4_w : cross priv_mode_m, legal_RWX_L_NA4, addr_offset_cp_cfg_A_na4, write_instr_sw ;
   `endif
 
-  cp_cfg_A_tor_x : cross priv_mode_m, legal_RWX_L_TOR, address_offsets_tor, exec_instr;
-  cp_cfg_A_tor_r : cross priv_mode_m, legal_RWX_L_TOR, address_offsets_tor, read_instr_lw;
-  cp_cfg_A_tor_w : cross priv_mode_m, legal_RWX_L_TOR, address_offsets_tor, write_instr_sw;
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    cp_cfg_A_tor_x : cross priv_mode_m, legal_RWX_L_TOR, address_offsets_tor, exec_instr;
+    cp_cfg_A_tor_r : cross priv_mode_m, legal_RWX_L_TOR, address_offsets_tor, read_instr_lw;
+    cp_cfg_A_tor_w : cross priv_mode_m, legal_RWX_L_TOR, address_offsets_tor, write_instr_sw;
 
-  cp_cfg_A_tor0_r: cross priv_mode_m, addr_offset_cp_cfg_A_tor0, pmp_addr_for_tor0,pmpcfg_for_tor0, read_instr_lw ;
-  cp_cfg_A_tor0_w: cross priv_mode_m, addr_offset_cp_cfg_A_tor0, pmp_addr_for_tor0,pmpcfg_for_tor0, write_instr_sw ;
-  cp_cfg_A_tor0_x: cross priv_mode_m, addr_offset_cp_cfg_A_tor0, pmp_addr_for_tor0,pmpcfg_for_tor0, exec_instr;
+    cp_cfg_A_tor0_r: cross priv_mode_m, addr_offset_cp_cfg_A_tor0, pmp_addr_for_tor0,pmpcfg_for_tor0, read_instr_lw ;
+    cp_cfg_A_tor0_w: cross priv_mode_m, addr_offset_cp_cfg_A_tor0, pmp_addr_for_tor0,pmpcfg_for_tor0, write_instr_sw ;
+    cp_cfg_A_tor0_x: cross priv_mode_m, addr_offset_cp_cfg_A_tor0, pmp_addr_for_tor0,pmpcfg_for_tor0, exec_instr;
 
-  cp_cfg_A_tor_all0: cross priv_mode_m, addr_for_tor_all_region0, pmpaddr_for_tor_region0, RWXL_i111_pmp0cfg, read_instr_lw;
-  cp_cfg_A_tor_all1: cross priv_mode_m, addr_for_tor_all_region1, pmpaddr_for_tor_region1, RWXL_i001_pmp1cfg, read_instr_lw;
-  cp_cfg_A_tor_all2: cross priv_mode_m, addr_for_tor_all_region2, pmpaddr_for_tor_region2, RWXL_i001_pmp2cfg, read_instr_lw;
-  cp_cfg_A_tor_all3: cross priv_mode_m, addr_for_tor_all_region3, pmpaddr_for_tor_region3, RWXL_i001_pmp3cfg, read_instr_lw;
-  cp_cfg_A_tor_all4: cross priv_mode_m, addr_for_tor_all_region4, pmpaddr_for_tor_region4, RWXL_i001_pmp4cfg, read_instr_lw;
-  cp_cfg_A_tor_all5: cross priv_mode_m, addr_for_tor_all_region5, pmpaddr_for_tor_region5, RWXL_i001_pmp5cfg, read_instr_lw;
-  cp_cfg_A_tor_all6: cross priv_mode_m, addr_for_tor_all_region6, pmpaddr_for_tor_region6, RWXL_i001_pmp6cfg, read_instr_lw;
-  cp_cfg_A_tor_all7: cross priv_mode_m, addr_for_tor_all_region7, pmpaddr_for_tor_region7, RWXL_i001_pmp7cfg, read_instr_lw;
-  cp_cfg_A_tor_all8: cross priv_mode_m, addr_for_tor_all_region8, pmpaddr_for_tor_region8, RWXL_i001_pmp8cfg, read_instr_lw;
-  cp_cfg_A_tor_all9: cross priv_mode_m, addr_for_tor_all_region9, pmpaddr_for_tor_region9, RWXL_i001_pmp9cfg, read_instr_lw;
-  cp_cfg_A_tor_all10: cross priv_mode_m, addr_for_tor_all_region10, pmpaddr_for_tor_region10, RWXL_i001_pmp10cfg, read_instr_lw;
-  cp_cfg_A_tor_all11: cross priv_mode_m, addr_for_tor_all_region11, pmpaddr_for_tor_region11, RWXL_i001_pmp11cfg, read_instr_lw;
-  cp_cfg_A_tor_all12: cross priv_mode_m, addr_for_tor_all_region12, pmpaddr_for_tor_region12, RWXL_i001_pmp12cfg, read_instr_lw;
-  cp_cfg_A_tor_all13: cross priv_mode_m, addr_for_tor_all_region13, pmpaddr_for_tor_region13, RWXL_i001_pmp13cfg, read_instr_lw;
-  cp_cfg_A_tor_all14: cross priv_mode_m, addr_for_tor_all_region14, pmpaddr_for_tor_region14, RWXL_i001_pmp14cfg, read_instr_lw;
+    cp_cfg_A_tor_all0: cross priv_mode_m, addr_for_tor_all_region0, pmpaddr_for_tor_region0, RWXL_i111_pmp0cfg, read_instr_lw;
+    cp_cfg_A_tor_all1: cross priv_mode_m, addr_for_tor_all_region1, pmpaddr_for_tor_region1, RWXL_i001_pmp1cfg, read_instr_lw;
+    cp_cfg_A_tor_all2: cross priv_mode_m, addr_for_tor_all_region2, pmpaddr_for_tor_region2, RWXL_i001_pmp2cfg, read_instr_lw;
+    cp_cfg_A_tor_all3: cross priv_mode_m, addr_for_tor_all_region3, pmpaddr_for_tor_region3, RWXL_i001_pmp3cfg, read_instr_lw;
+    cp_cfg_A_tor_all4: cross priv_mode_m, addr_for_tor_all_region4, pmpaddr_for_tor_region4, RWXL_i001_pmp4cfg, read_instr_lw;
+    cp_cfg_A_tor_all5: cross priv_mode_m, addr_for_tor_all_region5, pmpaddr_for_tor_region5, RWXL_i001_pmp5cfg, read_instr_lw;
+    cp_cfg_A_tor_all6: cross priv_mode_m, addr_for_tor_all_region6, pmpaddr_for_tor_region6, RWXL_i001_pmp6cfg, read_instr_lw;
+    cp_cfg_A_tor_all7: cross priv_mode_m, addr_for_tor_all_region7, pmpaddr_for_tor_region7, RWXL_i001_pmp7cfg, read_instr_lw;
+    cp_cfg_A_tor_all8: cross priv_mode_m, addr_for_tor_all_region8, pmpaddr_for_tor_region8, RWXL_i001_pmp8cfg, read_instr_lw;
+    cp_cfg_A_tor_all9: cross priv_mode_m, addr_for_tor_all_region9, pmpaddr_for_tor_region9, RWXL_i001_pmp9cfg, read_instr_lw;
+    cp_cfg_A_tor_all10: cross priv_mode_m, addr_for_tor_all_region10, pmpaddr_for_tor_region10, RWXL_i001_pmp10cfg, read_instr_lw;
+    cp_cfg_A_tor_all11: cross priv_mode_m, addr_for_tor_all_region11, pmpaddr_for_tor_region11, RWXL_i001_pmp11cfg, read_instr_lw;
+    cp_cfg_A_tor_all12: cross priv_mode_m, addr_for_tor_all_region12, pmpaddr_for_tor_region12, RWXL_i001_pmp12cfg, read_instr_lw;
+    cp_cfg_A_tor_all13: cross priv_mode_m, addr_for_tor_all_region13, pmpaddr_for_tor_region13, RWXL_i001_pmp13cfg, read_instr_lw;
+    cp_cfg_A_tor_all14: cross priv_mode_m, addr_for_tor_all_region14, pmpaddr_for_tor_region14, RWXL_i001_pmp14cfg, read_instr_lw;
 
-  cp_cfg_A_tor_bot_L0_x: cross priv_mode_m, addr_for_tor_bot, pmpcfg_tor_bot_L0, pmp_addr_for_tor_bot, exec_instr;
-  cp_cfg_A_tor_bot_L0_w: cross priv_mode_m, addr_for_tor_bot, pmpcfg_tor_bot_L0, pmp_addr_for_tor_bot, write_instr_sw;
-  cp_cfg_A_tor_bot_L0_r: cross priv_mode_m, addr_for_tor_bot, pmpcfg_tor_bot_L0, pmp_addr_for_tor_bot, read_instr_lw;
+    cp_cfg_A_tor_bot_L0_x: cross priv_mode_m, addr_for_tor_bot, pmpcfg_tor_bot_L0, pmp_addr_for_tor_bot, exec_instr;
+    cp_cfg_A_tor_bot_L0_w: cross priv_mode_m, addr_for_tor_bot, pmpcfg_tor_bot_L0, pmp_addr_for_tor_bot, write_instr_sw;
+    cp_cfg_A_tor_bot_L0_r: cross priv_mode_m, addr_for_tor_bot, pmpcfg_tor_bot_L0, pmp_addr_for_tor_bot, read_instr_lw;
 
-  cp_cfg_A_tor_bot_L1_x: cross priv_mode_m, addr_for_tor_bot, pmpcfg_tor_bot_L1, pmp_addr_for_tor_bot, exec_instr;
-  cp_cfg_A_tor_bot_L1_w: cross priv_mode_m, addr_for_tor_bot, pmpcfg_tor_bot_L1, pmp_addr_for_tor_bot, write_instr_sw;
-  cp_cfg_A_tor_bot_L1_r: cross priv_mode_m, addr_for_tor_bot, pmpcfg_tor_bot_L1, pmp_addr_for_tor_bot, read_instr_lw;
+    cp_cfg_A_tor_bot_L1_x: cross priv_mode_m, addr_for_tor_bot, pmpcfg_tor_bot_L1, pmp_addr_for_tor_bot, exec_instr;
+    cp_cfg_A_tor_bot_L1_w: cross priv_mode_m, addr_for_tor_bot, pmpcfg_tor_bot_L1, pmp_addr_for_tor_bot, write_instr_sw;
+    cp_cfg_A_tor_bot_L1_r: cross priv_mode_m, addr_for_tor_bot, pmpcfg_tor_bot_L1, pmp_addr_for_tor_bot, read_instr_lw;
 
-  cp_cfg_A_tor_nonoverlap1_x: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap1, exec_instr;
-  cp_cfg_A_tor_nonoverlap1_w: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap1, write_instr_sw;
-  cp_cfg_A_tor_nonoverlap1_r: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap1, read_instr_lw;
+    cp_cfg_A_tor_nonoverlap1_x: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap1, exec_instr;
+    cp_cfg_A_tor_nonoverlap1_w: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap1, write_instr_sw;
+    cp_cfg_A_tor_nonoverlap1_r: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap1, read_instr_lw;
 
-  cp_cfg_A_tor_nonoverlap2_x: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap2, exec_instr;
-  cp_cfg_A_tor_nonoverlap2_w: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap2, write_instr_sw;
-  cp_cfg_A_tor_nonoverlap2_r: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap2, read_instr_lw;
+    cp_cfg_A_tor_nonoverlap2_x: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap2, exec_instr;
+    cp_cfg_A_tor_nonoverlap2_w: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap2, write_instr_sw;
+    cp_cfg_A_tor_nonoverlap2_r: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap2, read_instr_lw;
 
-  cp_cfg_A_tor_nonoverlap3_x: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap3, exec_instr;
-  cp_cfg_A_tor_nonoverlap3_w: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap3, write_instr_sw;
-  cp_cfg_A_tor_nonoverlap3_r: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap3, read_instr_lw;
+    cp_cfg_A_tor_nonoverlap3_x: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap3, exec_instr;
+    cp_cfg_A_tor_nonoverlap3_w: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap3, write_instr_sw;
+    cp_cfg_A_tor_nonoverlap3_r: cross priv_mode_m, addr_for_tor_nonoverlap, pmpcfg_tor_nonoverlap, pmp_addr_for_tor_nonoverlap3, read_instr_lw;
+  `endif
 
   `ifdef UDB_MXLEN_64
     cp_pmpaddr_upper_zero: cross priv_mode_m, cp_pmpaddr_upper_zero_rs1, csrrw, legal_pmpaddr_entries ;
@@ -1066,10 +1083,12 @@ covergroup PMPSm_cg with function sample(
   `ifndef UDB_PMP_GRANULARITY_2
     cp_grain_OFF_to_OFF : cross priv_mode_m, pmpcfg0_A_mode_was_OFF, pmpcfg0_A_mode_is_OFF ;
     cp_grain_OFF_to_NAPOT : cross priv_mode_m, pmpcfg0_A_mode_was_OFF, pmpcfg0_A_mode_is_NAPOT ;
-    cp_grain_OFF_to_TOR : cross priv_mode_m, pmpcfg0_A_mode_was_OFF, pmpcfg0_A_mode_is_TOR ;
     cp_grain_NAPOT_to_OFF : cross priv_mode_m, pmpcfg0_A_mode_was_NAPOT, pmpcfg0_A_mode_is_OFF ;
     cp_grain_NAPOT_to_NAPOT : cross priv_mode_m, pmpcfg0_A_mode_was_NAPOT, pmpcfg0_A_mode_is_NAPOT ;
-    cp_grain_NAPOT_to_TOR : cross priv_mode_m, pmpcfg0_A_mode_was_NAPOT, pmpcfg0_A_mode_is_TOR ;
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      cp_grain_OFF_to_TOR : cross priv_mode_m, pmpcfg0_A_mode_was_OFF, pmpcfg0_A_mode_is_TOR ;
+      cp_grain_NAPOT_to_TOR : cross priv_mode_m, pmpcfg0_A_mode_was_NAPOT, pmpcfg0_A_mode_is_TOR ;
+    `endif
   `endif
 
   cp_grain_check_write: cross priv_mode_m, pmpcfg_for_cp_grain_check, value_to_write, csrw_to_pmpaddr0;
@@ -1090,7 +1109,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
   `ifdef UDB_MXLEN_32
       // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
       for (int i = 0; i < 16; i++) begin
-        logic [31:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + i];
+        logic [31:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + i, "pmpcfg", "pmpcfg");
         pmpcfg[i*4 + 0] = cfg_word[7:0];
         pmpcfg[i*4 + 1] = cfg_word[15:8];
         pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -1099,7 +1118,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
   `elsif UDB_MXLEN_64
       // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-      logic [63:0] cfg_word = ins.current.csr[CSR_PMPCFG0 + 2*i];
+      logic [63:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 2*i, "pmpcfg", "pmpcfg");
       pmpcfg[i*8 + 0] = cfg_word[7:0];
       pmpcfg[i*8 + 1] = cfg_word[15:8];
       pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -1112,7 +1131,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
   `endif
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = ins.current.csr[CSR_PMPADDR0 + j];
+    pmpaddr[j] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0 + j, "pmpaddr", "pmpaddr");
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
@@ -1126,597 +1145,597 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
     pmp_HIT[k-15] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
   end
 
-  pack_pmpaddr = { ins.current.csr[CSR_PMPADDR15]
-                  ,ins.current.csr[CSR_PMPADDR14]
-                  ,ins.current.csr[CSR_PMPADDR13]
-                  ,ins.current.csr[CSR_PMPADDR12]
-                  ,ins.current.csr[CSR_PMPADDR11]
-                  ,ins.current.csr[CSR_PMPADDR10]
-                  ,ins.current.csr[CSR_PMPADDR9]
-                  ,ins.current.csr[CSR_PMPADDR8]
-                  ,ins.current.csr[CSR_PMPADDR7]
-                  ,ins.current.csr[CSR_PMPADDR6]
-                  ,ins.current.csr[CSR_PMPADDR5]
-                  ,ins.current.csr[CSR_PMPADDR4]
-                  ,ins.current.csr[CSR_PMPADDR3]
-                  ,ins.current.csr[CSR_PMPADDR2]
-                  ,ins.current.csr[CSR_PMPADDR1]
-                  ,ins.current.csr[CSR_PMPADDR0]
+  pack_pmpaddr = { get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr15", "pmpaddr15")
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr14", "pmpaddr14")
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr13", "pmpaddr13")
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr12", "pmpaddr12")
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr11", "pmpaddr11")
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr10", "pmpaddr10")
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr9", "pmpaddr9")
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr8", "pmpaddr8")
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr7", "pmpaddr7")
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr6", "pmpaddr6")
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr5", "pmpaddr5")
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr4", "pmpaddr4")
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr3", "pmpaddr3")
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr2", "pmpaddr2")
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr1", "pmpaddr1")
+                  ,get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0")
                 };
 
   `ifdef UDB_MXLEN_32
     pmpcfg_wr = {
-          ins.current.csr[CSR_PMPCFG3][17:16],
-          ins.current.csr[CSR_PMPCFG3][9:8],
-          ins.current.csr[CSR_PMPCFG3][1:0],
-          ins.current.csr[CSR_PMPCFG2][25:24],
-          ins.current.csr[CSR_PMPCFG2][17:16],
-          ins.current.csr[CSR_PMPCFG2][9:8],
-          ins.current.csr[CSR_PMPCFG2][1:0],
-          ins.current.csr[CSR_PMPCFG1][25:24],
-          ins.current.csr[CSR_PMPCFG1][17:16],
-          ins.current.csr[CSR_PMPCFG1][9:8],
-          ins.current.csr[CSR_PMPCFG1][1:0],
-          ins.current.csr[CSR_PMPCFG0][25:24],
-          ins.current.csr[CSR_PMPCFG0][17:16],
-          ins.current.csr[CSR_PMPCFG0][9:8],
-          ins.current.csr[CSR_PMPCFG0][1:0]
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp14cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp13cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp12cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp7cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp6cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp5cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp4cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_xwr")[1:0]
           };
   `endif
   `ifdef UDB_MXLEN_64
     pmpcfg_wr = {
-          ins.current.csr[CSR_PMPCFG2][49:48],
-          ins.current.csr[CSR_PMPCFG2][41:40],
-          ins.current.csr[CSR_PMPCFG2][33:32],
-          ins.current.csr[CSR_PMPCFG2][25:24],
-          ins.current.csr[CSR_PMPCFG2][17:16],
-          ins.current.csr[CSR_PMPCFG2][9:8],
-          ins.current.csr[CSR_PMPCFG2][1:0],
-          ins.current.csr[CSR_PMPCFG0][57:56],
-          ins.current.csr[CSR_PMPCFG0][49:48],
-          ins.current.csr[CSR_PMPCFG0][41:40],
-          ins.current.csr[CSR_PMPCFG0][33:32],
-          ins.current.csr[CSR_PMPCFG0][25:24],
-          ins.current.csr[CSR_PMPCFG0][17:16],
-          ins.current.csr[CSR_PMPCFG0][9:8],
-          ins.current.csr[CSR_PMPCFG0][1:0]
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp14cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp13cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp12cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp7cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp6cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp5cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp4cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_xwr")[1:0]
           };
   `endif
 
   `ifdef UDB_MXLEN_32
     pmpcfg_WR = {
-          ins.current.csr[CSR_PMPCFG15][17:16],
-          ins.current.csr[CSR_PMPCFG15][9:8],
-          ins.current.csr[CSR_PMPCFG15][1:0],
-          ins.current.csr[CSR_PMPCFG14][25:24],
-          ins.current.csr[CSR_PMPCFG14][17:16],
-          ins.current.csr[CSR_PMPCFG14][9:8],
-          ins.current.csr[CSR_PMPCFG14][1:0],
-          ins.current.csr[CSR_PMPCFG13][25:24],
-          ins.current.csr[CSR_PMPCFG13][17:16],
-          ins.current.csr[CSR_PMPCFG13][9:8],
-          ins.current.csr[CSR_PMPCFG13][1:0],
-          ins.current.csr[CSR_PMPCFG12][25:24],
-          ins.current.csr[CSR_PMPCFG12][17:16],
-          ins.current.csr[CSR_PMPCFG12][9:8],
-          ins.current.csr[CSR_PMPCFG12][1:0],
-          ins.current.csr[CSR_PMPCFG11][25:24],
-          ins.current.csr[CSR_PMPCFG11][17:16],
-          ins.current.csr[CSR_PMPCFG11][9:8],
-          ins.current.csr[CSR_PMPCFG11][1:0],
-          ins.current.csr[CSR_PMPCFG10][25:24],
-          ins.current.csr[CSR_PMPCFG10][17:16],
-          ins.current.csr[CSR_PMPCFG10][9:8],
-          ins.current.csr[CSR_PMPCFG10][1:0],
-          ins.current.csr[CSR_PMPCFG9][25:24],
-          ins.current.csr[CSR_PMPCFG9][17:16],
-          ins.current.csr[CSR_PMPCFG9][9:8],
-          ins.current.csr[CSR_PMPCFG9][1:0],
-          ins.current.csr[CSR_PMPCFG8][25:24],
-          ins.current.csr[CSR_PMPCFG8][17:16],
-          ins.current.csr[CSR_PMPCFG8][9:8],
-          ins.current.csr[CSR_PMPCFG8][1:0],
-          ins.current.csr[CSR_PMPCFG7][25:24],
-          ins.current.csr[CSR_PMPCFG7][17:16],
-          ins.current.csr[CSR_PMPCFG7][9:8],
-          ins.current.csr[CSR_PMPCFG7][1:0],
-          ins.current.csr[CSR_PMPCFG6][25:24],
-          ins.current.csr[CSR_PMPCFG6][17:16],
-          ins.current.csr[CSR_PMPCFG6][9:8],
-          ins.current.csr[CSR_PMPCFG6][1:0],
-          ins.current.csr[CSR_PMPCFG5][25:24],
-          ins.current.csr[CSR_PMPCFG5][17:16],
-          ins.current.csr[CSR_PMPCFG5][9:8],
-          ins.current.csr[CSR_PMPCFG5][1:0],
-          ins.current.csr[CSR_PMPCFG4][25:24],
-          ins.current.csr[CSR_PMPCFG4][17:16],
-          ins.current.csr[CSR_PMPCFG4][9:8],
-          ins.current.csr[CSR_PMPCFG4][1:0],
-          ins.current.csr[CSR_PMPCFG3][25:24]
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp62cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp61cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp60cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp59cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp58cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp57cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp56cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp55cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp54cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp53cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp52cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp51cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp50cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp49cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp48cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp47cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp46cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp45cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp44cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp43cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp42cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp41cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp40cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp39cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp38cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp37cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp36cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp35cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp34cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp33cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp32cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp31cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp30cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp29cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp28cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp27cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp26cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp25cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp24cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp23cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp22cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp21cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp20cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp19cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp18cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp17cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp16cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp15cfg_xwr")[1:0]
           };
   `endif
   `ifdef UDB_MXLEN_64
     pmpcfg_WR = {
-          ins.current.csr[CSR_PMPCFG14][49:48],
-          ins.current.csr[CSR_PMPCFG14][41:40],
-          ins.current.csr[CSR_PMPCFG14][33:32],
-          ins.current.csr[CSR_PMPCFG14][25:24],
-          ins.current.csr[CSR_PMPCFG14][17:16],
-          ins.current.csr[CSR_PMPCFG14][9:8],
-          ins.current.csr[CSR_PMPCFG14][1:0],
-          ins.current.csr[CSR_PMPCFG12][57:56],
-          ins.current.csr[CSR_PMPCFG12][49:48],
-          ins.current.csr[CSR_PMPCFG12][41:40],
-          ins.current.csr[CSR_PMPCFG12][33:32],
-          ins.current.csr[CSR_PMPCFG12][25:24],
-          ins.current.csr[CSR_PMPCFG12][17:16],
-          ins.current.csr[CSR_PMPCFG12][9:8],
-          ins.current.csr[CSR_PMPCFG12][1:0],
-          ins.current.csr[CSR_PMPCFG10][57:56],
-          ins.current.csr[CSR_PMPCFG10][49:48],
-          ins.current.csr[CSR_PMPCFG10][41:40],
-          ins.current.csr[CSR_PMPCFG10][33:32],
-          ins.current.csr[CSR_PMPCFG10][25:24],
-          ins.current.csr[CSR_PMPCFG10][17:16],
-          ins.current.csr[CSR_PMPCFG10][9:8],
-          ins.current.csr[CSR_PMPCFG10][1:0],
-          ins.current.csr[CSR_PMPCFG8][57:56],
-          ins.current.csr[CSR_PMPCFG8][49:48],
-          ins.current.csr[CSR_PMPCFG8][41:40],
-          ins.current.csr[CSR_PMPCFG8][33:32],
-          ins.current.csr[CSR_PMPCFG8][25:24],
-          ins.current.csr[CSR_PMPCFG8][17:16],
-          ins.current.csr[CSR_PMPCFG8][9:8],
-          ins.current.csr[CSR_PMPCFG8][1:0],
-          ins.current.csr[CSR_PMPCFG6][57:56],
-          ins.current.csr[CSR_PMPCFG6][49:48],
-          ins.current.csr[CSR_PMPCFG6][41:40],
-          ins.current.csr[CSR_PMPCFG6][33:32],
-          ins.current.csr[CSR_PMPCFG6][25:24],
-          ins.current.csr[CSR_PMPCFG6][17:16],
-          ins.current.csr[CSR_PMPCFG6][9:8],
-          ins.current.csr[CSR_PMPCFG6][1:0],
-          ins.current.csr[CSR_PMPCFG4][57:56],
-          ins.current.csr[CSR_PMPCFG4][49:48],
-          ins.current.csr[CSR_PMPCFG4][41:40],
-          ins.current.csr[CSR_PMPCFG4][33:32],
-          ins.current.csr[CSR_PMPCFG4][25:24],
-          ins.current.csr[CSR_PMPCFG4][17:16],
-          ins.current.csr[CSR_PMPCFG4][9:8],
-          ins.current.csr[CSR_PMPCFG4][1:0],
-          ins.current.csr[CSR_PMPCFG2][57:56]
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp62cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp61cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp60cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp59cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp58cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp57cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp56cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp55cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp54cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp53cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp52cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp51cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp50cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp49cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp48cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp47cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp46cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp45cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp44cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp43cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp42cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp41cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp40cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp39cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp38cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp37cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp36cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp35cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp34cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp33cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp32cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp31cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp30cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp29cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp28cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp27cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp26cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp25cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp24cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp23cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp22cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp21cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp20cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp19cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp18cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp17cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp16cfg_xwr")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp15cfg_xwr")[1:0]
           };
   `endif
 
   `ifdef UDB_MXLEN_32
     pmpcfg_X =  {
-          ins.current.csr[CSR_PMPCFG15][18],
-          ins.current.csr[CSR_PMPCFG15][10],
-          ins.current.csr[CSR_PMPCFG15][2],
-          ins.current.csr[CSR_PMPCFG14][26],
-          ins.current.csr[CSR_PMPCFG14][18],
-          ins.current.csr[CSR_PMPCFG14][10],
-          ins.current.csr[CSR_PMPCFG14][2],
-          ins.current.csr[CSR_PMPCFG13][26],
-          ins.current.csr[CSR_PMPCFG13][18],
-          ins.current.csr[CSR_PMPCFG13][10],
-          ins.current.csr[CSR_PMPCFG13][2],
-          ins.current.csr[CSR_PMPCFG12][26],
-          ins.current.csr[CSR_PMPCFG12][18],
-          ins.current.csr[CSR_PMPCFG12][10],
-          ins.current.csr[CSR_PMPCFG12][2],
-          ins.current.csr[CSR_PMPCFG11][26],
-          ins.current.csr[CSR_PMPCFG11][18],
-          ins.current.csr[CSR_PMPCFG11][10],
-          ins.current.csr[CSR_PMPCFG11][2],
-          ins.current.csr[CSR_PMPCFG10][26],
-          ins.current.csr[CSR_PMPCFG10][18],
-          ins.current.csr[CSR_PMPCFG10][10],
-          ins.current.csr[CSR_PMPCFG10][2],
-          ins.current.csr[CSR_PMPCFG9][26],
-          ins.current.csr[CSR_PMPCFG9][18],
-          ins.current.csr[CSR_PMPCFG9][10],
-          ins.current.csr[CSR_PMPCFG9][2],
-          ins.current.csr[CSR_PMPCFG8][26],
-          ins.current.csr[CSR_PMPCFG8][18],
-          ins.current.csr[CSR_PMPCFG8][10],
-          ins.current.csr[CSR_PMPCFG8][2],
-          ins.current.csr[CSR_PMPCFG7][26],
-          ins.current.csr[CSR_PMPCFG7][18],
-          ins.current.csr[CSR_PMPCFG7][10],
-          ins.current.csr[CSR_PMPCFG7][2],
-          ins.current.csr[CSR_PMPCFG6][26],
-          ins.current.csr[CSR_PMPCFG6][18],
-          ins.current.csr[CSR_PMPCFG6][10],
-          ins.current.csr[CSR_PMPCFG6][2],
-          ins.current.csr[CSR_PMPCFG5][26],
-          ins.current.csr[CSR_PMPCFG5][18],
-          ins.current.csr[CSR_PMPCFG5][10],
-          ins.current.csr[CSR_PMPCFG5][2],
-          ins.current.csr[CSR_PMPCFG4][26],
-          ins.current.csr[CSR_PMPCFG4][18],
-          ins.current.csr[CSR_PMPCFG4][10],
-          ins.current.csr[CSR_PMPCFG4][2],
-          ins.current.csr[CSR_PMPCFG3][18]
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp62cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp61cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp60cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp59cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp58cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp57cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp56cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp55cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp54cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp53cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp52cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp51cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp50cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp49cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp48cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp47cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp46cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp45cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp44cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp43cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp42cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp41cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp40cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp39cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp38cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp37cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp36cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp35cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp34cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp33cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp32cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp31cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp30cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp29cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp28cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp27cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp26cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp25cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp24cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp23cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp22cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp21cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp20cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp19cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp18cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp17cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp16cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp14cfg_xwr")[2]
           };
   `endif
   `ifdef UDB_MXLEN_64
     pmpcfg_X =  {
-          ins.current.csr[CSR_PMPCFG14][50],
-          ins.current.csr[CSR_PMPCFG14][42],
-          ins.current.csr[CSR_PMPCFG14][34],
-          ins.current.csr[CSR_PMPCFG14][26],
-          ins.current.csr[CSR_PMPCFG14][18],
-          ins.current.csr[CSR_PMPCFG14][10],
-          ins.current.csr[CSR_PMPCFG14][2],
-          ins.current.csr[CSR_PMPCFG12][58],
-          ins.current.csr[CSR_PMPCFG12][50],
-          ins.current.csr[CSR_PMPCFG12][42],
-          ins.current.csr[CSR_PMPCFG12][34],
-          ins.current.csr[CSR_PMPCFG12][26],
-          ins.current.csr[CSR_PMPCFG12][18],
-          ins.current.csr[CSR_PMPCFG12][10],
-          ins.current.csr[CSR_PMPCFG12][2],
-          ins.current.csr[CSR_PMPCFG10][58],
-          ins.current.csr[CSR_PMPCFG10][50],
-          ins.current.csr[CSR_PMPCFG10][42],
-          ins.current.csr[CSR_PMPCFG10][34],
-          ins.current.csr[CSR_PMPCFG10][26],
-          ins.current.csr[CSR_PMPCFG10][18],
-          ins.current.csr[CSR_PMPCFG10][10],
-          ins.current.csr[CSR_PMPCFG10][2],
-          ins.current.csr[CSR_PMPCFG8][58],
-          ins.current.csr[CSR_PMPCFG8][50],
-          ins.current.csr[CSR_PMPCFG8][42],
-          ins.current.csr[CSR_PMPCFG8][34],
-          ins.current.csr[CSR_PMPCFG8][26],
-          ins.current.csr[CSR_PMPCFG8][18],
-          ins.current.csr[CSR_PMPCFG8][10],
-          ins.current.csr[CSR_PMPCFG8][2],
-          ins.current.csr[CSR_PMPCFG6][58],
-          ins.current.csr[CSR_PMPCFG6][50],
-          ins.current.csr[CSR_PMPCFG6][42],
-          ins.current.csr[CSR_PMPCFG6][34],
-          ins.current.csr[CSR_PMPCFG6][26],
-          ins.current.csr[CSR_PMPCFG6][18],
-          ins.current.csr[CSR_PMPCFG6][10],
-          ins.current.csr[CSR_PMPCFG6][2],
-          ins.current.csr[CSR_PMPCFG4][58],
-          ins.current.csr[CSR_PMPCFG4][50],
-          ins.current.csr[CSR_PMPCFG4][42],
-          ins.current.csr[CSR_PMPCFG4][34],
-          ins.current.csr[CSR_PMPCFG4][26],
-          ins.current.csr[CSR_PMPCFG4][18],
-          ins.current.csr[CSR_PMPCFG4][10],
-          ins.current.csr[CSR_PMPCFG4][2],
-          ins.current.csr[CSR_PMPCFG2][58]
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp62cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp61cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp60cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp59cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp58cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp57cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp56cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp55cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp54cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp53cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp52cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp51cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp50cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp49cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp48cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp47cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp46cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp45cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp44cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp43cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp42cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp41cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp40cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp39cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp38cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp37cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp36cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp35cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp34cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp33cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp32cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp31cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp30cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp29cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp28cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp27cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp26cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp25cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp24cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp23cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp22cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp21cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp20cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp19cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp18cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp17cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp16cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp15cfg_xwr")[2]
           };
   `endif
 
   `ifdef UDB_MXLEN_32
     pmpcfg_x =  {
-          ins.current.csr[CSR_PMPCFG3][18],
-          ins.current.csr[CSR_PMPCFG3][10],
-          ins.current.csr[CSR_PMPCFG3][2],
-          ins.current.csr[CSR_PMPCFG2][26],
-          ins.current.csr[CSR_PMPCFG2][18],
-          ins.current.csr[CSR_PMPCFG2][10],
-          ins.current.csr[CSR_PMPCFG2][2],
-          ins.current.csr[CSR_PMPCFG1][26],
-          ins.current.csr[CSR_PMPCFG1][18],
-          ins.current.csr[CSR_PMPCFG1][10],
-          ins.current.csr[CSR_PMPCFG1][2],
-          ins.current.csr[CSR_PMPCFG0][26],
-          ins.current.csr[CSR_PMPCFG0][18],
-          ins.current.csr[CSR_PMPCFG0][10],
-          ins.current.csr[CSR_PMPCFG0][2]
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp14cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp13cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp12cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp7cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp6cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp5cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp4cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_xwr")[2]
           };
   `endif
   `ifdef UDB_MXLEN_64
     pmpcfg_x =  {
-          ins.current.csr[CSR_PMPCFG2][50],
-          ins.current.csr[CSR_PMPCFG2][42],
-          ins.current.csr[CSR_PMPCFG2][34],
-          ins.current.csr[CSR_PMPCFG2][26],
-          ins.current.csr[CSR_PMPCFG2][18],
-          ins.current.csr[CSR_PMPCFG2][10],
-          ins.current.csr[CSR_PMPCFG2][2],
-          ins.current.csr[CSR_PMPCFG0][58],
-          ins.current.csr[CSR_PMPCFG0][50],
-          ins.current.csr[CSR_PMPCFG0][42],
-          ins.current.csr[CSR_PMPCFG0][34],
-          ins.current.csr[CSR_PMPCFG0][26],
-          ins.current.csr[CSR_PMPCFG0][18],
-          ins.current.csr[CSR_PMPCFG0][10],
-          ins.current.csr[CSR_PMPCFG0][2]
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp14cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp13cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp12cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp7cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp6cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp5cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp4cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_xwr")[2],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_xwr")[2]
           };
   `endif
 
   `ifdef UDB_MXLEN_32
     pmpcfg_a =  {
-          ins.current.csr[CSR_PMPCFG3][20:19],
-          ins.current.csr[CSR_PMPCFG3][12:11],
-          ins.current.csr[CSR_PMPCFG3][4:3],
-          ins.current.csr[CSR_PMPCFG2][28:27],
-          ins.current.csr[CSR_PMPCFG2][20:19],
-          ins.current.csr[CSR_PMPCFG2][12:11],
-          ins.current.csr[CSR_PMPCFG2][4:3],
-          ins.current.csr[CSR_PMPCFG1][28:27],
-          ins.current.csr[CSR_PMPCFG1][20:19],
-          ins.current.csr[CSR_PMPCFG1][12:11],
-          ins.current.csr[CSR_PMPCFG1][4:3],
-          ins.current.csr[CSR_PMPCFG0][28:27],
-          ins.current.csr[CSR_PMPCFG0][20:19],
-          ins.current.csr[CSR_PMPCFG0][12:11],
-          ins.current.csr[CSR_PMPCFG0][4:3]
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp14cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp13cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp12cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp7cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp6cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp5cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp4cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_a")[1:0]
           };
   `endif
   `ifdef UDB_MXLEN_64
     pmpcfg_a =  {
-          ins.current.csr[CSR_PMPCFG2][52:51],
-          ins.current.csr[CSR_PMPCFG2][44:43],
-          ins.current.csr[CSR_PMPCFG2][36:35],
-          ins.current.csr[CSR_PMPCFG2][28:27],
-          ins.current.csr[CSR_PMPCFG2][20:19],
-          ins.current.csr[CSR_PMPCFG2][12:11],
-          ins.current.csr[CSR_PMPCFG2][4:3],
-          ins.current.csr[CSR_PMPCFG0][60:59],
-          ins.current.csr[CSR_PMPCFG0][52:51],
-          ins.current.csr[CSR_PMPCFG0][44:43],
-          ins.current.csr[CSR_PMPCFG0][36:35],
-          ins.current.csr[CSR_PMPCFG0][28:27],
-          ins.current.csr[CSR_PMPCFG0][20:19],
-          ins.current.csr[CSR_PMPCFG0][12:11],
-          ins.current.csr[CSR_PMPCFG0][4:3]
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp14cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp13cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp12cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp7cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp6cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp5cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp4cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_a")[1:0]
           };
   `endif
 
   `ifdef UDB_MXLEN_32
     pmpcfg_A =  {
-          ins.current.csr[CSR_PMPCFG15][20:19],
-          ins.current.csr[CSR_PMPCFG15][12:11],
-          ins.current.csr[CSR_PMPCFG15][4:3],
-          ins.current.csr[CSR_PMPCFG14][28:27],
-          ins.current.csr[CSR_PMPCFG14][20:19],
-          ins.current.csr[CSR_PMPCFG14][12:11],
-          ins.current.csr[CSR_PMPCFG14][4:3],
-          ins.current.csr[CSR_PMPCFG13][28:27],
-          ins.current.csr[CSR_PMPCFG13][20:19],
-          ins.current.csr[CSR_PMPCFG13][12:11],
-          ins.current.csr[CSR_PMPCFG13][4:3],
-          ins.current.csr[CSR_PMPCFG12][28:27],
-          ins.current.csr[CSR_PMPCFG12][20:19],
-          ins.current.csr[CSR_PMPCFG12][12:11],
-          ins.current.csr[CSR_PMPCFG12][4:3],
-          ins.current.csr[CSR_PMPCFG11][28:27],
-          ins.current.csr[CSR_PMPCFG11][20:19],
-          ins.current.csr[CSR_PMPCFG11][12:11],
-          ins.current.csr[CSR_PMPCFG11][4:3],
-          ins.current.csr[CSR_PMPCFG10][28:27],
-          ins.current.csr[CSR_PMPCFG10][20:19],
-          ins.current.csr[CSR_PMPCFG10][12:11],
-          ins.current.csr[CSR_PMPCFG10][4:3],
-          ins.current.csr[CSR_PMPCFG9][28:27],
-          ins.current.csr[CSR_PMPCFG9][20:19],
-          ins.current.csr[CSR_PMPCFG9][12:11],
-          ins.current.csr[CSR_PMPCFG9][4:3],
-          ins.current.csr[CSR_PMPCFG8][28:27],
-          ins.current.csr[CSR_PMPCFG8][20:19],
-          ins.current.csr[CSR_PMPCFG8][12:11],
-          ins.current.csr[CSR_PMPCFG8][4:3],
-          ins.current.csr[CSR_PMPCFG7][28:27],
-          ins.current.csr[CSR_PMPCFG7][20:19],
-          ins.current.csr[CSR_PMPCFG7][12:11],
-          ins.current.csr[CSR_PMPCFG7][4:3],
-          ins.current.csr[CSR_PMPCFG6][28:27],
-          ins.current.csr[CSR_PMPCFG6][20:19],
-          ins.current.csr[CSR_PMPCFG6][12:11],
-          ins.current.csr[CSR_PMPCFG6][4:3],
-          ins.current.csr[CSR_PMPCFG5][28:27],
-          ins.current.csr[CSR_PMPCFG5][20:19],
-          ins.current.csr[CSR_PMPCFG5][12:11],
-          ins.current.csr[CSR_PMPCFG5][4:3],
-          ins.current.csr[CSR_PMPCFG4][28:27],
-          ins.current.csr[CSR_PMPCFG4][20:19],
-          ins.current.csr[CSR_PMPCFG4][12:11],
-          ins.current.csr[CSR_PMPCFG4][4:3],
-          ins.current.csr[CSR_PMPCFG3][28:27]
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp62cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp61cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp60cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp59cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp58cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp57cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp56cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp55cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp54cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp53cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp52cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp51cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp50cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp49cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp48cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp47cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp46cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp45cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp44cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp43cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp42cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp41cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp40cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp39cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp38cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp37cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp36cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp35cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp34cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp33cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp32cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp31cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp30cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp29cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp28cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp27cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp26cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp25cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp24cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp23cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp22cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp21cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp20cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp19cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp18cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp17cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp16cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp15cfg_a")[1:0]
           };
   `endif
   `ifdef UDB_MXLEN_64
     pmpcfg_A =  {
-          ins.current.csr[CSR_PMPCFG14][52:51],
-          ins.current.csr[CSR_PMPCFG14][44:43],
-          ins.current.csr[CSR_PMPCFG14][36:35],
-          ins.current.csr[CSR_PMPCFG14][28:27],
-          ins.current.csr[CSR_PMPCFG14][20:19],
-          ins.current.csr[CSR_PMPCFG14][12:11],
-          ins.current.csr[CSR_PMPCFG14][4:3],
-          ins.current.csr[CSR_PMPCFG12][60:59],
-          ins.current.csr[CSR_PMPCFG12][52:51],
-          ins.current.csr[CSR_PMPCFG12][44:43],
-          ins.current.csr[CSR_PMPCFG12][36:35],
-          ins.current.csr[CSR_PMPCFG12][28:27],
-          ins.current.csr[CSR_PMPCFG12][20:19],
-          ins.current.csr[CSR_PMPCFG12][12:11],
-          ins.current.csr[CSR_PMPCFG12][4:3],
-          ins.current.csr[CSR_PMPCFG10][60:59],
-          ins.current.csr[CSR_PMPCFG10][52:51],
-          ins.current.csr[CSR_PMPCFG10][44:43],
-          ins.current.csr[CSR_PMPCFG10][36:35],
-          ins.current.csr[CSR_PMPCFG10][28:27],
-          ins.current.csr[CSR_PMPCFG10][20:19],
-          ins.current.csr[CSR_PMPCFG10][12:11],
-          ins.current.csr[CSR_PMPCFG10][4:3],
-          ins.current.csr[CSR_PMPCFG8][60:59],
-          ins.current.csr[CSR_PMPCFG8][52:51],
-          ins.current.csr[CSR_PMPCFG8][44:43],
-          ins.current.csr[CSR_PMPCFG8][36:35],
-          ins.current.csr[CSR_PMPCFG8][28:27],
-          ins.current.csr[CSR_PMPCFG8][20:19],
-          ins.current.csr[CSR_PMPCFG8][12:11],
-          ins.current.csr[CSR_PMPCFG8][4:3],
-          ins.current.csr[CSR_PMPCFG6][60:59],
-          ins.current.csr[CSR_PMPCFG6][52:51],
-          ins.current.csr[CSR_PMPCFG6][44:43],
-          ins.current.csr[CSR_PMPCFG6][36:35],
-          ins.current.csr[CSR_PMPCFG6][28:27],
-          ins.current.csr[CSR_PMPCFG6][20:19],
-          ins.current.csr[CSR_PMPCFG6][12:11],
-          ins.current.csr[CSR_PMPCFG6][4:3],
-          ins.current.csr[CSR_PMPCFG4][60:59],
-          ins.current.csr[CSR_PMPCFG4][52:51],
-          ins.current.csr[CSR_PMPCFG4][44:43],
-          ins.current.csr[CSR_PMPCFG4][36:35],
-          ins.current.csr[CSR_PMPCFG4][28:27],
-          ins.current.csr[CSR_PMPCFG4][20:19],
-          ins.current.csr[CSR_PMPCFG4][12:11],
-          ins.current.csr[CSR_PMPCFG4][4:3],
-          ins.current.csr[CSR_PMPCFG2][60:59]
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp62cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp61cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp60cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp59cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp58cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp57cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp56cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp55cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp54cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp53cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp52cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp51cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp50cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp49cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp48cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp47cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp46cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp45cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp44cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp43cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp42cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp41cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp40cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp39cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp38cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp37cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp36cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp35cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp34cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp33cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp32cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp31cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp30cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp29cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp28cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp27cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp26cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp25cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp24cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp23cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp22cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp21cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp20cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp19cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp18cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp17cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp16cfg_a")[1:0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp15cfg_a")[1:0]
           };
   `endif
 
   `ifdef UDB_MXLEN_32
     pmpcfg_L =  {
-          ins.current.csr[CSR_PMPCFG15][23],
-          ins.current.csr[CSR_PMPCFG15][15],
-          ins.current.csr[CSR_PMPCFG15][7],
-          ins.current.csr[CSR_PMPCFG14][31],
-          ins.current.csr[CSR_PMPCFG14][23],
-          ins.current.csr[CSR_PMPCFG14][15],
-          ins.current.csr[CSR_PMPCFG14][7],
-          ins.current.csr[CSR_PMPCFG13][31],
-          ins.current.csr[CSR_PMPCFG13][23],
-          ins.current.csr[CSR_PMPCFG13][15],
-          ins.current.csr[CSR_PMPCFG13][7],
-          ins.current.csr[CSR_PMPCFG12][31],
-          ins.current.csr[CSR_PMPCFG12][23],
-          ins.current.csr[CSR_PMPCFG12][15],
-          ins.current.csr[CSR_PMPCFG12][7],
-          ins.current.csr[CSR_PMPCFG11][31],
-          ins.current.csr[CSR_PMPCFG11][23],
-          ins.current.csr[CSR_PMPCFG11][15],
-          ins.current.csr[CSR_PMPCFG11][7],
-          ins.current.csr[CSR_PMPCFG10][31],
-          ins.current.csr[CSR_PMPCFG10][23],
-          ins.current.csr[CSR_PMPCFG10][15],
-          ins.current.csr[CSR_PMPCFG10][7],
-          ins.current.csr[CSR_PMPCFG9][31],
-          ins.current.csr[CSR_PMPCFG9][23],
-          ins.current.csr[CSR_PMPCFG9][15],
-          ins.current.csr[CSR_PMPCFG9][7],
-          ins.current.csr[CSR_PMPCFG8][31],
-          ins.current.csr[CSR_PMPCFG8][23],
-          ins.current.csr[CSR_PMPCFG8][15],
-          ins.current.csr[CSR_PMPCFG8][7],
-          ins.current.csr[CSR_PMPCFG7][31],
-          ins.current.csr[CSR_PMPCFG7][23],
-          ins.current.csr[CSR_PMPCFG7][15],
-          ins.current.csr[CSR_PMPCFG7][7],
-          ins.current.csr[CSR_PMPCFG6][31],
-          ins.current.csr[CSR_PMPCFG6][23],
-          ins.current.csr[CSR_PMPCFG6][15],
-          ins.current.csr[CSR_PMPCFG6][7],
-          ins.current.csr[CSR_PMPCFG5][31],
-          ins.current.csr[CSR_PMPCFG5][23],
-          ins.current.csr[CSR_PMPCFG5][15],
-          ins.current.csr[CSR_PMPCFG5][7],
-          ins.current.csr[CSR_PMPCFG4][31],
-          ins.current.csr[CSR_PMPCFG4][23],
-          ins.current.csr[CSR_PMPCFG4][15],
-          ins.current.csr[CSR_PMPCFG4][7],
-          ins.current.csr[CSR_PMPCFG3][31]
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp62cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp61cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg15", "pmp60cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp59cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp58cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp57cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp56cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp55cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp54cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp53cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg13", "pmp52cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp51cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp50cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp49cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp48cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp47cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp46cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp45cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg11", "pmp44cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp43cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp42cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp41cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp40cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp39cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp38cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp37cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg9", "pmp36cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp35cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp34cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp33cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp32cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp31cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp30cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp29cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg7", "pmp28cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp27cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp26cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp25cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp24cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp23cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp22cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp21cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg5", "pmp20cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp19cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp18cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp17cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp16cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp15cfg_l")[0]
           };
   `endif
   `ifdef UDB_MXLEN_64
     pmpcfg_L =  {
-          ins.current.csr[CSR_PMPCFG14][55],
-          ins.current.csr[CSR_PMPCFG14][47],
-          ins.current.csr[CSR_PMPCFG14][39],
-          ins.current.csr[CSR_PMPCFG14][31],
-          ins.current.csr[CSR_PMPCFG14][23],
-          ins.current.csr[CSR_PMPCFG14][15],
-          ins.current.csr[CSR_PMPCFG14][7],
-          ins.current.csr[CSR_PMPCFG12][63],
-          ins.current.csr[CSR_PMPCFG12][55],
-          ins.current.csr[CSR_PMPCFG12][47],
-          ins.current.csr[CSR_PMPCFG12][39],
-          ins.current.csr[CSR_PMPCFG12][31],
-          ins.current.csr[CSR_PMPCFG12][23],
-          ins.current.csr[CSR_PMPCFG12][15],
-          ins.current.csr[CSR_PMPCFG12][7],
-          ins.current.csr[CSR_PMPCFG10][63],
-          ins.current.csr[CSR_PMPCFG10][55],
-          ins.current.csr[CSR_PMPCFG10][47],
-          ins.current.csr[CSR_PMPCFG10][39],
-          ins.current.csr[CSR_PMPCFG10][31],
-          ins.current.csr[CSR_PMPCFG10][23],
-          ins.current.csr[CSR_PMPCFG10][15],
-          ins.current.csr[CSR_PMPCFG10][7],
-          ins.current.csr[CSR_PMPCFG8][63],
-          ins.current.csr[CSR_PMPCFG8][55],
-          ins.current.csr[CSR_PMPCFG8][47],
-          ins.current.csr[CSR_PMPCFG8][39],
-          ins.current.csr[CSR_PMPCFG8][31],
-          ins.current.csr[CSR_PMPCFG8][23],
-          ins.current.csr[CSR_PMPCFG8][15],
-          ins.current.csr[CSR_PMPCFG8][7],
-          ins.current.csr[CSR_PMPCFG6][63],
-          ins.current.csr[CSR_PMPCFG6][55],
-          ins.current.csr[CSR_PMPCFG6][47],
-          ins.current.csr[CSR_PMPCFG6][39],
-          ins.current.csr[CSR_PMPCFG6][31],
-          ins.current.csr[CSR_PMPCFG6][23],
-          ins.current.csr[CSR_PMPCFG6][15],
-          ins.current.csr[CSR_PMPCFG6][7],
-          ins.current.csr[CSR_PMPCFG4][63],
-          ins.current.csr[CSR_PMPCFG4][55],
-          ins.current.csr[CSR_PMPCFG4][47],
-          ins.current.csr[CSR_PMPCFG4][39],
-          ins.current.csr[CSR_PMPCFG4][31],
-          ins.current.csr[CSR_PMPCFG4][23],
-          ins.current.csr[CSR_PMPCFG4][15],
-          ins.current.csr[CSR_PMPCFG4][7],
-          ins.current.csr[CSR_PMPCFG2][63]
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp62cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp61cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp60cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp59cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp58cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp57cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg14", "pmp56cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp55cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp54cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp53cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp52cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp51cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp50cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp49cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg12", "pmp48cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp47cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp46cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp45cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp44cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp43cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp42cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp41cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg10", "pmp40cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp39cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp38cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp37cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp36cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp35cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp34cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp33cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg8", "pmp32cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp31cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp30cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp29cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp28cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp27cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp26cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp25cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg6", "pmp24cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp23cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp22cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp21cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp20cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp19cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp18cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp17cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg4", "pmp16cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp15cfg_l")[0]
           };
   `endif
 
   `ifdef UDB_MXLEN_32
     pmpcfg_l =  {
-          ins.current.csr[CSR_PMPCFG3][23],
-          ins.current.csr[CSR_PMPCFG3][15],
-          ins.current.csr[CSR_PMPCFG3][7],
-          ins.current.csr[CSR_PMPCFG2][31],
-          ins.current.csr[CSR_PMPCFG2][23],
-          ins.current.csr[CSR_PMPCFG2][15],
-          ins.current.csr[CSR_PMPCFG2][7],
-          ins.current.csr[CSR_PMPCFG1][31],
-          ins.current.csr[CSR_PMPCFG1][23],
-          ins.current.csr[CSR_PMPCFG1][15],
-          ins.current.csr[CSR_PMPCFG1][7],
-          ins.current.csr[CSR_PMPCFG0][31],
-          ins.current.csr[CSR_PMPCFG0][23],
-          ins.current.csr[CSR_PMPCFG0][15],
-          ins.current.csr[CSR_PMPCFG0][7]
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp14cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp13cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg3", "pmp12cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp7cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp6cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp5cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg1", "pmp4cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_l")[0]
           };
   `endif
   `ifdef UDB_MXLEN_64
     pmpcfg_l =  {
-          ins.current.csr[CSR_PMPCFG2][55],
-          ins.current.csr[CSR_PMPCFG2][47],
-          ins.current.csr[CSR_PMPCFG2][39],
-          ins.current.csr[CSR_PMPCFG2][31],
-          ins.current.csr[CSR_PMPCFG2][23],
-          ins.current.csr[CSR_PMPCFG2][15],
-          ins.current.csr[CSR_PMPCFG2][7],
-          ins.current.csr[CSR_PMPCFG0][63],
-          ins.current.csr[CSR_PMPCFG0][55],
-          ins.current.csr[CSR_PMPCFG0][47],
-          ins.current.csr[CSR_PMPCFG0][39],
-          ins.current.csr[CSR_PMPCFG0][31],
-          ins.current.csr[CSR_PMPCFG0][23],
-          ins.current.csr[CSR_PMPCFG0][15],
-          ins.current.csr[CSR_PMPCFG0][7]
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp14cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp13cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp12cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp11cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp10cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp9cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg2", "pmp8cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp7cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp6cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp5cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp4cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp3cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp2cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp1cfg_l")[0],
+          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_l")[0]
           };
   `endif
   PMPSm_cg.sample(ins, pmpcfg, pmpaddr, pack_pmpaddr, pmpcfg_wr, pmpcfg_WR, pmpcfg_a, pmpcfg_A, pmpcfg_x, pmpcfg_X, pmpcfg_l, pmpcfg_L, pmp_hit, pmp_HIT);

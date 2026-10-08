@@ -25,7 +25,7 @@ from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig,
 from testgen.instructions.vector import parse_vector_instruction_info
 
 
-def unordered_index_element_generator(element_count: int, sew: int) -> list[int]:
+def unordered_index_element_generator(element_count: int, sew: int, _register: str) -> list[int]:
     # vlmax can take on values of any power of two, from 1 to the power of two exceeding element_count
     # All items in the generated list from [0, vlmax) must be unique mod 2*vlmax for all possible vlmaxes
     # LIMITATIONS: For SEW=8, unique indices are not guaranteed
@@ -141,7 +141,7 @@ def format_vsxseg_like_type(
     if params.maskval:
         setup.extend(prep_mask_v(params.maskval, test_data, params))
 
-    reload_register = random.choice(list(test_data.vec_regs.free_registers(int(max(params.lmul, 1)), segments)))
+    reload_register = random.choice(test_data.vec_regs.free_registers(int(max(params.lmul, 1)), segments))
     params.vd = reload_register
     params.vd_val_pointer = "NOT_A_LABEL"  # Placeholder value that should NOT end up in generated code
     test_data.vec_regs.allocate_operand("vd", reload_register, int(max(params.lmul, 1)) * segments)
@@ -189,12 +189,19 @@ def format_vsxseg_like_type(
         else:
             assert isinstance(params.vl, int)
             setup.append(f"vsetivli x0, {params.vl}, e{index_eew}, m{get_lmul_flag(index_emul)}, tu, mu")
-        # Construct a factor that masks off the correct bits to align load to the SEW
-        sew_alignment_factor = -params.sew // 8
+        # Construct a factor that shifts an index so that the correct alignment is read
+        # This will not overflow the specified space as the vlmax calculation implicitly
+        # takes into account SEW
+        index_alignment_factor = params.sew // 8 * segments
+        # Turn this into a bit shift for the nearest power of 2
+        index_alignment_shift = index_alignment_factor.bit_length() - 1
+        if 2**index_alignment_shift < index_alignment_factor:
+            index_alignment_shift += 1
+
         setup.extend(
             [
                 f"vremu.vx v{params.vs2}, v{params.vs2}, x{params.temp_reg}",
-                f"vand.vi v{params.vs2}, v{params.vs2}, {sew_alignment_factor}",
+                f"vsll.vi v{params.vs2}, v{params.vs2}, {index_alignment_shift}",
             ]
         )
 

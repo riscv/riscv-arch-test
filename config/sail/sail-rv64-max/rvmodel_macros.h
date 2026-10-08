@@ -25,8 +25,8 @@
 
 // Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
 // if defined.  For most DUTs, the default should work and this macro
-// should not be defined.  If no M-mode or CSRs are implemented, define this
-// macro as blank to bypass the boot process.  If a nonconforming
+// should not be defined.  If the DUT has no standard M-mode CSRs, do not
+// define STANDARD_SM_SUPPORTED.  If a nonconforming
 // M-mode is implemented, define this macro to set up the necessary
 // state in a fashion similar to RVTEST_BOOT_TO_MMODE.
 //#define RVMODEL_BOOT_TO_MMODE
@@ -101,7 +101,7 @@
 // Interrupt latency configuration
 #define RVMODEL_INTERRUPT_LATENCY 1
 
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
+#define RVMODEL_TIMER_INT_SOON_DELAY 5000
 
 #define SIG_ADDRESS  (0xC000000 + 0x4)  /* Address of memory mapped simple interrupt generator */
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)        \
@@ -116,17 +116,6 @@
   sw _R1, 0(_R2)            ; /* Clear MEXT interrupt */ \
 
 #define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
-#define RVMODEL_SET_MSW_INT(_R1, _R2)        \
-  li _R1, 1;                 \
-  li _R2, RVMODEL_MSIP_ADDRESS;              \
-  sw _R1, 0(_R2);
-
-
-#define RVMODEL_CLR_MSW_INT(_R1, _R2)        \
-  li _R2, RVMODEL_MSIP_ADDRESS;              \
-  sw zero, 0(_R2);
-
-
 
 ##### Supervisor Interrupts #####
 

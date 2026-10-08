@@ -11,24 +11,15 @@ implemented_extensions:
   - { name: C, version: "= 2.0" }
   - { name: D, version: "= 2.2.0" }
   - { name: F, version: "= 2.2.0" }
-  - { name: H, version: "= 1.0.0" }
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
   - { name: Q, version: "= 2.2.0" }
   - { name: S, version: "= 1.13.0" }
   - { name: Sdext, version: "= 1.0.0" }
   - { name: Sdtrig, version: "= 1.0.0" }
-  - { name: Sha, version: "= 1.0.0" }
-  - { name: Shcounterenw, version: "= 1.0.0" }
-  - { name: Shgatpa, version: "= 1.0.0" }
-  - { name: Shtvala, version: "= 1.0.0" }
-  - { name: Shvsatpa, version: "= 1.0.0" }
-  - { name: Shvstvala, version: "= 1.0.0" }
-  - { name: Shvstvecd, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.13.0" }
   - { name: Smaia, version: "= 1.0.0" }
   - { name: Smcdeleg, version: "= 1.0.0" }
-  - { name: Smcntrpmf, version: "= 1.0.0" }
   - { name: Smcsrind, version: "= 1.0.0" }
   - { name: Smctr, version: "= 1.0.0" }
   - { name: Smdbltrp, version: "= 1.0.0" }
@@ -42,8 +33,7 @@ implemented_extensions:
   - { name: Sscounterenw, version: "= 1.0.0" }
   - { name: Sscsrind, version: "= 1.0.0" }
   - { name: Ssctr, version: "= 1.0.0" }
-  - { name: Ssdbltrp, version: "= 1.0.0" }
-  - { name: Ssqosid, version: "= 1.0.0" }
+  # - { name: Ssdbltrp, version: "= 1.0.0" } # Imperas exposes mtval2 (0x34b) with this enabled and H absent
   - { name: Ssstateen, version: "= 1.0.0" }
   - { name: Ssstrict, version: "= 1.0.0" }
   - { name: Sstc, version: "= 1.0.0" }
@@ -72,6 +62,7 @@ implemented_extensions:
   - { name: Zba, version: "= 1.0.0" }
   - { name: Zbb, version: "= 1.0.0" }
   - { name: Zbc, version: "= 1.0.0" }
+  - { name: Zbkc, version: "= 1.0.0" }
   - { name: Zbs, version: "= 1.0.0" }
   - { name: Zca, version: "= 1.0.0" }
   - { name: Zcb, version: "= 1.0.0" }
@@ -119,6 +110,7 @@ implemented_extensions:
   - { name: Zvl512b, version: "= 1.0.0" }
 
 params:
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
   # A params
   MISALIGNED_AMO: false
   LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
@@ -149,11 +141,15 @@ params:
   # Zicntr params
   TIME_CSR_IMPLEMENTED: true
   # U params
+  WFI_U_MODE: false
   MUTABLE_MISA_U: false
   U_MODE_ENDIANNESS: dynamic
   UXLEN: [32]
   TRAP_ON_ECALL_FROM_U: true
   # S params
+  SEI_INTR_IMPL: true
+  SSI_INTR_IMPL: true
+  STI_INTR_IMPL: true
   MUTABLE_MISA_S: false
   ASID_WIDTH: 9
   S_MODE_ENDIANNESS: dynamic
@@ -214,6 +210,10 @@ params:
   TRAP_ON_ECALL_FROM_S: true
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
   # Sm params
+  MEI_INTR_IMPL: false
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  WFI_FINITE: true
   MXLEN: 32
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
@@ -292,6 +292,35 @@ params:
       true,
       true,
     ]
+  HPM_COUNTER3_WIDTH: 64
+  HPM_COUNTER4_WIDTH: 64
+  HPM_COUNTER5_WIDTH: 64
+  HPM_COUNTER6_WIDTH: 64
+  HPM_COUNTER7_WIDTH: 64
+  HPM_COUNTER8_WIDTH: 64
+  HPM_COUNTER9_WIDTH: 64
+  HPM_COUNTER10_WIDTH: 64
+  HPM_COUNTER11_WIDTH: 64
+  HPM_COUNTER12_WIDTH: 64
+  HPM_COUNTER13_WIDTH: 64
+  HPM_COUNTER14_WIDTH: 64
+  HPM_COUNTER15_WIDTH: 64
+  HPM_COUNTER16_WIDTH: 64
+  HPM_COUNTER17_WIDTH: 64
+  HPM_COUNTER18_WIDTH: 64
+  HPM_COUNTER19_WIDTH: 64
+  HPM_COUNTER20_WIDTH: 64
+  HPM_COUNTER21_WIDTH: 64
+  HPM_COUNTER22_WIDTH: 64
+  HPM_COUNTER23_WIDTH: 64
+  HPM_COUNTER24_WIDTH: 64
+  HPM_COUNTER25_WIDTH: 64
+  HPM_COUNTER26_WIDTH: 64
+  HPM_COUNTER27_WIDTH: 64
+  HPM_COUNTER28_WIDTH: 64
+  HPM_COUNTER29_WIDTH: 64
+  HPM_COUNTER30_WIDTH: 64
+  HPM_COUNTER31_WIDTH: 64
   HPM_EVENTS: [0]
   MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
@@ -379,12 +408,12 @@ params:
   VECTOR_LS_INDEX_MAX_EEW: "64"
   VECTOR_FF_UPDATE_PAST_TRIM: "update_none"
   VECTOR_FF_SEG_EXCEPTION_PARTIAL_LOAD: "no_subsegment_loaded"
-  VECTOR_LS_MISALIGNED_LEGAL: true
+  VECTOR_LS_MISALIGNED_LEGAL: false
   VECTOR_LOAD_PAST_TRAP: false
   VECTOR_LOAD_SEG_FF_OVERWRITE_ELEMENTS_AFTER_FAULT: "no_overwrite"
   VECTOR_LS_SEG_PARTIAL_ACCESS: false
   LEGAL_VSTART: "1_stride"
-  VECTOR_LS_WHOLEREG_MISALIGNED_LEGAL: true
+  VECTOR_LS_WHOLEREG_MISALIGNED_LEGAL: false
   VSSTATUS_VS_EXISTS: true
   VECTOR_FF_NO_EXCEPTION_TRIM: false
   VFREDUSUM_NAN: "no_change"
@@ -392,90 +421,6 @@ params:
   VFREDUSUM_INACTIVE_NODE_ELEMENT_BEHAVIOR: "additive_identity"
   VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR: "additive_identity"
   IMPRECISE_VECTOR_TRAP_SETTABLE: false
-  # H params
-  MUTABLE_MISA_H: false
-  VSXLEN: [32]
-  VUXLEN: [32]
-  VMID_WIDTH: 7
-  VS_MODE_ENDIANNESS: little
-  VU_MODE_ENDIANNESS: little
-  GSTAGE_MODE_BARE: true
-  VSSTAGE_MODE_BARE: true
-  VSTVEC_MODES: [0, 1]
-  HSTATEEN_ENVCFG_TYPE: rw
-  IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
-  NUM_EXTERNAL_GUEST_INTERRUPTS: 31
-  REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION: true
-  REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION: true
-  REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT: true
-  REPORT_GPA_IN_TVAL_ON_INSTRUCTION_GUEST_PAGE_FAULT: true
-  REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT: true
-  REPORT_GPA_IN_TVAL_ON_LOAD_GUEST_PAGE_FAULT: true
-  REPORT_GPA_IN_TVAL_ON_STORE_AMO_GUEST_PAGE_FAULT: true
-  REPORT_VA_IN_VSTVAL_ON_BREAKPOINT: true
-  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
-  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED: true
-  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT: true
-  REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT: true
-  REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED: true
-  REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT: true
-  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT: true
-  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED: true
-  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT: true
-  SV32_VSMODE_TRANSLATION: true
-  SV32X4_TRANSLATION: true
-  TINST_VALUE_ON_BREAKPOINT: "always zero"
-  TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED: "always zero"
-  TINST_VALUE_ON_LOAD_ACCESS_FAULT: "always zero"
-  TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED: "always zero"
-  TINST_VALUE_ON_LOAD_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_MCALL: "always zero"
-  TINST_VALUE_ON_SCALL: "always zero"
-  TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT: "always zero"
-  TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED: "always zero"
-  TINST_VALUE_ON_STORE_AMO_PAGE_FAULT: "always zero"
-  TINST_VALUE_ON_UCALL: "always zero"
-  TINST_VALUE_ON_VIRTUAL_INSTRUCTION: "always zero"
-  TINST_VALUE_ON_VSCALL: "always zero"
-  TRAP_ON_ECALL_FROM_VS: true
-  HCOUNTENABLE_EN:
-    [
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-    ]
   # Zicfilp params
   REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK: true
   REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK: true
@@ -491,24 +436,18 @@ params:
   DCSR_STEPIE_TYPE: rw
   DCSR_STOPCOUNT_TYPE: rw
   DCSR_STOPTIME_TYPE: rw
-  HCONTEXT_AVAILABLE: true
-  HSTATEEN_CONTEXT_TYPE: rw
+  HCONTEXT_AVAILABLE: false
   MCONTEXT_AVAILABLE: true
-  # Ssqosid params
-  MCID_WIDTH: 12
-  RCID_WIDTH: 12
   # Smstateen params
   MSTATEEN_ENVCFG_TYPE: rw
   MSTATEEN_CONTEXT_TYPE: rw
   # Csrind params
-  HSTATEEN_CSRIND_TYPE: rw
   MSTATEEN_CSRIND_TYPE: rw
   # AIA params
-  HSTATEEN_AIA_TYPE: rw
   MSTATEEN_AIA_TYPE: rw
   MSTATEEN_IMSIC_TYPE: rw
-  HSTATEEN_IMSIC_TYPE: rw
   # Smctr params
+  SCTRDEPTH_DEPTH_LEGAL_VALUES: [16, 32, 64, 128, 256]
   MCTRCTL_CORSWAPINH_IMPLEMENTED: true
   MCTRCTL_CUSTOM_IMPLEMENTED: false
   MCTRCTL_DIRCALLINH_IMPLEMENTED: true

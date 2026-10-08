@@ -28,9 +28,12 @@ def tsbi_call(instr: str) -> str:
     """
 
     normalized_instr = _normalize_instr(instr)
+    if normalized_instr.lower() == "sfence.vma":
+        return f"{INDENT}RVTEST_TSBI_SFENCE_VMA # T-SBI call to execute instruction: {instr}"
     rs1 = get_rs1(normalized_instr)
     rs2 = get_rs2(normalized_instr)
     rd = get_rd(normalized_instr)
+    opcode = add_opcode(normalized_instr, rs1, rs2, rd)
 
     preamble = []
     postscript = []
@@ -45,11 +48,34 @@ def tsbi_call(instr: str) -> str:
         [
             f"{INDENT}# T-SBI call to execute instruction: {instr}",
             *preamble,
-            f"{INDENT}LI(a0, {add_opcode(normalized_instr, rs1, rs2, rd)}) # {instr}",
+            f"{INDENT}LI(a0, {opcode}) # {instr}",
             f"{INDENT}ecall # T-SBI call to execute instruction at suitable privilege level",
             *postscript,
         ]
     )
+
+
+# Highest CSR privilege level, csr[9:8], that code in each mode may access directly. Level 2 holds the
+# hypervisor and VS CSRs, which exist only with H, and S-mode is HS-mode then.
+_MAX_CSR_LEVEL = {"M": 3, "S": 2, "VS": 1, "U": 0, "VU": 0}
+
+
+def tsbi_call_or_direct(instr: str, mode: str) -> str:
+    """
+    Generate a CSR instruction that runs directly when ``mode`` may access the CSR, otherwise through T-SBI.
+
+    Args:
+      instr: csrr/csrw/csrs/csrc instruction, optionally followed by a # comment
+      mode: privilege mode the code runs in: "M", "S" (HS when H is implemented), "VS", "U" or "VU"
+
+    Returns:
+      instr unchanged, or the T-SBI call that executes it
+    """
+    csr_match = _CSR_INSTR_RE.fullmatch(_normalize_instr(instr))
+    if csr_match is None:
+        raise ValueError(f"tsbi_call_or_direct takes a csrr/csrw/csrs/csrc instruction: {instr}")
+    csr = csr_match.group(3) if csr_match.group(1).lower() == "csrr" else csr_match.group(2)
+    return instr if _MAX_CSR_LEVEL[mode] >= (_parse_csr(csr) >> 8) & 3 else tsbi_call(instr)
 
 
 _REGISTER_ALIASES = {
@@ -93,11 +119,13 @@ _CSR_ALIASES = {
     "sie": 0x104,
     "stvec": 0x105,
     "scounteren": 0x106,
+    "senvcfg": 0x10A,
     "sscratch": 0x140,
     "sepc": 0x141,
     "scause": 0x142,
     "sip": 0x144,
-    "senvcfg": 0x10A,
+    "stimecmp": 0x14D,
+    "stimecmph": 0x15D,
     "satp": 0x180,
     "mstatus": 0x300,
     "misa": 0x301,
@@ -106,15 +134,18 @@ _CSR_ALIASES = {
     "mie": 0x304,
     "mtvec": 0x305,
     "mcounteren": 0x306,
+    "menvcfg": 0x30A,
+    "mstateen0": 0x30C,
+    "menvcfgh": 0x31A,
+    "mstateen0h": 0x31C,
+    "mcountinhibit": 0x320,
     "mscratch": 0x340,
     "mepc": 0x341,
     "mcause": 0x342,
     "mip": 0x344,
-    "menvcfg": 0x30A,
+    "scontext": 0x5A8,
+    "hcontext": 0x6A8,
     "mseccfg": 0x747,
-    "menvcfgh": 0x31A,
-    "stimecmp": 0x14D,
-    "stimecmph": 0x15D,
     "tselect": 0x7A0,
     "tdata1": 0x7A1,
     "tdata2": 0x7A2,
@@ -123,8 +154,6 @@ _CSR_ALIASES = {
     "tcontrol": 0x7A5,
     "mcontext": 0x7A8,
     "mscontext": 0x7AA,
-    "scontext": 0x5A8,
-    "hcontext": 0x6A8,
 }
 
 

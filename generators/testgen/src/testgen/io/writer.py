@@ -53,6 +53,7 @@ def write_test_file(
     file_idx: int = 0,
     extra_defines: list[str] | None = None,
     split_name: str | None = None,
+    vdsew: int = 0,
 ) -> Path:
     """
     Write a single test file and return its path.
@@ -65,6 +66,7 @@ def write_test_file(
         file_idx: File index for the filename suffix (default 00)
         extra_defines: Additional #define statements for the test (e.g., trap handlers)
         split_name: Named-split label for priv tests (mutually exclusive with instr_name)
+        vdsew: EEW of the destination vector register (if applicable, used in calculation of SIG_STRIDE)
     """
     if instr_name is not None and split_name is not None:
         raise ValueError("instr_name and split_name are mutually exclusive (unpriv tests should not use split_name).")
@@ -78,10 +80,16 @@ def write_test_file(
     vector_data_labels = [label for tc in test_chunks for label in tc.vector_labels]
     data_strings = [s for tc in test_chunks for s in tc.data_strings]
     sigupd_count = SIGUPD_MARGIN + sum(tc.sigupd_count for tc in test_chunks)
+    trap_sigupd_count = sum(tc.trap_sigupd_count for tc in test_chunks)
+    extra_defines = list(extra_defines or [])
+    if trap_sigupd_count:
+        extra_defines.append(f"#define TRAP_SIGUPD_COUNT {trap_sigupd_count}")
+    if any("RVTEST_TEST_CSR" in line for tc in test_chunks for line in tc.code):
+        extra_defines.append("#define RVTEST_USES_TEST_CSR")
 
     # Construct filename and paths
     if instr_name is not None:
-        filename = f"{testsuite}-{instr_name}-{file_idx:02d}.S"
+        filename = f"{test_config.name_prefix}-{instr_name}-{file_idx:02d}.S"
     elif split_name is not None:
         filename = f"{testsuite}_{split_name}-{file_idx:02d}.S"
     else:
@@ -98,23 +106,27 @@ def write_test_file(
 
     # Main test body: banner comment before coverpoint sections, 1 blank line between test chunks
     # Apply indent_asm to each line to ensure consistent indentation
-    body = ""
+    body_parts: list[str] = []
     # Re-establish signature/data pointers if the first chunk expects non-default registers
     # (because an earlier file's chunks relocated them via mv)
     reinit = _reinit_pointer_registers(test_chunks[0])
     if reinit:
-        body += reinit + "\n\n"
+        body_parts.append(reinit + "\n\n")
     for i, tc in enumerate(test_chunks):
         if tc.section_header:
             # Banner comment before coverpoint sections
-            body += tc.section_header + "\n\n"
+            body_parts.append(tc.section_header + "\n\n")
         elif i > 0:
-            body += "\n\n"
-        body += "\n".join(indent_asm(line) for line in "\n".join(tc.code).split("\n"))
+            body_parts.append("\n\n")
+        body_parts.append("\n".join(indent_asm(line) for code in tc.code for line in code.split("\n")))
+    body = "".join(body_parts)
 
     # Test footer
-    test_data_section = generate_test_data_section(data_values, test_config.xlen, test_config.flen)
-    test_data_section += generate_vector_data_section(vector_data_labels)
+    test_data_section = generate_test_data_section(data_values, test_config.xlen, test_config.flen, vdsew)
+    vector_data_section = generate_vector_data_section(vector_data_labels)
+    if test_data_section != "" and vector_data_section != "":
+        test_data_section += "\n"
+    test_data_section += vector_data_section
     if raw_data:
         raw_data_lines = "\n".join(raw_data).splitlines()
         test_data_section += "\n" + "\n".join(indent_asm(line) for line in raw_data_lines)
@@ -125,7 +137,8 @@ def write_test_file(
     test_string = f"{header}\n{body}\n{footer}"
 
     # Write test file if different from existing file. This avoids unnecessary rebuilds.
-    if not test_file.exists() or test_file.read_text() != test_string:
-        test_file.write_text(test_string)
+    test_bytes = test_string.encode()
+    if not test_file.exists() or test_file.read_bytes() != test_bytes:
+        test_file.write_bytes(test_bytes)
 
     return test_file

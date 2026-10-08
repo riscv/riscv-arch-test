@@ -54,13 +54,8 @@ RVTEST_BEGIN
 #define PMPREGION_LXWR_1111 (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(0))
 
 #define REGIONSTART TEST_FOR_EXECUTION
-#if UDB_PMP_GRANULARITY != 2
-#define PMP_MASK        ~((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
-#define PMP_REGION_SIZE ((1 << (UDB_PMP_GRANULARITY - 3)) - 1)
-#else
-#define PMP_MASK        ~0
-#define PMP_REGION_SIZE 0
-#endif
+#define PMP_REGION_SIZE (((1 << (UDB_PMP_GRANULARITY - 2)) - 1) >> 1)
+#define PMP_MASK        ~PMP_REGION_SIZE
 
   RVTEST_PMP_SET_BACKGROUND x4
 
@@ -319,13 +314,14 @@ RVTEST_DATA_BEGIN
   .option push
   .option norvc
 TEST_FOR_EXECUTION_0:
-  .rept (PMP_TOR_REGION_BYTES / 4)
+  .rept PMP_NAPOT_REGION_PAD_WORDS
   jr ra
   .endr
   .option pop
 TEST_FOR_EXECUTION:
   .rept (PMP_TOR_REGION_BYTES / 4)
-  nop
+  c.nop
+  c.nop
   .endr
   .option push
   .option norvc

@@ -25,6 +25,10 @@
 #define SAIL_MTIME_ADDRESS (SAIL_CLINT_BASE_ADDRESS + 0xBFF8)
 #define SAIL_SIG_ADDRESS (SAIL_SIMPLE_INTERRUPT_GENERATOR_BASE_ADDRESS + 0x4)
 
+// Don't use invisible trap emulation for expected result generation
+#undef RVTEST_EMULATE_TIME_CSR
+#undef RVMODEL_INVISIBLE_TRAP_HANDLER
+
 #undef RVMODEL_DATA_SECTION
 #define RVMODEL_DATA_SECTION \
         .pushsection .tohost,"aw",@progbits;                \
@@ -122,9 +126,10 @@
 #define RVMODEL_INTERRUPT_LATENCY 1
 
 #undef RVMODEL_TIMER_INT_SOON_DELAY
-#define RVMODEL_TIMER_INT_SOON_DELAY 100
+#define RVMODEL_TIMER_INT_SOON_DELAY 5000 // Sail ticks once per instruction; T-SBI round trips in the *_INT_SOON macros cost up to ~1000 ticks
 
 #undef RVMODEL_SET_MEXT_INT
+#undef RVMODEL_SET_MEXT_INT_M
 #define RVMODEL_SET_MEXT_INT(_R1, _R2)        \
   li _R1, (1 << 31) | (1 << 11);               \
   li _R2, SAIL_SIG_ADDRESS;    \
@@ -153,6 +158,7 @@
 
 ##### Supervisor Interrupts #####
 #undef RVMODEL_SET_SEXT_INT
+#undef RVMODEL_SET_SEXT_INT_M
 #define RVMODEL_SET_SEXT_INT(_R1, _R2)        \
   li _R1, (1 << 31) | (1 << 9);               \
   li _R2, SAIL_SIG_ADDRESS;    \

@@ -12,11 +12,6 @@ concurrency:
   group: "${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}"
   cancel-in-progress: true
 
-env:
-  SAIL_VERSION: "0.13.1"
-  RISCV_TOOLCHAIN_VERSION: "2026.08.27"
-  LLVM_VERSION: "23"
-
 permissions:
   contents: read
 
@@ -32,7 +27,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
 
       - name: Run prek
         uses: j178/prek-action@4e14d07f9231acabce116ccfca13b13dd9755ece # v3.0.0
@@ -54,9 +49,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
-        with:
-          udb-gems: "true"
+        uses: $/.github/actions/setup-tools
 
       # The act build cache is content-hash based and self-validating, so a
       # stale restore is safe: only configs whose UDB yaml changed rebuild.
@@ -73,8 +66,10 @@ jobs:
 
       # Generated tests (e.g. priv) are not checked in but count toward the
       # suite weights used for shard bin-packing, so generate them first.
+      # EXCLUDE_EXTENSIONS='' overrides the Makefile's default exclusions, so
+      # each simulator's ci.yaml exclude_extensions decides what CI skips.
       - name: Generate tests
-        run: make tests --jobs "$(nproc)"
+        run: EXCLUDE_EXTENSIONS='' make tests --jobs "$(nproc)"
 
       - name: Discover CI configs
         id: discover
@@ -98,9 +93,9 @@ jobs:
           persist-credentials: false
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
         with:
-          udb-gems: "true"
+          install-architecture-tools: ${{ matrix.extensions != '' }}
 
       - name: Report shard assignment
         env:
@@ -112,54 +107,6 @@ jobs:
           else
             echo "Shard $((MATRIX_SHARD_INDEX + 1))/${MATRIX_SHARD_TOTAL} extensions: ${MATRIX_EXTENSIONS}"
           fi
-
-      - name: Install sail-riscv model
-        if: matrix.extensions != ''
-        run: |
-          runner_uname=$(uname)
-          runner_arch=$(arch)
-          sudo mkdir -p /usr/local
-          curl --location "https://github.com/riscv/sail-riscv/releases/download/${SAIL_VERSION}/sail-riscv-${runner_uname}-${runner_arch}.tar.gz" \
-          | sudo tar xvz --directory=/usr/local --strip-components=1
-
-      - name: Install RISC-V GCC toolchain
-        if: matrix.extensions != ''
-        run: |
-          curl --location "https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${RISCV_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz" \
-          | sudo tar xvJ --directory=/usr/local --strip-components=1
-
-      - name: Install Clang
-        if: matrix.extensions != ''
-        run: |
-          retry() {
-            local max_attempts="$1"
-            shift
-            local attempt=1
-            while ! "$@"; do
-              if [ "$attempt" -ge "$max_attempts" ]; then
-                echo "Command failed after ${attempt} attempts: $*"
-                return 1
-              fi
-              local backoff=$((attempt * 10))
-              echo "Attempt ${attempt} failed: $*"
-              echo "Retrying in ${backoff}s..."
-              sleep "$backoff"
-              attempt=$((attempt + 1))
-            done
-          }
-
-          curl --fail --location --retry 5 --retry-all-errors --retry-delay 5 \
-            https://apt.llvm.org/llvm.sh \
-            --output /tmp/llvm.sh
-          chmod +x /tmp/llvm.sh
-
-          retry 3 sudo bash /tmp/llvm.sh "$LLVM_VERSION"
-          retry 3 sudo apt-get update
-          retry 3 sudo apt-get install -y -o Acquire::Retries=3 \
-            clang-"$LLVM_VERSION" lld-"$LLVM_VERSION" llvm-"$LLVM_VERSION"
-          for tool in clang clang++ lld llvm-objdump llvm-as llvm-ar llvm-nm llvm-readelf; do
-            sudo ln -sf "/usr/bin/${tool}-${LLVM_VERSION}" "/usr/bin/${tool}"
-          done
 
       - name: Install runtime dependencies
         if: matrix.extensions != '' && matrix.apt_packages != ''
@@ -203,7 +150,7 @@ jobs:
 
       - name: Generate tests and coverpoints
         if: matrix.extensions != ''
-        run: EXTENSIONS="${MATRIX_EXTENSIONS}" make tests --jobs "$(nproc)"
+        run: EXCLUDE_EXTENSIONS='' EXTENSIONS="${MATRIX_EXTENSIONS}" make tests --jobs "$(nproc)"
 
       - name: Build ELFs
         if: matrix.extensions != ''
@@ -232,6 +179,72 @@ jobs:
           name: ${{ matrix.config }}${{ matrix.shard_suffix }}-logs
           path: work/${{ matrix.config }}/logs
 
+  spike-rv64-experimental:
+    name: Spike (experimental extensions)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Set up tools
+        uses: $/.github/actions/setup-tools
+        with:
+          install-architecture-tools: "true"
+
+      - name: Install runtime dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y device-tree-compiler libboost-regex-dev libboost-system-dev
+
+      - name: Compute simulator cache key
+        id: spike-cache-key
+        run: |
+          hash="$(sha256sum .github/scripts/install-spike.sh)"
+          echo "key=spike-${hash:0:12}" >> "$GITHUB_OUTPUT"
+
+      - name: Restore cached simulator
+        id: cache-restore
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ${{ github.workspace }}/spike
+          key: ${{ steps.spike-cache-key.outputs.key }}
+
+      - name: Install simulator
+        if: steps.cache-restore.outputs.cache-hit != 'true'
+        run: bash .github/scripts/install-spike.sh "${GITHUB_WORKSPACE}/spike"
+
+      - name: Save cached simulator
+        if: steps.cache-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: ${{ github.workspace }}/spike
+          key: ${{ steps.spike-cache-key.outputs.key }}
+
+      - name: Add simulator to PATH
+        run: echo "$GITHUB_WORKSPACE/spike/bin" >> "$GITHUB_PATH"
+
+      - name: Build ELFs
+        run: |
+          FAST=True \
+          ENABLE_EXPERIMENTAL_EXTENSIONS=True \
+          EXTENSIONS=I \
+          CONFIG_FILES=config/spike/spike-rv64-experimental/test_config.yaml \
+          make elfs
+
+      - name: Run tests
+        run: |
+          ./run_tests.py "$(cat config/spike/spike-rv64-experimental/run_cmd.txt)" \
+            work/spike-rv64-experimental/elfs
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: spike-rv64-experimental-logs
+          path: work/spike-rv64-experimental/logs
+
   vector-testgen:
     name: Vector Testgen
     runs-on: ubuntu-latest
@@ -242,7 +255,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
 
       - name: Generate vector tests
         run: make vector-tests --jobs "$(nproc)"
@@ -256,12 +269,20 @@ jobs:
           persist-credentials: false
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
 
       - run: git submodule update --init docs/docs-resources
 
       - name: Build CTP
         run: cd docs/ctp && make docker-pull-latest && make -j6
+
+      - name: Upload CTP
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: ctp
+          path: |
+            docs/ctp/build/ctp.pdf
+            docs/ctp/build/ctp.html
 
   crd-build:
     name: Build CRD
@@ -276,6 +297,14 @@ jobs:
       - name: Build CRD
         run: cd docs/crd && make docker-pull-latest && make -j6
 
+      - name: Upload CRD
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: crd
+          path: |
+            docs/crd/build/rva23_crd.pdf
+            docs/crd/build/rva23_crd.html
+
   check-tests:
     name: Check generated tests
     runs-on: ubuntu-latest
@@ -287,7 +316,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
 
       - name: Regenerate tests and coverpoints
         run: make tests
@@ -323,25 +352,12 @@ jobs:
         run: echo "${{ matrix.python-version }}" > .python-version
 
       - name: Set up tools
-        uses: ./.github/actions/setup-tools
+        uses: $/.github/actions/setup-tools
         with:
-          udb-gems: "true"
+          install-architecture-tools: "true"
 
       - name: Verify Python version
         run: uv run python --version
-
-      - name: Install sail-riscv model
-        run: |
-          runner_uname=$(uname)
-          runner_arch=$(arch)
-          sudo mkdir -p /usr/local
-          curl --location "https://github.com/riscv/sail-riscv/releases/download/${SAIL_VERSION}/sail-riscv-${runner_uname}-${runner_arch}.tar.gz" \
-          | sudo tar xvz --directory=/usr/local --strip-components=1
-
-      - name: Install RISC-V GCC toolchain
-        run: |
-          curl --location "https://github.com/riscv-collab/riscv-gnu-toolchain/releases/download/${RISCV_TOOLCHAIN_VERSION}/riscv64-elf-ubuntu-24.04-gcc.tar.xz" \
-          | sudo tar xvJ --directory=/usr/local --strip-components=1
 
       - name: Build ELFs (exercises full act build DAG)
         run: |
@@ -358,6 +374,7 @@ jobs:
       [
         lint,
         regress,
+        spike-rv64-experimental,
         vector-testgen,
         check-tests,
         python-versions,

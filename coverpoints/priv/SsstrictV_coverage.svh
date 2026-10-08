@@ -12,13 +12,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_SSSTRICTV
-`define COVER_SSSTRICTVCUSTOMEFFEW
-`ifdef UDB_ELEN_EFFEW
-    `define SEW_EFFEW_EQ_ELEN
-`endif
-`ifdef UDB_ELEN_TWOEFFEW
-    `define SEW_EFFEW_EQ_ELEN_DIV_2
-`endif
 covergroup SsstrictV_vaadd_vv_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_ssstrictv_helpers.svh"
@@ -3914,37 +3907,37 @@ covergroup SsstrictV_vle16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -3990,37 +3983,37 @@ covergroup SsstrictV_vle16ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -4066,37 +4059,37 @@ covergroup SsstrictV_vle32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -4142,37 +4135,37 @@ covergroup SsstrictV_vle32ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -4218,37 +4211,37 @@ covergroup SsstrictV_vle64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -4294,37 +4287,37 @@ covergroup SsstrictV_vle64ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -4370,37 +4363,37 @@ covergroup SsstrictV_vle8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -4446,37 +4439,37 @@ covergroup SsstrictV_vle8ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -4522,37 +4515,37 @@ covergroup SsstrictV_vlm_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -4588,37 +4581,37 @@ covergroup SsstrictV_vloxei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -4674,37 +4667,37 @@ covergroup SsstrictV_vloxei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -4760,37 +4753,37 @@ covergroup SsstrictV_vloxei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -4846,37 +4839,37 @@ covergroup SsstrictV_vloxei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -4932,37 +4925,37 @@ covergroup SsstrictV_vloxseg2ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -5066,37 +5059,37 @@ covergroup SsstrictV_vloxseg2ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -5200,37 +5193,37 @@ covergroup SsstrictV_vloxseg2ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -5334,37 +5327,37 @@ covergroup SsstrictV_vloxseg2ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -5468,37 +5461,37 @@ covergroup SsstrictV_vloxseg3ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -5602,37 +5595,37 @@ covergroup SsstrictV_vloxseg3ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -5736,37 +5729,37 @@ covergroup SsstrictV_vloxseg3ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -5870,37 +5863,37 @@ covergroup SsstrictV_vloxseg3ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -6004,37 +5997,37 @@ covergroup SsstrictV_vloxseg4ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -6138,37 +6131,37 @@ covergroup SsstrictV_vloxseg4ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -6272,37 +6265,37 @@ covergroup SsstrictV_vloxseg4ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -6406,37 +6399,37 @@ covergroup SsstrictV_vloxseg4ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -6540,37 +6533,37 @@ covergroup SsstrictV_vloxseg5ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -6674,37 +6667,37 @@ covergroup SsstrictV_vloxseg5ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -6808,37 +6801,37 @@ covergroup SsstrictV_vloxseg5ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -6942,37 +6935,37 @@ covergroup SsstrictV_vloxseg5ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -7076,37 +7069,37 @@ covergroup SsstrictV_vloxseg6ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -7210,37 +7203,37 @@ covergroup SsstrictV_vloxseg6ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -7344,37 +7337,37 @@ covergroup SsstrictV_vloxseg6ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -7478,37 +7471,37 @@ covergroup SsstrictV_vloxseg6ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -7612,37 +7605,37 @@ covergroup SsstrictV_vloxseg7ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -7746,37 +7739,37 @@ covergroup SsstrictV_vloxseg7ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -7880,37 +7873,37 @@ covergroup SsstrictV_vloxseg7ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -8014,37 +8007,37 @@ covergroup SsstrictV_vloxseg7ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -8148,37 +8141,37 @@ covergroup SsstrictV_vloxseg8ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -8282,37 +8275,37 @@ covergroup SsstrictV_vloxseg8ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -8416,37 +8409,37 @@ covergroup SsstrictV_vloxseg8ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -8550,37 +8543,37 @@ covergroup SsstrictV_vloxseg8ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -8684,37 +8677,37 @@ covergroup SsstrictV_vlse16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -8760,37 +8753,37 @@ covergroup SsstrictV_vlse32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -8836,37 +8829,37 @@ covergroup SsstrictV_vlse64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -8912,37 +8905,37 @@ covergroup SsstrictV_vlse8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -8988,37 +8981,37 @@ covergroup SsstrictV_vlseg2e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -9087,37 +9080,37 @@ covergroup SsstrictV_vlseg2e16ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -9186,37 +9179,37 @@ covergroup SsstrictV_vlseg2e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -9285,37 +9278,37 @@ covergroup SsstrictV_vlseg2e32ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -9384,37 +9377,37 @@ covergroup SsstrictV_vlseg2e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -9483,37 +9476,37 @@ covergroup SsstrictV_vlseg2e64ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -9582,37 +9575,37 @@ covergroup SsstrictV_vlseg2e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -9681,37 +9674,37 @@ covergroup SsstrictV_vlseg2e8ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -9780,37 +9773,37 @@ covergroup SsstrictV_vlseg3e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -9879,37 +9872,37 @@ covergroup SsstrictV_vlseg3e16ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -9978,37 +9971,37 @@ covergroup SsstrictV_vlseg3e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -10077,37 +10070,37 @@ covergroup SsstrictV_vlseg3e32ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -10176,37 +10169,37 @@ covergroup SsstrictV_vlseg3e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -10275,37 +10268,37 @@ covergroup SsstrictV_vlseg3e64ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -10374,37 +10367,37 @@ covergroup SsstrictV_vlseg3e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -10473,37 +10466,37 @@ covergroup SsstrictV_vlseg3e8ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -10572,37 +10565,37 @@ covergroup SsstrictV_vlseg4e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -10671,37 +10664,37 @@ covergroup SsstrictV_vlseg4e16ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -10770,37 +10763,37 @@ covergroup SsstrictV_vlseg4e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -10869,37 +10862,37 @@ covergroup SsstrictV_vlseg4e32ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -10968,37 +10961,37 @@ covergroup SsstrictV_vlseg4e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -11067,37 +11060,37 @@ covergroup SsstrictV_vlseg4e64ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -11166,37 +11159,37 @@ covergroup SsstrictV_vlseg4e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -11265,37 +11258,37 @@ covergroup SsstrictV_vlseg4e8ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -11364,37 +11357,37 @@ covergroup SsstrictV_vlseg5e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -11463,37 +11456,37 @@ covergroup SsstrictV_vlseg5e16ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -11562,37 +11555,37 @@ covergroup SsstrictV_vlseg5e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -11661,37 +11654,37 @@ covergroup SsstrictV_vlseg5e32ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -11760,37 +11753,37 @@ covergroup SsstrictV_vlseg5e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -11859,37 +11852,37 @@ covergroup SsstrictV_vlseg5e64ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -11958,37 +11951,37 @@ covergroup SsstrictV_vlseg5e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -12057,37 +12050,37 @@ covergroup SsstrictV_vlseg5e8ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -12156,37 +12149,37 @@ covergroup SsstrictV_vlseg6e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -12255,37 +12248,37 @@ covergroup SsstrictV_vlseg6e16ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -12354,37 +12347,37 @@ covergroup SsstrictV_vlseg6e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -12453,37 +12446,37 @@ covergroup SsstrictV_vlseg6e32ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -12552,37 +12545,37 @@ covergroup SsstrictV_vlseg6e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -12651,37 +12644,37 @@ covergroup SsstrictV_vlseg6e64ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -12750,37 +12743,37 @@ covergroup SsstrictV_vlseg6e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -12849,37 +12842,37 @@ covergroup SsstrictV_vlseg6e8ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -12948,37 +12941,37 @@ covergroup SsstrictV_vlseg7e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -13047,37 +13040,37 @@ covergroup SsstrictV_vlseg7e16ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -13146,37 +13139,37 @@ covergroup SsstrictV_vlseg7e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -13245,37 +13238,37 @@ covergroup SsstrictV_vlseg7e32ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -13344,37 +13337,37 @@ covergroup SsstrictV_vlseg7e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -13443,37 +13436,37 @@ covergroup SsstrictV_vlseg7e64ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -13542,37 +13535,37 @@ covergroup SsstrictV_vlseg7e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -13641,37 +13634,37 @@ covergroup SsstrictV_vlseg7e8ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -13740,37 +13733,37 @@ covergroup SsstrictV_vlseg8e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -13839,37 +13832,37 @@ covergroup SsstrictV_vlseg8e16ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -13938,37 +13931,37 @@ covergroup SsstrictV_vlseg8e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -14037,37 +14030,37 @@ covergroup SsstrictV_vlseg8e32ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -14136,37 +14129,37 @@ covergroup SsstrictV_vlseg8e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -14235,37 +14228,37 @@ covergroup SsstrictV_vlseg8e64ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -14334,37 +14327,37 @@ covergroup SsstrictV_vlseg8e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -14433,37 +14426,37 @@ covergroup SsstrictV_vlseg8e8ff_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -14532,37 +14525,37 @@ covergroup SsstrictV_vlsseg2e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -14631,37 +14624,37 @@ covergroup SsstrictV_vlsseg2e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -14730,37 +14723,37 @@ covergroup SsstrictV_vlsseg2e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -14829,37 +14822,37 @@ covergroup SsstrictV_vlsseg2e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -14928,37 +14921,37 @@ covergroup SsstrictV_vlsseg3e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -15027,37 +15020,37 @@ covergroup SsstrictV_vlsseg3e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -15126,37 +15119,37 @@ covergroup SsstrictV_vlsseg3e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -15225,37 +15218,37 @@ covergroup SsstrictV_vlsseg3e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -15324,37 +15317,37 @@ covergroup SsstrictV_vlsseg4e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -15423,37 +15416,37 @@ covergroup SsstrictV_vlsseg4e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -15522,37 +15515,37 @@ covergroup SsstrictV_vlsseg4e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -15621,37 +15614,37 @@ covergroup SsstrictV_vlsseg4e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -15720,37 +15713,37 @@ covergroup SsstrictV_vlsseg5e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -15819,37 +15812,37 @@ covergroup SsstrictV_vlsseg5e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -15918,37 +15911,37 @@ covergroup SsstrictV_vlsseg5e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -16017,37 +16010,37 @@ covergroup SsstrictV_vlsseg5e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -16116,37 +16109,37 @@ covergroup SsstrictV_vlsseg6e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -16215,37 +16208,37 @@ covergroup SsstrictV_vlsseg6e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -16314,37 +16307,37 @@ covergroup SsstrictV_vlsseg6e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -16413,37 +16406,37 @@ covergroup SsstrictV_vlsseg6e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -16512,37 +16505,37 @@ covergroup SsstrictV_vlsseg7e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -16611,37 +16604,37 @@ covergroup SsstrictV_vlsseg7e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -16710,37 +16703,37 @@ covergroup SsstrictV_vlsseg7e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -16809,37 +16802,37 @@ covergroup SsstrictV_vlsseg7e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -16908,37 +16901,37 @@ covergroup SsstrictV_vlsseg8e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -17007,37 +17000,37 @@ covergroup SsstrictV_vlsseg8e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -17106,37 +17099,37 @@ covergroup SsstrictV_vlsseg8e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -17205,37 +17198,37 @@ covergroup SsstrictV_vlsseg8e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -17304,37 +17297,37 @@ covergroup SsstrictV_vluxei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -17390,37 +17383,37 @@ covergroup SsstrictV_vluxei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -17476,37 +17469,37 @@ covergroup SsstrictV_vluxei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -17562,37 +17555,37 @@ covergroup SsstrictV_vluxei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -17648,37 +17641,37 @@ covergroup SsstrictV_vluxseg2ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -17782,37 +17775,37 @@ covergroup SsstrictV_vluxseg2ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -17916,37 +17909,37 @@ covergroup SsstrictV_vluxseg2ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -18050,37 +18043,37 @@ covergroup SsstrictV_vluxseg2ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -18184,37 +18177,37 @@ covergroup SsstrictV_vluxseg3ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -18318,37 +18311,37 @@ covergroup SsstrictV_vluxseg3ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -18452,37 +18445,37 @@ covergroup SsstrictV_vluxseg3ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -18586,37 +18579,37 @@ covergroup SsstrictV_vluxseg3ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -18720,37 +18713,37 @@ covergroup SsstrictV_vluxseg4ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -18854,37 +18847,37 @@ covergroup SsstrictV_vluxseg4ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -18988,37 +18981,37 @@ covergroup SsstrictV_vluxseg4ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -19122,37 +19115,37 @@ covergroup SsstrictV_vluxseg4ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -19256,37 +19249,37 @@ covergroup SsstrictV_vluxseg5ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -19390,37 +19383,37 @@ covergroup SsstrictV_vluxseg5ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -19524,37 +19517,37 @@ covergroup SsstrictV_vluxseg5ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -19658,37 +19651,37 @@ covergroup SsstrictV_vluxseg5ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -19792,37 +19785,37 @@ covergroup SsstrictV_vluxseg6ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -19926,37 +19919,37 @@ covergroup SsstrictV_vluxseg6ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -20060,37 +20053,37 @@ covergroup SsstrictV_vluxseg6ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -20194,37 +20187,37 @@ covergroup SsstrictV_vluxseg6ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -20328,37 +20321,37 @@ covergroup SsstrictV_vluxseg7ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -20462,37 +20455,37 @@ covergroup SsstrictV_vluxseg7ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -20596,37 +20589,37 @@ covergroup SsstrictV_vluxseg7ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -20730,37 +20723,37 @@ covergroup SsstrictV_vluxseg7ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -20864,37 +20857,37 @@ covergroup SsstrictV_vluxseg8ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -20998,37 +20991,37 @@ covergroup SsstrictV_vluxseg8ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -21132,37 +21125,37 @@ covergroup SsstrictV_vluxseg8ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -21266,37 +21259,37 @@ covergroup SsstrictV_vluxseg8ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -25087,37 +25080,37 @@ covergroup SsstrictV_vs1r_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -25170,37 +25163,37 @@ covergroup SsstrictV_vs2r_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -25245,37 +25238,37 @@ covergroup SsstrictV_vs4r_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -25320,37 +25313,37 @@ covergroup SsstrictV_vs8r_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -25663,37 +25656,37 @@ covergroup SsstrictV_vse16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -25739,37 +25732,37 @@ covergroup SsstrictV_vse32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -25815,37 +25808,37 @@ covergroup SsstrictV_vse64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -25891,37 +25884,37 @@ covergroup SsstrictV_vse8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -26380,37 +26373,37 @@ covergroup SsstrictV_vsm_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -26506,37 +26499,37 @@ covergroup SsstrictV_vsoxei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -26592,37 +26585,37 @@ covergroup SsstrictV_vsoxei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -26678,37 +26671,37 @@ covergroup SsstrictV_vsoxei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -26764,37 +26757,37 @@ covergroup SsstrictV_vsoxei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -26850,37 +26843,37 @@ covergroup SsstrictV_vsoxseg2ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -26984,37 +26977,37 @@ covergroup SsstrictV_vsoxseg2ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -27118,37 +27111,37 @@ covergroup SsstrictV_vsoxseg2ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -27252,37 +27245,37 @@ covergroup SsstrictV_vsoxseg2ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -27386,37 +27379,37 @@ covergroup SsstrictV_vsoxseg3ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -27520,37 +27513,37 @@ covergroup SsstrictV_vsoxseg3ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -27654,37 +27647,37 @@ covergroup SsstrictV_vsoxseg3ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -27788,37 +27781,37 @@ covergroup SsstrictV_vsoxseg3ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -27922,37 +27915,37 @@ covergroup SsstrictV_vsoxseg4ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -28056,37 +28049,37 @@ covergroup SsstrictV_vsoxseg4ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -28190,37 +28183,37 @@ covergroup SsstrictV_vsoxseg4ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -28324,37 +28317,37 @@ covergroup SsstrictV_vsoxseg4ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -28458,37 +28451,37 @@ covergroup SsstrictV_vsoxseg5ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -28592,37 +28585,37 @@ covergroup SsstrictV_vsoxseg5ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -28726,37 +28719,37 @@ covergroup SsstrictV_vsoxseg5ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -28860,37 +28853,37 @@ covergroup SsstrictV_vsoxseg5ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -28994,37 +28987,37 @@ covergroup SsstrictV_vsoxseg6ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -29128,37 +29121,37 @@ covergroup SsstrictV_vsoxseg6ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -29262,37 +29255,37 @@ covergroup SsstrictV_vsoxseg6ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -29396,37 +29389,37 @@ covergroup SsstrictV_vsoxseg6ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -29530,37 +29523,37 @@ covergroup SsstrictV_vsoxseg7ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -29664,37 +29657,37 @@ covergroup SsstrictV_vsoxseg7ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -29798,37 +29791,37 @@ covergroup SsstrictV_vsoxseg7ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -29932,37 +29925,37 @@ covergroup SsstrictV_vsoxseg7ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -30066,37 +30059,37 @@ covergroup SsstrictV_vsoxseg8ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -30200,37 +30193,37 @@ covergroup SsstrictV_vsoxseg8ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -30334,37 +30327,37 @@ covergroup SsstrictV_vsoxseg8ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -30468,37 +30461,37 @@ covergroup SsstrictV_vsoxseg8ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -30772,37 +30765,37 @@ covergroup SsstrictV_vsse16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -30848,37 +30841,37 @@ covergroup SsstrictV_vsse32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -30924,37 +30917,37 @@ covergroup SsstrictV_vsse64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -31000,37 +30993,37 @@ covergroup SsstrictV_vsse8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -31076,37 +31069,37 @@ covergroup SsstrictV_vsseg2e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -31175,37 +31168,37 @@ covergroup SsstrictV_vsseg2e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -31274,37 +31267,37 @@ covergroup SsstrictV_vsseg2e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -31373,37 +31366,37 @@ covergroup SsstrictV_vsseg2e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -31472,37 +31465,37 @@ covergroup SsstrictV_vsseg3e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -31571,37 +31564,37 @@ covergroup SsstrictV_vsseg3e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -31670,37 +31663,37 @@ covergroup SsstrictV_vsseg3e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -31769,37 +31762,37 @@ covergroup SsstrictV_vsseg3e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -31868,37 +31861,37 @@ covergroup SsstrictV_vsseg4e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -31967,37 +31960,37 @@ covergroup SsstrictV_vsseg4e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -32066,37 +32059,37 @@ covergroup SsstrictV_vsseg4e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -32165,37 +32158,37 @@ covergroup SsstrictV_vsseg4e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -32264,37 +32257,37 @@ covergroup SsstrictV_vsseg5e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -32363,37 +32356,37 @@ covergroup SsstrictV_vsseg5e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -32462,37 +32455,37 @@ covergroup SsstrictV_vsseg5e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -32561,37 +32554,37 @@ covergroup SsstrictV_vsseg5e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -32660,37 +32653,37 @@ covergroup SsstrictV_vsseg6e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -32759,37 +32752,37 @@ covergroup SsstrictV_vsseg6e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -32858,37 +32851,37 @@ covergroup SsstrictV_vsseg6e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -32957,37 +32950,37 @@ covergroup SsstrictV_vsseg6e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -33056,37 +33049,37 @@ covergroup SsstrictV_vsseg7e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -33155,37 +33148,37 @@ covergroup SsstrictV_vsseg7e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -33254,37 +33247,37 @@ covergroup SsstrictV_vsseg7e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -33353,37 +33346,37 @@ covergroup SsstrictV_vsseg7e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -33452,37 +33445,37 @@ covergroup SsstrictV_vsseg8e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -33551,37 +33544,37 @@ covergroup SsstrictV_vsseg8e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -33650,37 +33643,37 @@ covergroup SsstrictV_vsseg8e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -33749,37 +33742,37 @@ covergroup SsstrictV_vsseg8e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -34018,37 +34011,37 @@ covergroup SsstrictV_vssseg2e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -34117,37 +34110,37 @@ covergroup SsstrictV_vssseg2e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -34216,37 +34209,37 @@ covergroup SsstrictV_vssseg2e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -34315,37 +34308,37 @@ covergroup SsstrictV_vssseg2e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -34414,37 +34407,37 @@ covergroup SsstrictV_vssseg3e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -34513,37 +34506,37 @@ covergroup SsstrictV_vssseg3e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -34612,37 +34605,37 @@ covergroup SsstrictV_vssseg3e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -34711,37 +34704,37 @@ covergroup SsstrictV_vssseg3e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -34810,37 +34803,37 @@ covergroup SsstrictV_vssseg4e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -34909,37 +34902,37 @@ covergroup SsstrictV_vssseg4e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -35008,37 +35001,37 @@ covergroup SsstrictV_vssseg4e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -35107,37 +35100,37 @@ covergroup SsstrictV_vssseg4e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -35206,37 +35199,37 @@ covergroup SsstrictV_vssseg5e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -35305,37 +35298,37 @@ covergroup SsstrictV_vssseg5e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -35404,37 +35397,37 @@ covergroup SsstrictV_vssseg5e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -35503,37 +35496,37 @@ covergroup SsstrictV_vssseg5e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -35602,37 +35595,37 @@ covergroup SsstrictV_vssseg6e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -35701,37 +35694,37 @@ covergroup SsstrictV_vssseg6e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -35800,37 +35793,37 @@ covergroup SsstrictV_vssseg6e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -35899,37 +35892,37 @@ covergroup SsstrictV_vssseg6e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -35998,37 +35991,37 @@ covergroup SsstrictV_vssseg7e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -36097,37 +36090,37 @@ covergroup SsstrictV_vssseg7e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -36196,37 +36189,37 @@ covergroup SsstrictV_vssseg7e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -36295,37 +36288,37 @@ covergroup SsstrictV_vssseg7e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -36394,37 +36387,37 @@ covergroup SsstrictV_vssseg8e16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -36493,37 +36486,37 @@ covergroup SsstrictV_vssseg8e32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -36592,37 +36585,37 @@ covergroup SsstrictV_vssseg8e64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -36691,37 +36684,37 @@ covergroup SsstrictV_vssseg8e8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -36970,37 +36963,37 @@ covergroup SsstrictV_vsuxei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -37056,37 +37049,37 @@ covergroup SsstrictV_vsuxei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -37142,37 +37135,37 @@ covergroup SsstrictV_vsuxei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -37228,37 +37221,37 @@ covergroup SsstrictV_vsuxei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -37314,37 +37307,37 @@ covergroup SsstrictV_vsuxseg2ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -37448,37 +37441,37 @@ covergroup SsstrictV_vsuxseg2ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -37582,37 +37575,37 @@ covergroup SsstrictV_vsuxseg2ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -37716,37 +37709,37 @@ covergroup SsstrictV_vsuxseg2ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -37850,37 +37843,37 @@ covergroup SsstrictV_vsuxseg3ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -37984,37 +37977,37 @@ covergroup SsstrictV_vsuxseg3ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -38118,37 +38111,37 @@ covergroup SsstrictV_vsuxseg3ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -38252,37 +38245,37 @@ covergroup SsstrictV_vsuxseg3ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -38386,37 +38379,37 @@ covergroup SsstrictV_vsuxseg4ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -38520,37 +38513,37 @@ covergroup SsstrictV_vsuxseg4ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -38654,37 +38647,37 @@ covergroup SsstrictV_vsuxseg4ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -38788,37 +38781,37 @@ covergroup SsstrictV_vsuxseg4ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -38922,37 +38915,37 @@ covergroup SsstrictV_vsuxseg5ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -39056,37 +39049,37 @@ covergroup SsstrictV_vsuxseg5ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -39190,37 +39183,37 @@ covergroup SsstrictV_vsuxseg5ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -39324,37 +39317,37 @@ covergroup SsstrictV_vsuxseg5ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -39458,37 +39451,37 @@ covergroup SsstrictV_vsuxseg6ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -39592,37 +39585,37 @@ covergroup SsstrictV_vsuxseg6ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -39726,37 +39719,37 @@ covergroup SsstrictV_vsuxseg6ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -39860,37 +39853,37 @@ covergroup SsstrictV_vsuxseg6ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -39994,37 +39987,37 @@ covergroup SsstrictV_vsuxseg7ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -40128,37 +40121,37 @@ covergroup SsstrictV_vsuxseg7ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -40262,37 +40255,37 @@ covergroup SsstrictV_vsuxseg7ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -40396,37 +40389,37 @@ covergroup SsstrictV_vsuxseg7ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -40530,37 +40523,37 @@ covergroup SsstrictV_vsuxseg8ei16_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -40664,37 +40657,37 @@ covergroup SsstrictV_vsuxseg8ei32_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -40798,37 +40791,37 @@ covergroup SsstrictV_vsuxseg8ei64_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -40932,37 +40925,37 @@ covergroup SsstrictV_vsuxseg8ei8_v_cg with function sample(ins_t ins);
     // so the coverpoints + crosses are entirely absent on configurations where
     // every relevant SEW is supported (e.g. sail/spike/whisper *-max).
     `ifndef SEW8_SUPPORTED
-    ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
-        bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
-        `ifndef SEW16_SUPPORTED
-        bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
-        `endif
-        `ifndef SEW32_SUPPORTED
-        bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
-        `endif
-    }
+        ls_eew_below_sewmin: coverpoint ins.current.insn[14:12] {
+            bins eew8  = {3'b000};  // width=000 -> EEW=8, reserved if SEWMIN > 8
+            `ifndef SEW16_SUPPORTED
+                bins eew16 = {3'b101};  // width=101 -> EEW=16, reserved if SEWMIN > 16
+            `endif
+            `ifndef SEW32_SUPPORTED
+                bins eew32 = {3'b110};  // width=110 -> EEW=32, reserved if SEWMIN > 32
+            `endif
+        }
 
 
-    cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin: cross std_trap_vec, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vl=0
-    vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
-        bins zero = {0};
-    }
+        // Edge case: still reserved when vl=0
+        vl_zero_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+            bins zero = {0};
+        }
 
-    mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins active = {[1:3]};
-    }
+        mstatus_vs_active_6b0501: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+            bins active = {[1:3]};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vl0: cross vtype_prev_vill_clear, vl_zero_6b0501, mstatus_vs_active_6b0501, ls_eew_below_sewmin;
 
-    // Edge case: still reserved when vstart >= vl
-    vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
-        bins true = {1'b1};
-    }
+        // Edge case: still reserved when vstart >= vl
+        vstart_ge_vl_6b0501: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >=
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
+            bins true = {1'b1};
+        }
 
-    cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
+        cp_ssstrictv_ls_eew_lt_sewmin_vstart_ge_vl: cross vtype_prev_vill_clear, vl_nonzero, mstatus_vs_active_6b0501, vstart_ge_vl_6b0501, ls_eew_below_sewmin;
     `endif
 
 //// end cp_ssstrictv_ls_eew_lt_sewmin ///////////////////////////////////////////////////////////
@@ -44491,5 +44484,6 @@ function void ssstrictv_sample(int hart, int issue, ins_t ins);
         "vzext.vf8"     : begin
             SsstrictV_vzext_vf8_cg.sample(ins);
         end
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

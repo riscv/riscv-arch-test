@@ -8,7 +8,7 @@
 
 """Zalrsc extension exception test generator."""
 
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner, lrsc_retry_loop, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -49,14 +49,29 @@ def _generate_load_address_misaligned_tests(test_data: TestData) -> list[str]:
 
 def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
     """Generate store address misaligned exception tests."""
-    covergroup, coverpoint = "ExceptionsZalrsc_cg", "cp_store_address_misaligned"
+    covergroup = "ExceptionsZalrsc_cg"
     addr_reg, data_reg, rd_reg, temp_reg, base_reg, check_reg = test_data.int_regs.get_registers(6)
 
-    lines = [comment_banner(coverpoint)]
-    # illegal sc.w does not get coverage as SAIL stores content in by bytes instead of giving exceptions
-    # Sail issue: https://github.com/riscv/sail-riscv/issues/1574
+    def lrsc(width: str, offset: int, coverpoint: str, aligned: bool) -> list[str]:
+        lines = [
+            test_data.add_testcase(f"lr.{width}_off{offset}", coverpoint, covergroup),
+            f"lr.{width} x{temp_reg}, (x{addr_reg})",  # establish reservation
+            f"addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
+            test_data.add_testcase(f"sc.{width}_off{offset}", coverpoint, covergroup),
+            f"sc.{width} x{rd_reg}, x{data_reg}, (x{addr_reg})",
+        ]
+        if aligned:
+            # check_reg is not used until the scratch checks, so it counts the retries
+            retry_start, retry_end = lrsc_retry_loop(test_data.current_testcase_label, check_reg, rd_reg)
+            lines = [*retry_start, *lines, *retry_end]
+        return lines
+
+    lines = [comment_banner("cp_store_address_misaligned_legal_w/illegal_w/legal_d/illegal_d")]
 
     for offset in range(8):
+        # sc.w is aligned at offsets 0 and 4; sc.d only at offset 0
+        cp_w = "cp_store_address_misaligned_legal_w" if offset % 4 == 0 else "cp_store_address_misaligned_illegal_w"
+        cp_d = "cp_store_address_misaligned_legal_d" if offset == 0 else "cp_store_address_misaligned_illegal_d"
         lines.extend(
             [
                 f"\n# Offset {offset} (LSBs: {offset:03b})",
@@ -64,11 +79,7 @@ def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
                 f"addi x{addr_reg}, x{base_reg}, {offset}",  # addr = aligned base + offset
                 f"LI(x{data_reg}, 0xDECAFCAB)",
                 f"LI(x{temp_reg}, 0xBAD)",
-                test_data.add_testcase(f"lr.w_off{offset}", coverpoint, covergroup),
-                f"lr.w x{temp_reg}, (x{addr_reg})",  # establish reservation
-                f"addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
-                test_data.add_testcase(f"sc.w_off{offset}", coverpoint, covergroup),
-                f"sc.w x{rd_reg}, x{data_reg}, (x{addr_reg})",
+                *lrsc("w", offset, cp_w, offset % 4 == 0),
                 write_sigupd(temp_reg, test_data),
                 write_sigupd(rd_reg, test_data),
                 f"{INDENT}# Check scratch region",
@@ -82,11 +93,7 @@ def _generate_store_address_misaligned_tests(test_data: TestData) -> list[str]:
                 write_sigupd(check_reg, test_data),
                 "#if __riscv_xlen == 64",
                 f"LI(x{temp_reg}, 0xBAD)",
-                test_data.add_testcase(f"lr.d_off{offset}", coverpoint, covergroup),
-                f"lr.d x{temp_reg}, (x{addr_reg})",  # establish reservation
-                f"addi x{rd_reg}, x0, -1107",  # previous rd greater than 1 （-1107 = 0xBAD）
-                test_data.add_testcase(f"sc.d_off{offset}", coverpoint, covergroup),
-                f"sc.d x{rd_reg}, x{data_reg}, (x{addr_reg})",
+                *lrsc("d", offset, cp_d, offset == 0),
                 write_sigupd(temp_reg, test_data),
                 write_sigupd(rd_reg, test_data),
                 f"{INDENT}# Check scratch region",
@@ -135,7 +142,7 @@ def _generate_load_access_fault_tests(test_data: TestData) -> list[str]:
 
 def _generate_load_misaligned_priority_tests(test_data: TestData) -> list[str]:
     """Generate instruction address misaligned and access fault exception tests."""
-    covergroup, coverpoint = "ExceptionsZalrsc_cg", "cp_load_misaligned_priority"
+    covergroup, coverpoint = "ExceptionsZalrsc_cg", "cp_load_access_misaligned_priority"
     addr_reg, check_reg = test_data.int_regs.get_registers(2)
 
     lines = [
@@ -203,7 +210,7 @@ def _generate_store_access_fault_tests(test_data: TestData) -> list[str]:
 
 def _generate_store_misaligned_priority_tests(test_data: TestData) -> list[str]:
     """Generate instruction address misaligned and access fault exception tests."""
-    covergroup, coverpoint = "ExceptionsZalrsc_cg", "cp_store_misaligned_priority"
+    covergroup, coverpoint = "ExceptionsZalrsc_cg", "cp_store_access_misaligned_priority"
     addr_reg, data_reg, rd_reg, temp_reg = test_data.int_regs.get_registers(4)
 
     lines = ["#ifdef RVMODEL_ACCESS_FAULT_ADDRESS", comment_banner(coverpoint)]

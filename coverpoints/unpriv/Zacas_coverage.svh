@@ -24,18 +24,18 @@ covergroup Zacas_amocas_w_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cmp_rd_rs1_val_eq : coverpoint (ins.current.rd_val == ins.prev.rd_val) iff (ins.trap == 0) {
+    cmp_rd_rs1_val_eq : coverpoint (ins.current.rd_val == ins.current.rd_val_pre) iff (ins.trap == 0) {
         // Compare rd current to rd previous value (which is the same as rs1 value for the current instruction)
     }
 
-    cmp_rd_rs1_val_hw : coverpoint (ins.current.rd_val[15:0] == ins.prev.rd_val[15:0]) iff (ins.trap == 0) {
+    cmp_rd_rs1_val_hw : coverpoint (ins.current.rd_val[15:0] == ins.current.rd_val_pre[15:0]) iff (ins.trap == 0) {
         // Compare the lowest 16 bits of current rd value to
-        // lowest 16 bits of previous rd value (which is the same as rs1 value for the current instruction)
+        // lowest 16 bits of the value rd held before this instruction, which is the comparand
     }
 
-    cmp_rd_rs1_val_lsb : coverpoint (ins.current.rd_val[7:0] == ins.prev.rd_val[7:0]) iff (ins.trap == 0) {
+    cmp_rd_rs1_val_lsb : coverpoint (ins.current.rd_val[7:0] == ins.current.rd_val_pre[7:0]) iff (ins.trap == 0) {
         // Compare the least significant byte of current rd value to the
-        // least significant byte of previous rd value (which is the same as rs1 value for the current instruction)
+        // least significant byte of the value rd held before this instruction, which is the comparand
     }
 
     cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
@@ -57,6 +57,10 @@ covergroup Zacas_amocas_w_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "amocas.w"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
     }
 
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
@@ -96,6 +100,8 @@ covergroup Zacas_amocas_w_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -118,8 +124,8 @@ covergroup Zacas_amocas_d_cg with function sample(ins_t ins);
     }
 
     cmp_rd_rs1_pair_partial_val : coverpoint (
-            (ins.current.rd_val == ins.prev.rd_val) ^
-            (ins.current.rd_upper_pair_val == ins.prev.rd_upper_pair_val)
+            (ins.current.rd_val == ins.current.rd_val_pre) ^
+            (ins.current.rd_upper_pair_val == ins.current.rd_upper_pair_val_pre)
         ) iff (ins.trap == 0)
         {
         // Cases where rd and rs1 have matching high or low halves but not both
@@ -133,25 +139,18 @@ covergroup Zacas_amocas_d_cg with function sample(ins_t ins);
         bins reg_pair[] = {[$:$]} with (item % 2 == 0);
     }
 
-    cmp_rd_rs1_val_eq : coverpoint (ins.current.rd_val == ins.prev.rd_val) iff (ins.trap == 0) {
+    cmp_rd_rs1_val_eq : coverpoint (ins.current.rd_val == ins.current.rd_val_pre) iff (ins.trap == 0) {
         // Compare rd current to rd previous value (which is the same as rs1 value for the current instruction)
     }
 
-    cmp_rd_rs1_val_hw : coverpoint (ins.current.rd_val[15:0] == ins.prev.rd_val[15:0]) iff (ins.trap == 0) {
+    cmp_rd_rs1_val_hw : coverpoint (ins.current.rd_val[15:0] == ins.current.rd_val_pre[15:0]) iff (ins.trap == 0) {
         // Compare the lowest 16 bits of current rd value to
-        // lowest 16 bits of previous rd value (which is the same as rs1 value for the current instruction)
+        // lowest 16 bits of the value rd held before this instruction, which is the comparand
     }
 
-    cmp_rd_rs1_val_lsb : coverpoint (ins.current.rd_val[7:0] == ins.prev.rd_val[7:0]) iff (ins.trap == 0) {
+    cmp_rd_rs1_val_lsb : coverpoint (ins.current.rd_val[7:0] == ins.current.rd_val_pre[7:0]) iff (ins.trap == 0) {
         // Compare the least significant byte of current rd value to the
-        // least significant byte of previous rd value (which is the same as rs1 value for the current instruction)
-    }
-
-    cmp_rd_rs1_val_w : coverpoint (ins.current.rd_val[31:0] == ins.prev.rd_val[31:0]) iff (ins.trap == 0) {
-        // Compare the lowest 32 bits of current rd value to the
-        // lowest 32 bits of previous rd value (which is the same as rs1 value for the current instruction)
-        bins rd_equal_val_w_rs1  = {1}; // Cases where the lowest 32 bits of rd and rs1 are equal
-        bins rd_not_equal_val_w_rs1  = {0}; // Cases where the lowest 32 bits of rd and rs1 are not equal
+        // least significant byte of the value rd held before this instruction, which is the comparand
     }
 
     cmp_rd_rs2_pair : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
@@ -168,6 +167,10 @@ covergroup Zacas_amocas_d_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "amocas.d"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
     }
 
     cp_rd_pair : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
@@ -204,6 +207,8 @@ covergroup Zacas_amocas_d_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -235,23 +240,23 @@ covergroup Zacas_amocas_d_cg with function sample(ins_t ins);
         ignore_bins x0 = {x0};
     }
 
-    cmp_rd_rs1_val_eq : coverpoint (ins.current.rd_val == ins.prev.rd_val) iff (ins.trap == 0) {
+    cmp_rd_rs1_val_eq : coverpoint (ins.current.rd_val == ins.current.rd_val_pre) iff (ins.trap == 0) {
         // Compare rd current to rd previous value (which is the same as rs1 value for the current instruction)
     }
 
-    cmp_rd_rs1_val_hw : coverpoint (ins.current.rd_val[15:0] == ins.prev.rd_val[15:0]) iff (ins.trap == 0) {
+    cmp_rd_rs1_val_hw : coverpoint (ins.current.rd_val[15:0] == ins.current.rd_val_pre[15:0]) iff (ins.trap == 0) {
         // Compare the lowest 16 bits of current rd value to
-        // lowest 16 bits of previous rd value (which is the same as rs1 value for the current instruction)
+        // lowest 16 bits of the value rd held before this instruction, which is the comparand
     }
 
-    cmp_rd_rs1_val_lsb : coverpoint (ins.current.rd_val[7:0] == ins.prev.rd_val[7:0]) iff (ins.trap == 0) {
+    cmp_rd_rs1_val_lsb : coverpoint (ins.current.rd_val[7:0] == ins.current.rd_val_pre[7:0]) iff (ins.trap == 0) {
         // Compare the least significant byte of current rd value to the
-        // least significant byte of previous rd value (which is the same as rs1 value for the current instruction)
+        // least significant byte of the value rd held before this instruction, which is the comparand
     }
 
-    cmp_rd_rs1_val_w : coverpoint (ins.current.rd_val[31:0] == ins.prev.rd_val[31:0]) iff (ins.trap == 0) {
+    cmp_rd_rs1_val_w : coverpoint (ins.current.rd_val[31:0] == ins.current.rd_val_pre[31:0]) iff (ins.trap == 0) {
         // Compare the lowest 32 bits of current rd value to the
-        // lowest 32 bits of previous rd value (which is the same as rs1 value for the current instruction)
+        // lowest 32 bits of the value rd held before this instruction, which is the comparand
         bins rd_equal_val_w_rs1  = {1}; // Cases where the lowest 32 bits of rd and rs1 are equal
         bins rd_not_equal_val_w_rs1  = {0}; // Cases where the lowest 32 bits of rd and rs1 are not equal
     }
@@ -268,6 +273,10 @@ covergroup Zacas_amocas_d_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "amocas.d"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
     }
 
     cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
@@ -307,6 +316,8 @@ covergroup Zacas_amocas_d_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -328,8 +339,8 @@ covergroup Zacas_amocas_q_cg with function sample(ins_t ins);
     }
 
     cmp_rd_rs1_pair_partial_val : coverpoint (
-            (ins.current.rd_val == ins.prev.rd_val) ^
-            (ins.current.rd_upper_pair_val == ins.prev.rd_upper_pair_val)
+            (ins.current.rd_val == ins.current.rd_val_pre) ^
+            (ins.current.rd_upper_pair_val == ins.current.rd_upper_pair_val_pre)
         ) iff (ins.trap == 0)
         {
         // Cases where rd and rs1 have matching high or low halves but not both
@@ -343,23 +354,23 @@ covergroup Zacas_amocas_q_cg with function sample(ins_t ins);
         bins reg_pair[] = {[$:$]} with (item % 2 == 0);
     }
 
-    cmp_rd_rs1_val_eq : coverpoint (ins.current.rd_val == ins.prev.rd_val) iff (ins.trap == 0) {
+    cmp_rd_rs1_val_eq : coverpoint (ins.current.rd_val == ins.current.rd_val_pre) iff (ins.trap == 0) {
         // Compare rd current to rd previous value (which is the same as rs1 value for the current instruction)
     }
 
-    cmp_rd_rs1_val_hw : coverpoint (ins.current.rd_val[15:0] == ins.prev.rd_val[15:0]) iff (ins.trap == 0) {
+    cmp_rd_rs1_val_hw : coverpoint (ins.current.rd_val[15:0] == ins.current.rd_val_pre[15:0]) iff (ins.trap == 0) {
         // Compare the lowest 16 bits of current rd value to
-        // lowest 16 bits of previous rd value (which is the same as rs1 value for the current instruction)
+        // lowest 16 bits of the value rd held before this instruction, which is the comparand
     }
 
-    cmp_rd_rs1_val_lsb : coverpoint (ins.current.rd_val[7:0] == ins.prev.rd_val[7:0]) iff (ins.trap == 0) {
+    cmp_rd_rs1_val_lsb : coverpoint (ins.current.rd_val[7:0] == ins.current.rd_val_pre[7:0]) iff (ins.trap == 0) {
         // Compare the least significant byte of current rd value to the
-        // least significant byte of previous rd value (which is the same as rs1 value for the current instruction)
+        // least significant byte of the value rd held before this instruction, which is the comparand
     }
 
-    cmp_rd_rs1_val_w : coverpoint (ins.current.rd_val[31:0] == ins.prev.rd_val[31:0]) iff (ins.trap == 0) {
+    cmp_rd_rs1_val_w : coverpoint (ins.current.rd_val[31:0] == ins.current.rd_val_pre[31:0]) iff (ins.trap == 0) {
         // Compare the lowest 32 bits of current rd value to the
-        // lowest 32 bits of previous rd value (which is the same as rs1 value for the current instruction)
+        // lowest 32 bits of the value rd held before this instruction, which is the comparand
         bins rd_equal_val_w_rs1  = {1}; // Cases where the lowest 32 bits of rd and rs1 are equal
         bins rd_not_equal_val_w_rs1  = {0}; // Cases where the lowest 32 bits of rd and rs1 are not equal
     }
@@ -378,6 +389,10 @@ covergroup Zacas_amocas_q_cg with function sample(ins_t ins);
     cp_asm_count : coverpoint ins.ins_str == "amocas.q"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
     }
 
     cp_rd_pair : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
@@ -414,6 +429,8 @@ covergroup Zacas_amocas_q_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -451,5 +468,6 @@ function void zacas_sample(int hart, int issue, ins_t ins);
             Zacas_amocas_q_cg.sample(ins);
         end
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

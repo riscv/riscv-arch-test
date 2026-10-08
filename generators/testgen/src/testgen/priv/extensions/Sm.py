@@ -13,8 +13,23 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.S import S_CSR_SENVCFG, S_CSRS, S_CSRS_NOWALK, S_SSTATUS_MASK
+from testgen.priv.extensions.PrivCommon import (
+    S_CSR_SENVCFG,
+    S_CSRS,
+    S_SSTATUS_MASK,
+    SV_GATE,
+    addr_csr_tests,
+    csr_insufficient_priv_tests,
+    csr_ro_write_tests,
+    xtval_value_tests,
+)
 from testgen.priv.registry import add_priv_test_generator
+
+# Address CSRs that must hold every valid virtual address: {csr: (held-low mask, {bit: gate define})}
+SM_VADDR_CSRS = {
+    "mepc": (0b00, {}),
+    "mtval": (0b00, {}),
+}
 
 
 def _gen_misa_dependencies(
@@ -61,7 +76,7 @@ def _generate_mcause_tests(test_data: TestData) -> list[str]:
     gated_exceptions = [
         (10, "#ifdef H_SUPPORTED"),  # ecall from VS-mode
         (14, "RESERVED"),
-        (16, "#ifdef SMDBLTRP_SUPPORTED"),  # Double trap
+        (16, "#ifdef SSDBLTRP_SUPPORTED"),  # Double trap, written to mcause only by Ssdbltrp
         (17, "RESERVED"),
         (18, "#if defined(ZICFILP_SUPPORTED) || defined(ZICFISS_SUPPORTED)"),  # software check
         (19, "#ifdef SM1P13P0_OR_LATER_SUPPORTED"),  # hardware error
@@ -104,9 +119,20 @@ def _generate_mcause_tests(test_data: TestData) -> list[str]:
     ######################################
     coverpoint = "cp_mcause_write_interrupt"
     ######################################
+    gated_interrupts = {
+        2: "#ifdef H_SUPPORTED",  # VS software interrupt
+        6: "#ifdef H_SUPPORTED",  # VS timer interrupt
+        10: "#ifdef H_SUPPORTED",  # VS external interrupt
+        12: "#ifdef H_SUPPORTED",  # S guest external interrupt
+        13: "#ifdef SSCOFPMF_SUPPORTED",  # local counter overflow interrupt
+    }
+
     for i in range(14):
         if i in {0, 4, 8}:  # skip reserved causes
             continue
+        guard = gated_interrupts.get(i)
+        if guard is not None:
+            lines.append(guard)
         lines.extend(
             [
                 "",
@@ -117,6 +143,8 @@ def _generate_mcause_tests(test_data: TestData) -> list[str]:
                 gen_csr_write_sigupd(check_reg, "mcause", test_data),
             ]
         )
+        if guard is not None:
+            lines.append("#endif")
 
     lines.append(f"\ncsrw mcause, x{save_reg}       # restore CSR")
 
@@ -180,7 +208,7 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
     """Generate ecall and ebreak tests."""
     ######################################
     covergroup = "Sm_mprivinst_cg"
-    coverpoint = "cp_mprvinst"
+    coverpoint = "cp_mprivinst"
     ######################################
 
     lines = [
@@ -200,6 +228,60 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
         "ebreak                # test ebreak instruction",
     ]
 
+    return lines
+
+
+def _generate_sfence_tvm_tests(test_data: TestData) -> list[str]:
+    """Generate sfence.vma from S-mode under both mstatus.TVM settings (cp_sfence_tvm)."""
+    ######################################
+    covergroup = "Sm_mprivinst_cg"
+    coverpoint = "cp_sfence_tvm"
+    ######################################
+    tvm_reg, medeleg_reg = test_data.int_regs.get_registers(2)
+
+    lines = [
+        # sfence.vma may raise an illegal instruction on a hart that makes satp.MODE read-only zero
+        # (norm:satp-mode_roz_sfence_illegal), so these cases need a supported Sv mode, which in turn
+        # implies S-mode.
+        SV_GATE,
+        comment_banner(
+            coverpoint,
+            "Execute sfence.vma in M-mode and S-mode under both mstatus.TVM settings\n"
+            "TVM restricts S-mode only: TVM=1 raises an illegal instruction there.\n"
+            "M-mode, and S-mode with TVM=0, execute it with no trap.",
+        ),
+        "",
+        "# Setup",
+        f"csrr x{medeleg_reg}, medeleg          # save medeleg",
+        "csrci medeleg, 1 << 2          # illegal instructions trap to M-mode",
+        f"LI(x{tvm_reg}, {1 << 20:#x})          # mstatus.TVM bit",
+    ]
+
+    for tvm in (0, 1):
+        set_or_clear = "csrs" if tvm else "csrc"
+        lines.extend(
+            [
+                "",
+                f"# Testcase: sfence.vma with tvm = {tvm}",
+                f"{set_or_clear} mstatus, x{tvm_reg}          # {'set' if tvm else 'clear'} TVM bit",
+                test_data.add_testcase(f"sfence_vma_m_tvm{tvm}", coverpoint, covergroup),
+                "sfence.vma             # permitted in M-mode whatever TVM says",
+                "RVTEST_TSBI_GOTO_SMODE      # TVM restricts S-mode only",
+                test_data.add_testcase(f"sfence_vma_s_tvm{tvm}", coverpoint, covergroup),
+                "sfence.vma             # test sfence.vma instruction",
+                "RVTEST_TSBI_GOTO_MMODE      # back to M-mode to twiddle mstatus.TVM",
+            ]
+        )
+
+    lines.extend(
+        [
+            "",
+            f"csrc mstatus, x{tvm_reg}          # clear TVM bit",
+            f"csrw medeleg, x{medeleg_reg}          # restore medeleg",
+            f"#endif // {SV_GATE.split(' ', 1)[1]}",
+        ]
+    )
+    test_data.int_regs.return_registers([tvm_reg, medeleg_reg])
     return lines
 
 
@@ -228,7 +310,7 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
     mpp_guard = {3: None, 1: "S_SUPPORTED", 0: "U_SUPPORTED"}
     for mpp, guard in mpp_guard.items():
         if guard:
-            lines.append("#ifdef guard")
+            lines.append(f"#ifdef {guard}")
         for mprv in (0, 1):
             for mpie in (0, 1):
                 for mie in (0, 1):
@@ -257,7 +339,7 @@ def _generate_mret_tests(test_data: TestData) -> list[str]:
                         ]
                     )
         if guard:
-            lines.append("#endif // guard")
+            lines.append(f"#endif // {guard}")
 
     lines.append(f"\ncsrw mstatus, x{save_reg}    # restore CSR")
     test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
@@ -304,7 +386,9 @@ def _generate_sret_tests(test_data: TestData) -> list[str]:
                                 f"LI(x{check_reg}, 0x{fields:08x})",
                                 f"or x{check_reg}, x{check_reg}, x{reg1}          # value to write to mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
                                 f"LA(x{reg3}, 1f)             # return address after sret",
+                                "#ifdef S_SUPPORTED",
                                 f"csrw sepc, x{reg3}         # set sepc to return address. Note that sepc does not exist if S-mode is not implemented, and this test will break if writing it hangs",
+                                "#endif // S_SUPPORTED",
                                 f"csrw mstatus, x{check_reg}       # write mstatus with MPRV/SPP/SPIE/SIE/TSR bits set/clear",
                                 test_data.add_testcase(f"{binname}_wval", coverpoint, covergroup),
                                 "sret                    # test sret instruction",
@@ -422,6 +506,7 @@ def _add_shadow(
     coverpoint: str,
     covergroup: str,
     test_data: TestData,
+    bin_suffix: str = "",
 ) -> str:
     """Generate shadow CSR test lines for writing wreg and reading rreg (direct CSR access, M-mode)."""
     return str.join(
@@ -432,14 +517,87 @@ def _add_shadow(
             f"LI(x{rmask}, 0x{mask:x}) # mask specifying bits to keep",
             f"csrr x{rsave}, {wreg}       # save original value of {wreg}",
             f"csrw {wreg}, x{r1}       # write many 1s to {wreg}",
-            test_data.add_testcase(f"{wreg}_{rreg}_1s", coverpoint, covergroup),
+            test_data.add_testcase(f"{wreg}_{rreg}_1s{bin_suffix}", coverpoint, covergroup),
             gen_csr_read_sigupd(r2, (rreg, mask), test_data, rmask),
             f"csrw {wreg}, x0       # write all 0s to {wreg}",
-            test_data.add_testcase(f"{wreg}_{rreg}_0s", coverpoint, covergroup),
+            test_data.add_testcase(f"{wreg}_{rreg}_0s{bin_suffix}", coverpoint, covergroup),
             gen_csr_read_sigupd(r2, (rreg, mask), test_data, rmask),
             f"csrw {wreg}, x{rsave}       # write back saved value of {wreg}",
         ],
     )
+
+
+def _add_deleg_alias(r1: int, r2: int, coverpoint: str, covergroup: str, test_data: TestData) -> list[str]:
+    """sip/sie alias the delegated bits of mip/mie and read as zero for the bits mideleg does not delegate."""
+
+    def read(csr: str, bin_name: str, comment: str) -> list[str]:
+        return [
+            f"# {comment}",
+            test_data.add_testcase(bin_name, coverpoint, covergroup),
+            gen_csr_read_sigupd(r2, (csr, None), test_data),
+        ]
+
+    lines = [
+        "# Test mip/sip and mie/sie with delegation on and off",
+        f"LI(x{r1}, 0x3EEE) # all S-, VS-, and M-level interrupts",
+        "csrw mideleg, zero # delegate nothing",
+        "csrw mie, zero",
+        "csrw mip, zero",
+        *read("sip", "sip_readback_zero", "sip reads zero"),
+        *read("sie", "sie_readback_zero", "sie reads zero"),
+        f"csrw mip, x{r1} # set all writable interrupts in mip",
+        *read("sip", "sip_readback_zero_masked", "sip reads zero because nothing is delegated"),
+        "csrw sip, zero # ignored because nothing is delegated",
+        *read("mip", "mip_readback_nonzero_masked", "mip keeps its value because the sip write is ignored"),
+        "csrw mip, zero",
+        f"csrw mie, x{r1} # set all writable interrupts in mie",
+        *read("sie", "sie_readback_zero_masked", "sie reads zero because nothing is delegated"),
+        "csrw sie, zero # ignored because nothing is delegated",
+        *read("mie", "mie_readback_nonzero_masked", "mie keeps its value because the sie write is ignored"),
+        "csrw mie, zero",
+        "",
+        f"csrw mideleg, x{r1} # delegate all delegable interrupts to S-mode",
+        *read("sip", "sip_readback_zero_2", "sip reads zero"),
+        *read("sie", "sie_readback_zero_2", "sie reads zero"),
+        f"csrw mip, x{r1} # set all interrupts in mip",
+        *read("sip", "sip_readback_nonzero", "sip reads the delegated bits"),
+        "csrw sip, zero # clears SSIP and LCOFIP; STIP and SEIP are read-only in sip",
+        *read("mip", "mip_readback_partiallyzero", "mip typically keeps STIP and SEIP"),
+        f"csrw mie, x{r1} # set all interrupts in mie",
+        *read("sie", "sie_readback_nonzero_deleg", "sie reads the delegated bits"),
+        "csrw sie, zero # clears every delegated S-level enable",
+        *read("mie", "mie_readback_m_only_deleg", "mie keeps only the M-level enables"),
+        "",
+        "# Delegate one interrupt at a time; sip and sie show just that bit",
+        f"csrw mip, x{r1} # set all interrupts in mip",
+        f"csrw mie, x{r1} # set all interrupts in mie",
+    ]
+    # Test all delegation bits individually. Machine mode bits are usually but not necessarily read-only in mideleg and thus have no effect.
+    # https://github.com/riscv/riscv-isa-manual/issues/153
+    for name, bit in [
+        ("SSI", 1),
+        ("STI", 5),
+        ("SEI", 9),
+        ("LCOFI", 13),
+        ("MSI", 3),
+        ("MTI", 7),
+        ("MEI", 11),
+        ("VSSI", 2),
+        ("VSTI", 6),
+        ("VSEI", 10),
+    ]:
+        lines += [
+            f"LI(x{r1}, {1 << bit:#x})",
+            f"csrw mideleg, x{r1} # delegate only {name}",
+            *read("sip", f"deleg_sip_{name}", f"sip reads only {name}P if delegable"),
+            *read("sie", f"deleg_sie_{name}", f"sie reads only {name}E if delegable"),
+        ]
+    lines += [
+        "csrw mip, zero # restore mip",
+        "csrw mie, zero # restore mie",
+        "csrw mideleg, zero # restore mideleg",
+    ]
+    return lines
 
 
 def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
@@ -466,16 +624,16 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 21)  # TW:   Timeout Wait
         | (1 << 22)  # TSR:  Trap SRET
         | (1 << 23)  # SPELP: Supervisor Previous Expect Landing Pad
-        | (0 << 24)  # SDT: not yet supported by Sail; TODO change to 1 when Ssdbltrp implemented
+        | (1 << 24)  # SDT: Supervisor Disable Trap
         | (1 << 31)  # SD for RV32 (probably shouldn't be tested for RV64, but seems to work ok)
         | (0 << 32)  # UXL:  User-Mode XLEN not supported by Sail.  Test in xlen suite.
         | (0 << 34)  # SXL:  Supervisor-Mode XLEN  not supported by Sail.  Test in xlen suite.
         | (0 << 36)  # SBE not supported by Sail; test in Endian
         | (0 << 37)  # MBE not supported by Sail; test in Endian
-        | (0 << 38)  # GVA not supported by Sail; TODO change to 1 when H is implemented
-        | (0 << 39)  # MPV not supported by Sail; TODO change to 1 when H is implemented
+        | (1 << 38)
+        | (1 << 39)
         | (1 << 41)  # MPELP: Machine Previous Expect Landing Pad
-        | (0 << 42)  # MDT:   not yet supported by Sail; TODO change to 1 when Smdbltrp implemented
+        | (1 << 42)  # MDT: Machine Disable Trap
         | (1 << 63)  # SD for RV64
     )
     mseccfg_mask = (
@@ -495,7 +653,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 6)  # CBCFE: Cache Block Clean and Flush Enable
         | (1 << 7)  # CBZE: Cache Block Zero Enable
         | (3 << 32)  # PMM: Pointer Masking
-        | (0 << 59)  # Double Trap not supported by Sail; TODO change to 1 when Smdbltrp implemented
+        | (1 << 59)  # DTE: Double Trap Enable
         | (0 << 60)  # Counter Delegation Smcdeleg not supported by Sail; TODO change to 1 when Smcdeleg implemented
         | (1 << 61)  # ADUE: A/D
         | (1 << 62)  # PBMTE: Page-Based Memory Type Enable
@@ -509,15 +667,13 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ),  # mask off custom bits and reserved bits; instr misaligned [0] depends on ZCA_SUPPORTED so don't check it
         ("mideleg", 0xFFFF),  # limit to standard interrupt bits
         ("mie", 0xFFFF),  # limit to standard interrupt bits
-        ("mtvec", 0b10),  # mtvec.MODE[1] must be 0. Legal values for BASE are hard to describe with a reference model
+        ("mtvec", 0b10),  # mtvec.MODE[1] must be 0.
         ("mcounteren", None),
         ("mscratch", None),
-        ("mepc", None),
+        ("mepc", None),  # only accessed here; walked as a valid virtual address in cp_mepc_vaddr_walk*
         #        ("mcause", None), # WLRL fields can't be handled with masks.  Use cp_mcause_* instead
-        ("mtval", None),
+        ("mtval", None),  # only accessed here; walked in cp_mtval_* instead
         ("mip", 0xFFFF),  # limit to standard interrupt bits
-        # TODO: remove mcountinhibit mask when Sail gets parameters for writable bits
-        ("mcountinhibit", 0b111),
         ("mhpmevent3", 0),  # mask all bits because they are WARL and can all be ROZ
         ("mhpmevent4", 0),  # mask all bits because they are WARL and can all be ROZ
         ("mhpmevent5", 0),  # mask all bits because they are WARL and can all be ROZ
@@ -548,15 +704,20 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ("mhpmevent30", 0),  # mask all bits because they are WARL and can all be ROZ
         ("mhpmevent31", 0),  # mask all bits because they are WARL and can all be ROZ
     ]
+    # mcountinhibit is optional, so it is accessed under UDB_MCOUNTINHIBIT_IMPLEMENTED
+    # TODO: remove mcountinhibit mask when Sail gets parameters for writable bits
+    csr_mcountinhibit = ("mcountinhibit", 0b111)
     csr_menvcfg = ("menvcfg", menvcfg_mask)
     csr_mseccfg = ("mseccfg", mseccfg_mask)
     # RV32-only high CSRs
     csr_mstatush = ("mstatush", (mstatus_mask >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
     csr_menvcfgh = ("menvcfgh", menvcfg_mask >> 32)
     csr_mseccfgh = ("mseccfgh", mseccfg_mask >> 32)
-    csr_medelegh = ("medelegh", 0x00000000)  # all bits are reserved or custom
+    # medelegh (0x312) by number: clang 20 does not accept the CSR name (gcc does).  All bits reserved/custom.
+    csr_medelegh = ("0x312", 0x00000000)
     # Read-only CSRs
-    csrmro = [("mvendorid", None), ("mimpid", None), ("marchid", None), ("mhartid", None), ("mconfigptr", None)]
+    csrmro = [("mvendorid", None), ("mimpid", None), ("marchid", None), ("mhartid", None)]
+    csr_mconfigptr = ("mconfigptr", None)
 
     ######################################
     coverpoint = "cp_mcsr_access"
@@ -580,6 +741,11 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
 
     tc = test_data.new_test_chunk(test_chunks)
+    tc.code.append("\n#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED")
+    tc.code.extend(csr_access_test(test_data, csr_mcountinhibit, covergroup, coverpoint))
+    tc.code.append("#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED")
+
+    tc = test_data.new_test_chunk(test_chunks)
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.extend(csr_access_test(test_data, csr_menvcfg, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("#endif")
@@ -591,6 +757,9 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("\n// Read-Only CSRs")
     for csr in csrmro:
         tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
+    tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
+    tc.code.extend(csr_access_test(test_data, csr_mconfigptr, covergroup, coverpoint))
+    tc.code.append("#endif")
 
     tc.code.extend(
         [
@@ -600,9 +769,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ]
     )
 
-    tc.code.extend(csr_access_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
-
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
+    tc.code.extend(csr_access_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.extend(csr_access_test(test_data, csr_menvcfgh, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("#endif //  SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
@@ -643,9 +811,53 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         )
     )
 
+    # The walk runs with menvcfg.DTE = 0 (set by the boot code), where SDT is read-only zero.
+    # Check that SDT is writable once DTE = 1.
+    tc = test_data.new_test_chunk(test_chunks)
+    r_envcfg, r_status, r_bit, r_check = test_data.int_regs.get_registers(4)
+    tc.code.extend(
+        [
+            "",
+            "#ifdef SSDBLTRP_SUPPORTED",
+            "# mstatus.SDT with menvcfg.DTE = 1",
+            "#if __riscv_xlen == 64",
+            f"csrr x{r_envcfg}, menvcfg",
+            f"LI(x{r_bit}, {1 << 59})",
+            f"csrs menvcfg, x{r_bit}    # DTE = 1",
+            "#else",
+            f"csrr x{r_envcfg}, menvcfgh",
+            f"LI(x{r_bit}, {1 << 27})",
+            f"csrs menvcfgh, x{r_bit}    # DTE = 1",
+            "#endif",
+            f"csrr x{r_status}, mstatus",
+            f"LI(x{r_bit}, {1 << 24})",
+            f"csrs mstatus, x{r_bit}    # SDT = 1",
+            test_data.add_testcase("csrs_sdt", "cp_mstatus_sdt_dte", covergroup),
+            gen_csr_read_sigupd(r_check, ("mstatus", 1 << 24), test_data, r_bit),
+            f"csrc mstatus, x{r_bit}    # SDT = 0",
+            test_data.add_testcase("csrc_sdt", "cp_mstatus_sdt_dte", covergroup),
+            gen_csr_read_sigupd(r_check, ("mstatus", 1 << 24), test_data, r_bit),
+            f"csrw mstatus, x{r_status}",
+            "#if __riscv_xlen == 64",
+            f"csrw menvcfg, x{r_envcfg}",
+            "#else",
+            f"csrw menvcfgh, x{r_envcfg}",
+            "#endif",
+            "#endif // SSDBLTRP_SUPPORTED",
+        ]
+    )
+    test_data.int_regs.return_registers([r_envcfg, r_status, r_bit, r_check])
+
     for csr in csrm:
+        if csr[0] in SM_VADDR_CSRS:
+            continue  # skip the virtual-address CSRs; they are walked in addr_csr_tests
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(csr_walk_test(test_data, csr, covergroup, coverpoint))
+
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.append("\n#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED")
+    tc.code.extend(csr_walk_test(test_data, csr_mcountinhibit, covergroup, coverpoint))
+    tc.code.append("#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED")
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
@@ -669,8 +881,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         ]
     )
 
-    tc.code.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
+    tc.code.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.extend(csr_walk_test(test_data, csr_menvcfgh, covergroup, coverpoint_masked, maskedwrites=True))
     tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
@@ -681,51 +893,24 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("#endif // MEDELEGH")
     tc.code.append("#endif // __riscv_xlen == 32")
 
-    ######################################
-    coverpoint = "cp_csr_insufficient_priv"
-    ######################################
-
-    tc = test_data.new_test_chunk(test_chunks, "csr_insufficient_priv")
-
+    tc = test_data.new_test_chunk(test_chunks, "mcsr_addr")
     tc.section_header = comment_banner(
-        coverpoint,
+        "cp_mtval_zero / cp_mtval_ilen_walk1 / cp_mtval_ilen_ones",
+        "Write 0 to mtval, and every ILEN-bit value as a walking 1 and all 32 1s when the illegal\n"
+        "instruction encoding is reported in mtval",
+    )
+    tc.code.extend(xtval_value_tests(test_data, "mtval", "Sm_mcsr_cg"))
+    addr_csr_tests(test_data, test_chunks, SM_VADDR_CSRS, "Sm_mcsr_cg", "mcsr_addr")
+
+    csr_insufficient_priv_tests(
+        test_data,
+        test_chunks,
+        covergroup,
+        [range(0x7B0, 0x7C0)],
+        "csr_insufficient_priv",
         "Attempt to read debug-mode registers.  Should throw illegal instruction",
     )
-    temp_reg = test_data.int_regs.get_register()
-    for csr in range(0x7B0, 0x7C0):
-        tc.code.extend(
-            [
-                "",
-                # Test the write value
-                test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"csrr x{temp_reg}, 0x{csr:03x}    # attempt to read debug-mode CSR {csr:03x}; should get illegal instruction",
-            ]
-        )
-    test_data.int_regs.return_register(temp_reg)
-
-    ######################################
-    coverpoint = "cp_csr_ro"
-    ######################################
-
-    tc = test_data.new_test_chunk(test_chunks, "csr_ro")
-
-    tc.section_header = comment_banner(
-        coverpoint,
-        "Attempt to write read-only CSRs.  Should throw illegal instruction",
-    )
-
-    for csr in range(0xC00, 0x1000):
-        tc = test_data.new_test_chunk(test_chunks, "csr_ro")
-        temp_reg = test_data.int_regs.get_register()
-        tc.code.extend(
-            [
-                "",
-                f"\nLI(x{temp_reg}, -1)          # x{temp_reg} = all 1s",
-                test_data.add_testcase(f"{csr}", coverpoint, covergroup),
-                f"csrw 0x{csr:03x}, x{temp_reg}    # attempt to write read-only CSR {csr:03x}; should get illegal instruction",
-            ]
-        )
-        test_data.int_regs.return_register(temp_reg)
+    csr_ro_write_tests(test_data, test_chunks, covergroup, [range(0xC00, 0x1000)], "csr_ro")
 
     ######################################
     coverpoint = "cp_scsr_from_m"
@@ -737,12 +922,61 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     )
 
     tc.code.append("#ifdef S_SUPPORTED")
-    for csr in S_CSRS + S_CSRS_NOWALK:
+    for csr in S_CSRS:
         tc.code.extend(csr_access_test(test_data, csr, covergroup, coverpoint))
     tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
     tc.code.extend(csr_access_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint))
     tc.code.extend(["", "#endif // S1P12P0_OR_LATER_SUPPORTED"])
     tc.code.append("#endif // S_SUPPORTED")
+
+    ######################################
+    coverpoint = "cp_satp_from_m"
+    ######################################
+    tc = test_data.new_test_chunk(test_chunks, "satp_from_m")
+    tc.section_header = comment_banner(coverpoint, "Read satp from M-mode with mstatus.TVM = 1 and 0")
+    temp_reg, tvm_reg = test_data.int_regs.get_registers(2)
+    tc.code.extend(
+        [
+            "#ifdef S_SUPPORTED",
+            f"LI(x{tvm_reg}, 0x00100000) # mstatus.TVM (bit 20)",
+            f"csrs mstatus, x{tvm_reg}",
+            test_data.add_testcase("tvm_enabled", coverpoint, covergroup),
+            f"csrr x{temp_reg}, satp # read satp with mstatus.TVM = 1; TVM only traps S-mode, so expect no trap",
+            f"csrc mstatus, x{tvm_reg}",
+            test_data.add_testcase("tvm_disabled", coverpoint, covergroup),
+            f"csrr x{temp_reg}, satp # read satp with mstatus.TVM = 0; expect no trap.  Value is WARL and unpredictable so don't sigupd it",
+            "#endif // S_SUPPORTED",
+        ]
+    )
+    test_data.int_regs.return_registers([temp_reg, tvm_reg])
+
+    ######################################
+    coverpoint = "cp_satp_from_s"
+    ######################################
+    tc = test_data.new_test_chunk(test_chunks, "satp_from_s")
+    tc.section_header = comment_banner(coverpoint, "Read satp from S-mode with mstatus.TVM = 1 and 0")
+    temp_reg, tvm_reg = test_data.int_regs.get_registers(2)
+    # This suite does not delegate illegal instructions, so the TVM = 1 trap is taken in M-mode,
+    # whose handler can read satp.  The S suite cannot host this case: it delegates to S-mode and
+    # the S-mode handler reads satp itself.
+    tc.code.extend(
+        [
+            "#ifdef S_SUPPORTED",
+            f"LI(x{tvm_reg}, 0x00100000) # mstatus.TVM (bit 20)",
+            f"csrs mstatus, x{tvm_reg}",
+            "RVTEST_TSBI_GOTO_SMODE",
+            test_data.add_testcase("tvm_enabled", coverpoint, covergroup),
+            f"csrr x{temp_reg}, satp # read satp from S-mode with mstatus.TVM = 1; expect illegal instruction trap",
+            "RVTEST_TSBI_GOTO_MMODE",
+            f"csrc mstatus, x{tvm_reg}",
+            "RVTEST_TSBI_GOTO_SMODE",
+            test_data.add_testcase("tvm_disabled", coverpoint, covergroup),
+            f"csrr x{temp_reg}, satp # read satp from S-mode with mstatus.TVM = 0; expect no trap.  Value is WARL and unpredictable so don't sigupd it",
+            "RVTEST_TSBI_GOTO_MMODE",
+            "#endif // S_SUPPORTED",
+        ]
+    )
+    test_data.int_regs.return_registers([temp_reg, tvm_reg])
 
     ######################################
     coverpoint = "cp_shadow"
@@ -762,10 +996,20 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             _add_shadow(r1, r2, rmask, rsave, "mstatus", "sstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data),
             _add_shadow(r1, r2, rmask, rsave, "sstatus", "mstatus", 0xCFFFFFFCF, coverpoint, covergroup, test_data),
             f"LI(x{r1}, 0xFFFF) # all interrupts",
-            _add_shadow(r1, r2, rmask, rsave, "mie", "sie", 0x3666, coverpoint, covergroup, test_data),
-            _add_shadow(r1, r2, rmask, rsave, "mip", "sip", 0x3666, coverpoint, covergroup, test_data),
-            _add_shadow(r1, r2, rmask, rsave, "sie", "mie", 0x3666, coverpoint, covergroup, test_data),
-            _add_shadow(r1, r2, rmask, rsave, "sip", "mip", 0x3666, coverpoint, covergroup, test_data),
+            "# Without delegation, S-mode should not see any of the M-mode interrupts",
+            "csrw mideleg, zero # disable delegation",
+            _add_shadow(r1, r2, rmask, rsave, "mie", "sie", 0x3EEE, coverpoint, covergroup, test_data),
+            _add_shadow(r1, r2, rmask, rsave, "mip", "sip", 0x3EEE, coverpoint, covergroup, test_data),
+            _add_shadow(r1, r2, rmask, rsave, "sie", "mie", 0x3EEE, coverpoint, covergroup, test_data),
+            _add_shadow(r1, r2, rmask, rsave, "sip", "mip", 0x3EEE, coverpoint, covergroup, test_data),
+            "# With delegation, S-mode should see the delegated M-mode interrupts",
+            f"csrw mideleg, x{r1} # delegate all interrupts to S-mode",
+            _add_shadow(r1, r2, rmask, rsave, "mie", "sie", 0x3EEE, coverpoint, covergroup, test_data, "_deleg"),
+            _add_shadow(r1, r2, rmask, rsave, "mip", "sip", 0x3EEE, coverpoint, covergroup, test_data, "_deleg"),
+            _add_shadow(r1, r2, rmask, rsave, "sie", "mie", 0x3EEE, coverpoint, covergroup, test_data, "_deleg"),
+            _add_shadow(r1, r2, rmask, rsave, "sip", "mip", 0x3EEE, coverpoint, covergroup, test_data, "_deleg"),
+            *_add_deleg_alias(r1, r2, coverpoint, covergroup, test_data),
+            # mideleg restored to 0 by _add_deleg_alias()
             "#endif // S_SUPPORTED",
         ]
     )
@@ -965,14 +1209,10 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     test_data.int_regs.return_registers([r1, r2, rc, rmisasave])
 
-    ######################################
-    coverpoint = "cp_misa_bv"
-    ######################################
-
     tc = test_data.new_test_chunk(test_chunks, "misa")
 
     tc.section_header = comment_banner(
-        coverpoint,
+        "cp_misa_b / cp_misa_v",
         "Sm1p13: misa.B (bit 1) and misa.V (bit 21) correctness.\n"
         "Read, set, and clear each bit; read back and write to signature.",
     )
@@ -988,28 +1228,28 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             f"LI(x{rv}, 0x200000)            # bitmask for misa.V (bit 21)",
             "",
             "# Set misa.B and read back",
-            test_data.add_testcase("set_B", coverpoint, covergroup),
+            test_data.add_testcase("set_B", "cp_misa_b", covergroup),
             f"csrs misa, x{rb}              # attempt to set misa.B",
             f"csrr x{rr3}, misa             # read back misa",
             f"and x{rr3}, x{rr3}, x{rb}     # isolate misa.B",
             write_sigupd(rr3, test_data),
             "",
             "# Clear misa.B and read back",
-            test_data.add_testcase("clr_B", coverpoint, covergroup),
+            test_data.add_testcase("clr_B", "cp_misa_b", covergroup),
             f"csrc misa, x{rb}              # attempt to clear misa.B",
             f"csrr x{rr3}, misa             # read back misa",
             f"and x{rr3}, x{rr3}, x{rb}     # isolate misa.B",
             write_sigupd(rr3, test_data),
             "",
             "# Set misa.V and read back",
-            test_data.add_testcase("set_V", coverpoint, covergroup),
+            test_data.add_testcase("set_V", "cp_misa_v", covergroup),
             f"csrs misa, x{rv}              # attempt to set misa.V",
             f"csrr x{rr3}, misa             # read back misa",
             f"and x{rr3}, x{rr3}, x{rv}     # isolate misa.V",
             write_sigupd(rr3, test_data),
             "",
             "# Clear misa.V and read back",
-            test_data.add_testcase("clr_V", coverpoint, covergroup),
+            test_data.add_testcase("clr_V", "cp_misa_v", covergroup),
             f"csrc misa, x{rv}              # attempt to clear misa.V",
             f"csrr x{rr3}, misa             # read back misa",
             f"and x{rr3}, x{rr3}, x{rv}     # isolate misa.V",
@@ -1187,6 +1427,8 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     )
     lines.extend(
         [
+            "#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED",
+            "#ifdef UDB_COUNTINHIBIT_EN_0 // mcountinhibit.CY may be read-only zero",
             f"LI(x{r1}, 0b1)        # inhibit mcycle",
             f"csrw mcountinhibit, x{r1}        # inhibit mcycle",
             f"csrr x{r1}, mcycle        # read mcycle",
@@ -1195,6 +1437,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             f"csrr x{r2}, mcycle        # read mcycle again",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be 0",
             write_sigupd(r2, test_data),
+            "#endif // UDB_COUNTINHIBIT_EN_0",
         ]
     )
 
@@ -1209,6 +1452,7 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     )
     lines.extend(
         [
+            "#ifdef UDB_COUNTINHIBIT_EN_2 // mcountinhibit.IR may be read-only zero",
             f"LI(x{r1}, 0b100)        # inhibit minstret",
             f"csrw mcountinhibit, x{r1}        # inhibit minstret",
             f"csrr x{r1}, minstret        # read minstret",
@@ -1217,6 +1461,8 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             f"csrr x{r2}, minstret        # read minstret again",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be 0",
             write_sigupd(r2, test_data),
+            "#endif // UDB_COUNTINHIBIT_EN_2",
+            "#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED",
         ]
     )
 
@@ -1235,16 +1481,18 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             f"LI(x{r1}, 42)        # value to write to mtime",
             f"LA(x{r2}, RVMODEL_MTIME_ADDRESS)        # load address of mtime",
             f"SREG x{r1}, 0(x{r2})        # write mtime = 42 using memory-mapped I/O",
+            "fence o, i        # order the mtime write before the time read",
             test_data.add_testcase("", coverpoint, covergroup),
             f"csrr x{r2}, time        # read time",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be small",
-            f"slti x{r2}, x{r2}, 10          # signature is 1 if difference < 10",
+            f"sltiu x{r2}, x{r2}, 100          # signature is 1 only if time is within 100 above the written value",
             write_sigupd(r2, test_data),
             "",
             "#if __riscv_xlen == 32",
             f"LI(x{r1}, 67)        # value to write to mtimeh",
             f"LA(x{r2}, RVMODEL_MTIME_ADDRESS)        # load address of mtimeh",
             f"SREG x{r1}, 4(x{r2})        # write mtimeh = 67 using memory-mapped I/O",
+            "fence o, i        # order the mtimeh write before the timeh read",
             test_data.add_testcase("h", coverpoint, covergroup),
             f"csrr x{r2}, timeh        # read timeh",
             f"sub x{r2}, x{r2}, x{r1}          # difference should be zero",
@@ -1260,7 +1508,13 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
     r_val, r_val2, r_temp, r_counter = test_data.int_regs.get_registers(4)
 
     # Re-enable all counters before trying to wrap them!
-    lines.append("csrw mcountinhibit, x0    # Clear inhibit register")
+    lines.extend(
+        [
+            "#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED",
+            "csrw mcountinhibit, x0    # Clear inhibit register",
+            "#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED",
+        ]
+    )
 
     ######################################
     coverpoint = "cp_mcycle_wraparound"
@@ -1333,13 +1587,14 @@ def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
             "#endif",
             test_data.add_testcase("mtime_wrap", coverpoint, covergroup),
             f"SREG x{r_val}, 0(x{r_temp})          # write all-ones to the base word; arms the counter",
-            f"LI(x{r_counter}, RVMODEL_MAX_CYCLES_PER_TIMER_TICK * 2) # Wait loop for two timer ticks",
+            f"LI(x{r_counter}, 100000)            # wrap threshold; too big for an sltiu immediate (12-bit signed)",
+            f"LI(x{r_val}, 20000)                 # bounded poll iterations (models tick mtime at different rates)",
             "1:",
-            "nop",
-            f"addi x{r_counter}, x{r_counter}, -1",
-            f"bnez x{r_counter}, 1b",
-            f"LREG x{r_val2}, 0(x{r_temp})         # read raw lower half after the bounded wait",
-            f"LI(x{r_counter}, 100000)            # threshold; too big for an sltiu immediate (12-bit signed)",
+            f"LREG x{r_val2}, 0(x{r_temp})         # read raw lower half",
+            f"bltu x{r_val2}, x{r_counter}, 2f     # wrapped to a small value -> done",
+            f"addi x{r_val}, x{r_val}, -1",
+            f"bnez x{r_val}, 1b",
+            "2:",
             f"sltu x{r_val}, x{r_val2}, x{r_counter}  # pass if mtime wrapped to a small value",
             "#if __riscv_xlen == 32",
             f"LREG x{r_val2}, 4(x{r_temp})         # read raw upper half after the bounded wait",
@@ -1376,6 +1631,7 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.begin_test_chunk("inst")
     tc.code.extend(_generate_priv_inst_tests(test_data))
+    tc.code.extend(_generate_sfence_tvm_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
 
     tc = test_data.begin_test_chunk("xret")

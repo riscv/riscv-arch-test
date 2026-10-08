@@ -31,14 +31,17 @@ covergroup F_fadd_s_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_von : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_von : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
-        wildcard bins OF   = (5'b??0?? => 5'b??1??);
-        wildcard bins OF1  = (5'b??1?? => 5'b??1??);
-        wildcard bins NX   = (5'b????0 => 5'b????1);
-        wildcard bins NX1  = (5'b????1 => 5'b????1);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+        wildcard bins OF   = {10'b??0??_??1??};
+        wildcard bins OF1  = {10'b??1??_??1??};
+        wildcard bins NX   = {10'b????0_????1};
+        wildcard bins NX1  = {10'b????1_????1};
     }
 
     cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
@@ -48,7 +51,6 @@ covergroup F_fadd_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -65,10 +67,10 @@ covergroup F_fadd_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -99,10 +101,10 @@ covergroup F_fadd_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -160,10 +162,10 @@ covergroup F_fclass_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -201,10 +203,13 @@ covergroup F_fcvt_s_w_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_n : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_n : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NX   = (5'b????0 => 5'b????1);
-        wildcard bins NX1  = (5'b????1 => 5'b????1);
+        wildcard bins NX   = {10'b????0_????1};
+        wildcard bins NX1  = {10'b????1_????1};
     }
 
     cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
@@ -214,7 +219,6 @@ covergroup F_fcvt_s_w_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -249,6 +253,8 @@ covergroup F_fcvt_s_w_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -272,10 +278,13 @@ covergroup F_fcvt_s_wu_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_n : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_n : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NX   = (5'b????0 => 5'b????1);
-        wildcard bins NX1  = (5'b????1 => 5'b????1);
+        wildcard bins NX   = {10'b????0_????1};
+        wildcard bins NX1  = {10'b????1_????1};
     }
 
     cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
@@ -285,7 +294,6 @@ covergroup F_fcvt_s_wu_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -320,6 +328,8 @@ covergroup F_fcvt_s_wu_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -343,12 +353,15 @@ covergroup F_fcvt_w_s_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_vn : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_vn : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
-        wildcard bins NX   = (5'b????0 => 5'b????1);
-        wildcard bins NX1  = (5'b????1 => 5'b????1);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+        wildcard bins NX   = {10'b????0_????1};
+        wildcard bins NX1  = {10'b????1_????1};
     }
 
     cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
@@ -358,7 +371,6 @@ covergroup F_fcvt_w_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -371,10 +383,10 @@ covergroup F_fcvt_w_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -416,12 +428,15 @@ covergroup F_fcvt_wu_s_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_vn : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_vn : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
-        wildcard bins NX   = (5'b????0 => 5'b????1);
-        wildcard bins NX1  = (5'b????1 => 5'b????1);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+        wildcard bins NX   = {10'b????0_????1};
+        wildcard bins NX1  = {10'b????1_????1};
     }
 
     cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
@@ -431,7 +446,6 @@ covergroup F_fcvt_wu_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -444,10 +458,10 @@ covergroup F_fcvt_wu_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -501,18 +515,21 @@ covergroup F_fdiv_s_cg with function sample(ins_t ins);
     // cp_csr_fflags_vdoun
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_fflags_vdoun : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_vdoun : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
-        wildcard bins DZ   = (5'b?0??? => 5'b?1???);
-        wildcard bins DZ1  = (5'b?1??? => 5'b?1???);
-        wildcard bins OF   = (5'b??0?? => 5'b??1??);
-        wildcard bins OF1  = (5'b??1?? => 5'b??1??);
-        wildcard bins UF   = (5'b???0? => 5'b???1?);
-        wildcard bins UF1  = (5'b???1? => 5'b???1?);
-        wildcard bins NX   = (5'b????0 => 5'b????1);
-        wildcard bins NX1  = (5'b????1 => 5'b????1);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+        wildcard bins DZ   = {10'b?0???_?1???};
+        wildcard bins DZ1  = {10'b?1???_?1???};
+        wildcard bins OF   = {10'b??0??_??1??};
+        wildcard bins OF1  = {10'b??1??_??1??};
+        wildcard bins UF   = {10'b???0?_???1?};
+        wildcard bins UF1  = {10'b???1?_???1?};
+        wildcard bins NX   = {10'b????0_????1};
+        wildcard bins NX1  = {10'b????1_????1};
     }
 
     //// end cp_csr_fflags_vdoun////////////////////////////////////////////////
@@ -524,7 +541,6 @@ covergroup F_fdiv_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -541,10 +557,10 @@ covergroup F_fdiv_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -575,10 +591,10 @@ covergroup F_fdiv_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -612,10 +628,13 @@ covergroup F_feq_s_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_v : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -628,10 +647,10 @@ covergroup F_feq_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -662,10 +681,10 @@ covergroup F_feq_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -703,10 +722,13 @@ covergroup F_fle_s_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_v : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -719,10 +741,10 @@ covergroup F_fle_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -753,10 +775,10 @@ covergroup F_fle_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -794,10 +816,13 @@ covergroup F_flt_s_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_v : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -810,10 +835,10 @@ covergroup F_flt_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -844,10 +869,10 @@ covergroup F_flt_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -912,6 +937,36 @@ covergroup F_flw_cg with function sample(ins_t ins);
         bins randomp = {1795};
     }
 
+    cp_memval_fp_single : coverpoint unsigned'(ins.current.fd_val[31:0])  iff (ins.trap == 0 )  {
+        // Single-precision value loaded from memory
+        bins pos0             = {32'h00000000};
+        bins neg0             = {32'h80000000};
+        bins pos1             = {32'h3f800000};
+        bins neg1             = {32'hbf800000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
+        bins posminnorm       = {32'h00800000};
+        bins negminnorm       = {32'h80800000};
+        bins posmaxnorm       = {32'h7f7fffff};
+        bins negmaxnorm       = {32'hff7fffff};
+        bins posmax_subnorm   = {32'h007fffff};
+        bins negmax_subnorm   = {32'h807fffff};
+        bins posmid_subnorm   = {32'h00400000};
+        bins negmid_subnorm   = {32'h80400000};
+        bins posmin_subnorm   = {32'h00000001};
+        bins negmin_subnorm   = {32'h80000001};
+        bins posinfinity      = {32'h7f800000};
+        bins neginfinity      = {32'hff800000};
+        bins posQNaN          = {[32'h7fc00000:32'h7fffffff]};
+        bins posSNaN          = {[32'h7f800001:32'h7fbfffff]};
+        bins negQNaN          = {[32'hffc00000:32'hffffffff]};
+        bins negSNaN          = {[32'hff800001:32'hffbfffff]};
+        bins posrandom        = {32'h7ef8654f};
+        bins negrandom        = {32'h813d9ab0};
+    }
+
     cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
         // RS1 register assignment (excluding x0)
         ignore_bins x0 = {x0};
@@ -942,16 +997,19 @@ covergroup F_fmadd_s_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_voun : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_voun : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
-        wildcard bins OF   = (5'b??0?? => 5'b??1??);
-        wildcard bins OF1  = (5'b??1?? => 5'b??1??);
-        wildcard bins UF   = (5'b???0? => 5'b???1?);
-        wildcard bins UF1  = (5'b???1? => 5'b???1?);
-        wildcard bins NX   = (5'b????0 => 5'b????1);
-        wildcard bins NX1  = (5'b????1 => 5'b????1);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+        wildcard bins OF   = {10'b??0??_??1??};
+        wildcard bins OF1  = {10'b??1??_??1??};
+        wildcard bins UF   = {10'b???0?_???1?};
+        wildcard bins UF1  = {10'b???1?_???1?};
+        wildcard bins NX   = {10'b????0_????1};
+        wildcard bins NX1  = {10'b????1_????1};
     }
 
     cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
@@ -961,7 +1019,6 @@ covergroup F_fmadd_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -978,10 +1035,10 @@ covergroup F_fmadd_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1012,10 +1069,10 @@ covergroup F_fmadd_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1046,10 +1103,10 @@ covergroup F_fmadd_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1095,10 +1152,13 @@ covergroup F_fmax_s_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_v : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -1115,10 +1175,10 @@ covergroup F_fmax_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1149,10 +1209,10 @@ covergroup F_fmax_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1194,10 +1254,13 @@ covergroup F_fmin_s_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_v : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_v : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -1214,10 +1277,10 @@ covergroup F_fmin_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1248,10 +1311,10 @@ covergroup F_fmin_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1301,16 +1364,19 @@ covergroup F_fmsub_s_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_voun : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_voun : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
-        wildcard bins OF   = (5'b??0?? => 5'b??1??);
-        wildcard bins OF1  = (5'b??1?? => 5'b??1??);
-        wildcard bins UF   = (5'b???0? => 5'b???1?);
-        wildcard bins UF1  = (5'b???1? => 5'b???1?);
-        wildcard bins NX   = (5'b????0 => 5'b????1);
-        wildcard bins NX1  = (5'b????1 => 5'b????1);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+        wildcard bins OF   = {10'b??0??_??1??};
+        wildcard bins OF1  = {10'b??1??_??1??};
+        wildcard bins UF   = {10'b???0?_???1?};
+        wildcard bins UF1  = {10'b???1?_???1?};
+        wildcard bins NX   = {10'b????0_????1};
+        wildcard bins NX1  = {10'b????1_????1};
     }
 
     cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
@@ -1320,7 +1386,6 @@ covergroup F_fmsub_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -1337,10 +1402,10 @@ covergroup F_fmsub_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1371,10 +1436,10 @@ covergroup F_fmsub_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1405,10 +1470,10 @@ covergroup F_fmsub_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1458,16 +1523,19 @@ covergroup F_fmul_s_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_voun : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_voun : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
-        wildcard bins OF   = (5'b??0?? => 5'b??1??);
-        wildcard bins OF1  = (5'b??1?? => 5'b??1??);
-        wildcard bins UF   = (5'b???0? => 5'b???1?);
-        wildcard bins UF1  = (5'b???1? => 5'b???1?);
-        wildcard bins NX   = (5'b????0 => 5'b????1);
-        wildcard bins NX1  = (5'b????1 => 5'b????1);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+        wildcard bins OF   = {10'b??0??_??1??};
+        wildcard bins OF1  = {10'b??1??_??1??};
+        wildcard bins UF   = {10'b???0?_???1?};
+        wildcard bins UF1  = {10'b???1?_???1?};
+        wildcard bins NX   = {10'b????0_????1};
+        wildcard bins NX1  = {10'b????1_????1};
     }
 
     cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
@@ -1477,7 +1545,6 @@ covergroup F_fmul_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -1494,10 +1561,10 @@ covergroup F_fmul_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1528,10 +1595,10 @@ covergroup F_fmul_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1597,6 +1664,8 @@ covergroup F_fmv_w_x_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -1626,10 +1695,10 @@ covergroup F_fmv_x_w_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1679,16 +1748,19 @@ covergroup F_fnmadd_s_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_voun : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_voun : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
-        wildcard bins OF   = (5'b??0?? => 5'b??1??);
-        wildcard bins OF1  = (5'b??1?? => 5'b??1??);
-        wildcard bins UF   = (5'b???0? => 5'b???1?);
-        wildcard bins UF1  = (5'b???1? => 5'b???1?);
-        wildcard bins NX   = (5'b????0 => 5'b????1);
-        wildcard bins NX1  = (5'b????1 => 5'b????1);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+        wildcard bins OF   = {10'b??0??_??1??};
+        wildcard bins OF1  = {10'b??1??_??1??};
+        wildcard bins UF   = {10'b???0?_???1?};
+        wildcard bins UF1  = {10'b???1?_???1?};
+        wildcard bins NX   = {10'b????0_????1};
+        wildcard bins NX1  = {10'b????1_????1};
     }
 
     cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
@@ -1698,7 +1770,6 @@ covergroup F_fnmadd_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -1715,10 +1786,10 @@ covergroup F_fnmadd_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1749,10 +1820,10 @@ covergroup F_fnmadd_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1783,10 +1854,10 @@ covergroup F_fnmadd_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1840,16 +1911,19 @@ covergroup F_fnmsub_s_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_voun : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_voun : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
-        wildcard bins OF   = (5'b??0?? => 5'b??1??);
-        wildcard bins OF1  = (5'b??1?? => 5'b??1??);
-        wildcard bins UF   = (5'b???0? => 5'b???1?);
-        wildcard bins UF1  = (5'b???1? => 5'b???1?);
-        wildcard bins NX   = (5'b????0 => 5'b????1);
-        wildcard bins NX1  = (5'b????1 => 5'b????1);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+        wildcard bins OF   = {10'b??0??_??1??};
+        wildcard bins OF1  = {10'b??1??_??1??};
+        wildcard bins UF   = {10'b???0?_???1?};
+        wildcard bins UF1  = {10'b???1?_???1?};
+        wildcard bins NX   = {10'b????0_????1};
+        wildcard bins NX1  = {10'b????1_????1};
     }
 
     cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
@@ -1859,7 +1933,6 @@ covergroup F_fnmsub_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -1876,10 +1949,10 @@ covergroup F_fnmsub_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1910,10 +1983,10 @@ covergroup F_fnmsub_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -1944,10 +2017,10 @@ covergroup F_fnmsub_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2007,10 +2080,10 @@ covergroup F_fsgnj_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2041,10 +2114,10 @@ covergroup F_fsgnj_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2100,10 +2173,10 @@ covergroup F_fsgnjn_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2134,10 +2207,10 @@ covergroup F_fsgnjn_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2193,10 +2266,10 @@ covergroup F_fsgnjx_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2227,10 +2300,10 @@ covergroup F_fsgnjx_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2272,12 +2345,15 @@ covergroup F_fsqrt_s_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_vn : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_vn : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
-        wildcard bins NX   = (5'b????0 => 5'b????1);
-        wildcard bins NX1  = (5'b????1 => 5'b????1);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+        wildcard bins NX   = {10'b????0_????1};
+        wildcard bins NX1  = {10'b????1_????1};
     }
 
     cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
@@ -2287,7 +2363,6 @@ covergroup F_fsqrt_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -2304,10 +2379,10 @@ covergroup F_fsqrt_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2353,14 +2428,17 @@ covergroup F_fsub_s_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_von : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_von : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
-        wildcard bins OF   = (5'b??0?? => 5'b??1??);
-        wildcard bins OF1  = (5'b??1?? => 5'b??1??);
-        wildcard bins NX   = (5'b????0 => 5'b????1);
-        wildcard bins NX1  = (5'b????1 => 5'b????1);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+        wildcard bins OF   = {10'b??0??_??1??};
+        wildcard bins OF1  = {10'b??1??_??1??};
+        wildcard bins NX   = {10'b????0_????1};
+        wildcard bins NX1  = {10'b????1_????1};
     }
 
     cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
@@ -2370,7 +2448,6 @@ covergroup F_fsub_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -2387,10 +2464,10 @@ covergroup F_fsub_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2421,10 +2498,10 @@ covergroup F_fsub_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2468,10 +2545,10 @@ covergroup F_fsw_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2534,12 +2611,15 @@ covergroup F_fcvt_l_s_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_vn : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_vn : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
-        wildcard bins NX   = (5'b????0 => 5'b????1);
-        wildcard bins NX1  = (5'b????1 => 5'b????1);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+        wildcard bins NX   = {10'b????0_????1};
+        wildcard bins NX1  = {10'b????1_????1};
     }
 
     cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
@@ -2549,7 +2629,6 @@ covergroup F_fcvt_l_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -2562,10 +2641,10 @@ covergroup F_fcvt_l_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2607,12 +2686,15 @@ covergroup F_fcvt_lu_s_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_vn : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_vn : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NV   = (5'b0???? => 5'b1????);
-        wildcard bins NV1  = (5'b1???? => 5'b1????);
-        wildcard bins NX   = (5'b????0 => 5'b????1);
-        wildcard bins NX1  = (5'b????1 => 5'b????1);
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+        wildcard bins NX   = {10'b????0_????1};
+        wildcard bins NX1  = {10'b????1_????1};
     }
 
     cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
@@ -2622,7 +2704,6 @@ covergroup F_fcvt_lu_s_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fs1 : coverpoint ins.get_fpr_reg(ins.current.fs1)  iff (ins.trap == 0 )  {
@@ -2635,10 +2716,10 @@ covergroup F_fcvt_lu_s_cg with function sample(ins_t ins);
         bins neg0             = {32'h80000000};
         bins pos1             = {32'h3f800000};
         bins neg1             = {32'hbf800000};
-        bins pos1p5           = {32'h3fc00000};
-        bins neg1p5           = {32'hbfc00000};
-        bins pos2             = {32'h40000000};
-        bins neg2             = {32'hc0000000};
+        bins pos2p5           = {32'h40200000};
+        bins neg2p5           = {32'hc0200000};
+        bins pos2prec         = {32'h4b800000};
+        bins neg2prec         = {32'hcb800000};
         bins posminnorm       = {32'h00800000};
         bins negminnorm       = {32'h80800000};
         bins posmaxnorm       = {32'h7f7fffff};
@@ -2680,10 +2761,13 @@ covergroup F_fcvt_s_l_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_n : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_n : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NX   = (5'b????0 => 5'b????1);
-        wildcard bins NX1  = (5'b????1 => 5'b????1);
+        wildcard bins NX   = {10'b????0_????1};
+        wildcard bins NX1  = {10'b????1_????1};
     }
 
     cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
@@ -2693,7 +2777,6 @@ covergroup F_fcvt_s_l_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -2728,6 +2811,8 @@ covergroup F_fcvt_s_l_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -2751,10 +2836,13 @@ covergroup F_fcvt_s_lu_cg with function sample(ins_t ins);
         bins count[]  = {1};
     }
 
-    cp_csr_fflags_n : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags") iff (ins.trap == 0 )  {
+    cp_csr_fflags_n : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
         // Value of FCSR.fflags
-        wildcard bins NX   = (5'b????0 => 5'b????1);
-        wildcard bins NX1  = (5'b????1 => 5'b????1);
+        wildcard bins NX   = {10'b????0_????1};
+        wildcard bins NX1  = {10'b????1_????1};
     }
 
     cp_csr_frm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "frm", "frm")  iff (ins.trap == 0 & ins.current.insn[14:12] == 3'b111)  {
@@ -2764,7 +2852,6 @@ covergroup F_fcvt_s_lu_cg with function sample(ins_t ins);
         bins rdn  = {3'b010};
         bins rup  = {3'b011};
         bins rmm  = {3'b100};
-        bins illegal  = default;
     }
 
     cp_fd : coverpoint ins.get_fpr_reg(ins.current.fd)  iff (ins.trap == 0 )  {
@@ -2799,6 +2886,8 @@ covergroup F_fcvt_s_lu_cg with function sample(ins_t ins);
             bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
             bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
             bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
             bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
             bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
             bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
@@ -2907,5 +2996,6 @@ function void f_sample(int hart, int issue, ins_t ins);
             F_fcvt_s_lu_cg.sample(ins);
         end
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

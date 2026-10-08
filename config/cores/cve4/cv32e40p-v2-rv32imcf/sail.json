@@ -1,11 +1,31 @@
 // Copyright (c) 2026 Eclipse Foundation
 // SPDX-License-Identifier: Apache-2.0
 {
-  "$schema": "/opt/riscv/share/sail-riscv/sail_riscv_config_schema.json",
+  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.15/sail_riscv_config_schema.json",
   "base": {
     "xlen": 32,
     "E": false,
-    "writable_misa": false,
+    // Whether a `mhpmcounter` increments if the event it is counting
+    // was generated during a write to its corresponding `mhpmevent`
+    // CSR (which could change the monitored event).
+    "hpmcounter_increments_in_self_hpmevent_write": false,
+    // The precision of the HPM counter, upto 64 bits.
+    "hpmcounter_width_bits": 64,
+    // The width of the `mhpmevent` CSRs, upto 64 bits, if Sscofpmf is
+    // not supported.  On RV32 without Sscofpmf, this can be upto 32,
+    // since the `mhpmeventh` CSRs are not accessible.
+    // If Sscofpmf is supported, the `mhpmevent` CSRs are always 64
+    // bits; this value then defines the number, upto 56, of the lowest
+    // bits of the CSRs that are used as the event selector.
+    "hpmevent_width_bits": 32,
+    "mcountinhibit": {
+      // Whether the `mcountinhibit` CSR is implemented.
+      "supported": true,
+      // This bits in this value control whether the corresponding
+      // bits of the CSR are writable.  Note that bit 1 cannot be written
+      // to as it is read-only zero.
+      "writable_bits": { "len": 32, "value": "0xFFFF_FFFD" }
+    },
     // cv32e40p has no menvcfg register (M-mode only, no S/U-mode).
     // SCHEMA-REQUIRED: no RTL counterpart; value has no effect on DUT comparison.
     "writable_fiom": true,
@@ -28,6 +48,10 @@
     // corresponding bit of `mcounteren` is writable, otherwise the
     // bit is read-only zero.
     "mcounteren_writable_bits": {
+      "len": 32,
+      "value": "0x0"
+    },
+    "hcounteren_writable_bits": {
       "len": 32,
       "value": "0x0"
     },
@@ -65,6 +89,15 @@
         "base_alignment": 2
       }
     },
+    "vstvec": {
+      "direct": {
+        "supported": false
+      },
+      "vectored": {
+        "supported": false,
+        "base_alignment": 2
+      }
+    },
     "medeleg": {
       "delegatable_bits": {
         "len": 64,
@@ -83,6 +116,10 @@
     "xtval_nonzero": {
       // mtval is hardwired to 0 in cv32e40p.
       "illegal_instruction": false,
+      "virtual_instruction": false,
+      "load_guest_page_fault": false,
+      "samo_guest_page_fault": false,
+      "fetch_guest_page_fault": false,
       "software_breakpoint": false,
       "hardware_breakpoint": false,
       "load_address_misaligned": false,
@@ -95,6 +132,7 @@
       "fetch_access_fault": false,
       "fetch_page_fault": false,
       "software_check": false,
+      "hardware_error": true,
       "reserved_exceptions": false
     },
     "reserved_behavior": {
@@ -128,6 +166,8 @@
   },
   "memory": {
     "physaddr_bits": 32,
+    "asidlen": 9,
+    "vmidlen": 7,
     "pmp": {
       "grain": 0,
       // cv32e40p has no PMP (USE_PMP=0, cv32e40p_core.sv:108; NUM_PMP_ENTRIES instantiated
@@ -152,7 +192,7 @@
         "vector": { "None": null },
         // SCHEMA-REQUIRED: cv32e40p has no Zalrsc (A: false, extensions section).
         // LR/SC opcodes decode as illegal instructions. Value has no effect on DUT comparison.
-        "lrsc": "AccessFault",
+        "lrsc": { "Some": "AccessFault" },
         // SCHEMA-REQUIRED: cv32e40p has no Zaamo/A extension (A: false, extensions section).
         // AMO opcodes decode as illegal instructions.
         // Value has no effect on DUT comparison.
@@ -196,7 +236,8 @@
             "vector": { "None": null },
             // SCHEMA-REQUIRED: no A extension. No RTL counterpart.
             // Value has no effect on DUT comparison.
-            "amo": "AccessFault"
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
           },
           // cv32e40p has no A extension; atomic instructions are not supported.
           "atomic_support": "AMONone",
@@ -239,7 +280,8 @@
             "vector": { "None": null },
             // SCHEMA-REQUIRED: no A extension. No RTL counterpart.
             // Value has no effect on DUT comparison.
-            "amo": "AccessFault"
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
           },
           // cv32e40p has no A extension; atomic instructions are not supported.
           "atomic_support": "AMONone",
@@ -273,6 +315,13 @@
       "require_exact_reservation_addr": false,
       "invalidate_on_same_hart_store": false
     },
+    "interrupts": {
+      "machine": {
+        "software": { "supported": true },
+        "external": { "supported": true },
+        "timer": { "supported": true }
+      }
+    },
     "clint": {
       "supported": true,
       // This must be in a suitable memory region (see `memory.regions`).
@@ -295,23 +344,54 @@
     // also `true`.
     "wfi_available_to_user_mode": false,
     // Maximum time before a WFI instruction expires.
-    "max_time_to_wait": 1000
+    "max_time_to_wait": 1000,
+    // The model can generate the following events that can be tracked
+    // using the HPM counters:
+    // - EV_FENCE
+    // - EV_MISALIGNED_LOAD_EXCEPTION
+    // - EV_MISALIGNED_STORE_EXCEPTION
+    // - EV_TLB_MISS
+    //
+    // An event can be mapped to a selector value, that when written
+    // to the event field of an `mhpmeventNN` CSR, will increment the
+    // corresponding `mhpmcounterNN` CSR as per the specification
+    // (e.g. the `Sscofpmf` extension).
+    //
+    // The selector values need to fit into the event field of an
+    // `mhpmeventNN` CSR. When Sscofpmf is not supported, this field
+    // is `base.hpmevent_width_bits` wide; with Sscofpmf, this field
+    // is the lowest 56 bits of the 64-bit `mhpeventNN` CSR.
+    //
+    // The `event_selectors` list can contain any subset of these
+    // supported events.  Events cannot be repeated in the list, and
+    // the selector values should be unique.  These selector values
+    // are always specified as 64-bit, but their values must fit the
+    // width restrictions mentioned above.
+    "event_selectors": []
   },
   "extensions": {
     "M": {
+      "mutable_misa": false,
       "supported": true
     },
     "A": {
+      "mutable_misa": false,
       "supported": false
     },
     "F": {
+      "mutable_misa": false,
       "supported": true,
       "fflags_dirty_policy": "Fflags_Dirty_Precise"
     },
     "D": {
+      "mutable_misa": false,
       "supported": false
     },
+    "C": {
+      "mutable_misa": false
+    },
     "V": {
+      "mutable_misa": false,
       "support_level": "Disabled",
       "vlen_exp": 7,
       "elen_exp": 6,
@@ -351,14 +431,67 @@
       }
     },
     "B": {
+      "mutable_misa": false,
       "supported": false
     },
     "S": {
-      "supported": false
+      "mutable_misa": false,
+      "supported": false,
+      "interrupts": {
+        "software": { "supported": false },
+        "external": { "supported": false },
+        "timer": { "supported": false }
+      }
     },
     "U": {
+      "mutable_misa": false,
       "supported": false
     },
+
+    "H": {
+      "mutable_misa": false,
+      "supported": false,
+      "geilen": 31,
+      "guest_page_fault_writes_htval": true,
+      // Whether a trap into M or HS mode caused by the specified exception
+      // writes the transformed trapping instruction to `mtinst`/`htinst`.
+      // This applies to integer and floating-point loads and stores
+      // (including compressed forms), LR/SC, AMOs, HLV/HLVX/HSV and CBOs.
+      // If false, zero is written instead.
+      "transformed_instruction": {
+        "load_access_fault": true,
+        "load_address_misaligned": true,
+        "load_guest_page_fault": true,
+        "load_page_fault": true,
+        "samo_access_fault": true,
+        "samo_address_misaligned": true,
+        "samo_guest_page_fault": true,
+        "samo_page_fault": true
+      },
+      "hgatp_modes": {
+        "Sv32x4": false,
+        "Sv39x4": false,
+        "Sv48x4": false,
+        "Sv57x4": false
+      },
+      "vsatp_modes": {
+        "Sv32": true,
+        "Sv39": false,
+        "Sv48": false,
+        "Sv57": false
+      }
+    },
+
+    "Sha": { "supported": false },
+    "Shcounterenw": { "supported": false },
+    "Shgatpa": { "supported": false },
+    "Shtvala": { "supported": false },
+    "Shvsatpa": { "supported": false },
+    "Shvstvala": { "supported": false },
+    "Shvstvecd": { "supported": false },
+    "Sstvecd": { "supported": false },
+    "Svukte": { "supported": false },
+    "Zilx": { "supported": false },
     "Zibi": {
       "supported": false
     },
@@ -622,6 +755,55 @@
     },
     "Svvptc": {
       "supported": false
-    }
+    },
+    "Sdtrig": {
+      "supported": false,
+      // `breakpoint_reentrancy` must be one of the below strings:
+      // . `Use_tcontrol`: use the `mte` and `mpte` bits in the `tcontrol` CSR (this also makes the `tcontrol` CSR available)
+      // . `Use_interrupt_enables`: use `mstatus.MIE` and the `SIE` bits in `sstatus` and `vsstatus`
+      // . `No_reentrancy_support`: no specific support for reentrancy
+      // Note: `Use_tcontrol` hardwires medeleg[3] to 0, which breaks the
+      // `sbreak` test in `riscv-tests`.
+      "breakpoint_reentrancy": "No_reentrancy_support",
+      "etrigger": {
+        "supported": false,
+        // A bit set to 1 in this value specifies that the
+        // corresponding exception is supported by the trigger.
+        // Triggers for reserved exceptions are not supported.  This
+        // value is ignored when `etrigger` is not supported.
+        "supported_exceptions": { "len": "xlen", "value": "0" }
+      },
+      "hcontext": { "supported": false },
+      // Triggers
+      "icount": {
+        "supported": false,
+        "count_hardwired_one": false,
+        // Whether a `tdata1` write to an `icount` trigger with
+        // `count`=1 also makes it pending when that write's instruction
+        // matches the trigger.
+        "self_write_sets_pending": false
+      },
+      "itrigger": {
+        "supported": false,
+        // A bit set to 1 in this value specifies that the
+        // corresponding interrupt is supported by the trigger.
+        // Triggers for reserved interrupts are not supported.  This
+        // value is ignored when `itrigger` is not supported.
+        "supported_interrupts": { "len": "xlen", "value": "0" }
+      },
+      // CSRs
+      "mcontext": { "supported": false },
+      // The number of supported triggers.  This has to be
+      // non-negative, and greater than 0 if Sdtrig is supported.
+      // The model does not support more than 16 triggers.
+      "num_triggers": 0,
+      "scontext": { "supported": false }
+    },
+    // The double trap extensions are not enabled by default because
+    // mstatus[MDT] is reset to 1. Unless the boot code clears it, the
+    // first trap taken will result in an unexpected double trap.
+    "Smdbltrp": { "supported": false },
+    "Ssdbltrp": { "supported": false },
+    "Ssstrict": { "supported": false }
   }
 }

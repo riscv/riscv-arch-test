@@ -1,7 +1,0 @@
-Instruction,Type,RV32,RV64,cp_NaNBox,cp_fs1_badNB,cp_fs2_badNB
-fcvt.h.s,FI,x,x,D_H,,
-fcvt.s.h,FI,x,x,,D_H,
-flh,FL,x,x,D_H,,
-fmv.h.x,X2F,x,x,D_H,,
-fmv.x.h,F2X,x,x,,D_H,
-fsh,FS,x,x,,,D_H

@@ -4,9 +4,20 @@
 # Shared across all Spike configs
 
 ci_enabled: true
-# Smstateen will be added back once sail starts supporting Sscsrind too
-# Sdtrig* not yet supported in Sail reference
-exclude_extensions: "Smstateen,SdtrigSm,SdtrigS,SdtrigU"
+# Run experimental extensions in their dedicated workflow job.
+exclude_configs:
+  - spike-rv64-experimental
+# Smstateen:
+#   - spike-rv64-max: mstateen0.P1P13 is writable on RV64; it controls hedelegh, which exists only on
+#     RV32 with H (https://github.com/riscv-software-src/riscv-isa-sim/issues/2464)
+#   - spike-rv{32,64}-max: spike implements scontext but keeps mstateen0.CONTEXT read-only zero, which
+#     Sail cannot model (https://github.com/riscv/sail-riscv/issues/2013); S-mode can also access
+#     scontext while CONTEXT is 0 (https://github.com/riscv-software-src/riscv-isa-sim/issues/2465)
+#   - spike-rv{32,64}-mu: mstateen0.ENVCFG is writable without S
+#     (https://github.com/riscv-software-src/riscv-isa-sim/issues/2464)
+# Sdtrig* not yet supported in Sail reference (https://github.com/riscv/sail-riscv/issues/222)
+# Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)
+exclude_extensions: "Smstateen,SdtrigSm,SdtrigS,SdtrigU,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm"
 install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"
 shards: 1

@@ -651,7 +651,7 @@
     "Svukte": { "supported": false },
     "Zilx": { "supported": false },
     "Zibi": {
-      "supported": true
+      "supported": false
     },
     // This extension just asserts that the cache block size is 64 bytes.
     // If you enable this you also need to ensure `platform.cache_block_size_exp`
@@ -837,7 +837,7 @@
       "supported": false
     },
     "Zvabd": {
-      "supported": true
+      "supported": false
     },
     "Zvfbfmin": {
       "supported": true

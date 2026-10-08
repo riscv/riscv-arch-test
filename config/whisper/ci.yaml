@@ -5,9 +5,9 @@
 # SsstrictSm: Sail 0.15 lacks Smaia and Smrnmi, whose CSRs Whisper implements; Whisper also
 #   exposes CSRs that do not exist on the configured hart (ssp without Zicfiss, S-level AIA CSRs
 #   without S-mode, hidelegh without H, RV32 mhpmevent<n>h without Sscofpmf)
-# Smstateen: Whisper's mstateen0/0h writable mask ignores the configured extensions (RV32 P1P13
-#   without H; ENVCFG, CSRIND, AIA, IMSIC, CONTEXT and SRMCFG on the -mu configs); Sail lacks the
-#   Sdtrig CONTEXT bit (rv64-max)
+# Smstateen: the -mu configs pass. On the max configs Whisper implements Sscsrind and Ssaia, so
+#   mstateen0.CSRIND, AIA and IMSIC are writable, but Sail does not model those extensions
+#   (https://github.com/riscv/sail-riscv/issues/1134, https://github.com/riscv/sail-riscv/pull/1874).
 # SsstrictS: Sail traps on siselect/stopi accesses that Whisper permits with mstateen0 enabled.
 # Sdtrig* not yet implemented in Sail (https://github.com/riscv/sail-riscv/issues/222)
 # Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)

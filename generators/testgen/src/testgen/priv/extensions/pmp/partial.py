@@ -14,7 +14,8 @@ W and X are.
 
 A misaligned access that the hart performs in hardware fails when any of its bytes fails the PMP check. With a
 region the access may not use on one side of it and no entry on the other, it faults whether or not the hart
-splits it. The address in xtval depends on how the hart splits it, so these tests do not record it.
+splits it. The address in xtval, and the Addr. Offset field of a transformed mtinst or htinst, depend on how
+the hart splits it, so these tests do not record them.
 
 Each partial-match case uses its own 16-byte slot of PMP_PARTIAL_BASE and its own PMP entries, all below the
 background entry, so an entry locked by one case never matches another case's slot.
@@ -38,7 +39,7 @@ GRAIN = "PMP_TOR_REGION_BYTES"
 #: The cases use entries 0-13, and the background entry (with pmpaddr below it for a TOR background) the top two.
 ENTRIES_PARAM = "NUM_USABLE_PMP_ENTRIES: '>=16'"
 
-#: Trap handler switch that leaves xtval out of the trap record of a load or store access fault.
+#: Trap handler switch that leaves xtval, mtinst and htinst out of the trap record of a load or store access fault.
 IMPRECISE_XTVAL = "#define IMPRECISE_ACCESS_FAULT_XTVAL"
 
 

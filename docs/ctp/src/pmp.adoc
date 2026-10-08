@@ -14,7 +14,7 @@ With Zama16b, a misaligned access inside a 16-byte granule is also a single memo
 These tests give each case its own entries below the background entry, so they need `NUM_USABLE_PMP_ENTRIES` {ge} 16.
 Outside a misaligned atomicity granule, a misaligned access may be split into memory operations that are checked separately.
 When `MISALIGNED_LDST` is true, `cp_misaligned_partial` checks that an access partly in a region it may not use, with the rest matching no entry, faults whether or not it is split.
-Those tests check only the trap: `mtval` may hold the address of the access or of its faulting part, so the trap handler does not record it (`IMPRECISE_ACCESS_FAULT_XTVAL`), and part of a split store may become visible.
+Those tests check only the trap: `mtval` may hold the address of the access or of its faulting part, and the Addr. Offset field of a transformed `mtinst` or `htinst` follows it, so the trap handler records none of them (`IMPRECISE_ACCESS_FAULT_XTVAL`). Part of a split store may also become visible.
 A misaligned access outside a granule that straddles two permitted regions has no single expected result and is not tested.
 
 ==== PMPSm

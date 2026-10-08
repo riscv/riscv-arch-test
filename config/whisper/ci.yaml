@@ -8,8 +8,6 @@
 # Smstateen: the -mu configs pass. On the max configs Whisper implements Sscsrind and Ssaia, so
 #   mstateen0.CSRIND, AIA and IMSIC are writable, but Sail does not model those extensions
 #   (https://github.com/riscv/sail-riscv/issues/1134, https://github.com/riscv/sail-riscv/pull/1874).
-#   whisper-rv{32,64}-max/sail.json also disable Sail's scontext, hcontext and mcontext, which
-#   Whisper implements, so Sail keeps mstateen0.CONTEXT read-only zero while Whisper makes it writable.
 # SsstrictS: Sail traps on siselect/stopi accesses that Whisper permits with mstateen0 enabled.
 # Sdtrig* not yet implemented in Sail (https://github.com/riscv/sail-riscv/issues/222)
 # Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)

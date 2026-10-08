@@ -70,3 +70,7 @@ normative_rule_definitions:
   - name: Zacas_amocas_w_permission
     # TODO: amocas with a failing compare to a read-only PMP region or page must raise a store/AMO fault
     coverpoint: [""]
+
+  - name: Zabha_amocas-bh_ignore_bits
+    # TODO: a successful amocas.b/h compare whose rd upper bits differ from the sign extension
+    coverpoint: [""]

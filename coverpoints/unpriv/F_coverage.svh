@@ -3206,5 +3206,6 @@ function void f_sample(int hart, int issue, ins_t ins);
             F_fcvt_s_lu_cg.sample(ins);
         end
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

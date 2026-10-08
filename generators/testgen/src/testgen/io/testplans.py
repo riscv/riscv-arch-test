@@ -28,8 +28,8 @@ def get_extensions(testplan_dir: Path) -> list[str]:
 def expand_vector_extension(extension: str) -> list[str]:
     """Expands a vector extension by adding SEW suffixes."""
 
-    if not extension.startswith(("Vx", "Vls")):
-        # Only Vx and Vls are supported for now
+    if not extension.startswith(("Vx", "Vls", "Vf", "Zvf", "Zvbb", "Zvbc", "Zvk")):
+        # Only unprivileged vector is supported for now
         return []
 
     if extension in ["Vx", "Vls", "Zvbb", "Zvkb"]:
@@ -38,6 +38,8 @@ def expand_vector_extension(extension: str) -> list[str]:
         return [extension + effew for effew in ["16", "32", "64"]]
     elif extension == "Zvknhb":
         return [extension + effew for effew in ["32", "64"]]
+    elif extension == "Zvbc":
+        return [extension + "64"]
     else:
         return [extension]
 
@@ -51,14 +53,24 @@ class TestPlanData:
     rv32: bool
     rv64: bool
     sews_supported: list[int]
+    extra_extension: str
     coverpoints: list[str]
 
 
 def read_testplan(testplan_path: Path) -> list[TestPlanData]:
     """Read a testplan and return a list of instructions and their associated data (type, coverpoints, etc.)."""
     # Columns that are parsed separately and should not be treated as coverpoints
-    non_coverpoint_columns = {"Instruction", "Type", "RV32", "RV64", "EFFEW8", "EFFEW16", "EFFEW32", "EFFEW64"}
-
+    non_coverpoint_columns = {
+        "Instruction",
+        "Type",
+        "RV32",
+        "RV64",
+        "ExtraExtension",
+        "EFFEW8",
+        "EFFEW16",
+        "EFFEW32",
+        "EFFEW64",
+    }
     instructions: list[TestPlanData] = []
     with testplan_path.open() as csvfile:
         reader = csv.DictReader(csvfile)
@@ -82,6 +94,7 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                     f"Error: 'Type' column missing in testplan {testplan_path}. Make sure you remembered to shrink the CSV."
                 )
                 raise
+            extra_extension = (row.get("ExtraExtension", "")).strip()
             rv32 = row["RV32"].strip().lower() == "x"
             rv64 = row["RV64"].strip().lower() == "x"
             sews = []
@@ -108,6 +121,7 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                     rv32=rv32,
                     rv64=rv64,
                     sews_supported=sews,
+                    extra_extension=extra_extension,
                     coverpoints=coverpoints,
                 )
             )

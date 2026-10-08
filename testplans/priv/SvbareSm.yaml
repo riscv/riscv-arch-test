@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SvbareSm
+source: https://docs.google.com/spreadsheets/d/1LGwD2e01j4SN9tg85nt6gPwpp7nXyXMF7hqbw3jvXko/edit?gid=2057771753#gid=2057771753
+coverpoints:
+  - heading: "General Test Environment (SvbareSm):\n- Sm suite: boots to M-mode (BOOT_TO_MMODE) because each coverpoint needs M-mode state (mstatus.MPRV/MPP, mstatus.TVM, mstatus.SBE or an M-mode CSR access). Mode changes use RVTEST_TSBI_GOTO_*. satp.MODE=Bare with mstatus.MPRV=1 and MPP=S or U.\n- Split from Svbare: cp_satp_bare_mprv_{load,store,exec}."
+  - name: cp_satp_bare_mprv_load
+    goal: Verify an M-mode load with MPRV=1 and satp.MODE=Bare uses the physical address
+    description: "M-mode with satp = 0: set mstatus.MPRV=1 with MPP=S, then MPP=U, reading mstatus back each time. Load (lw) from the page at the physical address of rvtest_data_1."
+    expectation: No fault; the access is untranslated for either MPP.
+    bins: |-
+      satp_bare x mprv_mstatus x mpp_mstatus x read_acc x mode {M-mode}
+      = 2 bins on RV64, 2 on RV32
+    id: mstatus_mprv_ldst_op
+    rules:
+      - "[norm:mstatus_mprv_ldst_op]"
+  - name: cp_satp_bare_mprv_store
+    goal: Verify an M-mode store with MPRV=1 and satp.MODE=Bare uses the physical address
+    description: "M-mode with satp = 0: set mstatus.MPRV=1 with MPP=S, then MPP=U, reading mstatus back each time. Store (sw) to the page at the physical address of rvtest_data_1."
+    expectation: No fault; the access is untranslated for either MPP.
+    bins: |-
+      satp_bare x mprv_mstatus x mpp_mstatus x write_acc x mode {M-mode}
+      = 2 bins on RV64, 2 on RV32
+    id: mstatus_mprv_ldst_op
+    rules:
+      - "[norm:mstatus_mprv_ldst_op]"
+  - name: cp_satp_bare_mprv_exec
+    goal: Verify an M-mode instruction fetch with MPRV=1 and satp.MODE=Bare uses the physical address
+    description: "M-mode with satp = 0: set mstatus.MPRV=1 with MPP=S, then MPP=U, reading mstatus back each time. Jump (jalr) into the page at the physical address of rvtest_data_1."
+    expectation: No fault; the access is untranslated for either MPP.
+    bins: |-
+      satp_bare x mprv_mstatus x mpp_mstatus x exec_acc x mode {M-mode}
+      = 2 bins on RV64, 2 on RV32
+    id: mstatus_mprv_inst_xlat_op
+    rules:
+      - "[norm:mstatus_mprv_inst_xlat_op]"

@@ -1,0 +1,17 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for the SERV core
+
+ci_enabled: true
+
+# DUT bugs at olofk/serv f200eb2e; paths are under https://github.com/olofk/serv/blob/f200eb2e/
+#   Zicsr         mepc bit 0 is writable: rtl/serv_rf_if.v#L75
+#   Zifencei      fence.i executes as a halfword load from rs1 + imm and can trap: rtl/serv_decode.v#L88
+#   Sm            Unimplemented CSRs alias onto implemented ones; mstatus.MPIE and mie read 0: rtl/serv_decode.v#L168
+#   ExceptionsSm  No illegal-instruction exception: README.md#L209
+#   ExceptionsZc  No illegal-instruction exception: README.md#L209
+exclude_extensions: "Zicsr,Zifencei,Sm,ExceptionsSm,ExceptionsZc"
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache"
+install_script: ".github/scripts/install-serv.sh"
+setup_script: ".github/scripts/setup-serv.sh"

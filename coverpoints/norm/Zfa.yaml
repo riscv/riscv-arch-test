@@ -1,0 +1,203 @@
+# Mapping of normative rules to coverpoints for a test suite
+
+normative_rule_definitions:
+  # When multiple floating-point precisions are supported, then valid values of narrower
+  # n-bit types, n&lt;FLEN, are represented in the lower n bits of an FLEN-bit NaN
+  # value, in a process termed NaN-boxing. The upper bits of a valid NaN-boxed value
+  # must be all 1s. Valid NaN-boxed n-bit values therefore appear as negative quiet NaNs
+  # (qNaNs) when viewed as any wider m-bit value, n &lt; m ≤ FLEN. Any operation that
+  # writes a narrower result to an f register must write all 1s to the uppermost FLEN-n
+  # bits to yield a legal NaN-boxed value.
+  - name: fp_nan_boxing
+    # Representative coverpoints; apply to the other ZfaD *_s and ZfaZfh covergroups too
+    coverpoint:
+      [
+        "{ZfaD_fli_s_cg, ZfaD_fminm_s_cg, ZfaD_fround_s_cg, ZfaD_froundnx_s_cg}/cp_NaNBox_D_S",
+        "{ZfaZfh_fli_h_cg, ZfaZfh_fminm_h_cg, ZfaZfh_fround_h_cg}/cp_NaNBox_S_H",
+      ]
+  # Apart from transfer operations described in the previous paragraph, all other
+  # floating-point operations on narrower n-bit operations, n&lt;FLEN, check if the
+  # input operands are correctly NaN-boxed, i.e., all upper FLEN-n bits are 1. If so,
+  # the n least-significant bits of the input are used as the input value, otherwise the
+  # input value is treated as an n-bit canonical NaN.
+  - name: fp_nontransfer_instrs_improper_nan_boxed_input
+    # Representative coverpoints; apply to the other ZfaD *_s and ZfaZfh covergroups too
+    coverpoint:
+      [
+        "{ZfaD_fleq_s_cg, ZfaD_fminm_s_cg}/{cp_fs1_badNB_D_S, cp_fs2_badNB_D_S}",
+        "{ZfaZfh_fleq_h_cg, ZfaZfh_fminm_h_cg}/{cp_fs1_badNB_S_H, cp_fs2_badNB_S_H}",
+      ]
+  # The insn:fli.s[] instruction loads one of 32 single-precision floating-point
+  # constants, encoded in the rs1 field, into floating-point register rd. The
+  # correspondence of rs1 field values and single-precision floating-point values is
+  # shown in . insn:fli.s[] is encoded like insn:fmv.w.x[], but with rs2=1.
+  - name: fli-s_op
+    coverpoint: ["Zfa_fli_s_cg/{cp_rs1_fli, cp_fd}"]
+  # If the ext:d[] extension is implemented, insn:fli.d[] performs the analogous
+  # operation, but loads a double-precision value into floating-point register rd. Note
+  # that entry 1 (corresponding to the minimum positive normal value) has a numerically
+  # different value for double-precision than for single-precision. insn:fli.d[] is
+  # encoded like insn:fli.s[], but with fmt=D.
+  - name: fli-d_op
+    coverpoint: ["ZfaD_fli_d_cg/{cp_rs1_fli, cp_fd}"]
+  # If the ext:q[] extension is implemented, insn:fli.q[] performs the analogous
+  # operation, but loads a quad-precision value into floating-point register rd. Note
+  # that entry 1 (corresponding to the minimum positive normal value) has a numerically
+  # different value for quad-precision. insn:fli.q[] is encoded like insn:fli.s[], but
+  # with fmt=Q.
+  - name: fli-q_op
+    # TODO: needs a Q test suite
+    coverpoint: [""]
+  # If the ext:zfh[] or ext:zvfh[] extension is implemented, insn:fli.h[] performs the
+  # analogous operation, but loads a half-precision floating-point value into register
+  # rd. Note that entry 1 (corresponding to the minimum positive normal value) has a
+  # numerically different value for half-precision. Furthermore, since 216 is not
+  # representable in half-precision floating-point, entry 29 in the table instead loads
+  # positive infinity—i.e., it is redundant with entry 30. insn:fli.h[] is encoded like
+  # insn:fli.s[], but with fmt=H.
+  - name: fli-h_op
+    coverpoint:
+      [
+        "ZfaZfh_fli_h_cg/{cp_rs1_fli, cp_fd}",
+        "ZfaZvfh_fli_h_cg/{cp_rs1_fli, cp_fd, cp_NaNBox_S_H}",
+      ]
+  # The insn:fminm.s[] and insn:fmaxm.s[] instructions are defined like the
+  # insn:fmin.s[] and insn:fmax.s[] instructions, except that if either input is NaN,
+  # the result is the canonical NaN.
+  - name: fmaxm-s_fminm-s_op
+    coverpoint:
+      ["{Zfa_fminm_s_cg, Zfa_fmaxm_s_cg}/{cr_fs1_fs2_edges, cp_csr_fflags_v}"]
+  # If the ext:d[] extension is implemented, insn:fminm.d[] and insn:fmaxm.d[]
+  # instructions are analogously defined to operate on double-precision numbers.
+  - name: fmaxm-d_fminm-d_op
+    coverpoint:
+      [
+        "{ZfaD_fminm_d_cg, ZfaD_fmaxm_d_cg}/{cr_fs1_fs2_edges_D, cp_csr_fflags_v}",
+      ]
+  # If the ext:q[] extension is implemented, insn:fminm.q[] and insn:fmaxm.q[]
+  # instructions are analogously defined to operate on quad-precision numbers.
+  - name: fmaxm-q_fminm-q_op
+    # TODO: needs a Q test suite
+    coverpoint: [""]
+  # If the ext:zfh[] extension is implemented, insn:fminm.h[] and insn:fmaxm.h[]
+  # instructions are analogously defined to operate on half-precision numbers.
+  - name: fmaxm-h_fminm-h_op
+    coverpoint:
+      [
+        "{ZfaZfh_fminm_h_cg, ZfaZfh_fmaxm_h_cg}/{cr_fs1_fs2_edges_H, cp_csr_fflags_v}",
+      ]
+  # The insn:fround.s[] instruction rounds the single-precision floating-point number in
+  # floating-point register rs1 to an integer, according to the rounding mode specified
+  # in the instruction's rm field. It then writes that integer, represented as a
+  # single-precision floating-point number, to floating-point register rd
+  - name: fround-s_op
+    coverpoint:
+      [
+        "Zfa_fround_s_cg/{cp_fs1_edges, cr_fs1_cvt_edges_frm_S_R, cp_csr_frm, cp_csr_fflags_v}",
+      ]
+  # Zero and infinite inputs are copied to rd unmodified
+  - name: fround-s_zero_inf
+    coverpoint: ["{Zfa_fround_s_cg, Zfa_froundnx_s_cg}/cp_fs1_edges"]
+  # Signaling NaN inputs cause the invalid operation exception flag to be set; no other
+  # exception flags are set
+  - name: fround-s_nan_nv
+    coverpoint:
+      [
+        "Zfa_fround_s_cg/{cp_fs1_edges, cp_csr_fflags_v}",
+        "Zfa_froundnx_s_cg/{cp_fs1_edges, cp_csr_fflags_vn}",
+      ]
+  # The insn:froundnx.s[] instruction is defined similarly, but it also sets the inexact
+  # exception flag if the input differs from the rounded result and is not NaN.
+  # insn:froundnx.s[] is encoded like insn:fcvt.s.d[], but with rs2=5.
+  - name: froundnx-s_op
+    coverpoint:
+      [
+        "Zfa_froundnx_s_cg/{cp_fs1_edges, cr_fs1_cvt_edges_frm_S_R, cp_csr_frm, cp_csr_fflags_vn}",
+      ]
+  # If the ext:d[] extension is implemented, insn:fround.d[] and insn:froundnx.d[]
+  # instructions are analogously defined to operate on double-precision numbers. They
+  # are encoded like insn:fcvt.d.s[], but with rs2=4 and 5, respectively,
+  - name: fround-d_froundnx-d_op
+    coverpoint:
+      [
+        "{ZfaD_fround_d_cg, ZfaD_froundnx_d_cg}/{cp_fs1_edges_D, cr_fs1_cvt_edges_frm_D_R}",
+      ]
+  # If the ext:q[] extension is implemented, insn:fround.q[] and insn:froundnx.q[]
+  # instructions are analogously defined to operate on quad-precision numbers. They are
+  # encoded like insn:fcvt.q.s[], but with rs2=4 and 5, respectively,
+  - name: fround-q_froundnx-q_op
+    # TODO: needs a Q test suite
+    coverpoint: [""]
+  # If the ext:zfh[] extension is implemented, insn:fround.h[] and insn:froundnx.h[]
+  # instructions are analogously defined to operate on half-precision numbers. They are
+  # encoded like insn:fcvt.h.s[], but with rs2=4 and 5, respectively,
+  - name: fround-h_froundnx-h_op
+    coverpoint:
+      [
+        "{ZfaZfh_fround_h_cg, ZfaZfh_froundnx_h_cg}/{cp_fs1_edges_H, cr_fs1_cvt_edges_frm_H_R}",
+      ]
+  # The insn:fcvtmod.w.d[] instruction is defined similarly to the insn:fcvt.w.d[]
+  # instruction, with the following differences. insn:fcvtmod.w.d[] always rounds
+  # towards zero. Bits 31:0 are taken from the rounded, unbounded two&#8217;s complement
+  # result, then sign-extended to XLEN bits and written to integer register rd. ±∞ and
+  # NaN are converted to zero.
+  - name: fcvtmod-w-d_op
+    coverpoint:
+      [
+        "ZfaD_fcvtmod_w_d_cg/{cp_rd, cp_fs1_edges_D, cp_fs1_cvt_edges_D_I, cp_fs1_cvt_exact_D_I}",
+      ]
+  # Floating-point exception flags are raised the same as they would be for
+  # insn:fcvt.w.d[] with the same input operand.
+  - name: fcvtmod-w-d_flags
+    coverpoint: ["ZfaD_fcvtmod_w_d_cg/{cp_fs1_edges_D, cp_csr_fflags_vn}"]
+  # For RV32 only, if the ext:d[] extension is implemented, the insn:fmvh.x.d[]
+  # instruction moves bits 63:32 of floating-point register rs1 into integer register
+  # rd. It is encoded in the OP-FP major opcode with funct3=0, rs2=1, and
+  # funct7=1110001.
+  - name: fmvh-x-d_op
+    coverpoint: ["ZfaD_fmvh_x_d_cg/{cp_rd, cp_fs1, cp_fs1_edges_D}"]
+  # For RV32 only, if the ext:d[] extension is implemented, the insn:fmvp.d.x[]
+  # instruction moves a double-precision number from a pair of integer registers into a
+  # floating-point register. Integer registers rs1 and rs2 supply bits 31:0 and 63:32,
+  # respectively; the result is written to floating-point register rd. FMVP.D.X is
+  # encoded in the OP-FP major opcode with funct3=0 and funct7=1011001.
+  - name: fmvp-d-x_op
+    coverpoint: ["ZfaD_fmvp_d_x_cg/{cp_rs1_edges, cp_rs2_edges, cp_fd}"]
+  # For RV64 only, if the ext:q[] extension is implemented, the insn:fmvh.x.q[]
+  # instruction moves bits 127:64 of floating-point register rs1 into integer register
+  # rd. It is encoded in the OP-FP major opcode with funct3=0, rs2=1, and
+  # funct7=1110011.
+  - name: fmvh-x-q_op
+    # TODO: needs a Q test suite
+    coverpoint: [""]
+  # For RV64 only, if the ext:q[] extension is implemented, the insn:fmvp.q.x[]
+  # instruction moves a double-precision number from a pair of integer registers into a
+  # floating-point register. Integer registers rs1 and rs2 supply bits 63:0 and 127:64,
+  # respectively; the result is written to floating-point register rd. insn:fmvp.q.x[]
+  # is encoded in the OP-FP major opcode with funct3=0 and funct7=1011011.
+  - name: fmvp-q-x_op
+    # TODO: needs a Q test suite
+    coverpoint: [""]
+  # The insn:fleq.s[] and insn:fltq.s[] instructions are defined like the insn:fle.s[]
+  # and insn:flt.s[] instructions, except that quiet NaN inputs do not cause the invalid
+  # operation exception flag to be set.
+  - name: fleq-s_fltq-s_op
+    coverpoint:
+      ["{Zfa_fleq_s_cg, Zfa_fltq_s_cg}/{cr_fs1_fs2_edges, cp_csr_fflags_v}"]
+  # If the ext:d[] extension is implemented, insn:fleq.d[] and insn:fltq.d[]
+  # instructions are analogously defined to operate on double-precision numbers.
+  - name: fleq-d_fltq-d_op
+    coverpoint:
+      ["{ZfaD_fleq_d_cg, ZfaD_fltq_d_cg}/{cr_fs1_fs2_edges_D, cp_csr_fflags_v}"]
+  # If the ext:q[] extension is implemented, insn:fleq.q[] and insn:fltq.q[]
+  # instructions are analogously defined to operate on quad-precision numbers.
+  - name: fleq-q_fltq-q_op
+    # TODO: needs a Q test suite
+    coverpoint: [""]
+  # If the ext:zfh[] extension is implemented, insn:fleq.h[] and insn:fltq.h[]
+  # instructions are analogously defined to operate on half-precision numbers.
+  - name: fleq-h_fltq-h_op
+    coverpoint:
+      [
+        "{ZfaZfh_fleq_h_cg, ZfaZfh_fltq_h_cg}/{cr_fs1_fs2_edges_H, cp_csr_fflags_v}",
+      ]

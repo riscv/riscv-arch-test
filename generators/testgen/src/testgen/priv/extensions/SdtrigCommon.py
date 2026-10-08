@@ -1443,8 +1443,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
             "mcontrol6 mask-low / mask-high match types",
         )
     )
-    # tdata2[XLEN-1:XLEN/2] is the mask and tdata2[XLEN/2-1:0] the value. In each half the data is the value,
-    # differs only outside the mask, differs inside the mask, and the value with the other half nonzero.
+    # Mask cases for the current RV length, with the correct length store operation, and test case values.
     mask_cases = (
         (
             32,

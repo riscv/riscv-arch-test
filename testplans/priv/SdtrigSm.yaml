@@ -467,7 +467,7 @@ coverpoints:
     notes: "comments on test results: Exceptions when tdata2 = 0x00008013, and execute = 1"
   - name: cp_sdtrig_mcontrol6_load_store_data
     description: |-
-      tdata2 = {random value/random value ^ 1}
+      tdata2 = {random value}
       tdata1.select = 1 (data)
       tdata1.XSL = 8 combinations
       perform {SW/ LW random value} to scratch
@@ -506,7 +506,7 @@ coverpoints:
       tdata1.select = 0 (adr)
       tdata1.XSL = 011
       tdata1.size = {0/1/2/3/5}
-      perform {lb/lbu/lh/lhu/lw/sb/sh/sw} to scratch with value 0x12345678
+      perform {lb/lbu/lh/lhu/lw/sb/sh/sw} to scratch with a random value
       if RV64 supported, also perform {lwu/ld/sd}
       if F_SUPPORTED, also perform {flw/fsw}
       if D_SUPPORTED, also perform {fld/fsd}

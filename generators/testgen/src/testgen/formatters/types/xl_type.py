@@ -67,9 +67,7 @@ def format_xl_type(
     test_data.test_chunk.data_values.append(params.temp_val)
     if alignment:
         test_data.test_chunk.data_values.append(params.temp_val)
-    setup.append(
-        f"addi x{params.rs2}, x{test_data.int_regs.data_reg}, {alignment} # copy target address into base"
-    )
+    setup.append(f"addi x{params.rs2}, x{test_data.int_regs.data_reg}, {alignment} # copy target address into base")
 
     if params.rs1 != 0:
         if unsigned_word_index:

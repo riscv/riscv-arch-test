@@ -248,6 +248,10 @@ covergroup SdtrigSm_mcontrol6_cg with function sample(ins_t ins);
             wildcard bins flh = {FLH};
             wildcard bins fsh = {FSH};
         `endif
+        `ifdef Q_SUPPORTED
+            wildcard bins flq = {FLQ};
+            wildcard bins fsq = {FSQ};
+        `endif
         `ifdef ZCA_SUPPORTED
             wildcard bins c_lw   = {C_LW};
             wildcard bins c_sw   = {C_SW};

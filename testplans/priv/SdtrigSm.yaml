@@ -511,22 +511,21 @@ coverpoints:
       if F_SUPPORTED, also perform {flw/fsw}
       if D_SUPPORTED, also perform {fld/fsd}
       if ZFH_SUPPORTED, also perform {flh/fsh}
+      if Q_SUPPORTED, also perform {flq/fsq}
       if ZCA_SUPPORTED, also perform c.{lw/sw/lwsp/swsp}
       if ZCA_SUPPORTED and RV64, also perform c.{ld/sd/ldsp/sdsp}
       if ZCB_SUPPORTED, also perform c.{lbu/lh/lhu/sb/sh}
       if ZCF_SUPPORTED and RV32, also perform c.{flw/flwsp/fsw/fswsp}
       if ZCD_SUPPORTED, also perform c.{fld/fldsp/fsd/fsdsp}
     expectation: Breakpoint exception if the size of the memory access matches the trigger size in mcontrol6
-    bins: 2 values * 5 sizes * up to 34 instructions
+    bins: 2 values * 5 sizes * up to 36 instructions
     rules:
       - Sdtrig_mcontrol6_size_8bit
       - Sdtrig_mcontrol6_size_16bit
       - Sdtrig_mcontrol6_size_32bit
       - Sdtrig_mcontrol6_size_64bit
       - Sdtrig_mcontrol6_size_128bit
-    notes: |-
-      Q loads and stores (flq/fsq) are not tested due to lack of support
-      Sizes 4 (48-bit) and 6 (128-bit) are not tested because no tested load or store has that size
+    notes: Sizes 4 (48-bit) and 6 (128-bit) are not tested
   - name: cp_sdtrig_mcontrol6_match
     goal: Test boundaries for match conditions
     description: |-

@@ -445,9 +445,6 @@
     `ifdef COVER_ZFHMIN
         zfhmin_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZFHMIND
-        zfhmind_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_ZIC64BZICBOZ
         zic64bzicboz_sample(hart, issue, ins);
     `endif

@@ -11,6 +11,7 @@ import csv
 import importlib.resources
 import math
 import re
+from collections import defaultdict
 from dataclasses import dataclass
 from difflib import get_close_matches
 from pathlib import Path
@@ -270,10 +271,15 @@ def _write_if_changed(path: Path, content: str) -> None:
 # Reading testplans and templates
 ##################################
 
+Testplan = dict[tuple[str, str], list[str]]
 
-def _parse_testplan_csv(csv_path: Path) -> dict[tuple[str, str], list[str]]:
-    """Parse a single testplan CSV into a dict of (instruction, type) -> coverpoints."""
-    tp: dict[tuple[str, str], list[str]] = {}
+
+def _parse_testplan_groups(csv_path: Path) -> dict[str, Testplan]:
+    """Parse a testplan CSV into (instruction, type) -> coverpoints, grouped by ExtraExtension entry.
+
+    The "" group holds the rows that need only the suite's own extensions.
+    """
+    groups: dict[str, Testplan] = defaultdict(dict)
     with csv_path.open() as csvfile:
         for row in csv.DictReader(csvfile):
             if "Instruction" not in row:
@@ -283,6 +289,7 @@ def _parse_testplan_csv(csv_path: Path) -> dict[tuple[str, str], list[str]]:
                 )
             instr = row["Instruction"]
             instr_type = row.get("Type", "")
+            extra_extension = (row.pop("ExtraExtension", "")).strip()
 
             cps: list[str] = []
             del row["Instruction"]
@@ -300,25 +307,31 @@ def _parse_testplan_csv(csv_path: Path) -> dict[tuple[str, str], list[str]]:
                         key = f"{key}_{value}"
                     cps.append(key)
 
-            tp[(instr, instr_type)] = cps
-    return tp
+            groups[extra_extension][(instr, instr_type)] = cps
+    return groups
 
 
-def read_testplans(testplan_dir: Path) -> dict[str, dict[tuple[str, str], list[str]]]:
-    """Read all CSV testplan files and return a dict mapping extension name to testplan.
+def read_testplans(testplan_dir: Path) -> tuple[dict[str, Testplan], dict[str, dict[str, Testplan]]]:
+    """Read all CSV testplan files.
 
-    Each CSV file produces one testplan entry keyed by the file's stem (e.g. "I", "Zba").
+    Returns (testplans, extra_testplans). testplans maps each extension name to the rows that need only
+    that extension; extra_testplans maps an extension name to its rows with a ExtraExtension entry,
+    keyed by that entry. Each CSV file produces one testplan entry keyed by the file's stem (e.g. "I", "Zba").
     Some extensions are expanded:
       - "I" is duplicated as "E"
       - Vector extensions are expanded into per-SEW variants (e.g. Vx → Vx8/16/32/64);
         see _sew_variants_for for the exact prefix → SEW mapping.
     """
-    testplans: dict[str, dict[tuple[str, str], list[str]]] = {}
+    testplans: dict[str, Testplan] = {}
+    extra_testplans: dict[str, dict[str, Testplan]] = {}
 
     for csv_path in testplan_dir.glob("*.csv"):
         arch = csv_path.stem
-        tp = _parse_testplan_csv(csv_path)
+        groups = _parse_testplan_groups(csv_path)
+        tp = groups.pop("")
         testplans[arch] = tp
+        if groups:
+            extra_testplans[arch] = groups
 
         # Duplicate I testplan for E
         if arch == "I":
@@ -331,7 +344,7 @@ def read_testplans(testplan_dir: Path) -> dict[str, dict[tuple[str, str], list[s
                 testplans[f"{arch}{sew}"] = tp
             del testplans[arch]
 
-    return testplans
+    return testplans, extra_testplans
 
 
 def _filter_testplans(
@@ -590,6 +603,7 @@ def _gen_instrs(
     arch: str,
     has_rv32: bool,
     has_rv64: bool,
+    name: str,
 ) -> tuple[str, str]:
     """Generate covergroup definitions and init content for matching instructions.
 
@@ -620,11 +634,11 @@ def _gen_instrs(
         # Instruction header
         if vectorwiden:
             effew = _get_effew(arch)
-            covergroup_lines.append(customize_template(templates, "instruction_vector_widen", arch, instr, effew=effew))
-            init_lines.append(customize_template(templates, "init_vector_widen", arch, instr, effew=effew))
+            covergroup_lines.append(customize_template(templates, "instruction_vector_widen", name, instr, effew=effew))
+            init_lines.append(customize_template(templates, "init_vector_widen", name, instr, effew=effew))
         else:
-            covergroup_lines.append(customize_template(templates, "instruction", arch, instr))
-            init_lines.append(customize_template(templates, "init", arch, instr))
+            covergroup_lines.append(customize_template(templates, "instruction", name, instr))
+            init_lines.append(customize_template(templates, "init", name, instr))
 
         # SsstrictV templates reference a small set of helpers (vtype_lmul_*,
         # std_trap_vec, mask_enabled, vd_v0, vd/vs1/vs2_all_reg_unaligned_lmul_*,
@@ -656,15 +670,29 @@ def _gen_instrs(
 
         # Instruction footer
         if vectorwiden:
-            covergroup_lines.append(customize_template(templates, "endgroup_vector_widen", arch, instr))
+            covergroup_lines.append(customize_template(templates, "endgroup_vector_widen", name, instr))
         else:
-            covergroup_lines.append(customize_template(templates, "endgroup", arch, instr))
+            covergroup_lines.append(customize_template(templates, "endgroup", name, instr))
 
         if gate:
             covergroup_lines.append("`endif\n")
             init_lines.append("`endif\n")
 
     return "".join(covergroup_lines), "".join(init_lines)
+
+
+def _guard(extension: str, content: str) -> str:
+    """Wrap content in `ifdef <EXTENSION>_SUPPORTED, or return it unchanged when extension is empty."""
+    return f"`ifdef {extension.upper()}_SUPPORTED\n{content}`endif\n" if extension else content
+
+
+def _gen_sample_arm(templates: dict[str, str], instr: str, calls: list[str]) -> str:
+    """Generate the sample function's case arm for instr around the given sample calls."""
+    return (
+        customize_template(templates, "covergroup_case_begin", instr=instr)
+        + "".join(calls)
+        + customize_template(templates, "covergroup_case_end")
+    )
 
 
 def _gen_covergroup_samples(
@@ -674,13 +702,30 @@ def _gen_covergroup_samples(
     arch: str,
     has_rv32: bool,
     has_rv64: bool,
-    vector_sample: bool,
+    extras: dict[str, Testplan],
+    vector_sample: bool = False,
 ) -> str:
-    """Generate covergroup sample function calls for matching instructions."""
+    """Generate covergroup sample function calls for matching instructions and ExtraExtension rows."""
     lines: list[str] = []
-    for instr, _instr_type in instr_keys:
-        cps = tp[(instr, _instr_type)]
+    for key in sorted(set(instr_keys).union(*extras.values())):
+        instr = key[0]
+        extra_rows = [extension for extension, group in sorted(extras.items()) if key in group]
+        cps = tp[key] if key in tp else extras[extra_rows[0]][key]
         if not _matches_xlen(cps, has_rv32, has_rv64):
+            continue
+
+        if extra_rows:
+            base_calls = [customize_template(templates, "covergroup_case_sample", arch, instr)] if key in tp else []
+            extra_calls = {
+                ext: customize_template(templates, "covergroup_case_sample", f"{arch}{ext}", instr)
+                for ext in extra_rows
+            }
+            if not base_calls and len(extra_calls) == 1:
+                ((ext, call),) = extra_calls.items()
+                lines.append(_guard(ext, _gen_sample_arm(templates, instr, [call])))
+            else:
+                guarded_calls = [_guard(ext, call) for ext, call in extra_calls.items()]
+                lines.append(_gen_sample_arm(templates, instr, base_calls + guarded_calls))
             continue
 
         gate = _should_gate_maxindexeew(arch, instr)
@@ -697,7 +742,8 @@ def _gen_covergroup_samples(
         elif vector_sample:
             lines.append(customize_template(templates, "covergroup_sample_vector", arch, instr))
         elif arch != "E":  # E currently breaks coverage
-            lines.append(customize_template(templates, "covergroup_sample", arch, instr))
+            call = customize_template(templates, "covergroup_case_sample", arch, instr)
+            lines.append(_gen_sample_arm(templates, instr, [call]))
 
         if gate:
             lines.append("`endif\n")
@@ -735,12 +781,15 @@ def _write_extension_files(
     output_dir: Path,
     *,
     vector: bool,
+    extras: dict[str, Testplan],
 ) -> None:
     """Write the _coverage.svh / _coverage_init.svh pair for one extension.
 
     When *vector* is True the vector-flavored header/sample templates are used,
     an EFFEW substitution is made available in the header, and the instruction
-    key list is filtered to the matching SEW.
+    key list is filtered to the matching SEW. *extras* holds the testplan's
+    ExtraExtension rows by extension; their covergroups follow the base
+    covergroups inside `ifdef <EXT>_SUPPORTED guards.
     """
     per_sew = vector or _has_effew_suffix(arch)
     effew = ""
@@ -763,26 +812,41 @@ def _write_extension_files(
     lines: list[str] = [customize_template(templates, header_tmpl, arch, effew=effew)]
     init_lines: list[str] = [customize_template(templates, "initheader", arch)]
 
-    # Covergroup definitions: common instructions, then RV32-only, then RV64-only
-    instr_content, init_content = _gen_instrs(instr_keys, templates, tp, arch, True, True)
-    lines.append(instr_content)
-    init_lines.append(init_content)
+    # Covergroup definitions: common instructions, then RV32-only, then RV64-only;
+    # then the same for each group of ExtraExtension rows inside its extension guards
+    for extension, group in [("", tp), *sorted(extras.items())]:
+        group_keys = instr_keys if not extension else sorted(group.keys())
+        name = f"{arch}{extension}"
+        instr_content, init_content = _gen_instrs(group_keys, templates, group, arch, True, True, name)
+        group_lines, group_init_lines = [instr_content], [init_content]
 
-    for rv32, rv64, exclude_marker in ((True, False, "RV64"), (False, True, "RV32")):
-        if _any_xlen_exclusion(exclude_marker, instr_keys, tp):
-            guard = customize_template(templates, "RV32" if rv32 else "RV64", arch)
-            end = customize_template(templates, "end", arch)
-            instr_content, init_content = _gen_instrs(instr_keys, templates, tp, arch, rv32, rv64)
-            lines.extend([guard, instr_content, end])
-            init_lines.extend([guard, init_content, end])
+        for rv32, rv64, exclude_marker in ((True, False, "RV64"), (False, True, "RV32")):
+            if _any_xlen_exclusion(exclude_marker, group_keys, group):
+                guard = customize_template(templates, "RV32" if rv32 else "RV64", arch)
+                end = customize_template(templates, "end", arch)
+                instr_content, init_content = _gen_instrs(group_keys, templates, group, arch, rv32, rv64, name)
+                group_lines.extend([guard, instr_content, end])
+                group_init_lines.extend([guard, init_content, end])
+        lines.append(_guard(extension, "".join(group_lines)))
+        init_lines.append(_guard(extension, "".join(group_init_lines)))
 
     # Covergroup sample functions with the same XLEN ifdef structure
+    all_rows = {key: cps for group in [tp, *extras.values()] for key, cps in group.items()}
+    all_keys = sorted(set(instr_keys).union(*extras.values()))
     lines.append(customize_template(templates, sample_header_tmpl, arch, effew=effew))
-    lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, True, True, use_vector_sample))
+    lines.append(
+        _gen_covergroup_samples(
+            instr_keys, templates, tp, arch, True, True, extras=extras, vector_sample=use_vector_sample
+        )
+    )
     for rv32, rv64, exclude_marker in ((True, False, "RV64"), (False, True, "RV32")):
-        if _any_xlen_exclusion(exclude_marker, instr_keys, tp):
+        if _any_xlen_exclusion(exclude_marker, all_keys, all_rows):
             lines.append(customize_template(templates, "RV32" if rv32 else "RV64", arch))
-            lines.append(_gen_covergroup_samples(instr_keys, templates, tp, arch, rv32, rv64, use_vector_sample))
+            lines.append(
+                _gen_covergroup_samples(
+                    instr_keys, templates, tp, arch, rv32, rv64, extras=extras, vector_sample=use_vector_sample
+                )
+            )
             lines.append(customize_template(templates, "end", arch))
     lines.append(customize_template(templates, sample_end_tmpl, arch))
 
@@ -798,16 +862,21 @@ class _CovergroupJob:
     tp: dict[tuple[str, str], list[str]]
     output_dir: Path
     vector: bool
+    extras: dict[str, Testplan]
 
 
 def _plan_unpriv_jobs(
     test_plans: dict[str, dict[tuple[str, str], list[str]]],
     output_dir: Path,
+    extra_testplans: dict[str, dict[str, Testplan]],
 ) -> list[_CovergroupJob]:
     """Collect the unpriv per-extension covergroup jobs (writes go in output_dir/unpriv)."""
     unpriv_dir = output_dir / "unpriv"
     unpriv_dir.mkdir(parents=True, exist_ok=True)
-    return [_CovergroupJob(arch, tp, unpriv_dir, _is_vector(arch)) for arch, tp in test_plans.items()]
+    return [
+        _CovergroupJob(arch, tp, unpriv_dir, _is_vector(arch), extra_testplans.get(arch, {}))
+        for arch, tp in test_plans.items()
+    ]
 
 
 def write_coverage_headers(
@@ -850,6 +919,7 @@ def write_coverage_headers(
 def _merge_instruction_testplans(
     test_plans: dict[str, dict[tuple[str, str], list[str]]],
     instruction_formats: dict[tuple[str, str], list[str]],
+    extra_testplans: dict[str, dict[str, Testplan]],
 ) -> dict[tuple[str, str], list[str]]:
     """Merge testplan and extra instruction formats into a single mapping with unique instruction entries.
 
@@ -865,6 +935,11 @@ def _merge_instruction_testplans(
         for key in _get_sorted_instr_keys(tp, arch):
             if key not in merged:
                 merged[key] = tp[key]
+    # Instructions that appear only in ExtraExtension rows
+    for arch in sorted(extra_testplans):
+        for _, group in sorted(extra_testplans[arch].items()):
+            for key in sorted(group):
+                merged.setdefault(key, group[key])
     return merged
 
 
@@ -873,6 +948,7 @@ def write_instruction_sample_file(
     instruction_formats: dict[tuple[str, str], list[str]],
     templates: dict[str, str],
     output_dir: Path,
+    extra_testplans: dict[str, dict[str, Testplan]],
 ) -> None:
     """Generate and write RISCV_instruction_sample.svh with a complete instruction decode case statement.
 
@@ -882,7 +958,7 @@ def write_instruction_sample_file(
     coverage_dir = output_dir / "coverage"
     coverage_dir.mkdir(parents=True, exist_ok=True)
 
-    merged_tp = _merge_instruction_testplans(test_plans, instruction_formats)
+    merged_tp = _merge_instruction_testplans(test_plans, instruction_formats, extra_testplans)
     instr_keys = sorted(merged_tp.keys())
 
     lines: list[str] = [customize_template(templates, "instruction_sample_header")]
@@ -919,7 +995,7 @@ def _plan_priv_jobs(
     priv_output_dir = output_dir / "priv"
     priv_output_dir.mkdir(parents=True, exist_ok=True)
 
-    priv_plans = {csv_path.stem: _parse_testplan_csv(csv_path) for csv_path in priv_plan_dir.glob("*.csv")}
+    priv_plans = {csv_path.stem: _parse_testplan_groups(csv_path)[""] for csv_path in priv_plan_dir.glob("*.csv")}
 
     # Mirror the unpriv per-SEW expansion for ExceptionsVf so a single
     # ExceptionsVf.csv produces ExceptionsVf{16,32,64} covergroup files (one
@@ -935,7 +1011,7 @@ def _plan_priv_jobs(
     if extensions != "all" or exclude != "":
         priv_plans = _filter_testplans(priv_plans, extensions, exclude)
 
-    return [_CovergroupJob(arch, tp, priv_output_dir, _is_priv_vector(arch)) for arch, tp in priv_plans.items()]
+    return [_CovergroupJob(arch, tp, priv_output_dir, _is_priv_vector(arch), {}) for arch, tp in priv_plans.items()]
 
 
 ##################################
@@ -945,23 +1021,23 @@ def _plan_priv_jobs(
 
 def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str = "all", exclude: str = "") -> None:
     """Main entry point: read testplans, generate all coverage files."""
-    all_test_plans = read_testplans(testplan_dir)
+    all_test_plans, extra_testplans = read_testplans(testplan_dir)
     if extensions != "all" or exclude != "":
         test_plans = _filter_testplans(all_test_plans, extensions, exclude)
     else:
         test_plans = all_test_plans
 
     templates = read_covergroup_templates()
-    instruction_formats = _parse_testplan_csv(testplan_dir / "coverage" / "instruction_formats.csv")
+    instruction_formats = _parse_testplan_groups(testplan_dir / "coverage" / "instruction_formats.csv")[""]
 
-    jobs = _plan_unpriv_jobs(test_plans, output_dir)
+    jobs = _plan_unpriv_jobs(test_plans, output_dir, extra_testplans)
     jobs += _plan_priv_jobs(testplan_dir, output_dir, extensions, exclude)
     with _progress("Generating covergroups...") as progress:
         task_id = progress.add_task("covergroups", total=len(jobs))
         for job in jobs:
-            _write_extension_files(job.arch, job.tp, templates, job.output_dir, vector=job.vector)
+            _write_extension_files(job.arch, job.tp, templates, job.output_dir, vector=job.vector, extras=job.extras)
             progress.advance(task_id)
 
     write_coverage_headers(all_test_plans, output_dir, templates)
-    write_instruction_sample_file(all_test_plans, instruction_formats, templates, output_dir)
+    write_instruction_sample_file(all_test_plans, instruction_formats, templates, output_dir, extra_testplans)
     rprint(f"[bold green]✓ Generated covergroups for {len(test_plans)} extension(s)[/]")

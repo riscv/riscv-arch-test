@@ -15,7 +15,7 @@ from itertools import combinations
 
 from testgen.asm.csr import write_stce
 from testgen.asm.helpers import comment_banner, write_sigupd
-from testgen.asm.tsbi import tsbi_call
+from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 
@@ -82,11 +82,6 @@ def guard_symbol(int_type: str) -> str:
 int_macro = {"MEI": "MEXT", "MTI": "MTIME", "MSI": "MSW", "SEI": "SEXT", "STI": "STIME", "SSI": "SSW"}
 int_macro |= {name: name for name in ["LCOFI", *reg_ints, *sstc_ints]}
 
-# Privilege needed to access a CSR, keyed by name prefix, and privilege held by each test mode.
-# HS-mode can reach h* and vs* CSRs directly; VS-mode reaches only its own s* aliases.
-_CSR_LEVEL = {"m": 3, "h": 2, "vs": 2, "s": 1}
-_MODE_LEVEL = {"M": 3, "S": 2, "VS": 1, "U": 0, "VU": 0}
-
 
 @dataclass(frozen=True)
 class InterruptSuite:
@@ -109,25 +104,6 @@ class InterruptSuite:
 
 
 Generator = Callable[[TestData, list[TestChunk], InterruptSuite, str], None]
-
-
-def _csr_level(instr: str) -> int:
-    """Privilege level of the CSR named in a csr* instruction (0 for unprivileged CSRs)."""
-    mnemonic, operands = instr.split("#", 1)[0].split(None, 1)
-    fields = [f.strip() for f in operands.split(",")]
-    csr = fields[1] if mnemonic.startswith("csrr") else fields[0]
-    for prefix, level in _CSR_LEVEL.items():
-        if csr.startswith(prefix):
-            return level
-    return 0
-
-
-def csr_access(instr: str, mode: str) -> str:
-    """A CSR instruction issued directly when ``mode`` can access the CSR, otherwise through T-SBI.
-
-    U-mode reaches m*, s*, h*, and vs* CSRs through T-SBI; S-mode reaches m* CSRs through T-SBI.
-    """
-    return instr if _MODE_LEVEL[mode] >= _csr_level(instr) else tsbi_call(instr)
 
 
 def mode_enter(suite: InterruptSuite, priv: str) -> list[str]:
@@ -279,13 +255,13 @@ def generate_cp_priority(
                 *_raise(raised, pair, "SET", priv),
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait until every raised interrupt is pending",
                 test_data.add_testcase(bin_name, label_coverpoint(suite, coverpoint, priv), suite.covergroup),
-                csr_access(f"csrr x{check_reg}, {suite.ip}", priv),
+                tsbi_call_or_direct(f"csrr x{check_reg}, {suite.ip}", priv),
                 f"LI(x{tmp_reg}, {raised_mask:#x})",
                 f"and x{check_reg}, x{check_reg}, x{tmp_reg} # raised interrupts that are pending",
                 write_sigupd(check_reg, test_data),
                 # Enable last, so the pending interrupts are arbitrated together and taken in priority order
                 f"LI(x{tmp_reg}, {ie_after})",
-                csr_access(f"csrw {ie}, x{tmp_reg} # {ie} = {ie_after:#x}", priv),
+                tsbi_call_or_direct(f"csrw {ie}, x{tmp_reg} # {ie} = {ie_after:#x}", priv),
                 *_raise(raised, pair, "CLR", priv),
                 *mode_exit(suite, priv),
                 f"#endif // {guard_symbol(second)}",
@@ -346,7 +322,7 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
                 *suite.deleg,
                 *(write_stce(test_data, True, boot) if wfi["stce"] else []),
                 f"LI(x{tmp_reg}, 0x200000)",
-                csr_access(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", boot),
+                tsbi_call_or_direct(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", boot),
                 f"LI(x{tmp_reg}, {status['mask']:#x})",
                 f"{enablecmd} {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = {enable}",
                 f"LI(x{tmp_reg}, {ie_mask:#x})",
@@ -429,7 +405,7 @@ def generate_cp_wfi_timeout(
                         else []
                     ),
                     f"LI(x{tmp_reg}, 0x200000)",
-                    csr_access(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", suite.boot),
+                    tsbi_call_or_direct(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", suite.boot),
                     f"LI(x{tmp_reg}, {status['mask']:#x})",
                     f"{enablecmd} {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = {enable}",
                     f"LI(x{tmp_reg}, {ie * ie_mask:#x})",

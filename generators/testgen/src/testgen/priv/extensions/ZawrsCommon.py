@@ -10,18 +10,8 @@
 
 from testgen.asm.csr import write_stce
 from testgen.asm.helpers import comment_banner, write_sigupd
-from testgen.asm.tsbi import tsbi_call
+from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
-
-
-def m_csr(priv: str, instr: str) -> str:
-    """M-mode CSR instruction; a T-SBI call when the test runs below M-mode."""
-    return instr if priv == "M" else tsbi_call(instr)
-
-
-def s_csr(priv: str, instr: str) -> str:
-    """S-mode CSR instruction; a T-SBI call when the test runs in U-mode."""
-    return instr if priv != "U" else tsbi_call(instr)
 
 
 def _read_trap_count_helper(r_temp: int) -> list[str]:
@@ -38,7 +28,7 @@ def _sstatus_sie(priv: str, r_temp: int, value: int) -> list[str]:
     lines = [
         f"# sstatus.SIE = {value}",
         f"LI(x{r_temp}, 0x22)",
-        s_csr(priv, f"{'csrs' if value else 'csrc'} sstatus, x{r_temp}"),
+        tsbi_call_or_direct(f"{'csrs' if value else 'csrc'} sstatus, x{r_temp}", priv),
     ]
     if priv == "U":
         return ["#ifdef S_SUPPORTED", *lines, "#endif"]
@@ -49,10 +39,10 @@ def _disable_interrupts(priv: str, r_temp: int) -> list[str]:
     """mie = 0, mstatus.MIE = MPIE = 0, and SPIE/SIE = 0 where it exists."""
     lines = [
         "# Disable all interrupts in mie",
-        m_csr(priv, "csrw mie, zero"),
+        tsbi_call_or_direct("csrw mie, zero", priv),
         "# mstatus.MPIE, SPIE, MIE, AND SIE = 0",
         f"LI(x{r_temp}, 0xAA)",
-        m_csr(priv, f"csrc mstatus, x{r_temp}"),
+        tsbi_call_or_direct(f"csrc mstatus, x{r_temp}", priv),
     ]
     return lines
 
@@ -99,10 +89,10 @@ def wrs_resume_helper(
                             "#### Setup ####",
                             f"# mstatus.MPIE and mstatus.MIE = {mie_val}",
                             f"LI(x{r_temp}, 0x88)",
-                            m_csr(priv, f"{'csrs' if mie_val else 'csrc'} mstatus, x{r_temp}"),
+                            tsbi_call_or_direct(f"{'csrs' if mie_val else 'csrc'} mstatus, x{r_temp}", priv),
                             "# Write mstatus.TW",
                             f"LI(x{r_temp}, 0x200000)",
-                            m_csr(priv, f"{'csrs' if tw_val else 'csrc'} mstatus, x{r_temp}"),
+                            tsbi_call_or_direct(f"{'csrs' if tw_val else 'csrc'} mstatus, x{r_temp}", priv),
                             "",
                         ]
                     )
@@ -114,13 +104,13 @@ def wrs_resume_helper(
                                 "#ifdef SSTC_SUPPORTED",
                                 "# Set sie.STIE",
                                 f"LI(x{r_temp}, 0x20)",
-                                s_csr(priv, f"csrs sie, x{r_temp}"),
+                                tsbi_call_or_direct(f"csrs sie, x{r_temp}", priv),
                                 "# Set stimer interrupt soon",
                                 f"RVTEST_SET_SSTC_INT_SOON_{priv}",
                                 "#else",
                                 "# Set mie.MTIE",
                                 f"LI(x{r_temp}, 0x80)",
-                                m_csr(priv, f"csrs mie, x{r_temp}"),
+                                tsbi_call_or_direct(f"csrs mie, x{r_temp}", priv),
                                 "# Set mtimer interrupt soon",
                                 f"RVTEST_SET_MTIME_INT_SOON_{priv}",
                                 "#endif",
@@ -246,10 +236,10 @@ def wrs_no_mie_helper(
             [
                 "###### Setup ######",
                 "# Disable all interrupts in mie",
-                m_csr(priv, "csrw mie, zero"),
+                tsbi_call_or_direct("csrw mie, zero", priv),
                 "# mstatus.MIE, SIE, MPIE, and SPIE = 1",
                 f"LI(x{r_temp}, 0xAA)",
-                m_csr(priv, f"csrs mstatus, x{r_temp}"),
+                tsbi_call_or_direct(f"csrs mstatus, x{r_temp}", priv),
                 "# Set all M mode interrupts pending",
                 "#ifdef UDB_MEI_INTR_IMPL",
                 f"RVTEST_SET_MEXT_INT_{priv}",
@@ -266,12 +256,12 @@ def wrs_no_mie_helper(
                     f"RVTEST_SET_STIME_INT_{priv}",
                     "# set SSI and SEI through mip",
                     f"LI(x{r_temp}, 0x202)",
-                    m_csr(priv, f"csrs mip, x{r_temp}"),
+                    tsbi_call_or_direct(f"csrs mip, x{r_temp}", priv),
                     "#endif",
                     "",
                     "# Set TW bit",
                     f"LI(x{r_temp}, 0x200000)",
-                    m_csr(priv, f"csrs mstatus, x{r_temp}"),
+                    tsbi_call_or_direct(f"csrs mstatus, x{r_temp}", priv),
                 ]
             )
         else:
@@ -316,7 +306,7 @@ def wrs_no_mie_helper(
                     "#ifdef S_SUPPORTED",
                     "# clear SSI, STI and SEI through mip, the way they were set",
                     f"LI(x{r_temp}, 0x222)",
-                    m_csr(priv, f"csrc mip, x{r_temp}"),
+                    tsbi_call_or_direct(f"csrc mip, x{r_temp}", priv),
                     "#endif",
                 ]
             )
@@ -364,7 +354,7 @@ def wrs_no_res_helper(test_data: TestData, priv: str, covergroup: str) -> list[s
                     *_disable_interrupts(priv, r_temp),
                     "# Write mstatus.TW",
                     f"LI(x{r_temp}, 0x200000)",
-                    m_csr(priv, f"{'csrs' if tw_val else 'csrc'} mstatus, x{r_temp}"),
+                    tsbi_call_or_direct(f"{'csrs' if tw_val else 'csrc'} mstatus, x{r_temp}", priv),
                     "",
                     "# sc.w to clear reservation",
                     f"LA(x{r_scratch}, scratch)",
@@ -466,7 +456,7 @@ def wrs_timeout_helper(
                     *_disable_interrupts(priv, r_temp),
                     "# Write mstatus.TW",
                     f"LI(x{r_temp}, 0x200000)",
-                    m_csr(priv, f"{'csrs' if tw_val else 'csrc'} mstatus, x{r_temp}"),
+                    tsbi_call_or_direct(f"{'csrs' if tw_val else 'csrc'} mstatus, x{r_temp}", priv),
                 ]
             )
             if virtualized:

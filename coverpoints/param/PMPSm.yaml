@@ -1,0 +1,81 @@
+# Parameter mappings
+
+parameter_definitions:
+  - name: NUM_PMP_ENTRIES
+    coverpoint: ["all coverpoints", "cp_pmp64_{write, read}"]
+    effect:
+      [
+        "The suite runs only when NUM_PMP_ENTRIES > 0",
+        "cp_pmp64_* exist only with 64 entries",
+      ]
+  - name: NUM_USABLE_PMP_ENTRIES
+    coverpoint:
+      [
+        "all coverpoints",
+        "cp_pmp64_{write, read}",
+        "cp_partial_{match, covered}, cp_misaligned_mag16",
+      ]
+    effect:
+      [
+        "Entry NUM_USABLE_PMP_ENTRIES - 1 is the locked background entry, except in cp_none_* and cp_misaligned_partial",
+        "cp_pmp64_* bins for entries at or above NUM_USABLE_PMP_ENTRIES - 1 cannot be hit",
+        "Tests of the partial-match coverpoints run only when NUM_USABLE_PMP_ENTRIES >= 16: each case has its own entries below the background entry",
+      ]
+  - name: PMP_GRANULARITY
+    coverpoint:
+      [
+        "all coverpoints",
+        "cp_grain_*",
+        "cp_cfg_A_all_{even, odd}",
+        "cp_partial_{match, covered}, cp_misaligned_mag16",
+      ]
+    effect:
+      [
+        "Sets the grain g = 2^(G+2) and so the size and placement of every region under test",
+        "cp_grain_* exist only when G >= 1 (PMP_GRANULARITY > 2)",
+        "NA4 is not selectable when G >= 1",
+        "cp_partial_{match, covered} need G = 0 (PMP_GRANULARITY = 2) for 4-byte regions",
+        "cp_misaligned_mag16 needs G <= 1 (PMP_GRANULARITY <= 3) so that one-grain regions split a 16-byte granule",
+      ]
+  - name: PMP_NA4_SUPPORTED
+    coverpoint:
+      [
+        "cp_cfg_A_NA4_all, cp_cfg_A_na4_{x, r, w}, cp_cfg_A_all_{even, odd}, cp_partial_{match, covered}",
+      ]
+    effect:
+      [
+        "NA4 coverpoints and tests exist only when true",
+        "Readback of A = NA4 in cp_cfg_A_all_*",
+      ]
+  - name: PMP_NAPOT_SUPPORTED
+    coverpoint:
+      [
+        "cp_cfg_{X, R, W}, cp_cfg_A_napot_*, cp_priority_*, cp_pmp64_*, cp_partial_covered",
+      ]
+    effect:
+      [
+        "NAPOT test file runs only when true; the background entry uses TOR when false",
+      ]
+  - name: PMP_TOR_SUPPORTED
+    coverpoint:
+      [
+        "cp_cfg_A_tor*, cp_grain_*_to_TOR, cp_cfg_L_modify, cp_partial_match, cp_misaligned_{mag16, partial}",
+      ]
+    effect: ["TOR coverpoints, bins and tests exist only when true"]
+  - name: MXLEN
+    coverpoint:
+      [
+        "cp_pmpaddr_upper_zero, cp_pmpcfg_walk*, cp_pmpcfg_zero, cp_pmpcfg_odd_rv64, cp_cfg_A_all_odd",
+        "cp_partial_{match, covered}, cp_misaligned_{mag16, partial}",
+      ]
+    effect:
+      [
+        "RV64: cp_pmpaddr_upper_zero, the even pmpcfg CSRs, and the odd pmpcfg CSRs as illegal. RV32: the odd pmpcfg CSRs as legal",
+        "cp_partial_{match, covered} exist only on RV64; lwu, ld and sd bins of cp_misaligned_* only on RV64",
+      ]
+  - name: MISALIGNED_LDST
+    coverpoint: ["cp_misaligned_partial"]
+    effect:
+      [
+        "The coverpoint and its test exist only when true: the misaligned loads and stores must not raise address-misaligned exceptions",
+      ]

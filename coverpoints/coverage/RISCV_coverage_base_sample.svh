@@ -154,6 +154,9 @@
     `ifdef COVER_PMPZAAMO
         pmpzaamo_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_PMPZACAS
+        pmpzacas_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_PMPZALRSC
         pmpzalrsc_sample(hart, issue, ins);
     `endif

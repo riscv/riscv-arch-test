@@ -1,0 +1,40 @@
+# Parameter mappings
+
+parameter_definitions:
+  - name: NUM_PMP_ENTRIES
+    coverpoint: ["all coverpoints"]
+    effect: ["The suite runs only when NUM_PMP_ENTRIES > 0"]
+  - name: NUM_USABLE_PMP_ENTRIES
+    coverpoint: ["all coverpoints", "cp_misaligned_partial"]
+    effect:
+      [
+        "Entry NUM_USABLE_PMP_ENTRIES - 1 is the locked background entry, except in cp_none_* and cp_misaligned_partial",
+        "cp_misaligned_partial needs at least 5 entries",
+      ]
+  - name: PMP_GRANULARITY
+    coverpoint: ["all coverpoints"]
+    effect:
+      [
+        "Sets the grain g = 2^(G+2) and so the size and placement of every region under test",
+      ]
+  - name: PMP_NA4_SUPPORTED
+    coverpoint: ["cp_cfg_A_na4_{jalr, lw, sw}"]
+    effect: ["NA4 coverpoints and tests exist only when true"]
+  - name: PMP_NAPOT_SUPPORTED
+    coverpoint: ["cp_cfg_A_napot_{jalr, lw, sw}"]
+    effect: ["NAPOT test file runs only when true"]
+  - name: PMP_TOR_SUPPORTED
+    coverpoint:
+      [
+        "cp_cfg_A_tor_{jalr, lw, sw}, cp_none_{jalr, lw, sw}, cp_misaligned_partial",
+      ]
+    effect: ["TOR coverpoints and tests exist only when true"]
+  - name: MISALIGNED_LDST
+    coverpoint: ["cp_misaligned_partial"]
+    effect:
+      [
+        "The coverpoint and its test exist only when true: the misaligned loads and stores must not raise address-misaligned exceptions",
+      ]
+  - name: MXLEN
+    coverpoint: ["cp_cfg_R, cp_cfg_W, cp_misaligned_partial"]
+    effect: ["lwu, ld and sd bins exist only on RV64"]

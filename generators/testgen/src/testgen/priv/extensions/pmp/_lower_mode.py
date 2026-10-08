@@ -25,6 +25,7 @@ from testgen.priv.extensions.pmp.helpers import (
     set_pmpcfg,
     zero_pmp_regs,
 )
+from testgen.priv.extensions.pmp.partial import make_misaligned_chunk, misaligned_setup_lower
 from testgen.priv.extensions.pmp.probes import (
     gen_rwx,
     gen_rwx_all,
@@ -202,6 +203,40 @@ def _make_legal_chunk(test_data: TestData, mode: Mode, amode: str, part: int | N
     return test_data.end_test_chunk()
 
 
+def _make_none_chunk(test_data: TestData, mode: Mode) -> TestChunk:
+    """An access that matches no PMP entry fails in S and U mode."""
+    chunk = test_data.begin_test_chunk("none")
+    body = [
+        *zero_pmp_regs(),
+        "",
+        f"#define PMPREGION_BELOW {cfg_byte('0111', 'tor', cfg_shift(0))}",
+        f"#define PMPREGION_ABOVE {cfg_byte('0111', 'tor', cfg_shift(2))}",
+        "",
+        "// No background entry. Entry 0 (TOR) covers [0, TEST_FOR_EXECUTION) and entry 2 (TOR, bottom in",
+        "// pmpaddr1) covers [TEST_FOR_EXECUTION + g, top), so the grain at TEST_FOR_EXECUTION matches no entry.",
+        "LA(x5, TEST_FOR_EXECUTION)",
+        "srl x5, x5, PMP_SHIFT",
+        "csrw pmpaddr0, x5",
+        "LI(x6, PMP_TOR_REGION_BYTES >> PMP_SHIFT)",
+        "add x5, x5, x6",
+        "csrw pmpaddr1, x5",
+        "LI(x5, -1)",
+        "csrw pmpaddr2, x5",
+        *set_pmpcfg(0, "PMPREGION_BELOW | PMPREGION_ABOVE"),
+        "RVTEST_SFENCE_VMA_IF_SUPPORTED",
+        f"RVTEST_TSBI_GOTO_{mode.letter}MODE",
+        *gen_rwx(test_data, "no_match", "cp_none"),
+        "RVTEST_TSBI_GOTO_MMODE",
+    ]
+    chunk.section_header = comment_banner(
+        f"{mode.suite} cp_none",
+        f"{{jalr, sw, lw}} from {mode.letter} mode at a grain that no PMP entry matches; each raises an access fault.",
+    )
+    chunk.code.extend(body)
+    chunk.raw_data.extend(REGION_BLOBS["tor"])
+    return test_data.end_test_chunk()
+
+
 def make_lower_mode_base(test_data: TestData, mode: Mode) -> list[TestChunk]:
     """Build lower-mode PMP tests without an address-mode constraint."""
     chunks = [_make_cfg_a_off_chunk(test_data, mode)]
@@ -215,4 +250,22 @@ def make_lower_mode_amode(test_data: TestData, mode: Mode, amode: str) -> list[T
     """Build lower-mode PMP tests for one PMP address mode."""
     if amode == "na4":
         return [_make_legal_chunk(test_data, mode, amode)]
-    return [_make_legal_chunk(test_data, mode, amode, part) for part in (1, 2)]
+    chunks = [_make_legal_chunk(test_data, mode, amode, part) for part in (1, 2)]
+    if amode == "tor":
+        chunks.append(_make_none_chunk(test_data, mode))
+    return chunks
+
+
+def make_lower_mode_misaligned(test_data: TestData, mode: Mode) -> list[TestChunk]:
+    """Misaligned loads and stores from the lower mode, partly in a region and partly in a gap that matches no entry."""
+    return [
+        make_misaligned_chunk(
+            test_data,
+            misaligned_setup_lower(),
+            "cp_misaligned_partial",
+            f"Misaligned loads and stores from {mode.letter} mode across each end of a TOR region with XWR = 111; the\n"
+            "rest of the access is in a gap that matches no entry. Each faults whether or not the hart splits it.\n"
+            "xtval is not recorded.",
+            lower_mode=mode.letter,
+        )
+    ]

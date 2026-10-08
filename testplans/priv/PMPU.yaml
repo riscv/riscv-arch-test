@@ -1,11 +1,11 @@
 # yaml-language-server: $schema=testplan.schema.json
 suite: PMPU
 source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=2072825600#gid=2072825600
-notes: |
+notes: |-
   General Test Environment (PMPU):
   - Runs when U and Sm are implemented and NUM_PMP_ENTRIES > 0. The NA4, NAPOT and TOR test files also need PMP_NA4_SUPPORTED, PMP_NAPOT_SUPPORTED or PMP_TOR_SUPPORTED.
   - Boots to M-mode and programs the PMP there, then switches to U-mode (RVTEST_TSBI_GOTO_UMODE) for each set of probes and back to M-mode (RVTEST_TSBI_GOTO_MMODE). cp_mprv_* probes run in M-mode.
-  - Background entry, grain, standard region, loads, stores and the fetch probe are as in PMPSm.
+  - Background entry, grain, standard region, loads, stores and the fetch probe are as in PMPSm, except that cp_none_* and cp_misaligned_partial run without a background entry.
   - Entries under test are unlocked (L=0) unless a row says otherwise: R/W/X apply to U-mode accesses whatever L is.
 coverpoints:
   - heading: Permission bits
@@ -135,13 +135,27 @@ coverpoints:
     bins: 16 CSRs
     rules:
       - pmp_csr_mode
-  - heading: Not yet implemented in ACT4 (no coverpoint or test yet)
-  - name: cp_none
+  - heading: No matching entry
+  - name: |-
+      cp_none_jalr
+      cp_none_lw
+      cp_none_sw
     goal: Verify that a U-mode access that matches no entry fails when PMP entries are implemented.
-    description: No background entry. Program one entry that covers only the code the probes run from, then jalr, lw and sw from U-mode to an address that no entry matches. (The original plan cleared every entry, which faults on the first U-mode fetch and ends the test.)
-    expectation: Instruction, load or store/AMO access fault.
-    bins: 3 types of access
+    description: "PMP_TOR_SUPPORTED only. No background entry. Entry 0: TOR [0, R); entry 1: OFF, pmpaddr1 = R + g; entry 2: TOR [R + g, top); all L=0 and XWR=111, every other entry OFF. R is the start of the test region, so the grain at R matches no entry. jalr, lw and sw at R from U-mode."
+    expectation: Instruction access fault, load access fault and store/AMO access fault.
+    bins: 1 each
     rules:
       - pmp_no_entry_match
       - pmp_check_priv_modes
       - pmp_access_fault_exception
+      - pmp_a_field_tor
+  - heading: Misaligned access partly in a region
+  - name: cp_misaligned_partial
+    goal: Verify that a misaligned U-mode access partly inside a region faults when the rest matches no entry, whether or not the hart splits it.
+    description: "MISALIGNED_LDST = true, PMP_TOR_SUPPORTED. No background entry. Entry 0: TOR [0, gap below); entry 2: TOR over one grain; entry 4: TOR [gap above, top); all L=0, XWR=111. Each gap is max(g, 8) bytes and matches no entry. lh, lhu and sh 1 byte, lw, sw (and lwu) 2 bytes, and ld and sd 6 bytes below the region start, and the same instructions 1, 2 and 2 bytes below its end, from U-mode."
+    expectation: "Load or store/AMO access fault. Only the trap is checked: part of a split store may become visible, and mtval may hold the address of the faulting part, so it is not recorded."
+    bins: 2 ends × 5 loads and stores (8 on RV64)
+    rules:
+      - pmp_misaligned_access_behavior
+      - pmp_full_match_required
+      - pmp_no_entry_match

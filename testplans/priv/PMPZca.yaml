@@ -1,14 +1,14 @@
 # yaml-language-server: $schema=testplan.schema.json
 suite: PMPZca
 source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1336315481#gid=1336315481
+notes: |-
+  General Test Environment (PMPZca):
+  - Runs when Zca and Sm are implemented and NUM_PMP_ENTRIES > 0. Zcb, Zcf and Zcd test files add their instructions; NA4, NAPOT and TOR rows need PMP_NA4_SUPPORTED, PMP_NAPOT_SUPPORTED or PMP_TOR_SUPPORTED. M-mode only.
+  - Loads = c.lw, c.lwsp (+ c.ld, c.ldsp on RV64; c.flw, c.flwsp with Zcf on RV32; c.fld, c.fldsp with Zcd; c.lbu, c.lh, c.lhu with Zcb).
+  - Stores = c.sw, c.swsp (+ c.sd, c.sdsp on RV64; c.fsw, c.fswsp with Zcf on RV32; c.fsd, c.fsdsp with Zcd; c.sb, c.sh with Zcb).
+  - Fetch rows jump with c.jalr to a target that holds a 32-bit ret (jalr x0, 0(ra)) or a 16-bit c.ret. c.jr, c.j and c.jal are not tested; their 32-bit forms are covered in PMPSm.
+  - Standard region and L=1 XWR walk as in PMPSm cp_cfg_X/R/W.
 coverpoints:
-  - heading: |-
-      General Test Environment (PMPZca):
-      - Runs when Zca and Sm are implemented and NUM_PMP_ENTRIES > 0. Zcb, Zcf and Zcd test files add their instructions; NA4, NAPOT and TOR rows need PMP_NA4_SUPPORTED, PMP_NAPOT_SUPPORTED or PMP_TOR_SUPPORTED. M-mode only.
-      - Loads = c.lw, c.lwsp (+ c.ld, c.ldsp on RV64; c.flw, c.flwsp with Zcf on RV32; c.fld, c.fldsp with Zcd; c.lbu, c.lh, c.lhu with Zcb).
-      - Stores = c.sw, c.swsp (+ c.sd, c.sdsp on RV64; c.fsw, c.fswsp with Zcf on RV32; c.fsd, c.fsdsp with Zcd; c.sb, c.sh with Zcb).
-      - Fetch rows jump with c.jalr to a target that holds a 32-bit ret (jalr x0, 0(ra)) or a 16-bit c.ret. c.jr, c.j and c.jal are not tested; their 32-bit forms are covered in PMPSm.
-      - Standard region and L=1 XWR walk as in PMPSm cp_cfg_X/R/W.
   - heading: Compressed loads and stores
   - name: cp_cfg_R
     goal: Verify that R controls every compressed load when the entry is locked.
@@ -30,6 +30,16 @@ coverpoints:
       - pmp_cfg_permissions
       - pmp_rwx_check
       - pmp_l_bit_m_mode_enforcement
+  - name: cp_misaligned_mag16
+    goal: Verify that a misaligned compressed load or store inside a 16-byte granule fails when the deciding entry matches only part of it.
+    description: Zama16b, as in PMPSm cp_misaligned_mag16. c.lw and c.sw 2 bytes and, on RV64, c.ld and c.sd 4 bytes below the middle of the granule; with Zcb c.lh, c.lhu and c.sh 1 byte below; with Zcf (RV32) c.flw and c.fsw 2 bytes below; with Zcd on RV64 c.fld and c.fsd 4 bytes below. Each extension has its own test file. The sp-based forms are not used.
+    expectation: "Load or store/AMO access fault: the access is a single memory operation."
+    bins: 3 placements × 2 L × compressed loads and stores
+    rules:
+      - pmp_full_match_required
+      - pmp_misaligned_access_behavior
+      - pma_mag_op_within
+      - pma_mag_insts
   - heading: 32-bit fetch across a region boundary (IALIGN = 16)
   - name: cp_misaligned_napot
     goal: Verify that a 32-bit instruction straddling two NAPOT regions must be fully matched.

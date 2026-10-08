@@ -9,8 +9,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_PMPS
+`include "PMP_partial.svh"
 
-covergroup PMPS_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pack_pmpaddr, logic [29:0] pmpcfg_a, [7:0] pmpcfg [63:0], logic [14:0] pmp_hit);
+covergroup PMPS_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pack_pmpaddr, logic [29:0] pmpcfg_a, [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, logic others_off, pmp_partial_t partial);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -256,6 +257,23 @@ covergroup PMPS_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
 
 //-------------------------------------------------------
 
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    // cp_none: entry 0 = TOR [0, PMP_REGION_START), entry 1 = OFF, entry 2 = TOR [PMP_REGION_START + g, top),
+    // all L=0 and XWR=111, and every other entry OFF, so the grain at PMP_REGION_START matches no entry.
+    none_cfg: coverpoint {pmpcfg[2], pmpcfg[1], pmpcfg[0], others_off} {
+      bins tor_gap = {25'b00001111_00000000_00001111_1};
+    }
+
+    none_pmpaddr: coverpoint (((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr0", "pmpaddr0") & `PMP_PMPADDR_LOWMASK) ==
+                                (`NON_STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) &&
+                              ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr1", "pmpaddr1") & `PMP_PMPADDR_LOWMASK) ==
+                                (((`PMP_REGION_START + `g_tor) >> 2) & `PMP_PMPADDR_LOWMASK)) &&
+                              ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpaddr2", "pmpaddr2") & `PMP_PMPADDR_LOWMASK) ==
+                                (`PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK))) {
+      bins gap = {1};
+    }
+  `endif
+
   cp_cfg_X: cross priv_mode_s, legal_lxwr, exec_instr, addr_in_napot_region ;
   cp_cfg_R: cross priv_mode_s, legal_lxwr, read_instr, addr_in_napot_region ;
   cp_cfg_W: cross priv_mode_s, legal_lxwr, write_instr, addr_in_napot_region ;
@@ -290,10 +308,59 @@ covergroup PMPS_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
   cp_pmpaddr_access_s: cross priv_mode_s, csrrw, pmpaddr_entries ;
   cp_pmpcfg_access_s: cross priv_mode_s, csrrw, pmpcfg_entries ;
 
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    cp_none_jalr: cross priv_mode_s, none_cfg, none_pmpaddr, exec_instr, addr_in_region ;
+    cp_none_lw: cross priv_mode_s, none_cfg, none_pmpaddr, read_instr_lw, addr_in_region ;
+    cp_none_sw: cross priv_mode_s, none_cfg, none_pmpaddr, write_instr_sw, addr_in_region ;
+  `endif
+
+  // Misaligned accesses partly in a region (see PMP_partial.svh), the rest matching no entry.
+  partial_ldst: coverpoint ins.current.insn {
+    type_option.weight = 0;
+    wildcard bins lh  = {LH};
+    wildcard bins lhu = {LHU};
+    wildcard bins sh  = {SH};
+    wildcard bins lw  = {LW};
+    wildcard bins sw  = {SW};
+    `ifdef UDB_MXLEN_64
+      wildcard bins lwu = {LWU};
+      wildcard bins ld  = {LD};
+      wildcard bins sd  = {SD};
+    `endif
+  }
+
+  partial_misaligned: coverpoint partial.align {
+    type_option.weight = 0;
+    bins misaligned = {PMP_ACCESS_IN_GRANULE16, PMP_ACCESS_CROSSES_GRANULE16};
+  }
+
+  partial_tor_xwr111: coverpoint partial.cfg {
+    type_option.weight = 0;
+    bins l0_tor_xwr111 = {8'b0000_1111};
+  }
+
+  partial_one_end: coverpoint partial.kind {
+    type_option.weight = 0;
+    bins lower = {PMP_PARTIAL_LOWER};
+    bins upper = {PMP_PARTIAL_UPPER};
+  }
+
+  partial_rest_unmatched: coverpoint partial.rest_matched {
+    type_option.weight = 0;
+    bins unmatched = {1'b0};
+  }
+
+  `ifdef UDB_MISALIGNED_LDST
+    `ifdef UDB_PMP_TOR_SUPPORTED
+      cp_misaligned_partial: cross priv_mode_s, partial_ldst, partial_misaligned, partial_tor_xwr111, partial_one_end, partial_rest_unmatched ;
+    `endif
+  `endif
+
 endgroup
 
 function void pmps_sample(int hart, int issue, ins_t ins);
 
+  logic others_off;
   logic [16*`UDB_MXLEN-1:0] pack_pmpaddr;
   logic [29:0] pmpcfg_a;      // for first 15 Regions
   logic [7:0] pmpcfg [63:0];
@@ -390,5 +457,9 @@ function void pmps_sample(int hart, int issue, ins_t ins);
           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_a")[1:0]
           };
   `endif
-  PMPS_cg.sample(ins, pack_pmpaddr, pmpcfg_a, pmpcfg, pmp_hit);
+  // Every entry above entry 2 is OFF (cp_none).
+  others_off = 1'b1;
+  for (int k = 3; k < 64; k++) others_off &= (pmpcfg[k][4:3] == 2'b00);
+
+  PMPS_cg.sample(ins, pack_pmpaddr, pmpcfg_a, pmpcfg, pmp_hit, others_off, pmp_partial(ins));
 endfunction

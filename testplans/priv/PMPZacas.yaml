@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: PMPZacas
+notes: |-
+  General Test Environment (PMPZacas):
+  - Runs when Zacas and Sm are implemented and NUM_USABLE_PMP_ENTRIES >= 16. M-mode only. Partial-match setup as in PMPSm cp_partial_match and cp_misaligned_mag16.
+  - An aligned AMO is one memory operation even when it is wider than XLEN, so amocas.d on RV32 and amocas.q on RV64 are included. rd is the x8/x9 pair and rs2 the x14/x15 pair when the operand is wider than XLEN; rd is checked after each amocas.
+coverpoints:
+  - name: cp_partial_match_d
+    goal: Verify that an aligned amocas.d fails when the deciding entry matches only part of it.
+    description: G = 0, RV32 and RV64. 4-byte NA4 entries (PMP_NA4_SUPPORTED) or TOR entries (PMP_TOR_SUPPORTED) below the background entry cover the lower half, the upper half, or both halves of an aligned doubleword, with L={0,1} and XWR=111. amocas.d on the doubleword.
+    expectation: Store/AMO access fault in every case; rd is unchanged.
+    bins: 2 modes × 2 L × 3 placements = 12
+    rules:
+      - pmp_full_match_required
+      - rvwmo_aligned_amo_memop
+      - mcause_exccode_st_sc_amo
+  - name: cp_partial_match_q
+    goal: Verify that an aligned amocas.q fails when the deciding entry matches only part of it.
+    description: RV64, G <= 1. 8-byte NAPOT entries (PMP_NAPOT_SUPPORTED) or TOR entries (PMP_TOR_SUPPORTED) below the background entry cover the lower half, the upper half, or both halves of an aligned 16-byte quadword, with L={0,1} and XWR=111. amocas.q on the quadword.
+    expectation: Store/AMO access fault in every case; rd is unchanged.
+    bins: 2 modes × 2 L × 3 placements = 12
+    rules:
+      - pmp_full_match_required
+      - rvwmo_aligned_amo_memop
+      - mcause_exccode_st_sc_amo
+  - name: cp_misaligned_mag16
+    goal: Verify that a misaligned amocas inside a 16-byte granule fails when the deciding entry matches only part of it.
+    description: Zama16b, as in PMPSm cp_misaligned_mag16. amocas.w 2 bytes and amocas.d 4 bytes below the middle of the granule.
+    expectation: "Store/AMO access fault: the AMO is a single memory operation."
+    bins: 3 placements × 2 L × {amocas.w, amocas.d}
+    rules:
+      - pmp_full_match_required
+      - pmp_misaligned_access_behavior
+      - pma_mag_op_within
+      - pma_mag_insts
+      - mcause_exccode_st_sc_amo
+  - heading: Not yet implemented in ACT4 (no coverpoint or test yet)
+  - goal: "Open item: no ACT configuration has G = 1 (PMP_GRANULARITY = 3), so CI runs the G <= 1 rows (cp_misaligned_mag16, PMPZacas cp_partial_match_q) only at G = 0. Add a G = 1 configuration."

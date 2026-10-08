@@ -1,0 +1,27 @@
+# Parameter mappings
+
+parameter_definitions:
+  - name: NUM_PMP_ENTRIES
+    coverpoint: ["all coverpoints"]
+    effect: ["The suite runs only when NUM_PMP_ENTRIES > 0"]
+  - name: NUM_USABLE_PMP_ENTRIES
+    coverpoint: ["all coverpoints", "cp_misaligned_mag16"]
+    effect:
+      [
+        "Entry NUM_USABLE_PMP_ENTRIES - 1 is the locked background entry",
+        "Tests of the partial-match coverpoints run only when NUM_USABLE_PMP_ENTRIES >= 16: each case has its own entries below the background entry",
+      ]
+  - name: PMP_GRANULARITY
+    coverpoint: ["all coverpoints", "cp_misaligned_mag16"]
+    effect:
+      [
+        "Sets the grain g = 2^(G+2) and so the size and placement of every region under test",
+        "cp_misaligned_mag16 needs G <= 1 (PMP_GRANULARITY <= 3) so that one-grain regions split a 16-byte granule",
+      ]
+  - name: PMP_TOR_SUPPORTED
+    coverpoint: ["cp_misaligned_mag16"]
+    effect: ["The coverpoint and its test exist only when true"]
+  - name: MXLEN
+    coverpoint: ["cp_misaligned_mag16"]
+    effect:
+      ["fld and fsd bins exist only on RV64: on RV32 they are wider than XLEN"]

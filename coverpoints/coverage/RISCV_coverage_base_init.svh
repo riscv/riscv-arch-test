@@ -202,6 +202,10 @@
         `cover_info("//      PMPZaamo - Enabled");
         `include "PMPZaamo_coverage_init.svh"
     `endif
+    `ifdef COVER_PMPZACAS
+        `cover_info("//      PMPZacas - Enabled");
+        `include "PMPZacas_coverage_init.svh"
+    `endif
     `ifdef COVER_PMPZALRSC
         `cover_info("//      PMPZalrsc - Enabled");
         `include "PMPZalrsc_coverage_init.svh"

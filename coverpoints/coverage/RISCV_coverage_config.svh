@@ -155,6 +155,9 @@
 `ifdef PMPZAAMO_COVERAGE
   `include "PMPZaamo_coverage.svh"
 `endif
+`ifdef PMPZACAS_COVERAGE
+  `include "PMPZacas_coverage.svh"
+`endif
 `ifdef PMPZALRSC_COVERAGE
   `include "PMPZalrsc_coverage.svh"
 `endif

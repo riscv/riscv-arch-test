@@ -2,17 +2,65 @@
 # Generated from riscv-isa-manual normative rule definitions
 
 normative_rule_definitions:
-  # Attempting to execute a load instruction that accesses a physical address within a
-  # PMP region without read permissions raises a load access-fault exception.
+  # &lt;&lt;pmpcfg&gt;&gt; shows the layout of a PMP configuration register. The R, W,
+  # and X bits, when set, indicate that the PMP entry permits read, write, and
+  # instruction execution, respectively. When one of these bits is clear, the
+  # corresponding access type is denied.
+  - name: pmp_cfg_permissions
+    coverpoint: ["PMPF_cg/{cp_cfg_R, cp_cfg_W}"]
+
+  # Attempting to execute a load or load-reserved instruction that accesses a physical
+  # address within a PMP region without read permissions raises a load access-fault
+  # exception.
   - name: pmp_load_fault
     coverpoint: ["PMPF_cg/cp_cfg_R"]
 
-  # Attempting to execute a store instruction which accesses a physical address within
-  # a PMP region without write permissions raises a store access-fault exception.
+  # Attempting to execute a store, store-conditional, AMO, or cache-block zero
+  # instruction that accesses a physical address within a PMP region without write
+  # permissions raises a store access-fault exception.
   - name: pmp_store_fault
     coverpoint: ["PMPF_cg/cp_cfg_W"]
 
-  # When the L bit is set, the R/W/X permissions are enforced for all privilege modes.
+  # In addition to locking the PMP entry, the L bit indicates whether the R/W/X
+  # permissions are additionally enforced on M-mode accesses. When the L bit is set,
+  # these permissions are enforced for all privilege modes. When the L bit is clear, any
+  # M-mode access matching the PMP entry will succeed; the R/W/X permissions apply only
+  # to S and U modes.
   - name: pmp_l_bit_m_mode_enforcement
-    # M-mode FP loads and stores to locked entries
     coverpoint: ["PMPF_cg/{cp_cfg_R, cp_cfg_W}"]
+
+  # On some implementations, misaligned loads, stores, and instruction fetches may be
+  # decomposed into multiple memory operations, some of which may succeed before an
+  # access-fault exception occurs, as described in the RVWMO specification. PMP checking
+  # is performed on each memory operation independently.
+  - name: pmp_misaligned_access_behavior
+    coverpoint: ["PMPF_cg/cp_misaligned_mag16"]
+
+  # The matching PMP entry must match all bytes of a memory operation, or the operation
+  # fails, irrespective of the L, R, W, and X bits.
+  - name: pmp_full_match_required
+    coverpoint: ["PMPF_cg/cp_misaligned_mag16"]
+
+  # If a PMP entry matches all bytes of a memory operation, then the L, R, W, and X bits
+  # determine whether the operation succeeds or fails. If the L bit is clear and the
+  # privilege mode of the access is M, the operation succeeds. Otherwise, if the L bit
+  # is set or the privilege mode of the access is S or U, then the operation succeeds
+  # only if the R, W, or X bit corresponding to the access type is set.
+  - name: pmp_rwx_check
+    coverpoint: ["PMPF_cg/{cp_cfg_R, cp_cfg_W}"]
+
+  # if all accessed bytes lie within the same misaligned atomicity granule, the
+  # instruction will not raise an exception for reasons of address alignment, and the
+  # instruction will give rise to only one memory operation for the purposes of RVWMO--
+  # i.e., it will execute atomically.
+  - name: pma_mag_op_within
+    coverpoint: ["PMPF_cg/cp_misaligned_mag16"]
+
+  # The misaligned atomicity granule PMA applies only to AMOs defined in the
+  # ext:zaamo[], ext:zabha[], and ext:zacas[] extensions; loads and stores defined in
+  # the base ISAs; loads and stores of no more than XLEN bits defined in the ext:f[],
+  # ext:d[], and ext:q[] extensions; the load-acquire and store-release instructions
+  # defined in the ext:zalasr[] extension; and compressed encodings of the foregoing
+  # loads and stores.
+  - name: pma_mag_insts
+    coverpoint: ["PMPF_cg/cp_misaligned_mag16"]

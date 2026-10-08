@@ -16,8 +16,12 @@ exclude_configs:
 #   - spike-rv{32,64}-mu: mstateen0.ENVCFG is writable without S
 #     (https://github.com/riscv-software-src/riscv-isa-sim/issues/2464)
 # Sdtrig* not yet supported in Sail reference (https://github.com/riscv/sail-riscv/issues/222)
+# PMPZalrsc: an sc without a reservation is PMP-checked on its first byte only (check_load_reservation
+#   translates with size 1), so an sc.d that a PMP entry matches only in part fails without the
+#   store/AMO access fault that sc_retire_permission requires
+#   (https://github.com/riscv-software-src/riscv-isa-sim/issues/2466)
 # Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)
-exclude_extensions: "Smstateen,SdtrigSm,SdtrigS,SdtrigU,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm"
+exclude_extensions: "Smstateen,SdtrigSm,SdtrigS,SdtrigU,PMPZalrsc,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm"
 install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"
 shards: 1

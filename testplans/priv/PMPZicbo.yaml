@@ -1,12 +1,12 @@
 # yaml-language-server: $schema=testplan.schema.json
 suite: PMPZicbo
 source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1958410505#gid=1958410505
+notes: |-
+  General Test Environment (PMPZicbo):
+  - Runs when Sm and NUM_PMP_ENTRIES > 0, with Zicbom and Zicboz for the cbo rows and Zicbop for the prefetch rows. M-mode only.
+  - menvcfg.CBIE = 11, CBCFE = 1, CBZE = 1.
+  - The region under test is a 4 KiB-aligned NAPOT region much larger than a cache block, so every byte of the block has the same permissions. Misaligned or partially covered cache blocks are not tested: their behavior is unspecified (pmp_same).
 coverpoints:
-  - heading: |-
-      General Test Environment (PMPZicbo):
-      - Runs when Sm and NUM_PMP_ENTRIES > 0, with Zicbom and Zicboz for the cbo rows and Zicbop for the prefetch rows. M-mode only.
-      - menvcfg.CBIE = 11, CBCFE = 1, CBZE = 1.
-      - The region under test is a 4 KiB-aligned NAPOT region much larger than a cache block, so every byte of the block has the same permissions. Misaligned or partially covered cache blocks are not tested: their behavior is unspecified (pmp_same).
   - name: cp_cbo_zero
     goal: Verify that cbo.zero needs W.
     description: "Entry 0 over the region: L=1, XWR = 000, 001, 011. cbo.zero at the start of the region."

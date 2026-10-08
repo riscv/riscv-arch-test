@@ -1,12 +1,13 @@
 # yaml-language-server: $schema=testplan.schema.json
 suite: PMPZalrsc
 source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=613653829#gid=613653829
+notes: |-
+  General Test Environment (PMPZalrsc):
+  - Runs when Zalrsc and Sm are implemented and NUM_PMP_ENTRIES > 0. M-mode only.
+  - lr.w, sc.w (also lr.d, sc.d on RV64). Each lr is followed by an sc to the same address; when W=1 the pair retries in a constrained LR/SC loop until the sc succeeds.
+  - LR and SC are not in the misaligned atomicity granule's instruction set, so there are no misaligned rows.
+  - Standard region and L=1 XWR walk as in PMPSm cp_cfg_X/R/W.
 coverpoints:
-  - heading: |-
-      General Test Environment (PMPZalrsc):
-      - Runs when Zalrsc and Sm are implemented and NUM_PMP_ENTRIES > 0. M-mode only.
-      - lr.w, sc.w (also lr.d, sc.d on RV64). Each lr is followed by an sc to the same address; when W=1 the pair retries in a constrained LR/SC loop until the sc succeeds.
-      - Standard region and L=1 XWR walk as in PMPSm cp_cfg_X/R/W.
   - name: cp_cfg_RW
     goal: Verify that LR needs R and SC needs W.
     description: Six legal XWR with L=1, one entry each. lr then sc at the start of the region. When R=0 the lr faults, so the sc runs without a reservation.
@@ -20,3 +21,13 @@ coverpoints:
       - mcause_exccode_st_sc_amo
       - pmp_cfg_permissions
       - pmp_l_bit_m_mode_enforcement
+  - name: cp_partial_match
+    goal: Verify that lr.d and sc.d fail when the deciding entry matches only part of the doubleword.
+    description: RV64, G = 0, as in PMPSm cp_partial_match. lr.d, and sc.d without a preceding lr.d (an lr.d to the same bytes would fault, so no reservation can be set up), from M-mode.
+    expectation: "lr.d: load access fault. sc.d: store/AMO access fault, although it would fail for lack of a reservation: no SC retires unless it passes the memory permission checks."
+    bins: 2 modes × 2 L × 3 placements × {lr.d, sc.d} = 24
+    rules:
+      - pmp_full_match_required
+      - sc_retire_permission
+      - mcause_exccode_ld_ldrsv
+      - mcause_exccode_st_sc_amo

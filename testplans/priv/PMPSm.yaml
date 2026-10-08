@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=testplan.schema.json
 suite: PMPSm
 source: https://docs.google.com/spreadsheets/d/1VuBt-H9VVWh8k-USAJEplrgEJETjQ-iNjD4Iq_ZOnN0/edit?gid=1474055416#gid=1474055416
-notes: |
+notes: |-
   General Test Environment (PMPSm):
   - Runs when Sm is implemented and NUM_PMP_ENTRIES > 0. Boots to M-mode; every access on this sheet is made from M-mode.
   - Test files are split by UDB parameter: base, RV64 only (MXLEN = 64), PMP_NA4_SUPPORTED, PMP_NAPOT_SUPPORTED and PMP_TOR_SUPPORTED. The NA4 and TOR coverpoints are compiled out when the mode is not supported; the NAPOT ones are not.
@@ -12,6 +12,10 @@ notes: |
   - After every PMP CSR write the tests execute sfence.vma when S-mode is implemented.
   - Coverpoints compare addresses and pmpaddr values on their low bits (PMP_ADDR_LOWMASK), so bins match wherever .data lands.
   - Entries 0-14 are the entries below the background entry of a 16-entry PMP; with 64 entries, cp_pmp64_* covers entries 15-62.
+  - An aligned load, store or AMO of at most XLEN bits, and any aligned AMO, is a single memory operation, so it fails when the lowest-numbered entry matching any of its bytes (the deciding entry) does not match all of them, whatever L, R, W and X are. The same holds for a misaligned access inside a misaligned atomicity granule (Zama16b).
+  - Partial-match tests (cp_partial_*, cp_misaligned_mag16) give each case its own 16-byte slot and its own entries 0-13 below the background entry, so they need NUM_USABLE_PMP_ENTRIES >= 16. Coverage classifies each access with a PMP matcher (PMP_partial.svh): which entry decides, its A, L and XWR, and whether it matches the lower bytes, the upper bytes, or the lower bytes with the next entry matching the upper bytes ("both").
+  - cp_misaligned_partial needs MISALIGNED_LDST and runs without a background entry. The trap handler does not record mtval for its access faults (IMPRECISE_ACCESS_FAULT_XTVAL): mtval may hold the address of the access or of its faulting part.
+  - Not tested: a misaligned access outside a misaligned atomicity granule that straddles two permitted regions. The hart may split it into memory operations that are checked separately, so it has no single expected result; #1878 removed earlier tests of this kind. PMPZca covers 32-bit fetches across a region boundary.
 coverpoints:
   - heading: Permission bits, locked entry
   - name: cp_cfg_X
@@ -365,6 +369,14 @@ coverpoints:
       - pmp_cfg_rv64_layout
       - pmp_rwx_warl
       - pmp_csrs_warl_access
+  - name: cp_pmpcfg_odd_rv64
+    goal: Verify that the odd pmpcfg CSRs are illegal on RV64.
+    description: RV64 only. Write all ones to each of pmpcfg1, pmpcfg3, …, pmpcfg15 with csrw, then read it back with csrr.
+    expectation: Illegal-instruction exception (mcause = 2) on every access; the source register keeps its value.
+    bins: 8 CSRs × {csrw, csrr} = 16
+    rules:
+      - pmp_cfg_rv64_illegal
+      - pmp_cfg_rv64_layout
   - heading: 64 PMP entries
   - name: |-
       cp_pmp64_write
@@ -380,73 +392,49 @@ coverpoints:
       - pmp_cfg_rv64_layout
       - pmp_store_fault
       - pmp_cfg_permissions
-  - name: cp_pmpcfg_odd_rv64
-    goal: Verify that the odd pmpcfg CSRs are illegal on RV64.
-    description: RV64 only. csrr and csrw each of pmpcfg1, pmpcfg3, …, pmpcfg15 from M-mode.
-    expectation: Illegal-instruction exception (mcause = 2) on every access.
-    bins: 8 CSRs × 2 operations = 16
-    rules:
-      - pmp_cfg_rv64_illegal
-  - name: cp_na4_boundary
-    goal: Verify that an aligned doubleword that only half matches an NA4 entry fails.
-    description: "RV64, PMP_NA4_SUPPORTED only. Entry i: L=1, A=NA4, XWR=111 over the lower or the upper word of an aligned doubleword. ld and sd on the doubleword."
-    expectation: "Load or store/AMO access fault: the entry matches only some bytes of one memory operation."
-    bins: 2 halves × 2 accesses = 4
+  - heading: Partial matches
+  - name: cp_partial_match
+    goal: Verify that an aligned doubleword fails when the deciding entry matches only part of it.
+    description: RV64, G = 0. 4-byte NA4 entries (PMP_NA4_SUPPORTED) or TOR entries (PMP_TOR_SUPPORTED) below the background entry cover the lower half, the upper half, or both halves (two consecutive entries) of an aligned doubleword, with L={0,1} and XWR=111. ld and sd on the doubleword from M-mode.
+    expectation: Load or store/AMO access fault in every case, including L=0 from M-mode.
+    bins: 2 modes × 2 L × 3 placements × {ld, sd} = 24
     rules:
       - pmp_full_match_required
       - pmp_entry_priority
       - pmp_access_fault_exception
-  - name: cp_tor_boundary
-    goal: Verify that an aligned doubleword that only half matches a TOR entry fails.
-    description: "RV64, G = 0, PMP_TOR_SUPPORTED only. Entry i: L=1, A=TOR, XWR=111, a 4-byte region over the lower or upper word of an aligned doubleword (entry i-1: OFF, pmpaddr(i-1) = pmpaddr(i) - 4). ld and sd on the doubleword."
-    expectation: Load or store/AMO access fault. (The original plan also allowed success for a split access; an aligned doubleword is one memory operation.)
-    bins: 2 halves × 2 accesses = 4
-    rules:
-      - pmp_full_match_required
-      - pmp_entry_priority
-      - pmp_access_fault_exception
-  - name: cp_tor_doubleregionfail
-    goal: Verify that an aligned doubleword split across two TOR entries fails.
-    description: "RV64, G = 0, PMP_TOR_SUPPORTED only. Entries i and i+1: XWR=111, TOR, each covering one word of an aligned doubleword (entry i-1: OFF, pmpaddr at the doubleword). ld and sd on the doubleword."
-    expectation: "Load or store/AMO access fault: no single entry matches all bytes."
-    bins: 2 accesses
-    rules:
-      - pmp_full_match_required
-      - pmp_entry_priority
-      - pmp_access_fault_exception
-  - name: |-
-      cp_misaligned_napot
-      cp_misaligned_na4
-      cp_misaligned_tor
-    goal: Verify that a misaligned load or store that straddles a region boundary is checked byte by byte.
-    description: Standard NAPOT region, NA4 region (G = 0) or one-grain TOR region with L={0,1}, XWR=111. Misaligned lh, lhu, lw, sh, sw (+ lwu, ld, sd on RV64) at each offset straddling the start and the end of the region.
-    expectation: Address-misaligned exception, access fault, or success if the hart splits the access into operations that each match fully. Depends on MISALIGNED_LDST, MISALIGNED_LDST_EXCEPTION_PRIORITY and MISALIGNED_SPLIT_STRATEGY.
-    bins: ~(3 lw + 3 sw + 1 lh + 1 lhu + 1 sh) offsets × 2 ends × 2 L, per mode
-    rules:
+      - rvwmo_aligned_memop
       - pmp_misaligned_access_behavior
-      - pmp_full_match_required
-      - pmp_entry_priority
-      - pmp_access_fault_exception
-  - name: cp_misaligned_off
-    goal: Verify that a misaligned access across an OFF entry's region only sees the background entry.
-    description: Standard region with A=OFF, L={0,1}, XWR=111. The same misaligned accesses as cp_misaligned_napot.
-    expectation: Address-misaligned exception or success; never an access fault.
-    bins: ~(3 lw + 3 sw + 1 lh + 1 lhu + 1 sh) offsets × 2 ends × 2 L
+  - name: cp_partial_covered
+    goal: Verify that a lower-numbered entry covering the whole doubleword decides, not a later partial match.
+    description: RV64, G = 0, PMP_NA4_SUPPORTED and PMP_NAPOT_SUPPORTED. An 8-byte NAPOT entry with L=1, XWR=001 over an aligned doubleword, and a higher-numbered NA4 entry with XWR=111 over its lower half. ld and sd.
+    expectation: ld succeeds; sd raises a store/AMO access fault (W=0 in the NAPOT entry).
+    bins: "{ld, sd} = 2"
     rules:
-      - pmp_a_field_off
-      - pmp_misaligned_access_behavior
-  - name: |-
-      cp_misaligned_na4_wrap
-      cp_misaligned_tor_wrap
-    goal: Verify that a doubleword that starts before and ends after a 4-byte region fails.
-    description: RV64, G = 0. A 4-byte NA4 or TOR region with L={0,1}, XWR=111. ld and sd that start 2 bytes before the region and end 2 bytes after it.
-    expectation: Address-misaligned exception or access fault (the entry matches only the middle bytes). Depends on MISALIGNED_LDST and MISALIGNED_LDST_EXCEPTION_PRIORITY.
-    bins: 2 accesses × 2 L, per mode
+      - pmp_entry_priority
+      - pmp_full_match_required
+  - name: cp_misaligned_mag16
+    goal: Verify that a misaligned access inside a 16-byte granule fails when the deciding entry matches only part of it.
+    description: Zama16b, G <= 1, PMP_TOR_SUPPORTED. One-grain TOR entries below the background entry cover the lower part, the upper part, or both parts of a 16-byte granule, split at its middle, with L={0,1} and XWR=111. lh, lhu and sh 1 byte, lw, sw (and lwu) 2 bytes, and ld and sd 4 bytes below the middle, from M-mode. PMPF, PMPZca, PMPZaamo and PMPZacas have the same rows for their instructions.
+    expectation: "Load or store/AMO access fault: the access is a single memory operation."
+    bins: 3 placements × 2 L × 5 loads and stores (8 on RV64)
     rules:
       - pmp_full_match_required
       - pmp_misaligned_access_behavior
-      - pmp_entry_priority
+      - rvwmo_misaligned_in_atomic_pma
+      - pma_mag_op_within
+      - pma_mag_insts
+  - name: cp_misaligned_partial
+    goal: Verify that a misaligned access partly inside a locked region without permission faults, whether or not the hart splits it.
+    description: "MISALIGNED_LDST = true, PMP_TOR_SUPPORTED. No background entry. Entry 1: TOR over one grain, L=1, XWR=000; no other entry. lh, lhu and sh 1 byte, lw, sw (and lwu) 2 bytes, and ld and sd 6 bytes below the region start, and the same instructions 1, 2 and 2 bytes below its end, from M-mode. The rest of each access matches no entry."
+    expectation: "Load or store/AMO access fault. Only the trap is checked: part of a split store may become visible, and mtval may hold the address of the faulting part, so it is not recorded."
+    bins: 2 ends × 5 loads and stores (8 on RV64)
+    rules:
+      - pmp_misaligned_access_behavior
+      - pmp_full_match_required
+      - pmp_rwx_check
+  - heading: Not yet implemented in ACT4 (no coverpoint or test yet)
   - goal: "Open item from the original plan: add mstatus.MXR to cp_cfg_R and cp_cfg_W."
   - goal: "Open item from the original plan: add a check of the default (background) region."
   - goal: "Open item from the original plan: add a check of different region types in combination."
   - goal: "Open item from the original plan: a misaligned instruction or data access that spans a 4 KiB page boundary and translates to two physical pages, one outside the PMP region. Belongs in SvPMP."
+  - goal: "Open item: no ACT configuration has G = 1 (PMP_GRANULARITY = 3), so CI runs the G <= 1 rows (cp_misaligned_mag16, PMPZacas cp_partial_match_q) only at G = 0. Add a G = 1 configuration."

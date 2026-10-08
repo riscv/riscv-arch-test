@@ -1,0 +1,29 @@
+# Parameter mappings
+
+parameter_definitions:
+  - name: NUM_USABLE_PMP_ENTRIES
+    coverpoint: ["all coverpoints"]
+    effect:
+      [
+        "Entry NUM_USABLE_PMP_ENTRIES - 1 is the locked background entry",
+        "The suite runs only when NUM_USABLE_PMP_ENTRIES >= 16: each case has its own entries below the background entry",
+      ]
+  - name: PMP_GRANULARITY
+    coverpoint: ["all coverpoints"]
+    effect:
+      [
+        "cp_partial_match_d needs G = 0 (PMP_GRANULARITY = 2) for 4-byte regions",
+        "cp_partial_match_q and cp_misaligned_mag16 need G <= 1 (PMP_GRANULARITY <= 3) for 8-byte regions",
+      ]
+  - name: PMP_NA4_SUPPORTED
+    coverpoint: ["cp_partial_match_d"]
+    effect: ["NA4 bins and test exist only when true"]
+  - name: PMP_NAPOT_SUPPORTED
+    coverpoint: ["cp_partial_match_q"]
+    effect: ["NAPOT bins and test exist only when true"]
+  - name: PMP_TOR_SUPPORTED
+    coverpoint: ["cp_partial_match_d, cp_partial_match_q, cp_misaligned_mag16"]
+    effect: ["TOR bins and tests exist only when true"]
+  - name: MXLEN
+    coverpoint: ["cp_partial_match_q"]
+    effect: ["amocas.q exists only on RV64"]

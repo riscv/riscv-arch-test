@@ -19,7 +19,6 @@ RVA23_TEST_SUITES = frozenset(
         "Zicsr",
         "Zifencei",
         "Zihintntl",
-        "ZihintntlZca",
         "Zihintpause",
         "Zihpm",
         "Zimop",
@@ -29,7 +28,6 @@ RVA23_TEST_SUITES = frozenset(
         "Zaamo",
         "Zabha",
         "Zacas",
-        "ZacasZabha",
         "Zalrsc",
         # Zf extensions
         "ZfaD",
@@ -43,9 +41,6 @@ RVA23_TEST_SUITES = frozenset(
         # Zc extensions
         "Zca",
         "Zcb",
-        "ZcbM",
-        "ZcbZba",
-        "ZcbZbb",
         "Zcd",
         "Zcmop",
         # Zb extensions

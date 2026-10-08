@@ -47,9 +47,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zalrsc|Load Reserved / Store Cond|<<t-Zalrsc-coverpoints>>|o||x|x|x
 |Zca|Compressed|<<t-Zca-coverpoints>>|o|x|x|x|x
 |Zcb|Extra Compressed|<<t-Zcb-coverpoints>>||||x|x
-|ZcbM|Compressed Multiply|<<t-ZcbM-coverpoints>>||||x|x
-|ZcbZba|Compressed Zero Extend|<<t-ZcbZba-coverpoints>>||||x|x
-|ZcbZbb|Compressed Sign Extend|<<t-ZcbZbb-coverpoints>>||||x|x
 |Zcf|Compressed Float|<<t-Zcf-coverpoints>>|o||||
 |Zcd|Compressed Double|<<t-Zcd-coverpoints>>|o||x|x|x
 |F|Float|<<t-F-coverpoints>>|o||x|x|x
@@ -83,7 +80,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zicclsm|Misaligned Loads / Stores|<<t-Zicclsm-normative-rules>>|o|o|x|x|x
 |Zihintpause|Pause Hint|<<t-Zihintpause-coverpoints>>|||x|x|x
 |Zihintntl|Nontemporal Locality Hint|<<t-Zihintntl-coverpoints>>||||x|x
-|ZihintntlZca|Compressed Nontemporal Locality Hint|<<t-ZihintntlZca-coverpoints>>||||x|x
 |Zicbom|Cache Block Flush/Inval|<<t-Zicbom-coverpoints>>|||x|x|x
 |Zicboz|Cache Block Zero|<<t-Zicboz-coverpoints>>|||x|x|x
 |Zicbop|Cache Block Prefetch|<<t-Zicbop-coverpoints>>|||x|x|x
@@ -224,7 +220,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |SsnpmH|Hypervisor Pointer Masking|<<t-SsnpmH-coverpoints>>|||||
 |Zacas|Atomic Compare-And-Swap|<<t-Zacas-coverpoints>>||||o|o
 |Zabha|Subword Atomics|<<t-Zabha-coverpoints>>||||o|o
-|ZacasZabha|Subword CAS|<<t-ZacasZabha-coverpoints>>||||o|o
 |Zama16b|Main memory PMA supports misaligned atomics within 16-byte regions|<<t-Zama16b-coverpoints>>|||||x
 |ZicfilpU|User Landing Pads|<<t-ZicfilpU-coverpoints>>||||o|o
 |ZicfilpSm|Machine Landing Pads|<<t-ZicfilpSm-coverpoints>>||||o|o

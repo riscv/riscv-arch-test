@@ -353,9 +353,6 @@
 `ifdef ZACAS_COVERAGE
   `include "Zacas_coverage.svh"
 `endif
-`ifdef ZACASZABHA_COVERAGE
-  `include "ZacasZabha_coverage.svh"
-`endif
 `ifdef ZALRSC_COVERAGE
   `include "Zalrsc_coverage.svh"
 `endif
@@ -397,15 +394,6 @@
 `endif
 `ifdef ZCB_COVERAGE
   `include "Zcb_coverage.svh"
-`endif
-`ifdef ZCBM_COVERAGE
-  `include "ZcbM_coverage.svh"
-`endif
-`ifdef ZCBZBA_COVERAGE
-  `include "ZcbZba_coverage.svh"
-`endif
-`ifdef ZCBZBB_COVERAGE
-  `include "ZcbZbb_coverage.svh"
 `endif
 `ifdef ZCD_COVERAGE
   `include "Zcd_coverage.svh"
@@ -493,9 +481,6 @@
 `endif
 `ifdef ZIHINTNTL_COVERAGE
   `include "Zihintntl_coverage.svh"
-`endif
-`ifdef ZIHINTNTLZCA_COVERAGE
-  `include "ZihintntlZca_coverage.svh"
 `endif
 `ifdef ZIHINTPAUSE_COVERAGE
   `include "Zihintpause_coverage.svh"

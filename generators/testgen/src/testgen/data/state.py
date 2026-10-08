@@ -208,7 +208,7 @@ class TestData:
         self.increment_test_count()
 
         if covergroup is None:
-            covergroup = f"{self.testsuite}_{self.instr_name}_cg"
+            covergroup = f"{self._config.name_prefix}_{self.instr_name}_cg"
 
         # Construct full coverpoint name
         full_name = f"{covergroup}_{coverpoint}_{bin_name}"
@@ -252,13 +252,11 @@ class TestData:
         )
 
         if random_elements is not None:
-            elements = []
-            for _ in range(random_elements):
-                elements.append(random_int(sew))
-
-        assert elements is not None, "Unreachable Case: Bytes is guaranteed to be set at this point"
-        for element in elements:
-            assert element.bit_length() <= sew, f"Element {element:x} is wider than SEW {sew} for label {label}"
+            elements = [random_int(sew) for _ in range(random_elements)]
+        else:
+            assert elements is not None, "Unreachable Case: elements is guaranteed to be set at this point"
+            for element in elements:
+                assert element.bit_length() <= sew, f"Element {element:x} is wider than SEW {sew} for label {label}"
 
         if label in self._vector_labels and self._vector_labels[label] != (elements, sew):
             raise ValueError(

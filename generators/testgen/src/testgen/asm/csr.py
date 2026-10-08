@@ -9,7 +9,7 @@
 """CSR test utilities for privileged test generation."""
 
 from testgen.asm.helpers import write_sigupd
-from testgen.asm.tsbi import tsbi_call
+from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 
@@ -457,17 +457,14 @@ def write_stce(test_data: TestData, enable: bool, priv: str) -> list[str]:
     op = "csrs" if enable else "csrc"
     reg = test_data.int_regs.get_register()
 
-    def m_csr(instr: str) -> str:
-        return instr if priv == "M" else tsbi_call(instr)
-
     lines = [
         f"# {'Enable' if enable else 'Disable'} menvcfg.STCE{'' if priv == 'M' else ' via T-SBI'}",
         "#if __riscv_xlen == 64",
         f"LI(x{reg}, MENVCFG_STCE)",
-        m_csr(f"{op} menvcfg, x{reg}"),
+        tsbi_call_or_direct(f"{op} menvcfg, x{reg}", priv),
         "#else",
         f"LI(x{reg}, MENVCFGH_STCE)",
-        m_csr(f"{op} menvcfgh, x{reg}"),
+        tsbi_call_or_direct(f"{op} menvcfgh, x{reg}", priv),
         "#endif",
     ]
     test_data.int_regs.return_register(reg)

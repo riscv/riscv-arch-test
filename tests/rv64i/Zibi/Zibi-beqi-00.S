@@ -19,7 +19,7 @@
 #define SIGUPD_COUNT 232
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
-
+#define RVTEST_EXPERIMENTAL
 
 // Include framework macros
 #include "riscv_arch_test.h"

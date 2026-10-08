@@ -305,7 +305,7 @@ covergroup SmV_cg with function sample(ins_t ins);
 
     vl_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
         //Any value between max and 1
-        bins target = {[64'h10000:64'h1]};
+        bins target = {[64'h1:64'h10000]};
     }
 
     cp_vtype_vill_set_vl_0 : cross vsetvl_instruction, rs1_non_zero, rs2_vill_set, vl_nonzero;
@@ -326,7 +326,7 @@ covergroup SmV_cg with function sample(ins_t ins);
     }
 
     rd_n0 : coverpoint ins.current.insn[11:7] {
-        bins not_zero = {[31:1]};
+        bins not_zero = {[1:31]};
     }
 
     rs1_x0 : coverpoint ins.current.insn[19:15] {

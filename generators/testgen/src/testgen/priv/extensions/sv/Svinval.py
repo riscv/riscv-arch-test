@@ -49,5 +49,5 @@ def make_svinval(test_data: TestData) -> list[TestChunk]:
             "RVTEST_TSBI_GOTO_SMODE",
         ]
     )
-    chunk.trap_sigupd_count = 30
+    chunk.trap_sigupd_count = 8
     return [test_data.end_test_chunk()]

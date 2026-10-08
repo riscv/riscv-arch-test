@@ -11,8 +11,8 @@ from dataclasses import dataclass, field
 
 
 def trap_sigupd_count(expected_traps: int = 0) -> int:
-    """Return the trap-signature allocation for the expected trap count."""
-    return ((10 + expected_traps * 6 + 4) // 5) * 5
+    """Return the TRAP_SIGUPD_COUNT allocation for the expected trap count, with two extra for safety."""
+    return expected_traps + 2
 
 
 @dataclass
@@ -32,7 +32,7 @@ class TestChunk:
         data_strings: Debug strings for the test data section
         vector_labels: Values for vector registers given in (label, data, sew) triples
         sigupd_count: Number of signature updates
-        trap_sigupd_count: Trap-handler signature allocation for this chunk's file
+        trap_sigupd_count: Number of traps this chunk adds to its file's TRAP_SIGUPD_COUNT
         num_testcases: Number of individual testcases (for split counting)
         split_name: Optional named-split marker. A non-None value starts a new
                     named file group (unless the current group already has the

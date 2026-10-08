@@ -27,7 +27,7 @@ def get_vector_scalar_check_extensions(testplan_dir: Path) -> list[str]:
     return [
         extension + VECTOR_SCALAR_CHECK_SUFFIX
         for extension in get_extensions(testplan_dir)
-        if extension.startswith(("Vx", "Vls"))
+        if extension.startswith(("Vx", "Vls", "Vf"))
     ]
 
 

@@ -57,6 +57,7 @@
 #define VSC_F_VCOMPRESS 4
 #define VSC_F_BASE      8
 #define VSC_F_MASKPROD  16
+#define VSC_F_AGNOSTIC  32  // check tail and inactive elements as agnostic regardless of vtype
 
 // Data block layout, relative to rvtest_vsc_ctx
 #define VSC_CTX_BYTES 256
@@ -127,9 +128,11 @@
 
 // Length suite check: compares the whole register group of _VR at EEW=_VD_EEW and
 // LMUL=_LMUL (or the whole mask register when _MASKPROD_FLAG is set).
+// _FORCE_TA_MA_FLAG checks the instruction as tail and mask agnostic whatever vta and vma are.
 // _VTMP, _MTMP3, _MTMP2, and _MTMP are unused. Restores vl and vtype at the end.
 #define RVTEST_SIGUPD_V_LEN(_SIG_PTR, _LINK_REG, _TEMP_REG, _TEMP_REG2, _TEMP_REG3, _VTMP, _MTMP3, _MTMP2, _MTMP, _VR, \
-    _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _INST_PTR, _STR_PTR) \
+    _VS1, _MASK_REG, _MASKPROD_FLAG, _MASKED_FLAG, _VCOMPRESS_FLAG, _VD_EEW, _LMUL, _SCALAR_DST_FLAG, _FORCE_TA_MA_FLAG, \
+    _INST_PTR, _STR_PTR) \
     .option push                                                                         ;\
     .option norvc                                                                        ;\
     LA(_TEMP_REG3, rvtest_vsc_ctx)                                                       ;\
@@ -169,7 +172,7 @@
         SREG _LINK_REG, VSC_EEWLOG(_TEMP_REG3)                                           ;\
     .endif                                                                               ;\
     LI(_LINK_REG, ((_MASKED_FLAG * VSC_F_MASKED) | (_MASKPROD_FLAG * (VSC_F_BITMODE | VSC_F_MASKPROD)) | \
-        (_VCOMPRESS_FLAG * VSC_F_VCOMPRESS)))                                            ;\
+        (_VCOMPRESS_FLAG * VSC_F_VCOMPRESS) | (_FORCE_TA_MA_FLAG * VSC_F_AGNOSTIC)))     ;\
     SREG _LINK_REG, VSC_FLAGS(_TEMP_REG3)                                                ;\
     RVTEST_SIGUPD_V_ADVANCE(_SIG_PTR, _LINK_REG, _TEMP_REG)                              ;\
     SREG _SIG_PTR, VSC_EXP2(_TEMP_REG3)                                                  ;\
@@ -484,6 +487,9 @@ rvtest_vsc_not_base_\L\()_\T:
     beq x1, x2, rvtest_vsc_next_\L\()_\T
     j rvtest_vsc_fail_\L\()_\T
 rvtest_vsc_tail_data_\L\()_\T:
+    LREG x2, VSC_FLAGS(\T)
+    andi x2, x2, VSC_F_AGNOSTIC
+    bnez x2, rvtest_vsc_agnostic_\L\()_\T
     LREG x2, VSC_VTYPE(\T)
     srli x2, x2, 6
     andi x2, x2, 1
@@ -495,6 +501,9 @@ rvtest_vsc_body_\L\()_\T:
     VSC_LOAD_BIT(x2, x6, x3, x1)
     bnez x2, rvtest_vsc_active_\L\()_\T
     li x12, 2
+    LREG x2, VSC_FLAGS(\T)
+    andi x2, x2, VSC_F_AGNOSTIC
+    bnez x2, rvtest_vsc_agnostic_\L\()_\T
     LREG x2, VSC_VTYPE(\T)
     srli x2, x2, 7
     andi x2, x2, 1

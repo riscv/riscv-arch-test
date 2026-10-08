@@ -8,7 +8,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-import testgen.asm.vector_helpers as vector_helpers
+from testgen.asm import vector_helpers
 from testgen.data.state import TestData
 
 

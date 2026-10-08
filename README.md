@@ -368,7 +368,6 @@ make VECTOR_CHECK=scalar
 Outside the instruction under test, the scalar self-checking tests only use `vsetvli`, `vsetivli`, `vsetvl`, and unmasked unit-stride `vle<eew>.v` and `vse<eew>.v` with EEW equal to SEW. Each result is stored to memory and checked element by element with scalar code, including the tail and mask-inactive elements and the tail-agnostic and mask-agnostic all-ones cases. Test setup that would need other vector instructions is also done with scalar code. The instructions under test, the testcases, the coverage, and the signature layout are the same as in the standard tests. A failure reports the register, element index and region (active, tail, or mask-inactive), and the expected and actual values.
 
 - `VECTOR_CHECK=scalar` replaces the `Vx`, `Vls`, and `Vf` suites with their `-scalarcheck` variants, such as `Vx32-scalarcheck`. `EXTENSIONS=Vx32` selects `Vx32-scalarcheck` in this mode. Other suites are unaffected.
-- The `Vf` tests come from the standalone vector generator. Generate them with `make vector-tests VECTOR_CHECK=scalar`.
 - A variant can also be selected by name in either mode, for example `EXTENSIONS=Vx32-scalarcheck`.
 - The checks run in scalar loops, so the tests execute about three times as many instructions as the standard tests. Coverage collection takes longer for the same reason.
 - The scalar self-checking tests use SEW=8 to copy mask and byte data, so the DUT must support SEW=8.

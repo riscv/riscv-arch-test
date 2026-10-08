@@ -18,12 +18,6 @@ import sys
 import textwrap
 from random import getrandbits, randint, shuffle
 
-# covergroupgen loads this file by path, so make its sibling modules importable
-_SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
-if _SCRIPTS_DIR not in sys.path:
-  sys.path.append(_SCRIPTS_DIR)
-import vector_scalar_check as vsc  # noqa: E402
-
 # change these to suite your tests
 ARCH_VERIF = os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), "..", "..", ".."))
 
@@ -348,10 +342,6 @@ def setFlen(new_flen):
 def setExtension(new_extension):
     global extension
     extension = new_extension
-
-def writeLines(lines):
-    for line, comment in lines:
-        writeLine(line, comment)
 
 # SEW selected for the current priv vector-FP test file (e.g. ExceptionsVf16
 # sets this to 16). None for non-FP priv suites; the FP SEW picker falls back
@@ -1781,7 +1771,6 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
         .replace("@EXTRA_DEFINES@", (f"#define RVTEST_VECTOR\n"
                                      f"#define RVTEST_SEW {sew}\n"
                                      f"#define VDSEW {vdsew}\n"
-                                     + ("#define RVTEST_VEC_SCALAR_CHECK\n" if vsc.enabled else "")
                                      + (f"\n{getPrivExtraDefines(sew)}" if priv else "")
                                      + ("\n#define TRAP_SIGUPD_COUNT 12500" if test.startswith("SsstrictV") else "")))
 
@@ -2276,26 +2265,13 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
     nf_prefill = register_data['segments'] if is_segment_field_prefill else 1
     emul_field = max(register_emul_field, 1)
 
-    mixed_width_load = vsc.mixed_width_load_applies(load_unique_vtype, register_value, nf_prefill, register_sew, sew,
-                                                    register_val_pointer)
-    if mixed_width_load:
-      savedVtypeReg = pickScalarScratch(scalar_registers_used)
-      scalar_registers_used.append(savedVtypeReg)
-      newVtypeReg = pickScalarScratch(scalar_registers_used)
-      scalar_registers_used.append(newVtypeReg)
-      fieldReg = pickScalarScratch(scalar_registers_used)
-      scalar_registers_used.append(fieldReg)
-      writeLines(vsc.mixed_width_vtype_lines(register_sew, sew, savedVtypeReg, newVtypeReg, fieldReg))
-
     if register_value is not None:
-      assert not vsc.enabled, "vmv.v.x register preload is not supported in scalar self-checking tests"
       writeLine(f"li x{tempReg}, {register_value}", "# Load immediate value into integer register")
       for i in range(nf_prefill):
         writeLine(f"vmv.v.x v{register + i*emul_field}, x{tempReg}", f"# Load desired value into v{register + i*emul_field}")
     else:
       writeLine(f"la x{tempReg}, {register_val_pointer}",  "# Load address of desired value")
       if register_val_pointer == "vs_corner_zero_emul8" and instruction not in crypto_ins:
-        assert not vsc.enabled, "vl1re register preload is not supported in scalar self-checking tests"
         writeLine(f"vl1re{getInstructionEEW(instruction)}.v v{register}, (x{tempReg})",               "# zero register")
       elif nf_prefill > 1:
         strideReg = pickScalarScratch(scalar_registers_used)
@@ -2310,14 +2286,10 @@ def loadVecReg(instruction, register_argument_name: str, vector_register_data, s
       else:
         writeLine(f"vle{register_sew}.v v{register}, (x{tempReg})", f"# Load desired value from memory into v{register}")
 
-    if mixed_width_load:
-      writeLines(vsc.restore_vtype_lines(savedVtypeReg))
-
     if load_unique_vtype: # return vl and vtype register to what it was before
       writeLine(f"vsetvl x0, x{avlReg}, x{vtypeReg}", "# restore vl and vtype setting")
 
     if register_argument_name == 'vs2' and instruction in vector_ls_ins: # make sure elements in vs2 are within VLMAX and sew aligned
-      assert not vsc.enabled, "vremu/vand index sanitizing is not supported in scalar self-checking tests"
       vtypeReg = pickScalarScratch(scalar_registers_used)
       scalar_registers_used.append(vtypeReg)
 
@@ -2696,16 +2668,12 @@ def encodeIndexedLSAsInsn(instruction, instruction_data, masked=False):
   mnemonic_args = f"v{dst}, (x{rs1}), v{vs2}" + (", v0.t" if masked else "")
   return f".insn 0x{enc:08x}    # {instruction} {mnemonic_args}"
 
-def prepMaskV(maskval, sew, tempReg, lmul, used=()):
+def prepMaskV(maskval, sew, tempReg, lmul):
   lmulflag = getLmulFlag(lmul)
   # vid.v requires an lmul-aligned register. v1 is fine for lmul<=1, but
   # for lmul>=2 we pick the first aligned register after v0. Overlap with
   # test operand registers is OK since this is just mask setup scaffolding.
   mask_vreg = int(lmul) if lmul >= 2 else 1
-
-  if vsc.enabled:
-    writeLines(vsc.mask_lines(maskval, sew, lmulflag, tempReg, used, pickScalarScratch))
-    return
 
   if (maskval == "zeroes"):
     writeLine(f"vsetvli x{tempReg}, x0, e{sew}, m{lmulflag}, ta, ma",  f"# x{tempReg} = VLMAX")
@@ -2926,7 +2894,7 @@ def writeTest(description, instruction, cp, instruction_data=None,
     # If mask value specified, load to v0 (must be before prepBaseV for types that
     # do their own vsetvli, so prepBaseV restores the correct vl/vtype afterward)
     if maskval is not None and maskval != "zeroes":
-      prepMaskV(maskval, sew, tempReg, lmul, scalar_registers_used)
+      prepMaskV(maskval, sew, tempReg, lmul)
 
     # --- special handling: preload vd at VLMAX for length-suite tests ---
     vd_preloaded = False
@@ -3023,11 +2991,10 @@ def writeTest(description, instruction, cp, instruction_data=None,
 
     # These bare vmv.v.i cases must be after prepBaseV which sets vsetvli (otherwise
     # vtype is invalid after reset and the vector instruction hangs in sail)
-    if maskval == "zeroes" or (maskval is None and any(instruction in instype for instype in [vvivtype, vvvvtype, vvxvtype, vvfvtype])):
-      if vsc.enabled:
-        writeLines(vsc.zero_v0_lines(sew, pickScalarScratch(scalar_registers_used)))
-      else:
-        writeLine("vmv.v.i v0, 0", "# set v0 register to 0 in base suit where vm is fixed to 0")
+    if maskval == "zeroes":
+      writeLine("vmv.v.i v0, 0", "# set v0 register to 0 in base suit where vm is fixed to 0")
+    elif maskval is None and any(instruction in instype for instype in [vvivtype, vvvvtype, vvxvtype, vvfvtype]):
+      writeLine("vmv.v.i v0, 0", "# set v0 register to 0 in base suit where vm is fixed to 0")
 
     if frm is not None:
       scalar_registers_used = loadFrmRoundingMode(frm, *scalar_registers_used)
@@ -3137,12 +3104,9 @@ def writeTest(description, instruction, cp, instruction_data=None,
           f"csrr x{mi_t2}, vtype",
           f"vsetvli x{mi_t3}, x0, e8, m{reload_zero_lmul}, tu, mu",
         ]
-        segment_lmul = reload_zero_lmul if instruction not in whole_register_ls else 1
-        segment_regs = [load_vd + segment*segment_lmul for segment in range(getInstructionSegments(instruction))]
-        if vsc.enabled:
-          reload_pre_init.extend(vsc.zero_regs_lines(segment_regs, mi_t3))
-        else:
-          reload_pre_init.extend(f"vmv.v.i v{reg}, 0" for reg in segment_regs)
+        for segment in range(getInstructionSegments(instruction)):
+          segment_lmul = reload_zero_lmul if instruction not in whole_register_ls else 1
+          reload_pre_init.append(f"vmv.v.i v{load_vd + segment*segment_lmul}, 0")
         reload_pre_init.append(f"vsetvli x0, x{mi_t1}, e{sew}, m{default_lmul_flag}, tu, mu")
         reset_vl_post_load = f"vsetvl x0, x{mi_t1}, x{mi_t2}"
 
@@ -3258,12 +3222,9 @@ def prepBaseV(sew, lmul, vl=1, vstart=0, ta=0, ma=0, force_vill=False, vector_re
   else:
     # reset all source and destination registers to 13 (0xD)
     writeLine(f"vsetvli x{tempReg2}, x0, e{sew}, m1, tu, mu",    f"# Set vl = VLMAX, where x{tempReg2} = VLMAX")
-    if vsc.enabled:
-      writeLines(vsc.fill_0xd_lines([vreg for vreg in vector_registers_used if vreg is not None], sew, tempReg2))
-    else:
-      for vreg in vector_registers_used:
-        if vreg is not None:
-          writeLine(f"vmv.v.i v{vreg}, 13",                     f"# Initialize v{vreg} to 0xD for deterministic undisturbed/tail elements in base suite")
+    for vreg in vector_registers_used:
+      if vreg is not None:
+        writeLine(f"vmv.v.i v{vreg}, 13",                       f"# Initialize v{vreg} to 0xD for deterministic undisturbed/tail elements in base suite")
     writeLine(f"li x{tempReg2}, {vl}",                                            "# Load desired vl value") # put desired vl into an integer register
     writeLine(f"vsetvli x0, x{tempReg2}, e{sew}, m{lmulflag}{taflag}{maflag}")
 

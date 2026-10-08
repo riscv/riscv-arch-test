@@ -437,9 +437,6 @@
 `ifdef ZFH_COVERAGE
   `include "Zfh_coverage.svh"
 `endif
-`ifdef ZFHD_COVERAGE
-  `include "ZfhD_coverage.svh"
-`endif
 `ifdef ZFHMIN_COVERAGE
   `include "Zfhmin_coverage.svh"
 `endif

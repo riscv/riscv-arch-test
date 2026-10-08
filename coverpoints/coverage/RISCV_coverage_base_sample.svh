@@ -436,9 +436,6 @@
     `ifdef COVER_ZFH
         zfh_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZFHD
-        zfhd_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_ZFHMIN
         zfhmin_sample(hart, issue, ins);
     `endif

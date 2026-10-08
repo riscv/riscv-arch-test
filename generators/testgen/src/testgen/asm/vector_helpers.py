@@ -170,12 +170,14 @@ def write_sigupd_v_len(
     maskprod_flag = 1 if mask_producing else 0
     vcompress_flag = 1 if vcompress else 0
     scalar_dst_flag = 1 if scalar_dest else 0
+    force_ta_ma_flag = 1 if params.vd_different_eew_overlap else 0
 
     lines = [
         f"# Check if v{params.vd} contains the expected result. x{sig_reg} is the signature ptr, x{link_reg} is the link ptr, x{temp_reg}, x{temp_reg2}, and x{temp_reg3} are a temp regs.",
         f"# v{vtmp} will hold the signature result, v{mtmp3}, v{mtmp2}, and v{mtmp} are temporary mask registers holding the masks to aid error detection. v{vs1} was VS1 in the instruction",
         f"# under test and is used to compute the evl for vcompress, v{mask_reg} is the register holding the mask for the instruction under test. In order the flags are: mask_producing,",
-        f"# masked and vcompress. VDSEW={vdsew}, signature lmul = {max(1, lmul)}, and finally a flag for if the destinitation register is used as a scalar vector register.",
+        f"# masked and vcompress. VDSEW={vdsew}, signature lmul = {max(1, lmul)}, a flag for if the destination register is used as a scalar vector register, and a flag to force the",
+        "# instruction to be tail and mask agnostic.",
     ]
 
     if segments != 1:
@@ -186,7 +188,7 @@ def write_sigupd_v_len(
     for i in range(segments):
         register_to_check = check_reg + i * int(max(lmul, 1))
         lines.append(
-            f"RVTEST_SIGUPD_V_LEN(x{sig_reg}, x{link_reg}, x{temp_reg}, x{temp_reg2}, x{temp_reg3}, v{vtmp}, v{mtmp3}, v{mtmp2}, v{mtmp}, v{register_to_check}, v{vs1}, v{mask_reg}, {maskprod_flag}, {masked_flag}, {vcompress_flag}, {vdsew}, {int(max(lmul, 1))}, {scalar_dst_flag}, {label}, {label}_str)",
+            f"RVTEST_SIGUPD_V_LEN(x{sig_reg}, x{link_reg}, x{temp_reg}, x{temp_reg2}, x{temp_reg3}, v{vtmp}, v{mtmp3}, v{mtmp2}, v{mtmp}, v{register_to_check}, v{vs1}, v{mask_reg}, {maskprod_flag}, {masked_flag}, {vcompress_flag}, {vdsew}, {int(max(lmul, 1))}, {scalar_dst_flag}, {force_ta_ma_flag}, {label}, {label}_str)",
         )
 
     test_data.int_regs.return_registers([temp_reg2, temp_reg3])

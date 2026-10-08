@@ -195,5 +195,6 @@ function void misalign_sample(int hart, int issue, ins_t ins);
             Misalign_sd_cg.sample(ins);
         end
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

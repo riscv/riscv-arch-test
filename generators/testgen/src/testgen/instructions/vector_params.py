@@ -10,9 +10,9 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-import dataclasses
 import math
 import random
+from copy import copy
 from typing import Any, Literal
 
 from testgen.constants import VLEN_MAX
@@ -39,6 +39,20 @@ def get_register_emul(
         return info.whole_registers
 
     return max(lmul * info.get_size_multiplier(register_name, sew, vector_type_config.widened_regs), 1)
+
+
+def get_register_eew(
+    register_name: str, sew: int, vector_type_config: VectorTypeConfig, info: VectorInstructionInfo
+) -> int:
+    """
+    Helper function to calculate the EEW of a specific register, given its name, the sew, and the type
+    and instruction info
+    """
+
+    if register_name in vector_type_config.mask_regs:
+        return 1
+
+    return int(sew * info.get_size_multiplier(register_name, sew, vector_type_config.widened_regs))
 
 
 def randomize_register(
@@ -94,7 +108,7 @@ def randomize_register(
         alignment = max(emul, int(lmul)) if int(lmul) >= 1 else emul
 
         # We can't take the registers from the register file yet because we want to randomly generate valid overlaps
-        return random.choice(list(test_data.vec_regs.free_registers(alignment, segments)))
+        return random.choice(test_data.vec_regs.free_registers(alignment, segments))
 
     if preset is not None:
         return preset  # No need to validate r and f registers
@@ -124,7 +138,7 @@ def randomize_registers(
         info: InstructionInfo object that will aid emul calculation when picking a random registers
         lmul: lmul value for the test. Passed to ensure proper alignment of all registers
     """
-    new_params = dataclasses.replace(preset_params)  # Copies preset_params
+    new_params = copy(preset_params)
 
     if instr_type_config.required_params is None:
         return new_params
@@ -333,7 +347,7 @@ def has_invalid_overlap(
     """
 
     register_overlap = False
-    params_dict = dataclasses.asdict(params)
+    params_dict = vars(params)
     for no_overlap_set in no_overlap:
         register_type = no_overlap_set[0][0]  # grab either "v" "r" or "f" to get the register type
         registers_occupied = []
@@ -422,12 +436,12 @@ def generate_random_vector_params(
     invalid_overlap = True
     randomization_count = 0
     params = InstructionParams()
-    preset_params_dict = dataclasses.asdict(preset_params)
-    params_dict = dataclasses.asdict(params)
+    preset_params_dict = vars(preset_params)
+    params_dict = vars(params)
 
     while invalid_overlap:
         params = randomize_registers(preset_params, test_data, instr_type_config, info, lmul)
-        params_dict = dataclasses.asdict(params)
+        params_dict = vars(params)
 
         invalid_overlap = has_invalid_overlap(
             params, info, no_overlap, lmul, sew, scalar_vector_regs, mask_vector_regs, widened_regs
@@ -454,6 +468,19 @@ def generate_random_vector_params(
                 f'No Overlap constraint "{no_overlap}" cannot be met for instruction "{instruction}" with sew "{sew}" and lmul "{lmul}" after {max_randomization_count} attempts'
             )
         randomization_count = randomization_count + 1
+
+    # "When source and destination registers overlap and have different EEW, the instruction is mask- and tail-agnostic,
+    #  regardless of the setting of the vta and vma bits in vtype."
+    if instr_type_config.required_params is not None and "vd" in instr_type_config.required_params:
+        vd_eew = get_register_eew("vd", sew, instr_type_config.vector_data, info)
+        source_dest_different_eew = {
+            ("vd", reg)
+            for reg in ["vs1", "vs2"]
+            if vd_eew != get_register_eew(reg, sew, instr_type_config.vector_data, info)
+        }
+        params.vd_different_eew_overlap = has_invalid_overlap(
+            params, info, source_dest_different_eew, lmul, sew, scalar_vector_regs, mask_vector_regs, widened_regs
+        )
 
     ####################################################################################
     # Randomize the instruction data & take vector registers from the register file

@@ -11,7 +11,7 @@
 from random import seed
 
 from testgen.asm.helpers import comment_banner, reproducible_hash, write_sigupd
-from testgen.asm.tsbi import tsbi_call
+from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.random import random_int
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -130,10 +130,7 @@ def _add_tc(test_data: TestData, binname: str, coverpoint: str, covergroup: str)
 
 def _csr_access(instr: str, mode: str) -> str:
     """Accesses a CSR using an T-SBI or CSR operation based on mode"""
-    if mode == "Sm":
-        return instr
-    else:
-        return tsbi_call(instr)
+    return tsbi_call_or_direct(instr, MODE_UDB_LETTER[mode])
 
 
 def _load_tdata1(reg: int, trig_type: int, mode: str, lowfields: int = 0) -> list[str]:

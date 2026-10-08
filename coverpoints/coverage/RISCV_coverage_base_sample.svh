@@ -70,9 +70,6 @@
     `ifdef COVER_EXCEPTIONSU
         exceptionsu_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_EXCEPTIONSVF
-        exceptionsvf_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_EXCEPTIONSVF16
         exceptionsvf16_sample(hart, issue, ins);
     `endif
@@ -444,9 +441,6 @@
     `endif
     `ifdef COVER_ZFHMIN
         zfhmin_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZFHMIND
-        zfhmind_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZIC64BZICBOZ
         zic64bzicboz_sample(hart, issue, ins);

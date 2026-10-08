@@ -1,0 +1,12 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for the YosysHQ PicoRV32 core
+
+ci_enabled: true
+
+# I: FENCE with rd != x0 writes rd (I-fence-00): https://github.com/YosysHQ/picorv32/blob/ef203c2/picorv32.v#L1821-L1825
+exclude_extensions: "I"
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache"
+install_script: ".github/scripts/install-picorv32.sh"
+setup_script: ".github/scripts/setup-picorv32.sh"

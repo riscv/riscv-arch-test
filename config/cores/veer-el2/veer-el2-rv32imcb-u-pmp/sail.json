@@ -1,0 +1,910 @@
+// Copyright (c) 2026, Harvey Mudd College
+// SPDX-License-Identifier: Apache-2.0
+{
+  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.15/sail_riscv_config_schema.json",
+  "base": {
+    "xlen": 32,
+    "E": false,
+    // Whether a `mhpmcounter` increments if the event it is counting
+    // was generated during a write to its corresponding `mhpmevent`
+    // CSR (which could change the monitored event).
+    // The counters increment from mhpmc_inc_r, decoded from the mhpmevent value held
+    // while the writing instruction is in the r stage; the new event takes effect only
+    // after the write.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L2603-L2605
+    "hpmcounter_increments_in_self_hpmevent_write": false,
+    // The precision of the HPM counter, upto 64 bits.
+    // mhpmcounter3..6 are 64-bit counters: {mhpmcNh, mhpmcN} increment together.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L2746-L2753
+    "hpmcounter_width_bits": 64,
+    // The width of the `mhpmevent` CSRs, upto 64 bits, if Sscofpmf is
+    // not supported.  On RV32 without Sscofpmf, this can be upto 32,
+    // since the `mhpmeventh` CSRs are not accessible.
+    // If Sscofpmf is supported, the `mhpmevent` CSRs are always 64
+    // bits; this value then defines the number, upto 56, of the lowest
+    // bits of the CSRs that are used as the event selector.
+    // VeeR EL2 stores bits 9:0 of mhpmevent3..6. A write of an unsupported event, or with any
+    // of bits 31:10 set, stores 0 instead, which Sail does not model.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L2807-L2829
+    "hpmevent_width_bits": 10,
+    "mcountinhibit": {
+      // Whether the `mcountinhibit` CSR is implemented.
+      "supported": true,
+      // This bits in this value control whether the corresponding
+      // bits of the CSR are writable.  Note that bit 1 cannot be written
+      // to as it is read-only zero.
+      // VeeR EL2 implements CY (0), IR (2) and HPM3..HPM6 (6:3); bits 31:7 read zero.
+      //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L2871-L2872
+      "writable_bits": { "len": 32, "value": "0x0000_007D" }
+    },
+    // menvcfg reads as zero.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L3002
+    "writable_fiom": false,
+    // VeeR EL2 implements mhpmcounter3..6 / mhpmevent3..6 only (see HPM_COUNTER_EN in
+    // veer-el2-rv32imcb-u-pmp.yaml), so bits 3..6 are the only HPM counters that exist.
+    //   Quote: "0xB03 ... mhpmcounter3" through "0xB06 ... mhpmcounter6"
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/csrs.md
+    "writable_hpm_counters": {
+      "len": 32,
+      "value": "0x0000_0078"
+    },
+    // The top 29 bits control whether the corresponding bits of `scounteren`
+    // that control HPM counters are read-only zero. VeeR EL2 has no S-mode,
+    // so all bits are read-only zero.
+    "scounteren_writable_bits": {
+      "len": 32,
+      "value": "0x0"
+    },
+    // The bits in this value control whether the corresponding bits
+    // of the `mcounteren` CSR that control access to HPM counters,
+    // and `cycle`, `time` and `instret` registers at lower privilege
+    // modes, are read-only zero. A set bit specifies that the
+    // corresponding bit of `mcounteren` is writable, otherwise the
+    // bit is read-only zero.
+    // VeeR EL2 makes CY (0), IR (2) and HPM3..HPM6 (6:3) writable; TM (1) is read-only zero
+    // because there is no time CSR. MCOUNTENABLE_EN in the yaml marks only bits 3..6, because
+    // UDB requires bits 0..2 to be read-only zero without Zicntr.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L2856
+    "mcounteren_writable_bits": {
+      "len": 32,
+      "value": "0x0000_007D"
+    },
+    "hcounteren_writable_bits": {
+      "len": 32,
+      "value": "0x0"
+    },
+    // `mtvec.{direct,vectored}.supported` indicates whether the
+    // corresponding mode is supported for `mtvec`.  At least one mode
+    // should be supported.  If both modes are supported, the mode on
+    // reset is unspecified.
+    // The `mtvec.{direct,vectored}.base_alignment` parameters control the alignment
+    // of the trap vector base for each mode.  The alignment is
+    // specified as the power of 2 of the desired byte alignment, and
+    // can range from a minimum of 2 upto a maximum of 24. If
+    // unaligned values are written to these CSRs, the lowest bits
+    // will be zeroed to respect the specified alignment.
+    // VeeR stores mtvec as {wrdata[31:2], wrdata[0]}: bit 1 is dropped, so BASE is
+    // 4-byte aligned (base_alignment 2) and both MODE=0 (Direct) and MODE=1 (Vectored)
+    // are representable. Must agree with MTVEC_MODES and MTVEC_BASE_ALIGNMENT_* in the
+    // UDB config.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L1691
+    "mtvec": {
+      "direct": {
+        "supported": true,
+        "base_alignment": 2
+      },
+      "vectored": {
+        "supported": true,
+        "base_alignment": 2
+      }
+    },
+    // Similar to `mtvec` above. If `S` mode is not supported, these
+    // values need to be present and legal but are ignored.
+    "stvec": {
+      // The spec requires `base_alignment` for `stvec.direct` to be 2
+      // (i.e. 4-byte alignment), hence there is no configuration
+      // parameter for it.
+      "direct": {
+        "supported": false
+      },
+      "vectored": {
+        "supported": false,
+        "base_alignment": 2
+      }
+    },
+    "vstvec": {
+      "direct": {
+        "supported": false
+      },
+      "vectored": {
+        "supported": false,
+        "base_alignment": 2
+      }
+    },
+    "medeleg": {
+      "delegatable_bits": {
+        "len": 64,
+        "value": "0x0000_0000_000c_b3FF"
+      }
+    },
+    "mideleg": {
+      "delegatable_bits": {
+        "len": "xlen",
+        "value": "0x0000_2222"
+      }
+    },
+    // These settings control whether the specified exceptions
+    // cause information to be written into the appropriate
+    // `xtval` registers.
+    // mtval takes the PC for ebreak and fetch access faults, the encoding for illegal
+    // instructions, and the address for load/store misaligned and access faults.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L1887-L1899
+    "xtval_nonzero": {
+      // A U-mode CSR privilege violation (csr_acc_r) sets mtval to 0 instead, which this
+      // single flag cannot express.
+      "illegal_instruction": true,
+      "virtual_instruction": false,
+      "load_guest_page_fault": false,
+      "samo_guest_page_fault": false,
+      "fetch_guest_page_fault": false,
+      "software_breakpoint": true,
+      "hardware_breakpoint": false,
+      "load_address_misaligned": true,
+      "load_access_fault": true,
+      "load_page_fault": false,
+      "samo_address_misaligned": true,
+      "samo_access_fault": true,
+      "samo_page_fault": false,
+      "fetch_address_misaligned": true,
+      "fetch_access_fault": true,
+      "fetch_page_fault": false,
+      "software_check": false,
+      "hardware_error": true,
+      "reserved_exceptions": false
+    },
+    "reserved_behavior": {
+      // The configuration option determines how to handle the reserved behavior `amocas_odd_registers`.
+      // "AMOCAS_Fatal"  – raise a Sail exception, stopping execution.
+      // "AMOCAS_Illegal" – treat it as an illegal instruction.
+      "amocas_odd_register": "AMOCAS_Illegal",
+      // The configuration option determines how to handle execution of a floating-point
+      // instruction with DYN (dynamic) rounding mode when `fcsr.FRM` contains a
+      // reserved value (0b101, 0b110, 0b111).
+      // This does not affect the execution of floating-point instructions that have a
+      // reserved rounding mode statically encoded in the instruction.
+      // "Fcsr_RM_Fatal"  – raise a Sail exception, stopping execution.
+      // "Fcsr_RM_Illegal" – treat it as an illegal instruction.
+      "fcsr_rm": "Fcsr_RM_Illegal",
+      // The configuration option determines how to handle the reserved behavior `pmpcfg_with_R0W1`.
+      // "PMP_Fatal"  – raise a Sail exception, stopping execution.
+      // "PMP_ClearPermissions" – convert a PMP entry with R=0, W=1 to R=0, W=0, X=0.
+      "pmpcfg_write_only": "PMP_ClearPermissions",
+      // The configuration option determines how to handle the reserved behavior `xenvcfg.CBIE` with 0b10.
+      // "Xenvcfg_Fatal"  – raise a Sail exception, stopping execution.
+      // "Xenvcfg_ClearPermissions" – convert CBIE with 0b10 to 0b00.
+      "xenvcfg_cbie": "Xenvcfg_ClearPermissions",
+      // The configuration option determines how to handle the reserved behavior `xtvec[Mode] >= 2`.
+      // "Xtvec_Fatal"  – raise a Sail exception, stopping execution.
+      // "Xtvec_Ignore" – use old Mode of xtvec.
+      "xtvec_mode": "Xtvec_Ignore",
+      // The configuration option determines how to handle the reserved behavior: Odd-numbered registers for RV32Zdinx.
+      // "Zdinx_Fatal"  – raise a Sail exception, stopping execution.
+      // "Zdinx_Illegal" – treat it as an illegal instruction.
+      "rv32zdinx_odd_register": "Zdinx_Illegal"
+    },
+    "mstatus": {
+      // The legal values for the FS and VS fields in this CSR are
+      // specified by the two fields below.  Their values can be one
+      // of:
+      // - "ExtContext_FourState" allows all values {Off, Initial, Clean, Dirty}.
+      // - "ExtContext_TwoState" allows {Off, Dirty}, and writes of Initial and Clean get written as Dirty.
+      // - "ExtContext_Off" allows only {Off}.  This makes the field read-only zero.
+      "fs_legal_states": "ExtContext_Off",
+      "vs_legal_states": "ExtContext_Off"
+    },
+    // The yaml declares Sm 1.11 because EL2 has no mstatush or mconfigptr, but Sail rejects
+    // more than 16 PMP entries before 1.12. EL2 implements the 1.12 CSRs menvcfg(h) and
+    // mseccfg(h) and all 64 PMP entries, so 1.12 is the closer model here.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/csrdecode_mu#L79-L85
+    "privileged_isa_version": "Privileged_ISA_1_12"
+  },
+  "memory": {
+    "physaddr_bits": 32,
+    "asidlen": 9,
+    "vmidlen": 7,
+    "pmp": {
+      // G=0 (4-byte granule), hardwired in design/el2_pmp.sv.
+      "grain": 0,
+      // EL2 supports 0, 16 or 64 entries; built here with 64 (-set pmp_entries=64).
+      "count": 64,
+      "usable_count": 64,
+      "tor_supported": true,
+      "na4_supported": true,
+      "napot_supported": true
+    },
+    // These settings control global support for misaligned access so they are
+    // checked before address translation. `misaligned_exceptions` in
+    // `regions` is checked after address translation.
+    "misaligned": {
+      // VeeR EL2 splits misaligned loads/stores in hardware within a region, so no
+      // alignment exception is raised there. Accesses that cross a region boundary do
+      // raise a misaligned exception, which this global setting cannot express.
+      //   Quote: "Accesses across region boundaries always cause a misaligned exception."
+      //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/memory-map.md
+      "exceptions": {
+        "load_store": { "None": null },
+        "vector": { "None": null },
+        "lrsc": { "Some": "AccessFault" },
+        "amo": { "Some": "AccessFault" }
+      },
+      "default_allowed_within_exp": 0,
+      "byte_by_byte": false,
+      "order_decreasing": false
+    },
+    // Address to write DTB to (if provided).
+    "dtb_address": {
+      "len": 64,
+      "value": "0x1000"
+    },
+    "regions": [
+      // Main memory: code and data, at the reset vector 0x8000_0000. Must match
+      // RAM_ORIGIN/RAM_LENGTH in link.ld.
+      {
+        "base": {
+          "len": 64,
+          "value": "0x80000000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x10000000"
+        },
+        "attributes": {
+          "mem_type": "MainMemory",
+          "cacheable": true,
+          "coherent": true,
+          "executable": true,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": true,
+          "write_idempotent": true,
+          // VeeR EL2 splits misaligned loads/stores in hardware; no per-region fault.
+          "misaligned_exceptions": {
+            "load_store": { "None": null },
+            "vector": { "None": null },
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": true
+      },
+      // IO memory: the VeeR testbench console/termination mailbox at 0xD058_0000.
+      // A byte store of 0xFF ends the simulation as TEST_PASSED, 0x01 as TEST_FAILED,
+      // and 0x06..0x7E are echoed to the console.
+      {
+        "base": {
+          "len": 64,
+          "value": "0xD0000000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x10000000"
+        },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": true,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": { "None": null },
+            "vector": { "None": null },
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": false
+      }
+    ]
+  },
+  "platform": {
+    "vendorid": 69,
+    "archid": 16,
+    "impid": 4,
+    "hartid": 0,
+    // Cache block size, specified as a power of 2.
+    "cache_block_size_exp": 6,
+    "reservation": {
+      // Reservation set size/alignment as a power of 2. Minimum 2 on RV32.
+      "reservation_set_size_exp": 3,
+      // VeeR EL2 has no A extension so LR/SC is never executed.
+      "require_exact_reservation_addr": false,
+      // Some implementations (e.g. SiFive U74) also invalidate the
+      // reservation on stores from the same hart.  If this is set to `true`, the
+      // model invalidates the reservation if a store from the same hart lies within
+      // the reservation set.
+      "invalidate_on_same_hart_store": false
+    },
+    "interrupts": {
+      "machine": {
+        "software": { "supported": true },
+        "external": { "supported": true },
+        "timer": { "supported": true }
+      }
+    },
+    "clint": {
+      "supported": true,
+      // This must be in a suitable memory region (see `memory.regions`).
+      "base": 3489660928,
+      "size": 786432
+    },
+    // Simple MMIO device to generate interrupts for testing purposes.
+    "simple_interrupt_generator": {
+      "supported": true,
+      // Must be 4-byte aligned and within a memory region. Size is always 0x20.
+      "base": 3490709504
+    },
+    "clock_frequency": 1000000000,
+    "instructions_per_tick": 2,
+    // WFI is a NOP, so it completes at once and never times out when mstatus.TW=1.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/docs/source/power.md#L631
+    "wfi_is_nop": true,
+    // WFI is optionally available to User mode.  Note that even if
+    // `wfi_is_nop` is set to `true` above, it will still not be
+    // available to User mode unless `wfi_available_to_user_mode` is
+    // also `true`.
+    "wfi_available_to_user_mode": true,
+    "max_time_to_wait": 1000,
+    // The model can generate the following events that can be tracked
+    // using the HPM counters:
+    // - EV_FENCE
+    // - EV_MISALIGNED_LOAD_EXCEPTION
+    // - EV_MISALIGNED_STORE_EXCEPTION
+    // - EV_TLB_MISS
+    //
+    // An event can be mapped to a selector value, that when written
+    // to the event field of an `mhpmeventNN` CSR, will increment the
+    // corresponding `mhpmcounterNN` CSR as per the specification
+    // (e.g. the `Sscofpmf` extension).
+    //
+    // The selector values need to fit into the event field of an
+    // `mhpmeventNN` CSR. When Sscofpmf is not supported, this field
+    // is `base.hpmevent_width_bits` wide; with Sscofpmf, this field
+    // is the lowest 56 bits of the 64-bit `mhpeventNN` CSR.
+    //
+    // The `event_selectors` list can contain any subset of these
+    // supported events.  Events cannot be repeated in the list, and
+    // the selector values should be unique.  These selector values
+    // are always specified as 64-bit, but their values must fit the
+    // width restrictions mentioned above.
+    // VeeR EL2 event 21 (MHPME_INST_FENCE) counts committed FENCE instructions. It has no
+    // event for misaligned-access exceptions, and no TLB.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L2627
+    "event_selectors": [
+      {
+        "event": "EV_FENCE",
+        "selector": {
+          "len": 64,
+          "value": "0x15"
+        }
+      }
+    ]
+  },
+  "extensions": {
+    "M": {
+      "mutable_misa": false,
+      "supported": true
+    },
+    "A": {
+      "mutable_misa": false,
+      "supported": false
+    },
+    "F": {
+      "mutable_misa": false,
+      "supported": false,
+      "fflags_dirty_policy": "Fflags_Dirty_Precise"
+    },
+    "D": {
+      "mutable_misa": false,
+      "supported": false
+    },
+    "C": {
+      "mutable_misa": false
+    },
+    "V": {
+      "mutable_misa": false,
+      // `support_level` must be one of the below strings:
+      // . "Disabled" for no vector extension support
+      // . "Integer" for Zve*x support
+      // . "Float_single" for Zve*f support
+      // . "Float_double" for Zve*d support
+      // . "Full" for the full V extension
+      // Note that `support_level` requires compatible
+      // values for `vlen_exp` and `elen_exp` below.
+      // For e.g. Zve32x and Zve32f require `elen_exp` >= 5,
+      // Zve64x, Zve64f, and Zve64d require `elen_exp` >= 6,
+      // and V requires `elen_exp` >= 6 and `vlen_exp` >= 7.
+      "support_level": "Disabled",
+      "vlen_exp": 7,
+      "elen_exp": 6,
+      "reserved_behavior": {
+        // This determines how to handle attempts by vsetvli, vsetivli,
+        // and vsetvl to set an unsupported or reserved vtype.
+        // "IllegalVtype_SetVill" - set vtype.vill, set vl to zero, clear vstart, and write rd.
+        // "IllegalVtype_Illegal" - treat it as an illegal instruction.
+        // "IllegalVtype_Fatal"   - raise a Sail exception, stopping execution.
+        "illegal_vtype": "IllegalVtype_SetVill",
+        // This determines how to handle an out-of-bounds vstart (vstart >= VLMAX), which the
+        // vector spec marks reserved and recommends, but does not require, trapping.
+        // "Vstart_Illegal" - raise an illegal instruction exception.
+        // "Vstart_Ignore"  - treat as a no-op, the instruction writes nothing.
+        "vstart_out_of_bounds": "Vstart_Illegal"
+      },
+      "vl_use_ceil": false,
+      // The maximum index EEW for indexed vector addressing mode, as
+      // a power of 2.  This must be at least 3 but must not exceed
+      // the supported ELEN.
+      "max_index_eew_exp": 5,
+      "vstart": {
+        // The vector specification permits implementations to raise an
+        // illegal instruction exception when `vstart` is non-zero for
+        // instructions that cannot produce such a `vstart` value through
+        // normal execution.
+        "zero_required": {
+          // Whether vector arithmetic instructions raise an illegal instruction
+          // exception when `vstart` is non-zero. This also governs instructions
+          // from the Zvbb, Zvbc, Zvabd, Zvfbfmin, and Zvfbfwma extensions.
+          "arith": true,
+          // Whether the vector scalar move instructions (vmv.x.s, vmv.s.x,
+          // vfmv.f.s and vfmv.s.f) raise an illegal instruction exception when
+          // `vstart` is non-zero.
+          "scalar_move": true
+        }
+      }
+    },
+    // misa.B reads 0, although Zba, Zbb and Zbs are implemented.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/el2_dec_tlu_ctl.sv#L2945
+    "B": {
+      "mutable_misa": false,
+      "supported": false
+    },
+    "S": {
+      "mutable_misa": false,
+      "supported": false,
+      "interrupts": {
+        "software": { "supported": true },
+        "external": { "supported": true },
+        "timer": { "supported": true }
+      }
+    },
+    "U": {
+      "mutable_misa": false,
+      "supported": true
+    },
+
+    "H": {
+      "mutable_misa": false,
+      "supported": false,
+      "geilen": 31,
+      "guest_page_fault_writes_htval": true,
+      // Whether a trap into M or HS mode caused by the specified exception
+      // writes the transformed trapping instruction to `mtinst`/`htinst`.
+      // This applies to integer and floating-point loads and stores
+      // (including compressed forms), LR/SC, AMOs, HLV/HLVX/HSV and CBOs.
+      // If false, zero is written instead.
+      "transformed_instruction": {
+        "load_access_fault": true,
+        "load_address_misaligned": true,
+        "load_guest_page_fault": true,
+        "load_page_fault": true,
+        "samo_access_fault": true,
+        "samo_address_misaligned": true,
+        "samo_guest_page_fault": true,
+        "samo_page_fault": true
+      },
+      "hgatp_modes": {
+        "Sv32x4": false,
+        "Sv39x4": false,
+        "Sv48x4": false,
+        "Sv57x4": false
+      },
+      "vsatp_modes": {
+        "Sv32": true,
+        "Sv39": false,
+        "Sv48": false,
+        "Sv57": false
+      }
+    },
+
+    "Sha": { "supported": false },
+    "Shcounterenw": { "supported": false },
+    "Shgatpa": { "supported": false },
+    "Shtvala": { "supported": false },
+    "Shvsatpa": { "supported": false },
+    "Shvstvala": { "supported": false },
+    "Shvstvecd": { "supported": false },
+    "Sstvecd": { "supported": false },
+    "Svukte": { "supported": false },
+    "Zilx": { "supported": false },
+    "Zibi": {
+      "supported": false
+    },
+    "Zicbom": {
+      "supported": false
+    },
+    "Zicbop": {
+      "supported": false
+    },
+    "Zicboz": {
+      "supported": false
+    },
+    // This extension just asserts that the cache block size is 64 bytes.
+    // If you enable this you also need to ensure `platform.cache_block_size_exp`
+    // is 6, otherwise you will get a config validation error.
+    "Zic64b": {
+      "supported": false
+    },
+    "Ziccamoa": {
+      "supported": false
+    },
+    "Ziccamoc": {
+      "supported": false
+    },
+    "Ziccif": {
+      "supported": false
+    },
+    "Zicclsm": {
+      "supported": false
+    },
+    "Ziccrse": {
+      "supported": false
+    },
+    "Zicfilp": {
+      "supported": false
+    },
+    "Zicfiss": {
+      "supported": false
+    },
+    "Zicond": {
+      "supported": false
+    },
+    // Sail-only: EL2 implements cycle(h) and instret(h) but no time CSR, so the yaml cannot
+    // claim Zicntr. Sail makes cycle and instret accessible only with Zicntr
+    // (model/extensions/Zicntr/zicntr_control.sail:18-23), so it is enabled here to model them.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/csrdecode_mu#L86-L89
+    "Zicntr": {
+      "supported": true
+    },
+    "Zicsr": {
+      "supported": true
+    },
+    "Zifencei": {
+      "supported": true
+    },
+    "Zihintntl": {
+      "supported": false
+    },
+    "Zihintpause": {
+      "supported": false
+    },
+    // The M+U build decodes hpmcounter3..6 and their high halves; writable_hpm_counters
+    // above and HPM_COUNTER_EN in the yaml say which counters exist.
+    //   https://github.com/chipsalliance/Cores-VeeR-EL2/blob/925f3a34/design/dec/csrdecode_mu#L90-L97
+    "Zihpm": {
+      "supported": true
+    },
+    "Zimop": {
+      "supported": false
+    },
+    "Zmmul": {
+      "supported": false
+    },
+    "Zaamo": {
+      "supported": false
+    },
+    "Zabha": {
+      "supported": false
+    },
+    "Zacas": {
+      "supported": false
+    },
+    "Zalrsc": {
+      "supported": false
+    },
+    "Zama16b": {
+      "supported": false
+    },
+    "Zawrs": {
+      "supported": false,
+      "nto": {
+        "is_nop": false
+      },
+      "sto": {
+        "is_nop": false
+      }
+    },
+    "Zfa": {
+      "supported": false
+    },
+    "Zfbfmin": {
+      "supported": false
+    },
+    "Zfh": {
+      "supported": false
+    },
+    "Zfhmin": {
+      "supported": false
+    },
+    "Zfinx": {
+      "supported": false
+    },
+    "Zdinx": {
+      "supported": false
+    },
+    "Zca": {
+      "supported": true
+    },
+    "Zcf": {
+      "supported": false
+    },
+    "Zcd": {
+      "supported": false
+    },
+    "Zcb": {
+      "supported": false
+    },
+    "Zcmop": {
+      "supported": false
+    },
+    // Built with bitmanip_zba/zbb/zbc/zbs=1; Zbc includes Zbkc. See the yaml for citations.
+    "Zba": {
+      "supported": true
+    },
+    "Zbb": {
+      "supported": true
+    },
+    "Zbs": {
+      "supported": true
+    },
+    "Zbc": {
+      "supported": true
+    },
+    "Zbkb": {
+      "supported": false
+    },
+    "Zbkc": {
+      "supported": true
+    },
+    "Zbkx": {
+      "supported": false
+    },
+    "Zknd": {
+      "supported": false
+    },
+    "Zkne": {
+      "supported": false
+    },
+    "Zknh": {
+      "supported": false
+    },
+    "Zkr": {
+      "supported": false,
+      "sseed_reset_value": false,
+      "useed_reset_value": false,
+      "sseed_read_only_zero": false,
+      "useed_read_only_zero": false
+    },
+    "Zksed": {
+      "supported": false
+    },
+    "Zksh": {
+      "supported": false
+    },
+    "Zkt": {
+      "supported": false
+    },
+    "Zhinx": {
+      "supported": false
+    },
+    "Zhinxmin": {
+      "supported": false
+    },
+    "Zvabd": {
+      "supported": false
+    },
+    "Zvfbfmin": {
+      "supported": false
+    },
+    "Zvfbfwma": {
+      "supported": false
+    },
+    "Zvfh": {
+      "supported": false
+    },
+    "Zvfhmin": {
+      "supported": false
+    },
+    "Zvbb": {
+      "supported": false
+    },
+    "Zvbc": {
+      "supported": false
+    },
+    "Zvkb": {
+      "supported": false
+    },
+    "Zvkg": {
+      "supported": false
+    },
+    "Zvkned": {
+      "supported": false
+    },
+    "Zvknha": {
+      "supported": false
+    },
+    "Zvknhb": {
+      "supported": false
+    },
+    "Zvksed": {
+      "supported": false
+    },
+    "Zvksh": {
+      "supported": false
+    },
+    "Zvkt": {
+      "supported": false
+    },
+    "Ssccptr": {
+      "supported": false
+    },
+    "Sscofpmf": {
+      "supported": false
+    },
+    "Sscounterenw": {
+      "supported": false
+    },
+    "Sstc": {
+      "supported": false
+    },
+    // Enabling Sstvala requires that the exceptions specified in the extension
+    // have their appropriate settings under `base.xtval_nonzero`.
+    "Sstvala": {
+      "supported": false
+    },
+    "Svade": {
+      "supported": false
+    },
+    "Svadu": {
+      "supported": false
+    },
+    "Svinval": {
+      "supported": false
+    },
+    "Svnapot": {
+      "supported": false
+    },
+    "Ssnpm": {
+      "supported": false,
+      "supported_pmlen_7": true,
+      "supported_pmlen_16": true
+    },
+    "Smnpm": {
+      "supported": false,
+      "supported_pmlen_7": true,
+      "supported_pmlen_16": true
+    },
+    "Smmpm": {
+      "supported": false,
+      "supported_pmlen_7": true,
+      "supported_pmlen_16": true
+    },
+    "Svrsw60t59b": {
+      "supported": false
+    },
+    "Smcntrpmf": {
+      "supported": false
+    },
+    "Svbare": {
+      "supported": false,
+      "sfence_vma_illegal_if_svbare_only": true
+    },
+    "Sv32": {
+      "supported": false
+    },
+    "Sv39": {
+      "supported": false
+    },
+    "Sv48": {
+      "supported": false
+    },
+    "Sv57": {
+      "supported": false
+    },
+    "Stateen": {
+      "Smstateen": {
+        "supported": false
+      },
+      "Ssstateen": {
+        "supported": false
+      },
+      "C_readonly_zero": true,
+      "SE0_readonly_zero": false
+    },
+    "Ssqosid": {
+      "supported": false,
+      "rcid_length": 12,
+      "mcid_length": 12
+    },
+    "Svpbmt": {
+      "supported": false
+    },
+    "Svvptc": {
+      "supported": false
+    },
+    "Sdtrig": {
+      "supported": false,
+      // `breakpoint_reentrancy` must be one of the below strings:
+      // . `Use_tcontrol`: use the `mte` and `mpte` bits in the `tcontrol` CSR (this also makes the `tcontrol` CSR available)
+      // . `Use_interrupt_enables`: use `mstatus.MIE` and the `SIE` bits in `sstatus` and `vsstatus`
+      // . `No_reentrancy_support`: no specific support for reentrancy
+      // Note: `Use_tcontrol` hardwires medeleg[3] to 0, which breaks the
+      // `sbreak` test in `riscv-tests`.
+      "breakpoint_reentrancy": "No_reentrancy_support",
+      "etrigger": {
+        "supported": false,
+        // A bit set to 1 in this value specifies that the
+        // corresponding exception is supported by the trigger.
+        // Triggers for reserved exceptions are not supported.  This
+        // value is ignored when `etrigger` is not supported.
+        "supported_exceptions": { "len": "xlen", "value": "0" }
+      },
+      "hcontext": { "supported": false },
+      // Triggers
+      "icount": {
+        "supported": false,
+        "count_hardwired_one": false,
+        // Whether a `tdata1` write to an `icount` trigger with
+        // `count`=1 also makes it pending when that write's instruction
+        // matches the trigger.
+        "self_write_sets_pending": false
+      },
+      "itrigger": {
+        "supported": false,
+        // A bit set to 1 in this value specifies that the
+        // corresponding interrupt is supported by the trigger.
+        // Triggers for reserved interrupts are not supported.  This
+        // value is ignored when `itrigger` is not supported.
+        "supported_interrupts": { "len": "xlen", "value": "0" }
+      },
+      // CSRs
+      "mcontext": { "supported": false },
+      // The number of supported triggers.  This has to be
+      // non-negative, and greater than 0 if Sdtrig is supported.
+      // The model does not support more than 16 triggers.
+      "num_triggers": 0,
+      "scontext": { "supported": false }
+    },
+    // The double trap extensions are not enabled by default because
+    // mstatus[MDT] is reset to 1. Unless the boot code clears it, the
+    // first trap taken will result in an unexpected double trap.
+    "Smdbltrp": { "supported": false },
+    "Ssdbltrp": { "supported": false },
+    "Ssstrict": { "supported": false }
+  }
+}

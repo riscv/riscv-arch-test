@@ -22,8 +22,10 @@ covergroup PMPZicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0]
         bins configuration = {4'b1111}; //menvcfg.CBIE, CBCFE, CBZE = 1
     }
 
-    pmpaddr_region: coverpoint ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK) ==
-                                 (`PMPZICBO_STANDARD_REGION & `PMP_PMPADDR_LOWMASK)) {
+    // Compare above the grain: the test writes pmpaddr0 while the entry is OFF, so the trace
+    // records it with bits G-1:0 read as zero, and does not record it again once the entry is NAPOT.
+    pmpaddr_region: coverpoint ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK) ==
+                                 (`PMPZICBO_STANDARD_REGION & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)) {
         bins region = {1};
     }
 
@@ -121,7 +123,8 @@ function void pmpzicbo_sample(int hart, int issue, ins_t ins);
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions
-    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK) == (`PMPZICBO_STANDARD_REGION & `PMP_PMPADDR_LOWMASK));
+    pmp_hit[k] = ((pmpaddr[k] & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK) ==
+                  (`PMPZICBO_STANDARD_REGION & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)); // above the grain, as pmpaddr_region
   end
 
   PMPZicbo_cg.sample(ins, pmpcfg, pmp_hit, pmpaddr);

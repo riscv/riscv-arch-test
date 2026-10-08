@@ -1,0 +1,693 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: sargantana-rv64imafdb
+description: >-
+  BSC Sargantana as delivered in the bsc-loca/core_tile tile.
+  Written against core_tile 2528e7df6507fa06d372f001e55cfd46efae4a4b, whose
+  rtl/core/sargantana submodule is pinned at
+  403975c8a3c64c8eb369021a1ac2a374e5df441b.  Every parameter below is taken
+  from that RTL; permalinks point into bsc-loca/sargantana, bsc-loca/core_tile
+  and their csr, mmu and cv-hpdcache submodules.
+#
+# The ISA string comes from the misa constant, def_pkg::ISA_CODE:
+#   "| (1   <<  8)  // I - RV32I/64I/128I base ISA
+#    | (1   << 12)  // M - Integer Multiply/Divide extension
+#    | (1   <<  1)  // B - Bit Manipulation extension
+#    | (0   <<  2)  // C - Compressed extension
+#    | (1   << 18)  // S - Supervisor mode implemented
+#    | (1   << 20)  // U - User mode implemented
+#    | (1   << 63); // RV64"
+#   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/def_pkg.sv#L81-L94
+# with RVA = RVF = RVD = 1:
+#   "localparam bit RVF = 1'b1; ... localparam bit RVD = 1'b1; ... localparam bit RVA = 1'b1;"
+#   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/def_pkg.sv#L30-L34
+#
+# misa.V (bit 21) is set but V is not claimed.  RVV 1.0 encodings are decoded, but only a
+# subset: no segment loads/stores, mew must be 0, only the 1-register whole-register forms,
+# and one non-standard opcode ("F6_VCNT = 6'b010001, //Custom instruction",
+# https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/riscv_pkg.sv#L380).
+implemented_extensions:
+  # "localparam logic [63:0] ISA_CODE = ... | (1 << 8) // I ... | (1 << 63); // RV64"
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/def_pkg.sv#L81-L94
+  - { name: I, version: "= 2.1" }
+  # "{F7_MUL_DIV, F3_MUL}: begin ... decode_instr_int.instr_type = MUL;" plus the
+  # RV64 *W forms at decoder.sv#L786-L808
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/datapath/rtl/id_stage/rtl/decoder.sv#L626-L628
+  - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
+  # LR/SC and the full AMO set, both .W and .D:
+  #   "LR_W: begin ... decode_instr_int.instr_type = AMO_LRW;"
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/datapath/rtl/id_stage/rtl/decoder.sv#L359-L439
+  - { name: A, version: "= 2.1.0" }
+  - { name: Zaamo, version: "= 1.0.0" }
+  - { name: Zalrsc, version: "= 1.0.0" }
+  # FPNew instance with FP32 and FP64 enabled; OP-FP and the FMA opcodes are decoded
+  # at decoder.sv#L3242-L3491 and gated on mstatus.FS.
+  - { name: F, version: "= 2.2.0" }
+  - { name: D, version: "= 2.2.0" }
+  # flh/fsh plus the FP16<->FP32/FP64 conversions:
+  #   "assign valid_zfhmin_i = ((op == fpnew_pkg::F2F) & ((src_fmt == fpnew_pkg::FP16) |
+  #    (dst_fmt == fpnew_pkg::FP16))) | ..."
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/datapath/rtl/exe_stage/rtl/old_fpu/fpu_drac_wrapper.sv#L348-L349
+  # Zfh (FP16 arithmetic) is NOT claimed: "localparam bit XF16    = 1'b0;"
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/def_pkg.sv#L44
+  - { name: Zfhmin, version: "= 1.0.0" }
+  # "// Floating-point Zfa instructions
+  #  FMINM_MAXM, FLEQ_FLTQ, FROUND, FROUNDNX, FLI, FCVTMOD,"
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/drac_pkg.sv#L377-L378
+  # (fmvh.x.d / fmvp.d.x are RV32-only Zfa instructions, so their absence is correct here.)
+  - { name: Zfa, version: "= 1.0.0" }
+  # misa.B is hardwired 1 and all three component extensions decode completely.
+  # Zba: "{F7_SHADD, F3_SH1ADD}: begin ... decode_instr_int.instr_type = SH1ADD;" (decoder.sv#L661)
+  # Zbb: clz/ctz/cpop/sext/rev8/orc.b/andn/orn/xnor/rol/ror/min/max and the *W forms
+  # Zbs: "// Zbs bit-manip
+  #       BCLR, BEXT, BINV, BSET,"
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/drac_pkg.sv#L421-L422
+  - { name: B, version: "= 1.0.0" }
+  - { name: Zba, version: "= 1.0.0" }
+  - { name: Zbb, version: "= 1.0.0" }
+  - { name: Zbs, version: "= 1.0.0" }
+  # No Zbc or Zbk*: F3_CLMUL is defined in riscv_pkg.sv but never decoded, and there is no
+  # pack, brev8, zip or xperm.
+  # "// Zicond
+  #  {F7_CZERO, F3_SRL_SRA}: begin ... decode_instr_int.instr_type = CZ_EQZ;"
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/datapath/rtl/id_stage/rtl/decoder.sv#L694-L699
+  - { name: Zicond, version: "= 1.0.0" }
+  # All six CSR instruction forms: decoder.sv#L3191-L3218
+  - { name: Zicsr, version: "= 2.0" }
+  # "F3_FENCE_I: begin ... decode_instr_int.instr_type = FENCE_I;" (decoder.sv#L2896), and
+  # the I-cache and fetch buffer are invalidated when it commits:
+  #   "assign invalidate_icache_o = (commit_cu_i.valid && commit_cu_i.fence_i);"
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/control_unit/rtl/control_unit.sv#L323
+  # This contradicts the decoder specification, which says "Also, ZicFenceI extension is
+  # not supported at the moment."
+  #   (doc/specifications/decoder_specification/7-Section.tex:54); the RTL wins.
+  - { name: Zifencei, version: "= 2.0.0" }
+  # cycle, time and instret are all directly readable, not trapped and emulated:
+  #   "riscv_pkg::CSR_CYCLE:              csr_rdata = cycle_q;
+  #    riscv_pkg::CSR_TIME: begin csr_rdata = reg_time_q;
+  #    riscv_pkg::CSR_INSTRET:            csr_rdata = instret_q;"
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L741-L749
+  # NOTE: `time` is driven by a top-level port that the standalone testbench ties to
+  # zero ("// No support for timer, interrupts, etc in simulation / .time_i(64'd0),",
+  # core_tile simulator/sim_top.sv#L263-L268), so in this environment `time` never
+  # advances.  Zicntr is still claimed because the CSR exists and is architecturally
+  # accessible; the resulting Zicntr failures are listed in ci.yaml.
+  - { name: Zicntr, version: "= 2.0" }
+  # 29 unprivileged hpmcounter shadows, readable from S/U when mcounteren/scounteren
+  # permit ("privilege_violation = ~mcounteren_q[sel_cnt_en];", csr_bsc.sv#L2400-L2413):
+  #   "// This module implements the Zihpm (v2.0) ... extensions" / "parameter HPM_NUM_COUNTERS = 29"
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/hpm_counters.sv#L22-L27
+  - { name: Zihpm, version: "= 2.0.0" }
+  # "F3_CBO: begin //Zicbom extension (CMO instructions)" (decoder.sv#L2900) and cbo.zero
+  # at decoder.sv#L2985; prefetch.r/.w at decoder.sv#L469-L487.  menvcfg/senvcfg
+  # implement exactly the CBIE/CBCFE/CBZE bits:
+  #   "csr_rdata = {56'b0, menvcfg_q[7:4], 3'b0, menvcfg_q[0]}; // only FIOM & CMO bits implemented"
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L693
+  - { name: Zicbom, version: "= 1.0.0" }
+  - { name: Zicbop, version: "= 1.0.0" }
+  - { name: Zicboz, version: "= 1.0.0" }
+  # HPDcache line width is 512 bits = 64 bytes ("DCacheLineWidth: 512",
+  # https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/drac_pkg.sv#L1310)
+  - { name: Zic64b, version: "= 1.0.0" }
+  # Main memory (InitMappedBase[0] = 0x0040000000 .. InitMappedEnd[0] = 0x3fffffffff) is
+  # cacheable. The tile supports every AMO there, LR/SC ("Reservation set for LR instruction
+  # is always 8-bytes in this implementation.") and instruction fetch through the I-cache.
+  #   https://github.com/bsc-loca/cv-hpdcache/blob/c523164515b7c3e0949f24468a7d3f2d80e33cee/rtl/src/hpdcache_uncached.sv#L285-L286
+  - { name: Ziccamoa, version: "= 1.0.0" }
+  - { name: Ziccif, version: "= 1.0.0" }
+  - { name: Ziccrse, version: "= 1.0.0" }
+  # "mstateen0-3" and "sstateen0-3" are implemented with the SE and ENVCFG bits writable:
+  #   "mask = riscv_pkg::MSTATEEN0_SE | riscv_pkg::MSTATEEN0_ENVCFG;"
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L1612-L1631
+  - { name: Smstateen, version: "= 1.0.0" }
+  - { name: Ssstateen, version: "= 1.0.0" }
+  # "| (1   << 20)  // U - User mode implemented" / "| (1   << 18)  // S - Supervisor mode implemented"
+  - { name: U, version: "= 1.0.0" }
+  - { name: S, version: "= 1.12.0" }
+  # menvcfg exists, so the hart is at least Sm/Ss 1.12; the CSR README claims
+  # "- Privilege-Level ISA  v1.11"
+  # (https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/README.md#L3-L9)
+  # but that predates the menvcfg/mstateen/mcountinhibit support now in the file.
+  # RV64 means mstatush does not exist to be read, so the 1.12-vs-1.11 choice cannot
+  # misfire the way it does on RV32 cores.
+  - { name: Sm, version: "= 1.12.0" }
+  # "localparam logic [3:0] MODE_SV39 = 4'h8; ... localparam logic [3:0] MODE_OFF = 4'h0;"
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/def_pkg.sv#L160-L162
+  # and satp only accepts those two modes:
+  #   "// only update if we actually support this mode
+  #    if ((satp.mode == def_pkg::MODE_OFF) || (satp.mode == def_pkg::MODE_SV39)) satp_d = satp;"
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L1248-L1260
+  # No Sv48/Sv57 (grep for Sv48|Sv57 over rtl/ returns nothing).
+  - { name: Sv39, version: "= 1.0.0" }
+  - { name: Svbare, version: "= 1.0.0" }
+  # The page-table walker only ever issues reads ("assign ptw_dmem_comm_o.req.cmd = M_XRD;",
+  # https://github.com/bsc-loca/mmu/blob/0f4727a7ed57651f465f4eeeae509859693ad4dc/rtl/ptw/ptw.sv#L386)
+  # so A/D are never set by hardware: this is Svade, not Svadu.
+  - { name: Svade, version: "= 1.0.0" }
+  # The page-table walker reads PTEs from main memory through the HPDcache.
+  - { name: Ssccptr, version: "= 1.0.0" }
+  # Every scounteren bit is writable ("scounteren_d = {csr_wdata[31:0]};", csr_bsc.sv#L1240).
+  - { name: Sscounterenw, version: "= 1.0.0" }
+  # stval gets the faulting address for every misaligned, access and page fault and the
+  # encoding for an illegal instruction (csr_bsc.sv#L2003-L2019, REPORT_*_IN_STVAL below).
+  - { name: Sstvala, version: "= 1.0.0" }
+  # In Direct mode stvec.BASE holds any 4-byte-aligned address
+  # ("stvec_d = {csr_wdata[63:2], 1'b0, csr_wdata[0]};", csr_bsc.sv#L1241).
+  - { name: Sstvecd, version: "= 1.0.0" }
+  # "This module implements the Zihpm (v2.0) ... and Sscofpmf (v0.5.2) extensions": mhpmevent
+  # OF and inhibit bits, scountovf, and the LCOFI interrupt in mip/mie/mideleg.
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/hpm_counters.sv#L21
+  - { name: Sscofpmf, version: "= 1.0.0" }
+  # "localparam bit RVH = 1'b1; // Is H extension enabled"
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/def_pkg.sv#L42
+  # The hypervisor CSRs are at csr_bsc.sv#L562-L668 (read) and #L1309-L1515 (write), and
+  # HLV/HLVX/HSV are decoded at decoder.sv#L3000.
+  - { name: H, version: "= 1.0.0" }
+  # Every hcounteren bit is writable ("hcounteren_d = csr_wdata[31:0];", csr_bsc.sv#L1385).
+  - { name: Shcounterenw, version: "= 1.0.0" }
+  # hgatp accepts Bare and Sv39x4, matching satp's Bare and Sv39 (csr_bsc.sv#L1396-L1414).
+  - { name: Shgatpa, version: "= 1.0.0" }
+  # htval gets GPA >> 2 on every guest-page fault ("htval_d = {{25{1'b0}}, ex_tval2};",
+  # csr_bsc.sv#L2098).
+  - { name: Shtvala, version: "= 1.0.0" }
+  # vsatp accepts the same Bare and Sv39 modes as satp (csr_bsc.sv#L1501-L1511).
+  - { name: Shvsatpa, version: "= 1.0.0" }
+  # vstval is written from the same ex_tval as stval (csr_bsc.sv#L2084).
+  - { name: Shvstvala, version: "= 1.0.0" }
+  # In Direct mode vstvec.BASE holds any 4-byte-aligned address
+  # ("vstvec_d = {csr_wdata[63:2], 1'b0, csr_wdata[0]};", csr_bsc.sv#L1484).
+  - { name: Shvstvecd, version: "= 1.0.0" }
+
+params:
+  # ---------------- Sm ----------------
+  # "| (1 << 63); // RV64"
+  MXLEN: 64
+  # "+define+CONF_SARGANTANA_PHY_ADDR_SIZE=42"
+  #   https://github.com/bsc-loca/core_tile/blob/2528e7df6507fa06d372f001e55cfd46efae4a4b/standalone_config.f#L4
+  PHYS_ADDR_WIDTH: 42
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_ECALL_FROM_S: true
+  TRAP_ON_ECALL_FROM_U: true
+  TRAP_ON_EBREAK: true
+  # WFI stalls until an interrupt is both pending and enabled, or a debug halt request
+  # arrives; there is no timeout:
+  #   "if ((((|mip_q) || irq_q[0] || irq_q[1]) && interrupt_cause[63]) || debug_halt_req_i) begin
+  #        wfi_d = 1'b0;"
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L2749-L2760
+  WFI_FINITE: false
+  # WFI is decoded as a system instruction at privilege S (rw_addr[9:8] = 01), so in U mode
+  # "if ((system_insn && !priv_sufficient && !v_mode_q) || ... privilege_violation = 1'b1;"
+  # raises an illegal-instruction exception:
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L2531-L2535
+  WFI_U_MODE: false
+  # mie.MEIE/MSIE/MTIE are writable ("mask = riscv_pkg::MIP_SSIP | riscv_pkg::MIP_STIP |
+  # riscv_pkg::MIP_SEIP | riscv_pkg::MIP_MSIP | riscv_pkg::MIP_MTIP | riscv_pkg::MIP_MEIP | ...",
+  # https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L1565-L1577)
+  # and mip.MEIP/MTIP/MSIP follow the core's irq_i[0], time_irq_i and m_soft_irq_i inputs:
+  #   "// the IRQ_M_EXT = irq_i || rocc_interrupt_i, IRQ_M_SOFT = m_soft_irq_i and IRQ_M_TIMER = time_irq_i"
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L1053-L1054
+  # The core implements all three.  The standalone testbench ties those pins to zero
+  # ("// No support for timer, interrupts, etc in simulation / .irq_i(1'b0), .soft_irq_i(1'b0),
+  # .time_irq_i(1'b0),", https://github.com/bsc-loca/core_tile/blob/2528e7df6507fa06d372f001e55cfd46efae4a4b/simulator/sim_top.sv#L263-L269)
+  # and has no CLINT, so in this environment the pending bits can never be set.
+  # ACT reads {MEI,MTI,MSI}_INTR_IMPL as the machine interrupts the platform can raise
+  # (tests/env/check_defines.h), so each is true only where rvmodel_macros.h can raise it.
+  MEI_INTR_IMPL: false
+  MSI_INTR_IMPL: false
+  MTI_INTR_IMPL: false
+  # "riscv_pkg::CSR_MVENDORID:          csr_rdata = 64'b0; // not implemented"
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L694
+  VENDOR_ID_BANK: 0
+  VENDOR_ID_OFFSET: 0
+  # "riscv_pkg::CSR_MARCHID:            csr_rdata = 64'd51;"  (csr_bsc.sv#L695)
+  MARCHID_IMPLEMENTED: true
+  ARCH_ID_VALUE: 51
+  # "riscv_pkg::CSR_MIMPID:             csr_rdata = 64'h300; //v3.0.0"  (csr_bsc.sv#L696)
+  MIMPID_IMPLEMENTED: true
+  IMP_ID_VALUE: 0x300
+  # "riscv_pkg::CSR_MCONFIGPTR:         csr_rdata = 64'b0; // not implemented"  (csr_bsc.sv#L698)
+  CONFIG_PTR_ADDRESS: 0
+  # misa reads the ISA_CODE constant and writes are dropped without trapping:
+  #   "// MISA is WARL (Write Any Value, Reads Legal Value)
+  #    riscv_pkg::CSR_MISA:;"
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L1532-L1533
+  MISA_CSR_IMPLEMENTED: true
+  # misa.X is "(NSX << 23)" with "localparam bit NSX = XF16 | XF16ALT | XF8 | XFVEC;" and all
+  # four of those 1'b0, so misa.X reads 0:
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/def_pkg.sv#L45-L48
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/def_pkg.sv#L74
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
+  MUTABLE_MISA_A: false
+  MUTABLE_MISA_B: false
+  MUTABLE_MISA_D: false
+  MUTABLE_MISA_F: false
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_S: false
+  MUTABLE_MISA_U: false
+  # mstatus.UBE/SBE/MBE are all inside the WPRI clear mask
+  # ("localparam logic [63:0] MSTATUS64_WPRI = 64'h7fffff35ff800044;",
+  # https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/includes/riscv_pkg.sv#L1427
+  # — 0x44 clears bit 6 = UBE and 0x35 in the upper word clears bits 36 = SBE and
+  # 37 = MBE), so every mode is fixed little-endian.
+  M_MODE_ENDIANNESS: little
+  S_MODE_ENDIANNESS: little
+  U_MODE_ENDIANNESS: little
+  # UXL and SXL are re-forced to 64 every cycle
+  # ("mstatus_set = ... | {30'b0,riscv_pkg::XLEN_64,32'b0} | {28'b0,riscv_pkg::XLEN_64,34'b0};",
+  # csr_bsc.sv#L1008-L1012)
+  SXLEN: [64]
+  UXLEN: [64]
+  # "mtvec_d = {csr_wdata[63:2], 1'b0, csr_wdata[0]};
+  #  // we are in vector mode, this implementation requires the additional
+  #  // alignment constraint of 64 * 4 bytes
+  #  if (csr_wdata[0]) mtvec_d = {csr_wdata[63:8], 7'b0, csr_wdata[0]};"
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L1580-L1585
+  # Bit 1 is hardwired 0, so MODE is 0 (direct) or 1 (vectored) and nothing else; a
+  # write of MODE=2 reads back 0 and MODE=3 reads back 1, i.e. the illegal value is
+  # legalized rather than retained.
+  MTVEC_ACCESS: rw
+  MTVEC_MODES: [0, 1]
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 256
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
+  # Misaligned scalar loads and stores always trap; there is no splitter and no
+  # hardware misalignment support:
+  #   "translated_instr.ex.cause = (instr_to_translate.is_amo_store_or_cmo && ~is_load_reserved)
+  #    ? ST_AMO_ADDR_MISALIGNED : LD_ADDR_MISALIGNED;"
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/rtl/datapath/rtl/exe_stage/rtl/load_store_queue.sv#L148-L161
+  # The vendor's own test runner skips the misaligned suites for the same reason:
+  #   '"rv64ui-p-ma_data": "Core doesn't support misaligned load/stores",'
+  #   https://github.com/bsc-loca/core_tile/blob/2528e7df6507fa06d372f001e55cfd46efae4a4b/tb/tb_isa_tests/run-tests.py#L15-L18
+  MISALIGNED_LDST: false
+  # The alignment check happens in the load/store queue before the access is handed to
+  # the MMU (load_store_queue.sv#L148-L161 runs on instr_to_translate), so a misaligned
+  # access reports cause 4/6 even when the address would also have page-faulted.
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: high
+  MISALIGNED_AMO: false
+  # An unknown CSR address falls through to
+  #   "default: read_access_exception = 1'b1;"   (csr_bsc.sv#L903)
+  #   "default: update_access_exception = 1'b1;" (csr_bsc.sv#L1822)
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  # "By default, it is followed the RISCV ISA in a strict manner to mark as illegal
+  #  instruction if for example, there is a combination of opcode and funct7 code that
+  #  is not legal." (doc/specifications/decoder_specification/7-Section.tex:6)
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  # WLRL fields (mtvec.MODE, satp.MODE, mcause) are masked or dropped on write, never
+  # trapped — see MTVEC_ILLEGAL_WRITE_BEHAVIOR above and the satp arm at csr_bsc.sv#L1259.
+  TRAP_ON_ILLEGAL_WLRL: false
+  # xtval sourcing, csr_bsc.sv#L2003-L2019:
+  #   address faults (misaligned / access fault / page fault, load, store and fetch):
+  #     "ex_tval = ex_origin_i;" where ex_origin_i is the faulting virtual address
+  #     ("translated_instr.ex.origin = instr_to_translate.data_rs1;", load_store_queue.sv#L157)
+  #   illegal instruction: the 32-bit encoding, zero-extended
+  #     ("decode_instr_o.ex.origin = {32'd0, decode_i.inst};", decoder.sv#L3616-L3619)
+  #   breakpoint: "ex_tval = pc_i;"  (csr_bsc.sv#L2016-L2017)
+  #   everything else: "ex_tval = 64'b0;"
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
+  MTVAL_WIDTH: 64
+  # PMP is not implemented at all.  pmpcfg0-3 and pmpaddr0-15 exist only as empty case
+  # arms that neither drive csr_rdata (so they read the default 64'b0) nor set an
+  # exception:
+  #   "riscv_pkg::CSR_PMPCFG_0:;  ...  riscv_pkg::CSR_PMPADDR_15:;"
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L881-L903
+  # There is no address matcher anywhere in rtl/, and no mseccfg.
+  NUM_PMP_ENTRIES: 0
+  # "InitMappedBase: {40'h0040000000, ...}" — the address decoder works on whole
+  # regions, not on an architectural PMA granule; 3 (8 bytes) is the smallest value
+  # that cannot over-claim.
+  PMA_GRANULARITY: 3
+  # 29 hpm counters, indices 3..31:  "parameter HPM_NUM_COUNTERS = 29"
+  HPM_COUNTER_EN:
+    [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]
+  # Every mhpmcounter is a full 64-bit register:
+  #   "logic [63:0] mhpmcounter_d[HPM_NUM_COUNTERS+3-1:3];"
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/hpm_counters.sv#L73-L74
+  HPM_COUNTER3_WIDTH: 64
+  HPM_COUNTER4_WIDTH: 64
+  HPM_COUNTER5_WIDTH: 64
+  HPM_COUNTER6_WIDTH: 64
+  HPM_COUNTER7_WIDTH: 64
+  HPM_COUNTER8_WIDTH: 64
+  HPM_COUNTER9_WIDTH: 64
+  HPM_COUNTER10_WIDTH: 64
+  HPM_COUNTER11_WIDTH: 64
+  HPM_COUNTER12_WIDTH: 64
+  HPM_COUNTER13_WIDTH: 64
+  HPM_COUNTER14_WIDTH: 64
+  HPM_COUNTER15_WIDTH: 64
+  HPM_COUNTER16_WIDTH: 64
+  HPM_COUNTER17_WIDTH: 64
+  HPM_COUNTER18_WIDTH: 64
+  HPM_COUNTER19_WIDTH: 64
+  HPM_COUNTER20_WIDTH: 64
+  HPM_COUNTER21_WIDTH: 64
+  HPM_COUNTER22_WIDTH: 64
+  HPM_COUNTER23_WIDTH: 64
+  HPM_COUNTER24_WIDTH: 64
+  HPM_COUNTER25_WIDTH: 64
+  HPM_COUNTER26_WIDTH: 64
+  HPM_COUNTER27_WIDTH: 64
+  HPM_COUNTER28_WIDTH: 64
+  HPM_COUNTER29_WIDTH: 64
+  HPM_COUNTER30_WIDTH: 64
+  HPM_COUNTER31_WIDTH: 64
+  # "Event 0 is hardwired to always zero, as per the spec."
+  #   https://github.com/bsc-loca/sargantana/blob/403975c8a3c64c8eb369021a1ac2a374e5df441b/events.md#L47
+  HPM_EVENTS: [0]
+  # "riscv_pkg::CSR_MCOUNTINHIBIT:      mcountinhibit_d = csr_wdata[31:0];" (csr_bsc.sv#L1588)
+  # read back with bit 1 forced to zero, as the spec requires:
+  #   "csr_rdata = {{32{1'b0}}, mcountinhibit_q[31:2], 1'b0, mcountinhibit_q[0]};" (csr_bsc.sv#L679)
+  MCOUNTINHIBIT_IMPLEMENTED: true
+  COUNTINHIBIT_EN:
+    [
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]
+  # "riscv_pkg::CSR_MCOUNTEREN:         mcounteren_d = {csr_wdata[31:0]};" (csr_bsc.sv#L1587)
+  # — all 32 bits are writable, unmasked.
+  MCOUNTENABLE_EN:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]
+  # ---------------- F/D ----------------
+  # mstatus.FS is a normal two-bit field, forced to Dirty when an FP instruction writes:
+  #   csr_bsc.sv#L1842
+  HW_MSTATUS_FS_DIRTY_UPDATE: precise
+  MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
+  # mstatus.VS is writable (it is in SMODE_STATUS_WRITE_MASK, def_pkg.sv#L115-L121) even
+  # though the vector unit is not modelled in this configuration.
+  MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
+  # ---------------- A ----------------
+  # The HPDcache reserves the naturally aligned 8-byte word (hpdcache_uncached.sv#L285-L286;
+  # Sail reservation_set_size_exp = 3).
+  LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
+  LRSC_FAIL_ON_VA_SYNONYM: false
+  # A misaligned LR/SC raises the misaligned exception like any other access:
+  # load_store_queue.sv#L148-L161 covers AMO/LR/SC through is_amo_store_or_cmo.
+  LRSC_MISALIGNED_BEHAVIOR: "always raise misaligned exception"
+  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+  # ---------------- CBO ----------------
+  # "DCacheLineWidth: 512" (drac_pkg.sv#L1310) = 64 bytes.
+  CACHE_BLOCK_SIZE: 64
+  FORCE_UPGRADE_CBO_INVAL_TO_FLUSH: false
+  # ---------------- Zicntr ----------------
+  # csr_bsc.sv#L742: "riscv_pkg::CSR_TIME: begin csr_rdata = reg_time_q;"
+  TIME_CSR_IMPLEMENTED: true
+  # ---------------- S ----------------
+  # "parameter ASID_WIDTH = 13" (csr_bsc.sv#L27); satp.asid is masked to that width on
+  # write ("satp.asid = satp_temp.asid & {{(16-ASID_WIDTH){1'b0}}, {ASID_WIDTH{1'b1}}};",
+  # csr_bsc.sv#L1253).  Note the TLB ties the ASID off
+  # ("assign dtlb_comm_o.req.asid = '0;", load_store_queue.sv#L374), so the field is
+  # architecturally visible but has no effect on translation.
+  ASID_WIDTH: 13
+  # "riscv_pkg::CSR_STVEC:              stvec_d     = {csr_wdata[63:2], 1'b0, csr_wdata[0]};"
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L1241
+  # Unlike mtvec, stvec does NOT force the extra 256-byte alignment in vectored mode,
+  # yet the dispatch adder is the same truncated 6-bit add
+  # ("trunc_sum_6bits(stvec_q[7:2] + ex_cause_i[5:0])", csr_bsc.sv#L2817-L2820), so a
+  # vectored stvec whose base is not 256-byte aligned wraps inside its 256-byte block.
+  # The config records what stvec accepts; the wrap is a DUT bug, not a config knob.
+  STVEC_MODES: [0, 1]
+  STVEC_BASE_ALIGNMENT_VECTORED: 4
+  # satp accepts only MODE 0 and MODE 8.
+  SATP_MODE_BARE: true
+  REPORT_VA_IN_STVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION: true
+  STVAL_WIDTH: 64
+  # mie.SEIE/SSIE/STIE are writable (same mask, csr_bsc.sv#L1565-L1577), mideleg.SEI/SSI/STI
+  # are writable ("mask = riscv_pkg::MIP_SSIP | riscv_pkg::MIP_STIP | riscv_pkg::MIP_SEIP | riscv_pkg::MIP_LCOFIP;",
+  # https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L1557-L1563),
+  # and M-mode software can set mip.SEIP/SSIP/STIP (csr_bsc.sv#L1600-L1610).  SEIP is also
+  # driven by the core's irq_i[1] input, which the standalone testbench ties to zero
+  # (core_tile simulator/sim_top.sv#L263-L269); there is no Sstc, so STIP is software-only.
+  SEI_INTR_IMPL: true
+  SSI_INTR_IMPL: true
+  STI_INTR_IMPL: true
+  # "riscv_pkg::CSR_SCOUNTEREN:         scounteren_d =  {csr_wdata[31:0]};" (csr_bsc.sv#L1240)
+  SCOUNTENABLE_EN:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]
+  # ---------------- Smstateen ----------------
+  # "mask = riscv_pkg::MSTATEEN0_SE | riscv_pkg::MSTATEEN0_ENVCFG;"
+  #   https://github.com/bsc-loca/csr/blob/c5c8a1d1302b62cbb5fd88863a446bfb3312adb9/rtl/csr_bsc.sv#L1612-L1631
+  MSTATEEN_ENVCFG_TYPE: rw
+  # ---------------- H ----------------
+  MUTABLE_MISA_H: false
+  # hstatus.VSXL is forced to 64 every cycle ("hstatus_d.vsxl = riscv_pkg::XLEN_64;",
+  # csr_bsc.sv#L1837), and vsstatus.UXL likewise.
+  VSXLEN: [64]
+  VUXLEN: [64]
+  # hstatus.VSBE is in HSTATUS_WRITE_MASK (def_pkg.sv#L123), but nothing in rtl/ reads it, so
+  # every access is little-endian.
+  VS_MODE_ENDIANNESS: little
+  VU_MODE_ENDIANNESS: little
+  # "parameter VMID_WIDTH = 11" (csr_bsc.sv#L28), and top_drac.sv does not override it.
+  VMID_WIDTH: 11
+  # hgeip and hgeie read 0 and ignore writes (csr_bsc.sv#L581-L586, #L1376-L1380).
+  NUM_EXTERNAL_GUEST_INTERRUPTS: 0
+  # "if ((hgatp.mode != def_pkg::MODE_OFF) && (hgatp.mode != def_pkg::MODE_SV39x4))
+  #    hgatp_d.mode = hgatp_q.mode;"  (csr_bsc.sv#L1409-L1410)
+  GSTAGE_MODE_BARE: true
+  SV39X4_TRANSLATION: true
+  SV48X4_TRANSLATION: false
+  SV57X4_TRANSLATION: false
+  # "if ((vsatp.mode == def_pkg::MODE_OFF) || (vsatp.mode == def_pkg::MODE_SV39)) vsatp_d = vsatp;"
+  # (csr_bsc.sv#L1510-L1511): a write with any other mode is dropped.
+  VSSTAGE_MODE_BARE: true
+  SV39_VSMODE_TRANSLATION: true
+  SV48_VSMODE_TRANSLATION: false
+  SV57_VSMODE_TRANSLATION: false
+  IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
+  # "vstvec_d = {csr_wdata[63:2], 1'b0, csr_wdata[0]};" (csr_bsc.sv#L1484)
+  VSTVEC_MODES: [0, 1]
+  TRAP_ON_ECALL_FROM_VS: true
+  # hvip.VSSIP/VSTIP/VSEIP are writable (csr_bsc.sv#L1352-L1358).
+  VSEI_INTR_IMPL: true
+  VSSI_INTR_IMPL: true
+  VSTI_INTR_IMPL: true
+  # vstval takes the same ex_tval as stval (csr_bsc.sv#L2003-L2019, #L2084).
+  REPORT_VA_IN_VSTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION: true
+  REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION: true
+  # htval and mtval2 get ex_tval2, which is GPA >> 2 on a guest-page fault
+  # (csr_bsc.sv#L2021-L2029, #L2098, #L2144).
+  REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_LOAD_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_STORE_AMO_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_INSTRUCTION_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT: true
+  # Every source of ex_tinst drives zero (e.g. "translated_instr.ex.tinst = '0;",
+  # load_store_queue.sv#L159-L207), so mtinst and htinst are always written with 0.
+  TINST_VALUE_ON_BREAKPOINT: "always zero"
+  TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED: "always zero"
+  TINST_VALUE_ON_LOAD_ACCESS_FAULT: "always zero"
+  TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED: "always zero"
+  TINST_VALUE_ON_LOAD_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_MCALL: "always zero"
+  TINST_VALUE_ON_SCALL: "always zero"
+  TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT: "always zero"
+  TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED: "always zero"
+  TINST_VALUE_ON_STORE_AMO_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_UCALL: "always zero"
+  TINST_VALUE_ON_VIRTUAL_INSTRUCTION: "always zero"
+  TINST_VALUE_ON_VSCALL: "always zero"
+  # "mask = (riscv_pkg::HSTATEEN0_SE | riscv_pkg::HSTATEEN0_ENVCFG) & mstateen0_q;"
+  # (csr_bsc.sv#L1422-L1429)
+  HSTATEEN_ENVCFG_TYPE: rw
+  # "hcounteren_d = csr_wdata[31:0];" (csr_bsc.sv#L1385)
+  HCOUNTENABLE_EN:
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true
+    - true

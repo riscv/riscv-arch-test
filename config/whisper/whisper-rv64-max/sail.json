@@ -470,7 +470,7 @@
         "event": "EV_FENCE",
         "selector": {
           "len": 64,
-          "value": "0x1"
+          "value": "0xC"
         }
       }
     ]

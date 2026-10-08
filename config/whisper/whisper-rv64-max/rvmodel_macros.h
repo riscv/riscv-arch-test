@@ -196,8 +196,14 @@
 ##### Sscofpmf #####
 
 #define RVMODEL_HPM_COUNTER 3   // HPM counter used by the Sscofpmf tests (3 to 31)
-#define RVMODEL_MHPMEVENT_VAL  1   // mapped to the Fence event in whisper.json and to EV_FENCE in sail.json
+// Selector 12 is the Mult event in whisper.json. The Sail reference counts EV_FENCE for the same
+// selector (sail.json) and triggers it with a fence (sail_macros.h).
+#define RVMODEL_MHPMEVENT_VAL  12
+// The Sscofpmf tests are not built with M in -march, so enable it for the multiply.
 #define RVMODEL_MHPMEVENT_CODE(_R1, _R2)  \
-    fence
+    .option push;                         \
+    .option arch, +m;                     \
+    mul _R2, _R2, _R2;                    \
+    .option pop
 
 #endif // _RVMODEL_MACROS_H

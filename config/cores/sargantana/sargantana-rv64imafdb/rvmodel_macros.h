@@ -149,4 +149,11 @@
 // There is no interrupt controller, so RVMODEL_SET/CLR_SEXT_INT and RVMODEL_SET/CLR_SSW_INT are
 // left undefined and ACT raises the supervisor interrupts through mip.SEIP and mip.SSIP.
 
+// Sscofpmf //
+
+#define RVMODEL_HPM_COUNTER 3
+#define RVMODEL_MHPMEVENT_VAL 0
+#define RVMODEL_MHPMEVENT_CODE(_R1, _R2) \
+    nop
+
 #endif // _RVMODEL_MACROS_H

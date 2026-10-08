@@ -2,7 +2,8 @@
 
 == Profiles & Test Suites
 
-This test plan addresses Phase 0, Phase 1, and Phase 2 RISC-V certification objectives, including the following ratified and unratified profiles.  The following is a summary of the Certification Requirement Documents (CRDs) for each phase, and changes to the CRDs supersede anything in this summary.
+This test plan contains test suites for all of the mandatory and optional extensions in the RVA23 and earlier profiles, and for various other extensions.
+Some of these profiles, ratified and unratified, are listed below:
 
 * https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVI20 Profile] (Ratified)
 ** RV{32/64}IMAFDC_Zifencei_Zicntr_Zihpm with no Sm machine mode, no PMP.  Zicsr instructions only access counters and floating-point CSRs. Optional support for misaligned loads/stores (MISALIGNED_LDST parameter).
@@ -17,6 +18,7 @@ This test plan addresses Phase 0, Phase 1, and Phase 2 RISC-V certification obje
 Where a CRD is available, it lists the mandatory and optional extensions and IN/OUT-OF_SCOPE parameters.
 
 This test plan makes some further assumptions, which should be checked against the CRDs when they become available:
+
 * All certificates for profiles that support interrupts require that the platform be able to set and clear via software all implemented interrupt pending bits
 * Although the RVI20 profile states that ecall causes a trap to the execution environment, it also says that Zicsr instructions are not supported independent of the Zicntr or F instructions, so there
 is no way to control mtvec and write a trap handler.  Therefore ecall is not exercised.

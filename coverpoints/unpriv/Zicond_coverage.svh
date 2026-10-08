@@ -247,5 +247,6 @@ function void zicond_sample(int hart, int issue, ins_t ins);
         "czero.nez"     : begin
             Zicond_czero_nez_cg.sample(ins);
         end
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

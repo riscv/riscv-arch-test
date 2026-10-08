@@ -10,11 +10,12 @@
 
 import re
 from dataclasses import dataclass
+from functools import cache
 
 from testgen.constants import ELEN_MAX, MIN_SEW_MIN
 
 
-@dataclass
+@dataclass(frozen=True)
 class VectorInstructionInfo:
     """
     Information about individual vector instructions derived from instruction names.
@@ -51,6 +52,7 @@ class VectorInstructionInfo:
         return 1
 
 
+@cache
 def parse_vector_instruction_info(instruction: str, instruction_type: str) -> VectorInstructionInfo:
     """Parse vector instruction facts encoded in an instruction name."""
 

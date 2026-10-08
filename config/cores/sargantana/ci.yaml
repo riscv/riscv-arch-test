@@ -1,0 +1,43 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for the BSC Sargantana core
+
+ci_enabled: true
+
+# bsc-loca/core_tile @ 2528e7df. Paths are under
+#   tile:  https://github.com/bsc-loca/core_tile/blob/2528e7df/
+#   core:  https://github.com/bsc-loca/sargantana/blob/403975c8/rtl/
+#   fpu:   https://github.com/bsc-loca/sargantana/blob/403975c8/rtl/datapath/rtl/exe_stage/rtl/old_fpu/
+#   csr:   https://github.com/bsc-loca/csr/blob/c5c8a1d1/rtl/
+#   mmu:   https://github.com/bsc-loca/mmu/blob/0f4727a7/rtl/
+#   cvfpu: https://github.com/openhwgroup/cvfpu/blob/84066933/src/
+#   F             FMA sets UF when the result rounds up to the smallest normal: cvfpu:fpnew_fma_multi.sv#L801-L803
+#   ZicsrF        fmul.s has the same UF bug: cvfpu:fpnew_fma_multi.sv#L801-L803
+#   ZfaF          fleq.s/fltq.s raise NV on a quiet NaN: fpu:zfa_post_process.sv#L88-L98
+#   ZfaD          fleq/fltq raise NV on a quiet NaN; fround.s/froundnx.s ignore NaN-boxing; fcvtmod.w.d drops NX
+#   Zfhmin        fcvt.s.h ignores NaN-boxing; fcvt.h.s rounds a tiny value up under RMM: fpu:conv_zfhmin.sv
+#   ZfhminD       fcvt.d.h/fcvt.s.h ignore NaN-boxing; fcvt.h.d rounds a tiny value up under RMM: fpu:conv_zfhmin.sv
+#   SmF           csrr mstatus just after an FP write reads SD = 0: csr:csr_bsc.sv#L1009
+#   Zicntr        Testbench: time is tied to 0: tile:simulator/sim_top.sv#L263-L268
+#   ZicntrS       U mode may read a counter if mcounteren or scounteren allows it: csr:csr_bsc.sv#L2411
+#   ZicntrU       Same counter-enable bug: csr:csr_bsc.sv#L2411
+#   Zifencei      fence.i does not drain the HPDcache write buffer first: core:control_unit/rtl/control_unit.sv#L323
+#   Sm            mstatus.MPP and menvcfg.CBIE keep the reserved 0b10: csr:csr_bsc.sv#L1525, #L1595; mideleg.SGEI
+#                 is read-only one with GEILEN = 0: csr:csr_bsc.sv#L1559-L1560; misa.V is set without V
+#   S             sepc[1] is writable with IALIGN = 32: csr:csr_bsc.sv#L1244; senvcfg.CBIE keeps 0b10: #L1242
+#   InterruptsSm  mideleg is applied after the interrupt is picked by cause, so a delegated SEI hides an M-level STI:
+#                 csr:csr_bsc.sv#L1888-L1936
+#   Sv            A non-canonical VA gives an access fault and is checked at 41 bits:
+#                 core:datapath/rtl/exe_stage/rtl/load_store_queue.sv#L197; bad PTEs hang or give the wrong fault
+#   SvZicbo       PTE reads are never PMA-checked, so a walk to a faulting address page-faults:
+#                 mmu:dcache_adapters/bsc_mmu_hpdc_adapter.sv#L87-L93
+#   ExceptionsSv  A translated fetch is not PMA-checked: core:datapath/rtl/if_stage_1/rtl/if_stage_1.sv#L139-L141
+#   ExceptionsSvZalrsc  LR/SC exception cases under Sv39 deadlock ("200 cycles without a valid commit"), like the Sv hangs
+#   H             hedeleg[10] and hedeleg[23:20] are writable but must be read-only zero: csr:csr_bsc.sv#L1320-L1339;
+#                 an hlv.d page fault in HS mode matches Sail's cause and tval but not the rest of its trap signature
+#                 (status/GVA/htinst; HS-mode trap CSR writes: csr:csr_bsc.sv#L2086-L2099)
+exclude_extensions: "F,ZicsrF,ZfaF,ZfaD,Zfhmin,ZfhminD,SmF,Zicntr,ZicntrS,ZicntrU,Zifencei,Sm,S,InterruptsSm,Sv,SvZicbo,ExceptionsSv,ExceptionsSvZalrsc,H"
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler libboost-dev libboost-regex-dev libboost-system-dev"
+install_script: ".github/scripts/install-sargantana.sh"
+setup_script: ".github/scripts/setup-sargantana.sh"

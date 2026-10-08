@@ -90,10 +90,6 @@
         `cover_info("//      ExceptionsU - Enabled");
         `include "ExceptionsU_coverage_init.svh"
     `endif
-    `ifdef COVER_EXCEPTIONSVF
-        `cover_info("//      ExceptionsVf - Enabled");
-        `include "ExceptionsVf_coverage_init.svh"
-    `endif
     `ifdef COVER_EXCEPTIONSVF16
         `cover_info("//      ExceptionsVf16 - Enabled");
         `include "ExceptionsVf16_coverage_init.svh"
@@ -601,10 +597,6 @@
     `ifdef COVER_ZFHMIN
         `cover_info("//      Zfhmin - Enabled");
         `include "Zfhmin_coverage_init.svh"
-    `endif
-    `ifdef COVER_ZFHMIND
-        `cover_info("//      ZfhminD - Enabled");
-        `include "ZfhminD_coverage_init.svh"
     `endif
     `ifdef COVER_ZIC64BZICBOZ
         `cover_info("//      Zic64bZicboz - Enabled");

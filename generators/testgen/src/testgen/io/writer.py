@@ -16,7 +16,7 @@ from testgen.data.config import TestConfig
 from testgen.data.registers import IntegerRegisterFile
 from testgen.data.test_chunk import TestChunk
 from testgen.io.templates import insert_footer_template, insert_header_template
-from testgen.io.testplans import VECTOR_SCALAR_CHECK_SUFFIX
+from testgen.io.vector_scalar_check import VECTOR_SCALAR_CHECK_SUFFIX
 
 SIGUPD_MARGIN = 10
 

@@ -12,10 +12,11 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from act.certificate_tests import get_certificate_test_suites
-from act.config import Config, base_test_suite, load_config
+from act.config import Config, load_config
 from act.parse_test_constraints import ExtensionRequirement, TestMetadata
 from act.parse_udb_config import get_config_params, get_implemented_extensions, prepare_dut_outputs
 from act.toolchain import EXPERIMENTAL_EXTENSIONS
+from act.vector_check import base_test_suite
 
 PRIV_EXTENSIONS = {"Sm", "S", "U", "H"}
 

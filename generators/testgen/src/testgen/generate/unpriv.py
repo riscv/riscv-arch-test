@@ -20,7 +20,8 @@ from testgen.data.test_chunk import TestChunk, split_test_chunks
 from testgen.formatters.registry import get_instruction_type_config
 from testgen.instructions.vector import parse_vector_instruction_info
 from testgen.io.templates import canonicalize_extensions
-from testgen.io.testplans import VECTOR_SCALAR_CHECK_SUFFIX, read_testplan, split_vector_scalar_check
+from testgen.io.testplans import read_testplan
+from testgen.io.vector_scalar_check import VECTOR_SCALAR_CHECK_SUFFIX, split_vector_scalar_check
 from testgen.io.writer import write_test_file
 
 

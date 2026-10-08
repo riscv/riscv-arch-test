@@ -30,10 +30,10 @@ from rich.progress import (
 
 from testgen.constants import E_EXTENSION_TESTS
 from testgen.generate import generate_priv_test, generate_unpriv_extension_tests
-from testgen.io.testplans import (
-    VECTOR_SCALAR_CHECK_SUFFIX,
+from testgen.io.testplans import get_extensions
+from testgen.io.vector_scalar_check import (
     VectorCheck,
-    get_extensions,
+    apply_vector_check,
     get_vector_scalar_check_extensions,
 )
 from testgen.priv import get_priv_test_suites
@@ -130,13 +130,7 @@ def generate_all_tests(
             if ext in priv_ext_list:
                 priv_ext_list.remove(ext)
 
-    if vector_check == VectorCheck.SCALAR:
-        unpriv_ext_list = list(
-            dict.fromkeys(
-                ext + VECTOR_SCALAR_CHECK_SUFFIX if ext + VECTOR_SCALAR_CHECK_SUFFIX in scalar_check_extensions else ext
-                for ext in unpriv_ext_list
-            )
-        )
+    unpriv_ext_list = apply_vector_check(unpriv_ext_list, testplan_dir, vector_check)
 
     # Build list of test generation tasks
     tasks: list[UnprivTask | PrivTask] = []

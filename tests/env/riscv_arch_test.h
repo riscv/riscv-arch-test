@@ -32,4 +32,7 @@
 #include "rvtest_trap_handler.h"
 #include "rvtest_invisible_trap_handler.h"
 #include "rvtest_failure_code.h"
+#ifdef RVTEST_VEC_SCALAR_CHECK
+  #include "rvtest_vector_scalar_check_failure.h"
+#endif
 #include "rvtest_setup.h"

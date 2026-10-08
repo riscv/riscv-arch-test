@@ -10,13 +10,13 @@ import random
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
-    emulated_load_lines,
     get_lmul_flag,
     handle_parameter_exclusions,
     index_fixup_lines,
     load_test_vtype,
     load_vec_regs,
     prep_mask_v,
+    reload_after_store,
     write_sigupd_v,
     write_sigupd_v_len,
 )
@@ -211,33 +211,23 @@ def format_vsxseg_like_type(
         test_data.int_regs.return_register(int(random_vl_reg[1:]))
 
     equivalent_load = "vl" + instr_str[2:]
-    if test_data.config.vector_scalar_check:
-        mask_suffix = ", v0.t" if params.maskval else ""
-        test = [
-            f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}{mask_suffix}",
-            *emulated_load_lines(
-                test_data,
-                vd=params.vd,
-                eew=params.sew,
-                emul=params.lmul,
-                base_reg=params.rs1,
-                segments=segments,
-                masked=bool(params.maskval),
-                index_reg=params.vs2,
-                index_eew=index_eew,
-                index_emul=index_emul,
-            ),
-        ]
-    elif params.maskval:
-        test = [
-            f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}, v0.t",
-            f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}, v0.t",
-        ]
-    else:
-        test = [
-            f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}",
-            f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}",
-        ]
+    mask_suffix = ", v0.t" if params.maskval else ""
+    test = [
+        f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}{mask_suffix}",
+        *reload_after_store(
+            test_data,
+            [f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}{mask_suffix}"],
+            vd=params.vd,
+            eew=params.sew,
+            emul=params.lmul,
+            base_reg=params.rs1,
+            segments=segments,
+            masked=bool(params.maskval),
+            index_reg=params.vs2,
+            index_eew=index_eew,
+            index_emul=index_emul,
+        ),
+    ]
 
     # We no longer need vs2. This allows us to have enough registers for length SIGUPD where the maximum number of
     # registers (25) are required by the test section

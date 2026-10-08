@@ -1617,42 +1617,7 @@
     .option arch, RVTEST_VEC_INIT_ARCH
     // splat integer registers into all of vector registers
   #ifdef RVTEST_VEC_SCALAR_CHECK
-    // load a constant pattern with unit-stride loads instead of splatting
-    vsetvli x1, x0, e32, m1, ta, ma // configure vector to vl = VLMAX
-    LA (x1, rvtest_vsc_init_e32)
-    vle32.v v0, (x1)
-    vle32.v v1, (x1)
-    vle32.v v2, (x1)
-    vle32.v v3, (x1)
-    vle32.v v4, (x1)
-    vle32.v v5, (x1)
-    vle32.v v6, (x1)
-    vle32.v v7, (x1)
-    vle32.v v8, (x1)
-    vle32.v v9, (x1)
-    vle32.v v10, (x1)
-    vle32.v v11, (x1)
-    vle32.v v12, (x1)
-    vle32.v v13, (x1)
-    vle32.v v14, (x1)
-    vle32.v v15, (x1)
-    vle32.v v16, (x1)
-    vle32.v v17, (x1)
-    vle32.v v18, (x1)
-    vle32.v v19, (x1)
-    vle32.v v20, (x1)
-    vle32.v v21, (x1)
-    vle32.v v22, (x1)
-    vle32.v v23, (x1)
-    vle32.v v24, (x1)
-    vle32.v v25, (x1)
-    vle32.v v26, (x1)
-    vle32.v v27, (x1)
-    vle32.v v28, (x1)
-    vle32.v v29, (x1)
-    vle32.v v30, (x1)
-    vle32.v v31, (x1)
-    LI (x1,  (0xFEEDBEADFEEDBEAD & MASK)) // restore x1
+    RVTEST_VSC_INIT_VREGS
   #else
     vsetvli x1, x0, e32, m1, ta, ma // configure vector to vl = VLMAX
     LI (x1,  (0xFEEDBEADFEEDBEAD & MASK)) // restore x1 after vsetvli clobbers it

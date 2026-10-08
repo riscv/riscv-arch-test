@@ -15,13 +15,14 @@ from pathlib import Path
 import pyjson5
 
 from act.build_types import COVERAGE_STEP_TIMEOUT_SECONDS, BuildTask, PythonAction, SubprocessAction, SymlinkAction
-from act.config import Config, CoverageSimulator, RefModelType, base_test_suite, spike_isa_string
+from act.config import Config, CoverageSimulator, RefModelType, spike_isa_string
 from act.coverreport import generate_report, merge_summaries
 from act.parse_test_constraints import TestMetadata
 from act.sail_to_rvvi import sailLog2Trace
 from act.sig_modify import process_signature_file
 from act.toolchain import Toolchain
 from act.trap_report import generate_trap_report
+from act.vector_check import base_test_suite
 
 # Flags used when generating .elf.objdump files.
 # -x: print all headers (file, section, program segment, relocation)

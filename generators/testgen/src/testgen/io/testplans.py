@@ -10,7 +10,6 @@
 
 import csv
 from dataclasses import dataclass
-from enum import Enum
 from pathlib import Path
 
 
@@ -24,32 +23,6 @@ def get_extensions(testplan_dir: Path) -> list[str]:
         else:
             extensions.append(extension)
     return extensions
-
-
-VECTOR_SCALAR_CHECK_SUFFIX = "-scalarcheck"
-
-
-class VectorCheck(str, Enum):
-    """How vector tests check results: with vector instructions or with scalar code."""
-
-    VECTOR = "vector"
-    SCALAR = "scalar"
-
-
-def get_vector_scalar_check_extensions(testplan_dir: Path) -> list[str]:
-    """Get the vector suites that can also be generated with scalar self-checking (e.g. Vx8-scalarcheck)."""
-    return [
-        extension + VECTOR_SCALAR_CHECK_SUFFIX
-        for extension in get_extensions(testplan_dir)
-        if extension.startswith(("Vx", "Vls"))
-    ]
-
-
-def split_vector_scalar_check(testsuite: str) -> tuple[str, bool]:
-    """Split a suite name into its base suite and whether it uses scalar self-checking."""
-    if testsuite.endswith(VECTOR_SCALAR_CHECK_SUFFIX):
-        return testsuite.removesuffix(VECTOR_SCALAR_CHECK_SUFFIX), True
-    return testsuite, False
 
 
 def expand_vector_extension(extension: str) -> list[str]:

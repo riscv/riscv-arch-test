@@ -8,7 +8,6 @@
 ##################################
 
 import os
-import shutil
 import sys
 from pathlib import Path
 from typing import Annotated
@@ -20,16 +19,11 @@ from act.build import build, prune_empty_dirs
 from act.build_plan import generate_build_plan
 from act.build_types import BuildTask
 from act.certificate_tests import certificate_exists
-from act.config import (
-    VECTOR_SCALAR_CHECK_SUFFIX,
-    CoverageSimulator,
-    VectorCheck,
-    base_test_suite,
-    has_scalar_check_variant,
-)
+from act.config import CoverageSimulator
 from act.coverreport import print_coverage_summary
-from act.parse_test_constraints import TestMetadata, TestYamlHeaderError, generate_test_dict
+from act.parse_test_constraints import TestYamlHeaderError, generate_test_dict
 from act.select_tests import prepare_configs_and_select_tests
+from act.vector_check import VectorCheck, remove_other_variant_elfs
 
 # CLI interface setup
 act_app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
@@ -152,7 +146,7 @@ def run_act(
 
         config_names.append(config.name)
         if not dry_run:
-            remove_other_vector_check_elfs(workdir / config.name / "elfs", selected_tests)
+            remove_other_variant_elfs(workdir / config.name / "elfs", selected_tests)
         tasks.extend(
             generate_build_plan(
                 config,
@@ -213,23 +207,6 @@ def run_act(
             if overall_summary.exists():
                 print()
                 print_coverage_summary(overall_summary, name)
-
-
-def remove_other_vector_check_elfs(elf_dir: Path, selected_tests: dict[str, TestMetadata]) -> None:
-    """Remove the ELFs of the unselected variant of each selected vector suite.
-
-    ELFs from an earlier build with the other VECTOR_CHECK setting would otherwise be run as well.
-    """
-    selected_suites = {Path(test_name).parent.name for test_name in selected_tests}
-    for suite in selected_suites:
-        base_suite = base_test_suite(suite)
-        if not has_scalar_check_variant(base_suite):
-            continue
-        other_suite = base_suite if suite != base_suite else base_suite + VECTOR_SCALAR_CHECK_SUFFIX
-        if other_suite in selected_suites:
-            continue
-        for other_dir in elf_dir.glob(f"*/{other_suite}"):
-            shutil.rmtree(other_dir)
 
 
 def main() -> None:

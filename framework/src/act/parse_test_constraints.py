@@ -17,7 +17,7 @@ from rich.panel import Panel
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 
-from act.config import VECTOR_SCALAR_CHECK_SUFFIX, VectorCheck, base_test_suite, has_scalar_check_variant
+from act.vector_check import VectorCheck, base_test_suite, requested_suite, selects_suite
 
 _TEST_FILE_SUFFIXES = (".S", ".c")
 
@@ -194,8 +194,7 @@ def generate_test_dict(
         for ext in extension_list:
             if ext in exclude_list:
                 continue
-            if vector_check == VectorCheck.SCALAR and has_scalar_check_variant(ext):
-                ext += VECTOR_SCALAR_CHECK_SUFFIX
+            ext = requested_suite(ext, vector_check)
             for suffix in _TEST_FILE_SUFFIXES:
                 for test_file in tests_dir.rglob(f"*/{ext}/*{suffix}"):
                     config = extract_yaml_config(test_file)
@@ -207,10 +206,7 @@ def generate_test_dict(
                 ext_dir = test_file.parent.name
                 if ext_dir == "env" or base_test_suite(ext_dir) in exclude_list:
                     continue
-                is_scalar_check = ext_dir != base_test_suite(ext_dir)
-                if vector_check == VectorCheck.SCALAR and has_scalar_check_variant(ext_dir):
-                    continue
-                if vector_check == VectorCheck.VECTOR and is_scalar_check:
+                if not selects_suite(ext_dir, vector_check):
                     continue
                 config = extract_yaml_config(test_file)
                 test_file_unique_name = str(test_file.relative_to(tests_dir))

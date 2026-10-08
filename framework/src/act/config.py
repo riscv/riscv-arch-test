@@ -7,7 +7,6 @@
 # Parse test framework configuration files
 ##################################
 
-import re
 import shutil
 import subprocess
 from enum import Enum
@@ -73,27 +72,6 @@ _SPIKE_ISA: dict[int, str] = {
 def spike_isa_string(xlen: int) -> str:
     """Return spike's ``--isa=`` string for the given XLEN."""
     return _SPIKE_ISA[xlen]
-
-
-class VectorCheck(str, Enum):
-    """How vector tests check results: with vector instructions or with scalar code."""
-
-    VECTOR = "vector"
-    SCALAR = "scalar"
-
-
-# Scalar self-checking vector suites are named after their base suite, e.g. Vx8-scalarcheck
-VECTOR_SCALAR_CHECK_SUFFIX = "-scalarcheck"
-
-
-def base_test_suite(suite: str) -> str:
-    """Return the base suite of a scalar self-checking vector suite, or the suite itself."""
-    return suite.removesuffix(VECTOR_SCALAR_CHECK_SUFFIX)
-
-
-def has_scalar_check_variant(suite: str) -> bool:
-    """Return whether a suite has a scalar self-checking variant."""
-    return re.fullmatch(r"(Vx|Vls|Vf)\d+", suite) is not None
 
 
 class CoverageSimulator(str, Enum):

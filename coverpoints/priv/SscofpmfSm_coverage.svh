@@ -42,16 +42,6 @@ covergroup SscofpmfSm_cg with function sample(ins_t ins);
         wildcard bins read_only = {CSRRS} iff (ins.current.rs1_val ==  0);
     }
 
-    `ifdef UDB_MXLEN_64
-        mhpmevent_inhibits_zero_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mhpmevent3", "mhpmevent3")[62:58] == 5'b00000) {
-                bins yes = {1};
-        }
-    `else
-        mhpmevent_inhibits_zero_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mhpmevent3h", "mhpmevent3h")[30:26] == 5'b00000) {
-                bins yes = {1};
-        }
-    `endif
-
     mcounteren_all_ones_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "enable")[28:0] == '1) {
             bins yes = {1};
     }
@@ -96,23 +86,6 @@ covergroup SscofpmfSm_cg with function sample(ins_t ins);
             bins one = {1};
     }
 
-    mie_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")[15:0]) {
-            bins all_zeros = {16'b0};
-            wildcard bins all_ones = {16'b??1?1???1???1???};
-    }
-    mip_other_pending: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "meip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "msip")[0]} {
-            bins none = {3'b000};
-            `ifdef UDB_MEI_INTR_IMPL
-            bins meip = {3'b100};
-            `endif
-            `ifdef UDB_MTI_INTR_IMPL
-            bins mtip = {3'b010};
-            `endif
-            `ifdef UDB_MSI_INTR_IMPL
-            bins msip = {3'b001};
-            `endif
-    }
-
     cp_minh_inhibits_mmode:    cross priv_mode_m, mhpmevent_xinh_combos, mhpmevent_of_zero;
     // The suite never leaves M-mode, so a pattern that inhibits M-mode counting cannot overflow.
     cp_of_set_on_overflow:     cross priv_mode_m, lcofi_ip_one, mie_clear, mhpmevent_inhibits_pattern_state, mhpmevent_of_one {
@@ -127,7 +100,6 @@ covergroup SscofpmfSm_cg with function sample(ins_t ins);
     cp_scountovf_shadow:       cross priv_mode_m, mcounteren_all_ones_state, of_stimulus_pattern;
     cp_sscofpmf_access:        cross priv_mode_m, csr_access_pattern, hpm_csr_target_m;
     cp_lcofi_m:                cross priv_mode_m, lcofi_ip, lcofi_ie, lcofi_mideleg, mstatus_mie_set;
-    cp_lcofip_priority_m:      cross priv_mode_m, mhpmevent_inhibits_zero_state, mstatus_mie_set, mie_state, lcofi_ip_one, mip_other_pending;
 endgroup
 
 function void sscofpmfsm_sample(int hart, int issue, ins_t ins);

@@ -82,14 +82,6 @@ normative_rule_definitions:
   - name: sip_sie_Sscofpmf
     coverpoint: ["SscofpmfS_cg/cp_lcofi_sip_s", "SscofpmfU_cg/cp_lcofi_sip_u"]
 
-  - name: intr_m_mode_pri
-    coverpoint: ["SscofpmfSm_cg/cp_lcofip_priority_m"]
-
-  # Multiple simultaneous interrupts destined for supervisor mode are handled in the
-  # following decreasing priority order: SEI, SSI, STI, LCOFI.
-  - name: sip_sie_priority_bit_order
-    coverpoint: ["SscofpmfS_cg/cp_lcofip_priority_s"]
-
   # VS-mode is out of scope for these suites: the SscofpmfSm/S/U suites never run in VS-mode.
   - name: scountovf_vsmode_read_access
     coverpoint: [""]

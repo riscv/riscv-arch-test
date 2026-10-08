@@ -114,17 +114,6 @@ def write_counter_all_ones(r_temp: int, priv_mode: str) -> list[str]:
     ]
 
 
-def prime_counter_overflow(r_val: int, r_hval: int, r_temp: int, r_addr: int, priv_mode: str) -> list[str]:
-    """Overflow RVTEST_CSR_MHPMCOUNTER with no inhibits, which sets OF and raises LCOFIP.
-    Below M the T-SBI round trip is counted too and may supply the wrapping event."""
-    return [
-        *write_event_pattern(r_val, r_hval, 0, priv_mode),
-        *write_counter_all_ones(r_temp, priv_mode),
-        f"LA(x{r_addr}, scratch)",
-        f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_val})",
-    ]
-
-
 _INHIBIT_MODE_SUFFIX = {"Sm": "mmode", "S": "smode", "U": "umode"}
 
 

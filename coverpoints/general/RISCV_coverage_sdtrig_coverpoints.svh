@@ -42,6 +42,18 @@ tdata1_m_on: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1"
     type_option.weight = 0;
     bins on = {1'b1};
 }
+tdata1_chain_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "chain")[0] {
+    type_option.weight = 0;
+    bins disabled = {1'b0};
+}
+tdata1_execute_on: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "execute")[0] {
+    type_option.weight = 0;
+    bins on = {1'b1};
+}
+tdata1_action_breakpoint: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "action") {
+    type_option.weight = 0;
+    bins breakpoint = {0};
+}
 tdata1_select_adr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "select")[0] {
     type_option.weight = 0;
     bins adr = {1'b0};

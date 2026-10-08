@@ -93,7 +93,7 @@ covergroup SdtrigSm_tcontrol_cg with function sample(ins_t ins);
     }
 
     // main coverpoints
-    cp_tcontrol_enable:     cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata2_pc, mte;  // NTRIG * 2 mte
+    cp_tcontrol_enable:     cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_execute_on, tdata1_select_adr, tdata1_action_breakpoint, tdata1_chain_disabled, tdata2_pc, mte;  // NTRIG * 2 mte
     cp_tcontrol_mtrap:      cross priv_mode_m, mte, mpte, illegal_insn;                                                       // 2 mte * 2 mpte
     cp_tcontrol_mret:       cross priv_mode_m, mte, mpte, mret;                                                               // 2 mte * 2 mpte
 endgroup
@@ -110,9 +110,6 @@ covergroup SdtrigSm_mcontrol6_cg with function sample(ins_t ins);
     tdata1_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "m")[0] {
         bins disabled = {1'b0};
         bins enabled  = {1'b1};
-    }
-    tdata1_chain_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "chain")[0] {
-        bins disabled = {1'b0};
     }
     tdata1_xsl_store: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "execute")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "store")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "load")[0]} {
         bins store = {3'b010};

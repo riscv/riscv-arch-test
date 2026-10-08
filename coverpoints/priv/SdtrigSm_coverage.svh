@@ -108,6 +108,22 @@ covergroup SdtrigSm_mcontrol6_cg with function sample(ins_t ins);
         bins pc   = {1'b1};
         bins zero = {1'b0} iff (ins.current.csr[CSR_TDATA2] == '0);
     }
+    tdata2_ls_adr: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.rs1_val     ? 2'd0 :
+                               ins.current.csr[CSR_TDATA2] == ins.current.rs1_val + 8 ? 2'd1 :
+                               ins.current.csr[CSR_TDATA2] == '0                      ? 2'd2 : 2'd3) {
+        bins scratch        = {2'd0};
+        bins scratch_plus_8 = {2'd1};
+        bins zero           = {2'd2};
+    }
+    tdata1_size_ls: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "size")[2:0] {
+        bins any = {3'd0};
+        `ifdef UDB_SDTRIG_MCONTROL6_SIZE_AVAILABLE
+            bins b8  = {3'd1};
+            bins b16 = {3'd2};
+            bins b32 = {3'd3};
+            bins b64 = {3'd5};
+        `endif
+    }
     tdata2_exec_data: coverpoint ins.current.csr[CSR_TDATA2] {
         bins addi_hint = {32'h00008013};
         bins nofire    = {2}; // no instruction in the test has this encoding
@@ -272,11 +288,11 @@ covergroup SdtrigSm_mcontrol6_cg with function sample(ins_t ins);
         ignore_bins no_match = binsof(tdata2_adr.zero);
     }
     cp_sdtrig_mcontrol6_execute_adr:     cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_adr, tdata1_xsl, tdata2_pc, exec_adr_target;                                            // NTRIG * 8 xsl * 2 tdata2
-    cp_sdtrig_mcontrol6_load_store_adr:  cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_adr, tdata1_xsl, tdata2_adr, lw_sw;                                                     // NTRIG * 8 xsl * 2 tdata2 * 2 instrs
+    cp_sdtrig_mcontrol6_load_store_adr:  cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_adr, tdata1_xsl, tdata2_ls_adr, store_offset, lw_sw;                                    // NTRIG * 8 xsl * 3 tdata2 * 2 offsets * 2 instrs
     cp_sdtrig_mcontrol6_execute_data:    cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_data, tdata1_xsl, tdata2_exec_data, addi_hint;                                          // NTRIG * 8 xsl * 2 tdata2
     cp_sdtrig_mcontrol6_load_store_data: cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_data, tdata1_xsl, lw_sw;                                                                // NTRIG * 8 xsl * 2 instrs
     cp_sdtrig_mcontrol6_execute_size:    cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_select_data, tdata1_xsl_load_store_execute, tdata1_size, tdata2_exec_size, exec_size_instr;               // NTRIG * 7 sizes * 2 tdata2 * 2 instrs
-    cp_sdtrig_mcontrol6_load_store_size: cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_select_adr, tdata1_xsl_load_store, tdata1_size, tdata2_adr, load_store_instr;                  // NTRIG * 7 sizes * 2 tdata2 * instrs
+    cp_sdtrig_mcontrol6_load_store_size: cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_select_adr, tdata1_xsl_load_store, tdata1_size_ls, tdata2_adr, load_store_instr;               // NTRIG * 5 sizes * 2 tdata2 * instrs
     cp_sdtrig_mcontrol6_match:           cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_size_any, tdata1_select_data, tdata1_xsl_store, tdata1_match_cmp, store_data_cmp, store_xlen;                   // NTRIG * 4 match * 5 values
     `ifdef UDB_SDTRIG_MCONTROL6_MATCH_AVAILABLE
         cp_sdtrig_mcontrol6_match_napot: cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_size_any, tdata1_select_data, tdata1_xsl_store, tdata1_match_napot, tdata2_napot, store_data_napot, store_xlen; // NTRIG * 2 match * (min(maskmax6, XLEN-1) - 1) tdata2 * 3 values

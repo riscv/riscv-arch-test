@@ -467,10 +467,10 @@ coverpoints:
     notes: "comments on test results: Exceptions when tdata2 = 0x00008013, and execute = 1"
   - name: cp_sdtrig_mcontrol6_load_store_data
     description: |-
-      tdata2 = {0x12345678/0}
+      tdata2 = {random value/random value ^ 1}
       tdata1.select = 1 (data)
       tdata1.XSL = 8 combinations
-      perform {SW/ LW 0x12345678} to scratch
+      perform {SW/ LW random value} to scratch
     expectation: |-
       Breakpoint exception on LW if access data matches tdata2 and tdata1.load = 1
       Breakpoint exception on SW if access data matches tdata2 and tdata1.store = 1
@@ -480,7 +480,7 @@ coverpoints:
       - Sdtrig_mcontrol6_execute
       - Sdtrig_mcontrol6_store
       - Sdtrig_mcontrol6_load
-    notes: "comments on test results: Exceptions when td2 = 0x12345678, and XSL = 1/2/3"
+    notes: "comments on test results: Exceptions when td2 = the stored value, and XSL = 1/2/3"
   - name: cp_sdtrig_mcontrol6_execute_size
     description: |-
       tdata2 = {addi x0, x1, 0 opcode/c.nop opcode}
@@ -505,7 +505,7 @@ coverpoints:
       tdata2 = {scratch/0}
       tdata1.select = 0 (adr)
       tdata1.XSL = 011
-      tdata1.size = {0/1/2/3/4/5/6}
+      tdata1.size = {0/1/2/3/5}
       perform {lb/lbu/lh/lhu/lw/sb/sh/sw} to scratch with value 0x12345678
       if RV64 supported, also perform {lwu/ld/sd}
       if F_SUPPORTED, also perform {flw/fsw}
@@ -517,14 +517,16 @@ coverpoints:
       if ZCF_SUPPORTED and RV32, also perform c.{flw/flwsp/fsw/fswsp}
       if ZCD_SUPPORTED, also perform c.{fld/fldsp/fsd/fsdsp}
     expectation: Breakpoint exception if the size of the memory access matches the trigger size in mcontrol6
-    bins: 2 values * 7 sizes * up to 34 instructions
+    bins: 2 values * 5 sizes * up to 34 instructions
     rules:
       - Sdtrig_mcontrol6_size_8bit
       - Sdtrig_mcontrol6_size_16bit
       - Sdtrig_mcontrol6_size_32bit
       - Sdtrig_mcontrol6_size_64bit
       - Sdtrig_mcontrol6_size_128bit
-    notes: "Q loads and stores (flq/fsq) are not tested due to lack of support"
+    notes: |-
+      Q loads and stores (flq/fsq) are not tested due to lack of support
+      Sizes 4 (48-bit) and 6 (128-bit) are not tested because no tested load or store has that size
   - name: cp_sdtrig_mcontrol6_match
     goal: Test boundaries for match conditions
     description: |-

@@ -83,7 +83,7 @@ def _generate_priv_test_entry(
     for split_name, test_files in group_test_chunks(chunks, entry.testcases_per_file):
         first_file_idx = next_file_indices.get(split_name, 0)
         for file_idx, test_file_chunks in enumerate(test_files, start=first_file_idx):
-            extra_defines = entry.extra_defines
+            extra_defines = list(entry.extra_defines)
             # Set default trap signature size if the chunks do not specify one
             if not any(tc.trap_sigupd_count for tc in test_file_chunks):
                 extra_defines.append(f"#define TRAP_SIGUPD_COUNT {PRIV_TRAP_SIGUPD_COUNT}")

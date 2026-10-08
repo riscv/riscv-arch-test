@@ -404,6 +404,79 @@ covergroup ZicntrU_cg with function sample(ins_t ins);
     // main coverpoints
     cp_mcounteren_access_u: cross csraccess, counters_mcounteren, priv_mode_u;
     cp_mcounter_inc_inaccessible: cross mcounteren_zeros, priv_mode_u;
+
+    // ---- instret delta coverpoints ----
+
+    ecall: coverpoint ins.current.insn {
+        bins ecall = {ECALL};
+    }
+    ebreak: coverpoint ins.current.insn {
+        bins ebreak = {EBREAK};
+    }
+    illegal_ones: coverpoint ins.current.insn {
+        bins ones = {'1};  // .word 0xFFFFFFFF
+    }
+    insn_lw: coverpoint ins.current.insn {
+        wildcard bins lw = {LW};
+    }
+    adr_misaligned_1: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] {
+        bins one = {3'b001};  // scratch + 1
+    }
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
+        }
+    `endif
+    wfi: coverpoint ins.current.insn {
+        bins wfi = {WFI};
+    }
+    mip_mtip_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")[0] {
+        bins zero = {0};
+    }
+    mie_mtie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")[0] {
+        bins one = {1};
+    }
+
+    insn_add_u: coverpoint ins.current.insn {
+        wildcard bins add = {ADD};
+    }
+    `ifdef ZAWRS_SUPPORTED
+        wrs_nto: coverpoint ins.current.insn {
+            bins wrs_nto = {WRS_NTO};
+        }
+        wrs_sto: coverpoint ins.current.insn {
+            bins wrs_sto = {WRS_STO};
+        }
+    `endif
+
+    // retiring instruction
+    cp_instret_add: cross priv_mode_u, insn_add_u;
+
+    // instructions that trap before retiring
+    cp_instret_ecall:  cross priv_mode_u, ecall;
+    cp_instret_ebreak: cross priv_mode_u, ebreak;
+    `ifdef UDB_TIME_CSR_IMPLEMENTED
+        cp_instret_illegal: cross priv_mode_u, illegal_ones;
+    `endif
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        cp_instret_load_access_fault: cross priv_mode_u, insn_lw, illegal_address;
+    `endif
+    cp_instret_load_misaligned: cross priv_mode_u, insn_lw, adr_misaligned_1;
+
+    // wfi and wrs
+    `ifdef UDB_WFI_FINITE
+        `ifdef UDB_WFI_U_MODE
+            cp_instret_wfi_timeout: cross priv_mode_u, wfi, mip_mtip_zero;
+        `endif
+    `endif
+    `ifdef UDB_WFI_U_MODE
+        cp_instret_wfi_taken: cross priv_mode_u, wfi, mie_mtie_one;
+    `endif
+    `ifdef ZAWRS_SUPPORTED
+        cp_instret_wrs_nto: cross priv_mode_u, wrs_nto;
+        cp_instret_wrs_sto: cross priv_mode_u, wrs_sto;
+    `endif
+
 endgroup
 
 

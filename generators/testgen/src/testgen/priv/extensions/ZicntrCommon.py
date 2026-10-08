@@ -13,7 +13,6 @@ from typing import Literal
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
-from testgen.priv.extensions.InterruptsCommon import csr_access
 
 Mode = Literal["M", "S", "U"]
 Counteren = Literal["ones", "zeros"]
@@ -170,7 +169,7 @@ def _counter_prep(test_data: TestData, mode: Mode) -> list[str]:
     """Start the counters and, in U-mode, make them readable."""
     lines = [
         "#ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED",
-        csr_access("csrw mcountinhibit, zero  # run all counters", mode),
+        tsbi_call_or_direct("csrw mcountinhibit, zero  # run all counters", mode),
         "#endif // UDB_MCOUNTINHIBIT_IMPLEMENTED",
     ]
     if mode == "U":
@@ -195,10 +194,10 @@ def _instret_case(
     counter = "instret" if mode == "U" else "minstret"
     lines = [
         *(setup or []),
-        test_data.add_testcase(f"{counter}_{name}", "cp_instret_delta", covergroup),
-        csr_access(f"csrr x{r_before}, {counter}", mode),
+        test_data.add_testcase(f"{counter}_{name}", f"cp_instret_{name}", covergroup),
+        f"csrr x{r_before}, {counter}",
         *body,
-        csr_access(f"csrr x{r_after}, {counter}", mode),
+        f"csrr x{r_after}, {counter}",
         f"sub x{r_diff}, x{r_after}, x{r_before}",
         write_sigupd(r_diff, test_data),
         *(cleanup or []),
@@ -225,10 +224,10 @@ def _instret_wait_case(test_data: TestData, covergroup: str, name: str, mode: Mo
     insns_per_trip = len(trip) + 2  # plus the addi and j below
 
     lines = [
-        csr_access("csrw mie, zero", mode),
+        tsbi_call_or_direct("csrw mie, zero", mode),
         *(["csrci mstatus, 8  # MIE = 0"] if mode == "M" else []),
         f"LI(x{r_after}, 0x80)",
-        csr_access(f"csrw mie, x{r_after}  # MTIE only", mode),
+        tsbi_call_or_direct(f"csrw mie, x{r_after}  # MTIE only", mode),
         f"RVTEST_SET_MTIME_INT_SOON_{mode}",
         # Sampled after the last setup trap, so only the timer interrupt can change it
         f"LA(x{r_addr}, rvtest_trap_count)",
@@ -236,14 +235,14 @@ def _instret_wait_case(test_data: TestData, covergroup: str, name: str, mode: Mo
         f"LI(x{r_diff}, 0)  # tally of instructions retired by the loop",
         *([f"LA(x{r_rsv[0]}, scratch)"] if reserve else []),
         *(["csrsi mstatus, 8  # MIE = 1"] if mode == "M" else []),
-        test_data.add_testcase(f"{csr}_{name}", "cp_instret_delta", covergroup),
-        csr_access(f"csrr x{r_before}, {csr}", mode),
+        test_data.add_testcase(f"{csr}_{name}", f"cp_instret_{name}", covergroup),
+        f"csrr x{r_before}, {csr}",
         "1:",
         *trip,
         f"addi x{r_diff}, x{r_diff}, {insns_per_trip}  # tally this trip",
         "j 1b",
         "2:",
-        csr_access(f"csrr x{r_after}, {csr}", mode),
+        f"csrr x{r_after}, {csr}",
         f"sub x{r_after}, x{r_after}, x{r_diff}  # remove the timing-dependent part",
         f"sub x{r_diff}, x{r_after}, x{r_before}",
         write_sigupd(r_diff, test_data),
@@ -263,7 +262,7 @@ def instret_retire_tests(test_data: TestData, covergroup: str, mode: Mode) -> li
 
     (r_tmp,) = test_data.int_regs.get_registers(1)
     lines += [
-        comment_banner("cp_instret_delta", f"{csr} delta around add in {mode}-mode"),
+        comment_banner("cp_instret_add", f"{csr} delta around add in {mode}-mode"),
         "",
         *_instret_case(test_data, covergroup, "add", mode, [f"add x{r_tmp}, zero, zero  # instruction under test"]),
     ]
@@ -272,7 +271,7 @@ def instret_retire_tests(test_data: TestData, covergroup: str, mode: Mode) -> li
     if mode == "M":
         r_save, r_mask = test_data.int_regs.get_registers(2)
         lines += [
-            comment_banner("cp_instret_delta", "minstret delta around mret (MPP = M)"),
+            comment_banner("cp_instret_mret", "minstret delta around mret (MPP = M)"),
             "",
             *_instret_case(
                 test_data,
@@ -297,7 +296,7 @@ def instret_retire_tests(test_data: TestData, covergroup: str, mode: Mode) -> li
         r_save, r_tmp = test_data.int_regs.get_registers(2)
         lines += [
             "#ifdef S_SUPPORTED",
-            comment_banner("cp_instret_delta", "minstret delta around sret (SPP = U, T-SBI back to M)"),
+            comment_banner("cp_instret_sret", "minstret delta around sret (SPP = U, T-SBI back to M)"),
             "",
             *_instret_case(
                 test_data,
@@ -320,7 +319,9 @@ def instret_retire_tests(test_data: TestData, covergroup: str, mode: Mode) -> li
             ),
             "#else",
             "#ifdef UDB_TIME_CSR_IMPLEMENTED",
-            comment_banner("cp_instret_delta", "minstret delta around sret without S-mode (illegal instruction)"),
+            comment_banner(
+                "cp_instret_sret_illegal", "minstret delta around sret without S-mode (illegal instruction)"
+            ),
             "",
             *_instret_case(test_data, covergroup, "sret_illegal", mode, ["sret", "nop"]),
             "#endif // UDB_TIME_CSR_IMPLEMENTED",
@@ -338,16 +339,16 @@ def instret_exception_tests(test_data: TestData, covergroup: str, mode: Mode) ->
     lines = _counter_prep(test_data, mode)
 
     lines += [
-        comment_banner("cp_instret_delta", f"ecall in {mode}-mode: {csr} delta recorded"),
+        comment_banner("cp_instret_ecall", f"ecall in {mode}-mode: {csr} delta recorded"),
         "",
         *_instret_case(test_data, covergroup, "ecall", mode, ["RVTEST_TSBI_ECALL_TEST"]),
-        comment_banner("cp_instret_delta", f"ebreak in {mode}-mode: {csr} delta recorded"),
+        comment_banner("cp_instret_ebreak", f"ebreak in {mode}-mode: {csr} delta recorded"),
         "",
         *_instret_case(test_data, covergroup, "ebreak", mode, ["ebreak", "nop"]),
         # The illegal-instruction trap goes through the invisible time-emulation handler when
         # time is not implemented. Sail runs without it, so no reference value fits that DUT.
         "#ifdef UDB_TIME_CSR_IMPLEMENTED",
-        comment_banner("cp_instret_delta", f"Illegal instruction in {mode}-mode: {csr} delta recorded"),
+        comment_banner("cp_instret_illegal", f"Illegal instruction in {mode}-mode: {csr} delta recorded"),
         "",
         *_instret_case(test_data, covergroup, "illegal", mode, [".word 0xFFFFFFFF", "nop"], setup=[".p2align 2"]),
         "#endif // UDB_TIME_CSR_IMPLEMENTED",
@@ -356,7 +357,7 @@ def instret_exception_tests(test_data: TestData, covergroup: str, mode: Mode) ->
     r_addr, r_tmp = test_data.int_regs.get_registers(2)
     lines += [
         "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
-        comment_banner("cp_instret_delta", f"Load access fault in {mode}-mode: {csr} delta recorded"),
+        comment_banner("cp_instret_load_access_fault", f"Load access fault in {mode}-mode: {csr} delta recorded"),
         "",
         *_instret_case(
             test_data,
@@ -368,7 +369,7 @@ def instret_exception_tests(test_data: TestData, covergroup: str, mode: Mode) ->
         ),
         "#endif // RVMODEL_ACCESS_FAULT_ADDRESS",
         "",
-        comment_banner("cp_instret_delta", f"Load address misaligned in {mode}-mode: {csr} delta recorded"),
+        comment_banner("cp_instret_load_misaligned", f"Load address misaligned in {mode}-mode: {csr} delta recorded"),
         "",
         *_instret_case(
             test_data,
@@ -393,13 +394,13 @@ def instret_interrupt_tests(test_data: TestData, covergroup: str, mode: Mode) ->
     lines = _counter_prep(test_data, mode)
     if mode == "U":
         (r_tmp,) = test_data.int_regs.get_registers(1)
-        lines += [f"LI(x{r_tmp}, 0x200000)", csr_access(f"csrc mstatus, x{r_tmp}  # mstatus.TW = 0", mode)]
+        lines += [f"LI(x{r_tmp}, 0x200000)", tsbi_call_or_direct(f"csrc mstatus, x{r_tmp}  # mstatus.TW = 0", mode)]
         test_data.int_regs.return_registers([r_tmp])
 
     cond = "defined(UDB_WFI_FINITE)" + (" && defined(UDB_WFI_U_MODE)" if mode == "U" else "")
     lines += [
         f"#if {cond}",
-        comment_banner("cp_instret_delta", f"wfi in {mode}-mode with nothing armed: {csr} delta recorded"),
+        comment_banner("cp_instret_wfi_timeout", f"wfi in {mode}-mode with nothing armed: {csr} delta recorded"),
         "",
         *_instret_case(
             test_data,
@@ -408,7 +409,7 @@ def instret_interrupt_tests(test_data: TestData, covergroup: str, mode: Mode) ->
             mode,
             ["wfi  # no event armed", *(["nop"] if mode == "U" else [])],
             setup=[
-                csr_access("csrw mie, zero", mode),
+                tsbi_call_or_direct("csrw mie, zero", mode),
                 *(["csrci mstatus, 8  # MIE = 0"] if mode == "M" else []),
                 f"RVTEST_CLR_MTIME_INT_{mode}",
             ],
@@ -420,7 +421,7 @@ def instret_interrupt_tests(test_data: TestData, covergroup: str, mode: Mode) ->
     if mode == "M":
         (r_tmp,) = test_data.int_regs.get_registers(1)
         lines += [
-            comment_banner("cp_instret_delta", "wfi with timer interrupt pending and MIE = 0: no trap."),
+            comment_banner("cp_instret_wfi_pending", "wfi with timer interrupt pending and MIE = 0: no trap."),
             "",
             *_instret_case(
                 test_data,
@@ -429,10 +430,10 @@ def instret_interrupt_tests(test_data: TestData, covergroup: str, mode: Mode) ->
                 mode,
                 ["wfi  # already pending, not taken"],
                 setup=[
-                    csr_access("csrw mie, zero", mode),
+                    tsbi_call_or_direct("csrw mie, zero", mode),
                     "csrci mstatus, 8  # MIE = 0",
                     f"LI(x{r_tmp}, 0x80)",
-                    csr_access(f"csrw mie, x{r_tmp}  # MTIE only", mode),
+                    tsbi_call_or_direct(f"csrw mie, x{r_tmp}  # MTIE only", mode),
                     "RVTEST_SET_MTIME_INT_SOON_M",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{r_tmp})  # wait for MTIP",
                 ],
@@ -444,7 +445,7 @@ def instret_interrupt_tests(test_data: TestData, covergroup: str, mode: Mode) ->
     if mode == "U":
         lines.append("#ifdef UDB_WFI_U_MODE")
     lines += [
-        comment_banner("cp_instret_delta", f"wfi in {mode}-mode: timer interrupt taken, {csr} delta recorded"),
+        comment_banner("cp_instret_wfi_taken", f"wfi in {mode}-mode: timer interrupt taken, {csr} delta recorded"),
         "",
         *_instret_wait_case(test_data, covergroup, "wfi_taken", mode, "wfi"),
     ]
@@ -453,10 +454,10 @@ def instret_interrupt_tests(test_data: TestData, covergroup: str, mode: Mode) ->
 
     lines += [
         "#ifdef ZAWRS_SUPPORTED",
-        comment_banner("cp_instret_delta", f"wrs.nto in {mode}-mode: timer interrupt taken, {csr} delta recorded"),
+        comment_banner("cp_instret_wrs_nto", f"wrs.nto in {mode}-mode: timer interrupt taken, {csr} delta recorded"),
         "",
         *_instret_wait_case(test_data, covergroup, "wrs_nto", mode, "wrs.nto"),
-        comment_banner("cp_instret_delta", f"wrs.sto in {mode}-mode: timer interrupt taken, {csr} delta recorded"),
+        comment_banner("cp_instret_wrs_sto", f"wrs.sto in {mode}-mode: timer interrupt taken, {csr} delta recorded"),
         "",
         *_instret_wait_case(test_data, covergroup, "wrs_sto", mode, "wrs.sto"),
         "#endif // ZAWRS_SUPPORTED",

@@ -35,6 +35,7 @@ def make_zicntrsm(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
 
+    tc.code.append("#ifdef U_SUPPORTED")
     tc.code.extend(
         counteren_walk_tests(
             test_data,
@@ -45,6 +46,7 @@ def make_zicntrsm(test_data: TestData) -> list[TestChunk]:
             mode="M",
         )
     )
+    tc.code.append("#endif // U_SUPPORTED")
     tc.code.append("#ifdef S_SUPPORTED")
     for setting in ("ones", "zeros"):
         tc.code.extend(

@@ -4,6 +4,9 @@
 # Shared across all Spike configs
 
 ci_enabled: true
+# Run experimental extensions in their dedicated workflow job.
+exclude_configs:
+  - spike-rv64-experimental
 # Smstateen:
 #   - spike-rv64-max: mstateen0.P1P13 is writable on RV64; it controls hedelegh, which exists only on
 #     RV32 with H (https://github.com/riscv-software-src/riscv-isa-sim/issues/2464)

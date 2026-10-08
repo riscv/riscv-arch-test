@@ -59,8 +59,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zfh|Half|<<t-Zfh-coverpoints>>|||o|o|o
 |Zfhmin|Half Converts|<<t-Zfhmin-coverpoints>>|||x|o|x
 |Zfa|Additional Float|<<t-Zfa-coverpoints>>||||x|x
-|ZfaD|Additional Double|<<t-ZfaD-coverpoints>>||||x|x
-|ZfaZfh|Additional Half|<<t-ZfaZfh-coverpoints>>||||o|o
 |ZfaZfhD|Additional Half-Double Converts|<<t-ZfaZfhD-coverpoints>>||||o|o
 |Zba|Address Generation|<<t-Zba-coverpoints>>|||x|x|x
 |Zbb|Basic Bit Manipulation|<<t-Zbb-coverpoints>>|||x|x|x
@@ -163,7 +161,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zvfhmin|Vector half conversions|<<t-Zvfhmin-coverpoints>>||||o|o
 |Zvfbfmin|Vector BF16 Convert|<<t-Zvfbfmin-coverpoints>>||||o|o
 |Zvfbfwma|Vector BF16 MAC|<<t-Zvfbfwma-coverpoints>>||||o|o
-|ZfaZvfh|fli for Vector Half|<<t-ZfaZvfh-coverpoints>>||||o|o
 |Zvbb8|Vector Bit Manip 8-bit|<<t-Zvbb-coverpoints>>||||o|x
 |Zvbb16|Vector Bit Manip 16-bit|<<t-Zvbb-coverpoints>>||||o|x
 |Zvbb32|Vector Bit Manip 32-bit|<<t-Zvbb-coverpoints>>||||o|x

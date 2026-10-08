@@ -406,17 +406,8 @@
     `ifdef COVER_ZFA
         zfa_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZFAD
-        zfad_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZFAZFH
-        zfazfh_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_ZFAZFHD
         zfazfhd_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZFAZVFH
-        zfazvfh_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZFBFMIN
         zfbfmin_sample(hart, issue, ins);

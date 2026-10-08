@@ -31,10 +31,7 @@ RVA23_TEST_SUITES = frozenset(
         "Zalrsc",
         # Zf extensions
         "Zfa",
-        "ZfaD",
-        "ZfaZfh",
         "ZfaZfhD",
-        "ZfaZvfh",
         "Zfbfmin",
         "Zfh",
         "Zfhmin",

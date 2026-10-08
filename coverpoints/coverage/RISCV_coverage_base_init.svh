@@ -538,21 +538,9 @@
         `cover_info("//      Zfa - Enabled");
         `include "Zfa_coverage_init.svh"
     `endif
-    `ifdef COVER_ZFAD
-        `cover_info("//      ZfaD - Enabled");
-        `include "ZfaD_coverage_init.svh"
-    `endif
-    `ifdef COVER_ZFAZFH
-        `cover_info("//      ZfaZfh - Enabled");
-        `include "ZfaZfh_coverage_init.svh"
-    `endif
     `ifdef COVER_ZFAZFHD
         `cover_info("//      ZfaZfhD - Enabled");
         `include "ZfaZfhD_coverage_init.svh"
-    `endif
-    `ifdef COVER_ZFAZVFH
-        `cover_info("//      ZfaZvfh - Enabled");
-        `include "ZfaZvfh_coverage_init.svh"
     `endif
     `ifdef COVER_ZFBFMIN
         `cover_info("//      Zfbfmin - Enabled");

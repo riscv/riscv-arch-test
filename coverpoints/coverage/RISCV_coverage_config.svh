@@ -407,17 +407,8 @@
 `ifdef ZFA_COVERAGE
   `include "Zfa_coverage.svh"
 `endif
-`ifdef ZFAD_COVERAGE
-  `include "ZfaD_coverage.svh"
-`endif
-`ifdef ZFAZFH_COVERAGE
-  `include "ZfaZfh_coverage.svh"
-`endif
 `ifdef ZFAZFHD_COVERAGE
   `include "ZfaZfhD_coverage.svh"
-`endif
-`ifdef ZFAZVFH_COVERAGE
-  `include "ZfaZvfh_coverage.svh"
 `endif
 `ifdef ZFBFMIN_COVERAGE
   `include "Zfbfmin_coverage.svh"

@@ -64,25 +64,13 @@ include::norm/Zfhmin_norm_rules.adoc[]
 
 ==== Zfa Additional FP
 
+The rows of <<t-Zfa-coverpoints>> with an entry in the ExtraExtension column apply only when that extension is also supported.
+The D rows cover the double-precision instructions and NaN-boxing of single-precision values in 64-bit registers, and the Zfh rows cover the half-precision instructions.
+The Zvfh row covers fli.h, which Zfa provides with Zvfh even when Zfh is not supported.
+
 include::{testplansdir}/Zfa.adoc[]
 
 include::norm/Zfa_norm_rules.adoc[]
-
-
-
-===== ZfaD
-
-include::{testplansdir}/ZfaD.adoc[]
-
-include::norm/ZfaD_norm_rules.adoc[]
-
-
-
-===== ZfaZfh
-
-include::{testplansdir}/ZfaZfh.adoc[]
-
-include::norm/ZfaZfh_norm_rules.adoc[]
 
 
 

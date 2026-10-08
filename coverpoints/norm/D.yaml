@@ -123,7 +123,7 @@ normative_rule_definitions:
   # insn:fsd[] stores a double-precision value from the floating-point registers to
   # memory
   - name: fsd_op
-    coverpoint: ["D_fsd_cg/{cp_rs1_nx0, cp_imm_edges, cp_fs2, cp_fs2_edges}"]
+    coverpoint: ["D_fsd_cg/{cp_rs1_nx0, cp_imm_edges, cp_fs2, cp_fs2_edges_D}"]
   # insn:fld[] and insn:fsd[] are only guaranteed to execute atomically if the effective
   # address is naturally aligned and XLEN≥64.
   - name: fld_fsd_atomic_align

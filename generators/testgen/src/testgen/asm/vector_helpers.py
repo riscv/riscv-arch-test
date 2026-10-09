@@ -11,6 +11,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Literal
 
+from testgen.asm import vector_scalar_check as vsc
 from testgen.asm.helpers import write_sigupd
 from testgen.constants import INDENT, VLEN_MAX
 from testgen.data.params import InstructionParams, PresetMask
@@ -26,6 +27,80 @@ def get_lmul_flag(lmul: float) -> str:
         return f"f{int(1 / lmul)}"
     else:
         return str(int(lmul))
+
+
+def splat_0xd_lines(test_data: TestData, register: int, sew: int, addr_reg: int) -> list[str]:
+    """Fill a register group with 0xD in every element at the current vl."""
+    if test_data.config.vector_scalar_check:
+        return vsc.splat_0xd_lines(register, sew, addr_reg)
+    return [f"vmv.v.i v{register}, 0xd"]
+
+
+def copy_mask_reg(test_data: TestData, dest: int, source: int) -> list[str]:
+    """Copy a mask register."""
+    if test_data.config.vector_scalar_check:
+        return vsc.copy_mask_reg(test_data, dest, source)
+    return [f"vmand.mm v{dest}, v{source}, v{source}"]
+
+
+def index_fixup_lines(
+    test_data: TestData, vreg: int, eew: int, divisor_reg: int, *, shift: int | None = None, and_imm: int | None = None
+) -> list[str]:
+    """
+    Reduce the first vl elements of an index register modulo divisor_reg, then shift them left by shift or AND
+    them with and_imm. vtype must have SEW = eew.
+    """
+    assert (shift is None) != (and_imm is None), "Exactly one of shift and and_imm must be provided"
+    if test_data.config.vector_scalar_check:
+        return vsc.index_fixup_lines(test_data, vreg, eew, divisor_reg, shift=shift, and_imm=and_imm)
+    if shift is not None:
+        return [f"vremu.vx v{vreg}, v{vreg}, x{divisor_reg}", f"vsll.vi v{vreg}, v{vreg}, {shift}"]
+    return [f"vremu.vx v{vreg}, v{vreg}, x{divisor_reg}", f"vand.vi v{vreg}, v{vreg}, {and_imm}"]
+
+
+def reload_after_store(
+    test_data: TestData,
+    standard_reload: list[str],
+    *,
+    vd: int,
+    eew: int,
+    emul: float,
+    base_reg: int,
+    segments: int = 1,
+    masked: bool = False,
+    stride_reg: int | None = None,
+    index_reg: int | None = None,
+    index_eew: int | None = None,
+    index_emul: float | None = None,
+    mask_load: bool = False,
+) -> list[str]:
+    """
+    Reload stored data for checking. Returns standard_reload, or an emulation of the same load described by the
+    keyword arguments when the test uses scalar self-checking.
+    """
+    if test_data.config.vector_scalar_check:
+        return vsc.emulated_load_lines(
+            test_data,
+            vd=vd,
+            eew=eew,
+            emul=emul,
+            base_reg=base_reg,
+            segments=segments,
+            masked=masked,
+            stride_reg=stride_reg,
+            index_reg=index_reg,
+            index_eew=index_eew,
+            index_emul=index_emul,
+            mask_load=mask_load,
+        )
+    return standard_reload
+
+
+def whole_register_load_lines(test_data: TestData, *, vd: int, nregs: int, sew: int, base_reg: int) -> list[str]:
+    """Load nregs whole registers starting at vd. Preserves vl and vtype."""
+    if test_data.config.vector_scalar_check:
+        return vsc.whole_register_load_lines(test_data, vd=vd, nregs=nregs, sew=sew, base_reg=base_reg)
+    return [f"vl{nregs}re{sew}.v v{vd}, (x{base_reg})"]
 
 
 def vector_sigupd_bytes(max_bytes: int, test_data: TestData, vdsew: int) -> int:
@@ -311,8 +386,11 @@ def prep_base_v(
             ]
         )
 
-        for register in registers:
-            lines.append(f"vmv.v.i v{register}, 13")
+        if test_data.config.vector_scalar_check:
+            lines.extend(vsc.fill_0xd_lines(registers, params.sew, params.temp_reg))
+        else:
+            for register in registers:
+                lines.append(f"vmv.v.i v{register}, 13")
 
         lines.extend(
             [
@@ -342,6 +420,9 @@ def set_lower_xreg_bits(num_bits_reg: int, test_data: TestData) -> list[str]:
 
     Uses the same calculation as the length suite sigupd macro building the tail mask.
     """
+
+    if test_data.config.vector_scalar_check:
+        return vsc.set_lower_xreg_bits(num_bits_reg, test_data)
 
     temp_reg, temp_reg2 = test_data.int_regs.get_registers(2, exclude_regs=[0])
     temp_v = test_data.vec_regs.get_register()
@@ -419,7 +500,10 @@ def prep_mask_v(
             )
 
     lines: list[str] = []
-    if mask_val == PresetMask.ZEROS:
+    scalar_check = test_data.config.vector_scalar_check
+    if scalar_check and mask_val in (PresetMask.ZEROS, PresetMask.ONES):
+        lines = vsc.preset_mask_lines(mask_val == PresetMask.ONES, params.temp_reg, params.sew)
+    elif mask_val == PresetMask.ZEROS:
         lines = [
             f"# Set mask value to zero, x{params.temp_reg} = VLMAX",
             f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m1, tu, mu",
@@ -454,13 +538,16 @@ def prep_mask_v(
             *set_lower_xreg_bits(params.temp_reg, test_data),
         ]
     else:  # random mask
-        lines = [
-            f"# x{params.temp_reg} = VLEN",
-            f"vsetvli x{params.temp_reg}, x0, e8, m8, tu, mu",
-            f"LA(x{params.temp_reg}, {mask_val})",
-            "# Load mask value into v0",
-            f"vlm.v v0, (x{params.temp_reg})",
-        ]
+        if scalar_check:
+            lines = vsc.random_mask_lines(mask_val, params.temp_reg)
+        else:
+            lines = [
+                f"# x{params.temp_reg} = VLEN",
+                f"vsetvli x{params.temp_reg}, x0, e8, m8, tu, mu",
+                f"LA(x{params.temp_reg}, {mask_val})",
+                "# Load mask value into v0",
+                f"vlm.v v0, (x{params.temp_reg})",
+            ]
 
         assert test_data.test_chunk is not None, "Test chunk must be set to prepare mask asm"
         test_data.test_chunk.vector_labels.append((mask_val, *test_data.vector_labels[mask_val]))
@@ -654,11 +741,12 @@ def load_vec_regs(regs: list[VectorLoad], params: InstructionParams, test_data: 
                 )
 
         if vl != "vlmax" or reg.only_setup_tail:
+            assert params.temp_reg is not None, "temp_reg must be set for load_vec_regs"
             # Create a deterministic tail at vlmax
             for i in range(reg.segments):
                 reg_to_load = reg_num + int(max(1, lmul)) * i
-                vtype_code[("vlmax", sew, max(lmul, 1))].append(
-                    f"vmv.v.i v{reg_to_load}, 0xd",
+                vtype_code[("vlmax", sew, max(lmul, 1))].extend(
+                    splat_0xd_lines(test_data, reg_to_load, int(sew), params.temp_reg),
                 )
 
     code: list[str] = []

@@ -12,9 +12,11 @@ from testgen.asm.vector_helpers import (
     VectorLoad,
     get_lmul_flag,
     handle_parameter_exclusions,
+    index_fixup_lines,
     load_test_vtype,
     load_vec_regs,
     prep_mask_v,
+    reload_after_store,
     write_sigupd_v,
     write_sigupd_v_len,
 )
@@ -198,12 +200,8 @@ def format_vsxseg_like_type(
         if 2**index_alignment_shift < index_alignment_factor:
             index_alignment_shift += 1
 
-        setup.extend(
-            [
-                f"vremu.vx v{params.vs2}, v{params.vs2}, x{params.temp_reg}",
-                f"vsll.vi v{params.vs2}, v{params.vs2}, {index_alignment_shift}",
-            ]
-        )
+        fixup_eew = params.sew if params.vs2_val_pointer == "vs2_edge_random_within_2vlmax_ls" else index_eew
+        setup.extend(index_fixup_lines(test_data, params.vs2, fixup_eew, params.temp_reg, shift=index_alignment_shift))
 
     setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer})")
     setup.append(load_test_vtype(params, random_vl_reg))
@@ -213,16 +211,23 @@ def format_vsxseg_like_type(
         test_data.int_regs.return_register(int(random_vl_reg[1:]))
 
     equivalent_load = "vl" + instr_str[2:]
-    if params.maskval:
-        test = [
-            f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}, v0.t",
-            f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}, v0.t",
-        ]
-    else:
-        test = [
-            f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}",
-            f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}",
-        ]
+    mask_suffix = ", v0.t" if params.maskval else ""
+    test = [
+        f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}{mask_suffix}",
+        *reload_after_store(
+            test_data,
+            [f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}{mask_suffix}"],
+            vd=params.vd,
+            eew=params.sew,
+            emul=params.lmul,
+            base_reg=params.rs1,
+            segments=segments,
+            masked=bool(params.maskval),
+            index_reg=params.vs2,
+            index_eew=index_eew,
+            index_emul=index_emul,
+        ),
+    ]
 
     # We no longer need vs2. This allows us to have enough registers for length SIGUPD where the maximum number of
     # registers (25) are required by the test section

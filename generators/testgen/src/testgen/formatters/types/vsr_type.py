@@ -13,6 +13,7 @@ from testgen.asm.vector_helpers import (
     handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
+    whole_register_load_lines,
     write_sigupd_v,
     write_sigupd_v_len,
 )
@@ -79,10 +80,9 @@ def format_vsr_type(
     if random_vl_reg.startswith("x"):
         test_data.int_regs.return_register(int(random_vl_reg[1:]))
 
-    equivalent_load = f"vl{emul}re{params.sew}.v"
     test = [
         f"{instr_str} v{params.vs3}, (x{params.rs1})",
-        f"{equivalent_load} v{params.vd}, (x{params.rs1})",
+        *whole_register_load_lines(test_data, vd=params.vd, nregs=emul, sew=params.sew, base_reg=params.rs1),
     ]
 
     if params.vector_suite == "length":

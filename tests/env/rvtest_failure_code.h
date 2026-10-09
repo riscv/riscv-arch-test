@@ -350,6 +350,9 @@
         # We need to ensure that VS is set in mstatus here, as VS off is an exceptions test
         RVTEST_TSBI_CSR_SET(CSR_MSTATUS, 0x600)
         la x6, vecreg_scratch              # vecreg_scratch base address
+    #ifdef RVTEST_VEC_SCALAR_CHECK
+        RVTEST_VSC_SAVE_VREGS
+    #else
         vs1r.v v0, (x6)
         addi x6, x6, VLEN_BYTES            # increment by one vector's bytes
         vs1r.v v1, (x6)
@@ -413,6 +416,7 @@
         vs1r.v v30, (x6)
         addi x6, x6, VLEN_BYTES
         vs1r.v v31, (x6)
+    #endif // RVTEST_VEC_SCALAR_CHECK
     #endif // RVTEST_VECTOR
 
     failedtest_saveresults:
@@ -426,7 +430,11 @@
 #endif // F_SUPPORTED
 #ifdef RVTEST_VECTOR  // *** TODO: change to ZVL32B_SUPPORTED
         li x10, 4
+#ifdef RVTEST_VEC_SCALAR_CHECK
+        beq x9, x10, failedtest_saveresults_vector_sc
+#else
         beq x9, x10, failedtest_saveresults_vector
+#endif
         li x10, 5
         beq x9, x10, failedtest_saveresults_vxsat
 #endif // RVTEST_VECTOR
@@ -2083,6 +2091,9 @@
         sb zero, 1(a2)          # null terminator
         ret
 #endif
+#ifdef RVTEST_VEC_SCALAR_CHECK
+    RVTEST_VSC_CODE
+#endif
 .endm
 
 // Macro to define failure code data section
@@ -2130,6 +2141,9 @@
         .fill VLEN_WORDS, 4, 0xbaaaaaad
     vecreg_scratch:                              # space to save full vector register contents
         .fill VECREG_REGION_WORDS, 4, 0xfeedf00dbaaaaaad
+#ifdef RVTEST_VEC_SCALAR_CHECK
+    RVTEST_VSC_DATA
+#endif
 #endif // RVTEST_VECTOR
 
     //==========================================================================

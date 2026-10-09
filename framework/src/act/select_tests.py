@@ -16,6 +16,7 @@ from act.config import Config, load_config
 from act.parse_test_constraints import ExtensionRequirement, TestMetadata
 from act.parse_udb_config import get_config_params, get_implemented_extensions, prepare_dut_outputs
 from act.toolchain import EXPERIMENTAL_EXTENSIONS
+from act.vector_check import base_test_suite
 
 PRIV_EXTENSIONS = {"Sm", "S", "U", "H"}
 
@@ -133,7 +134,7 @@ def filter_tests_by_certificate(test_dict: dict[str, TestMetadata], certificate:
     return {
         test_name: test_metadata
         for test_name, test_metadata in test_dict.items()
-        if Path(test_name).parent.name in certificate_test_suites
+        if base_test_suite(Path(test_name).parent.name) in certificate_test_suites
     }
 
 

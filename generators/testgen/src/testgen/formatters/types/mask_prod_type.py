@@ -7,6 +7,7 @@
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
+    copy_mask_reg,
     handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
@@ -226,7 +227,7 @@ def format_mask_producing_type(
                 [
                     "# Because vd = v0, we will not overwrite it with a mask value, instead because the",
                     f"# operation will overwrite v0, we will store a copy of the mask in v{mask_copy_reg}",
-                    f"vmand.mm v{mask_copy_reg}, v0, v0",
+                    *copy_mask_reg(test_data, mask_copy_reg, 0),
                 ]
             )
             load_vd = False
@@ -294,7 +295,7 @@ def format_mask_producing_type(
         recover_mask = []
 
         if mask_reg != 0:
-            recover_mask = [f"vmand.mm v0, v{mask_reg}, v{mask_reg}"]
+            recover_mask = copy_mask_reg(test_data, 0, mask_reg)
 
         reload_data = []
         if params.vd == params.vs1 or params.vd == params.vs2:

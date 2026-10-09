@@ -1616,6 +1616,9 @@
     .option push
     .option arch, RVTEST_VEC_INIT_ARCH
     // splat integer registers into all of vector registers
+  #ifdef RVTEST_VEC_SCALAR_CHECK
+    RVTEST_VSC_INIT_VREGS
+  #else
     vsetvli x1, x0, e32, m1, ta, ma // configure vector to vl = VLMAX
     LI (x1,  (0xFEEDBEADFEEDBEAD & MASK)) // restore x1 after vsetvli clobbers it
     vmv.v.x v0, x1 // x1 instead of x0 to avoid initializing v0 with zero value
@@ -1650,6 +1653,7 @@
     vmv.v.x v29, x13
     vmv.v.x v30, x14
     vmv.v.x v31, x15
+  #endif
     .option pop
   #endif
 

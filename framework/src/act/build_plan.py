@@ -22,6 +22,7 @@ from act.sail_to_rvvi import sailLog2Trace
 from act.sig_modify import process_signature_file
 from act.toolchain import Toolchain
 from act.trap_report import generate_trap_report
+from act.vector_check import base_test_suite
 
 # Flags used when generating .elf.objdump files.
 # -x: print all headers (file, section, program segment, relocation)
@@ -483,7 +484,8 @@ def gen_coverage_tasks(
                 tracelist_file.write_text(tracelist_contents)
 
         # Coverage collection task
-        coverage_tag = f"{coverage_group.stem.upper()}_COVERAGE"
+        # Scalar self-checking vector suites (e.g. Vx8-scalarcheck) use the covergroups of their base suite
+        coverage_tag = f"{base_test_suite(coverage_group.stem).upper()}_COVERAGE"
         coverage_define_list = [coverage_tag]
         if verbose:
             coverage_define_list.append("FCOV_VERBOSE")

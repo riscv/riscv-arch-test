@@ -17,6 +17,8 @@ from rich.panel import Panel
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 
+from act.vector_check import VectorCheck, base_test_suite, requested_suite, selects_suite
+
 _TEST_FILE_SUFFIXES = (".S", ".c")
 
 ExtensionRequirement = str | Annotated[frozenset[str], Field(min_length=1)]
@@ -163,13 +165,16 @@ def extract_yaml_config(file: Path) -> TestMetadata:
         raise TestYamlHeaderError(file, _describe_validation_error(e)) from None
 
 
-def generate_test_dict(tests_dir: Path, extensions: str, exclude: str = "") -> dict[str, TestMetadata]:
+def generate_test_dict(
+    tests_dir: Path, extensions: str, exclude: str = "", vector_check: VectorCheck = VectorCheck.VECTOR
+) -> dict[str, TestMetadata]:
     """Generate a dictionary of tests with their corresponding metadata from the specified directory.
 
     Args:
         tests_dir: Directory containing test files.
         extensions: Comma-separated list of extensions to include, or "all" for all extensions.
         exclude: Comma-separated list of extensions to exclude (applied after extensions filter).
+        vector_check: Selects the standard or the scalar self-checking variant of the vector suites.
 
     Returns:
         Dictionary mapping test file paths to their metadata.
@@ -189,6 +194,7 @@ def generate_test_dict(tests_dir: Path, extensions: str, exclude: str = "") -> d
         for ext in extension_list:
             if ext in exclude_list:
                 continue
+            ext = requested_suite(ext, vector_check)
             for suffix in _TEST_FILE_SUFFIXES:
                 for test_file in tests_dir.rglob(f"*/{ext}/*{suffix}"):
                     config = extract_yaml_config(test_file)
@@ -198,7 +204,9 @@ def generate_test_dict(tests_dir: Path, extensions: str, exclude: str = "") -> d
         for suffix in _TEST_FILE_SUFFIXES:
             for test_file in tests_dir.rglob(f"*{suffix}"):
                 ext_dir = test_file.parent.name
-                if ext_dir == "env" or ext_dir in exclude_list:
+                if ext_dir == "env" or base_test_suite(ext_dir) in exclude_list:
+                    continue
+                if not selects_suite(ext_dir, vector_check):
                     continue
                 config = extract_yaml_config(test_file)
                 test_file_unique_name = str(test_file.relative_to(tests_dir))

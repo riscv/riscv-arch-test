@@ -31,6 +31,11 @@ from rich.progress import (
 from testgen.constants import E_EXTENSION_TESTS
 from testgen.generate import generate_priv_test, generate_unpriv_extension_tests
 from testgen.io.testplans import get_extensions
+from testgen.io.vector_scalar_check import (
+    VectorCheck,
+    apply_vector_check,
+    get_vector_scalar_check_extensions,
+)
 from testgen.priv import get_priv_test_suites
 
 # CLI interface setup
@@ -75,6 +80,12 @@ def generate_all_tests(
         int,
         typer.Option("--jobs", "-j", help="Parallel build jobs (0 = auto-detect CPU count)"),
     ] = 0,
+    vector_check: Annotated[
+        VectorCheck,
+        typer.Option(
+            help="Check vector test results with vector instructions or with scalar code", case_sensitive=False
+        ),
+    ] = VectorCheck.VECTOR,
 ) -> None:
     """
     Generate riscv-arch-test tests.
@@ -87,6 +98,8 @@ def generate_all_tests(
 
     # Get available extensions
     available_unpriv_extensions = get_extensions(testplan_dir)
+    # Scalar self-checking vector suites are generated with --vector-check scalar or when requested by name
+    scalar_check_extensions = get_vector_scalar_check_extensions(testplan_dir)
     available_priv_extensions = get_priv_test_suites()
     unpriv_ext_list: list[str] = []
     priv_ext_list: list[str] = []
@@ -99,7 +112,7 @@ def generate_all_tests(
             ext = ext.strip()
             if not ext:
                 continue
-            if ext in available_unpriv_extensions:
+            if ext in available_unpriv_extensions or ext in scalar_check_extensions:
                 unpriv_ext_list.append(ext)
             elif ext in available_priv_extensions:
                 priv_ext_list.append(ext)
@@ -116,6 +129,8 @@ def generate_all_tests(
                 unpriv_ext_list.remove(ext)
             if ext in priv_ext_list:
                 priv_ext_list.remove(ext)
+
+    unpriv_ext_list = apply_vector_check(unpriv_ext_list, testplan_dir, vector_check)
 
     # Build list of test generation tasks
     tasks: list[UnprivTask | PrivTask] = []

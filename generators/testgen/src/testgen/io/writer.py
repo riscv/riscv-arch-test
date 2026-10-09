@@ -16,6 +16,7 @@ from testgen.data.config import TestConfig
 from testgen.data.registers import IntegerRegisterFile
 from testgen.data.test_chunk import TestChunk
 from testgen.io.templates import insert_footer_template, insert_header_template
+from testgen.io.vector_scalar_check import VECTOR_SCALAR_CHECK_SUFFIX
 
 SIGUPD_MARGIN = 10
 
@@ -73,6 +74,10 @@ def write_test_file(
     if split_name is not None and (".." in split_name or "/" in split_name or "\\" in split_name):
         raise ValueError(f"Invalid split_name {split_name!r}; must not contain path separators or '..'.")
     testsuite = test_config.testsuite
+    name_prefix = test_config.name_prefix
+    if test_config.vector_scalar_check:
+        testsuite += VECTOR_SCALAR_CHECK_SUFFIX
+        name_prefix += VECTOR_SCALAR_CHECK_SUFFIX
 
     # Combine data from all test chunks
     data_values = [v for tc in test_chunks for v in tc.data_values]
@@ -89,7 +94,7 @@ def write_test_file(
 
     # Construct filename and paths
     if instr_name is not None:
-        filename = f"{test_config.name_prefix}-{instr_name}-{file_idx:02d}.S"
+        filename = f"{name_prefix}-{instr_name}-{file_idx:02d}.S"
     elif split_name is not None:
         filename = f"{testsuite}_{split_name}-{file_idx:02d}.S"
     else:

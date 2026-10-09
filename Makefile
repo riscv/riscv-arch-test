@@ -20,6 +20,14 @@ EXCLUDE_EXTENSIONS ?= SdtrigSm,SdtrigS,SdtrigU
 CERTIFICATE ?=
 ENABLE_EXPERIMENTAL_EXTENSIONS ?=
 
+# VECTOR_CHECK selects how the Vx, Vls, and Vf tests check results. "vector" (default) uses vector compare, mask,
+# and permutation instructions. "scalar" uses the scalar self-checking variants (e.g. Vx8-scalarcheck), which only
+# use vset{i}vl{i} and unit-stride vle/vse at EEW = SEW outside the instruction under test.
+VECTOR_CHECK ?= vector
+ifeq ($(filter $(VECTOR_CHECK),vector scalar),)
+  $(error VECTOR_CHECK must be vector or scalar, not '$(VECTOR_CHECK)')
+endif
+
 # DEBUG, FAST, VERBOSE, and CLEAN_INTERMEDIATES are runtime options for controlling build output. DEBUG is mutually exclusive with FAST and CLEAN_INTERMEDIATES.
 # Set to True to enable, or leave blank to disable.
 # DEBUG enables debug output (signature objdump, trace files, and trap report). This will slow down ELF generation significantly.
@@ -83,6 +91,12 @@ TESTPLANS := $(wildcard $(TESTPLANS_DIR)/*.csv $(TESTPLANS_DIR)/**/*.csv)
 STAMP_DIR := $(WORKDIR)/stamps
 $(STAMP_DIR):
 	@mkdir -p $@
+
+# Regenerate tests when VECTOR_CHECK changes
+VECTOR_CHECK_STAMP := $(STAMP_DIR)/vector-check-$(VECTOR_CHECK).stamp
+$(VECTOR_CHECK_STAMP): | $(STAMP_DIR)
+	@rm -f $(STAMP_DIR)/vector-check-*.stamp
+	@touch $@
 
 
 
@@ -153,6 +167,7 @@ help:
 	  'EXCLUDE_EXTENSIONS'  'Comma-separated extensions to skip' \
 	  'CERTIFICATE'         'Only select tests for the specified certificate' \
 	  'ENABLE_EXPERIMENTAL_EXTENSIONS' 'Enable tests for unratified extensions' \
+	  'VECTOR_CHECK'        'vector (default) or scalar: how vector tests check results' \
 	  'JOBS'                'Parallel build jobs (0 = auto, also honors -j)' \
 	  'DEBUG'               'Emit objdump/trace/trap reports (slower)' \
 	  'FAST'                'Skip objdump for faster ELF builds' \
@@ -165,6 +180,7 @@ help:
 	@printf '  make tests EXTENSIONS=I,M            # generate just I and M tests\n'
 	@printf '  make EXCLUDE_EXTENSIONS=ExceptionsSm # skip an extension\n'
 	@printf '  make CERTIFICATE=RVA23               # build RVA23 tests only\n'
+	@printf '  make VECTOR_CHECK=scalar             # scalar self-checking vector tests\n'
 	@printf '  make coverage                        # coverage build\n'
 
 
@@ -181,6 +197,7 @@ elfs: tests
 		$(if $(CERTIFICATE),--certificate $(CERTIFICATE)) \
 		$(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS)) \
 		$(if $(ENABLE_EXPERIMENTAL_EXTENSIONS),--enable-experimental-extensions) \
+		--vector-check $(VECTOR_CHECK) \
 		$(if $(DEBUG),--debug) \
 		$(if $(FAST),--fast) \
 		$(if $(CLEAN_INTERMEDIATES),--clean-intermediates) \
@@ -206,8 +223,8 @@ $(STAMP_DIR)/covergroupgen.stamp: $(COVERGROUPGEN_DEPS) $(TESTPLANS) Makefile | 
 
 .PHONY: testgen
 testgen: $(STAMP_DIR)/testgen.stamp
-$(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile | $(STAMP_DIR)
-	@$(UV_RUN) testgen testplans -o tests --jobs $(JOBS) $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
+$(STAMP_DIR)/testgen.stamp: $(TESTGEN_DEPS) $(TESTPLANS) Makefile $(VECTOR_CHECK_STAMP) | $(STAMP_DIR)
+	@$(UV_RUN) testgen testplans -o tests --jobs $(JOBS) --vector-check $(VECTOR_CHECK) $(if $(EXTENSIONS),--extensions $(EXTENSIONS)) $(if $(EXCLUDE_EXTENSIONS),--exclude $(EXCLUDE_EXTENSIONS))
 	@touch $@
 
 .PHONY: vector-testgen

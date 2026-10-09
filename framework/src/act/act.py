@@ -23,6 +23,7 @@ from act.config import CoverageSimulator
 from act.coverreport import print_coverage_summary
 from act.parse_test_constraints import TestYamlHeaderError, generate_test_dict
 from act.select_tests import prepare_configs_and_select_tests
+from act.vector_check import VectorCheck, remove_other_variant_elfs
 
 # CLI interface setup
 act_app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
@@ -79,6 +80,12 @@ def run_act(
         bool,
         typer.Option(help="Enable tests for experimental extensions"),
     ] = False,
+    vector_check: Annotated[
+        VectorCheck,
+        typer.Option(
+            help="Check vector test results with vector instructions or with scalar code", case_sensitive=False
+        ),
+    ] = VectorCheck.VECTOR,
 ) -> None:
 
     # Parse options
@@ -113,7 +120,7 @@ def run_act(
 
     # Generate test list
     try:
-        full_test_dict = generate_test_dict(test_dir, extensions, exclude)
+        full_test_dict = generate_test_dict(test_dir, extensions, exclude, vector_check)
     except TestYamlHeaderError as e:
         e.print()
         raise typer.Exit(1) from None
@@ -138,6 +145,8 @@ def run_act(
             raise TypeError(f"MXLEN must be an integer, got {type(mxlen)}: {mxlen!r}")
 
         config_names.append(config.name)
+        if not dry_run:
+            remove_other_variant_elfs(workdir / config.name / "elfs", selected_tests)
         tasks.extend(
             generate_build_plan(
                 config,

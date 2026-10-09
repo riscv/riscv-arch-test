@@ -245,14 +245,6 @@ include::{testplansdir}/Zvfhmin.adoc[]
 
 include::norm/Zvfhmin_norm_rules.adoc[]
 
-==== ZfaZvfh Half-Precision Load Immediate
-
-When Zfa and Zvfh are both implemented, RISC-V provides a `fli.h` instruction (<<t-ZfaZvfh-coverpoints>>) even if full Zfh is not supported.
-
-include::{testplansdir}/ZfaZvfh.adoc[]
-
-include::norm/ZfaZvfh_norm_rules.adoc[]
-
 ==== Zvfbfmin BF16 Conversions
 
 include::{testplansdir}/Zvfbfmin.adoc[]

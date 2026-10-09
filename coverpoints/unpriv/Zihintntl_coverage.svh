@@ -48,9 +48,67 @@ covergroup Zihintntl_ntl_s1_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
+`ifdef ZCA_SUPPORTED
+covergroup ZihintntlZca_c_ntl_all_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "c.ntl.all"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+endgroup
+// ---------------------
+covergroup ZihintntlZca_c_ntl_p1_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "c.ntl.p1"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+endgroup
+// ---------------------
+covergroup ZihintntlZca_c_ntl_pall_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "c.ntl.pall"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+endgroup
+// ---------------------
+covergroup ZihintntlZca_c_ntl_s1_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "c.ntl.s1"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+endgroup
+// ---------------------
+`endif
 function void zihintntl_sample(int hart, int issue, ins_t ins);
 
     case (traceDataQ[hart][issue][0].inst_name)
+`ifdef ZCA_SUPPORTED
+        "c.ntl.all"     : begin
+            ZihintntlZca_c_ntl_all_cg.sample(ins);
+        end
+`endif
+`ifdef ZCA_SUPPORTED
+        "c.ntl.p1"     : begin
+            ZihintntlZca_c_ntl_p1_cg.sample(ins);
+        end
+`endif
+`ifdef ZCA_SUPPORTED
+        "c.ntl.pall"     : begin
+            ZihintntlZca_c_ntl_pall_cg.sample(ins);
+        end
+`endif
+`ifdef ZCA_SUPPORTED
+        "c.ntl.s1"     : begin
+            ZihintntlZca_c_ntl_s1_cg.sample(ins);
+        end
+`endif
         "ntl.all"     : begin
             Zihintntl_ntl_all_cg.sample(ins);
         end

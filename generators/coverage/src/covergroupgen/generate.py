@@ -274,12 +274,12 @@ def _write_if_changed(path: Path, content: str) -> None:
 Testplan = dict[tuple[str, str], list[str]]
 
 
-def _parse_testplan_groups(csv_path: Path) -> dict[str, Testplan]:
+def _parse_testplan_groups(csv_path: Path) -> dict[tuple[str, ...], Testplan]:
     """Parse a testplan CSV into (instruction, type) -> coverpoints, grouped by ExtraExtensions entry.
 
-    The "" group holds the rows that need only the suite's own extensions.
+    The () group holds the rows that need only the suite's own extensions.
     """
-    groups: dict[str, Testplan] = defaultdict(dict)
+    groups: dict[tuple[str, ...], Testplan] = defaultdict(dict)
     with csv_path.open() as csvfile:
         for row in csv.DictReader(csvfile):
             if "Instruction" not in row:
@@ -289,7 +289,7 @@ def _parse_testplan_groups(csv_path: Path) -> dict[str, Testplan]:
                 )
             instr = row["Instruction"]
             instr_type = row.get("Type", "")
-            extra_extensions = ":".join(ext.strip() for ext in row.pop("ExtraExtensions", "").split(":") if ext.strip())
+            extra_extensions = tuple(ext.strip() for ext in row.pop("ExtraExtensions", "").split(":") if ext.strip())
 
             cps: list[str] = []
             del row["Instruction"]
@@ -311,7 +311,7 @@ def _parse_testplan_groups(csv_path: Path) -> dict[str, Testplan]:
     return groups
 
 
-def read_testplans(testplan_dir: Path) -> tuple[dict[str, Testplan], dict[str, dict[str, Testplan]]]:
+def read_testplans(testplan_dir: Path) -> tuple[dict[str, Testplan], dict[str, dict[tuple[str, ...], Testplan]]]:
     """Read all CSV testplan files.
 
     Returns (testplans, extra_testplans). testplans maps each extension name to the rows that need only
@@ -323,12 +323,12 @@ def read_testplans(testplan_dir: Path) -> tuple[dict[str, Testplan], dict[str, d
         see _sew_variants_for for the exact prefix → SEW mapping.
     """
     testplans: dict[str, Testplan] = {}
-    extra_testplans: dict[str, dict[str, Testplan]] = {}
+    extra_testplans: dict[str, dict[tuple[str, ...], Testplan]] = {}
 
     for csv_path in testplan_dir.glob("*.csv"):
         arch = csv_path.stem
         groups = _parse_testplan_groups(csv_path)
-        tp = groups.pop("")
+        tp = groups.pop(())
         testplans[arch] = tp
         if groups:
             extra_testplans[arch] = groups
@@ -681,16 +681,16 @@ def _gen_instrs(
     return "".join(covergroup_lines), "".join(init_lines)
 
 
-def _guard(extension: str, content: str) -> str:
-    """Wrap content in `ifdef <EXT>_SUPPORTED for each extension of a colon-separated ExtraExtensions entry."""
-    for ext in reversed(extension.split(":") if extension else []):
+def _guard(extension: tuple[str, ...], content: str) -> str:
+    """Wrap content in `ifdef <EXT>_SUPPORTED for each extension of an ExtraExtensions entry."""
+    for ext in reversed(extension):
         content = f"`ifdef {ext.upper()}_SUPPORTED\n{content}`endif\n"
     return content
 
 
-def _extra_name(arch: str, extension: str) -> str:
+def _extra_name(arch: str, extension: tuple[str, ...]) -> str:
     """Name prefix for an ExtraExtensions group: the suite followed by its extensions, e.g. ZfaZfhD for Zfh:D."""
-    return arch + extension.replace(":", "")
+    return arch + "".join(extension)
 
 
 def _gen_sample_arm(templates: dict[str, str], instr: str, calls: list[str]) -> str:
@@ -709,7 +709,7 @@ def _gen_covergroup_samples(
     arch: str,
     has_rv32: bool,
     has_rv64: bool,
-    extras: dict[str, Testplan],
+    extras: dict[tuple[str, ...], Testplan],
     vector_sample: bool = False,
 ) -> str:
     """Generate covergroup sample function calls for matching instructions and ExtraExtensions rows."""
@@ -788,7 +788,7 @@ def _write_extension_files(
     output_dir: Path,
     *,
     vector: bool,
-    extras: dict[str, Testplan],
+    extras: dict[tuple[str, ...], Testplan],
 ) -> None:
     """Write the _coverage.svh / _coverage_init.svh pair for one extension.
 
@@ -821,7 +821,7 @@ def _write_extension_files(
 
     # Covergroup definitions: common instructions, then RV32-only, then RV64-only;
     # then the same for each group of ExtraExtensions rows inside its extension guards
-    for extension, group in [("", tp), *sorted(extras.items())]:
+    for extension, group in [((), tp), *sorted(extras.items())]:
         group_keys = instr_keys if not extension else sorted(group.keys())
         name = _extra_name(arch, extension)
         instr_content, init_content = _gen_instrs(group_keys, templates, group, arch, True, True, name)
@@ -869,13 +869,13 @@ class _CovergroupJob:
     tp: dict[tuple[str, str], list[str]]
     output_dir: Path
     vector: bool
-    extras: dict[str, Testplan]
+    extras: dict[tuple[str, ...], Testplan]
 
 
 def _plan_unpriv_jobs(
     test_plans: dict[str, dict[tuple[str, str], list[str]]],
     output_dir: Path,
-    extra_testplans: dict[str, dict[str, Testplan]],
+    extra_testplans: dict[str, dict[tuple[str, ...], Testplan]],
 ) -> list[_CovergroupJob]:
     """Collect the unpriv per-extension covergroup jobs (writes go in output_dir/unpriv)."""
     unpriv_dir = output_dir / "unpriv"
@@ -926,7 +926,7 @@ def write_coverage_headers(
 def _merge_instruction_testplans(
     test_plans: dict[str, dict[tuple[str, str], list[str]]],
     instruction_formats: dict[tuple[str, str], list[str]],
-    extra_testplans: dict[str, dict[str, Testplan]],
+    extra_testplans: dict[str, dict[tuple[str, ...], Testplan]],
 ) -> dict[tuple[str, str], list[str]]:
     """Merge testplan and extra instruction formats into a single mapping with unique instruction entries.
 
@@ -955,7 +955,7 @@ def write_instruction_sample_file(
     instruction_formats: dict[tuple[str, str], list[str]],
     templates: dict[str, str],
     output_dir: Path,
-    extra_testplans: dict[str, dict[str, Testplan]],
+    extra_testplans: dict[str, dict[tuple[str, ...], Testplan]],
 ) -> None:
     """Generate and write RISCV_instruction_sample.svh with a complete instruction decode case statement.
 
@@ -1002,7 +1002,7 @@ def _plan_priv_jobs(
     priv_output_dir = output_dir / "priv"
     priv_output_dir.mkdir(parents=True, exist_ok=True)
 
-    priv_plans = {csv_path.stem: _parse_testplan_groups(csv_path)[""] for csv_path in priv_plan_dir.glob("*.csv")}
+    priv_plans = {csv_path.stem: _parse_testplan_groups(csv_path)[()] for csv_path in priv_plan_dir.glob("*.csv")}
 
     # Mirror the unpriv per-SEW expansion for ExceptionsVf so a single
     # ExceptionsVf.csv produces ExceptionsVf{16,32,64} covergroup files (one
@@ -1035,7 +1035,7 @@ def generate_covergroups(testplan_dir: Path, output_dir: Path, extensions: str =
         test_plans = all_test_plans
 
     templates = read_covergroup_templates()
-    instruction_formats = _parse_testplan_groups(testplan_dir / "coverage" / "instruction_formats.csv")[""]
+    instruction_formats = _parse_testplan_groups(testplan_dir / "coverage" / "instruction_formats.csv")[()]
 
     jobs = _plan_unpriv_jobs(test_plans, output_dir, extra_testplans)
     jobs += _plan_priv_jobs(testplan_dir, output_dir, extensions, exclude)

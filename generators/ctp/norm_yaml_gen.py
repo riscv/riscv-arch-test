@@ -39,7 +39,7 @@ def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def load_csv_with_coverpoints(csv_path: Path) -> dict[str, list[tuple[str, list[str]]]]:
+def load_csv_with_coverpoints(csv_path: Path) -> dict[str, list[tuple[tuple[str, ...], list[str]]]]:
     """
     Load instruction names and coverpoint data from a CSV testplan file.
 
@@ -49,7 +49,7 @@ def load_csv_with_coverpoints(csv_path: Path) -> dict[str, list[tuple[str, list[
     - Start with 'cmp'
     - Contain 'edges' unless they start with 'cr' OR no cr*edges coverpoint exists
     """
-    data: dict[str, list[tuple[str, list[str]]]] = {}
+    data: dict[str, list[tuple[tuple[str, ...], list[str]]]] = {}
     with csv_path.open("r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
 
@@ -114,7 +114,9 @@ def load_csv_with_coverpoints(csv_path: Path) -> dict[str, list[tuple[str, list[
                 else:
                     coverpoints.append(f"{col_name}_{cell_value}")
 
-            extra_extensions = "".join(ext.strip() for ext in (row.get("ExtraExtensions") or "").split(":"))
+            extra_extensions = tuple(
+                ext.strip() for ext in (row.get("ExtraExtensions") or "").split(":") if ext.strip()
+            )
             data.setdefault(instr, []).append((extra_extensions, coverpoints))
 
     return data
@@ -143,7 +145,7 @@ def find_rule_in_json(rule_name: str, json_data: dict[str, Any]) -> dict[str, An
 
 
 def generate_yaml_content(
-    csv_base_name: str, instr_data: dict[str, list[tuple[str, list[str]]]], json_data: dict[str, Any]
+    csv_base_name: str, instr_data: dict[str, list[tuple[tuple[str, ...], list[str]]]], json_data: dict[str, Any]
 ) -> str:
     """
     Generate YAML content for the given instructions.
@@ -177,7 +179,7 @@ def generate_yaml_content(
             # instr uses underscores instead of dashes
             instr_with_underscore = instruction.replace(".", "_")
             cp_strs = [
-                f'"{csv_base_name}{extension}_{instr_with_underscore}_cg/{{{", ".join(cps)}}}"'
+                f'"{csv_base_name}{"".join(extension)}_{instr_with_underscore}_cg/{{{", ".join(cps)}}}"'
                 for extension, cps in rows
                 if cps
             ]

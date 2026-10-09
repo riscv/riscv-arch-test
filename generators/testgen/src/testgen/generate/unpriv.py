@@ -79,7 +79,7 @@ def generate_unpriv_extension_tests(
 
     # One test configuration per ExtraExtensions entry; a row with an extra extension gets its own
     # file/covergroup name prefix, header requirements, and FLEN, but stays in this testsuite's directory.
-    test_configs: dict[str, TestConfig] = {}
+    test_configs: dict[tuple[str, ...], TestConfig] = {}
     for extra_extensions in {instr_data.extra_extensions for instr_data in instructions}:
         ext_components, _ = canonicalize_extensions(
             testsuite, xlen, E_ext, sew=sew, instr_name=instructions[0].instr_name, extra_extensions=extra_extensions

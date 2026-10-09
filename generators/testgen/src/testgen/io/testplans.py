@@ -53,7 +53,7 @@ class TestPlanData:
     rv32: bool
     rv64: bool
     sews_supported: list[int]
-    extra_extensions: str
+    extra_extensions: tuple[str, ...]
     coverpoints: list[str]
 
 
@@ -94,7 +94,7 @@ def read_testplan(testplan_path: Path) -> list[TestPlanData]:
                     f"Error: 'Type' column missing in testplan {testplan_path}. Make sure you remembered to shrink the CSV."
                 )
                 raise
-            extra_extensions = ":".join(ext.strip() for ext in row.get("ExtraExtensions", "").split(":") if ext.strip())
+            extra_extensions = tuple(ext.strip() for ext in row.get("ExtraExtensions", "").split(":") if ext.strip())
             rv32 = row["RV32"].strip().lower() == "x"
             rv64 = row["RV64"].strip().lower() == "x"
             sews = []

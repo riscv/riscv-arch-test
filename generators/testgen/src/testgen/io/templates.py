@@ -100,7 +100,7 @@ def canonicalize_extensions(
     required_extensions: list[str] | None = None,
     sew: int | None = None,
     instr_name: str | None = None,
-    extra_extensions: str = "",
+    extra_extensions: tuple[str, ...] = (),
 ) -> tuple[list[str], list[str]]:
     """Canonicalize extension string.
 
@@ -111,14 +111,13 @@ def canonicalize_extensions(
         required_extensions: If provided, use these extensions instead of parsing from testsuite.
         sew: Optional. Used in vector suites to determine the base extension
         instr_name: Optional. Used in vector suites to determine whether or not an instruction is part of a base extension
-        extra_extensions: Optional. Colon-separated extensions a testplan row requires beyond the testsuite's own.
+        extra_extensions: Optional. Extensions a testplan row requires beyond the testsuite's own.
     """
     # Use required_extensions if provided, otherwise parse from testsuite name
     ext_components = (
         required_extensions.copy() if required_extensions is not None else re.findall(r"[A-Z][a-z]*", testsuite)
     )
-    if extra_extensions:
-        ext_components.extend(extra_extensions.split(":"))
+    ext_components.extend(extra_extensions)
 
     # Extract parameters
     params: list[str] = []

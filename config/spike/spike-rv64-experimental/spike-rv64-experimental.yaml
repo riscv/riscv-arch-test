@@ -83,7 +83,7 @@ params:
   STVEC_BASE_ALIGNMENT_VECTORED: 4
   SATP_MODE_BARE: true
   TRAP_ON_ECALL_FROM_S: true
-  MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
+  MSTATUS_VS_LEGAL_VALUES: [0] # spike has no V here, so mstatus.VS is read-only zero
   MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
   # Sm params
   MEI_INTR_IMPL: true
@@ -100,10 +100,10 @@ params:
   IMP_ID_VALUE: 0
   VENDOR_ID_BANK: 0
   VENDOR_ID_OFFSET: 0
-  MISALIGNED_LDST: true
-  MISALIGNED_LDST_EXCEPTION_PRIORITY: low
-  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 4096
-  MISALIGNED_SPLIT_STRATEGY: sequential_bytes
+  # Spike handles misaligned loads and stores only when Zicclsm is in --isa; without it,
+  # it raises an address-misaligned exception before translating the address.
+  MISALIGNED_LDST: false
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: high
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
   TRAP_ON_RESERVED_INSTRUCTION: true
   TRAP_ON_UNIMPLEMENTED_CSR: true
@@ -199,40 +199,41 @@ params:
   HPM_COUNTER31_WIDTH: 64
   HPM_EVENTS: [0]
   MCOUNTINHIBIT_IMPLEMENTED: true
+  # spike without Zicntr/Zihpm keeps mcountinhibit read-only zero
   COUNTINHIBIT_EN:
     [
-      true,
       false,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
-      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
   MCOUNTENABLE_EN:
     [

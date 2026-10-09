@@ -17,3 +17,16 @@
     Zcb_c_sb_cg = new(); Zcb_c_sb_cg.set_inst_name("obj_Zcb_c_sb");
     Zcb_c_sh_cg = new(); Zcb_c_sh_cg.set_inst_name("obj_Zcb_c_sh");
     Zcb_c_zext_b_cg = new(); Zcb_c_zext_b_cg.set_inst_name("obj_Zcb_c_zext_b");
+`ifdef ZBA_SUPPORTED
+`ifdef UDB_MXLEN_64
+    ZcbZba_c_zext_w_cg = new(); ZcbZba_c_zext_w_cg.set_inst_name("obj_ZcbZba_c_zext_w");
+`endif
+`endif
+`ifdef ZBB_SUPPORTED
+    ZcbZbb_c_sext_b_cg = new(); ZcbZbb_c_sext_b_cg.set_inst_name("obj_ZcbZbb_c_sext_b");
+    ZcbZbb_c_sext_h_cg = new(); ZcbZbb_c_sext_h_cg.set_inst_name("obj_ZcbZbb_c_sext_h");
+    ZcbZbb_c_zext_h_cg = new(); ZcbZbb_c_zext_h_cg.set_inst_name("obj_ZcbZbb_c_zext_h");
+`endif
+`ifdef ZMMUL_SUPPORTED
+    ZcbZmmul_c_mul_cg = new(); ZcbZmmul_c_mul_cg.set_inst_name("obj_ZcbZmmul_c_mul");
+`endif

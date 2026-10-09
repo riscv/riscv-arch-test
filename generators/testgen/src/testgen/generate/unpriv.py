@@ -52,7 +52,7 @@ def generate_unpriv_extension_tests(
     Args:
         xlen: Target XLEN (32 or 64)
         E_ext: Whether to generate RV32E tests
-        testsuite: Testsuite to generate tests for (e.g., 'I', 'M', 'ZcbM', 'MisalignD')
+        testsuite: Testsuite to generate tests for (e.g., 'I', 'M', 'Zcb', 'MisalignD')
         testplan_dir: Directory containing testplan CSV files
         output_test_dir: Directory to output generated tests
         is_vector: Set in vector test suites

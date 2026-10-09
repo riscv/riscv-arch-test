@@ -156,7 +156,7 @@
 #define TRAP_CHECK_ZERO(_R, _INST_PTR, _STR_PTR)                  \
     beqz _R, 2f                                                 ;\
     mv   T1, _R                                                 ;\
-    li   DEFAULT_TEMP_REG, 0                                    ;\
+    mv   DEFAULT_TEMP_REG, x0                                   ;\
     jal  T2, failedtest_trap_x7_x9                              ;\
     RVTEST_WORD_PTR _INST_PTR                                   ;\
     RVTEST_WORD_PTR _STR_PTR                                    ;\

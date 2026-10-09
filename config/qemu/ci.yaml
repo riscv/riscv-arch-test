@@ -28,7 +28,10 @@ ci_enabled: true
 #     (https://gitlab.com/qemu-project/qemu/-/work_items/4655). On the max configs CSRIND, AIA and IMSIC are
 #     legally writable, but Sail does not model Sscsrind or Ssaia.
 # ZawrsU and ZawrsS fail on qemu due to stval mismatching, filed QEMU issue https://gitlab.com/qemu-project/qemu/-/work_items/4080
-# Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
+# Sdtrig*: Sail does not implement mcontrol6 (https://github.com/riscv/sail-riscv/issues/222). QEMU's tinfo
+#     lists only mcontrol and mcontrol6, so sail.json disables icount, itrigger and etrigger, but tdata1 still
+#     accepts icount (type 3), which never fires and hangs QEMU under -icount
+#     (https://gitlab.com/qemu-project/qemu/-/work_items/4665).
 # H: mstatus.MPV and mstatus.GVA are read-only zero, so mret never enters VS/VU: a guest's
 #    ecall is reported as cause 9/8 instead of 10, and a hypervisor CSR access from VS raises
 #    an illegal instruction instead of a virtual instruction exception

@@ -15,6 +15,7 @@ from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.random import random_int
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.InterruptsCommon import guard_symbol
 
 # data
 PERM_XSL = ("exec", "store", "load")
@@ -217,6 +218,60 @@ def _cause_interrupt(code: int, mode: str, r1: int) -> list[str]:
     if code == 11:  # machine external interrupt (PLIC MEIP; M-mode only)
         return [f"RVTEST_SET_MEXT_INT_{flavor}"]
     raise ValueError(f"unsupported interrupt code {code}")
+
+
+_INT_MACRO = {
+    1: "SSW",
+    3: "MSW",
+    5: "STIME",
+    7: "MTIME",
+    9: "SEXT",
+    11: "MEXT",
+}
+_INT_TYPE = {
+    1: "SSI",
+    3: "MSI",
+    5: "STI",
+    7: "MTI",
+    9: "SEI",
+    11: "MEI",
+}
+
+
+def _clear_interrupt(code: int, mode: str) -> list[str]:
+    """Clear interrupt ``code`` using the standard ACT4 interrupt macro."""
+    if code == 13:
+        # LCOFIP is cleared by the counter-overflow mechanism before returning.
+        return []
+
+    int_type = _INT_TYPE[code]
+    guard = guard_symbol(int_type)
+    macro = _INT_MACRO[code]
+    priv = "M" if mode == "Sm" else mode
+
+    return [
+        f"#ifdef {guard}",
+        f"RVTEST_CLR_{macro}_INT_{priv} # clear interrupt {code}",
+        f"#endif // {guard}",
+    ]
+
+
+def _read_trigger_hit(temp_reg: int, trig_num: int, mode: str, test_data: TestData) -> list[str]:
+    """Read and sign tdata1.hit before disabling the trigger when it is implemented."""
+    return [
+        # "#ifdef UDB_SDTRIG_HIT_IMPLEMENTED",
+        _load_reg(temp_reg, trig_num),
+        _csr_access(f"csrw tselect, x{temp_reg}", mode),
+        _csr_access(f"csrr x{temp_reg}, tdata1", mode),
+        "#if __riscv_xlen == 64",
+        f"srli x{temp_reg}, x{temp_reg}, 58 # tdata1.hit",
+        "#else",
+        f"srli x{temp_reg}, x{temp_reg}, 26 # tdata.hit",
+        "#endif",
+        f"andi x{temp_reg}, x{temp_reg}, 1",
+        write_sigupd(temp_reg, test_data),
+        # "#endif // UDB_SDTRIG_HIT_IMPLEMENTED",
+    ]
 
 
 def _config_mcontrol6(
@@ -431,6 +486,18 @@ def _fire_supported_triggers(trig_num: int, mode: str, cfg_reg: int, addr_reg: i
     )
 
     # # itrigger: mask SSIP, fire by making it pending
+    #  lines.extend(
+    #   [
+    #       f"#ifdef UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE",
+    #       *_config_itrigger(cfg_reg, trig_num, 1 << 1, mode),
+    #       *_cause_interrupt(1, mode, cfg_reg),
+    #       "nop # spacer",
+    #       *_disable_trigger(cfg_reg, trig_num, mode),
+    #       f"#endif // UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE",
+    #   ]
+
+    # etrigger: watch ecall-from-<mode>, fire with an ecall
+    # ecall_cause = {"M": 11, "S": 9, "U": 8}.get(mode[0], 11)
     # lines.extend(
     #     [
     #         f"#ifdef UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE",
@@ -442,19 +509,17 @@ def _fire_supported_triggers(trig_num: int, mode: str, cfg_reg: int, addr_reg: i
     #     ]
     # )
 
-    # etrigger: watch ecall-from-<mode>, fire with an ecall
-    # ecall_cause = {"M": 11, "S": 9, "U": 8}.get(mode[0], 11)
+    # # itrigger: mask SSIP, fire by making it pending
     # lines.extend(
     #     [
-    #         f"#ifdef UDB_ETRIGGER_TRIG{trig_num}_AVAILABLE",
-    #         *_config_etrigger(cfg_reg, trig_num, 1 << ecall_cause, mode),
-    #         "ecall # fire etrigger",
+    #         f"#ifdef UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE",
+    #         *_config_itrigger(cfg_reg, trig_num, 1 << 1, mode),
+    #         *_cause_interrupt(1, mode, cfg_reg),
     #         "nop # spacer",
     #         *_disable_trigger(cfg_reg, trig_num, mode),
-    #         f"#endif // UDB_ETRIGGER_TRIG{trig_num}_AVAILABLE",
+    #         f"#endif // UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE",
     #     ]
     # )
-
     return lines
 
 
@@ -1668,14 +1733,33 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     return [test_data.end_test_chunk()]
 
 
+INTERRUPT_CODES = (1, 3, 5, 7, 9, 11, 13)  # SSI, MSI, STI, MTI, SEI, MEI
+LOWER_MODE_INTERRUPT_CODES = (1, 5, 9, 13)
+TIMER_INTERRUPT_CODE = 7
+
+
+def _set_itrigger_delegation(code: int, delegate: int, reg: int) -> list[str]:
+    return [
+        f"LI(x{reg}, 0x{1 << code:x})",
+        f"{'csrs' if delegate else 'csrc'} mideleg, x{reg}",
+    ]
+
+
+def _goto_itrigger_origin(origin: str) -> list[str]:
+    if origin == "Sm":
+        return []
+    return [f"RVTEST_TSBI_GOTO_{origin}MODE"]
+
+
 def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate itrigger interrupt trigger tests."""
+
     covergroup = f"Sdtrig{mode}_itrigger_cg"
     tc = test_data.begin_test_chunk("Itrigger")
     lines: list[str] = tc.code
 
     # setup registers
-    t1, t2, t3, t4 = test_data.int_regs.get_registers(4, exclude_regs=[2], reg_range=list(range(8, 16)))
+    t1, t2 = test_data.int_regs.get_registers(2, exclude_regs=[2], reg_range=list(range(8, 16)))
 
     ######################################
     coverpoint = "cp_sdtrig_itrigger"
@@ -1686,23 +1770,73 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             "itrigger fires on each interrupt cause in the tdata2 mask",
         )
     )
-    for trig_num in range(UDB_NUM_TRIGGERS):
-        lines.append(f"#ifdef UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE")
-        for code in (1,):  # one interrupt type at a time while debugging (1=SSIP)
-            for priv in (0, MODE_PRIVBIT[mode]):
-                binname = f"trig_num_{trig_num}_code_{code}_priv_{priv:05b}"
+    origins = ("Sm", "S", "U") if mode == "Sm" else (mode,)
+    for origin in origins:
+        gated = mode == "Sm" and origin != "Sm"
+        if gated:
+            lines.append("#ifdef S_SUPPORTED")
+        codes = INTERRUPT_CODES if origin == "Sm" else LOWER_MODE_INTERRUPT_CODES
+        delegations = (0,) if origin == "Sm" else (1,)
+        for trig_num in range(UDB_NUM_TRIGGERS):
+            # TODO Uncomment once udb add these parameters
+            # lines.append(f"#ifdef UDB_ITRIGGER_TRIG{trig_num}_AVAILABLE")
+            for code in codes:
+                for delegate in delegations:
+                    #  lines.append(f"#ifdef UDB_INTERRUPT{code}_SUPPORTED")
+                    if code == 13:
+                        lines.append("#ifdef SSCOFPMF_SUPPORTED")
+                    for priv in (0, MODE_PRIVBIT[origin]):
+                        binname = f"trig_num_{trig_num}_{origin.lower()}_code_{code}_deleg_{delegate}_priv_{priv:05b}"
+                        lines.append(_add_tc(test_data, binname, coverpoint, covergroup))
+                        for cause in (code,) if code == TIMER_INTERRUPT_CODE else (code, TIMER_INTERRUPT_CODE):
+                            cause_gated = mode == "Sm" and origin == "Sm" and cause in LOWER_MODE_INTERRUPT_CODES
+                            if cause_gated:
+                                lines.append("#ifdef S_SUPPORTED")
+                            lines.extend(_global_ie(mode, enable=False))
+                            wait = [f"RVTEST_IDLE_FOR_INTERRUPT(x{t1})"] if cause == code and code in (3, 7, 11) else []
+                            if mode == "Sm":
+                                lines.append("csrci mstatus, 0x2 # SIE=0 while the source is prepared")
+                                if gated:
+                                    lines.extend(_set_itrigger_delegation(code, delegate, t1))
+                            lines.extend(
+                                [
+                                    *_config_itrigger(
+                                        t1,
+                                        trig_num,
+                                        1 << code,
+                                        mode,
+                                        privbits=priv,
+                                    ),
+                                    *_cause_interrupt(cause, origin, t1),
+                                    *wait,
+                                    *_goto_itrigger_origin(origin),
+                                    *_global_ie(origin, enable=True),
+                                    "nop # allow the pending interrupt to be taken",
+                                    *_global_ie(origin, enable=False),
+                                ]
+                            )
+                            if mode == "Sm":
+                                lines.append("RVTEST_TSBI_GOTO_MMODE")
+                            lines.extend(
+                                [
+                                    *_clear_interrupt(cause, mode),
+                                    *_read_trigger_hit(t2, trig_num, mode, test_data),
+                                    *_disable_trigger(t1, trig_num, mode),
+                                ]
+                            )
+                            if mode == "Sm" and gated:
+                                lines.extend(_set_itrigger_delegation(code, 0, t1))
+                            if cause_gated:
+                                lines.append("#endif // S_SUPPORTED")
 
-                lines.extend(
-                    [
-                        _add_tc(test_data, binname, coverpoint, covergroup),
-                        # *_config_itrigger(t1, trig_num, 1 << code, mode, privbits=priv),
-                        # *_cause_interrupt(code, mode, t1),
-                        # "nop # spacer",
-                    ]
-                )
-        lines.append("#endif")  # endif ITRIGGER_SUPPORTED
+                    if code == 13:
+                        lines.append("#endif")  # SSCOFPMF_SUPPORTED
+                    # lines.append("#endif")  # UDB_INTERRUPT{code}_SUPPORTED
+            # lines.append("#endif")  # UDB_ITRIGGER_TRIGn_AVAILABLE
+        if gated:
+            lines.append("#endif  // S_SUPPORTED")
 
-    test_data.int_regs.return_registers([t1, t2, t3, t4])
+    test_data.int_regs.return_registers([t1, t2])
 
     return [test_data.end_test_chunk()]
 

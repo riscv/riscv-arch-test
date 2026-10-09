@@ -37,9 +37,8 @@ RVTEST_BEGIN
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs2: f10 = 0x7d06b6e205c39ea0
   fsflagsi 0b00000 # clear all fflags
   LA(x8, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0xfa3c615f
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0x4db836e5
   SREG x14, 0(x8) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0x82f9491d
   SREG x14, 4(x8) # fill store target with canary
   addi x8, x8, -96 # adjust base address for offset
 Zcd_c_fsd_cg_cp_rs1_p_b8:
@@ -58,9 +57,8 @@ Zcd_c_fsd_cg_cp_rs1_p_b8:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs2: f10 = 0xcde6a3b072558eb7
   fsflagsi 0b00000 # clear all fflags
   LA(x9, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load store canary: x8 = 0x8daa7148
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load store canary: x8 = 0x4db836e5
   SREG x8, 0(x9) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load store canary: x8 = 0x32195c4f
   SREG x8, 4(x9) # fill store target with canary
   addi x9, x9, -176 # adjust base address for offset
 Zcd_c_fsd_cg_cp_rs1_p_b9:
@@ -79,9 +77,8 @@ Zcd_c_fsd_cg_cp_rs1_p_b9:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs2: f10 = 0xe06081983fe9953f
   fsflagsi 0b00000 # clear all fflags
   LA(x10, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0xc0166ac0
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0x4db836e5
   SREG x12, 0(x10) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0x1f9f7e67
   SREG x12, 4(x10) # fill store target with canary
   addi x10, x10, -192 # adjust base address for offset
 Zcd_c_fsd_cg_cp_rs1_p_b10:
@@ -100,9 +97,8 @@ Zcd_c_fsd_cg_cp_rs1_p_b10:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs2: f11 = 0x0fbc3fa522a669f3
   fsflagsi 0b00000 # clear all fflags
   LA(x11, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load store canary: x10 = 0xdd59960c
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load store canary: x10 = 0x4db836e5
   SREG x10, 0(x11) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load store canary: x10 = 0xf043c05a
   SREG x10, 4(x11) # fill store target with canary
   addi x11, x11, -16 # adjust base address for offset
 Zcd_c_fsd_cg_cp_rs1_p_b11:
@@ -121,9 +117,8 @@ Zcd_c_fsd_cg_cp_rs1_p_b11:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0x1af7ec7e67f3c5e0
   fsflagsi 0b00000 # clear all fflags
   LA(x12, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load store canary: x9 = 0x980c3a1f
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load store canary: x9 = 0x4db836e5
   SREG x9, 0(x12) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load store canary: x9 = 0xe5081381
   SREG x9, 4(x12) # fill store target with canary
   addi x12, x12, -96 # adjust base address for offset
 Zcd_c_fsd_cg_cp_rs1_p_b12:
@@ -142,9 +137,8 @@ Zcd_c_fsd_cg_cp_rs1_p_b12:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x39e8e55068825950
   fsflagsi 0b00000 # clear all fflags
   LA(x13, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x977da6af
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x4db836e5
   SREG x11, 0(x13) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0xc6171aaf
   SREG x11, 4(x13) # fill store target with canary
   addi x13, x13, -104 # adjust base address for offset
 Zcd_c_fsd_cg_cp_rs1_p_b13:
@@ -163,9 +157,8 @@ Zcd_c_fsd_cg_cp_rs1_p_b13:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0x43cd50b5f952417b
   fsflagsi 0b00000 # clear all fflags
   LA(x14, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load store canary: x9 = 0x06adbe84
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load store canary: x9 = 0x4db836e5
   SREG x9, 0(x14) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load store canary: x9 = 0xbc32af4a
   SREG x9, 4(x14) # fill store target with canary
   addi x14, x14, -80 # adjust base address for offset
 Zcd_c_fsd_cg_cp_rs1_p_b14:
@@ -184,9 +177,8 @@ Zcd_c_fsd_cg_cp_rs1_p_b14:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x79a4931ec9d0b995
   fsflagsi 0b00000 # clear all fflags
   LA(x15, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load store canary: x10 = 0x362f466a
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load store canary: x10 = 0x4db836e5
   SREG x10, 0(x15) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load store canary: x10 = 0x865b6ce1
   SREG x10, 4(x15) # fill store target with canary
   addi x15, x15, -200 # adjust base address for offset
 Zcd_c_fsd_cg_cp_rs1_p_b15:
@@ -209,9 +201,8 @@ Zcd_c_fsd_cg_cp_rs1_p_b15:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs2: f8 = 0xc9d4ffde5cfe3479
   fsflagsi 0b00000 # clear all fflags
   LA(x15, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0xa301cb86
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0x4db836e5
   SREG x13, 0(x15) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0x362b0021
   SREG x13, 4(x15) # fill store target with canary
   addi x15, x15, -224 # adjust base address for offset
 Zcd_c_fsd_cg_cp_fs2_p_b8:
@@ -230,9 +221,8 @@ Zcd_c_fsd_cg_cp_fs2_p_b8:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs2: f9 = 0x9c39fc275d49d143
   fsflagsi 0b00000 # clear all fflags
   LA(x15, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0xa2b62ebc
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0x4db836e5
   SREG x12, 0(x15) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0x63c603d8
   SREG x12, 4(x15) # fill store target with canary
   addi x15, x15, -16 # adjust base address for offset
 Zcd_c_fsd_cg_cp_fs2_p_b9:
@@ -251,9 +241,8 @@ Zcd_c_fsd_cg_cp_fs2_p_b9:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs2: f10 = 0x5d8a31a6e202bd64
   fsflagsi 0b00000 # clear all fflags
   LA(x13, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x1dfd429b
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x4db836e5
   SREG x11, 0(x13) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0xa275ce59
   SREG x11, 4(x13) # fill store target with canary
   addi x13, x13, -208 # adjust base address for offset
 Zcd_c_fsd_cg_cp_fs2_p_b10:
@@ -272,9 +261,8 @@ Zcd_c_fsd_cg_cp_fs2_p_b10:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs2: f11 = 0x1feec53d666ea09c
   fsflagsi 0b00000 # clear all fflags
   LA(x10, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load store canary: x9 = 0x99915f63
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load store canary: x9 = 0x4db836e5
   SREG x9, 0(x10) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load store canary: x9 = 0xe0113ac2
   SREG x9, 4(x10) # fill store target with canary
   addi x10, x10, -136 # adjust base address for offset
 Zcd_c_fsd_cg_cp_fs2_p_b11:
@@ -293,9 +281,8 @@ Zcd_c_fsd_cg_cp_fs2_p_b11:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0xeb79abf92f301cef
   fsflagsi 0b00000 # clear all fflags
   LA(x11, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0xd0cfe310
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0x4db836e5
   SREG x15, 0(x11) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0x14865406
   SREG x15, 4(x11) # fill store target with canary
   addi x11, x11, -104 # adjust base address for offset
 Zcd_c_fsd_cg_cp_fs2_p_b12:
@@ -314,9 +301,8 @@ Zcd_c_fsd_cg_cp_fs2_p_b12:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0xffdecf9e8bf6899b
   fsflagsi 0b00000 # clear all fflags
   LA(x8, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x74097664
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x4db836e5
   SREG x11, 0(x8) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x00213061
   SREG x11, 4(x8) # fill store target with canary
   addi x8, x8, -40 # adjust base address for offset
 Zcd_c_fsd_cg_cp_fs2_p_b13:
@@ -335,9 +321,8 @@ Zcd_c_fsd_cg_cp_fs2_p_b13:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x0b51952ea9e090f5
   fsflagsi 0b00000 # clear all fflags
   LA(x8, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0x561f6f0a
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0x4db836e5
   SREG x14, 0(x8) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0xf4ae6ad1
   SREG x14, 4(x8) # fill store target with canary
   addi x8, x8, -112 # adjust base address for offset
 Zcd_c_fsd_cg_cp_fs2_p_b14:
@@ -356,9 +341,8 @@ Zcd_c_fsd_cg_cp_fs2_p_b14:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0x50c7cec0a5401eb7
   fsflagsi 0b00000 # clear all fflags
   LA(x15, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x5abfe148
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x4db836e5
   SREG x11, 0(x15) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0xaf38313f
   SREG x11, 4(x15) # fill store target with canary
   addi x15, x15, -120 # adjust base address for offset
 Zcd_c_fsd_cg_cp_fs2_p_b15:
@@ -381,9 +365,8 @@ Zcd_c_fsd_cg_cp_fs2_p_b15:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x2e3020b9e7ad1240
   fsflagsi 0b00000 # clear all fflags
   LA(x15, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load store canary: x8 = 0x1852edbf
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load store canary: x8 = 0x4db836e5
   SREG x8, 0(x15) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load store canary: x8 = 0xd1cfdf46
   SREG x8, 4(x15) # fill store target with canary
   addi x15, x15, 0 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x0:
@@ -402,9 +385,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x0:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs2: f9 = 0x8674276dec1e2f92
   fsflagsi 0b00000 # clear all fflags
   LA(x9, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0x13e1d06d
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0x4db836e5
   SREG x15, 0(x9) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0x798bd892
   SREG x15, 4(x9) # fill store target with canary
   addi x9, x9, -8 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x8:
@@ -423,9 +405,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x8:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0xdb03ef3613bbf934
   fsflagsi 0b00000 # clear all fflags
   LA(x13, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0xec4406cb
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0x4db836e5
   SREG x12, 0(x13) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0x24fc10c9
   SREG x12, 4(x13) # fill store target with canary
   addi x13, x13, -16 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x10:
@@ -444,9 +425,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x10:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0xaaffb3dda8422462
   fsflagsi 0b00000 # clear all fflags
   LA(x8, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x57bddb9d
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x4db836e5
   SREG x11, 0(x8) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x55004c22
   SREG x11, 4(x8) # fill store target with canary
   addi x8, x8, -24 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x18:
@@ -465,9 +445,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x18:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs2: f10 = 0x67fc765f58e779f1
   fsflagsi 0b00000 # clear all fflags
   LA(x12, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load store canary: x8 = 0xa718860e
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load store canary: x8 = 0x4db836e5
   SREG x8, 0(x12) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load store canary: x8 = 0x980389a0
   SREG x8, 4(x12) # fill store target with canary
   addi x12, x12, -32 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x20:
@@ -486,9 +465,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x20:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs2: f8 = 0xf71be4ed4aec414d
   fsflagsi 0b00000 # clear all fflags
   LA(x8, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0xb513beb2
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x4db836e5
   SREG x11, 0(x8) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x08e41b12
   SREG x11, 4(x8) # fill store target with canary
   addi x8, x8, -40 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x28:
@@ -507,9 +485,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x28:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs2: f10 = 0xdd2ccc2a0df8b495
   fsflagsi 0b00000 # clear all fflags
   LA(x10, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0xf2074b6a
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0x4db836e5
   SREG x13, 0(x10) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0x22d333d5
   SREG x13, 4(x10) # fill store target with canary
   addi x10, x10, -48 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x30:
@@ -528,9 +505,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x30:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0x6727cfb3c74e4c39
   fsflagsi 0b00000 # clear all fflags
   LA(x8, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load store canary: x10 = 0x38b1b3c6
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load store canary: x10 = 0x4db836e5
   SREG x10, 0(x8) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load store canary: x10 = 0x98d8304c
   SREG x10, 4(x8) # fill store target with canary
   addi x8, x8, -56 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x38:
@@ -549,9 +525,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x38:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x4454369588ecd07b
   fsflagsi 0b00000 # clear all fflags
   LA(x15, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0x77132f84
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0x4db836e5
   SREG x13, 0(x15) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0xbbabc96a
   SREG x13, 4(x15) # fill store target with canary
   addi x15, x15, -64 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x40:
@@ -570,9 +545,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x40:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x858dbb7953c50023
   fsflagsi 0b00000 # clear all fflags
   LA(x8, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0xac3affdc
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x4db836e5
   SREG x11, 0(x8) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x7a724486
   SREG x11, 4(x8) # fill store target with canary
   addi x8, x8, -72 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x48:
@@ -591,9 +565,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x48:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs2: f8 = 0x2be1cc526722fb9f
   fsflagsi 0b00000 # clear all fflags
   LA(x10, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load store canary: x8 = 0x98dd0460
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load store canary: x8 = 0x4db836e5
   SREG x8, 0(x10) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load store canary: x8 = 0xd41e33ad
   SREG x8, 4(x10) # fill store target with canary
   addi x10, x10, -80 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x50:
@@ -612,9 +585,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x50:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0xb8b87555bbea6e7f
   fsflagsi 0b00000 # clear all fflags
   LA(x15, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load store canary: x8 = 0x44159180
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load store canary: x8 = 0x4db836e5
   SREG x8, 0(x15) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load store canary: x8 = 0x47478aaa
   SREG x8, 4(x15) # fill store target with canary
   addi x15, x15, -88 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x58:
@@ -633,9 +605,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x58:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x387ae3ccf8609c48
   fsflagsi 0b00000 # clear all fflags
   LA(x11, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0x079f63b7
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0x4db836e5
   SREG x14, 0(x11) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0xc7851c33
   SREG x14, 4(x11) # fill store target with canary
   addi x11, x11, -96 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x60:
@@ -654,9 +625,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x60:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0x48119c6f5c6ab824
   fsflagsi 0b00000 # clear all fflags
   LA(x8, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0xa39547db
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x4db836e5
   SREG x11, 0(x8) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0xb7ee6390
   SREG x11, 4(x8) # fill store target with canary
   addi x8, x8, -104 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x68:
@@ -675,9 +645,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x68:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0x43aa0ca69e312e1d
   fsflagsi 0b00000 # clear all fflags
   LA(x9, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load store canary: x10 = 0x61ced1e2
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load store canary: x10 = 0x4db836e5
   SREG x10, 0(x9) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load store canary: x10 = 0xbc55f359
   SREG x10, 4(x9) # fill store target with canary
   addi x9, x9, -112 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x70:
@@ -696,9 +665,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x70:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f10) # load fs2: f10 = 0x84d8a63625152bcc
   fsflagsi 0b00000 # clear all fflags
   LA(x10, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0xdaead433
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0x4db836e5
   SREG x15, 0(x10) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0x7b2759c9
   SREG x15, 4(x10) # fill store target with canary
   addi x10, x10, -120 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x78:
@@ -717,9 +685,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x78:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0x9c09a90579ca0322
   fsflagsi 0b00000 # clear all fflags
   LA(x8, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load store canary: x10 = 0x8635fcdd
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load store canary: x10 = 0x4db836e5
   SREG x10, 0(x8) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load store canary: x10 = 0x63f656fa
   SREG x10, 4(x8) # fill store target with canary
   addi x8, x8, -128 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x80:
@@ -738,9 +705,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x80:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0x43971577bf1ee1f3
   fsflagsi 0b00000 # clear all fflags
   LA(x15, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0x40e11e0c
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0x4db836e5
   SREG x12, 0(x15) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0xbc68ea88
   SREG x12, 4(x15) # fill store target with canary
   addi x15, x15, -136 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x88:
@@ -759,9 +725,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x88:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x01a90955b0d2d6e8
   fsflagsi 0b00000 # clear all fflags
   LA(x9, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load store canary: x10 = 0x4f2d2917
+  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load store canary: x10 = 0x4db836e5
   SREG x10, 0(x9) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x10) # load store canary: x10 = 0xfe56f6aa
   SREG x10, 4(x9) # fill store target with canary
   addi x9, x9, -144 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x90:
@@ -780,9 +745,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x90:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f9) # load fs2: f9 = 0x40a816d3fee4296f
   fsflagsi 0b00000 # clear all fflags
   LA(x14, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x011bd690
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x4db836e5
   SREG x11, 0(x14) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0xbf57e92c
   SREG x11, 4(x14) # fill store target with canary
   addi x14, x14, -152 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0x98:
@@ -801,9 +765,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0x98:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0x2b0202953f4e42da
   fsflagsi 0b00000 # clear all fflags
   LA(x9, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0xc0b1bd25
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0x4db836e5
   SREG x13, 0(x9) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0xd4fdfd6a
   SREG x13, 4(x9) # fill store target with canary
   addi x9, x9, -160 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0xa0:
@@ -822,9 +785,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xa0:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f11) # load fs2: f11 = 0xf86f535c29dd280a
   fsflagsi 0b00000 # clear all fflags
   LA(x14, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load store canary: x8 = 0xd622d7f5
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load store canary: x8 = 0x4db836e5
   SREG x8, 0(x14) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load store canary: x8 = 0x0790aca3
   SREG x8, 4(x14) # fill store target with canary
   addi x14, x14, -168 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0xa8:
@@ -843,9 +805,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xa8:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0x80736cfcf0d5faa6
   fsflagsi 0b00000 # clear all fflags
   LA(x10, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x0f2a0559
+  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x4db836e5
   SREG x11, 0(x10) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x11) # load store canary: x11 = 0x7f8c9303
   SREG x11, 4(x10) # fill store target with canary
   addi x10, x10, -176 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0xb0:
@@ -864,9 +825,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xb0:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs2: f8 = 0x71caad0cb3dbf603
   fsflagsi 0b00000 # clear all fflags
   LA(x13, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0x4c2409fc
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0x4db836e5
   SREG x12, 0(x13) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0x8e3552f3
   SREG x12, 4(x13) # fill store target with canary
   addi x13, x13, -184 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0xb8:
@@ -885,9 +845,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xb8:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs2: f8 = 0x51cfa176a5b2529c
   fsflagsi 0b00000 # clear all fflags
   LA(x10, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0x5a4dad63
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0x4db836e5
   SREG x15, 0(x10) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0xae305e89
   SREG x15, 4(x10) # fill store target with canary
   addi x10, x10, -192 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0xc0:
@@ -906,9 +865,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xc0:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0xb1d8e9beda453f7b
   fsflagsi 0b00000 # clear all fflags
   LA(x10, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0x25bac084
+  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0x4db836e5
   SREG x15, 0(x10) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x15) # load store canary: x15 = 0x4e271641
   SREG x15, 4(x10) # fill store target with canary
   addi x10, x10, -200 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0xc8:
@@ -927,9 +885,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xc8:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0x68f97fb73afccb16
   fsflagsi 0b00000 # clear all fflags
   LA(x15, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0xc50334e9
+  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0x4db836e5
   SREG x12, 0(x15) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x12) # load store canary: x12 = 0x97068048
   SREG x12, 4(x15) # fill store target with canary
   addi x15, x15, -208 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0xd0:
@@ -948,9 +905,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xd0:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f15) # load fs2: f15 = 0x4d264cf6ab3bbdf4
   fsflagsi 0b00000 # clear all fflags
   LA(x8, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load store canary: x9 = 0x54c4420b
+  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load store canary: x9 = 0x4db836e5
   SREG x9, 0(x8) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x9) # load store canary: x9 = 0xb2d9b309
   SREG x9, 4(x8) # fill store target with canary
   addi x8, x8, -216 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0xd8:
@@ -969,9 +925,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xd8:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f12) # load fs2: f12 = 0xb5fc23593dffba5f
   fsflagsi 0b00000 # clear all fflags
   LA(x14, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0xc20045a0
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0x4db836e5
   SREG x13, 0(x14) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0x4a03dca6
   SREG x13, 4(x14) # fill store target with canary
   addi x14, x14, -224 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0xe0:
@@ -990,9 +945,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xe0:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f8) # load fs2: f8 = 0x38cee21df1092276
   fsflagsi 0b00000 # clear all fflags
   LA(x15, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0x0ef6dd89
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0x4db836e5
   SREG x13, 0(x15) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0xc7311de2
   SREG x13, 4(x15) # fill store target with canary
   addi x15, x15, -232 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0xe8:
@@ -1011,9 +965,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xe8:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0xac9d6d3523854f22
   fsflagsi 0b00000 # clear all fflags
   LA(x14, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0xdc7ab0dd
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0x4db836e5
   SREG x13, 0(x14) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0x536292ca
   SREG x13, 4(x14) # fill store target with canary
   addi x14, x14, -240 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0xf0:
@@ -1032,9 +985,8 @@ Zcd_c_fsd_cg_cp_imm_mul_8_b0xf0:
   RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0xac94604e187331b5
   fsflagsi 0b00000 # clear all fflags
   LA(x9, scratch) # point base at scratch
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0xe78cce4a
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0x4db836e5
   SREG x13, 0(x9) # fill store target with canary
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0x536b9fb1
   SREG x13, 4(x9) # fill store target with canary
   addi x9, x9, -248 # adjust base address for offset
 Zcd_c_fsd_cg_cp_imm_mul_8_b0xf8:
@@ -1057,149 +1009,101 @@ RVTEST_DATA_BEGIN
 
 // Test data
 .dword 0x7d06b6e205c39ea0
-.dword 0x00000000fa3c615f
-.dword 0x0000000082f9491d
+.dword 0x000000004db836e5
 .dword 0xcde6a3b072558eb7
-.dword 0x000000008daa7148
-.dword 0x0000000032195c4f
+.dword 0x000000004db836e5
 .dword 0xe06081983fe9953f
-.dword 0x00000000c0166ac0
-.dword 0x000000001f9f7e67
+.dword 0x000000004db836e5
 .dword 0x0fbc3fa522a669f3
-.dword 0x00000000dd59960c
-.dword 0x00000000f043c05a
+.dword 0x000000004db836e5
 .dword 0x1af7ec7e67f3c5e0
-.dword 0x00000000980c3a1f
-.dword 0x00000000e5081381
+.dword 0x000000004db836e5
 .dword 0x39e8e55068825950
-.dword 0x00000000977da6af
-.dword 0x00000000c6171aaf
+.dword 0x000000004db836e5
 .dword 0x43cd50b5f952417b
-.dword 0x0000000006adbe84
-.dword 0x00000000bc32af4a
+.dword 0x000000004db836e5
 .dword 0x79a4931ec9d0b995
-.dword 0x00000000362f466a
-.dword 0x00000000865b6ce1
+.dword 0x000000004db836e5
 .dword 0xc9d4ffde5cfe3479
-.dword 0x00000000a301cb86
-.dword 0x00000000362b0021
+.dword 0x000000004db836e5
 .dword 0x9c39fc275d49d143
-.dword 0x00000000a2b62ebc
-.dword 0x0000000063c603d8
+.dword 0x000000004db836e5
 .dword 0x5d8a31a6e202bd64
-.dword 0x000000001dfd429b
-.dword 0x00000000a275ce59
+.dword 0x000000004db836e5
 .dword 0x1feec53d666ea09c
-.dword 0x0000000099915f63
-.dword 0x00000000e0113ac2
+.dword 0x000000004db836e5
 .dword 0xeb79abf92f301cef
-.dword 0x00000000d0cfe310
-.dword 0x0000000014865406
+.dword 0x000000004db836e5
 .dword 0xffdecf9e8bf6899b
-.dword 0x0000000074097664
-.dword 0x0000000000213061
+.dword 0x000000004db836e5
 .dword 0x0b51952ea9e090f5
-.dword 0x00000000561f6f0a
-.dword 0x00000000f4ae6ad1
+.dword 0x000000004db836e5
 .dword 0x50c7cec0a5401eb7
-.dword 0x000000005abfe148
-.dword 0x00000000af38313f
+.dword 0x000000004db836e5
 .dword 0x2e3020b9e7ad1240
-.dword 0x000000001852edbf
-.dword 0x00000000d1cfdf46
+.dword 0x000000004db836e5
 .dword 0x8674276dec1e2f92
-.dword 0x0000000013e1d06d
-.dword 0x00000000798bd892
+.dword 0x000000004db836e5
 .dword 0xdb03ef3613bbf934
-.dword 0x00000000ec4406cb
-.dword 0x0000000024fc10c9
+.dword 0x000000004db836e5
 .dword 0xaaffb3dda8422462
-.dword 0x0000000057bddb9d
-.dword 0x0000000055004c22
+.dword 0x000000004db836e5
 .dword 0x67fc765f58e779f1
-.dword 0x00000000a718860e
-.dword 0x00000000980389a0
+.dword 0x000000004db836e5
 .dword 0xf71be4ed4aec414d
-.dword 0x00000000b513beb2
-.dword 0x0000000008e41b12
+.dword 0x000000004db836e5
 .dword 0xdd2ccc2a0df8b495
-.dword 0x00000000f2074b6a
-.dword 0x0000000022d333d5
+.dword 0x000000004db836e5
 .dword 0x6727cfb3c74e4c39
-.dword 0x0000000038b1b3c6
-.dword 0x0000000098d8304c
+.dword 0x000000004db836e5
 .dword 0x4454369588ecd07b
-.dword 0x0000000077132f84
-.dword 0x00000000bbabc96a
+.dword 0x000000004db836e5
 .dword 0x858dbb7953c50023
-.dword 0x00000000ac3affdc
-.dword 0x000000007a724486
+.dword 0x000000004db836e5
 .dword 0x2be1cc526722fb9f
-.dword 0x0000000098dd0460
-.dword 0x00000000d41e33ad
+.dword 0x000000004db836e5
 .dword 0xb8b87555bbea6e7f
-.dword 0x0000000044159180
-.dword 0x0000000047478aaa
+.dword 0x000000004db836e5
 .dword 0x387ae3ccf8609c48
-.dword 0x00000000079f63b7
-.dword 0x00000000c7851c33
+.dword 0x000000004db836e5
 .dword 0x48119c6f5c6ab824
-.dword 0x00000000a39547db
-.dword 0x00000000b7ee6390
+.dword 0x000000004db836e5
 .dword 0x43aa0ca69e312e1d
-.dword 0x0000000061ced1e2
-.dword 0x00000000bc55f359
+.dword 0x000000004db836e5
 .dword 0x84d8a63625152bcc
-.dword 0x00000000daead433
-.dword 0x000000007b2759c9
+.dword 0x000000004db836e5
 .dword 0x9c09a90579ca0322
-.dword 0x000000008635fcdd
-.dword 0x0000000063f656fa
+.dword 0x000000004db836e5
 .dword 0x43971577bf1ee1f3
-.dword 0x0000000040e11e0c
-.dword 0x00000000bc68ea88
+.dword 0x000000004db836e5
 .dword 0x01a90955b0d2d6e8
-.dword 0x000000004f2d2917
-.dword 0x00000000fe56f6aa
+.dword 0x000000004db836e5
 .dword 0x40a816d3fee4296f
-.dword 0x00000000011bd690
-.dword 0x00000000bf57e92c
+.dword 0x000000004db836e5
 .dword 0x2b0202953f4e42da
-.dword 0x00000000c0b1bd25
-.dword 0x00000000d4fdfd6a
+.dword 0x000000004db836e5
 .dword 0xf86f535c29dd280a
-.dword 0x00000000d622d7f5
-.dword 0x000000000790aca3
+.dword 0x000000004db836e5
 .dword 0x80736cfcf0d5faa6
-.dword 0x000000000f2a0559
-.dword 0x000000007f8c9303
+.dword 0x000000004db836e5
 .dword 0x71caad0cb3dbf603
-.dword 0x000000004c2409fc
-.dword 0x000000008e3552f3
+.dword 0x000000004db836e5
 .dword 0x51cfa176a5b2529c
-.dword 0x000000005a4dad63
-.dword 0x00000000ae305e89
+.dword 0x000000004db836e5
 .dword 0xb1d8e9beda453f7b
-.dword 0x0000000025bac084
-.dword 0x000000004e271641
+.dword 0x000000004db836e5
 .dword 0x68f97fb73afccb16
-.dword 0x00000000c50334e9
-.dword 0x0000000097068048
+.dword 0x000000004db836e5
 .dword 0x4d264cf6ab3bbdf4
-.dword 0x0000000054c4420b
-.dword 0x00000000b2d9b309
+.dword 0x000000004db836e5
 .dword 0xb5fc23593dffba5f
-.dword 0x00000000c20045a0
-.dword 0x000000004a03dca6
+.dword 0x000000004db836e5
 .dword 0x38cee21df1092276
-.dword 0x000000000ef6dd89
-.dword 0x00000000c7311de2
+.dword 0x000000004db836e5
 .dword 0xac9d6d3523854f22
-.dword 0x00000000dc7ab0dd
-.dword 0x00000000536292ca
+.dword 0x000000004db836e5
 .dword 0xac94604e187331b5
-.dword 0x00000000e78cce4a
-.dword 0x00000000536b9fb1
+.dword 0x000000004db836e5
 
 // Testcase strings
 Zcd_c_fsd_cg_cp_rs1_p_b8_str: .string "\"test: 1; cg: Zcd_c.fsd_cg; cp: cp_rs1_p; bin: b8\""

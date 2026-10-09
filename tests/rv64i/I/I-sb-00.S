@@ -36,9 +36,9 @@ RVTEST_BEGIN
 # Testcase cp_rs1_nx0 (Test source rs1 = x1)
   RVTEST_TESTDATA_LOAD_INT(x3, x9) # load rs2: x9 = 0xc0af5b2abb70fae5
   LA(x1, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x3, x21) # load store canary: x21 = 0xd2691ea74db836e5
+  SREG x21, 0(x1) # fill store target with canary
   addi x1, x1, -1526 # adjust base address for offset
-  xori x21, x9, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x21, 1526(x1) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b1:
   sb x9, 1526(x1) # perform store
   addi x1, x1, 1526 # restore base address
@@ -50,9 +50,9 @@ I_sb_cg_cp_rs1_nx0_b1:
 # Testcase cp_rs1_nx0 (Test source rs1 = x2)
   RVTEST_TESTDATA_LOAD_INT(x3, x26) # load rs2: x26 = 0x31b419822fc7d1ca
   LA(x2, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x3, x1) # load store canary: x1 = 0xd2691ea74db836e5
+  SREG x1, 0(x2) # fill store target with canary
   addi x2, x2, -1926 # adjust base address for offset
-  xori x1, x26, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x1, 1926(x2) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b2:
   sb x26, 1926(x2) # perform store
   addi x2, x2, 1926 # restore base address
@@ -64,9 +64,9 @@ I_sb_cg_cp_rs1_nx0_b2:
 # Testcase cp_rs1_nx0 (Test source rs1 = x3)
   RVTEST_TESTDATA_LOAD_INT(x12, x0) # load rs2: x0 = 0x00793d710ae01d82
   LA(x3, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x12, x18) # load store canary: x18 = 0xd2691ea74db836e5
+  SREG x18, 0(x3) # fill store target with canary
   addi x3, x3, -1906 # adjust base address for offset
-  xori x18, x0, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x18, 1906(x3) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b3:
   sb x0, 1906(x3) # perform store
   addi x3, x3, 1906 # restore base address
@@ -79,9 +79,9 @@ I_sb_cg_cp_rs1_nx0_b3:
 # Testcase cp_rs1_nx0 (Test source rs1 = x4)
   RVTEST_TESTDATA_LOAD_INT(x12, x5) # load rs2: x5 = 0x469f2490428cb3d7
   LA(x4, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x12, x26) # load store canary: x26 = 0xd2691ea74db836e5
+  SREG x26, 0(x4) # fill store target with canary
   addi x4, x4, -1076 # adjust base address for offset
-  xori x26, x5, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x26, 1076(x4) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b4:
   sb x5, 1076(x4) # perform store
   addi x4, x4, 1076 # restore base address
@@ -92,9 +92,9 @@ I_sb_cg_cp_rs1_nx0_b4:
 # Testcase cp_rs1_nx0 (Test source rs1 = x5)
   RVTEST_TESTDATA_LOAD_INT(x12, x31) # load rs2: x31 = 0xd03ca7fca311cc5c
   LA(x5, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x12, x21) # load store canary: x21 = 0xd2691ea74db836e5
+  SREG x21, 0(x5) # fill store target with canary
   addi x5, x5, 1945 # adjust base address for offset
-  xori x21, x31, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x21, -1945(x5) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b5:
   sb x31, -1945(x5) # perform store
   addi x5, x5, -1945 # restore base address
@@ -105,9 +105,9 @@ I_sb_cg_cp_rs1_nx0_b5:
 # Testcase cp_rs1_nx0 (Test source rs1 = x6)
   RVTEST_TESTDATA_LOAD_INT(x12, x31) # load rs2: x31 = 0x6cb7de20cc47eef5
   LA(x6, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x12, x16) # load store canary: x16 = 0xd2691ea74db836e5
+  SREG x16, 0(x6) # fill store target with canary
   addi x6, x6, -1805 # adjust base address for offset
-  xori x16, x31, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x16, 1805(x6) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b6:
   sb x31, 1805(x6) # perform store
   addi x6, x6, 1805 # restore base address
@@ -118,9 +118,9 @@ I_sb_cg_cp_rs1_nx0_b6:
 # Testcase cp_rs1_nx0 (Test source rs1 = x7)
   RVTEST_TESTDATA_LOAD_INT(x12, x17) # load rs2: x17 = 0x813faf68068d878b
   LA(x7, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x12, x15) # load store canary: x15 = 0xd2691ea74db836e5
+  SREG x15, 0(x7) # fill store target with canary
   addi x7, x7, -674 # adjust base address for offset
-  xori x15, x17, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x15, 674(x7) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b7:
   sb x17, 674(x7) # perform store
   addi x7, x7, 674 # restore base address
@@ -131,9 +131,9 @@ I_sb_cg_cp_rs1_nx0_b7:
 # Testcase cp_rs1_nx0 (Test source rs1 = x8)
   RVTEST_TESTDATA_LOAD_INT(x12, x25) # load rs2: x25 = 0x357acc20e3898be6
   LA(x8, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x12, x5) # load store canary: x5 = 0xd2691ea74db836e5
+  SREG x5, 0(x8) # fill store target with canary
   addi x8, x8, -1961 # adjust base address for offset
-  xori x5, x25, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x5, 1961(x8) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b8:
   sb x25, 1961(x8) # perform store
   addi x8, x8, 1961 # restore base address
@@ -144,9 +144,9 @@ I_sb_cg_cp_rs1_nx0_b8:
 # Testcase cp_rs1_nx0 (Test source rs1 = x9)
   RVTEST_TESTDATA_LOAD_INT(x12, x19) # load rs2: x19 = 0xdf8d486c1c9991bf
   LA(x9, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x12, x10) # load store canary: x10 = 0xd2691ea74db836e5
+  SREG x10, 0(x9) # fill store target with canary
   addi x9, x9, -243 # adjust base address for offset
-  xori x10, x19, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x10, 243(x9) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b9:
   sb x19, 243(x9) # perform store
   addi x9, x9, 243 # restore base address
@@ -157,9 +157,9 @@ I_sb_cg_cp_rs1_nx0_b9:
 # Testcase cp_rs1_nx0 (Test source rs1 = x10)
   RVTEST_TESTDATA_LOAD_INT(x12, x31) # load rs2: x31 = 0xa0a65cc143c6a0ea
   LA(x10, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x12, x29) # load store canary: x29 = 0xd2691ea74db836e5
+  SREG x29, 0(x10) # fill store target with canary
   addi x10, x10, -1487 # adjust base address for offset
-  xori x29, x31, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x29, 1487(x10) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b10:
   sb x31, 1487(x10) # perform store
   addi x10, x10, 1487 # restore base address
@@ -171,9 +171,9 @@ I_sb_cg_cp_rs1_nx0_b10:
 # Testcase cp_rs1_nx0 (Test source rs1 = x11)
   RVTEST_TESTDATA_LOAD_INT(x12, x24) # load rs2: x24 = 0xb863213617fa703c
   LA(x11, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x12, x8) # load store canary: x8 = 0xd2691ea74db836e5
+  SREG x8, 0(x11) # fill store target with canary
   addi x11, x11, 915 # adjust base address for offset
-  xori x8, x24, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x8, -915(x11) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b11:
   sb x24, -915(x11) # perform store
   addi x11, x11, -915 # restore base address
@@ -185,9 +185,9 @@ I_sb_cg_cp_rs1_nx0_b11:
 # Testcase cp_rs1_nx0 (Test source rs1 = x12)
   RVTEST_TESTDATA_LOAD_INT(x24, x18) # load rs2: x18 = 0xfa81bf06d3350395
   LA(x12, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load store canary: x17 = 0xd2691ea74db836e5
+  SREG x17, 0(x12) # fill store target with canary
   addi x12, x12, -653 # adjust base address for offset
-  xori x17, x18, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x17, 653(x12) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b12:
   sb x18, 653(x12) # perform store
   addi x12, x12, 653 # restore base address
@@ -200,9 +200,9 @@ I_sb_cg_cp_rs1_nx0_b12:
 # Testcase cp_rs1_nx0 (Test source rs1 = x13)
   RVTEST_TESTDATA_LOAD_INT(x24, x25) # load rs2: x25 = 0x41a023c03e0196ad
   LA(x13, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x24, x6) # load store canary: x6 = 0xd2691ea74db836e5
+  SREG x6, 0(x13) # fill store target with canary
   addi x13, x13, -1973 # adjust base address for offset
-  xori x6, x25, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x6, 1973(x13) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b13:
   sb x25, 1973(x13) # perform store
   addi x13, x13, 1973 # restore base address
@@ -213,9 +213,9 @@ I_sb_cg_cp_rs1_nx0_b13:
 # Testcase cp_rs1_nx0 (Test source rs1 = x14)
   RVTEST_TESTDATA_LOAD_INT(x24, x9) # load rs2: x9 = 0x20b3ebe82e8adb72
   LA(x14, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x24, x17) # load store canary: x17 = 0xd2691ea74db836e5
+  SREG x17, 0(x14) # fill store target with canary
   addi x14, x14, 1487 # adjust base address for offset
-  xori x17, x9, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x17, -1487(x14) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b14:
   sb x9, -1487(x14) # perform store
   addi x14, x14, -1487 # restore base address
@@ -226,9 +226,9 @@ I_sb_cg_cp_rs1_nx0_b14:
 # Testcase cp_rs1_nx0 (Test source rs1 = x15)
   RVTEST_TESTDATA_LOAD_INT(x24, x29) # load rs2: x29 = 0x3e6ffff26c0869bc
   LA(x15, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x24, x16) # load store canary: x16 = 0xd2691ea74db836e5
+  SREG x16, 0(x15) # fill store target with canary
   addi x15, x15, -847 # adjust base address for offset
-  xori x16, x29, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x16, 847(x15) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b15:
   sb x29, 847(x15) # perform store
   addi x15, x15, 847 # restore base address
@@ -239,9 +239,9 @@ I_sb_cg_cp_rs1_nx0_b15:
 # Testcase cp_rs1_nx0 (Test source rs1 = x16)
   RVTEST_TESTDATA_LOAD_INT(x24, x10) # load rs2: x10 = 0x90c07965a13b4977
   LA(x16, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x24, x22) # load store canary: x22 = 0xd2691ea74db836e5
+  SREG x22, 0(x16) # fill store target with canary
   addi x16, x16, 752 # adjust base address for offset
-  xori x22, x10, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x22, -752(x16) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b16:
   sb x10, -752(x16) # perform store
   addi x16, x16, -752 # restore base address
@@ -252,9 +252,9 @@ I_sb_cg_cp_rs1_nx0_b16:
 # Testcase cp_rs1_nx0 (Test source rs1 = x17)
   RVTEST_TESTDATA_LOAD_INT(x24, x2) # load rs2: x2 = 0xe87c95c2939c2df3
   LA(x17, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load store canary: x27 = 0xd2691ea74db836e5
+  SREG x27, 0(x17) # fill store target with canary
   addi x17, x17, -809 # adjust base address for offset
-  xori x27, x2, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x27, 809(x17) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b17:
   sb x2, 809(x17) # perform store
   addi x17, x17, 809 # restore base address
@@ -265,9 +265,9 @@ I_sb_cg_cp_rs1_nx0_b17:
 # Testcase cp_rs1_nx0 (Test source rs1 = x18)
   RVTEST_TESTDATA_LOAD_INT(x24, x3) # load rs2: x3 = 0x09b93b9c2d3e2ab6
   LA(x18, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x24, x13) # load store canary: x13 = 0xd2691ea74db836e5
+  SREG x13, 0(x18) # fill store target with canary
   addi x18, x18, -600 # adjust base address for offset
-  xori x13, x3, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x13, 600(x18) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b18:
   sb x3, 600(x18) # perform store
   addi x18, x18, 600 # restore base address
@@ -279,9 +279,9 @@ I_sb_cg_cp_rs1_nx0_b18:
 # Testcase cp_rs1_nx0 (Test source rs1 = x19)
   RVTEST_TESTDATA_LOAD_INT(x24, x17) # load rs2: x17 = 0xa424faf338c8491d
   LA(x19, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x24, x26) # load store canary: x26 = 0xd2691ea74db836e5
+  SREG x26, 0(x19) # fill store target with canary
   addi x19, x19, 1639 # adjust base address for offset
-  xori x26, x17, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x26, -1639(x19) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b19:
   sb x17, -1639(x19) # perform store
   addi x19, x19, -1639 # restore base address
@@ -292,9 +292,9 @@ I_sb_cg_cp_rs1_nx0_b19:
 # Testcase cp_rs1_nx0 (Test source rs1 = x20)
   RVTEST_TESTDATA_LOAD_INT(x24, x14) # load rs2: x14 = 0x4954ef5c0bf7ee69
   LA(x20, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x24, x27) # load store canary: x27 = 0xd2691ea74db836e5
+  SREG x27, 0(x20) # fill store target with canary
   addi x20, x20, -325 # adjust base address for offset
-  xori x27, x14, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x27, 325(x20) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b20:
   sb x14, 325(x20) # perform store
   addi x20, x20, 325 # restore base address
@@ -305,9 +305,9 @@ I_sb_cg_cp_rs1_nx0_b20:
 # Testcase cp_rs1_nx0 (Test source rs1 = x21)
   RVTEST_TESTDATA_LOAD_INT(x24, x4) # load rs2: x4 = 0x2c6eab5f4b649b38
   LA(x21, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x24, x25) # load store canary: x25 = 0xd2691ea74db836e5
+  SREG x25, 0(x21) # fill store target with canary
   addi x21, x21, -1262 # adjust base address for offset
-  xori x25, x4, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x25, 1262(x21) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b21:
   sb x4, 1262(x21) # perform store
   addi x21, x21, 1262 # restore base address
@@ -318,9 +318,9 @@ I_sb_cg_cp_rs1_nx0_b21:
 # Testcase cp_rs1_nx0 (Test source rs1 = x22)
   RVTEST_TESTDATA_LOAD_INT(x24, x27) # load rs2: x27 = 0x135343d50fc0bc49
   LA(x22, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x24, x30) # load store canary: x30 = 0xd2691ea74db836e5
+  SREG x30, 0(x22) # fill store target with canary
   addi x22, x22, -1615 # adjust base address for offset
-  xori x30, x27, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x30, 1615(x22) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b22:
   sb x27, 1615(x22) # perform store
   addi x22, x22, 1615 # restore base address
@@ -331,9 +331,9 @@ I_sb_cg_cp_rs1_nx0_b22:
 # Testcase cp_rs1_nx0 (Test source rs1 = x23)
   RVTEST_TESTDATA_LOAD_INT(x24, x13) # load rs2: x13 = 0xa32f97d934019764
   LA(x23, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x24, x19) # load store canary: x19 = 0xd2691ea74db836e5
+  SREG x19, 0(x23) # fill store target with canary
   addi x23, x23, -359 # adjust base address for offset
-  xori x19, x13, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x19, 359(x23) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b23:
   sb x13, 359(x23) # perform store
   addi x23, x23, 359 # restore base address
@@ -345,9 +345,9 @@ I_sb_cg_cp_rs1_nx0_b23:
 # Testcase cp_rs1_nx0 (Test source rs1 = x24)
   RVTEST_TESTDATA_LOAD_INT(x30, x21) # load rs2: x21 = 0xa9c2781d297367c2
   LA(x24, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x30, x15) # load store canary: x15 = 0xd2691ea74db836e5
+  SREG x15, 0(x24) # fill store target with canary
   addi x24, x24, 182 # adjust base address for offset
-  xori x15, x21, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x15, -182(x24) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b24:
   sb x21, -182(x24) # perform store
   addi x24, x24, -182 # restore base address
@@ -358,9 +358,9 @@ I_sb_cg_cp_rs1_nx0_b24:
 # Testcase cp_rs1_nx0 (Test source rs1 = x25)
   RVTEST_TESTDATA_LOAD_INT(x30, x1) # load rs2: x1 = 0xf21d9c580d176a85
   LA(x25, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x30, x31) # load store canary: x31 = 0xd2691ea74db836e5
+  SREG x31, 0(x25) # fill store target with canary
   addi x25, x25, 850 # adjust base address for offset
-  xori x31, x1, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x31, -850(x25) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b25:
   sb x1, -850(x25) # perform store
   addi x25, x25, -850 # restore base address
@@ -371,9 +371,9 @@ I_sb_cg_cp_rs1_nx0_b25:
 # Testcase cp_rs1_nx0 (Test source rs1 = x26)
   RVTEST_TESTDATA_LOAD_INT(x30, x22) # load rs2: x22 = 0x4c4759936ba01ff6
   LA(x26, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x30, x20) # load store canary: x20 = 0xd2691ea74db836e5
+  SREG x20, 0(x26) # fill store target with canary
   addi x26, x26, 477 # adjust base address for offset
-  xori x20, x22, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x20, -477(x26) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b26:
   sb x22, -477(x26) # perform store
   addi x26, x26, -477 # restore base address
@@ -384,9 +384,9 @@ I_sb_cg_cp_rs1_nx0_b26:
 # Testcase cp_rs1_nx0 (Test source rs1 = x27)
   RVTEST_TESTDATA_LOAD_INT(x30, x18) # load rs2: x18 = 0x2b2f798256dcf9a9
   LA(x27, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x30, x13) # load store canary: x13 = 0xd2691ea74db836e5
+  SREG x13, 0(x27) # fill store target with canary
   addi x27, x27, -1614 # adjust base address for offset
-  xori x13, x18, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x13, 1614(x27) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b27:
   sb x18, 1614(x27) # perform store
   addi x27, x27, 1614 # restore base address
@@ -397,9 +397,9 @@ I_sb_cg_cp_rs1_nx0_b27:
 # Testcase cp_rs1_nx0 (Test source rs1 = x28)
   RVTEST_TESTDATA_LOAD_INT(x30, x5) # load rs2: x5 = 0xdff6c78aa397dd61
   LA(x28, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x30, x18) # load store canary: x18 = 0xd2691ea74db836e5
+  SREG x18, 0(x28) # fill store target with canary
   addi x28, x28, 1925 # adjust base address for offset
-  xori x18, x5, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x18, -1925(x28) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b28:
   sb x5, -1925(x28) # perform store
   addi x28, x28, -1925 # restore base address
@@ -410,9 +410,9 @@ I_sb_cg_cp_rs1_nx0_b28:
 # Testcase cp_rs1_nx0 (Test source rs1 = x29)
   RVTEST_TESTDATA_LOAD_INT(x30, x2) # load rs2: x2 = 0x6b69a309dd78f866
   LA(x29, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x30, x10) # load store canary: x10 = 0xd2691ea74db836e5
+  SREG x10, 0(x29) # fill store target with canary
   addi x29, x29, 1296 # adjust base address for offset
-  xori x10, x2, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x10, -1296(x29) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b29:
   sb x2, -1296(x29) # perform store
   addi x29, x29, -1296 # restore base address
@@ -424,9 +424,9 @@ I_sb_cg_cp_rs1_nx0_b29:
 # Testcase cp_rs1_nx0 (Test source rs1 = x30)
   RVTEST_TESTDATA_LOAD_INT(x19, x26) # load rs2: x26 = 0xd6c33e212a88d409
   LA(x30, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x5) # load store canary: x5 = 0xd2691ea74db836e5
+  SREG x5, 0(x30) # fill store target with canary
   addi x30, x30, 1502 # adjust base address for offset
-  xori x5, x26, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x5, -1502(x30) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b30:
   sb x26, -1502(x30) # perform store
   addi x30, x30, -1502 # restore base address
@@ -437,9 +437,9 @@ I_sb_cg_cp_rs1_nx0_b30:
 # Testcase cp_rs1_nx0 (Test source rs1 = x31)
   RVTEST_TESTDATA_LOAD_INT(x19, x24) # load rs2: x24 = 0xfdb1988faf2bc695
   LA(x31, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x13) # load store canary: x13 = 0xd2691ea74db836e5
+  SREG x13, 0(x31) # fill store target with canary
   addi x31, x31, -1672 # adjust base address for offset
-  xori x13, x24, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x13, 1672(x31) # fill store target with canary
 I_sb_cg_cp_rs1_nx0_b31:
   sb x24, 1672(x31) # perform store
   addi x31, x31, 1672 # restore base address
@@ -454,9 +454,9 @@ I_sb_cg_cp_rs1_nx0_b31:
 # Testcase cp_rs2 (Test source rs2 = x0)
   RVTEST_TESTDATA_LOAD_INT(x19, x0) # load rs2: x0 = 0x574de5d2cc094d42
   LA(x3, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x21) # load store canary: x21 = 0xd2691ea74db836e5
+  SREG x21, 0(x3) # fill store target with canary
   addi x3, x3, 1464 # adjust base address for offset
-  xori x21, x0, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x21, -1464(x3) # fill store target with canary
 I_sb_cg_cp_rs2_b0:
   sb x0, -1464(x3) # perform store
   addi x3, x3, -1464 # restore base address
@@ -467,9 +467,9 @@ I_sb_cg_cp_rs2_b0:
 # Testcase cp_rs2 (Test source rs2 = x1)
   RVTEST_TESTDATA_LOAD_INT(x19, x1) # load rs2: x1 = 0x308968140a7e8ad1
   LA(x9, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x18) # load store canary: x18 = 0xd2691ea74db836e5
+  SREG x18, 0(x9) # fill store target with canary
   addi x9, x9, -810 # adjust base address for offset
-  xori x18, x1, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x18, 810(x9) # fill store target with canary
 I_sb_cg_cp_rs2_b1:
   sb x1, 810(x9) # perform store
   addi x9, x9, 810 # restore base address
@@ -480,9 +480,9 @@ I_sb_cg_cp_rs2_b1:
 # Testcase cp_rs2 (Test source rs2 = x2)
   RVTEST_TESTDATA_LOAD_INT(x19, x2) # load rs2: x2 = 0xba5a07169b1a6d75
   LA(x31, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x4) # load store canary: x4 = 0xd2691ea74db836e5
+  SREG x4, 0(x31) # fill store target with canary
   addi x31, x31, 1679 # adjust base address for offset
-  xori x4, x2, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x4, -1679(x31) # fill store target with canary
 I_sb_cg_cp_rs2_b2:
   sb x2, -1679(x31) # perform store
   addi x31, x31, -1679 # restore base address
@@ -493,9 +493,9 @@ I_sb_cg_cp_rs2_b2:
 # Testcase cp_rs2 (Test source rs2 = x3)
   RVTEST_TESTDATA_LOAD_INT(x19, x3) # load rs2: x3 = 0xd7bc459eec561362
   LA(x20, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x23) # load store canary: x23 = 0xd2691ea74db836e5
+  SREG x23, 0(x20) # fill store target with canary
   addi x20, x20, 741 # adjust base address for offset
-  xori x23, x3, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x23, -741(x20) # fill store target with canary
 I_sb_cg_cp_rs2_b3:
   sb x3, -741(x20) # perform store
   addi x20, x20, -741 # restore base address
@@ -506,9 +506,9 @@ I_sb_cg_cp_rs2_b3:
 # Testcase cp_rs2 (Test source rs2 = x4)
   RVTEST_TESTDATA_LOAD_INT(x19, x4) # load rs2: x4 = 0x7fdb7dccf48b56ed
   LA(x26, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x24) # load store canary: x24 = 0xd2691ea74db836e5
+  SREG x24, 0(x26) # fill store target with canary
   addi x26, x26, 1543 # adjust base address for offset
-  xori x24, x4, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x24, -1543(x26) # fill store target with canary
 I_sb_cg_cp_rs2_b4:
   sb x4, -1543(x26) # perform store
   addi x26, x26, -1543 # restore base address
@@ -519,9 +519,9 @@ I_sb_cg_cp_rs2_b4:
 # Testcase cp_rs2 (Test source rs2 = x5)
   RVTEST_TESTDATA_LOAD_INT(x19, x5) # load rs2: x5 = 0x64d1f0695c48f5e1
   LA(x3, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x30) # load store canary: x30 = 0xd2691ea74db836e5
+  SREG x30, 0(x3) # fill store target with canary
   addi x3, x3, 431 # adjust base address for offset
-  xori x30, x5, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x30, -431(x3) # fill store target with canary
 I_sb_cg_cp_rs2_b5:
   sb x5, -431(x3) # perform store
   addi x3, x3, -431 # restore base address
@@ -532,9 +532,9 @@ I_sb_cg_cp_rs2_b5:
 # Testcase cp_rs2 (Test source rs2 = x6)
   RVTEST_TESTDATA_LOAD_INT(x19, x6) # load rs2: x6 = 0x7024da73d4ebd155
   LA(x20, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x25) # load store canary: x25 = 0xd2691ea74db836e5
+  SREG x25, 0(x20) # fill store target with canary
   addi x20, x20, 691 # adjust base address for offset
-  xori x25, x6, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x25, -691(x20) # fill store target with canary
 I_sb_cg_cp_rs2_b6:
   sb x6, -691(x20) # perform store
   addi x20, x20, -691 # restore base address
@@ -547,9 +547,9 @@ I_sb_cg_cp_rs2_b6:
 # Testcase cp_rs2 (Test source rs2 = x7)
   RVTEST_TESTDATA_LOAD_INT(x19, x7) # load rs2: x7 = 0x0356e08c6b9c710c
   LA(x2, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x18) # load store canary: x18 = 0xd2691ea74db836e5
+  SREG x18, 0(x2) # fill store target with canary
   addi x2, x2, 1782 # adjust base address for offset
-  xori x18, x7, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x18, -1782(x2) # fill store target with canary
 I_sb_cg_cp_rs2_b7:
   sb x7, -1782(x2) # perform store
   addi x2, x2, -1782 # restore base address
@@ -560,9 +560,9 @@ I_sb_cg_cp_rs2_b7:
 # Testcase cp_rs2 (Test source rs2 = x8)
   RVTEST_TESTDATA_LOAD_INT(x19, x8) # load rs2: x8 = 0x8ebc750544db627d
   LA(x24, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x11) # load store canary: x11 = 0xd2691ea74db836e5
+  SREG x11, 0(x24) # fill store target with canary
   addi x24, x24, 278 # adjust base address for offset
-  xori x11, x8, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x11, -278(x24) # fill store target with canary
 I_sb_cg_cp_rs2_b8:
   sb x8, -278(x24) # perform store
   addi x24, x24, -278 # restore base address
@@ -573,9 +573,9 @@ I_sb_cg_cp_rs2_b8:
 # Testcase cp_rs2 (Test source rs2 = x9)
   RVTEST_TESTDATA_LOAD_INT(x19, x9) # load rs2: x9 = 0x821a7744d4b5c4df
   LA(x17, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x26) # load store canary: x26 = 0xd2691ea74db836e5
+  SREG x26, 0(x17) # fill store target with canary
   addi x17, x17, -1518 # adjust base address for offset
-  xori x26, x9, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x26, 1518(x17) # fill store target with canary
 I_sb_cg_cp_rs2_b9:
   sb x9, 1518(x17) # perform store
   addi x17, x17, 1518 # restore base address
@@ -586,9 +586,9 @@ I_sb_cg_cp_rs2_b9:
 # Testcase cp_rs2 (Test source rs2 = x10)
   RVTEST_TESTDATA_LOAD_INT(x19, x10) # load rs2: x10 = 0xe216f9467f0736ae
   LA(x28, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x17) # load store canary: x17 = 0xd2691ea74db836e5
+  SREG x17, 0(x28) # fill store target with canary
   addi x28, x28, 225 # adjust base address for offset
-  xori x17, x10, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x17, -225(x28) # fill store target with canary
 I_sb_cg_cp_rs2_b10:
   sb x10, -225(x28) # perform store
   addi x28, x28, -225 # restore base address
@@ -599,9 +599,9 @@ I_sb_cg_cp_rs2_b10:
 # Testcase cp_rs2 (Test source rs2 = x11)
   RVTEST_TESTDATA_LOAD_INT(x19, x11) # load rs2: x11 = 0x7a1da9e7690d3d3d
   LA(x17, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x21) # load store canary: x21 = 0xd2691ea74db836e5
+  SREG x21, 0(x17) # fill store target with canary
   addi x17, x17, 296 # adjust base address for offset
-  xori x21, x11, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x21, -296(x17) # fill store target with canary
 I_sb_cg_cp_rs2_b11:
   sb x11, -296(x17) # perform store
   addi x17, x17, -296 # restore base address
@@ -612,9 +612,9 @@ I_sb_cg_cp_rs2_b11:
 # Testcase cp_rs2 (Test source rs2 = x12)
   RVTEST_TESTDATA_LOAD_INT(x19, x12) # load rs2: x12 = 0xf680a9fc2d516b8a
   LA(x10, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x4) # load store canary: x4 = 0xd2691ea74db836e5
+  SREG x4, 0(x10) # fill store target with canary
   addi x10, x10, 1123 # adjust base address for offset
-  xori x4, x12, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x4, -1123(x10) # fill store target with canary
 I_sb_cg_cp_rs2_b12:
   sb x12, -1123(x10) # perform store
   addi x10, x10, -1123 # restore base address
@@ -627,9 +627,9 @@ I_sb_cg_cp_rs2_b12:
 # Testcase cp_rs2 (Test source rs2 = x13)
   RVTEST_TESTDATA_LOAD_INT(x19, x13) # load rs2: x13 = 0x04331db3a21a148c
   LA(x18, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x24) # load store canary: x24 = 0xd2691ea74db836e5
+  SREG x24, 0(x18) # fill store target with canary
   addi x18, x18, -1664 # adjust base address for offset
-  xori x24, x13, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x24, 1664(x18) # fill store target with canary
 I_sb_cg_cp_rs2_b13:
   sb x13, 1664(x18) # perform store
   addi x18, x18, 1664 # restore base address
@@ -640,9 +640,9 @@ I_sb_cg_cp_rs2_b13:
 # Testcase cp_rs2 (Test source rs2 = x14)
   RVTEST_TESTDATA_LOAD_INT(x19, x14) # load rs2: x14 = 0x4cc53de728a2a57b
   LA(x26, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x13) # load store canary: x13 = 0xd2691ea74db836e5
+  SREG x13, 0(x26) # fill store target with canary
   addi x26, x26, 1121 # adjust base address for offset
-  xori x13, x14, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x13, -1121(x26) # fill store target with canary
 I_sb_cg_cp_rs2_b14:
   sb x14, -1121(x26) # perform store
   addi x26, x26, -1121 # restore base address
@@ -653,9 +653,9 @@ I_sb_cg_cp_rs2_b14:
 # Testcase cp_rs2 (Test source rs2 = x15)
   RVTEST_TESTDATA_LOAD_INT(x19, x15) # load rs2: x15 = 0xa38cbd1554262317
   LA(x13, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x5) # load store canary: x5 = 0xd2691ea74db836e5
+  SREG x5, 0(x13) # fill store target with canary
   addi x13, x13, -1529 # adjust base address for offset
-  xori x5, x15, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x5, 1529(x13) # fill store target with canary
 I_sb_cg_cp_rs2_b15:
   sb x15, 1529(x13) # perform store
   addi x13, x13, 1529 # restore base address
@@ -667,9 +667,9 @@ I_sb_cg_cp_rs2_b15:
 # Testcase cp_rs2 (Test source rs2 = x16)
   RVTEST_TESTDATA_LOAD_INT(x19, x16) # load rs2: x16 = 0xf2e99703ffce0ad1
   LA(x30, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x3) # load store canary: x3 = 0xd2691ea74db836e5
+  SREG x3, 0(x30) # fill store target with canary
   addi x30, x30, 2035 # adjust base address for offset
-  xori x3, x16, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x3, -2035(x30) # fill store target with canary
 I_sb_cg_cp_rs2_b16:
   sb x16, -2035(x30) # perform store
   addi x30, x30, -2035 # restore base address
@@ -680,9 +680,9 @@ I_sb_cg_cp_rs2_b16:
 # Testcase cp_rs2 (Test source rs2 = x17)
   RVTEST_TESTDATA_LOAD_INT(x19, x17) # load rs2: x17 = 0xd4ffb4d9405ebb9b
   LA(x1, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x9) # load store canary: x9 = 0xd2691ea74db836e5
+  SREG x9, 0(x1) # fill store target with canary
   addi x1, x1, -105 # adjust base address for offset
-  xori x9, x17, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x9, 105(x1) # fill store target with canary
 I_sb_cg_cp_rs2_b17:
   sb x17, 105(x1) # perform store
   addi x1, x1, 105 # restore base address
@@ -693,9 +693,9 @@ I_sb_cg_cp_rs2_b17:
 # Testcase cp_rs2 (Test source rs2 = x18)
   RVTEST_TESTDATA_LOAD_INT(x19, x18) # load rs2: x18 = 0xbd86c1ce4fef2967
   LA(x10, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x19, x28) # load store canary: x28 = 0xd2691ea74db836e5
+  SREG x28, 0(x10) # fill store target with canary
   addi x10, x10, -115 # adjust base address for offset
-  xori x28, x18, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x28, 115(x10) # fill store target with canary
 I_sb_cg_cp_rs2_b18:
   sb x18, 115(x10) # perform store
   addi x10, x10, 115 # restore base address
@@ -707,9 +707,9 @@ I_sb_cg_cp_rs2_b18:
 # Testcase cp_rs2 (Test source rs2 = x19)
   RVTEST_TESTDATA_LOAD_INT(x23, x19) # load rs2: x19 = 0x8282a17acb595c7c
   LA(x12, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x23, x16) # load store canary: x16 = 0xd2691ea74db836e5
+  SREG x16, 0(x12) # fill store target with canary
   addi x12, x12, 1033 # adjust base address for offset
-  xori x16, x19, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x16, -1033(x12) # fill store target with canary
 I_sb_cg_cp_rs2_b19:
   sb x19, -1033(x12) # perform store
   addi x12, x12, -1033 # restore base address
@@ -720,9 +720,9 @@ I_sb_cg_cp_rs2_b19:
 # Testcase cp_rs2 (Test source rs2 = x20)
   RVTEST_TESTDATA_LOAD_INT(x23, x20) # load rs2: x20 = 0x2eba162f7dea98d3
   LA(x25, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x23, x5) # load store canary: x5 = 0xd2691ea74db836e5
+  SREG x5, 0(x25) # fill store target with canary
   addi x25, x25, 1716 # adjust base address for offset
-  xori x5, x20, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x5, -1716(x25) # fill store target with canary
 I_sb_cg_cp_rs2_b20:
   sb x20, -1716(x25) # perform store
   addi x25, x25, -1716 # restore base address
@@ -733,9 +733,9 @@ I_sb_cg_cp_rs2_b20:
 # Testcase cp_rs2 (Test source rs2 = x21)
   RVTEST_TESTDATA_LOAD_INT(x23, x21) # load rs2: x21 = 0xaeacd81210c97fc7
   LA(x3, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x23, x25) # load store canary: x25 = 0xd2691ea74db836e5
+  SREG x25, 0(x3) # fill store target with canary
   addi x3, x3, -69 # adjust base address for offset
-  xori x25, x21, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x25, 69(x3) # fill store target with canary
 I_sb_cg_cp_rs2_b21:
   sb x21, 69(x3) # perform store
   addi x3, x3, 69 # restore base address
@@ -746,9 +746,9 @@ I_sb_cg_cp_rs2_b21:
 # Testcase cp_rs2 (Test source rs2 = x22)
   RVTEST_TESTDATA_LOAD_INT(x23, x22) # load rs2: x22 = 0x706926099de9a2e8
   LA(x19, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x23, x9) # load store canary: x9 = 0xd2691ea74db836e5
+  SREG x9, 0(x19) # fill store target with canary
   addi x19, x19, -1370 # adjust base address for offset
-  xori x9, x22, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x9, 1370(x19) # fill store target with canary
 I_sb_cg_cp_rs2_b22:
   sb x22, 1370(x19) # perform store
   addi x19, x19, 1370 # restore base address
@@ -760,9 +760,9 @@ I_sb_cg_cp_rs2_b22:
 # Testcase cp_rs2 (Test source rs2 = x23)
   RVTEST_TESTDATA_LOAD_INT(x10, x23) # load rs2: x23 = 0xe37e107a3167e9bf
   LA(x21, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x5) # load store canary: x5 = 0xd2691ea74db836e5
+  SREG x5, 0(x21) # fill store target with canary
   addi x21, x21, 198 # adjust base address for offset
-  xori x5, x23, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x5, -198(x21) # fill store target with canary
 I_sb_cg_cp_rs2_b23:
   sb x23, -198(x21) # perform store
   addi x21, x21, -198 # restore base address
@@ -773,9 +773,9 @@ I_sb_cg_cp_rs2_b23:
 # Testcase cp_rs2 (Test source rs2 = x24)
   RVTEST_TESTDATA_LOAD_INT(x10, x24) # load rs2: x24 = 0xa944b28f48bb4994
   LA(x28, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x16) # load store canary: x16 = 0xd2691ea74db836e5
+  SREG x16, 0(x28) # fill store target with canary
   addi x28, x28, 1895 # adjust base address for offset
-  xori x16, x24, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x16, -1895(x28) # fill store target with canary
 I_sb_cg_cp_rs2_b24:
   sb x24, -1895(x28) # perform store
   addi x28, x28, -1895 # restore base address
@@ -786,9 +786,9 @@ I_sb_cg_cp_rs2_b24:
 # Testcase cp_rs2 (Test source rs2 = x25)
   RVTEST_TESTDATA_LOAD_INT(x10, x25) # load rs2: x25 = 0xbd097752f9b7f31b
   LA(x4, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x20) # load store canary: x20 = 0xd2691ea74db836e5
+  SREG x20, 0(x4) # fill store target with canary
   addi x4, x4, 986 # adjust base address for offset
-  xori x20, x25, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x20, -986(x4) # fill store target with canary
 I_sb_cg_cp_rs2_b25:
   sb x25, -986(x4) # perform store
   addi x4, x4, -986 # restore base address
@@ -799,9 +799,9 @@ I_sb_cg_cp_rs2_b25:
 # Testcase cp_rs2 (Test source rs2 = x26)
   RVTEST_TESTDATA_LOAD_INT(x10, x26) # load rs2: x26 = 0x85f8f706891b76b9
   LA(x12, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x22) # load store canary: x22 = 0xd2691ea74db836e5
+  SREG x22, 0(x12) # fill store target with canary
   addi x12, x12, -282 # adjust base address for offset
-  xori x22, x26, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x22, 282(x12) # fill store target with canary
 I_sb_cg_cp_rs2_b26:
   sb x26, 282(x12) # perform store
   addi x12, x12, 282 # restore base address
@@ -812,9 +812,9 @@ I_sb_cg_cp_rs2_b26:
 # Testcase cp_rs2 (Test source rs2 = x27)
   RVTEST_TESTDATA_LOAD_INT(x10, x27) # load rs2: x27 = 0x42cd274b851e58d2
   LA(x5, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load store canary: x9 = 0xd2691ea74db836e5
+  SREG x9, 0(x5) # fill store target with canary
   addi x5, x5, -750 # adjust base address for offset
-  xori x9, x27, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x9, 750(x5) # fill store target with canary
 I_sb_cg_cp_rs2_b27:
   sb x27, 750(x5) # perform store
   addi x5, x5, 750 # restore base address
@@ -825,9 +825,9 @@ I_sb_cg_cp_rs2_b27:
 # Testcase cp_rs2 (Test source rs2 = x28)
   RVTEST_TESTDATA_LOAD_INT(x10, x28) # load rs2: x28 = 0x6c1c307d2e788e24
   LA(x16, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x11) # load store canary: x11 = 0xd2691ea74db836e5
+  SREG x11, 0(x16) # fill store target with canary
   addi x16, x16, 1152 # adjust base address for offset
-  xori x11, x28, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x11, -1152(x16) # fill store target with canary
 I_sb_cg_cp_rs2_b28:
   sb x28, -1152(x16) # perform store
   addi x16, x16, -1152 # restore base address
@@ -838,9 +838,9 @@ I_sb_cg_cp_rs2_b28:
 # Testcase cp_rs2 (Test source rs2 = x29)
   RVTEST_TESTDATA_LOAD_INT(x10, x29) # load rs2: x29 = 0x18c5d1ded9fdf38f
   LA(x15, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x21) # load store canary: x21 = 0xd2691ea74db836e5
+  SREG x21, 0(x15) # fill store target with canary
   addi x15, x15, 943 # adjust base address for offset
-  xori x21, x29, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x21, -943(x15) # fill store target with canary
 I_sb_cg_cp_rs2_b29:
   sb x29, -943(x15) # perform store
   addi x15, x15, -943 # restore base address
@@ -851,9 +851,9 @@ I_sb_cg_cp_rs2_b29:
 # Testcase cp_rs2 (Test source rs2 = x30)
   RVTEST_TESTDATA_LOAD_INT(x10, x30) # load rs2: x30 = 0xd29750bc316a4506
   LA(x26, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x16) # load store canary: x16 = 0xd2691ea74db836e5
+  SREG x16, 0(x26) # fill store target with canary
   addi x26, x26, 794 # adjust base address for offset
-  xori x16, x30, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x16, -794(x26) # fill store target with canary
 I_sb_cg_cp_rs2_b30:
   sb x30, -794(x26) # perform store
   addi x26, x26, -794 # restore base address
@@ -865,9 +865,9 @@ I_sb_cg_cp_rs2_b30:
 # Testcase cp_rs2 (Test source rs2 = x31)
   RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs2: x31 = 0x3e9c91a364ac322a
   LA(x5, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x23) # load store canary: x23 = 0xd2691ea74db836e5
+  SREG x23, 0(x5) # fill store target with canary
   addi x5, x5, -1812 # adjust base address for offset
-  xori x23, x31, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x23, 1812(x5) # fill store target with canary
 I_sb_cg_cp_rs2_b31:
   sb x31, 1812(x5) # perform store
   addi x5, x5, 1812 # restore base address
@@ -882,9 +882,9 @@ I_sb_cg_cp_rs2_b31:
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x10, x2) # load rs2: x2 = 0x0000000000000000
   LA(x23, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x22) # load store canary: x22 = 0xd2691ea74db836e5
+  SREG x22, 0(x23) # fill store target with canary
   addi x23, x23, 89 # adjust base address for offset
-  xori x22, x2, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x22, -89(x23) # fill store target with canary
 I_sb_cg_cp_rs2_edges_0x0:
   sb x2, -89(x23) # perform store
   addi x23, x23, -89 # restore base address
@@ -895,9 +895,9 @@ I_sb_cg_cp_rs2_edges_0x0:
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x10, x16) # load rs2: x16 = 0x0000000000000001
   LA(x2, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x24) # load store canary: x24 = 0xd2691ea74db836e5
+  SREG x24, 0(x2) # fill store target with canary
   addi x2, x2, -1105 # adjust base address for offset
-  xori x24, x16, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x24, 1105(x2) # fill store target with canary
 I_sb_cg_cp_rs2_edges_0x1:
   sb x16, 1105(x2) # perform store
   addi x2, x2, 1105 # restore base address
@@ -908,9 +908,9 @@ I_sb_cg_cp_rs2_edges_0x1:
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000000000002)
   RVTEST_TESTDATA_LOAD_INT(x10, x1) # load rs2: x1 = 0x0000000000000002
   LA(x23, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x13) # load store canary: x13 = 0xd2691ea74db836e5
+  SREG x13, 0(x23) # fill store target with canary
   addi x23, x23, 1022 # adjust base address for offset
-  xori x13, x1, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x13, -1022(x23) # fill store target with canary
 I_sb_cg_cp_rs2_edges_0x2:
   sb x1, -1022(x23) # perform store
   addi x23, x23, -1022 # restore base address
@@ -921,9 +921,9 @@ I_sb_cg_cp_rs2_edges_0x2:
 # Testcase cp_rs2_edges (Test source rs2 value = 0x8000000000000000)
   RVTEST_TESTDATA_LOAD_INT(x10, x28) # load rs2: x28 = 0x8000000000000000
   LA(x13, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x5) # load store canary: x5 = 0xd2691ea74db836e5
+  SREG x5, 0(x13) # fill store target with canary
   addi x13, x13, -1800 # adjust base address for offset
-  xori x5, x28, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x5, 1800(x13) # fill store target with canary
 I_sb_cg_cp_rs2_edges_0x8000000000000000:
   sb x28, 1800(x13) # perform store
   addi x13, x13, 1800 # restore base address
@@ -934,9 +934,9 @@ I_sb_cg_cp_rs2_edges_0x8000000000000000:
 # Testcase cp_rs2_edges (Test source rs2 value = 0x8000000000000001)
   RVTEST_TESTDATA_LOAD_INT(x10, x12) # load rs2: x12 = 0x8000000000000001
   LA(x11, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x20) # load store canary: x20 = 0xd2691ea74db836e5
+  SREG x20, 0(x11) # fill store target with canary
   addi x11, x11, -1256 # adjust base address for offset
-  xori x20, x12, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x20, 1256(x11) # fill store target with canary
 I_sb_cg_cp_rs2_edges_0x8000000000000001:
   sb x12, 1256(x11) # perform store
   addi x11, x11, 1256 # restore base address
@@ -947,9 +947,9 @@ I_sb_cg_cp_rs2_edges_0x8000000000000001:
 # Testcase cp_rs2_edges (Test source rs2 value = 0x7fffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x10, x17) # load rs2: x17 = 0x7fffffffffffffff
   LA(x3, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x21) # load store canary: x21 = 0xd2691ea74db836e5
+  SREG x21, 0(x3) # fill store target with canary
   addi x3, x3, -1604 # adjust base address for offset
-  xori x21, x17, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x21, 1604(x3) # fill store target with canary
 I_sb_cg_cp_rs2_edges_0x7fffffffffffffff:
   sb x17, 1604(x3) # perform store
   addi x3, x3, 1604 # restore base address
@@ -960,9 +960,9 @@ I_sb_cg_cp_rs2_edges_0x7fffffffffffffff:
 # Testcase cp_rs2_edges (Test source rs2 value = 0x7ffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x10, x12) # load rs2: x12 = 0x7ffffffffffffffe
   LA(x24, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x19) # load store canary: x19 = 0xd2691ea74db836e5
+  SREG x19, 0(x24) # fill store target with canary
   addi x24, x24, 2002 # adjust base address for offset
-  xori x19, x12, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x19, -2002(x24) # fill store target with canary
 I_sb_cg_cp_rs2_edges_0x7ffffffffffffffe:
   sb x12, -2002(x24) # perform store
   addi x24, x24, -2002 # restore base address
@@ -973,9 +973,9 @@ I_sb_cg_cp_rs2_edges_0x7ffffffffffffffe:
 # Testcase cp_rs2_edges (Test source rs2 value = 0xffffffffffffffff)
   RVTEST_TESTDATA_LOAD_INT(x10, x16) # load rs2: x16 = 0xffffffffffffffff
   LA(x24, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x1) # load store canary: x1 = 0xd2691ea74db836e5
+  SREG x1, 0(x24) # fill store target with canary
   addi x24, x24, 1676 # adjust base address for offset
-  xori x1, x16, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x1, -1676(x24) # fill store target with canary
 I_sb_cg_cp_rs2_edges_0xffffffffffffffff:
   sb x16, -1676(x24) # perform store
   addi x24, x24, -1676 # restore base address
@@ -986,9 +986,9 @@ I_sb_cg_cp_rs2_edges_0xffffffffffffffff:
 # Testcase cp_rs2_edges (Test source rs2 value = 0xfffffffffffffffe)
   RVTEST_TESTDATA_LOAD_INT(x10, x26) # load rs2: x26 = 0xfffffffffffffffe
   LA(x1, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x19) # load store canary: x19 = 0xd2691ea74db836e5
+  SREG x19, 0(x1) # fill store target with canary
   addi x1, x1, 1920 # adjust base address for offset
-  xori x19, x26, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x19, -1920(x1) # fill store target with canary
 I_sb_cg_cp_rs2_edges_0xfffffffffffffffe:
   sb x26, -1920(x1) # perform store
   addi x1, x1, -1920 # restore base address
@@ -999,9 +999,9 @@ I_sb_cg_cp_rs2_edges_0xfffffffffffffffe:
 # Testcase cp_rs2_edges (Test source rs2 value = 0x5bbc887763ae86f2)
   RVTEST_TESTDATA_LOAD_INT(x10, x24) # load rs2: x24 = 0x5bbc887763ae86f2
   LA(x27, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x1) # load store canary: x1 = 0xd2691ea74db836e5
+  SREG x1, 0(x27) # fill store target with canary
   addi x27, x27, 40 # adjust base address for offset
-  xori x1, x24, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x1, -40(x27) # fill store target with canary
 I_sb_cg_cp_rs2_edges_0x5bbc887763ae86f2:
   sb x24, -40(x27) # perform store
   addi x27, x27, -40 # restore base address
@@ -1012,9 +1012,9 @@ I_sb_cg_cp_rs2_edges_0x5bbc887763ae86f2:
 # Testcase cp_rs2_edges (Test source rs2 value = 0xaaaaaaaaaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x10, x29) # load rs2: x29 = 0xaaaaaaaaaaaaaaaa
   LA(x24, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x4) # load store canary: x4 = 0xd2691ea74db836e5
+  SREG x4, 0(x24) # fill store target with canary
   addi x24, x24, 1507 # adjust base address for offset
-  xori x4, x29, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x4, -1507(x24) # fill store target with canary
 I_sb_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa:
   sb x29, -1507(x24) # perform store
   addi x24, x24, -1507 # restore base address
@@ -1025,9 +1025,9 @@ I_sb_cg_cp_rs2_edges_0xaaaaaaaaaaaaaaaa:
 # Testcase cp_rs2_edges (Test source rs2 value = 0x5555555555555555)
   RVTEST_TESTDATA_LOAD_INT(x10, x22) # load rs2: x22 = 0x5555555555555555
   LA(x14, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x4) # load store canary: x4 = 0xd2691ea74db836e5
+  SREG x4, 0(x14) # fill store target with canary
   addi x14, x14, -1297 # adjust base address for offset
-  xori x4, x22, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x4, 1297(x14) # fill store target with canary
 I_sb_cg_cp_rs2_edges_0x5555555555555555:
   sb x22, 1297(x14) # perform store
   addi x14, x14, 1297 # restore base address
@@ -1038,9 +1038,9 @@ I_sb_cg_cp_rs2_edges_0x5555555555555555:
 # Testcase cp_rs2_edges (Test source rs2 value = 0x00000000ffffffff)
   RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs2: x4 = 0x00000000ffffffff
   LA(x13, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x6) # load store canary: x6 = 0xd2691ea74db836e5
+  SREG x6, 0(x13) # fill store target with canary
   addi x13, x13, -522 # adjust base address for offset
-  xori x6, x4, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x6, 522(x13) # fill store target with canary
 I_sb_cg_cp_rs2_edges_0xffffffff:
   sb x4, 522(x13) # perform store
   addi x13, x13, 522 # restore base address
@@ -1051,9 +1051,9 @@ I_sb_cg_cp_rs2_edges_0xffffffff:
 # Testcase cp_rs2_edges (Test source rs2 value = 0x00000000fffffffe)
   RVTEST_TESTDATA_LOAD_INT(x10, x18) # load rs2: x18 = 0x00000000fffffffe
   LA(x26, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x16) # load store canary: x16 = 0xd2691ea74db836e5
+  SREG x16, 0(x26) # fill store target with canary
   addi x26, x26, 441 # adjust base address for offset
-  xori x16, x18, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x16, -441(x26) # fill store target with canary
 I_sb_cg_cp_rs2_edges_0xfffffffe:
   sb x18, -441(x26) # perform store
   addi x26, x26, -441 # restore base address
@@ -1064,9 +1064,9 @@ I_sb_cg_cp_rs2_edges_0xfffffffe:
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000100000000)
   RVTEST_TESTDATA_LOAD_INT(x10, x30) # load rs2: x30 = 0x0000000100000000
   LA(x18, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x29) # load store canary: x29 = 0xd2691ea74db836e5
+  SREG x29, 0(x18) # fill store target with canary
   addi x18, x18, 667 # adjust base address for offset
-  xori x29, x30, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x29, -667(x18) # fill store target with canary
 I_sb_cg_cp_rs2_edges_0x100000000:
   sb x30, -667(x18) # perform store
   addi x18, x18, -667 # restore base address
@@ -1077,9 +1077,9 @@ I_sb_cg_cp_rs2_edges_0x100000000:
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000100000001)
   RVTEST_TESTDATA_LOAD_INT(x10, x23) # load rs2: x23 = 0x0000000100000001
   LA(x28, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x21) # load store canary: x21 = 0xd2691ea74db836e5
+  SREG x21, 0(x28) # fill store target with canary
   addi x28, x28, -1985 # adjust base address for offset
-  xori x21, x23, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x21, 1985(x28) # fill store target with canary
 I_sb_cg_cp_rs2_edges_0x100000001:
   sb x23, 1985(x28) # perform store
   addi x28, x28, 1985 # restore base address
@@ -1090,9 +1090,9 @@ I_sb_cg_cp_rs2_edges_0x100000001:
 # Testcase cp_rs2_edges (Test source rs2 value = 0x0000000080000000)
   RVTEST_TESTDATA_LOAD_INT(x10, x1) # load rs2: x1 = 0x0000000080000000
   LA(x26, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load store canary: x9 = 0xd2691ea74db836e5
+  SREG x9, 0(x26) # fill store target with canary
   addi x26, x26, 116 # adjust base address for offset
-  xori x9, x1, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x9, -116(x26) # fill store target with canary
 I_sb_cg_cp_rs2_edges_0x80000000:
   sb x1, -116(x26) # perform store
   addi x26, x26, -116 # restore base address
@@ -1103,9 +1103,9 @@ I_sb_cg_cp_rs2_edges_0x80000000:
 # Testcase cp_rs2_edges (Test source rs2 value = 0x000000007fffffff)
   RVTEST_TESTDATA_LOAD_INT(x10, x27) # load rs2: x27 = 0x000000007fffffff
   LA(x25, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x30) # load store canary: x30 = 0xd2691ea74db836e5
+  SREG x30, 0(x25) # fill store target with canary
   addi x25, x25, -389 # adjust base address for offset
-  xori x30, x27, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x30, 389(x25) # fill store target with canary
 I_sb_cg_cp_rs2_edges_0x7fffffff:
   sb x27, 389(x25) # perform store
   addi x25, x25, 389 # restore base address
@@ -1120,9 +1120,9 @@ I_sb_cg_cp_rs2_edges_0x7fffffff:
 # Testcase cp_imm_edges (imm = 0)
   RVTEST_TESTDATA_LOAD_INT(x10, x25) # load rs2: x25 = 0x0b36d9a2b2c87321
   LA(x17, scratch) # point base at scratch
-  addi x17, x17, 0 # adjust base address for offset
-  xori x12, x25, -1 # canary = ~rs2, so the store changes every bit it writes
+  RVTEST_TESTDATA_LOAD_INT(x10, x12) # load store canary: x12 = 0xd2691ea74db836e5
   SREG x12, 0(x17) # fill store target with canary
+  addi x17, x17, 0 # adjust base address for offset
 I_sb_cg_cp_imm_edges_0x0:
   sb x25, 0(x17) # perform store
   addi x17, x17, 0 # restore base address
@@ -1133,9 +1133,9 @@ I_sb_cg_cp_imm_edges_0x0:
 # Testcase cp_imm_edges (imm = 1)
   RVTEST_TESTDATA_LOAD_INT(x10, x6) # load rs2: x6 = 0xba443fbd53d862b0
   LA(x11, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x14) # load store canary: x14 = 0xd2691ea74db836e5
+  SREG x14, 0(x11) # fill store target with canary
   addi x11, x11, -1 # adjust base address for offset
-  xori x14, x6, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x14, 1(x11) # fill store target with canary
 I_sb_cg_cp_imm_edges_0x1:
   sb x6, 1(x11) # perform store
   addi x11, x11, 1 # restore base address
@@ -1146,9 +1146,9 @@ I_sb_cg_cp_imm_edges_0x1:
 # Testcase cp_imm_edges (imm = 2)
   RVTEST_TESTDATA_LOAD_INT(x10, x2) # load rs2: x2 = 0x4a3217339988e780
   LA(x24, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x4) # load store canary: x4 = 0xd2691ea74db836e5
+  SREG x4, 0(x24) # fill store target with canary
   addi x24, x24, -2 # adjust base address for offset
-  xori x4, x2, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x4, 2(x24) # fill store target with canary
 I_sb_cg_cp_imm_edges_0x2:
   sb x2, 2(x24) # perform store
   addi x24, x24, 2 # restore base address
@@ -1159,9 +1159,9 @@ I_sb_cg_cp_imm_edges_0x2:
 # Testcase cp_imm_edges (imm = 3)
   RVTEST_TESTDATA_LOAD_INT(x10, x11) # load rs2: x11 = 0xb460d56db1caf10d
   LA(x23, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x30) # load store canary: x30 = 0xd2691ea74db836e5
+  SREG x30, 0(x23) # fill store target with canary
   addi x23, x23, -3 # adjust base address for offset
-  xori x30, x11, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x30, 3(x23) # fill store target with canary
 I_sb_cg_cp_imm_edges_0x3:
   sb x11, 3(x23) # perform store
   addi x23, x23, 3 # restore base address
@@ -1172,9 +1172,9 @@ I_sb_cg_cp_imm_edges_0x3:
 # Testcase cp_imm_edges (imm = 4)
   RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs2: x31 = 0xf13043e88626bb04
   LA(x5, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x18) # load store canary: x18 = 0xd2691ea74db836e5
+  SREG x18, 0(x5) # fill store target with canary
   addi x5, x5, -4 # adjust base address for offset
-  xori x18, x31, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x18, 4(x5) # fill store target with canary
 I_sb_cg_cp_imm_edges_0x4:
   sb x31, 4(x5) # perform store
   addi x5, x5, 4 # restore base address
@@ -1185,9 +1185,9 @@ I_sb_cg_cp_imm_edges_0x4:
 # Testcase cp_imm_edges (imm = 8)
   RVTEST_TESTDATA_LOAD_INT(x10, x22) # load rs2: x22 = 0x4800b4ed2d47bace
   LA(x4, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x16) # load store canary: x16 = 0xd2691ea74db836e5
+  SREG x16, 0(x4) # fill store target with canary
   addi x4, x4, -8 # adjust base address for offset
-  xori x16, x22, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x16, 8(x4) # fill store target with canary
 I_sb_cg_cp_imm_edges_0x8:
   sb x22, 8(x4) # perform store
   addi x4, x4, 8 # restore base address
@@ -1198,9 +1198,9 @@ I_sb_cg_cp_imm_edges_0x8:
 # Testcase cp_imm_edges (imm = 16)
   RVTEST_TESTDATA_LOAD_INT(x10, x24) # load rs2: x24 = 0x526aeab55101ea73
   LA(x14, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x18) # load store canary: x18 = 0xd2691ea74db836e5
+  SREG x18, 0(x14) # fill store target with canary
   addi x14, x14, -16 # adjust base address for offset
-  xori x18, x24, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x18, 16(x14) # fill store target with canary
 I_sb_cg_cp_imm_edges_0x10:
   sb x24, 16(x14) # perform store
   addi x14, x14, 16 # restore base address
@@ -1211,9 +1211,9 @@ I_sb_cg_cp_imm_edges_0x10:
 # Testcase cp_imm_edges (imm = 32)
   RVTEST_TESTDATA_LOAD_INT(x10, x16) # load rs2: x16 = 0xb79e99575f67ca05
   LA(x1, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x27) # load store canary: x27 = 0xd2691ea74db836e5
+  SREG x27, 0(x1) # fill store target with canary
   addi x1, x1, -32 # adjust base address for offset
-  xori x27, x16, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x27, 32(x1) # fill store target with canary
 I_sb_cg_cp_imm_edges_0x20:
   sb x16, 32(x1) # perform store
   addi x1, x1, 32 # restore base address
@@ -1224,9 +1224,9 @@ I_sb_cg_cp_imm_edges_0x20:
 # Testcase cp_imm_edges (imm = 64)
   RVTEST_TESTDATA_LOAD_INT(x10, x12) # load rs2: x12 = 0x353e3454f2fbc22f
   LA(x19, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x5) # load store canary: x5 = 0xd2691ea74db836e5
+  SREG x5, 0(x19) # fill store target with canary
   addi x19, x19, -64 # adjust base address for offset
-  xori x5, x12, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x5, 64(x19) # fill store target with canary
 I_sb_cg_cp_imm_edges_0x40:
   sb x12, 64(x19) # perform store
   addi x19, x19, 64 # restore base address
@@ -1237,9 +1237,9 @@ I_sb_cg_cp_imm_edges_0x40:
 # Testcase cp_imm_edges (imm = 128)
   RVTEST_TESTDATA_LOAD_INT(x10, x14) # load rs2: x14 = 0x49b50ccb566a6afb
   LA(x5, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x3) # load store canary: x3 = 0xd2691ea74db836e5
+  SREG x3, 0(x5) # fill store target with canary
   addi x5, x5, -128 # adjust base address for offset
-  xori x3, x14, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x3, 128(x5) # fill store target with canary
 I_sb_cg_cp_imm_edges_0x80:
   sb x14, 128(x5) # perform store
   addi x5, x5, 128 # restore base address
@@ -1250,9 +1250,9 @@ I_sb_cg_cp_imm_edges_0x80:
 # Testcase cp_imm_edges (imm = 256)
   RVTEST_TESTDATA_LOAD_INT(x10, x27) # load rs2: x27 = 0xf9a84ddf7a97066b
   LA(x12, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x20) # load store canary: x20 = 0xd2691ea74db836e5
+  SREG x20, 0(x12) # fill store target with canary
   addi x12, x12, -256 # adjust base address for offset
-  xori x20, x27, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x20, 256(x12) # fill store target with canary
 I_sb_cg_cp_imm_edges_0x100:
   sb x27, 256(x12) # perform store
   addi x12, x12, 256 # restore base address
@@ -1263,9 +1263,9 @@ I_sb_cg_cp_imm_edges_0x100:
 # Testcase cp_imm_edges (imm = 512)
   RVTEST_TESTDATA_LOAD_INT(x10, x1) # load rs2: x1 = 0x4d00029d42cac5c0
   LA(x25, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x14) # load store canary: x14 = 0xd2691ea74db836e5
+  SREG x14, 0(x25) # fill store target with canary
   addi x25, x25, -512 # adjust base address for offset
-  xori x14, x1, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x14, 512(x25) # fill store target with canary
 I_sb_cg_cp_imm_edges_0x200:
   sb x1, 512(x25) # perform store
   addi x25, x25, 512 # restore base address
@@ -1276,9 +1276,9 @@ I_sb_cg_cp_imm_edges_0x200:
 # Testcase cp_imm_edges (imm = 1023)
   RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs2: x4 = 0xbb0c753475255363
   LA(x25, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x13) # load store canary: x13 = 0xd2691ea74db836e5
+  SREG x13, 0(x25) # fill store target with canary
   addi x25, x25, -1023 # adjust base address for offset
-  xori x13, x4, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x13, 1023(x25) # fill store target with canary
 I_sb_cg_cp_imm_edges_0x3ff:
   sb x4, 1023(x25) # perform store
   addi x25, x25, 1023 # restore base address
@@ -1289,9 +1289,9 @@ I_sb_cg_cp_imm_edges_0x3ff:
 # Testcase cp_imm_edges (imm = 1024)
   RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs2: x31 = 0xbc734943a8b636a7
   LA(x13, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x16) # load store canary: x16 = 0xd2691ea74db836e5
+  SREG x16, 0(x13) # fill store target with canary
   addi x13, x13, -1024 # adjust base address for offset
-  xori x16, x31, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x16, 1024(x13) # fill store target with canary
 I_sb_cg_cp_imm_edges_0x400:
   sb x31, 1024(x13) # perform store
   addi x13, x13, 1024 # restore base address
@@ -1302,9 +1302,9 @@ I_sb_cg_cp_imm_edges_0x400:
 # Testcase cp_imm_edges (imm = 1795)
   RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs2: x4 = 0x37694751e1b0c49a
   LA(x11, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x25) # load store canary: x25 = 0xd2691ea74db836e5
+  SREG x25, 0(x11) # fill store target with canary
   addi x11, x11, -1795 # adjust base address for offset
-  xori x25, x4, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x25, 1795(x11) # fill store target with canary
 I_sb_cg_cp_imm_edges_0x703:
   sb x4, 1795(x11) # perform store
   addi x11, x11, 1795 # restore base address
@@ -1315,9 +1315,9 @@ I_sb_cg_cp_imm_edges_0x703:
 # Testcase cp_imm_edges (imm = 2047)
   RVTEST_TESTDATA_LOAD_INT(x10, x19) # load rs2: x19 = 0xd9c12983e0787ff9
   LA(x1, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x25) # load store canary: x25 = 0xd2691ea74db836e5
+  SREG x25, 0(x1) # fill store target with canary
   addi x1, x1, -2047 # adjust base address for offset
-  xori x25, x19, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x25, 2047(x1) # fill store target with canary
 I_sb_cg_cp_imm_edges_0x7ff:
   sb x19, 2047(x1) # perform store
   addi x1, x1, 2047 # restore base address
@@ -1328,10 +1328,10 @@ I_sb_cg_cp_imm_edges_0x7ff:
 # Testcase cp_imm_edges (imm = -2048)
   RVTEST_TESTDATA_LOAD_INT(x10, x31) # load rs2: x31 = 0x4e9f87dee0ea0cfd
   LA(x22, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x9) # load store canary: x9 = 0xd2691ea74db836e5
+  SREG x9, 0(x22) # fill store target with canary
   addi x22, x22, 2047 # increment by 2047
   addi x22, x22, 1 # increment by 1 more for total +2048
-  xori x9, x31, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x9, -2048(x22) # fill store target with canary
 I_sb_cg_cp_imm_edges_m0x800:
   sb x31, -2048(x22) # perform store
   addi x22, x22, -2048 # restore base address
@@ -1342,9 +1342,9 @@ I_sb_cg_cp_imm_edges_m0x800:
 # Testcase cp_imm_edges (imm = -2047)
   RVTEST_TESTDATA_LOAD_INT(x10, x20) # load rs2: x20 = 0x4805dad05f5d3ae9
   LA(x12, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x14) # load store canary: x14 = 0xd2691ea74db836e5
+  SREG x14, 0(x12) # fill store target with canary
   addi x12, x12, 2047 # adjust base address for offset
-  xori x14, x20, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x14, -2047(x12) # fill store target with canary
 I_sb_cg_cp_imm_edges_m0x7ff:
   sb x20, -2047(x12) # perform store
   addi x12, x12, -2047 # restore base address
@@ -1355,9 +1355,9 @@ I_sb_cg_cp_imm_edges_m0x7ff:
 # Testcase cp_imm_edges (imm = -2)
   RVTEST_TESTDATA_LOAD_INT(x10, x5) # load rs2: x5 = 0xcca0bf400e18247d
   LA(x31, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x20) # load store canary: x20 = 0xd2691ea74db836e5
+  SREG x20, 0(x31) # fill store target with canary
   addi x31, x31, 2 # adjust base address for offset
-  xori x20, x5, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x20, -2(x31) # fill store target with canary
 I_sb_cg_cp_imm_edges_m0x2:
   sb x5, -2(x31) # perform store
   addi x31, x31, -2 # restore base address
@@ -1368,9 +1368,9 @@ I_sb_cg_cp_imm_edges_m0x2:
 # Testcase cp_imm_edges (imm = -1)
   RVTEST_TESTDATA_LOAD_INT(x10, x11) # load rs2: x11 = 0xe1c0e74a1e95cf61
   LA(x29, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x10, x30) # load store canary: x30 = 0xd2691ea74db836e5
+  SREG x30, 0(x29) # fill store target with canary
   addi x29, x29, 1 # adjust base address for offset
-  xori x30, x11, -1 # canary = ~rs2, so the store changes every bit it writes
-  SREG x30, -1(x29) # fill store target with canary
 I_sb_cg_cp_imm_edges_m0x1:
   sb x11, -1(x29) # perform store
   addi x29, x29, -1 # restore base address
@@ -1385,7 +1385,7 @@ I_sb_cg_cp_imm_edges_m0x1:
 # Testcase: cp_align_byte (imm[2:0] = 000)
   RVTEST_TESTDATA_LOAD_INT(x10, x13) # load rs2: x13 = 0x9968da669c0f51d1
   LA(x21, scratch) # point base at scratch
-  xori x19, x13, -1 # canary = ~rs2, so the store changes every bit it writes
+  RVTEST_TESTDATA_LOAD_INT(x10, x19) # load store canary: x19 = 0xd2691ea74db836e5
   SREG x19, 0(x21) # fill store target with canary
 I_sb_cg_cp_align_byte_b0:
   sb x13, 0(x21) # perform store
@@ -1396,8 +1396,7 @@ I_sb_cg_cp_align_byte_b0:
 # Testcase: cp_align_byte (imm[2:0] = 001)
   RVTEST_TESTDATA_LOAD_INT(x10, x24) # load rs2: x24 = 0xa56335ff3b5546ad
   LA(x9, scratch) # point base at scratch
-  xori x13, x24, -1 # canary = ~rs2, so the store changes every bit it writes
-  slli x13, x13, 8 # line the canary up with the store
+  RVTEST_TESTDATA_LOAD_INT(x10, x13) # load store canary: x13 = 0xd2691ea74db836e5
   SREG x13, 0(x9) # fill store target with canary
 I_sb_cg_cp_align_byte_b1:
   sb x24, 1(x9) # perform store
@@ -1408,8 +1407,7 @@ I_sb_cg_cp_align_byte_b1:
 # Testcase: cp_align_byte (imm[2:0] = 010)
   RVTEST_TESTDATA_LOAD_INT(x10, x4) # load rs2: x4 = 0x63f392759289d8fa
   LA(x28, scratch) # point base at scratch
-  xori x27, x4, -1 # canary = ~rs2, so the store changes every bit it writes
-  slli x27, x27, 16 # line the canary up with the store
+  RVTEST_TESTDATA_LOAD_INT(x10, x27) # load store canary: x27 = 0xd2691ea74db836e5
   SREG x27, 0(x28) # fill store target with canary
 I_sb_cg_cp_align_byte_b2:
   sb x4, 2(x28) # perform store
@@ -1420,8 +1418,7 @@ I_sb_cg_cp_align_byte_b2:
 # Testcase: cp_align_byte (imm[2:0] = 011)
   RVTEST_TESTDATA_LOAD_INT(x10, x11) # load rs2: x11 = 0x14545a7a3c1de390
   LA(x27, scratch) # point base at scratch
-  xori x3, x11, -1 # canary = ~rs2, so the store changes every bit it writes
-  slli x3, x3, 24 # line the canary up with the store
+  RVTEST_TESTDATA_LOAD_INT(x10, x3) # load store canary: x3 = 0xd2691ea74db836e5
   SREG x3, 0(x27) # fill store target with canary
 I_sb_cg_cp_align_byte_b3:
   sb x11, 3(x27) # perform store
@@ -1432,8 +1429,7 @@ I_sb_cg_cp_align_byte_b3:
 # Testcase: cp_align_byte (imm[2:0] = 100)
   RVTEST_TESTDATA_LOAD_INT(x10, x26) # load rs2: x26 = 0x54be38274584f3dd
   LA(x28, scratch) # point base at scratch
-  xori x24, x26, -1 # canary = ~rs2, so the store changes every bit it writes
-  slli x24, x24, 32 # line the canary up with the store
+  RVTEST_TESTDATA_LOAD_INT(x10, x24) # load store canary: x24 = 0xd2691ea74db836e5
   SREG x24, 0(x28) # fill store target with canary
 I_sb_cg_cp_align_byte_b4:
   sb x26, 4(x28) # perform store
@@ -1444,8 +1440,7 @@ I_sb_cg_cp_align_byte_b4:
 # Testcase: cp_align_byte (imm[2:0] = 101)
   RVTEST_TESTDATA_LOAD_INT(x10, x18) # load rs2: x18 = 0xb31c02a0348a672d
   LA(x16, scratch) # point base at scratch
-  xori x20, x18, -1 # canary = ~rs2, so the store changes every bit it writes
-  slli x20, x20, 40 # line the canary up with the store
+  RVTEST_TESTDATA_LOAD_INT(x10, x20) # load store canary: x20 = 0xd2691ea74db836e5
   SREG x20, 0(x16) # fill store target with canary
 I_sb_cg_cp_align_byte_b5:
   sb x18, 5(x16) # perform store
@@ -1456,8 +1451,7 @@ I_sb_cg_cp_align_byte_b5:
 # Testcase: cp_align_byte (imm[2:0] = 110)
   RVTEST_TESTDATA_LOAD_INT(x10, x27) # load rs2: x27 = 0x3358da3c7995ec3f
   LA(x6, scratch) # point base at scratch
-  xori x20, x27, -1 # canary = ~rs2, so the store changes every bit it writes
-  slli x20, x20, 48 # line the canary up with the store
+  RVTEST_TESTDATA_LOAD_INT(x10, x20) # load store canary: x20 = 0xd2691ea74db836e5
   SREG x20, 0(x6) # fill store target with canary
 I_sb_cg_cp_align_byte_b6:
   sb x27, 6(x6) # perform store
@@ -1468,8 +1462,7 @@ I_sb_cg_cp_align_byte_b6:
 # Testcase: cp_align_byte (imm[2:0] = 111)
   RVTEST_TESTDATA_LOAD_INT(x10, x16) # load rs2: x16 = 0x306b890c0d137961
   LA(x13, scratch) # point base at scratch
-  xori x1, x16, -1 # canary = ~rs2, so the store changes every bit it writes
-  slli x1, x1, 56 # line the canary up with the store
+  RVTEST_TESTDATA_LOAD_INT(x10, x1) # load store canary: x1 = 0xd2691ea74db836e5
   SREG x1, 0(x13) # fill store target with canary
 I_sb_cg_cp_align_byte_b7:
   sb x16, 7(x13) # perform store
@@ -1488,114 +1481,223 @@ RVTEST_DATA_BEGIN
 
 // Test data
 .dword 0xc0af5b2abb70fae5
+.dword 0xd2691ea74db836e5
 .dword 0x31b419822fc7d1ca
+.dword 0xd2691ea74db836e5
 .dword 0x00793d710ae01d82
+.dword 0xd2691ea74db836e5
 .dword 0x469f2490428cb3d7
+.dword 0xd2691ea74db836e5
 .dword 0xd03ca7fca311cc5c
+.dword 0xd2691ea74db836e5
 .dword 0x6cb7de20cc47eef5
+.dword 0xd2691ea74db836e5
 .dword 0x813faf68068d878b
+.dword 0xd2691ea74db836e5
 .dword 0x357acc20e3898be6
+.dword 0xd2691ea74db836e5
 .dword 0xdf8d486c1c9991bf
+.dword 0xd2691ea74db836e5
 .dword 0xa0a65cc143c6a0ea
+.dword 0xd2691ea74db836e5
 .dword 0xb863213617fa703c
+.dword 0xd2691ea74db836e5
 .dword 0xfa81bf06d3350395
+.dword 0xd2691ea74db836e5
 .dword 0x41a023c03e0196ad
+.dword 0xd2691ea74db836e5
 .dword 0x20b3ebe82e8adb72
+.dword 0xd2691ea74db836e5
 .dword 0x3e6ffff26c0869bc
+.dword 0xd2691ea74db836e5
 .dword 0x90c07965a13b4977
+.dword 0xd2691ea74db836e5
 .dword 0xe87c95c2939c2df3
+.dword 0xd2691ea74db836e5
 .dword 0x09b93b9c2d3e2ab6
+.dword 0xd2691ea74db836e5
 .dword 0xa424faf338c8491d
+.dword 0xd2691ea74db836e5
 .dword 0x4954ef5c0bf7ee69
+.dword 0xd2691ea74db836e5
 .dword 0x2c6eab5f4b649b38
+.dword 0xd2691ea74db836e5
 .dword 0x135343d50fc0bc49
+.dword 0xd2691ea74db836e5
 .dword 0xa32f97d934019764
+.dword 0xd2691ea74db836e5
 .dword 0xa9c2781d297367c2
+.dword 0xd2691ea74db836e5
 .dword 0xf21d9c580d176a85
+.dword 0xd2691ea74db836e5
 .dword 0x4c4759936ba01ff6
+.dword 0xd2691ea74db836e5
 .dword 0x2b2f798256dcf9a9
+.dword 0xd2691ea74db836e5
 .dword 0xdff6c78aa397dd61
+.dword 0xd2691ea74db836e5
 .dword 0x6b69a309dd78f866
+.dword 0xd2691ea74db836e5
 .dword 0xd6c33e212a88d409
+.dword 0xd2691ea74db836e5
 .dword 0xfdb1988faf2bc695
+.dword 0xd2691ea74db836e5
 .dword 0x574de5d2cc094d42
+.dword 0xd2691ea74db836e5
 .dword 0x308968140a7e8ad1
+.dword 0xd2691ea74db836e5
 .dword 0xba5a07169b1a6d75
+.dword 0xd2691ea74db836e5
 .dword 0xd7bc459eec561362
+.dword 0xd2691ea74db836e5
 .dword 0x7fdb7dccf48b56ed
+.dword 0xd2691ea74db836e5
 .dword 0x64d1f0695c48f5e1
+.dword 0xd2691ea74db836e5
 .dword 0x7024da73d4ebd155
+.dword 0xd2691ea74db836e5
 .dword 0x0356e08c6b9c710c
+.dword 0xd2691ea74db836e5
 .dword 0x8ebc750544db627d
+.dword 0xd2691ea74db836e5
 .dword 0x821a7744d4b5c4df
+.dword 0xd2691ea74db836e5
 .dword 0xe216f9467f0736ae
+.dword 0xd2691ea74db836e5
 .dword 0x7a1da9e7690d3d3d
+.dword 0xd2691ea74db836e5
 .dword 0xf680a9fc2d516b8a
+.dword 0xd2691ea74db836e5
 .dword 0x04331db3a21a148c
+.dword 0xd2691ea74db836e5
 .dword 0x4cc53de728a2a57b
+.dword 0xd2691ea74db836e5
 .dword 0xa38cbd1554262317
+.dword 0xd2691ea74db836e5
 .dword 0xf2e99703ffce0ad1
+.dword 0xd2691ea74db836e5
 .dword 0xd4ffb4d9405ebb9b
+.dword 0xd2691ea74db836e5
 .dword 0xbd86c1ce4fef2967
+.dword 0xd2691ea74db836e5
 .dword 0x8282a17acb595c7c
+.dword 0xd2691ea74db836e5
 .dword 0x2eba162f7dea98d3
+.dword 0xd2691ea74db836e5
 .dword 0xaeacd81210c97fc7
+.dword 0xd2691ea74db836e5
 .dword 0x706926099de9a2e8
+.dword 0xd2691ea74db836e5
 .dword 0xe37e107a3167e9bf
+.dword 0xd2691ea74db836e5
 .dword 0xa944b28f48bb4994
+.dword 0xd2691ea74db836e5
 .dword 0xbd097752f9b7f31b
+.dword 0xd2691ea74db836e5
 .dword 0x85f8f706891b76b9
+.dword 0xd2691ea74db836e5
 .dword 0x42cd274b851e58d2
+.dword 0xd2691ea74db836e5
 .dword 0x6c1c307d2e788e24
+.dword 0xd2691ea74db836e5
 .dword 0x18c5d1ded9fdf38f
+.dword 0xd2691ea74db836e5
 .dword 0xd29750bc316a4506
+.dword 0xd2691ea74db836e5
 .dword 0x3e9c91a364ac322a
+.dword 0xd2691ea74db836e5
 .dword 0x0000000000000000
+.dword 0xd2691ea74db836e5
 .dword 0x0000000000000001
+.dword 0xd2691ea74db836e5
 .dword 0x0000000000000002
+.dword 0xd2691ea74db836e5
 .dword 0x8000000000000000
+.dword 0xd2691ea74db836e5
 .dword 0x8000000000000001
+.dword 0xd2691ea74db836e5
 .dword 0x7fffffffffffffff
+.dword 0xd2691ea74db836e5
 .dword 0x7ffffffffffffffe
+.dword 0xd2691ea74db836e5
 .dword 0xffffffffffffffff
+.dword 0xd2691ea74db836e5
 .dword 0xfffffffffffffffe
+.dword 0xd2691ea74db836e5
 .dword 0x5bbc887763ae86f2
+.dword 0xd2691ea74db836e5
 .dword 0xaaaaaaaaaaaaaaaa
+.dword 0xd2691ea74db836e5
 .dword 0x5555555555555555
+.dword 0xd2691ea74db836e5
 .dword 0x00000000ffffffff
+.dword 0xd2691ea74db836e5
 .dword 0x00000000fffffffe
+.dword 0xd2691ea74db836e5
 .dword 0x0000000100000000
+.dword 0xd2691ea74db836e5
 .dword 0x0000000100000001
+.dword 0xd2691ea74db836e5
 .dword 0x0000000080000000
+.dword 0xd2691ea74db836e5
 .dword 0x000000007fffffff
+.dword 0xd2691ea74db836e5
 .dword 0x0b36d9a2b2c87321
+.dword 0xd2691ea74db836e5
 .dword 0xba443fbd53d862b0
+.dword 0xd2691ea74db836e5
 .dword 0x4a3217339988e780
+.dword 0xd2691ea74db836e5
 .dword 0xb460d56db1caf10d
+.dword 0xd2691ea74db836e5
 .dword 0xf13043e88626bb04
+.dword 0xd2691ea74db836e5
 .dword 0x4800b4ed2d47bace
+.dword 0xd2691ea74db836e5
 .dword 0x526aeab55101ea73
+.dword 0xd2691ea74db836e5
 .dword 0xb79e99575f67ca05
+.dword 0xd2691ea74db836e5
 .dword 0x353e3454f2fbc22f
+.dword 0xd2691ea74db836e5
 .dword 0x49b50ccb566a6afb
+.dword 0xd2691ea74db836e5
 .dword 0xf9a84ddf7a97066b
+.dword 0xd2691ea74db836e5
 .dword 0x4d00029d42cac5c0
+.dword 0xd2691ea74db836e5
 .dword 0xbb0c753475255363
+.dword 0xd2691ea74db836e5
 .dword 0xbc734943a8b636a7
+.dword 0xd2691ea74db836e5
 .dword 0x37694751e1b0c49a
+.dword 0xd2691ea74db836e5
 .dword 0xd9c12983e0787ff9
+.dword 0xd2691ea74db836e5
 .dword 0x4e9f87dee0ea0cfd
+.dword 0xd2691ea74db836e5
 .dword 0x4805dad05f5d3ae9
+.dword 0xd2691ea74db836e5
 .dword 0xcca0bf400e18247d
+.dword 0xd2691ea74db836e5
 .dword 0xe1c0e74a1e95cf61
+.dword 0xd2691ea74db836e5
 .dword 0x9968da669c0f51d1
+.dword 0xd2691ea74db836e5
 .dword 0xa56335ff3b5546ad
+.dword 0xd2691ea74db836e5
 .dword 0x63f392759289d8fa
+.dword 0xd2691ea74db836e5
 .dword 0x14545a7a3c1de390
+.dword 0xd2691ea74db836e5
 .dword 0x54be38274584f3dd
+.dword 0xd2691ea74db836e5
 .dword 0xb31c02a0348a672d
+.dword 0xd2691ea74db836e5
 .dword 0x3358da3c7995ec3f
+.dword 0xd2691ea74db836e5
 .dword 0x306b890c0d137961
+.dword 0xd2691ea74db836e5
 
 // Testcase strings
 I_sb_cg_cp_rs1_nx0_b1_str: .string "\"test: 1; cg: I_sb_cg; cp: cp_rs1_nx0; bin: b1\""

@@ -7,8 +7,8 @@
 
 from testgen.asm.helpers import (
     STORE_BYTES,
-    check_store_canary,
-    fp_store_canary,
+    check_store_target,
+    fill_store_target,
     load_float_reg,
     write_sigupd,
 )
@@ -34,7 +34,7 @@ def format_fs_type(
     assert params.immval is not None, "immval must be provided for FS-type instructions"
 
     store_bytes = STORE_BYTES[instr_name]
-    area_bytes = max(store_bytes, params.fp_store_check_bytes)
+    area_bytes = max(store_bytes, 8)
 
     # Ensure rs1 is not x0 (base address)
     if params.rs1 == 0:
@@ -46,14 +46,7 @@ def format_fs_type(
         load_float_reg("fs2", params.fs2, params.fs2val, test_data, params.fp_load_type),
         "fsflagsi 0b00000 # clear all fflags",
         f"LA(x{params.rs1}, scratch) # point base at scratch",
-        *fp_store_canary(
-            params.rs1,
-            params.temp_reg,
-            test_data,
-            area_bytes=area_bytes,
-            store_val=params.fs2val,
-            store_bytes=store_bytes,
-        ),
+        *fill_store_target(params.rs1, params.temp_reg, test_data, area_bytes=area_bytes),
     ]
 
     # Handle special case where offset is -2048
@@ -70,7 +63,7 @@ def format_fs_type(
     test = [f"{instr_name} f{params.fs2}, {params.immval}(x{params.rs1}) # perform store"]
     check = [
         f"addi x{params.rs1}, x{params.rs1}, {params.immval} # restore base address",
-        *check_store_canary(params.rs1, params.temp_reg, test_data, area_bytes=area_bytes),
+        *check_store_target(params.rs1, params.temp_reg, test_data, area_bytes=area_bytes),
         write_sigupd(None, test_data, "fflags"),
     ]
     return (setup, test, check)

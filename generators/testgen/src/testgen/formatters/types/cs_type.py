@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import check_store_canary, load_int_reg, store_canary
+from testgen.asm.helpers import check_store_target, fill_store_target, load_int_reg
 from testgen.data.params import InstructionParams
 from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, add_instruction_formatter
@@ -48,13 +48,13 @@ def format_cs_type(
     setup = [
         load_int_reg("rs2", params.rs2, params.rs2val, test_data),
         f"LA(x{params.rs1}, scratch) # point base at scratch",
+        *fill_store_target(params.rs1, params.temp_reg, test_data, area_bytes=alignment),
         f"addi x{params.rs1}, x{params.rs1}, {-params.immval} # adjust base address for offset",
-        *store_canary(params.rs1, params.rs2, params.temp_reg, (params.immval,)),
     ]
 
     test = [f"{instr_name} x{params.rs2}, {params.immval}(x{params.rs1}) # perform store"]
     check = [
         f"addi x{params.rs1}, x{params.rs1}, {params.immval} # restore base address",
-        *check_store_canary(params.rs1, params.temp_reg, test_data, area_bytes=alignment),
+        *check_store_target(params.rs1, params.temp_reg, test_data, area_bytes=alignment),
     ]
     return (setup, test, check)

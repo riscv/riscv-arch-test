@@ -7,7 +7,12 @@
 
 """cp_align coverpoint generator."""
 
-from testgen.asm.helpers import check_store_canary, load_int_reg, store_area_offsets, store_canary, write_sigupd
+from testgen.asm.helpers import (
+    check_store_target,
+    fill_store_target,
+    load_int_reg,
+    write_sigupd,
+)
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
@@ -66,16 +71,10 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
                     f"# Testcase: {coverpoint} (imm[2:0] = {params.immval:03b})",
                     load_int_reg("rs2", params.rs2, params.rs2val, test_data),
                     f"LA(x{params.rs1}, scratch) # point base at scratch",
-                    *store_canary(
-                        params.rs1,
-                        params.rs2,
-                        params.temp_reg,
-                        store_area_offsets(8, test_data),
-                        shift_bytes=alignment % (test_data.xlen // 8),
-                    ),
+                    *fill_store_target(params.rs1, params.temp_reg, test_data, area_bytes=8),
                     test_data.add_testcase(f"b{alignment}", coverpoint),
                     f"{instr_name} x{params.rs2}, {params.immval}(x{params.rs1}) # perform store",
-                    *check_store_canary(params.rs1, params.temp_reg, test_data, area_bytes=8),
+                    *check_store_target(params.rs1, params.temp_reg, test_data, area_bytes=8),
                     "",
                 ]
             )

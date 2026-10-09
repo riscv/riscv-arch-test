@@ -161,57 +161,35 @@ def write_sigupd(
 # Bytes written by each S/FS-type store
 STORE_BYTES = {"sb": 1, "sh": 2, "sw": 4, "sd": 8, "fsh": 2, "fsw": 4, "fsd": 8, "fsq": 16}
 
-# Background pattern for FP store targets. Its bytes differ from each other and from common edge-value bytes.
+# Background pattern for store targets.
+# Its bytes differ from each other and from common edge-value bytes.
 STORE_CANARY = 0xD2691EA74DB836E5
 
 
 def store_area_offsets(area_bytes: int, test_data: TestData) -> range:
     """Byte offsets of the XLEN words that cover area_bytes."""
     xlen_bytes = test_data.xlen // 8
-    return range(0, max(area_bytes, xlen_bytes), xlen_bytes)
+    words = max(1, -(-area_bytes // xlen_bytes))
+    return range(0, words * xlen_bytes, xlen_bytes)
 
 
-def store_canary(
-    base_reg: int, rs2: int, temp_reg: int, offsets: range | tuple[int, ...] = (0,), shift_bytes: int = 0
-) -> list[str]:
-    """Fill the XLEN words at offsets(base_reg) with ~rs2 shifted left by shift_bytes bytes.
+def fill_store_target(base_reg: int, temp_reg: int, test_data: TestData, *, area_bytes: int) -> list[str]:
+    """Fill the XLEN words that cover area_bytes at base_reg with STORE_CANARY.
 
-    A store of rs2 at byte shift_bytes of one of these words then changes every bit it writes, so a store
-    that is dropped or goes to another address fails the readback. The complement is taken at run time
-    because rs2 may hold the base address.
+    A store that is dropped, goes to another address, or writes too many bytes then changes the readback.
     """
-    lines = [f"xori x{temp_reg}, x{rs2}, -1 # canary = ~rs2, so the store changes every bit it writes"]
-    if shift_bytes:
-        lines.append(f"slli x{temp_reg}, x{temp_reg}, {8 * shift_bytes} # line the canary up with the store")
-    lines.extend(f"SREG x{temp_reg}, {offset}(x{base_reg}) # fill store target with canary" for offset in offsets)
-    return lines
+    canary = STORE_CANARY & ((1 << test_data.xlen) - 1)
+    return [
+        load_int_reg("store canary", temp_reg, canary, test_data),
+        *(
+            f"SREG x{temp_reg}, {offset}(x{base_reg}) # fill store target with canary"
+            for offset in store_area_offsets(area_bytes, test_data)
+        ),
+    ]
 
 
-def fp_store_canary(
-    base_reg: int, temp_reg: int, test_data: TestData, *, area_bytes: int, store_val: int, store_bytes: int
-) -> list[str]:
-    """Fill area_bytes at base_reg, rounded up to whole XLEN words, with STORE_CANARY.
-
-    The low store_bytes bytes hold the complement of store_val instead, so the store changes each of them.
-    """
-    offsets = store_area_offsets(area_bytes, test_data)
-    area = bytearray(STORE_CANARY.to_bytes(8, "little") * ((offsets.stop + 7) // 8))
-    for i in range(store_bytes):
-        area[i] = ~(store_val >> (8 * i)) & 0xFF
-    lines: list[str] = []
-    for offset in offsets:
-        canary = int.from_bytes(area[offset : offset + offsets.step], "little")
-        lines.extend(
-            [
-                load_int_reg("store canary", temp_reg, canary, test_data),
-                f"SREG x{temp_reg}, {offset}(x{base_reg}) # fill store target with canary",
-            ]
-        )
-    return lines
-
-
-def check_store_canary(base_reg: int, temp_reg: int, test_data: TestData, *, area_bytes: int) -> list[str]:
-    """Read back and check the XLEN words that cover area_bytes at base_reg."""
+def check_store_target(base_reg: int, temp_reg: int, test_data: TestData, *, area_bytes: int) -> list[str]:
+    """Load the XLEN words that cover area_bytes at base_reg and add each to the signature."""
     lines: list[str] = []
     for offset in store_area_offsets(area_bytes, test_data):
         lines.extend(

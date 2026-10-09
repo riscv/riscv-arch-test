@@ -91,6 +91,7 @@ def generate_unpriv_extension_tests(
             E_ext=E_ext,
             sew=sew,
             extra_extension=extra_extension,
+            march_extensions=[] if testsuite == "Zilx" else None,
         )
 
     # Iterate through each instruction in the testsuite; generate separate test files for each

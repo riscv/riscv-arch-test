@@ -503,6 +503,9 @@
 `ifdef ZIHPM_COVERAGE
   `include "Zihpm_coverage.svh"
 `endif
+`ifdef ZILX_COVERAGE
+  `include "Zilx_coverage.svh"
+`endif
 `ifdef ZIMOP_COVERAGE
   `include "Zimop_coverage.svh"
 `endif

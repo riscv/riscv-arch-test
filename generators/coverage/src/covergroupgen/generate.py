@@ -275,7 +275,7 @@ Testplan = dict[tuple[str, str], list[str]]
 
 
 def _parse_testplan_groups(csv_path: Path) -> dict[str, Testplan]:
-    """Parse a testplan CSV into (instruction, type) -> coverpoints, grouped by ExtraExtension entry.
+    """Parse a testplan CSV into (instruction, type) -> coverpoints, grouped by ExtraExtensions entry.
 
     The "" group holds the rows that need only the suite's own extensions.
     """
@@ -289,7 +289,7 @@ def _parse_testplan_groups(csv_path: Path) -> dict[str, Testplan]:
                 )
             instr = row["Instruction"]
             instr_type = row.get("Type", "")
-            extra_extension = ":".join(ext.strip() for ext in row.pop("ExtraExtension", "").split(":") if ext.strip())
+            extra_extensions = ":".join(ext.strip() for ext in row.pop("ExtraExtensions", "").split(":") if ext.strip())
 
             cps: list[str] = []
             del row["Instruction"]
@@ -307,7 +307,7 @@ def _parse_testplan_groups(csv_path: Path) -> dict[str, Testplan]:
                         key = f"{key}_{value}"
                     cps.append(key)
 
-            groups[extra_extension][(instr, instr_type)] = cps
+            groups[extra_extensions][(instr, instr_type)] = cps
     return groups
 
 
@@ -315,7 +315,7 @@ def read_testplans(testplan_dir: Path) -> tuple[dict[str, Testplan], dict[str, d
     """Read all CSV testplan files.
 
     Returns (testplans, extra_testplans). testplans maps each extension name to the rows that need only
-    that extension; extra_testplans maps an extension name to its rows with a ExtraExtension entry,
+    that extension; extra_testplans maps an extension name to its rows with a ExtraExtensions entry,
     keyed by that entry. Each CSV file produces one testplan entry keyed by the file's stem (e.g. "I", "Zba").
     Some extensions are expanded:
       - "I" is duplicated as "E"
@@ -682,14 +682,14 @@ def _gen_instrs(
 
 
 def _guard(extension: str, content: str) -> str:
-    """Wrap content in `ifdef <EXT>_SUPPORTED for each extension of a colon-separated ExtraExtension entry."""
+    """Wrap content in `ifdef <EXT>_SUPPORTED for each extension of a colon-separated ExtraExtensions entry."""
     for ext in reversed(extension.split(":") if extension else []):
         content = f"`ifdef {ext.upper()}_SUPPORTED\n{content}`endif\n"
     return content
 
 
 def _extra_name(arch: str, extension: str) -> str:
-    """Name prefix for an ExtraExtension group: the suite followed by its extensions, e.g. ZfaZfhD for Zfh:D."""
+    """Name prefix for an ExtraExtensions group: the suite followed by its extensions, e.g. ZfaZfhD for Zfh:D."""
     return arch + extension.replace(":", "")
 
 
@@ -712,7 +712,7 @@ def _gen_covergroup_samples(
     extras: dict[str, Testplan],
     vector_sample: bool = False,
 ) -> str:
-    """Generate covergroup sample function calls for matching instructions and ExtraExtension rows."""
+    """Generate covergroup sample function calls for matching instructions and ExtraExtensions rows."""
     lines: list[str] = []
     for key in sorted(set(instr_keys).union(*extras.values())):
         instr = key[0]
@@ -795,7 +795,7 @@ def _write_extension_files(
     When *vector* is True the vector-flavored header/sample templates are used,
     an EFFEW substitution is made available in the header, and the instruction
     key list is filtered to the matching SEW. *extras* holds the testplan's
-    ExtraExtension rows by extension; their covergroups follow the base
+    ExtraExtensions rows by extension; their covergroups follow the base
     covergroups inside `ifdef <EXT>_SUPPORTED guards.
     """
     per_sew = vector or _has_effew_suffix(arch)
@@ -820,7 +820,7 @@ def _write_extension_files(
     init_lines: list[str] = [customize_template(templates, "initheader", arch)]
 
     # Covergroup definitions: common instructions, then RV32-only, then RV64-only;
-    # then the same for each group of ExtraExtension rows inside its extension guards
+    # then the same for each group of ExtraExtensions rows inside its extension guards
     for extension, group in [("", tp), *sorted(extras.items())]:
         group_keys = instr_keys if not extension else sorted(group.keys())
         name = _extra_name(arch, extension)
@@ -942,7 +942,7 @@ def _merge_instruction_testplans(
         for key in _get_sorted_instr_keys(tp, arch):
             if key not in merged:
                 merged[key] = tp[key]
-    # Instructions that appear only in ExtraExtension rows
+    # Instructions that appear only in ExtraExtensions rows
     for arch in sorted(extra_testplans):
         for _, group in sorted(extra_testplans[arch].items()):
             for key in sorted(group):

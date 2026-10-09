@@ -1,4 +1,4 @@
-Instruction,Type,RV32,RV64,ExtraExtension,cp_asm_count,cp_rs1,cp_rs2,cp_rd,cp_rs1_edges,cp_rs2_edges,cp_fs1,cp_fs2,cp_fd,cp_fs1_edges,cp_fs2_edges,cmp_fd_fs1,cmp_fd_fs2,cp_frm,cp_csr_fflags,cp_csr_frm,cr_fs1_fs2_edges,cp_NaNBox,cp_fs1_badNB,cp_fs2_badNB
+Instruction,Type,RV32,RV64,ExtraExtensions,cp_asm_count,cp_rs1,cp_rs2,cp_rd,cp_rs1_edges,cp_rs2_edges,cp_fs1,cp_fs2,cp_fd,cp_fs1_edges,cp_fs2_edges,cmp_fd_fs1,cmp_fd_fs2,cp_frm,cp_csr_fflags,cp_csr_frm,cr_fs1_fs2_edges,cp_NaNBox,cp_fs1_badNB,cp_fs2_badNB
 fleq.s,FC,x,x,,x,,,x,,,x,x,,x,x,,,,v,,x,,,
 fli.s,FLI,x,x,,x,fli,,,,,,,x,,,,,,,,,,,
 fltq.s,FC,x,x,,x,,,x,,,x,x,,x,x,,,,v,,x,,,

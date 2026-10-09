@@ -54,7 +54,7 @@ def insert_header_template(
         None if required_extensions is None else [ext for ext in required_extensions if isinstance(ext, str)]
     )
     ext_components, params = canonicalize_extensions(
-        testsuite, xlen, E_ext, required_extensions, sew, instr_name, test_config.extra_extension
+        testsuite, xlen, E_ext, required_extensions, sew, instr_name, test_config.extra_extensions
     )
     extension_requirements = [*ext_components, *alternative_extensions]
     flat_ext_components = ext_components + [ext for alternatives in alternative_extensions for ext in alternatives]
@@ -100,7 +100,7 @@ def canonicalize_extensions(
     required_extensions: list[str] | None = None,
     sew: int | None = None,
     instr_name: str | None = None,
-    extra_extension: str = "",
+    extra_extensions: str = "",
 ) -> tuple[list[str], list[str]]:
     """Canonicalize extension string.
 
@@ -111,14 +111,14 @@ def canonicalize_extensions(
         required_extensions: If provided, use these extensions instead of parsing from testsuite.
         sew: Optional. Used in vector suites to determine the base extension
         instr_name: Optional. Used in vector suites to determine whether or not an instruction is part of a base extension
-        extra_extension: Optional. Colon-separated extensions a testplan row requires beyond the testsuite's own.
+        extra_extensions: Optional. Colon-separated extensions a testplan row requires beyond the testsuite's own.
     """
     # Use required_extensions if provided, otherwise parse from testsuite name
     ext_components = (
         required_extensions.copy() if required_extensions is not None else re.findall(r"[A-Z][a-z]*", testsuite)
     )
-    if extra_extension:
-        ext_components.extend(extra_extension.split(":"))
+    if extra_extensions:
+        ext_components.extend(extra_extensions.split(":"))
 
     # Extract parameters
     params: list[str] = []

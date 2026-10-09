@@ -74,7 +74,7 @@ include::norm/Zcd_norm_rules.adoc[]
 ==== Zcb Additional Compressed Instructions
 
 <<t-Zcb-coverpoints>> summarizes the coverpoints for the Zcb extension.
-The rows with an entry in the ExtraExtension column apply only when that extension is also supported: c.mul needs Zmmul (which M implies), c.zext.w needs Zba, and c.sext.b, c.sext.h, and c.zext.h need Zbb.
+The rows with an entry in the ExtraExtensions column apply only when that extension is also supported: c.mul needs Zmmul (which M implies), c.zext.w needs Zba, and c.sext.b, c.sext.h, and c.zext.h need Zbb.
 
 include::{testplansdir}/Zcb.adoc[]
 

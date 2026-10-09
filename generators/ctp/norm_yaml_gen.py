@@ -43,8 +43,8 @@ def load_csv_with_coverpoints(csv_path: Path) -> dict[str, list[tuple[str, list[
     """
     Load instruction names and coverpoint data from a CSV testplan file.
 
-    Returns a dict mapping each instruction name to a (ExtraExtension, coverpoints) pair for each
-    of its rows; a row with an ExtraExtension entry maps to the covergroup <suite><ext>..._<instr>_cg.
+    Returns a dict mapping each instruction name to a (ExtraExtensions, coverpoints) pair for each
+    of its rows; a row with an ExtraExtensions entry maps to the covergroup <suite><ext>..._<instr>_cg.
     Excludes columns that:
     - Start with 'cmp'
     - Contain 'edges' unless they start with 'cr' OR no cr*edges coverpoint exists
@@ -59,7 +59,7 @@ def load_csv_with_coverpoints(csv_path: Path) -> dict[str, list[tuple[str, list[
 
         # Build the list of data columns to evaluate for coverpoints.
         # Always exclude metadata/header columns even if cp_asm_count is missing.
-        meta_cols = {"Instruction", "Type", "RV32", "RV64", "ExtraExtension", "cp_asm_count"}
+        meta_cols = {"Instruction", "Type", "RV32", "RV64", "ExtraExtensions", "cp_asm_count"}
         data_columns = [c for c in reader.fieldnames if c not in meta_cols]
 
         for row in reader:
@@ -114,8 +114,8 @@ def load_csv_with_coverpoints(csv_path: Path) -> dict[str, list[tuple[str, list[
                 else:
                     coverpoints.append(f"{col_name}_{cell_value}")
 
-            extra_extension = "".join(ext.strip() for ext in (row.get("ExtraExtension") or "").split(":"))
-            data.setdefault(instr, []).append((extra_extension, coverpoints))
+            extra_extensions = "".join(ext.strip() for ext in (row.get("ExtraExtensions") or "").split(":"))
+            data.setdefault(instr, []).append((extra_extensions, coverpoints))
 
     return data
 

@@ -153,7 +153,7 @@ include::norm/Zihintpause_norm_rules.adoc[]
 ==== Zihintntl Non-temporal Locality Hint
 
 These instructions are hints that behave as nops.  They are simply executed once.
-The rows of <<t-Zihintntl-coverpoints>> with Zca in the ExtraExtension column are the compressed instructions `c.ntl.p1`, `c.ntl.pall`, `c.ntl.s1`, and `c.ntl.all`, a subset of the `c.add` hints, and apply only when Zca is also supported.
+The rows of <<t-Zihintntl-coverpoints>> with Zca in the ExtraExtensions column are the compressed instructions `c.ntl.p1`, `c.ntl.pall`, `c.ntl.s1`, and `c.ntl.all`, a subset of the `c.add` hints, and apply only when Zca is also supported.
 
 include::{testplansdir}/Zihintntl.adoc[]
 

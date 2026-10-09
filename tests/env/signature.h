@@ -147,6 +147,22 @@
     4:                                                          ;
 #endif
 
+// TRAP_CHECK_ZERO(sigreg, instptr, strptr)
+// Checks a trap CSR value the spec requires to be zero, such as xtval on an
+// interrupt, without recording it in the trap signature. The check runs in both
+// compile modes, so the signature and self-check ELFs have identical code layout
+// and a reference model that writes a nonzero value fails its signature build.
+// On failure, x6/T1 carries the actual value and DEFAULT_TEMP_REG the expected zero.
+#define TRAP_CHECK_ZERO(_R, _INST_PTR, _STR_PTR)                  \
+    beqz _R, 2f                                                 ;\
+    mv   T1, _R                                                 ;\
+    li   DEFAULT_TEMP_REG, 0                                    ;\
+    jal  T2, failedtest_trap_x7_x9                              ;\
+    RVTEST_WORD_PTR _INST_PTR                                   ;\
+    RVTEST_WORD_PTR _STR_PTR                                    ;\
+    .word CSR_XEPC                                              ;\
+    2:                                                          ;
+
 // RVTEST_SIGUPD_FFLAGS(sigptr, linkreg, tempreg, instptr, strptr)
 // Reads fflags and compares/stores it to the signature at 0(sigptr).
 // In SELFCHECK mode, compares the value in fflags with the value in memory

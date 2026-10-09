@@ -76,7 +76,7 @@
 //    6. Ecall detection -> T-SBI dispatch (if ecall and SBI call) OR normal trap sig
 //    7. Normal path: record trap signature (vect+mode, cause, epc/ip, tval/intID)
 //    8. Exception: record xEPC, bump past trapping instruction
-//    9. Interrupt: clear interrupt source via dispatch table
+//    9. Interrupt: check xtval == 0, clear interrupt source via dispatch table
 //   10. resto_Xrtn: restore T1..T6 and sp, xret to resume execution
 //
 //  T-SBI (TEST SUPERVISOR BINARY INTERFACE)
@@ -2541,7 +2541,8 @@ dispatch_\__MODE__\()spcl_excpt_handler:
 
 //==============================================================================
 // INTERRUPT HANDLER
-// Clears the interrupt source and records xIP in the trap signature.
+// Records xIP in the trap signature, checks that xtval (and with H, the second
+// trap value and xtinst) is zero, and clears the interrupt source.
 //==============================================================================
 
 common_\__MODE__\()int_handler:
@@ -2553,6 +2554,34 @@ common_\__MODE__\()int_handler:
 
 sv_\__MODE__\()ip:
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()ip, sv_\__MODE__\()ip_str) // write word 2: xIP
+
+// An interrupt writes zero to xtval (norm:mtval_other_traps_zero), and with H to the second
+// trap value (mtval2/htval) and xtinst (norm:H_trap_xtinst_interrupt). The interrupt entry
+// does not record them, so check them here.
+        csrr    T3, CSR_XTVAL
+ck_\__MODE__\()int_tval:
+        TRAP_CHECK_ZERO(T3, ck_\__MODE__\()int_tval, ck_\__MODE__\()int_tval_str)
+  .ifc \__MODE__ , M
+        #ifdef H_SUPPORTED
+        csrr    T3, CSR_MTVAL2
+ck_\__MODE__\()int_tval2:
+        TRAP_CHECK_ZERO(T3, ck_\__MODE__\()int_tval2, ck_Mint_tval2_str)
+        csrr    T3, CSR_MTINST
+ck_\__MODE__\()int_tinst:
+        TRAP_CHECK_ZERO(T3, ck_\__MODE__\()int_tinst, ck_Mint_tinst_str)
+        #endif
+  .else
+    .ifnc \__MODE__ , V
+      #ifdef H_SUPPORTED
+        csrr    T3, CSR_HTVAL
+ck_\__MODE__\()int_tval2:
+        TRAP_CHECK_ZERO(T3, ck_\__MODE__\()int_tval2, ck_Hint_tval2_str)
+        csrr    T3, CSR_HTINST
+ck_\__MODE__\()int_tinst:
+        TRAP_CHECK_ZERO(T3, ck_\__MODE__\()int_tinst, ck_Hint_tinst_str)
+      #endif
+    .endif
+  .endif
 
         LI(     T2, 0)                               // T2 = 0 (offset for interrupt dispatch table)
 

@@ -109,6 +109,13 @@ def _generate_cp_trigger_sm(
                             f"{miecmd} mstatus, x{tmp_reg} # mstatus.MIE = {mie}",
                             f"LI(x{tmp_reg}, 0x22) # SIE, SPIE",
                             f"{siecmd} mstatus, x{tmp_reg} # mstatus.SIE = {sie}",
+                            # Leave a nonzero xtval so the trap handler's xtval == 0 check sees the interrupt write it.
+                            # The T-SBI ecall into S or U zeroes mtval again; it does not touch stval.
+                            f"auipc x{tmp_reg}, 0 # nonzero valid address",
+                            f"csrw mtval, x{tmp_reg} # mtval = nonzero",
+                            "#ifdef S_SUPPORTED",
+                            f"csrw stval, x{tmp_reg} # stval = nonzero",
+                            "#endif // S_SUPPORTED",
                             test_data.add_testcase(
                                 f"priv_{priv}_{int_type}_mideleg_{delegstr}_mode_{mode}_sie_{sie}_mie_{mie}",
                                 cp,

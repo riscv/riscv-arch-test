@@ -28,7 +28,7 @@ is no way to control mtvec and write a trap handler.  Therefore ecall is not exe
 
 <<t-profiles>> summarizes the coverage files applicable to each profile. x indicates a mandatory extension, and o indicates an optional extension.  The certification test plan handles all mandatory and optional extensions.
 
-Coverage files with multiple extensions in the name apply when all the extensions are supported; for example, ZfaZfhD is used in a system supporting Zfa, Zfh, and D extensions.
+Coverage files with multiple extensions in the name apply when all the extensions are supported; for example, ZicsrF is used in a system supporting the Zicsr and F extensions.
 
 All privileged suites require at least version 1.12 of the privileged specification.  Features specific to version 1.13 are tested separately in the Sm1p13 and Ss1p13 suites.
 
@@ -60,7 +60,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zfh|Half|<<t-Zfh-coverpoints>>|||o|o|o
 |Zfhmin|Half Converts|<<t-Zfhmin-coverpoints>>|||x|o|x
 |Zfa|Additional Float|<<t-Zfa-coverpoints>>||||x|x
-|ZfaZfhD|Additional Half-Double Converts|<<t-ZfaZfhD-coverpoints>>||||o|o
 |Zba|Address Generation|<<t-Zba-coverpoints>>|||x|x|x
 |Zbb|Basic Bit Manipulation|<<t-Zbb-coverpoints>>|||x|x|x
 |Zbc|Carryless Multiplication|<<t-Zbc-coverpoints>>|||o|o|o

@@ -77,20 +77,20 @@ def generate_unpriv_extension_tests(
     output_dir.mkdir(parents=True, exist_ok=True)
     generated_files: set[Path] = set()
 
-    # One test configuration per ExtraExtension entry; a row with an extra extension gets its own
+    # One test configuration per ExtraExtensions entry; a row with an extra extension gets its own
     # file/covergroup name prefix, header requirements, and FLEN, but stays in this testsuite's directory.
-    test_configs: dict[str, TestConfig] = {}
-    for extra_extension in {instr_data.extra_extension for instr_data in instructions}:
+    test_configs: dict[tuple[str, ...], TestConfig] = {}
+    for extra_extensions in {instr_data.extra_extensions for instr_data in instructions}:
         ext_components, _ = canonicalize_extensions(
-            testsuite, xlen, E_ext, sew=sew, instr_name=instructions[0].instr_name, extra_extension=extra_extension
+            testsuite, xlen, E_ext, sew=sew, instr_name=instructions[0].instr_name, extra_extensions=extra_extensions
         )
-        test_configs[extra_extension] = TestConfig(
+        test_configs[extra_extensions] = TestConfig(
             xlen=xlen,
             flen=get_flen_for_extensions(ext_components),
             testsuite=testsuite,
             E_ext=E_ext,
             sew=sew,
-            extra_extension=extra_extension,
+            extra_extensions=extra_extensions,
         )
 
     # Iterate through each instruction in the testsuite; generate separate test files for each
@@ -107,7 +107,7 @@ def generate_unpriv_extension_tests(
                 instr_data.instr_name,
                 instr_data.instr_type,
                 instr_data.coverpoints,
-                test_configs[instr_data.extra_extension],
+                test_configs[instr_data.extra_extensions],
                 output_dir,
                 is_vector,
             )

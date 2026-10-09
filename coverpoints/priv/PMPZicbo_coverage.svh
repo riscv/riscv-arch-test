@@ -17,12 +17,9 @@
 // cp_none_cbo: the same-size NAPOT regions just above and just below the region under test
 `define PMPZICBO_ABOVE_REGION (((`PMP_SPECIAL_REGION_START + `PMPZICBO_REGION_BYTES) >> 2) | `PMPZICBO_PMPADDR_MASK)
 `define PMPZICBO_BELOW_REGION (((`PMP_SPECIAL_REGION_START - `PMPZICBO_REGION_BYTES) >> 2) | `PMPZICBO_PMPADDR_MASK)
-// pmpaddr matches a NAPOT region encoding above the grain (see pmpaddr_region)
-`define PMPZICBO_PMPADDR_IS(PMPADDR, REGION) \
-    (((PMPADDR) & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK) == ((REGION) & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK))
 
 covergroup PMPZicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, logic [`UDB_MXLEN-1:0] pmpaddr [62:0],
-                                              logic [63:0] pmp_on);
+                                              logic [1:0] pmp_none);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -91,14 +88,10 @@ covergroup PMPZicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0]
         bins cfg_001 = {8'b00011001};
     }
 
-    // No entry matches the region. off: every entry is OFF. active: only entries 0 and 1 are on;
-    // entry 0 (L=1, A=NAPOT, XWR=000) covers the region just above and entry 1 (L=0, A=NAPOT,
-    // XWR=000) the region just below.
-    none_cfg: coverpoint {pmp_on[63:2] == '0, pmp_on[1:0], pmpcfg[0], pmpcfg[1],
-                          `PMPZICBO_PMPADDR_IS(pmpaddr[0], `PMPZICBO_ABOVE_REGION),
-                          `PMPZICBO_PMPADDR_IS(pmpaddr[1], `PMPZICBO_BELOW_REGION)} {
-        wildcard bins off    = {21'b1_00_????????_????????_?_?};
-        bins          active = {21'b1_11_10011000_00011000_1_1};
+    // No entry matches the region; pmp_none = {active, off} from pmpzicbo_sample
+    none_cfg: coverpoint pmp_none {
+        bins off    = {2'b01};
+        bins active = {2'b10};
     }
 
     mprv_off: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0] {
@@ -131,7 +124,8 @@ function void pmpzicbo_sample(int hart, int issue, ins_t ins);
   logic [7:0] pmpcfg [63:0];
   logic [`UDB_MXLEN-1:0] pmpaddr [62:0];
   logic [14:0] pmp_hit;   // for first 15 Regions
-  logic [63:0] pmp_on;    // pmpcfg.A is not OFF
+  logic       others_off; // entries 2-63 are OFF
+  logic [1:0] pmp_none;   // {active, off} configurations of cp_none_cbo
 
   `ifdef UDB_MXLEN_32
     // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
@@ -166,9 +160,19 @@ function void pmpzicbo_sample(int hart, int issue, ins_t ins);
                   (`PMPZICBO_STANDARD_REGION & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)); // above the grain, as pmpaddr_region
   end
 
-  for (int i = 0; i < 64; i++) begin
-    pmp_on[i] = (pmpcfg[i][4:3] != 2'b00);
+  // cp_none_cbo: no entry matches the region. off: every entry is OFF. active: entry 0 (L=1, A=NAPOT,
+  // XWR=000) covers the region just above, entry 1 (L=0, A=NAPOT, XWR=000) the region just below,
+  // and every other entry is OFF.
+  others_off = 1;
+  for (int i = 2; i < 64; i++) begin
+    if (pmpcfg[i][4:3] != 2'b00) others_off = 0;
   end
+  pmp_none[0] = others_off & (pmpcfg[0][4:3] == 2'b00) & (pmpcfg[1][4:3] == 2'b00);
+  pmp_none[1] = others_off & (pmpcfg[0] == 8'b10011000) & (pmpcfg[1] == 8'b00011000) &
+                ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK) ==
+                 (`PMPZICBO_ABOVE_REGION & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)) &
+                ((pmpaddr[1] & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK) ==
+                 (`PMPZICBO_BELOW_REGION & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK));
 
-  PMPZicbo_cg.sample(ins, pmpcfg, pmp_hit, pmpaddr, pmp_on);
+  PMPZicbo_cg.sample(ins, pmpcfg, pmp_hit, pmpaddr, pmp_none);
 endfunction

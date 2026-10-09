@@ -425,14 +425,21 @@ def gen_coverage_tasks(
     script_name = "riscv-arch-test.do" if coverage_simulator == CoverageSimulator.QUESTA else "riscv-arch-test-vcs.sh"
     sim_script = Path(str(act_resources / script_name)).absolute()
 
-    # Collect file dependencies for staleness checking.
-    # Coverage simulation depends on coverpoints, fcov infrastructure, generated DUT
-    # config header (in udb_header_dir), and the simulator script.
-    coverpoint_files = tuple(sorted(p.absolute() for p in coverpoint_dir.rglob("*") if p.is_file()))
+    # Collect shared file dependencies for staleness checking. Extension-specific
+    # coverpoints are added to each coverage task below so changing one extension
+    # does not invalidate every coverage group.
+    shared_coverpoint_files = tuple(
+        sorted(
+            p.absolute()
+            for path in (coverpoint_dir, coverpoint_dir / "coverage", coverpoint_dir / "general")
+            for p in path.iterdir()
+            if p.is_file()
+        )
+    )
     fcov_files = tuple(sorted(p.absolute() for p in fcov_path.rglob("*") if p.is_file()))
     udb_svh_files = tuple(sorted(p.absolute() for p in udb_header_dir.iterdir() if p.suffix == ".svh"))
     env_svh_files = tuple(sorted(p.absolute() for p in env_header_dir.iterdir() if p.suffix == ".svh"))
-    coverage_inputs = (*coverpoint_files, *fcov_files, *udb_svh_files, *env_svh_files, sim_script)
+    shared_coverage_inputs = (*shared_coverpoint_files, *fcov_files, *udb_svh_files, *env_svh_files, sim_script)
 
     for coverage_group, traces in sorted(coverage_targets.items()):
         # Paths
@@ -445,6 +452,17 @@ def gen_coverage_tasks(
         work_dir = base_name.parent / f"{coverage_db_ext}_work"
         report_file_base = config_report_dir / coverage_group.stem
         summary_file = Path(f"{report_file_base}_summary.txt")
+
+        coverpoint_kind = "priv" if coverage_group.parts[0] == "priv" else "unpriv"
+        group_coverpoint_dir = coverpoint_dir / coverpoint_kind
+        group_coverpoint_files = (
+            (group_coverpoint_dir / f"{coverage_group.stem}_coverage.svh").absolute(),
+            (group_coverpoint_dir / f"{coverage_group.stem}_coverage_init.svh").absolute(),
+        )
+        coverage_inputs = (
+            *shared_coverage_inputs,
+            *group_coverpoint_files,
+        )
 
         # Write tracelist file, but only when its contents actually change so its mtime
         # reflects real changes. This lets us include it in extra_inputs below without
@@ -540,6 +558,8 @@ def gen_coverage_tasks(
 # Top-level build plan construction
 # ---------------------------------------------------------------------------
 
+_COVERAGE_GROUPS_WITHOUT_COVERPOINTS = frozenset({Path("priv/H")})
+
 
 def generate_build_plan(
     config: Config,
@@ -619,8 +639,24 @@ def generate_build_plan(
             trace_name = test_name.with_suffix(".rvvi")
             trace_path = config_coverage_dir / trace_name
             coverage_group_dir = trace_path.parent.relative_to(config_coverage_dir)
-            coverage_targets[coverage_group_dir].append(trace_path.absolute())
+            coverpoint_kind = "priv" if coverage_group_dir.parts[0] == "priv" else "unpriv"
+            coverage_file = coverpoint_dir / coverpoint_kind / f"{coverage_group_dir.stem}_coverage.svh"
 
+            if coverage_group_dir in _COVERAGE_GROUPS_WITHOUT_COVERPOINTS:
+                if coverage_file.is_file():
+                    raise ValueError(
+                        f"Coverage group '{coverage_group_dir}' is listed as having no coverpoints, "
+                        f"but '{coverage_file}' exists"
+                    )
+                continue
+
+            if not coverage_file.is_file():
+                raise FileNotFoundError(
+                    f"Coverage group '{coverage_group_dir}' has no coverpoint file at '{coverage_file}'. "
+                    "Add coverpoints or list the group in _COVERAGE_GROUPS_WITHOUT_COVERPOINTS."
+                )
+
+            coverage_targets[coverage_group_dir].append(trace_path.absolute())
             tasks.extend(
                 gen_rvvi_tasks(
                     test_name,

@@ -15,7 +15,8 @@ exclude_configs:
 #     scontext while CONTEXT is 0 (https://github.com/riscv-software-src/riscv-isa-sim/issues/2465)
 #   - spike-rv{32,64}-mu: mstateen0.ENVCFG is writable without S
 #     (https://github.com/riscv-software-src/riscv-isa-sim/issues/2464)
-# Sdtrig* not yet supported in Sail reference (https://github.com/riscv/sail-riscv/issues/222)
+# Sdtrig*: Sail does not implement mcontrol6 (https://github.com/riscv/sail-riscv/issues/222), so the Mcontrol6 and
+#     AExt tests have no reference. The icount tests pass.
 # Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)
 exclude_extensions: "Smstateen,SdtrigSm,SdtrigS,SdtrigU,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm"
 install_script: ".github/scripts/install-spike.sh"

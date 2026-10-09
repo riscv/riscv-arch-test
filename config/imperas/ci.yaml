@@ -16,7 +16,10 @@
 #     cannot model yet (https://github.com/riscv/sail-riscv/issues/2013)
 #   imperas-rv32gck and rv32gcv pass.
 # - ExceptionsVx: https://solvnetplus.synopsys.com/s/case/500WQ000023l1CPYAY/vmvnrrv-does-not-raise-an-illegalinstruction-exception-when-vtypevill-1
-# - Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
+# - Sdtrig*: Sail does not implement mcontrol6 (https://github.com/riscv/sail-riscv/issues/222). Imperas also writes the
+#     PC to xtval on an icount breakpoint instead of zero
+#     (https://solvnetplus.synopsys.com/s/case/500WQ00002BsufNYAR/an-icount-trigger-that-fires-with-action0-writes-the-pc-to-mtval-instead-of-zero),
+#     and it combines tcontrol with delegable breakpoints, which Sail cannot model.
 # - Svnapot: Imperas accepts N=1 on superpage leaf PTEs instead of page faulting
 #   (validSvnapotEntry checks only for a leaf, not level 0, and fillTLBEntry skips the alignment check)
 # - Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm:Imperas still applies pointer masking when MXR is set, contradicting the spec rule.

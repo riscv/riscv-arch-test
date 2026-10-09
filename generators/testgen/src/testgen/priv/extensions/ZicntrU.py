@@ -25,7 +25,7 @@ covergroup = "ZicntrU_cg"
 @add_priv_test_generator(
     "ZicntrU",
     required_extensions=["U", "Zicntr"],
-    march_extensions=["Zicntr", "Zihpm", "Zawrs", "Zalrsc"],
+    march_extensions=["Zicntr", "Zihpm", "Zawrs"],
 )
 def make_zicntru(test_data: TestData) -> list[TestChunk]:
     """Generate tests for ZicntrU coverpoints"""

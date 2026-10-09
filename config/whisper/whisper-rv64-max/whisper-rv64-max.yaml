@@ -176,6 +176,7 @@ params:
   # Zicntr params
   TIME_CSR_IMPLEMENTED: false
   # U params
+  # U-mode WFI timing is implementation-dependent when S-mode is present.
   WFI_U_MODE: false
   MUTABLE_MISA_U: true
   U_MODE_ENDIANNESS: dynamic

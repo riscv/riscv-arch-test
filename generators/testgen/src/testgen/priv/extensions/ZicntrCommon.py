@@ -208,18 +208,15 @@ def _instret_case(
 
 
 def _instret_wait_case(test_data: TestData, covergroup: str, name: str, mode: Mode, wait: str) -> list[str]:
-    """Delta around a wait instruction (wfi, wrs.nto or wrs.sto) that a timer interrupt ends."""
+    """Delta around a wait instruction (wfi) that a timer interrupt ends."""
     csr = "instret" if mode == "U" else "minstret"
     r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
     r_count, r_addr = test_data.int_regs.get_registers(2)
-    reserve = wait.startswith("wrs")
-    r_rsv = test_data.int_regs.get_registers(1) if reserve else []
 
     trip = [
-        *([f"lr.w x{r_after}, (x{r_rsv[0]})  # retake the reservation"] if reserve else []),
         f"LREG x{r_after}, 0(x{r_addr})  # trap count now",
         f"bne x{r_after}, x{r_count}, 2f  # interrupt taken: leave the loop",
-        f"{wait}",
+        wait,
     ]
     insns_per_trip = len(trip) + 2  # plus the addi and j below
 
@@ -233,7 +230,6 @@ def _instret_wait_case(test_data: TestData, covergroup: str, name: str, mode: Mo
         f"LA(x{r_addr}, rvtest_trap_count)",
         f"LREG x{r_count}, 0(x{r_addr})  # trap count before waiting",
         f"LI(x{r_diff}, 0)  # tally of instructions retired by the loop",
-        *([f"LA(x{r_rsv[0]}, scratch)"] if reserve else []),
         *(["csrsi mstatus, 8  # MIE = 1"] if mode == "M" else []),
         test_data.add_testcase(f"{csr}_{name}", f"cp_instret_{name}", covergroup),
         f"csrr x{r_before}, {csr}",
@@ -250,7 +246,7 @@ def _instret_wait_case(test_data: TestData, covergroup: str, name: str, mode: Mo
         f"RVTEST_CLR_MTIME_INT_{mode}",
         "",
     ]
-    test_data.int_regs.return_registers([r_before, r_after, r_diff, r_count, r_addr, *r_rsv])
+    test_data.int_regs.return_registers([r_before, r_after, r_diff, r_count, r_addr])
     return lines
 
 
@@ -387,8 +383,10 @@ def instret_exception_tests(test_data: TestData, covergroup: str, mode: Mode) ->
 def instret_interrupt_tests(test_data: TestData, covergroup: str, mode: Mode) -> list[str]:
     """wfi and wrs cases in M-mode (minstret) or U-mode (instret).
 
-    wfi_timeout and wfi_pending record the raw delta; wfi_taken, wrs_nto and wrs_sto go through _instret_wait_case.
+    wfi_taken goes through _instret_wait_case; wfi_timeout, wfi_pending, wrs_nto and wrs_sto
+    record the raw delta through _instret_case.
     """
+
     assert mode in ("M", "U")
     csr = "instret" if mode == "U" else "minstret"
     lines = _counter_prep(test_data, mode)
@@ -435,7 +433,10 @@ def instret_interrupt_tests(test_data: TestData, covergroup: str, mode: Mode) ->
                     f"LI(x{r_tmp}, 0x80)",
                     tsbi_call_or_direct(f"csrw mie, x{r_tmp}  # MTIE only", mode),
                     "RVTEST_SET_MTIME_INT_SOON_M",
-                    f"RVTEST_IDLE_FOR_INTERRUPT(x{r_tmp})  # wait for MTIP",
+                    "1:",
+                    f"csrr x{r_tmp}, mip",
+                    f"andi x{r_tmp}, x{r_tmp}, 0x80  # mip.MTIP",
+                    f"beqz x{r_tmp}, 1b  # wait until MTIP is really pending",
                 ],
                 cleanup=["RVTEST_CLR_MTIME_INT_M"],
             ),
@@ -454,12 +455,28 @@ def instret_interrupt_tests(test_data: TestData, covergroup: str, mode: Mode) ->
 
     lines += [
         "#ifdef ZAWRS_SUPPORTED",
-        comment_banner("cp_instret_wrs_nto", f"wrs.nto in {mode}-mode: timer interrupt taken, {csr} delta recorded"),
+        comment_banner(
+            "cp_instret_wrs_nto", f"wrs.nto in {mode}-mode, no reservation: does not stall, {csr} delta recorded"
+        ),
         "",
-        *_instret_wait_case(test_data, covergroup, "wrs_nto", mode, "wrs.nto"),
-        comment_banner("cp_instret_wrs_sto", f"wrs.sto in {mode}-mode: timer interrupt taken, {csr} delta recorded"),
+        *_instret_case(
+            test_data,
+            covergroup,
+            "wrs_nto",
+            mode,
+            ["wrs.nto  # instruction under test"],
+            setup=[tsbi_call_or_direct("csrw mie, zero", mode)],
+        ),
+        comment_banner("cp_instret_wrs_sto", f"wrs.sto in {mode}-mode: short stall, {csr} delta recorded"),
         "",
-        *_instret_wait_case(test_data, covergroup, "wrs_sto", mode, "wrs.sto"),
+        *_instret_case(
+            test_data,
+            covergroup,
+            "wrs_sto",
+            mode,
+            ["wrs.sto  # instruction under test"],
+            setup=[tsbi_call_or_direct("csrw mie, zero", mode)],
+        ),
         "#endif // ZAWRS_SUPPORTED",
     ]
     return lines

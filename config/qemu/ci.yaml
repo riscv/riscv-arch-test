@@ -37,7 +37,7 @@ ci_enabled: true
 # Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : QEMU CBOs do not fault on inaccessible addresses in bare mode, shifting trap signatures;
 # same issue as ExceptionsZicboU/S and SvZicbo (https://gitlab.com/qemu-project/qemu/-/work_items/3501).
 # ZicntrSm/U fail on qemu because ecall, ebreak and illegal instruction increments minstret/instret. Filed QEMU issue: https://gitlab.com/qemu-project/qemu/-/work_items/4227
-# ZicntrSm/U fail on qemu because minstret/instret overcounts by 1 for wfi with a pending or taken interrupt. Files QEMU issue: https://gitlab.com/qemu-project/qemu/-/work_items/4230
+# ZicntrSm/U fail on qemu because minstret/instret overcounts by 1 for wfi with a pending or taken interrupt. Filed QEMU issue: https://gitlab.com/qemu-project/qemu/-/work_items/4230
 exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,ZicntrSm,ZicntrU"
 # qemu-rv32-mu, qemu-rv64-mu: U-mode cbo.zero/clean/flush/inval raise illegal-instruction without S-mode
 #   because check_zicbo_envcfg() also requires senvcfg, which does not exist

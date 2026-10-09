@@ -19,6 +19,8 @@ ci_enabled: true
 #   ZfhminD       fcvt.d.h/fcvt.s.h ignore NaN-boxing; fcvt.h.d rounds a tiny value up under RMM: fpu:conv_zfhmin.sv
 #   SmF           csrr mstatus just after an FP write reads SD = 0: csr:csr_bsc.sv#L1009
 #   Zicntr        Testbench: time is tied to 0: tile:simulator/sim_top.sv#L263-L268
+#   ZicntrSm      Timer interrupts are tied off in the testbench, causing WFI-based tests to hang:
+#                 tile:simulator/sim_top.sv#L263-L268
 #   ZicntrS       U mode may read a counter if mcounteren or scounteren allows it: csr:csr_bsc.sv#L2411
 #   ZicntrU       Same counter-enable bug: csr:csr_bsc.sv#L2411
 #   Zifencei      fence.i does not drain the HPDcache write buffer first: core:control_unit/rtl/control_unit.sv#L323
@@ -36,7 +38,7 @@ ci_enabled: true
 #   H             hedeleg[10] and hedeleg[23:20] are writable but must be read-only zero: csr:csr_bsc.sv#L1320-L1339;
 #                 an hlv.d page fault in HS mode matches Sail's cause and tval but not the rest of its trap signature
 #                 (status/GVA/htinst; HS-mode trap CSR writes: csr:csr_bsc.sv#L2086-L2099)
-exclude_extensions: "F,ZicsrF,ZfaF,ZfaD,Zfhmin,ZfhminD,SmF,Zicntr,ZicntrS,ZicntrU,Zifencei,Sm,S,InterruptsSm,Sv,SvZicbo,ExceptionsSv,ExceptionsSvZalrsc,H"
+exclude_extensions: "F,ZicsrF,ZfaF,ZfaD,Zfhmin,ZfhminD,SmF,Zicntr,ZicntrSm,ZicntrS,ZicntrU,Zifencei,Sm,S,InterruptsSm,Sv,SvZicbo,ExceptionsSv,ExceptionsSvZalrsc,H"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler libboost-dev libboost-regex-dev libboost-system-dev"
 install_script: ".github/scripts/install-sargantana.sh"

@@ -430,10 +430,7 @@ covergroup ZicntrU_cg with function sample(ins_t ins);
     wfi: coverpoint ins.current.insn {
         bins wfi = {WFI};
     }
-    mip_mtip_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")[0] {
-        bins zero = {0};
-    }
-    mie_mtie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")[0] {
+    mie_mtie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mtie")[0] {
         bins one = {1};
     }
 
@@ -449,32 +446,42 @@ covergroup ZicntrU_cg with function sample(ins_t ins);
         }
     `endif
 
+    prev_instret_read: coverpoint ins.prev.insn {
+        wildcard bins csrr_instret = {32'b110000000010_00000_010_?????_1110011};  // csrr rd, instret (0xC02)
+    }
+    prev_ecall_li: coverpoint ins.prev.insn {
+        bins li_a0 = {32'h07300513};  // addi a0, x0, 0x73 (RVTEST_TSBI_ECALL_TEST)
+    }
+    mie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mie")[31:0] {
+        bins zero = {0};
+    }
+
     // retiring instruction
-    cp_instret_add: cross priv_mode_u, insn_add_u;
+    cp_instret_add: cross priv_mode_u, insn_add_u, prev_instret_read;
 
     // instructions that trap before retiring
-    cp_instret_ecall:  cross priv_mode_u, ecall;
-    cp_instret_ebreak: cross priv_mode_u, ebreak;
+    cp_instret_ecall:  cross priv_mode_u, ecall, prev_ecall_li;
+    cp_instret_ebreak: cross priv_mode_u, ebreak, prev_instret_read;
     `ifdef UDB_TIME_CSR_IMPLEMENTED
-        cp_instret_illegal: cross priv_mode_u, illegal_ones;
+        cp_instret_illegal: cross priv_mode_u, illegal_ones, prev_instret_read;
     `endif
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-        cp_instret_load_access_fault: cross priv_mode_u, insn_lw, illegal_address;
+        cp_instret_load_access_fault: cross priv_mode_u, insn_lw, illegal_address, prev_instret_read;
     `endif
-    cp_instret_load_misaligned: cross priv_mode_u, insn_lw, adr_misaligned_1;
+    cp_instret_load_misaligned: cross priv_mode_u, insn_lw, adr_misaligned_1, prev_instret_read;
 
     // wfi and wrs
     `ifdef UDB_WFI_FINITE
         `ifdef UDB_WFI_U_MODE
-            cp_instret_wfi_timeout: cross priv_mode_u, wfi, mip_mtip_zero;
+            cp_instret_wfi_timeout: cross priv_mode_u, wfi, mie_zero, prev_instret_read;
         `endif
     `endif
     `ifdef UDB_WFI_U_MODE
         cp_instret_wfi_taken: cross priv_mode_u, wfi, mie_mtie_one;
     `endif
     `ifdef ZAWRS_SUPPORTED
-        cp_instret_wrs_nto: cross priv_mode_u, wrs_nto;
-        cp_instret_wrs_sto: cross priv_mode_u, wrs_sto;
+        cp_instret_wrs_nto: cross priv_mode_u, wrs_nto, prev_instret_read;
+        cp_instret_wrs_sto: cross priv_mode_u, wrs_sto, prev_instret_read;
     `endif
 
 endgroup

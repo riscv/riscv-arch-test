@@ -27,7 +27,7 @@ covergroup = "ZicntrSm_cg"
         "Sm",
         "Zicntr",
     ],
-    march_extensions=["Zicntr", "Zihpm", "Zawrs", "Zalrsc"],
+    march_extensions=["Zicntr", "Zihpm", "Zawrs"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_zicntrsm(test_data: TestData) -> list[TestChunk]:

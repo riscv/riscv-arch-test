@@ -68,6 +68,37 @@ covergroup SdtrigSm_trig_module_reg_cg with function sample(ins_t ins);
     cp_tinfo_read_only:       cross priv_mode_m, triggernum, csr_tinfo, csr_access;                         // NTRIG
 endgroup
 
+`ifdef UDB_TCONTROL_AVAILABLE
+covergroup SdtrigSm_tcontrol_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_sdtrig_coverpoints.svh"
+
+    mte: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tcontrol", "mte")[0] {
+        bins disabled = {1'b0};
+        bins enabled  = {1'b1};
+    }
+    mpte: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tcontrol", "mpte")[0] {
+        bins disabled = {1'b0};
+        bins enabled  = {1'b1};
+    }
+    tdata2_pc: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.pc_rdata) {
+        bins pc = {1'b1};
+    }
+    illegal_insn: coverpoint ins.current.insn iff (ins.current.trap) {
+        bins zero = {32'h0};
+    }
+    mret: coverpoint ins.current.insn {
+        bins mret = {MRET};
+    }
+
+    // main coverpoints
+    cp_tcontrol_enable:     cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_execute_on, tdata1_select_adr, tdata1_action_breakpoint, tdata1_chain_disabled, tdata2_pc, mte;  // NTRIG * 2 mte
+    cp_tcontrol_mtrap:      cross priv_mode_m, mte, mpte, illegal_insn;                                                       // 2 mte * 2 mpte
+    cp_tcontrol_mret:       cross priv_mode_m, mte, mpte, mret;                                                               // 2 mte * 2 mpte
+endgroup
+`endif
+
 covergroup SdtrigSm_mcontrol6_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -79,13 +110,6 @@ covergroup SdtrigSm_mcontrol6_cg with function sample(ins_t ins);
     tdata1_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "m")[0] {
         bins disabled = {1'b0};
         bins enabled  = {1'b1};
-    }
-    // a trigger disabled for M-mode or chained to the next one cannot fire on its own
-    tdata1_m_on: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "m")[0] {
-        bins on = {1'b1};
-    }
-    tdata1_chain_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "chain")[0] {
-        bins disabled = {1'b0};
     }
     tdata1_xsl_store: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "execute")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "store")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "load")[0]} {
         bins store = {3'b010};
@@ -292,4 +316,7 @@ endgroup
 function void sdtrigsm_sample(int hart, int issue, ins_t ins);
     SdtrigSm_trig_module_reg_cg.sample(ins);
     SdtrigSm_mcontrol6_cg.sample(ins);
+    `ifdef UDB_TCONTROL_AVAILABLE
+        SdtrigSm_tcontrol_cg.sample(ins);
+    `endif
 endfunction

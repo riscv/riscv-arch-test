@@ -60,7 +60,7 @@
     },
     "hcounteren_writable_bits": {
       "len": 32,
-      "value": "0xFFFF_FFFF"
+      "value": "0x0000_0000"
     },
     // `mtvec.{direct,vectored}.supported` indicates whether the
     // corresponding mode is supported for `mtvec`.  At least one mode
@@ -608,8 +608,8 @@
     },
 
     "H": {
-      "mutable_misa": false,
-      "supported": false,
+      "mutable_misa": true,
+      "supported": true,
       "geilen": 63,
       "guest_page_fault_writes_htval": true,
       // Whether a trap into M or HS mode caused by the specified exception
@@ -644,7 +644,7 @@
     "Shvstvala": { "supported": false },
     "Shvstvecd": { "supported": false },
     "Sstvecd": { "supported": false },
-    "Svukte": { "supported": false },
+    "Svukte": { "supported": true },
     "Zilx": { "supported": false },
     "Zibi": {
       "supported": false
@@ -938,10 +938,10 @@
       "supported": true
     },
     "Sv48": {
-      "supported": false
+      "supported": true
     },
     "Sv57": {
-      "supported": false
+      "supported": true
     },
     "Stateen": {
       "Smstateen": {

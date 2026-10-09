@@ -7,11 +7,15 @@ name: spike-rv64-experimental
 description: rv64 with all experimental extensions enabled, along with a minimal set of their dependencies
 implemented_extensions:
   - { name: I, version: "= 2.1" }
+  - { name: H, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.13.0" }
   - { name: S, version: "= 1.13.0" }
   - { name: U, version: "= 1.0.0" }
   - { name: Sv39, version: "= 1.0.0" }
+  - { name: Sv48, version: "= 1.0.0" }
+  - { name: Sv57, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
+  - { name: Svukte, version: "= 0.4.0" }
   - { name: Zicsr, version: "= 2.0" }
 params:
   NON_STANDARD_EXTENSION_IMPLEMENTED: false
@@ -94,6 +98,96 @@ params:
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
   TRAP_ON_EBREAK: true
+  # H params
+  VSEI_INTR_IMPL: false
+  VSSI_INTR_IMPL: false
+  VSTI_INTR_IMPL: true
+  MUTABLE_MISA_H: true
+  VSXLEN: [64]
+  VUXLEN: [64]
+  VMID_WIDTH: 14
+  VS_MODE_ENDIANNESS: little
+  VU_MODE_ENDIANNESS: little
+  GSTAGE_MODE_BARE: true
+  VSSTAGE_MODE_BARE: true
+  VSTVEC_MODES: [0, 1]
+  IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
+  NUM_EXTERNAL_GUEST_INTERRUPTS: 63
+  REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION: true
+  REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION: true
+  REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_INSTRUCTION_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_LOAD_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_STORE_AMO_GUEST_PAGE_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT: true
+  SV39_VSMODE_TRANSLATION: true
+  SV39X4_TRANSLATION: true
+  SV48_VSMODE_TRANSLATION: true
+  SV48X4_TRANSLATION: true
+  SV57_VSMODE_TRANSLATION: true
+  SV57X4_TRANSLATION: true
+  TINST_VALUE_ON_BREAKPOINT: "always zero"
+  TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED: "always zero"
+  TINST_VALUE_ON_LOAD_ACCESS_FAULT: "always zero"
+  TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED: "always zero"
+  TINST_VALUE_ON_LOAD_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_MCALL: "always zero"
+  TINST_VALUE_ON_SCALL: "always zero"
+  TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT: "always zero"
+  TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED: "always zero"
+  TINST_VALUE_ON_STORE_AMO_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_UCALL: "always zero"
+  TINST_VALUE_ON_VIRTUAL_INSTRUCTION: "always zero"
+  TINST_VALUE_ON_VSCALL: "always zero"
+  TRAP_ON_ECALL_FROM_VS: true
+  HCOUNTENABLE_EN:
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
   MARCHID_IMPLEMENTED: true
   ARCH_ID_VALUE: 0x5
   MIMPID_IMPLEMENTED: true

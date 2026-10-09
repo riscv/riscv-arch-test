@@ -38,7 +38,7 @@ PRIV_TRAP_SIGUPD_COUNT = 1500
 # Extension Configuration
 # =============================================================================
 
-EXPERIMENTAL_EXTENSIONS = frozenset({})
+EXPERIMENTAL_EXTENSIONS = frozenset({"Svukte"})
 
 # Extensions that should generate RV32E/RV64E variants
 # TODO: Add Zcmp and Zcmt when implemented

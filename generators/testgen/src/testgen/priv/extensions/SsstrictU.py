@@ -7,24 +7,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""SsstrictU — user-mode strict/negative compliance tests.
-
-The fast trap handlers are NOT emitted here — every split file defines
-RVTEST_USE_FAST_TRAP_HANDLER, which instantiates RVTEST_FAST_TRAP_HANDLER
-(rvtest_trap_handler.h: mtvec → fast M-mode handler, stvec →
-strap_handler_fastillegalinstr); generate/priv.py prepends
-_SPLIT_FILE_UMODE_GPR_INIT (which issues RVTEST_GOTO_LOWER_MODE Umode)
-to every split file.
-
-Structure
----------
-1. Per-split-file prefix switches to U-mode; the body stays in U-mode.
-2. CSR sweep from U-mode (user-level CSRs only: bits[9:8]=00).
-   - S/H/M CSRs are higher privilege and always trap from U-mode; that is
-     an architecturally known fact covered elsewhere, so they are excluded.
-   - Custom and reserved ranges are skipped (undefined behaviour).
-3. Illegal instruction and compressed encoding sweeps.
-"""
+"""SsstrictU — user-mode strict/negative compliance tests."""
 
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk

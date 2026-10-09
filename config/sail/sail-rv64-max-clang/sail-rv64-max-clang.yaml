@@ -26,24 +26,24 @@ implemented_extensions:
   - { name: Shvstvala, version: "= 1.0.0" }
   - { name: Shvstvecd, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.13.0" }
-  - { name: Smaia, version: "= 1.0.0" }
+  # - { name: Smaia, version: "= 1.0.0" } # Sail does not support this extension yet
   - { name: Smcdeleg, version: "= 1.0.0" }
   - { name: Smcntrpmf, version: "= 1.0.0" }
   - { name: Smcsrind, version: "= 1.0.0" }
-  - { name: Smctr, version: "= 1.0.0" }
+  # - { name: Smctr, version: "= 1.0.0" } # Sail does not support this extension yet
   - { name: Smdbltrp, version: "= 1.0.0" }
   - { name: Smepmp, version: "= 1.0.0" }
   - { name: Smmpm, version: "= 1.0.0" }
   - { name: Smnpm, version: "= 1.0.0" }
   # - { name: Smrnmi, version: "= 1.0.0" } # Sail does not support this extension yet
   - { name: Smstateen, version: "= 1.0.0" }
-  - { name: Ssaia, version: "= 1.0.0" }
+  # - { name: Ssaia, version: "= 1.0.0" } # Sail does not support this extension yet
   - { name: Ssccfg, version: "= 1.0.0" }
   - { name: Ssccptr, version: "= 1.0.0" }
   - { name: Sscofpmf, version: "= 1.0.0" }
   - { name: Sscounterenw, version: "= 1.0.0" }
   - { name: Sscsrind, version: "= 1.0.0" }
-  - { name: Ssctr, version: "= 1.0.0" }
+  # - { name: Ssctr, version: "= 1.0.0" } # Sail does not support this extension yet
   - { name: Ssdbltrp, version: "= 1.0.0" }
   - { name: Ssnpm, version: "= 1.0.0" }
   - { name: Sspm, version: "= 1.0.0" }
@@ -157,6 +157,7 @@ implemented_extensions:
   - { name: Zvl1024b, version: "= 1.0.0" }
 
 params:
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
   # A params
   MISALIGNED_AMO: false
   LRSC_RESERVATION_STRATEGY: "reserve exactly enough to cover the access"
@@ -187,11 +188,15 @@ params:
   # Zicntr params
   TIME_CSR_IMPLEMENTED: true
   # U params
+  WFI_U_MODE: true
   MUTABLE_MISA_U: false
   U_MODE_ENDIANNESS: dynamic
   UXLEN: [64]
   TRAP_ON_ECALL_FROM_U: true
   # S params
+  SEI_INTR_IMPL: true
+  SSI_INTR_IMPL: true
+  STI_INTR_IMPL: true
   MUTABLE_MISA_S: false
   ASID_WIDTH: 16
   S_MODE_ENDIANNESS: dynamic
@@ -252,6 +257,10 @@ params:
   TRAP_ON_ECALL_FROM_S: true
   MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
   # Sm params
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  WFI_FINITE: true
   MXLEN: 64
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
@@ -330,6 +339,35 @@ params:
       true,
       true,
     ]
+  HPM_COUNTER3_WIDTH: 64
+  HPM_COUNTER4_WIDTH: 64
+  HPM_COUNTER5_WIDTH: 64
+  HPM_COUNTER6_WIDTH: 64
+  HPM_COUNTER7_WIDTH: 64
+  HPM_COUNTER8_WIDTH: 64
+  HPM_COUNTER9_WIDTH: 64
+  HPM_COUNTER10_WIDTH: 64
+  HPM_COUNTER11_WIDTH: 64
+  HPM_COUNTER12_WIDTH: 64
+  HPM_COUNTER13_WIDTH: 64
+  HPM_COUNTER14_WIDTH: 64
+  HPM_COUNTER15_WIDTH: 64
+  HPM_COUNTER16_WIDTH: 64
+  HPM_COUNTER17_WIDTH: 64
+  HPM_COUNTER18_WIDTH: 64
+  HPM_COUNTER19_WIDTH: 64
+  HPM_COUNTER20_WIDTH: 64
+  HPM_COUNTER21_WIDTH: 64
+  HPM_COUNTER22_WIDTH: 64
+  HPM_COUNTER23_WIDTH: 64
+  HPM_COUNTER24_WIDTH: 64
+  HPM_COUNTER25_WIDTH: 64
+  HPM_COUNTER26_WIDTH: 64
+  HPM_COUNTER27_WIDTH: 64
+  HPM_COUNTER28_WIDTH: 64
+  HPM_COUNTER29_WIDTH: 64
+  HPM_COUNTER30_WIDTH: 64
+  HPM_COUNTER31_WIDTH: 64
   HPM_EVENTS: [0]
   MCOUNTINHIBIT_IMPLEMENTED: true
   COUNTINHIBIT_EN:
@@ -431,6 +469,9 @@ params:
   VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR: "additive_identity"
   IMPRECISE_VECTOR_TRAP_SETTABLE: false
   # H params
+  VSEI_INTR_IMPL: false
+  VSSI_INTR_IMPL: false
+  VSTI_INTR_IMPL: true
   MUTABLE_MISA_H: false
   VSXLEN: [64]
   VUXLEN: [64]
@@ -537,7 +578,9 @@ params:
   #HSTATEEN_CONTEXT_TYPE: rw
   #MCONTEXT_AVAILABLE: true
   # Pointer masking params
-  PMLEN: 17
+  SUPPORTED_PMLEN_SMMPM: [0, 7, 16]
+  SUPPORTED_PMLEN_SMNPM: [0, 7, 16]
+  SUPPORTED_PMLEN_SSNPM: [0, 7, 16]
   # Ssqosid params
   MCID_WIDTH: 12
   RCID_WIDTH: 12
@@ -548,27 +591,28 @@ params:
   HSTATEEN_CSRIND_TYPE: rw
   MSTATEEN_CSRIND_TYPE: rw
   # AIA params
-  HSTATEEN_AIA_TYPE: rw
-  MSTATEEN_AIA_TYPE: rw
-  MSTATEEN_IMSIC_TYPE: rw
-  HSTATEEN_IMSIC_TYPE: rw
+  # HSTATEEN_AIA_TYPE: rw
+  # MSTATEEN_AIA_TYPE: rw
+  # MSTATEEN_IMSIC_TYPE: rw
+  # HSTATEEN_IMSIC_TYPE: rw
   # Smctr params
-  MCTRCTL_CORSWAPINH_IMPLEMENTED: true
-  MCTRCTL_CUSTOM_IMPLEMENTED: false
-  MCTRCTL_DIRCALLINH_IMPLEMENTED: true
-  MCTRCTL_DIRJMPINH_IMPLEMENTED: true
-  MCTRCTL_DIRLJMPINH_IMPLEMENTED: true
-  MCTRCTL_EXCINH_IMPLEMENTED: true
-  MCTRCTL_INDCALLINH_IMPLEMENTED: true
-  MCTRCTL_INDJMPINH_IMPLEMENTED: true
-  MCTRCTL_INDLJMPINH_IMPLEMENTED: true
-  MCTRCTL_INTRINH_IMPLEMENTED: true
-  MCTRCTL_MTE_IMPLEMENTED: true
-  MCTRCTL_NTBREN_IMPLEMENTED: true
-  MCTRCTL_RASEMU_IMPLEMENTED: true
-  MCTRCTL_RETINH_IMPLEMENTED: true
-  MCTRCTL_STE_IMPLEMENTED: true
-  MCTRCTL_TKBRINH_IMPLEMENTED: true
-  MCTRCTL_TRETINH_IMPLEMENTED: true
+  # SCTRDEPTH_DEPTH_LEGAL_VALUES: [16, 32, 64, 128, 256]
+  # MCTRCTL_CORSWAPINH_IMPLEMENTED: true
+  # MCTRCTL_CUSTOM_IMPLEMENTED: false
+  # MCTRCTL_DIRCALLINH_IMPLEMENTED: true
+  # MCTRCTL_DIRJMPINH_IMPLEMENTED: true
+  # MCTRCTL_DIRLJMPINH_IMPLEMENTED: true
+  # MCTRCTL_EXCINH_IMPLEMENTED: true
+  # MCTRCTL_INDCALLINH_IMPLEMENTED: true
+  # MCTRCTL_INDJMPINH_IMPLEMENTED: true
+  # MCTRCTL_INDLJMPINH_IMPLEMENTED: true
+  # MCTRCTL_INTRINH_IMPLEMENTED: true
+  # MCTRCTL_MTE_IMPLEMENTED: true
+  # MCTRCTL_NTBREN_IMPLEMENTED: true
+  # MCTRCTL_RASEMU_IMPLEMENTED: true
+  # MCTRCTL_RETINH_IMPLEMENTED: true
+  # MCTRCTL_STE_IMPLEMENTED: true
+  # MCTRCTL_TKBRINH_IMPLEMENTED: true
+  # MCTRCTL_TRETINH_IMPLEMENTED: true
   # Zawrs params
   ZAWRS_NTO_IS_NOP: true

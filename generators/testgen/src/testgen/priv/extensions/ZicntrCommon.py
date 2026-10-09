@@ -11,7 +11,7 @@
 from typing import Literal
 
 from testgen.asm.helpers import comment_banner, write_sigupd
-from testgen.asm.tsbi import tsbi_call
+from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
 
 Mode = Literal["M", "S", "U"]
@@ -45,8 +45,11 @@ def _access_counter(
             *access(f"{name}h", "h"),
             "#endif",
         ]
+    # Access only the hpmcounters the configuration implements: an unimplemented counter may trap or
+    # return a constant (norm:hpm_unimplemented_counter_access), so no reference signature fits both.
+    # UDB_HPM_COUNTER_EN_<n> comes from the HPM_COUNTER_EN parameter of the UDB config.
     return [
-        "#ifdef ZIHPM_SUPPORTED",
+        f"#if defined(ZIHPM_SUPPORTED) && defined(UDB_HPM_COUNTER_EN_{i})",
         *access(f"hpmcounter{i}", ""),
         "#if __riscv_xlen == 32",
         *access(f"hpmcounter{i}h", "h"),
@@ -61,9 +64,7 @@ def _write_counteren(csr: str, operand: str, mode: Mode, comment: str = "") -> s
     instr = f"csrw {csr}, {operand}"
     if comment:
         instr += f"  # {comment}"
-    if mode == "M" or (mode == "S" and csr == "scounteren"):
-        return instr
-    return tsbi_call(instr)
+    return tsbi_call_or_direct(instr, mode)
 
 
 def counteren_walk_tests(

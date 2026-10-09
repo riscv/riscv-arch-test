@@ -34,11 +34,11 @@ covergroup ExceptionsSvZalrsc_cg with function sample(ins_t ins);
     // access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
-            d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
                 // auto fill 1/0 for the physical address being valid
             }
         `else
-            d_phys_address_nonexistent: coverpoint ({ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
                 // auto fill 1/0 for the physical address being valid
             }
         `endif

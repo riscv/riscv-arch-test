@@ -44,18 +44,18 @@ covergroup EndianH_cg with function sample(ins_t ins);
     }
 
     `ifdef UDB_MXLEN_64
-    cp_sd: coverpoint ins.current.insn {
-        wildcard bins sd = {SD};
-    }
-    cp_ld: coverpoint ins.current.insn {
-        wildcard bins ld = {LD};
-    }
-    cp_lwu: coverpoint ins.current.insn {
-        wildcard bins lwu = {LWU};
-    }
-    cp_doubleoffset: coverpoint ins.current.imm[2:0] iff (ins.current.rs1_val[2:0] == 3'b000)  {
-        bins zero = {3'b000};
-    }
+        cp_sd: coverpoint ins.current.insn {
+            wildcard bins sd = {SD};
+        }
+        cp_ld: coverpoint ins.current.insn {
+            wildcard bins ld = {LD};
+        }
+        cp_lwu: coverpoint ins.current.insn {
+            wildcard bins lwu = {LWU};
+        }
+        cp_doubleoffset: coverpoint ins.current.imm[2:0] iff (ins.current.rs1_val[2:0] == 3'b000)  {
+            bins zero = {3'b000};
+        }
     `endif
 
     cp_byteoffset: coverpoint {ins.current.imm + ins.current.rs1_val}[2:0] {

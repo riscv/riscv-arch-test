@@ -15,7 +15,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 34
+#define SIGUPD_COUNT 46
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
@@ -346,6 +346,144 @@ Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test8_exec:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test8_exec, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test8_exec_str)
 
+// PTE.N with the 64 KiB encoding ppn[3:0]=1000 on a level 4 superpage, which is reserved
+  SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
+  sfence.vma
+
+  LI(a5, (va_data >> 48) << 48)
+  LA(a0, rvtest_data_1)
+  slli a0, a0, 16
+  srli a0, a0, 16
+  add a5, a5, a0
+  addi a2, a2, 16
+
+// Store
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test9_store:
+  sw a2, 20(a5)
+  nop
+
+// Load
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test9_load:
+  lw a3, 20(a5)
+  nop
+
+// Execute
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test9_exec:
+  jalr ra, a5, 0
+  nop
+
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test9_store, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test9_store_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test9_load, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test9_load_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test9_exec, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test9_exec_str)
+
+// PTE.N with the 64 KiB encoding ppn[3:0]=1000 on a level 3 superpage, which is reserved
+  PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
+  SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
+  sfence.vma
+
+  LI(a5, (va_data >> 39) << 39)
+  LA(a0, rvtest_data_1)
+  slli a0, a0, 25
+  srli a0, a0, 25
+  add a5, a5, a0
+  addi a2, a2, 16
+
+// Store
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test10_store:
+  sw a2, 20(a5)
+  nop
+
+// Load
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test10_load:
+  lw a3, 20(a5)
+  nop
+
+// Execute
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test10_exec:
+  jalr ra, a5, 0
+  nop
+
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test10_store, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test10_store_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test10_load, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test10_load_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test10_exec, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test10_exec_str)
+
+// PTE.N with the 64 KiB encoding ppn[3:0]=1000 on a level 2 superpage, which is reserved
+  PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
+  PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
+  SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  sfence.vma
+
+  LI(a5, (va_data >> 30) << 30)
+  LA(a0, rvtest_data_1)
+  slli a0, a0, 34
+  srli a0, a0, 34
+  add a5, a5, a0
+  addi a2, a2, 16
+
+// Store
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test11_store:
+  sw a2, 20(a5)
+  nop
+
+// Load
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test11_load:
+  lw a3, 20(a5)
+  nop
+
+// Execute
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test11_exec:
+  jalr ra, a5, 0
+  nop
+
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test11_store, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test11_store_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test11_load, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test11_load_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test11_exec, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test11_exec_str)
+
+// PTE.N with the 64 KiB encoding ppn[3:0]=1000 on a level 1 superpage, which is reserved
+  PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
+  PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
+  PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_N | (1 << 13) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  sfence.vma
+
+  LI(a5, (va_data >> 21) << 21)
+  LA(a0, rvtest_data_1)
+  slli a0, a0, 43
+  srli a0, a0, 43
+  add a5, a5, a0
+  addi a2, a2, 16
+
+// Store
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test12_store:
+  sw a2, 20(a5)
+  nop
+
+// Load
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test12_load:
+  lw a3, 20(a5)
+  nop
+
+// Execute
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test12_exec:
+  jalr ra, a5, 0
+  nop
+
+  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x12, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test12_store, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test12_store_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test12_load, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test12_load_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test12_exec, Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test12_exec_str)
+
 #endif
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -408,6 +546,18 @@ Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test7_exec_str: .string "\"test: 30; 
 Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test8_store_str: .string "\"test: 31; cg: Svnapot; cp: cp_sv57_Svnapot_reserved_enc_Smode; bin: test8_store\""
 Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test8_load_str: .string "\"test: 32; cg: Svnapot; cp: cp_sv57_Svnapot_reserved_enc_Smode; bin: test8_load\""
 Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test8_exec_str: .string "\"test: 33; cg: Svnapot; cp: cp_sv57_Svnapot_reserved_enc_Smode; bin: test8_exec\""
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test9_store_str: .string "\"test: 34; cg: Svnapot; cp: cp_sv57_Svnapot_reserved_enc_Smode; bin: test9_store\""
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test9_load_str: .string "\"test: 35; cg: Svnapot; cp: cp_sv57_Svnapot_reserved_enc_Smode; bin: test9_load\""
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test9_exec_str: .string "\"test: 36; cg: Svnapot; cp: cp_sv57_Svnapot_reserved_enc_Smode; bin: test9_exec\""
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test10_store_str: .string "\"test: 37; cg: Svnapot; cp: cp_sv57_Svnapot_reserved_enc_Smode; bin: test10_store\""
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test10_load_str: .string "\"test: 38; cg: Svnapot; cp: cp_sv57_Svnapot_reserved_enc_Smode; bin: test10_load\""
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test10_exec_str: .string "\"test: 39; cg: Svnapot; cp: cp_sv57_Svnapot_reserved_enc_Smode; bin: test10_exec\""
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test11_store_str: .string "\"test: 40; cg: Svnapot; cp: cp_sv57_Svnapot_reserved_enc_Smode; bin: test11_store\""
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test11_load_str: .string "\"test: 41; cg: Svnapot; cp: cp_sv57_Svnapot_reserved_enc_Smode; bin: test11_load\""
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test11_exec_str: .string "\"test: 42; cg: Svnapot; cp: cp_sv57_Svnapot_reserved_enc_Smode; bin: test11_exec\""
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test12_store_str: .string "\"test: 43; cg: Svnapot; cp: cp_sv57_Svnapot_reserved_enc_Smode; bin: test12_store\""
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test12_load_str: .string "\"test: 44; cg: Svnapot; cp: cp_sv57_Svnapot_reserved_enc_Smode; bin: test12_load\""
+Svnapot_cp_sv57_Svnapot_reserved_enc_Smode_test12_exec_str: .string "\"test: 45; cg: Svnapot; cp: cp_sv57_Svnapot_reserved_enc_Smode; bin: test12_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

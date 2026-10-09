@@ -305,7 +305,7 @@ covergroup SmV_cg with function sample(ins_t ins);
 
     vl_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
         //Any value between max and 1
-        bins target = {[64'h10000:64'h1]};
+        bins target = {[64'h1:64'h10000]};
     }
 
     cp_vtype_vill_set_vl_0 : cross vsetvl_instruction, rs1_non_zero, rs2_vill_set, vl_nonzero;
@@ -321,12 +321,12 @@ covergroup SmV_cg with function sample(ins_t ins);
     }
 
     vl_not_max: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") ==
-                            get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+                            `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins target = {1'b0};
     }
 
     rd_n0 : coverpoint ins.current.insn[11:7] {
-        bins not_zero = {[31:1]};
+        bins not_zero = {[1:31]};
     }
 
     rs1_x0 : coverpoint ins.current.insn[19:15] {
@@ -380,20 +380,20 @@ covergroup SmV_cg with function sample(ins_t ins);
         bins true = {1};
     }
 
-    rs1_eq_vlmax : coverpoint (ins.current.rs1_val == get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+    rs1_eq_vlmax : coverpoint (ins.current.rs1_val == `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins true = {1};
     }
 
-    rs1_lt_2x_vlmax_gt_vlmax : coverpoint (ins.current.rs1_val < 2 * get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)
-                                        & ins.current.rs1_val > get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+    rs1_lt_2x_vlmax_gt_vlmax : coverpoint (ins.current.rs1_val < `UDB_MXLEN'(2 * get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))
+                                        & ins.current.rs1_val > `UDB_MXLEN'(get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins true = {1};
     }
 
-    rs1_eq_2x_vlmax : coverpoint (ins.current.rs1_val == 2 * get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+    rs1_eq_2x_vlmax : coverpoint (ins.current.rs1_val == `UDB_MXLEN'(2 * get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins true = {1};
     }
 
-    rs1_gt_2x_vlmax : coverpoint (ins.current.rs1_val > 2 * get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE)) {
+    rs1_gt_2x_vlmax : coverpoint (ins.current.rs1_val > `UDB_MXLEN'(2 * get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE))) {
         bins true = {1};
     }
 

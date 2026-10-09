@@ -10,7 +10,7 @@
 
 `define COVER_PMPS
 
-covergroup PMPS_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pack_pmpaddr, logic [29:0] pmpcfg_a, [7:0] pmpcfg [63:0], logic [14:0] pmp_hit);
+covergroup PMPS_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pack_pmpaddr, logic [31:0] pmpcfg_a, [7:0] pmpcfg [63:0], logic [14:0] pmp_hit);
   option.per_instance = 0;
   `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -34,13 +34,15 @@ covergroup PMPS_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
     bins beyond_top  = {(`PMP_REGION_START + 4) & `PMP_ADDR_LOWMASK};  // Access beyond top of region
   }
 
-  // if range is from `PMP_REGION_START to `PMP_REGION_START + `g
-  addr_offset_tor: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
-    bins at_base      = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};              // Access exactly at the region base
-    bins below_base   = {(`PMP_REGION_START - 4) & `PMP_ADDR_LOWMASK};          // Access 4 bytes below the base
-    bins at_top       = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};     // Access exactly at top of range
-    bins highest_word = {(`PMP_REGION_START + `g_tor - 4) & `PMP_ADDR_LOWMASK}; // Access at the last word in region
-  }
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    // if range is from `PMP_REGION_START to `PMP_REGION_START + `g
+    addr_offset_tor: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
+      bins at_base      = {`PMP_REGION_START & `PMP_ADDR_LOWMASK};              // Access exactly at the region base
+      bins below_base   = {(`PMP_REGION_START - 4) & `PMP_ADDR_LOWMASK};          // Access 4 bytes below the base
+      bins at_top       = {(`PMP_REGION_START + `g_tor) & `PMP_ADDR_LOWMASK};     // Access exactly at top of range
+      bins highest_word = {(`PMP_REGION_START + `g_tor - 4) & `PMP_ADDR_LOWMASK}; // Access at the last word in region
+    }
+  `endif
 
   exec_instr: coverpoint ins.current.insn {
     wildcard bins jalr = {JALR};
@@ -80,10 +82,9 @@ covergroup PMPS_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
     bins standard_region = {`STANDARD_REGION & `PMP_PMPADDR_LOWMASK};
   }
 
-  // addr_in_region (PMP_REGION_START-based) doesn't apply here: entry0 is configured
-  // via standard_region (pmpaddr0 == STANDARD_REGION, i.e. a NAPOT match at
-  // PMP_NAPOT_REGION_START), so the access under test for cp_mprv_* must target that
-  // same NAPOT-safe address, not the plain PMP_REGION_START other crosses use.
+  // Accesses to a NAPOT region that the tests place at PMP_NAPOT_REGION_START (cp_cfg_X/R/W and
+  // cp_mprv_*). That base is g_napot-aligned, so the 8-byte ld/sd probes are naturally aligned at
+  // every grain; PMP_REGION_START is only 4-byte aligned at PMP_GRANULARITY 2.
   addr_in_napot_region: coverpoint ((ins.current.rs1_val + ins.current.imm) & `PMP_ADDR_LOWMASK) {
     bins at_region = {`PMP_NAPOT_REGION_START & `PMP_ADDR_LOWMASK};
   }
@@ -241,21 +242,23 @@ covergroup PMPS_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
     }
   `endif
 
-  // pmpcfg_i.L = 0, pmpcfg_i.A = TOR, all legal pmpcfg_i.XWR, pmpaddr_i = `NON_STANDARD_REGION + `g, pmpaddr_i-1 = `NON_STANDARD_REGION
-  cfg_A_tor: coverpoint {pmpcfg[1],pmpcfg[3],pmpcfg[5],pmpcfg[7],pmpcfg[9],pmpcfg[11],pmp_hit[11:0]} {
-    wildcard bins tor_lwxr_0000 = {60'b????????????????????????????????????????00001000_?10000000000};
-    wildcard bins tor_lwxr_0001 = {60'b????????????????????????????????00001001????????_???100000000};
-    wildcard bins tor_lwxr_0011 = {60'b????????????????????????00001011????????????????_?????1000000};
-    wildcard bins tor_lwxr_0100 = {60'b????????????????00001100????????????????????????_???????10000};
-    wildcard bins tor_lwxr_0101 = {60'b????????00001101????????????????????????????????_?????????100};
-    wildcard bins tor_lwxr_0111 = {60'b00001111????????????????????????????????????????_???????????1};
-  }
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    // pmpcfg_i.L = 0, pmpcfg_i.A = TOR, all legal pmpcfg_i.XWR, pmpaddr_i = `NON_STANDARD_REGION + `g, pmpaddr_i-1 = `NON_STANDARD_REGION
+    cfg_A_tor: coverpoint {pmpcfg[1],pmpcfg[3],pmpcfg[5],pmpcfg[7],pmpcfg[9],pmpcfg[11],pmp_hit[11:0]} {
+      wildcard bins tor_lwxr_0000 = {60'b????????????????????????????????????????00001000_?10000000000};
+      wildcard bins tor_lwxr_0001 = {60'b????????????????????????????????00001001????????_???100000000};
+      wildcard bins tor_lwxr_0011 = {60'b????????????????????????00001011????????????????_?????1000000};
+      wildcard bins tor_lwxr_0100 = {60'b????????????????00001100????????????????????????_???????10000};
+      wildcard bins tor_lwxr_0101 = {60'b????????00001101????????????????????????????????_?????????100};
+      wildcard bins tor_lwxr_0111 = {60'b00001111????????????????????????????????????????_???????????1};
+    }
+  `endif
 
 //-------------------------------------------------------
 
-  cp_cfg_X: cross priv_mode_s, legal_lxwr, exec_instr, addr_in_region ;
-  cp_cfg_R: cross priv_mode_s, legal_lxwr, read_instr, addr_in_region ;
-  cp_cfg_W: cross priv_mode_s, legal_lxwr, write_instr, addr_in_region ;
+  cp_cfg_X: cross priv_mode_s, legal_lxwr, exec_instr, addr_in_napot_region ;
+  cp_cfg_R: cross priv_mode_s, legal_lxwr, read_instr, addr_in_napot_region ;
+  cp_cfg_W: cross priv_mode_s, legal_lxwr, write_instr, addr_in_napot_region ;
 
   cp_cfg_A_off_jalr: cross priv_mode_s, cfg_A_off, exec_instr, addr_in_region ;
   cp_cfg_A_off_lw: cross priv_mode_s, cfg_A_off, read_instr_lw, addr_in_region ;
@@ -273,10 +276,12 @@ covergroup PMPS_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pac
     cp_cfg_A_na4_sw: cross priv_mode_s, cfg_A_na4, write_instr_sw, addr_offset_na4 ;
   `endif
 
-  // Access at address, address-4, address-g, address-g-4.
-  cp_cfg_A_tor_jalr: cross priv_mode_s, cfg_A_tor, exec_instr, addr_offset_tor ;
-  cp_cfg_A_tor_lw: cross priv_mode_s, cfg_A_tor, read_instr_lw, addr_offset_tor ;
-  cp_cfg_A_tor_sw: cross priv_mode_s, cfg_A_tor, write_instr_sw, addr_offset_tor ;
+  `ifdef UDB_PMP_TOR_SUPPORTED
+    // Access at address, address-4, address-g, address-g-4.
+    cp_cfg_A_tor_jalr: cross priv_mode_s, cfg_A_tor, exec_instr, addr_offset_tor ;
+    cp_cfg_A_tor_lw: cross priv_mode_s, cfg_A_tor, read_instr_lw, addr_offset_tor ;
+    cp_cfg_A_tor_sw: cross priv_mode_s, cfg_A_tor, write_instr_sw, addr_offset_tor ;
+  `endif
 
   cp_mprv_jalr: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, exec_instr, standard_region, addr_in_napot_region ;
   cp_mprv_lw: cross priv_mode_m, mprv_mstatus, mpp_mstatus, lxwr, read_instr_lw, standard_region, addr_in_napot_region ;
@@ -290,7 +295,7 @@ endgroup
 function void pmps_sample(int hart, int issue, ins_t ins);
 
   logic [16*`UDB_MXLEN-1:0] pack_pmpaddr;
-  logic [29:0] pmpcfg_a;      // for first 15 Regions
+  logic [31:0] pmpcfg_a;      // for first 15 Regions
   logic [7:0] pmpcfg [63:0];
   logic [`UDB_MXLEN-1:0] pmpaddr [62:0];
   logic [14:0] pmp_hit;
@@ -298,7 +303,7 @@ function void pmps_sample(int hart, int issue, ins_t ins);
   `ifdef UDB_MXLEN_32
     // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
     for (int i = 0; i < 16; i++) begin
-      logic [31:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + i, "pmpcfg", "pmpcfg");
+      logic [31:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + i, "pmpcfg", "pmpcfg");
       pmpcfg[i*4 + 0] = cfg_word[7:0];
       pmpcfg[i*4 + 1] = cfg_word[15:8];
       pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -307,7 +312,7 @@ function void pmps_sample(int hart, int issue, ins_t ins);
   `elsif UDB_MXLEN_64
     // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-      logic [63:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 2*i, "pmpcfg", "pmpcfg");
+      logic [63:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + 2*i, "pmpcfg", "pmpcfg");
       pmpcfg[i*8 + 0] = cfg_word[7:0];
       pmpcfg[i*8 + 1] = cfg_word[15:8];
       pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -320,7 +325,7 @@ function void pmps_sample(int hart, int issue, ins_t ins);
   `endif
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0 + j, "pmpaddr", "pmpaddr");
+    pmpaddr[j] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPADDR0) + j, "pmpaddr", "pmpaddr");
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions

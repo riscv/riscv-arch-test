@@ -1,0 +1,14 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for the Hazard3 core
+
+ci_enabled: true
+
+# Wren6991/Hazard3 ba0c83c; paths are under https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/
+#   Sm                mtval is read-only zero, which Sail cannot model: hdl/hazard3_csr.v#L848
+#   ExceptionsZalrsc  sc.w with no reservation fails without a bus access, so it cannot fault: doc/sections/bus_behaviour.adoc#L63
+exclude_extensions: "ExceptionsZalrsc,Sm"
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache"
+install_script: ".github/scripts/install-hazard3.sh"
+setup_script: ".github/scripts/setup-hazard3.sh"

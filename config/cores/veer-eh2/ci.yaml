@@ -1,0 +1,16 @@
+# Copyright (c) 2026, Harvey Mudd College
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for the CHIPS Alliance VeeR EH2 core
+
+ci_enabled: true
+
+# chipsalliance/Cores-VeeR-EH2 @ a7203d02:
+#   Zaamo     AMOs fault outside the DCCM and ACT data is in system memory: https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/design/lsu/eh2_lsu_addrcheck.sv#L199-L200
+#   Zalrsc    LR/SC fault outside the DCCM, as for Zaamo.
+#   Sm        minstret bits 31:8 advance by 0x41 per carry: https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/design/dec/eh2_dec_tlu_ctl.sv#L1338
+#   Zifencei  The testbench instruction memory ignores stores: https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/testbench/tb_top.sv#L1011
+exclude_extensions: "Zaamo,Zalrsc,Sm,Zifencei"
+
+apt_packages: "autoconf flex bison help2man libfl-dev ccache"
+install_script: ".github/scripts/install-veer-eh2.sh"
+setup_script: ".github/scripts/setup-veer-eh2.sh"

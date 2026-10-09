@@ -600,7 +600,6 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     )
     lines.extend(_global_ie(mode, True))
 
-    # both halves nonzero so the value stays distinct from the tdata2=0 case once LI trims it to XLEN
     dataval = random_int(32, signed=False, nonzero=True) << 32 | random_int(32, signed=False, nonzero=True)
     perms = (0b100, 0b010, 0b001)  # exec / store / load
 
@@ -611,7 +610,7 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines.append(
         comment_banner(
             coverpoint,
-            "lr is a load, sc is a store: breakpoint when the access address matches tdata2",
+            "mcontrol6 fires when lr/sc address == tdata2 (select=address)",
         )
     )
     for trig_num in range(UDB_NUM_TRIGGERS):
@@ -625,15 +624,15 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     lines.extend(
                         [
                             _add_tc(test_data, binname, coverpoint, covergroup),
-                            f"LA(x{addr_reg}, scratch) # access address",
+                            f"LA(x{addr_reg}, scratch) # x{addr_reg} = &scratch",
                             _load_reg(data_reg, dataval),
                             *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=perm, select=0),
                             *_arch_guard(
-                                f"lr.{width} x{dest_reg}, (x{addr_reg}) # load, fires on address match",
+                                f"lr.{width} x{dest_reg}, (x{addr_reg}) # fire iff addr==tdata2 and xsl has load bit",
                                 ["zalrsc"],
                             ),
-                            "nop # landing pad",
-                            f"li x{dest_reg}, 1 # separator: pins the trap record to this slot; 1 never matches tdata2",
+                            "nop # spacer",
+                            f"LI(x{dest_reg}, 1) # separator, prevent sigupd from firing trigger",
                             write_sigupd(dest_reg, test_data),
                         ]
                     )
@@ -642,11 +641,11 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                         [
                             _add_tc(test_data, binname, coverpoint, covergroup),
                             *_arch_guard(
-                                f"sc.{width} x{temp_reg}, x{data_reg}, (x{addr_reg}) # store, fires on address match",
+                                f"sc.{width} x{temp_reg}, x{data_reg}, (x{addr_reg}) # fire iff addr==tdata2 and xsl has store bit",
                                 ["zalrsc"],
                             ),
-                            "nop # landing pad",
-                            f"li x{dest_reg}, 1 # separator: pins the trap record to this slot; 1 never matches tdata2",
+                            "nop # spacer",
+                            f"LI(x{dest_reg}, 1) # separator, prevent sigupd from firing trigger",
                             write_sigupd(dest_reg, test_data),
                         ]
                     )
@@ -663,14 +662,14 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines.append(
         comment_banner(
             coverpoint,
-            "lr is a load, sc is a store: breakpoint when the accessed value matches tdata2",
+            "mcontrol6 fires when lr/sc data == tdata2 (select=data)",
         )
     )
     lines.extend(
         [
-            f"LA(x{addr_reg}, scratch) # access address",
+            f"LA(x{addr_reg}, scratch) # x{addr_reg} = &scratch",
             _load_reg(data_reg, dataval),
-            f"SREG x{data_reg}, 0(x{addr_reg}) # seed the watched value, no trigger armed yet",
+            f"SREG x{data_reg}, 0(x{addr_reg}) # load scratch with XLEN-wide dataval",
         ]
     )
     for trig_num in range(UDB_NUM_TRIGGERS):
@@ -685,15 +684,15 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     lines.extend(
                         [
                             _add_tc(test_data, binname, coverpoint, covergroup),
-                            f"LA(x{addr_reg}, scratch) # access address",
+                            f"LA(x{addr_reg}, scratch) # x{addr_reg} = &scratch",
                             _load_reg(data_reg, dataval),
                             *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=perm, select=1),
                             *_arch_guard(
-                                f"lr.{width} x{dest_reg}, (x{addr_reg}) # load, fires on data match",
+                                f"lr.{width} x{dest_reg}, (x{addr_reg}) # fire iff data==tdata2 and xsl has load bit",
                                 ["zalrsc"],
                             ),
-                            "nop # landing pad",
-                            f"li x{dest_reg}, 1 # separator: pins the trap record to this slot; 1 never matches tdata2",
+                            "nop # spacer (data match fires after)",
+                            f"LI(x{dest_reg}, 1) # separator, prevent sigupd from firing trigger",
                             write_sigupd(dest_reg, test_data),
                         ]
                     )
@@ -702,11 +701,11 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                         [
                             _add_tc(test_data, binname, coverpoint, covergroup),
                             *_arch_guard(
-                                f"sc.{width} x{temp_reg}, x{data_reg}, (x{addr_reg}) # store, fires on data match",
+                                f"sc.{width} x{temp_reg}, x{data_reg}, (x{addr_reg}) # fire iff data==tdata2 and xsl has store bit",
                                 ["zalrsc"],
                             ),
-                            "nop # landing pad",
-                            f"li x{dest_reg}, 1 # separator: pins the trap record to this slot; 1 never matches tdata2",
+                            "nop # spacer (data match fires after)",
+                            f"LI(x{dest_reg}, 1) # separator, prevent sigupd from firing trigger",
                             write_sigupd(dest_reg, test_data),
                         ]
                     )
@@ -723,7 +722,7 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines.append(
         comment_banner(
             coverpoint,
-            "amo reads then writes: breakpoint when either half's address matches tdata2",
+            "mcontrol6 fires when amo address == tdata2 (select=address)",
         )
     )
     for trig_num in range(UDB_NUM_TRIGGERS):
@@ -739,14 +738,14 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                         lines.extend(
                             [
                                 _add_tc(test_data, binname, coverpoint, covergroup),
-                                f"LA(x{addr_reg}, scratch) # access address",
+                                f"LA(x{addr_reg}, scratch) # x{addr_reg} = &scratch",
                                 _load_reg(data_reg, dataval),
                                 *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=perm, select=0),
                                 *_arch_guard(
-                                    f"{insn} x{dest_reg}, x{data_reg}, (x{addr_reg}) # load and store, fires on address match",
+                                    f"{insn} x{dest_reg}, x{data_reg}, (x{addr_reg}) # fire iff addr==tdata2 and xsl has load or store bit",
                                     ["zaamo"],
                                 ),
-                                "nop # landing pad",
+                                "nop # spacer",
                             ]
                         )
                         lines.extend(_ifdef_guard(insn, closing=True))

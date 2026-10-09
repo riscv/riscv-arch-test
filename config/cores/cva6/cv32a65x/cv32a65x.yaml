@@ -12,6 +12,7 @@ description: OpenHW Group CVA6 cv32a65x configuration;
 implemented_extensions:
   - { name: I, version: "= 2.1" }
   - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
   - { name: C, version: "= 2.0" }
   - { name: Zba, version: "= 1.0.0" }
   - { name: Zbb, version: "= 1.0.0" }

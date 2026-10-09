@@ -47,9 +47,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zalrsc|Load Reserved / Store Cond|<<t-Zalrsc-coverpoints>>|o||x|x|x
 |Zca|Compressed|<<t-Zca-coverpoints>>|o|x|x|x|x
 |Zcb|Extra Compressed|<<t-Zcb-coverpoints>>||||x|x
-|ZcbM|Compressed Multiply|<<t-ZcbM-coverpoints>>||||x|x
-|ZcbZba|Compressed Zero Extend|<<t-ZcbZba-coverpoints>>||||x|x
-|ZcbZbb|Compressed Sign Extend|<<t-ZcbZbb-coverpoints>>||||x|x
 |Zcf|Compressed Float|<<t-Zcf-coverpoints>>|o||||
 |Zcd|Compressed Double|<<t-Zcd-coverpoints>>|o||x|x|x
 |F|Float|<<t-F-coverpoints>>|o||x|x|x
@@ -61,9 +58,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |MisalignD|Misaligned Double|<<t-MisalignD-coverpoints>>|o||o|o|o
 |Zfh|Half|<<t-Zfh-coverpoints>>|||o|o|o
 |Zfhmin|Half Converts|<<t-Zfhmin-coverpoints>>|||x|o|x
-|ZfaF|Additional Float|<<t-ZfaF-coverpoints>>||||x|x
-|ZfaD|Additional Double|<<t-ZfaD-coverpoints>>||||x|x
-|ZfaZfh|Additional Half|<<t-ZfaZfh-coverpoints>>||||o|o
+|Zfa|Additional Float|<<t-Zfa-coverpoints>>||||x|x
 |ZfaZfhD|Additional Half-Double Converts|<<t-ZfaZfhD-coverpoints>>||||o|o
 |Zba|Address Generation|<<t-Zba-coverpoints>>|||x|x|x
 |Zbb|Basic Bit Manipulation|<<t-Zbb-coverpoints>>|||x|x|x
@@ -83,7 +78,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zicclsm|Misaligned Loads / Stores|<<t-Zicclsm-normative-rules>>|o|o|x|x|x
 |Zihintpause|Pause Hint|<<t-Zihintpause-coverpoints>>|||x|x|x
 |Zihintntl|Nontemporal Locality Hint|<<t-Zihintntl-coverpoints>>||||x|x
-|ZihintntlZca|Compressed Nontemporal Locality Hint|<<t-ZihintntlZca-coverpoints>>||||x|x
 |Zicbom|Cache Block Flush/Inval|<<t-Zicbom-coverpoints>>|||x|x|x
 |Zicboz|Cache Block Zero|<<t-Zicboz-coverpoints>>|||x|x|x
 |Zicbop|Cache Block Prefetch|<<t-Zicbop-coverpoints>>|||x|x|x
@@ -167,7 +161,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zvfhmin|Vector half conversions|<<t-Zvfhmin-coverpoints>>||||o|o
 |Zvfbfmin|Vector BF16 Convert|<<t-Zvfbfmin-coverpoints>>||||o|o
 |Zvfbfwma|Vector BF16 MAC|<<t-Zvfbfwma-coverpoints>>||||o|o
-|ZfaZvfh|fli for Vector Half|<<t-ZfaZvfh-coverpoints>>||||o|o
 |Zvbb8|Vector Bit Manip 8-bit|<<t-Zvbb-coverpoints>>||||o|x
 |Zvbb16|Vector Bit Manip 16-bit|<<t-Zvbb-coverpoints>>||||o|x
 |Zvbb32|Vector Bit Manip 32-bit|<<t-Zvbb-coverpoints>>||||o|x
@@ -224,7 +217,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |SsnpmH|Hypervisor Pointer Masking|<<t-SsnpmH-coverpoints>>|||||
 |Zacas|Atomic Compare-And-Swap|<<t-Zacas-coverpoints>>||||o|o
 |Zabha|Subword Atomics|<<t-Zabha-coverpoints>>||||o|o
-|ZacasZabha|Subword CAS|<<t-ZacasZabha-coverpoints>>||||o|o
 |Zama16b|Main memory PMA supports misaligned atomics within 16-byte regions|<<t-Zama16b-coverpoints>>|||||x
 |ZicfilpU|User Landing Pads|<<t-ZicfilpU-coverpoints>>||||o|o
 |ZicfilpSm|Machine Landing Pads|<<t-ZicfilpSm-coverpoints>>||||o|o

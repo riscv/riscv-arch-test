@@ -22,7 +22,7 @@ class TestConfig:
     Attributes:
         xlen: Register width (32 or 64 bits)
         flen: Floating-point register width (32, 64, or 128 bits)
-        testsuite: Name of the testsuite (e.g., "I", "M", "ZcbM", "MisalignD", "ExceptionsSm")
+        testsuite: Name of the testsuite (e.g., "I", "M", "Zcb", "MisalignD", "ExceptionsSm")
         E_ext: Whether to use RV32E/RV64E (16 registers instead of 32)
         sew: Selected Element Width that the test will run at (8, 16, 32, or 64 bits)
         required_extensions: List of RISC-V extensions required for the test.

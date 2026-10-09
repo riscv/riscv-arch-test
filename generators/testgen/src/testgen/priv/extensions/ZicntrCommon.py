@@ -381,7 +381,7 @@ def instret_exception_tests(test_data: TestData, covergroup: str, mode: Mode) ->
 
 
 def instret_interrupt_tests(test_data: TestData, covergroup: str, mode: Mode) -> list[str]:
-    """wfi and wrs cases in M-mode (minstret) or U-mode (instret).
+    """wfi and wrs cases in M-mode (minstret) or U-mode (instret),
 
     wfi_taken goes through _instret_wait_case; wfi_timeout, wfi_pending, wrs_nto and wrs_sto
     record the raw delta through _instret_case.

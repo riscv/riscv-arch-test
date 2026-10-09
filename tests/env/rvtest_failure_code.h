@@ -1150,47 +1150,48 @@
     1:
 
         //--- Interrupt zero checks (not recorded in the trap signature) ---
-        la x7, ck_Mint_tval_str
-        bne x6, x7, 1f
-        li x8, 10                                    # subtype: xtval on an interrupt
+        // x6 = failure string pointer passed by TRAP_CHECK_ZERO; match it to a known string
+        la x7, ck_Mint_tval_str                      # x7 = address of the nonzero-mtval string
+        bne x6, x7, 1f                               # not this string: try the next one
+        li x8, 10                                    # subtype: nonzero xtval on an interrupt
         li x9, 0                                     # mode: M
-        j trap_diag_field_identified
+        j trap_diag_field_identified                 # record subtype and mode
     1:
-        la x7, ck_Mint_tval2_str
-        bne x6, x7, 1f
-        li x8, 11                                    # subtype: second trap value on an interrupt
+        la x7, ck_Mint_tval2_str                     # x7 = address of the nonzero-mtval2 string
+        bne x6, x7, 1f                               # not this string: try the next one
+        li x8, 11                                    # subtype: nonzero second trap value on an interrupt
         li x9, 0                                     # mode: M
-        j trap_diag_field_identified
+        j trap_diag_field_identified                 # record subtype and mode
     1:
-        la x7, ck_Mint_tinst_str
-        bne x6, x7, 1f
-        li x8, 12                                    # subtype: xtinst on an interrupt
+        la x7, ck_Mint_tinst_str                     # x7 = address of the nonzero-mtinst string
+        bne x6, x7, 1f                               # not this string: try the next one
+        li x8, 12                                    # subtype: nonzero xtinst on an interrupt
         li x9, 0                                     # mode: M
-        j trap_diag_field_identified
+        j trap_diag_field_identified                 # record subtype and mode
     1:
-        la x7, ck_Sint_tval_str
-        bne x6, x7, 1f
-        li x8, 10                                    # subtype: xtval on an interrupt
+        la x7, ck_Sint_tval_str                      # x7 = address of the nonzero-stval string
+        bne x6, x7, 1f                               # not this string: try the next one
+        li x8, 10                                    # subtype: nonzero xtval on an interrupt
         li x9, 1                                     # mode: S/HS
-        j trap_diag_field_identified
+        j trap_diag_field_identified                 # record subtype and mode
     1:
-        la x7, ck_Hint_tval2_str
-        bne x6, x7, 1f
-        li x8, 11                                    # subtype: second trap value on an interrupt
+        la x7, ck_Hint_tval2_str                     # x7 = address of the nonzero-htval string
+        bne x6, x7, 1f                               # not this string: try the next one
+        li x8, 11                                    # subtype: nonzero second trap value on an interrupt
         li x9, 1                                     # mode: S/HS
-        j trap_diag_field_identified
+        j trap_diag_field_identified                 # record subtype and mode
     1:
-        la x7, ck_Hint_tinst_str
-        bne x6, x7, 1f
-        li x8, 12                                    # subtype: xtinst on an interrupt
+        la x7, ck_Hint_tinst_str                     # x7 = address of the nonzero-htinst string
+        bne x6, x7, 1f                               # not this string: try the next one
+        li x8, 12                                    # subtype: nonzero xtinst on an interrupt
         li x9, 1                                     # mode: S/HS
-        j trap_diag_field_identified
+        j trap_diag_field_identified                 # record subtype and mode
     1:
-        la x7, ck_Vint_tval_str
-        bne x6, x7, 1f
-        li x8, 10                                    # subtype: xtval on an interrupt
+        la x7, ck_Vint_tval_str                      # x7 = address of the nonzero-vstval string
+        bne x6, x7, 1f                               # not this string: try the next one
+        li x8, 10                                    # subtype: nonzero xtval on an interrupt
         li x9, 3                                     # mode: VS
-        j trap_diag_field_identified
+        j trap_diag_field_identified                 # record subtype and mode
     1:
         //--- External interrupt ID mismatch checks ---
         // These use Xclr_Yext_int_str format

@@ -18,8 +18,8 @@
 
 // Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
 // if defined.  For most DUTs, the default should work and this macro
-// should not be defined.  If no M-mode or CSRs are implemented, define this
-// macro as blank to bypass the boot process.  If a nonconforming
+// should not be defined.  If the DUT has no standard M-mode CSRs, do not
+// define STANDARD_SM_SUPPORTED.  If a nonconforming
 // M-mode is implemented, define this macro to set up the necessary
 // state in a fashion similar to RVTEST_BOOT_TO_MMODE.
 //#define RVMODEL_BOOT_TO_MMODE
@@ -151,8 +151,6 @@
 
 ##### Supervisor Interrupts #####
 
-#define CVW_SSIP_ADDRESS (CLINT_BASE_ADDRESS + 0xC000)
-
 #define RVMODEL_SET_SEXT_INT(_R1, _R2)          \
   li _R1, 7;                                     \
   li _R2, PLIC_BASE_ADDRESS;                     \
@@ -175,13 +173,7 @@
   li _R2, PLIC_SENABLE_ADDRESS;  /* Disable the S-context UART enable that SET_SEXT turned on, so a later MEXT test does not also raise SEIP via the shared source */\
   sw zero, 0(_R2);
 
-#define RVMODEL_SET_SSW_INT(_R1, _R2) \
-  li _R1, 1; \
-  li _R2, CVW_SSIP_ADDRESS; \
-  sw _R1, 0(_R2);
-
-#define RVMODEL_CLR_SSW_INT(_R1, _R2) \
-  li _R2, CVW_SSIP_ADDRESS; \
-  sw zero, 0(_R2);
+// RVMODEL_SET_SSW_INT / RVMODEL_CLR_SSW_INT are intentionally undefined: Wally has no
+// supervisor software interrupt controller, so the test environment raises and clears SSI through mip.SSIP.
 
 #endif // _RVMODEL_MACROS_H

@@ -196,8 +196,8 @@ def _generate_bit_controlled(
     every CSR in `csrs` is exercised with every op in CSR_OPS.
 
     Args:
-        csrs: CSRs to access. When `csrs_rv32` is given, those are used instead on RV32
-            (e.g. the AIA high-half registers sieh/siph in place of sie/sip).
+        csrs: CSRs to access.
+        csrs_rv32: Additional CSRs to access on RV32 only (e.g. the AIA high halves sieh/siph).
     """
     covergroup = "Smstateen_cg"
     lines = [comment_banner(coverpoint, banner)]
@@ -243,14 +243,11 @@ def _generate_bit_controlled(
             if needs_guard:
                 lines.append("#ifdef S_SUPPORTED")
             lines.append(enter_line)
-            if csrs_rv32 is None:
-                lines.extend(emit_ops(csrs, state, mode_label))
-            else:
-                lines.append("#if __riscv_xlen == 64")
-                lines.extend(emit_ops(csrs, state, mode_label))
-                lines.append("#else  // RV32")
+            lines.extend(emit_ops(csrs, state, mode_label))
+            if csrs_rv32:
+                lines.append("#if __riscv_xlen == 32")
                 lines.extend(emit_ops(csrs_rv32, state, mode_label))
-                lines.append("#endif  // __riscv_xlen")
+                lines.append("#endif  // __riscv_xlen == 32")
             lines.append("RVTEST_TSBI_GOTO_MMODE")
             if needs_guard:
                 lines.append("#endif  // S_SUPPORTED")
@@ -294,7 +291,7 @@ def _generate_jvt(test_data: TestData) -> list[str]:
                     "",
                     f"{INDENT}# mstateen0.jvt = {state}, {mode_label}",
                     f"LI(x{temp_reg}, {JVT_BIT_MASK})",
-                    f"{bit_action}(mstateen0, x{temp_reg})",
+                    f"{bit_action} mstateen0, x{temp_reg}",
                 ]
             )
             lines.append(enter_line)
@@ -464,7 +461,7 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
                     "",
                     f"{INDENT}# mstateen0.fcsr = {state}, {mode_label}",
                     f"LI(x{temp_reg}, {FCSR_BIT_MASK})",
-                    f"{bit_action}(mstateen0, x{temp_reg})",
+                    f"{bit_action} mstateen0, x{temp_reg}",
                 ]
             )
             lines.append(enter_line)
@@ -490,14 +487,14 @@ def _generate_fcsr_lower(test_data: TestData) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# cp_fcsr_lower_fp_instrs
+# cp_fcsr_fp_instrs
 #   Cross: priv_mode_s_u × misa_F × mstateen0_fcsr_bit × fp_instrs
 #   S-mode and U-mode only.
 # ---------------------------------------------------------------------------
 
 
 def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
-    coverpoint = "cp_fcsr_lower_fp_instrs"
+    coverpoint = "cp_fcsr_fp_instrs"
     covergroup = "Smstateen_cg"
 
     lines = [
@@ -528,7 +525,7 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
                     "",
                     f"{INDENT}# mstateen0.fcsr = {state}, {mode_label}",
                     f"LI(x{temp_reg1}, {FCSR_BIT_MASK})",
-                    f"{bit_action}(mstateen0, x{temp_reg1})",
+                    f"{bit_action} mstateen0, x{temp_reg1}",
                 ]
             )
             lines.append(enter_line)
@@ -650,7 +647,7 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
     tc.code.append("#endif")
 
     # cp_imsic — only when IMSIC is present
-    tc.code.append("#ifdef IMSIC_SUPPORTED")
+    tc.code.append("#ifdef SSAIA_SUPPORTED")
     tc.code.extend(
         _generate_bit_controlled(
             test_data,
@@ -661,22 +658,22 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
             csrs=["stopei", "vstopei"],
         )
     )
-    tc.code.append("#endif  // IMSIC_SUPPORTED")
+    tc.code.append("#endif  // SSAIA_SUPPORTED")
 
     # cp_aia — only when AIA is present
-    tc.code.append("#ifdef AIA_SUPPORTED")
+    tc.code.append("#ifdef SSAIA_SUPPORTED")
     tc.code.extend(
         _generate_bit_controlled(
             test_data,
             coverpoint="cp_aia",
             bit=59,
             bit_name="aia",
-            banner="CSR ops on AIA CSRs with mstateen0.aia (bit 59) disabled and enabled — M/S/U-mode",
-            csrs=["sie", "sip"],
+            banner="CSR ops on Ssaia CSRs with mstateen0.aia (bit 59) disabled and enabled — M/S/U-mode",
+            csrs=["stopi"],
             csrs_rv32=["sieh", "siph"],
         )
     )
-    tc.code.append("#endif  // AIA_SUPPORTED")
+    tc.code.append("#endif  // SSAIA_SUPPORTED")
 
     # cp_jvt_access — only when Zcmt is present (covers S-mode and U-mode)
     tc.code.append("#ifdef ZCMT_SUPPORTED")
@@ -697,8 +694,9 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
     )
     tc.code.append("#endif  // SDTRIG_SUPPORTED")
 
-    # cp_p1p13 — only when Sm1p13 + Hypervisor present
-    tc.code.append("#if defined(SM1P13P0_OR_LATER_SUPPORTED) && defined(H_SUPPORTED)")
+    # cp_p1p13 — only when Sm1p13 + Hypervisor present. hedelegh is the high half of
+    # hedeleg and exists only on RV32; on RV64 mstateen0.P1P13 is read-only zero.
+    tc.code.append("#if defined(SM1P13P0_OR_LATER_SUPPORTED) && defined(H_SUPPORTED) && __riscv_xlen == 32")
     tc.code.extend(
         _generate_bit_controlled(
             test_data,
@@ -709,7 +707,7 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
             csrs=["hedelegh"],
         )
     )
-    tc.code.append("#endif  // SM1P13P0_OR_LATER_SUPPORTED && H_SUPPORTED")
+    tc.code.append("#endif  // SM1P13P0_OR_LATER_SUPPORTED && H_SUPPORTED && RV32")
 
     # cp_srmcfg — only when Ssqosid is present
     tc.code.append("#ifdef SSQOSID_SUPPORTED")
@@ -726,7 +724,7 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
     tc.code.append("#endif  // SSQOSID_SUPPORTED")
 
     # cp_ctr — only when Sctr is present
-    tc.code.append("#ifdef SCTR_SUPPORTED")
+    tc.code.append("#ifdef SSCTR_SUPPORTED")
     tc.code.extend(
         _generate_bit_controlled(
             test_data,
@@ -737,9 +735,9 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
             csrs=["sctrdepth", "sctrstatus"],
         )
     )
-    tc.code.append("#endif  // SCTR_SUPPORTED")
+    tc.code.append("#endif  // SSCTR_SUPPORTED")
 
-    # cp_fcsr, cp_fcsr_ro_zero, cp_fcsr_lower, cp_fcsr_lower_fp_instrs — only when Zfinx present
+    # cp_fcsr, cp_fcsr_ro_zero, cp_fcsr_lower, cp_fcsr_fp_instrs — only when Zfinx present
     tc.code.append("#ifdef ZFINX_SUPPORTED")
     fcsr_lines = [
         *_generate_fcsr_ro_zero(test_data),

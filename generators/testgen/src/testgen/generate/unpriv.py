@@ -77,9 +77,21 @@ def generate_unpriv_extension_tests(
     output_dir.mkdir(parents=True, exist_ok=True)
     generated_files: set[Path] = set()
 
-    ext_components, _ = canonicalize_extensions(testsuite, xlen, E_ext, sew=sew, instr_name=instructions[0].instr_name)
-    flen = get_flen_for_extensions(ext_components)
-    test_config = TestConfig(xlen=xlen, flen=flen, testsuite=testsuite, E_ext=E_ext, sew=sew)
+    # One test configuration per ExtraExtension entry; a row with an extra extension gets its own
+    # file/covergroup name prefix, header requirements, and FLEN, but stays in this testsuite's directory.
+    test_configs: dict[str, TestConfig] = {}
+    for extra_extension in {instr_data.extra_extension for instr_data in instructions}:
+        ext_components, _ = canonicalize_extensions(
+            testsuite, xlen, E_ext, sew=sew, instr_name=instructions[0].instr_name, extra_extension=extra_extension
+        )
+        test_configs[extra_extension] = TestConfig(
+            xlen=xlen,
+            flen=get_flen_for_extensions(ext_components),
+            testsuite=testsuite,
+            E_ext=E_ext,
+            sew=sew,
+            extra_extension=extra_extension,
+        )
 
     # Iterate through each instruction in the testsuite; generate separate test files for each
     for instr_data in instructions:
@@ -95,7 +107,7 @@ def generate_unpriv_extension_tests(
                 instr_data.instr_name,
                 instr_data.instr_type,
                 instr_data.coverpoints,
-                test_config,
+                test_configs[instr_data.extra_extension],
                 output_dir,
                 is_vector,
             )
@@ -184,9 +196,10 @@ def _generate_unpriv_tests_for_instruction(
             ]
         else:
             extra_defines = []
+            vdsew = 0
 
         generated_files.add(
-            write_test_file(test_config, instr_name, test_file_chunks, output_dir, file_idx, extra_defines)
+            write_test_file(test_config, instr_name, test_file_chunks, output_dir, file_idx, extra_defines, vdsew=vdsew)
         )
 
     # Clean up (make sure all registers were returned)

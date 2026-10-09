@@ -60,7 +60,7 @@ covergroup Sm_mcause_cg with function sample(ins_t ins);
         bins b_13_load_page_fault = {13};
         //bins b_14_reserved = {14};
         bins b_15_store_page_fault = {15};
-        `ifdef SMDBLTRP_SUPPORTED
+        `ifdef SSDBLTRP_SUPPORTED
             bins b_16_double_trap = {16}; // never delegated to S mode
         `endif
         //bins b_17_reserved = {17};
@@ -189,7 +189,25 @@ covergroup Sm_mprivinst_cg with function sample(ins_t ins);
         }
         old_sstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "sie")[0] {
         }
-        cp_sret_s:    cross priv_mode_s, sret, old_sstatus_spp, old_sstatus_spie, old_sstatus_sie, old_mstatus_tsr;
+        cp_sret_s:     cross priv_mode_s, sret, old_sstatus_spp, old_sstatus_spie, old_sstatus_sie, old_mstatus_tsr;
+
+        // sfence.vma is here rather than in S because it exercises mstatus.TVM, which only M-mode can set.
+        // It is only tested where some Sv mode exists, because a hart with satp.MODE read-only
+        // zero may raise an illegal instruction for it (norm:satp-mode_roz_sfence_illegal).
+        // Sv48 and Sv57 imply Sv39, so Sv39 and Sv32 between them cover every case.
+        `ifdef SV39_SUPPORTED
+            `define SM_SFENCE_VMA_LEGAL
+        `elsif SV32_SUPPORTED
+            `define SM_SFENCE_VMA_LEGAL
+        `endif
+        `ifdef SM_SFENCE_VMA_LEGAL
+            sfence: coverpoint ins.current.insn  {
+                wildcard bins sfence_vma = {SFENCE_VMA};
+            }
+            old_mstatus_tvm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {
+            }
+            cp_sfence_tvm: cross priv_mode_m_s, sfence, old_mstatus_tvm;
+        `endif
     `endif
 endgroup
 
@@ -202,7 +220,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         bins marchid    = {CSR_MARCHID};
         bins mimpid     = {CSR_MIMPID};
         bins mhartid    = {CSR_MHARTID};
-        bins mconfigptr = {CSR_MCONFIGPTR};
+        `ifdef SM1P12P0_OR_LATER_SUPPORTED
+            bins mconfigptr = {CSR_MCONFIGPTR};
+        `endif
     }
 
     csraccesses : coverpoint ins.current.insn {
@@ -231,8 +251,8 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             bins mseccfg = {CSR_MSECCFG};
         `endif
         `ifdef UDB_MXLEN_32
-            bins mstatush = {CSR_MSTATUSH};
             `ifdef SM1P12P0_OR_LATER_SUPPORTED
+                bins mstatush = {CSR_MSTATUSH};
                 bins menvcfgh = {CSR_MENVCFGH};
             `endif
             `ifdef MSECCFG_SUPPORTED
@@ -403,18 +423,18 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     }
 
     `ifdef UDB_MCOUNTINHIBIT_IMPLEMENTED
-    old_mcountinhibit_cy: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "cy") {
-        bins zero = {1'b0};
-        `ifdef UDB_COUNTINHIBIT_EN_0
-            bins one = {1'b1}; // only if counter can be inhibited
-        `endif
-    }
-    old_mcountinhibit_ir: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "ir") {
-        bins zero = {1'b0};
-        `ifdef UDB_COUNTINHIBIT_EN_2
-            bins one = {1'b1}; // only if counter can be inhibited
-        `endif
-    }
+        old_mcountinhibit_cy: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "cy") {
+            bins zero = {1'b0};
+            `ifdef UDB_COUNTINHIBIT_EN_0
+                bins one = {1'b1}; // only if counter can be inhibited
+            `endif
+        }
+        old_mcountinhibit_ir: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcountinhibit", "ir") {
+            bins zero = {1'b0};
+            `ifdef UDB_COUNTINHIBIT_EN_2
+                bins one = {1'b1}; // only if counter can be inhibited
+            `endif
+        }
     `endif
 
     mcycle: coverpoint ins.current.insn[31:20] {
@@ -554,9 +574,9 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
                 binsof(walking_ones) intersect {[0:7], [11:31], [34:63]};
         `endif
         `ifdef UDB_MXLEN_32
-            ignore_bins mstatush_not_walked = binsof(mcsrname_masked.mstatush) &&
-                binsof(walking_ones) intersect {[0:5], 8, [11:31]};
             `ifdef SM1P12P0_OR_LATER_SUPPORTED
+                ignore_bins mstatush_not_walked = binsof(mcsrname_masked.mstatush) &&
+                    binsof(walking_ones) intersect {[0:5], 8, [11:31]};
                 ignore_bins menvcfgh_not_walked = binsof(mcsrname_masked.menvcfgh) &&
                     binsof(walking_ones) intersect {[2:26]};
             `endif
@@ -566,6 +586,19 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             `endif
         `endif
     }
+    `ifdef SSDBLTRP_SUPPORTED
+        // mstatus.SDT is read-only zero while menvcfg.DTE = 0 (the walks, after boot) and writable with DTE = 1
+        mstatus_sdt_write : coverpoint ins.current.insn {
+            wildcard bins csrs_sdt = {CSRS} iff (ins.current.insn[31:20] == CSR_MSTATUS && ins.current.rs1_val[24]);
+            wildcard bins csrc_sdt = {CSRC} iff (ins.current.insn[31:20] == CSR_MSTATUS && ins.current.rs1_val[24]);
+        }
+        `ifdef UDB_MXLEN_32
+            old_menvcfg_dte : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "dte")[0];
+        `else
+            old_menvcfg_dte : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "dte")[0];
+        `endif
+        cp_mstatus_sdt_dte :    cross priv_mode_m, mstatus_sdt_write, old_menvcfg_dte;
+    `endif
     cp_mtval_zero:              cross priv_mode_m, csrrw, mtval, mtval_zero;
     cp_mepc_vaddr_pc:           cross priv_mode_m, csrrw, mepc, xaddr_pc;
     cp_mepc_vaddr_scratch:      cross priv_mode_m, csrrw, mepc, xaddr_scratch;
@@ -710,13 +743,13 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             bins sip_mip         = { {CSR_SIP, CSR_MIP} };
         }
         // S-level interrupt delegation bits {LCOFI, SEI, STI, SSI}; the VS bits are read-only without H
-        mideleg_s: coverpoint {ins.current.csr[CSR_MIDELEG][13], ins.current.csr[CSR_MIDELEG][9],
-                               ins.current.csr[CSR_MIDELEG][5],  ins.current.csr[CSR_MIDELEG][1]} {
+        mideleg_s: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "lcofip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "seip")[0],
+                               get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "stip")[0],  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "ssip")[0]} {
             bins none = {4'b0000};
             bins all  = {4'b1111};
         }
-        mideleg_s_walking: coverpoint {ins.current.csr[CSR_MIDELEG][13], ins.current.csr[CSR_MIDELEG][9],
-                                       ins.current.csr[CSR_MIDELEG][5],  ins.current.csr[CSR_MIDELEG][1]} {
+        mideleg_s_walking: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "lcofip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "seip")[0],
+                                       get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "stip")[0],  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "ssip")[0]} {
             bins lcofi = {4'b1000};
             bins sei   = {4'b0100};
             bins sti   = {4'b0010};
@@ -729,7 +762,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         satp : coverpoint ins.current.insn[31:20] {
             bins satp = {CSR_SATP};
         }
-        mstatus_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
+        mstatus_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm")[0] {
         }
 
         cp_scsr_from_m :            cross priv_mode_m, scsrname, csraccesses;

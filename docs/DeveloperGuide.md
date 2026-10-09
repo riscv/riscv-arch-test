@@ -274,6 +274,7 @@ All testplan CSVs must include the following keys:
 - `Instruction`: The instruction mnemonic. For example, `add`, `mul`, `fadd.d`, etc.
 - `Type`: The instruction type. Note that these types are more specific than the ISA manual types and take the kind of register, size of immediate, etc. into account. For example, `R`, `I`, `IS`, `ISW`. TODO: Document the list of instruction types?
 - `RV32`/`RV64`: Which XLENs the instruction exists for. Place an `x` in the relevant columns.
+- `ExtraExtension` (optional, after `RV64`): An extension a row needs beyond the testplan's own (e.g. `D`). Leave it empty for ordinary rows. The row's tests go in the testplan's suite directory as `<suite><ext>-<instr>-NN.S`, with the extension added to `REQUIRED_EXTENSIONS` in the test header, and its covergroups are named `<suite><ext>_<instr>_cg` inside `` `ifdef <EXT>_SUPPORTED ``. For example, the `D` rows of [`Zfhmin.csv`](../testplans/Zfhmin.csv) produce `ZfhminD-flh-00.S` and `ZfhminD_flh_cg`, which apply only when D is also implemented.
 - coverpoints: Which coverpoints apply to the instruction. Place an `x` in the column corresponding to the relevant coverpoints in each instruction's row.
   - Some coverpoints have multiple variants. To indicate that a variant of the coverpoint should be used for a particular instruction, use the variant's suffix in the CSV instead of an `x`. See the `20bit` variant of the `cp_imm_edges` coverpoint for the `auipc` instruction below.
 
@@ -469,7 +470,7 @@ case statement.
 All instruction sample templates must match the following format:
 
 ```sv
-        "INSTR"     : begin
+        "@INSTR@"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
             ins.add_rs2(2);

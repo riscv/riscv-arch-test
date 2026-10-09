@@ -9,6 +9,7 @@
 """CSR test utilities for privileged test generation."""
 
 from testgen.asm.helpers import write_sigupd
+from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 
@@ -438,4 +439,33 @@ def cntr_access_test(test_data: TestData, csr: tuple, covergroup: str, coverpoin
         f"csrw {csr_name}, x{save_reg}       # Restore CSR",
     ]
     test_data.int_regs.return_registers([save_reg, temp_reg, check_reg])
+    return lines
+
+
+def write_stce(test_data: TestData, enable: bool, priv: str) -> list[str]:
+    """
+    Generate assembly to set or clear menvcfg.STCE (menvcfgh.STCE on RV32).
+
+    Args:
+        test_data: TestData object used to allocate a temporary register
+        enable: True to set STCE, False to clear it
+        priv: Privilege mode the code runs in ("M", "S", or "U"); below M the write goes through T-SBI
+
+    Returns:
+        List of assembly lines
+    """
+    op = "csrs" if enable else "csrc"
+    reg = test_data.int_regs.get_register()
+
+    lines = [
+        f"# {'Enable' if enable else 'Disable'} menvcfg.STCE{'' if priv == 'M' else ' via T-SBI'}",
+        "#if __riscv_xlen == 64",
+        f"LI(x{reg}, MENVCFG_STCE)",
+        tsbi_call_or_direct(f"{op} menvcfg, x{reg}", priv),
+        "#else",
+        f"LI(x{reg}, MENVCFGH_STCE)",
+        tsbi_call_or_direct(f"{op} menvcfgh, x{reg}", priv),
+        "#endif",
+    ]
+    test_data.int_regs.return_register(reg)
     return lines

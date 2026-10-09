@@ -822,15 +822,16 @@ function void zvksed_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
-        "vsm4k.vi"     : begin
-            Zvksed_vsm4k_vi_cg.sample(ins);
-        end
-        "vsm4r.vs"     : begin
-            Zvksed_vsm4r_vs_cg.sample(ins);
-        end
-        "vsm4r.vv"     : begin
-            Zvksed_vsm4r_vv_cg.sample(ins);
-        end
+            "vsm4k.vi"     : begin
+                Zvksed_vsm4k_vi_cg.sample(ins);
+            end
+            "vsm4r.vs"     : begin
+                Zvksed_vsm4r_vs_cg.sample(ins);
+            end
+            "vsm4r.vv"     : begin
+                Zvksed_vsm4r_vv_cg.sample(ins);
+            end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

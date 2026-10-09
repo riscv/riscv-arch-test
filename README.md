@@ -142,12 +142,12 @@ For more information or if you have issues installing the RISC-V toolchain, refe
 
 #### 4. RISC-V Sail Reference Model
 
-The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.14.1 of the model.
+The ACTs use the RISC-V Sail model to generate expected results. It is currently compatible with version 0.15 of the model.
 
 To install the sail model:
 
 ```bash
-curl --location https://github.com/riscv/sail-riscv/releases/download/0.14.1/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
+curl --location https://github.com/riscv/sail-riscv/releases/download/0.15/sail-riscv-$(uname)-$(arch).tar.gz | sudo tar xvz --directory=/path/to/install --strip-components=1
 ```
 
 > [!NOTE]
@@ -261,12 +261,14 @@ The ACT Framework uses a selection of assembly macros to run DUT-specific code t
 **Interrupt Macros**: Defined if a platform-specific interrupt controller is used to set or clear. MSW and SSW preferably use `msip` and `mip.ssip` rather than a platform-specific controller, but are available to be defined for designs that only support a controller. _M flavors run in machine mode and do not use T-SBI. Others may be invoked from any mode and may need T-SBI if they access memory-mapped I/O that requires machine permissions. If the _M flavor is identical to the regular flavor, it does not need to be defined.
 
 - `RVMODEL_SET_MEXT_INT(_R1, _R2)`
+- `RVMODEL_SET_MEXT_INT_M(_R1, _R2)`
 - `RVMODEL_CLR_MEXT_INT(_R1, _R2)`
 - `RVMODEL_CLR_MEXT_INT_M(_R1, _R2)`
 - `RVMODEL_SET_MSW_INT(_R1, _R2)`
 - `RVMODEL_CLR_MSW_INT(_R1, _R2)`
 - `RVMODEL_CLR_MSW_INT_M(_R1, _R2)`
 - `RVMODEL_SET_SEXT_INT(_R1, _R2)`
+- `RVMODEL_SET_SEXT_INT_M(_R1, _R2)`
 - `RVMODEL_CLR_SEXT_INT(_R1, _R2)`
 - `RVMODEL_CLR_SEXT_INT_M(_R1, _R2)`
 - `RVMODEL_SET_SSW_INT(_R1, _R2)`

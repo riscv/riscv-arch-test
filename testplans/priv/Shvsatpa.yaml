@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Shvsatpa
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=1777147736#gid=1777147736
+coverpoints:
+  - heading: Following tests are done in M-mode
+  - name: cp_shvsatpa
+    goal: Check all values writable to vsatp.mode
+    description: |-
+      RV32: write vsatp.mode = 0/1
+      RV64: write vsatp.mode = 0, 8, 9, 10
+    expectation: Matches reference model, which should accept same values as satp.mode
+    bins: 2 or 4
+    rules:
+      - All translation modes supported in satp must be supported in vsatp.

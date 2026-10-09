@@ -119,11 +119,11 @@ def _generate_cp_trigger_sm(
                             # Likewise the second trap value and xtinst. The ecall zeroes mtval2 and mtinst but
                             # not htval and htinst. xtinst gets a transformed load, lw x1, 0(x0).
                             "#ifdef H_SUPPORTED",
-                            f"csrw CSR_MTVAL2, x{tmp_reg} # mtval2 = nonzero",
-                            f"csrw CSR_HTVAL, x{tmp_reg} # htval = nonzero",
+                            f"csrw mtval2, x{tmp_reg} # mtval2 = nonzero",
+                            f"csrw htval, x{tmp_reg} # htval = nonzero",
                             f"LI(x{tmp_reg}, 0x2083) # transformed lw x1, 0(x0)",
-                            f"csrw CSR_MTINST, x{tmp_reg} # mtinst = nonzero",
-                            f"csrw CSR_HTINST, x{tmp_reg} # htinst = nonzero",
+                            f"csrw mtinst, x{tmp_reg} # mtinst = nonzero",
+                            f"csrw htinst, x{tmp_reg} # htinst = nonzero",
                             "#endif // H_SUPPORTED",
                             test_data.add_testcase(
                                 f"priv_{priv}_{int_type}_mideleg_{delegstr}_mode_{mode}_sie_{sie}_mie_{mie}",

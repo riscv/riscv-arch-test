@@ -191,6 +191,9 @@ def gen_compile_tasks(
     c_compile_flags = (
         ["-ffreestanding", "-fno-builtin", "-msmall-data-limit=0", "-std=gnu99"] if test_metadata.is_c_test else []
     )
+    # Assembly tests set up their own sp; only C tests need the linker script's stack.
+    # 128 bytes rather than 0 leaves room for RVMODEL macros that use the stack.
+    stack_flags = [] if test_metadata.is_c_test else ["-Wl,--defsym=__stack_size=128"]
 
     # Compilation sources and inputs
     test_sources = [str(test_path)]
@@ -203,6 +206,7 @@ def gen_compile_tasks(
         sig_elf_cmd = [
             *compile_prefix,
             *c_compile_flags,
+            *stack_flags,
             "-o",
             str(sig_elf),
             *march_flags,
@@ -284,6 +288,7 @@ def gen_compile_tasks(
     final_elf_cmd = [
         *compile_prefix,
         *c_compile_flags,
+        *stack_flags,
         "-o",
         str(final_elf),
         *march_flags,

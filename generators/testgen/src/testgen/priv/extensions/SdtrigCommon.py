@@ -62,6 +62,7 @@ UDB_DEFINES = [
     "#define UDB_SDTRIG_VU_AVAILABLE",
     # ICOUNT params
     *[f"#define UDB_ICOUNT_TRIG{n}_AVAILABLE" for n in range(UDB_NUM_TRIGGERS)],
+    "//#define UDB_ICOUNT_HARDWIRED_1",
     "#define SDTRIG_IMPRECISE_XEPC",
 ]
 
@@ -725,6 +726,7 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             "mcontrol6 fires when amo address == tdata2 (select=address)",
         )
     )
+    randval = random_int(32, signed=False, nonzero=True)
     for trig_num in range(UDB_NUM_TRIGGERS):
         lines.append(f"\n#ifdef UDB_SDTRIG_MCONTROL6_SUPPORTED{trig_num}")
         for tdata2 in ("scratch", 0):
@@ -740,12 +742,14 @@ def _generate_a_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                                 _add_tc(test_data, binname, coverpoint, covergroup),
                                 f"LA(x{addr_reg}, scratch) # x{addr_reg} = &scratch",
                                 _load_reg(data_reg, dataval),
+                                f"LI(x{dest_reg}, 0x{randval:x}) # data for sigupd",
                                 *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=perm, select=0),
                                 *_arch_guard(
                                     f"{insn} x{dest_reg}, x{data_reg}, (x{addr_reg}) # fire iff addr==tdata2 and xsl has load or store bit",
                                     ["zaamo"],
                                 ),
                                 "nop # spacer",
+                                write_sigupd(dest_reg, test_data),
                             ]
                         )
                         lines.extend(_ifdef_guard(insn, closing=True))
@@ -1718,10 +1722,12 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             lines.extend(
                 [
                     _add_tc(test_data, binname, coverpoint, covergroup),
+                    f"LI(x{addr_reg}, 0) # marker sum",
                     *_config_icount(temp_reg, trig_num, 9, mode, privbits=privbits),
-                    *["nop # decrement count"] * 9,
-                    "nop # fire trigger",
-                    "nop # landing pad",
+                    *[
+                        f"addi x{addr_reg}, x{addr_reg}, 0x{i:x} # marker {i}" for i in range(1, 12)
+                    ],  # has extra markers that act as spacers
+                    write_sigupd(addr_reg, test_data),
                     _csr_access(f"csrr x{data_reg}, tdata1 # read back count/pending after firing", mode),
                     *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "icount hit bit (bit 24)"),
                     *_disable_trigger(temp_reg, trig_num, mode),

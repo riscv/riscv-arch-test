@@ -647,7 +647,7 @@
     "Svukte": { "supported": false },
     "Zilx": { "supported": false },
     "Zibi": {
-      "supported": true
+      "supported": false
     },
     // This extension just asserts that the cache block size is 64 bytes.
     // If you enable this you also need to ensure `platform.cache_block_size_exp`
@@ -833,7 +833,7 @@
       "supported": false
     },
     "Zvabd": {
-      "supported": true
+      "supported": false
     },
     "Zvfbfmin": {
       "supported": true
@@ -1010,10 +1010,7 @@
       "num_triggers": 16,
       "scontext": { "supported": false }
     },
-    // The double trap extensions are not enabled by default because
-    // mstatus[MDT] is reset to 1. Unless the boot code clears it, the
-    // first trap taken will result in an unexpected double trap.
-    "Smdbltrp": { "supported": false },
+    "Smdbltrp": { "supported": true },
     "Ssdbltrp": { "supported": false },
     "Ssstrict": { "supported": false }
   }

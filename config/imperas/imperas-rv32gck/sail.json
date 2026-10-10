@@ -1008,17 +1008,14 @@
         "supported_interrupts": { "len": "xlen", "value": "0" }
       },
       // CSRs
-      "mcontext": { "supported": false },
+      "mcontext": { "supported": true },
       // The number of supported triggers.  This has to be
       // non-negative, and greater than 0 if Sdtrig is supported.
       // The model does not support more than 16 triggers.
       "num_triggers": 16,
-      "scontext": { "supported": false }
+      "scontext": { "supported": true }
     },
-    // The double trap extensions are not enabled by default because
-    // mstatus[MDT] is reset to 1. Unless the boot code clears it, the
-    // first trap taken will result in an unexpected double trap.
-    "Smdbltrp": { "supported": false },
+    "Smdbltrp": { "supported": true },
     "Ssdbltrp": { "supported": false },
     "Ssstrict": { "supported": true }
   }

@@ -52,7 +52,7 @@ def generate_unpriv_extension_tests(
     Args:
         xlen: Target XLEN (32 or 64)
         E_ext: Whether to generate RV32E tests
-        testsuite: Testsuite to generate tests for (e.g., 'I', 'M', 'ZcbM', 'MisalignD')
+        testsuite: Testsuite to generate tests for (e.g., 'I', 'M', 'Zcb', 'MisalignD')
         testplan_dir: Directory containing testplan CSV files
         output_test_dir: Directory to output generated tests
         is_vector: Set in vector test suites
@@ -77,9 +77,21 @@ def generate_unpriv_extension_tests(
     output_dir.mkdir(parents=True, exist_ok=True)
     generated_files: set[Path] = set()
 
-    ext_components, _ = canonicalize_extensions(testsuite, xlen, E_ext, sew=sew, instr_name=instructions[0].instr_name)
-    flen = get_flen_for_extensions(ext_components)
-    test_config = TestConfig(xlen=xlen, flen=flen, testsuite=testsuite, E_ext=E_ext, sew=sew)
+    # One test configuration per ExtraExtensions entry; a row with an extra extension gets its own
+    # file/covergroup name prefix, header requirements, and FLEN, but stays in this testsuite's directory.
+    test_configs: dict[tuple[str, ...], TestConfig] = {}
+    for extra_extensions in {instr_data.extra_extensions for instr_data in instructions}:
+        ext_components, _ = canonicalize_extensions(
+            testsuite, xlen, E_ext, sew=sew, instr_name=instructions[0].instr_name, extra_extensions=extra_extensions
+        )
+        test_configs[extra_extensions] = TestConfig(
+            xlen=xlen,
+            flen=get_flen_for_extensions(ext_components),
+            testsuite=testsuite,
+            E_ext=E_ext,
+            sew=sew,
+            extra_extensions=extra_extensions,
+        )
 
     # Iterate through each instruction in the testsuite; generate separate test files for each
     for instr_data in instructions:
@@ -95,7 +107,7 @@ def generate_unpriv_extension_tests(
                 instr_data.instr_name,
                 instr_data.instr_type,
                 instr_data.coverpoints,
-                test_config,
+                test_configs[instr_data.extra_extensions],
                 output_dir,
                 is_vector,
             )

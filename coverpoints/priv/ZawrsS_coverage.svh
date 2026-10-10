@@ -65,13 +65,13 @@ covergroup ZawrsS_cg with function sample(ins_t ins);
         bins one = {1};
     }
 
-    mip_any_ones: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip") ||
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "meip") ||
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "msip")
+    mip_any_ones: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")[0] ||
+                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "meip")[0] ||
+                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "msip")[0]
                            `ifdef S_SUPPORTED
-                        || get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "stip") ||
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "seip") ||
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "ssip")
+                        || get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "stip")[0] ||
+                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "seip")[0] ||
+                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "ssip")[0]
                            `endif){
         bins any_ones = {1};
     }
@@ -91,13 +91,13 @@ covergroup ZawrsS_cg with function sample(ins_t ins);
         bins zeros = {0}; // zero in all 6 interrupt enable bits
     }
     `ifdef SSTC_SUPPORTED
-    sie_stie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sie", "stie")) {
-        bins one = {1};
-    }
+        sie_stie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sie", "stie")) {
+            bins one = {1};
+        }
     `else
-    mie_mtie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")) {
-        bins one = {1};
-    }
+        mie_mtie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")) {
+            bins one = {1};
+        }
     `endif
 
     `ifdef H_SUPPORTED
@@ -112,13 +112,13 @@ covergroup ZawrsS_cg with function sample(ins_t ins);
 
     `ifdef SSTC_SUPPORTED
         `ifdef UDB_MXLEN_64
-        menvcfg_STCE_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "stce")) {
-            bins one  = {1};
-        }
+            menvcfg_STCE_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "stce")) {
+                bins one  = {1};
+            }
         `else
-        menvcfg_STCE_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "stce")) {
-            bins one  = {1};
-        }
+            menvcfg_STCE_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "stce")) {
+                bins one  = {1};
+            }
         `endif
     `endif
 

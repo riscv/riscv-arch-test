@@ -149,10 +149,10 @@ class RISCV_instruction
   endfunction
 
   // Lookup floating point register value
-  function `SIGNED_FLEN_BITS get_fpr_val(int hart, int issue, string key, int prev);
+  function bit signed [FLEN-1:0] get_fpr_val(int hart, int issue, string key, int prev);
     int idx = get_fpr_num(key);
     if (idx >= 0) begin
-      return traceDataQ[hart][issue][prev].f_wdata[idx];
+      return traceDataQ[hart][issue][prev].f_wdata[idx][FLEN-1:0];
     end
     return 0;
   endfunction
@@ -186,7 +186,7 @@ class RISCV_instruction
     endcase
   endfunction
 
-  function bit[`UDB_VLEN*4-1:0] get_vr_val_lmul8(string key);
+  function bit[`UDB_VLEN*8-1:0] get_vr_val_lmul8(string key);
     case (key)
       "v0" : return prev.v_wdata[7:0];   // { v7,  v6,  v5,  v4,  v3,  v2,  v1,  v0  };
       "v8" : return prev.v_wdata[15:8];  // { v15, v14, v13, v12, v11, v10, v9,  v8  };
@@ -482,70 +482,71 @@ class RISCV_instruction
   endfunction
 
   virtual function void add_imm(int offset);
-    current.imm = get_imm(ops[offset].key);
+    current.imm = XLEN'(get_imm(ops[offset].key));
   endfunction
 
   virtual function void add_imm2(int offset);
-    current.imm2 = get_imm(ops[offset].key);
+    current.imm2 = XLEN'(get_imm(ops[offset].key));
   endfunction
 
   virtual function void add_imm3(int offset);
-    current.imm3 = get_imm(ops[offset].key);
+    current.imm3 = XLEN'(get_imm(ops[offset].key));
   endfunction
 
   virtual function void add_imm_addr(int offset);
-    current.imm = get_imm(ops[offset].key);
+    current.imm = XLEN'(get_imm(ops[offset].key));
   endfunction
 
   virtual function void add_csr(int offset);
-    current.imm2 = get_csr_addr(current.hart, ops[offset].key);
+    // The disassembler names CSRs missing from its table by number, so take the address from the encoding
+    current.imm2 = XLEN'(current.insn[31:20]);
   endfunction
 
   virtual function void add_mem_offset(int offset);
-    current.imm = get_imm(ops[offset].key);
+    current.imm = XLEN'(get_imm(ops[offset].key));
   endfunction
 
   virtual function void add_mem_address();
     current.mem_addr = current.rs1_val + current.imm;
   endfunction
 
-  virtual function void add_fd(int offset, int finx=0);
+  virtual function void add_fd(int offset, bit finx=0);
     current.has_fd = 1;
     current.fd = ops[offset].key;
     if (finx) begin
-      current.fd_val = current.x_wdata[get_gpr_num(ops[offset].key)];
-      current.fd_val_pre = prev.x_wdata[get_gpr_num(ops[offset].key)];
+      current.fd_val = FLEN'(current.x_wdata[get_gpr_num(ops[offset].key)]);
+      current.fd_val_pre = FLEN'(prev.x_wdata[get_gpr_num(ops[offset].key)]);
     end else begin
       current.fd_val = current.f_wdata[get_fpr_num(ops[offset].key)];
       current.fd_val_pre = prev.f_wdata[get_fpr_num(ops[offset].key)];
     end
   endfunction
 
-  virtual function void add_fs1(int offset, int finx=0);
+  virtual function void add_fs1(int offset, bit finx=0);
     current.has_fs1 = 1;
     current.fs1 = ops[offset].key;
     if (finx) begin
-      current.fs1_val = prev.x_wdata[get_gpr_num(ops[offset].key)];
+      current.fs1_val = FLEN'(prev.x_wdata[get_gpr_num(ops[offset].key)]);
     end else begin
       current.fs1_val = prev.f_wdata[get_fpr_num(ops[offset].key)];
     end
   endfunction
 
-  virtual function void add_fs2(int offset, int finx=0);
+  virtual function void add_fs2(int offset, bit finx=0);
     current.has_fs2 = 1;
     current.fs2 = ops[offset].key;
     if (finx) begin
-      current.fs2_val = prev.x_wdata[get_gpr_num(ops[offset].key)];
+      current.fs2_val = FLEN'(prev.x_wdata[get_gpr_num(ops[offset].key)]);
     end else begin
       current.fs2_val = prev.f_wdata[get_fpr_num(ops[offset].key)];
     end
   endfunction
 
-  virtual function void add_fs3(int offset, int finx=0);
+  virtual function void add_fs3(int offset, bit finx=0);
     current.has_fs3 = 1;
     current.fs3 = ops[offset].key;
     if (finx) begin
-      current.fs3_val = prev.x_wdata[get_gpr_num(ops[offset].key)];
+      current.fs3_val = FLEN'(prev.x_wdata[get_gpr_num(ops[offset].key)]);
     end else begin
       current.fs3_val = prev.f_wdata[get_fpr_num(ops[offset].key)];
     end

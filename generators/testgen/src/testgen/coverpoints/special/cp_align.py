@@ -7,7 +7,12 @@
 
 """cp_align coverpoint generator."""
 
-from testgen.asm.helpers import load_int_reg, write_sigupd
+from testgen.asm.helpers import (
+    check_store_target,
+    fill_store_target,
+    load_int_reg,
+    write_sigupd,
+)
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
@@ -30,6 +35,7 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
     for alignment in alignments:
         if instr_type == "L":
             params = generate_random_params(test_data, instr_type, exclude_regs=[0], immval=alignment)
+            params.temp_reg = test_data.int_regs.get_register(exclude_regs=[0, 2])
             assert params.rs1 is not None, "rs1 must be provided for L-type instruction"
             assert params.rd is not None, "rd must be provided for L-type instruction"
             assert params.immval is not None and params.temp_val is not None and params.temp_reg is not None, (
@@ -59,28 +65,19 @@ def make_align(instr_name: str, instr_type: str, coverpoint: str, test_data: Tes
             assert params.temp_reg is not None, "temp_reg must be provided for S-type instructions"
             assert params.immval is not None, "immval must be provided for S-type instructions"
 
-            tc.sigupd_count += 3  # extra space in signature region is needed
-            offset = 8
+            # Stores reach byte 7 of scratch, so fill and check 8 bytes
             tc.code.extend(
                 [
                     f"# Testcase: {coverpoint} (imm[2:0] = {params.immval:03b})",
                     load_int_reg("rs2", params.rs2, params.rs2val, test_data),
+                    f"LA(x{params.rs1}, scratch) # point base at scratch",
+                    *fill_store_target(params.rs1, params.temp_reg, test_data, area_bytes=8),
                     test_data.add_testcase(f"b{alignment}", coverpoint),
-                    f"{instr_name} x{params.rs2}, {params.immval}(x{test_data.int_regs.sig_reg}) # perform store",
-                    f"addi x{test_data.int_regs.sig_reg}, x{test_data.int_regs.sig_reg}, {offset} # increment signature pointer",
-                    f"LREG x{params.temp_reg}, -{offset}(x{test_data.int_regs.sig_reg}) # load stored value for checking",
-                    write_sigupd(params.temp_reg, test_data),
+                    f"{instr_name} x{params.rs2}, {params.immval}(x{params.rs1}) # perform store",
+                    *check_store_target(params.rs1, params.temp_reg, test_data, area_bytes=8),
+                    "",
                 ]
             )
-            # For XLEN == 32, two sigupds are needed to handle alignments up to 7 that enter a second word
-            if test_data.xlen == 32:
-                tc.code.extend(
-                    [
-                        f"LREG x{params.temp_reg}, -{offset}(x{test_data.int_regs.sig_reg}) # load stored value for checking",
-                        write_sigupd(params.temp_reg, test_data),
-                    ]
-                )
-            tc.code.append("")
 
         elif instr_type == "A":
             params = generate_random_params(test_data, instr_type, exclude_regs=[0])

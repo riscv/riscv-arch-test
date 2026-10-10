@@ -1,0 +1,1 @@
+run-hazard3.sh --elf

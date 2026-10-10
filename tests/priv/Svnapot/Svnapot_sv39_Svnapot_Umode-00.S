@@ -19,6 +19,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
+#define TRAP_SIGUPD_COUNT 1500
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -210,15 +211,15 @@ rvtest_slvl1_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Svnapot_cp_sv39_Svnapot_Umode_test1_access1_store_str: .string "\"test: 28; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access1_store\""
-Svnapot_cp_sv39_Svnapot_Umode_test1_access1_load_str: .string "\"test: 29; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access1_load\""
-Svnapot_cp_sv39_Svnapot_Umode_test1_access1_exec_str: .string "\"test: 30; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access1_exec\""
-Svnapot_cp_sv39_Svnapot_Umode_test1_access2_store_str: .string "\"test: 31; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access2_store\""
-Svnapot_cp_sv39_Svnapot_Umode_test1_access2_load_str: .string "\"test: 32; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access2_load\""
-Svnapot_cp_sv39_Svnapot_Umode_test1_access2_exec_str: .string "\"test: 33; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access2_exec\""
-Svnapot_cp_sv39_Svnapot_Umode_test1_access3_store_str: .string "\"test: 34; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access3_store\""
-Svnapot_cp_sv39_Svnapot_Umode_test1_access3_load_str: .string "\"test: 35; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access3_load\""
-Svnapot_cp_sv39_Svnapot_Umode_test1_access3_exec_str: .string "\"test: 36; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access3_exec\""
+Svnapot_cp_sv39_Svnapot_Umode_test1_access1_store_str: .string "\"test: 34; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access1_store\""
+Svnapot_cp_sv39_Svnapot_Umode_test1_access1_load_str: .string "\"test: 35; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access1_load\""
+Svnapot_cp_sv39_Svnapot_Umode_test1_access1_exec_str: .string "\"test: 36; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access1_exec\""
+Svnapot_cp_sv39_Svnapot_Umode_test1_access2_store_str: .string "\"test: 37; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access2_store\""
+Svnapot_cp_sv39_Svnapot_Umode_test1_access2_load_str: .string "\"test: 38; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access2_load\""
+Svnapot_cp_sv39_Svnapot_Umode_test1_access2_exec_str: .string "\"test: 39; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access2_exec\""
+Svnapot_cp_sv39_Svnapot_Umode_test1_access3_store_str: .string "\"test: 40; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access3_store\""
+Svnapot_cp_sv39_Svnapot_Umode_test1_access3_load_str: .string "\"test: 41; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access3_load\""
+Svnapot_cp_sv39_Svnapot_Umode_test1_access3_exec_str: .string "\"test: 42; cg: Svnapot; cp: cp_sv39_Svnapot_Umode; bin: test1_access3_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

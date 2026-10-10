@@ -17,13 +17,13 @@ covergroup ExceptionsSv_cg with function sample(ins_t ins);
 
     // building blocks for the main coverpoints
 
-    instr_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") == INSTRUCTION_PAGE_FAULT) {
+    instr_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") == `UDB_MXLEN'(INSTRUCTION_PAGE_FAULT)) {
         // auto fill 0/1
     }
-    load_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") == LOAD_PAGE_FAULT) {
+    load_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") == `UDB_MXLEN'(LOAD_PAGE_FAULT)) {
         // auto fill 0/1
     }
-    store_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") == STORE_AMO_PAGE_FAULT) {
+    store_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") == `UDB_MXLEN'(STORE_AMO_PAGE_FAULT)) {
         // auto fill 0/1
     }
     // The PC of the target: a fetch that spans two parcels may report either parcel in virt_adr_i
@@ -114,17 +114,17 @@ covergroup ExceptionsSv_cg with function sample(ins_t ins);
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         // Accesses land at an offset into the faulting region, which is at least 128 bytes
         `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
-            i_phys_address_nonexistent: coverpoint ((ins.current.phys_adr_i - `RVMODEL_ACCESS_FAULT_ADDRESS) < 128) {
+            i_phys_address_nonexistent: coverpoint ((64'(ins.current.phys_adr_i) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS)) < 64'd128) {
                 // auto fill 1/0 for the physical address being valid
             }
-            d_phys_address_nonexistent: coverpoint ((ins.current.phys_adr_d - `RVMODEL_ACCESS_FAULT_ADDRESS) < 128) {
+            d_phys_address_nonexistent: coverpoint ((64'(ins.current.phys_adr_d) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS)) < 64'd128) {
                 // auto fill 1/0 for the physical address being valid
             }
         `else
-            i_phys_address_nonexistent: coverpoint ((ins.current.phys_adr_i - `RVMODEL_ACCESS_FAULT_ADDRESS) < 128) {
+            i_phys_address_nonexistent: coverpoint ((64'(ins.current.phys_adr_i) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS)) < 64'd128) {
                 // auto fill 1/0 for the physical address being valid
             }
-            d_phys_address_nonexistent: coverpoint ((ins.current.phys_adr_d - `RVMODEL_ACCESS_FAULT_ADDRESS) < 128) {
+            d_phys_address_nonexistent: coverpoint ((64'(ins.current.phys_adr_d) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS)) < 64'd128) {
                 // auto fill 1/0 for the physical address being valid
             }
         `endif

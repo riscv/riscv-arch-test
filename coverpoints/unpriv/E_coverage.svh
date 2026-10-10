@@ -467,7 +467,7 @@ covergroup E_beq_cg with function sample(ins_t ins);
         bins b_8 = {8};
         bins b_16 = {16};
         bins b_2048 = {2048};
-        bins b_4092 = {4092}; // not hit yet because gcc is not generating a branch by this much correctly
+        bins b_4092 = {4092};
         bins b_m4 = {-4};
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
@@ -582,7 +582,7 @@ covergroup E_bge_cg with function sample(ins_t ins);
         bins b_8 = {8};
         bins b_16 = {16};
         bins b_2048 = {2048};
-        bins b_4092 = {4092}; // not hit yet because gcc is not generating a branch by this much correctly
+        bins b_4092 = {4092};
         bins b_m4 = {-4};
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
@@ -697,7 +697,7 @@ covergroup E_bgeu_cg with function sample(ins_t ins);
         bins b_8 = {8};
         bins b_16 = {16};
         bins b_2048 = {2048};
-        bins b_4092 = {4092}; // not hit yet because gcc is not generating a branch by this much correctly
+        bins b_4092 = {4092};
         bins b_m4 = {-4};
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
@@ -812,7 +812,7 @@ covergroup E_blt_cg with function sample(ins_t ins);
         bins b_8 = {8};
         bins b_16 = {16};
         bins b_2048 = {2048};
-        bins b_4092 = {4092}; // not hit yet because gcc is not generating a branch by this much correctly
+        bins b_4092 = {4092};
         bins b_m4 = {-4};
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
@@ -927,7 +927,7 @@ covergroup E_bltu_cg with function sample(ins_t ins);
         bins b_8 = {8};
         bins b_16 = {16};
         bins b_2048 = {2048};
-        bins b_4092 = {4092}; // not hit yet because gcc is not generating a branch by this much correctly
+        bins b_4092 = {4092};
         bins b_m4 = {-4};
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
@@ -1042,7 +1042,7 @@ covergroup E_bne_cg with function sample(ins_t ins);
         bins b_8 = {8};
         bins b_16 = {16};
         bins b_2048 = {2048};
-        bins b_4092 = {4092}; // not hit yet because gcc is not generating a branch by this much correctly
+        bins b_4092 = {4092};
         bins b_m4 = {-4};
         bins b_m8 = {-8};
         bins b_m4096 = {-4096};
@@ -1150,7 +1150,7 @@ covergroup E_fence_cg with function sample(ins_t ins);
     // Custom coverpoints for fence
 
     // Encodings with a nonzero fm, rd or rs1 field. fm = 0, rd = rs1 = x0 is cp_custom_fence_pred_succ.
-    cp_custom_fence_reserved : coverpoint ins.current.insn  {
+    cp_custom_fence_reserved : coverpoint ins.current.insn  iff (ins.trap == 0 )  {
         bins fence_tso_rw_rw  = {32'h8330000f}; // fence.tso
         bins fence_nonzerors1 = {32'h0331000f}; // nonzero rs should behave as fence
         bins fence_nonzerord  = {32'h0330008f}; // nonzero rd should behave as fence
@@ -1159,7 +1159,7 @@ covergroup E_fence_cg with function sample(ins_t ins);
         bins fence_hint0b     = {32'h0301000f}; // fence with rd = x0, rs1 != x0, fm = 0, succ = 0 is a hint
         bins fence_hint1a     = {32'h0030008f}; // fence with rd != x0, rs1 = x0, fm = 0, pred = 0 is a hint
         bins fence_hint1b     = {32'h0300008f}; // fence with rd != x0, rs1 = x0, fm = 0, succ = 0 is a hint
-        bins fence_tso_r_r    = {32'h8110000f}; // fence.tso with r, r should behave as fence
+        bins fence_tso_w_w    = {32'h8110000f}; // fm = 1000 with pred = succ = W is reserved and should behave as fence
     }
 
     // Every pred x succ combination with fm = 0 and rd = rs1 = x0.
@@ -4414,5 +4414,6 @@ function void e_sample(int hart, int issue, ins_t ins);
     case (traceDataQ[hart][issue][0].inst_name)
 `ifdef UDB_MXLEN_64
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

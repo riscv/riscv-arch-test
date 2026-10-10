@@ -1,0 +1,55 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: ExceptionsSv
+source: https://docs.google.com/spreadsheets/d/1W95I4jPbuQBnXzDdIZtOG4kae8vi7djpKtJXWCXPxMU/edit?gid=270777025#gid=270777025
+description: |
+  The following coverpoints should be exercised in supervisor mode
+coverpoints:
+  - name: cp_instr_page_fault_s
+    goal: Instruction Page Fault
+    description: jump to address that causes instruction page fault
+  - name: cp_load_page_fault_s
+    goal: Load Page Fault
+    description: load from address that causes load page fault
+  - name: cp_store_page_fault_s
+    goal: Store Page Fault
+    description: store to address that causes store page fault
+  - name: cp_misaligned_priority_s
+    goal: Priority of exceptions
+    description: Attempt lw and sw and fetch from memory location causing {access fault and page fault}, {page fault and misaligned}, {access fault, page fault, misaligned}
+  - name: cp_misaligned_load_page_fault_s
+    goal: Page fault on each part of a misaligned access
+    description: |-
+      Check behavior of a misaligned load spanning a page boundary, in which one of the two pages faults.
+      Set up two consecutive virtual kilopages, with both combinations of one page RWX=111 and the other RWX=000.
+      Issue misaligned lw crossing page boundary.
+      If misaligned accesses are supported, expect a misaligned load fault.
+      If misaligned access is supported, expect a load page fault.
+      stval could be 0, or should be the address of the load if the fault occurs in the first page,
+      or the address of the start of the second virtual page if the fault occurs in the second page.
+    bins: 2 bins
+  - name: cp_misaligned_store_page_fault_s
+    goal: Page fault on each part of a misaligned access
+    description: Same as cp_misaligned_load_page_fault_u but with sw and store faults.
+    bins: 2 bins
+  - name: cp_misaligned_instr_page_fault_s
+    goal: Page fault on each part of a misaligned instruction
+    description: |-
+      Same setup as cp_misaligned_load_page_fault_s
+      Issue jalr to 4-byte instruction on odd multiple of 2 address spanning the two virtual pages.
+      If Zca is not supported, expect a misaligned instruction fault.
+      If Zca is supported, expect a instruction fetch page fault.
+      See cp_misaligned_load_page_fault_s about possible MTVAL outcomes.
+    bins: 2 bins
+  - heading: The following coverpoints should be exercised in user mode
+  - name: cp_instr_page_fault_u
+    goal: Instruction Page Fault
+    description: jump to address that causes instruction page fault
+  - name: cp_load_page_fault_u
+    goal: Load Page Fault
+    description: load from address that causes load page fault
+  - name: cp_store_page_fault_u
+    goal: Store Page Fault
+    description: store to address that causes store page fault
+  - name: cp_misaligned_priority_u
+    goal: Priority of exceptions
+    description: Attempt lw and sw and fetch from memory location causing {access fault and page fault}, {page fault and misaligned}, {access fault, page fault, misaligned}

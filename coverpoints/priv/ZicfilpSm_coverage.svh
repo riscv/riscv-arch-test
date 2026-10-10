@@ -17,7 +17,7 @@ covergroup Zicfilp_Sm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    `include "Zicfilp_coverpoints.svh"
+    `include "general/Zicfilp_coverpoints.svh"
 
     `ifdef XLEN64
         elp_before: coverpoint get_csr_val(ins.hart, ins.issue,

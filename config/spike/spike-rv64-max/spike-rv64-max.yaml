@@ -4,7 +4,7 @@ $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
 name: spike-rv64-max
-description: rv64 with all non-conflicting extensions enabled
+description: rv64 with all non-conflicting & non-experimental extensions enabled
 implemented_extensions:
   - { name: A, version: "= 2.1.0" }
   - { name: B, version: "= 1.0.0" }

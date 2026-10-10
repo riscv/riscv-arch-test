@@ -36,199 +36,145 @@ RVTEST_BEGIN
 
 # Testcase: cp_misalign (scratch+0 window, offset 0)
   LA(x10, scratch) # load base address
-  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x10
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_0: x14 = 0x0000000044556677
-  sw x14, 0(x10) # store at offset 0
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_1: x14 = 0x0000000000112233
-  sw x14, 4(x10) # store at offset 4
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_2: x14 = 0x0000000089abcdef
-  sw x14, 8(x10) # store at offset 8
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_3: x14 = 0x0000000001234567
-  sw x14, 12(x10) # store at offset 12
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x0f1e2d3c4b5a6978
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0xd2691ea74db836e5
+  SREG x14, 0(x10) # fill store target with canary
+  SREG x14, 8(x10) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x0f1f2d3c4b5a6879
 MisalignD_fsd_cg_cp_misalign_0:
   fsd f14, 0(x10) # perform store to scratch memory
   # Check all 16 bytes of the window as signature
-  LREG x14, 0(x10)
+  LREG x14, 0(x10) # load store target for checking
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, MisalignD_fsd_cg_cp_misalign_0, MisalignD_fsd_cg_cp_misalign_0_str)
-  LREG x14, 8(x10)
+  LREG x14, 8(x10) # load store target for checking
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, MisalignD_fsd_cg_cp_misalign_0, MisalignD_fsd_cg_cp_misalign_0_str)
 
 # Testcase: cp_misalign (scratch+0 window, offset 1)
   LA(x10, scratch) # load base address
-  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x10
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_0: x14 = 0x0000000044556677
-  sw x14, 0(x10) # store at offset 0
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_1: x14 = 0x0000000000112233
-  sw x14, 4(x10) # store at offset 4
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_2: x14 = 0x0000000089abcdef
-  sw x14, 8(x10) # store at offset 8
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_3: x14 = 0x0000000001234567
-  sw x14, 12(x10) # store at offset 12
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x0f1e2d3c4b5a6978
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0xd2691ea74db836e5
+  SREG x14, 0(x10) # fill store target with canary
+  SREG x14, 8(x10) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x0f1f2d3c4b5a6879
 MisalignD_fsd_cg_cp_misalign_1:
   fsd f14, 1(x10) # perform store to scratch memory
   # Check all 16 bytes of the window as signature
-  LREG x14, 0(x10)
+  LREG x14, 0(x10) # load store target for checking
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, MisalignD_fsd_cg_cp_misalign_1, MisalignD_fsd_cg_cp_misalign_1_str)
-  LREG x14, 8(x10)
+  LREG x14, 8(x10) # load store target for checking
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, MisalignD_fsd_cg_cp_misalign_1, MisalignD_fsd_cg_cp_misalign_1_str)
 
 # Testcase: cp_misalign (scratch+0 window, offset 2)
   LA(x10, scratch) # load base address
-  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x10
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_0: x14 = 0x0000000044556677
-  sw x14, 0(x10) # store at offset 0
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_1: x14 = 0x0000000000112233
-  sw x14, 4(x10) # store at offset 4
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_2: x14 = 0x0000000089abcdef
-  sw x14, 8(x10) # store at offset 8
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_3: x14 = 0x0000000001234567
-  sw x14, 12(x10) # store at offset 12
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x0f1e2d3c4b5a6978
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0xd2691ea74db836e5
+  SREG x14, 0(x10) # fill store target with canary
+  SREG x14, 8(x10) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x0f1f2d3c4b5a6879
 MisalignD_fsd_cg_cp_misalign_2:
   fsd f14, 2(x10) # perform store to scratch memory
   # Check all 16 bytes of the window as signature
-  LREG x14, 0(x10)
+  LREG x14, 0(x10) # load store target for checking
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, MisalignD_fsd_cg_cp_misalign_2, MisalignD_fsd_cg_cp_misalign_2_str)
-  LREG x14, 8(x10)
+  LREG x14, 8(x10) # load store target for checking
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, MisalignD_fsd_cg_cp_misalign_2, MisalignD_fsd_cg_cp_misalign_2_str)
 
 # Testcase: cp_misalign (scratch+0 window, offset 3)
   LA(x10, scratch) # load base address
-  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x10
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_0: x14 = 0x0000000044556677
-  sw x14, 0(x10) # store at offset 0
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_1: x14 = 0x0000000000112233
-  sw x14, 4(x10) # store at offset 4
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_2: x14 = 0x0000000089abcdef
-  sw x14, 8(x10) # store at offset 8
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_3: x14 = 0x0000000001234567
-  sw x14, 12(x10) # store at offset 12
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x0f1e2d3c4b5a6978
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0xd2691ea74db836e5
+  SREG x14, 0(x10) # fill store target with canary
+  SREG x14, 8(x10) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x0f1f2d3c4b5a6879
 MisalignD_fsd_cg_cp_misalign_3:
   fsd f14, 3(x10) # perform store to scratch memory
   # Check all 16 bytes of the window as signature
-  LREG x14, 0(x10)
+  LREG x14, 0(x10) # load store target for checking
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, MisalignD_fsd_cg_cp_misalign_3, MisalignD_fsd_cg_cp_misalign_3_str)
-  LREG x14, 8(x10)
+  LREG x14, 8(x10) # load store target for checking
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, MisalignD_fsd_cg_cp_misalign_3, MisalignD_fsd_cg_cp_misalign_3_str)
 
 # Testcase: cp_misalign (scratch+0 window, offset 4)
   LA(x10, scratch) # load base address
-  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x10
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_0: x14 = 0x0000000044556677
-  sw x14, 0(x10) # store at offset 0
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_1: x14 = 0x0000000000112233
-  sw x14, 4(x10) # store at offset 4
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_2: x14 = 0x0000000089abcdef
-  sw x14, 8(x10) # store at offset 8
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_3: x14 = 0x0000000001234567
-  sw x14, 12(x10) # store at offset 12
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x0f1e2d3c4b5a6978
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0xd2691ea74db836e5
+  SREG x14, 0(x10) # fill store target with canary
+  SREG x14, 8(x10) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x0f1f2d3c4b5a6879
 MisalignD_fsd_cg_cp_misalign_4:
   fsd f14, 4(x10) # perform store to scratch memory
   # Check all 16 bytes of the window as signature
-  LREG x14, 0(x10)
+  LREG x14, 0(x10) # load store target for checking
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, MisalignD_fsd_cg_cp_misalign_4, MisalignD_fsd_cg_cp_misalign_4_str)
-  LREG x14, 8(x10)
+  LREG x14, 8(x10) # load store target for checking
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, MisalignD_fsd_cg_cp_misalign_4, MisalignD_fsd_cg_cp_misalign_4_str)
 
 # Testcase: cp_misalign (scratch+0 window, offset 5)
   LA(x10, scratch) # load base address
-  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x10
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_0: x14 = 0x0000000044556677
-  sw x14, 0(x10) # store at offset 0
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_1: x14 = 0x0000000000112233
-  sw x14, 4(x10) # store at offset 4
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_2: x14 = 0x0000000089abcdef
-  sw x14, 8(x10) # store at offset 8
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_3: x14 = 0x0000000001234567
-  sw x14, 12(x10) # store at offset 12
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x0f1e2d3c4b5a6978
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0xd2691ea74db836e5
+  SREG x14, 0(x10) # fill store target with canary
+  SREG x14, 8(x10) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x0f1f2d3c4b5a6879
 MisalignD_fsd_cg_cp_misalign_5:
   fsd f14, 5(x10) # perform store to scratch memory
   # Check all 16 bytes of the window as signature
-  LREG x14, 0(x10)
+  LREG x14, 0(x10) # load store target for checking
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, MisalignD_fsd_cg_cp_misalign_5, MisalignD_fsd_cg_cp_misalign_5_str)
-  LREG x14, 8(x10)
+  LREG x14, 8(x10) # load store target for checking
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, MisalignD_fsd_cg_cp_misalign_5, MisalignD_fsd_cg_cp_misalign_5_str)
 
 # Testcase: cp_misalign (scratch+0 window, offset 6)
   LA(x10, scratch) # load base address
-  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x10
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_0: x14 = 0x0000000044556677
-  sw x14, 0(x10) # store at offset 0
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_1: x14 = 0x0000000000112233
-  sw x14, 4(x10) # store at offset 4
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_2: x14 = 0x0000000089abcdef
-  sw x14, 8(x10) # store at offset 8
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_3: x14 = 0x0000000001234567
-  sw x14, 12(x10) # store at offset 12
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x0f1e2d3c4b5a6978
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0xd2691ea74db836e5
+  SREG x14, 0(x10) # fill store target with canary
+  SREG x14, 8(x10) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x0f1f2d3c4b5a6879
 MisalignD_fsd_cg_cp_misalign_6:
   fsd f14, 6(x10) # perform store to scratch memory
   # Check all 16 bytes of the window as signature
-  LREG x14, 0(x10)
+  LREG x14, 0(x10) # load store target for checking
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, MisalignD_fsd_cg_cp_misalign_6, MisalignD_fsd_cg_cp_misalign_6_str)
-  LREG x14, 8(x10)
+  LREG x14, 8(x10) # load store target for checking
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, MisalignD_fsd_cg_cp_misalign_6, MisalignD_fsd_cg_cp_misalign_6_str)
 
 # Testcase: cp_misalign (scratch+0 window, offset 7)
   LA(x10, scratch) # load base address
-  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x10
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_0: x14 = 0x0000000044556677
-  sw x14, 0(x10) # store at offset 0
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_1: x14 = 0x0000000000112233
-  sw x14, 4(x10) # store at offset 4
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_2: x14 = 0x0000000089abcdef
-  sw x14, 8(x10) # store at offset 8
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_3: x14 = 0x0000000001234567
-  sw x14, 12(x10) # store at offset 12
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x0f1e2d3c4b5a6978
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0xd2691ea74db836e5
+  SREG x14, 0(x10) # fill store target with canary
+  SREG x14, 8(x10) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x0f1f2d3c4b5a6879
 MisalignD_fsd_cg_cp_misalign_7:
   fsd f14, 7(x10) # perform store to scratch memory
   # Check all 16 bytes of the window as signature
-  LREG x14, 0(x10)
+  LREG x14, 0(x10) # load store target for checking
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, MisalignD_fsd_cg_cp_misalign_7, MisalignD_fsd_cg_cp_misalign_7_str)
-  LREG x14, 8(x10)
+  LREG x14, 8(x10) # load store target for checking
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, MisalignD_fsd_cg_cp_misalign_7, MisalignD_fsd_cg_cp_misalign_7_str)
 
 # Testcase: cp_misalign (scratch+0 window, offset 8)
   LA(x10, scratch) # load base address
-  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x10
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_0: x14 = 0x0000000044556677
-  sw x14, 0(x10) # store at offset 0
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_1: x14 = 0x0000000000112233
-  sw x14, 4(x10) # store at offset 4
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_2: x14 = 0x0000000089abcdef
-  sw x14, 8(x10) # store at offset 8
-  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_3: x14 = 0x0000000001234567
-  sw x14, 12(x10) # store at offset 12
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x0f1e2d3c4b5a6978
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load store canary: x14 = 0xd2691ea74db836e5
+  SREG x14, 0(x10) # fill store target with canary
+  SREG x14, 8(x10) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f14) # load fs2: f14 = 0x0f1f2d3c4b5a6879
 MisalignD_fsd_cg_cp_misalign_8_wrap:
   fsd f14, 8(x10) # perform store to scratch memory
   # Check all 16 bytes of the window as signature
-  LREG x14, 0(x10)
+  LREG x14, 0(x10) # load store target for checking
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, MisalignD_fsd_cg_cp_misalign_8_wrap, MisalignD_fsd_cg_cp_misalign_8_wrap_str)
-  LREG x14, 8(x10)
+  LREG x14, 8(x10) # load store target for checking
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, MisalignD_fsd_cg_cp_misalign_8_wrap, MisalignD_fsd_cg_cp_misalign_8_wrap_str)
 
@@ -240,207 +186,153 @@ MisalignD_fsd_cg_cp_misalign_8_wrap:
 # Testcase: cp_misalign_cross64_double (scratch+56 window, offset 0)
   LA(x12, scratch) # load base address
   addi x12, x12, 56 # scratch+56 window
-  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x12
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_0: x13 = 0x0000000044556677
-  sw x13, 0(x12) # store at offset 0
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_1: x13 = 0x0000000000112233
-  sw x13, 4(x12) # store at offset 4
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_2: x13 = 0x0000000089abcdef
-  sw x13, 8(x12) # store at offset 8
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_3: x13 = 0x0000000001234567
-  sw x13, 12(x12) # store at offset 12
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x0f1e2d3c4b5a6978
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0xd2691ea74db836e5
+  SREG x13, 0(x12) # fill store target with canary
+  SREG x13, 8(x12) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x0f1f2d3c4b5a6879
 MisalignD_fsd_cg_cp_misalign_cross64_double_no_0:
   fsd f13, 0(x12) # perform store to scratch memory
   # Check all 16 bytes of the window as signature
-  LREG x13, 0(x12)
+  LREG x13, 0(x12) # load store target for checking
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, MisalignD_fsd_cg_cp_misalign_cross64_double_no_0, MisalignD_fsd_cg_cp_misalign_cross64_double_no_0_str)
-  LREG x13, 8(x12)
+  LREG x13, 8(x12) # load store target for checking
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, MisalignD_fsd_cg_cp_misalign_cross64_double_no_0, MisalignD_fsd_cg_cp_misalign_cross64_double_no_0_str)
 
 # Testcase: cp_misalign_cross64_double (scratch+56 window, offset 1)
   LA(x12, scratch) # load base address
   addi x12, x12, 56 # scratch+56 window
-  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x12
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_0: x13 = 0x0000000044556677
-  sw x13, 0(x12) # store at offset 0
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_1: x13 = 0x0000000000112233
-  sw x13, 4(x12) # store at offset 4
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_2: x13 = 0x0000000089abcdef
-  sw x13, 8(x12) # store at offset 8
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_3: x13 = 0x0000000001234567
-  sw x13, 12(x12) # store at offset 12
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x0f1e2d3c4b5a6978
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0xd2691ea74db836e5
+  SREG x13, 0(x12) # fill store target with canary
+  SREG x13, 8(x12) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x0f1f2d3c4b5a6879
 MisalignD_fsd_cg_cp_misalign_cross64_double_yes_1:
   fsd f13, 1(x12) # perform store to scratch memory
   # Check all 16 bytes of the window as signature
-  LREG x13, 0(x12)
+  LREG x13, 0(x12) # load store target for checking
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_1, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_1_str)
-  LREG x13, 8(x12)
+  LREG x13, 8(x12) # load store target for checking
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_1, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_1_str)
 
 # Testcase: cp_misalign_cross64_double (scratch+56 window, offset 2)
   LA(x12, scratch) # load base address
   addi x12, x12, 56 # scratch+56 window
-  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x12
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_0: x13 = 0x0000000044556677
-  sw x13, 0(x12) # store at offset 0
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_1: x13 = 0x0000000000112233
-  sw x13, 4(x12) # store at offset 4
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_2: x13 = 0x0000000089abcdef
-  sw x13, 8(x12) # store at offset 8
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_3: x13 = 0x0000000001234567
-  sw x13, 12(x12) # store at offset 12
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x0f1e2d3c4b5a6978
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0xd2691ea74db836e5
+  SREG x13, 0(x12) # fill store target with canary
+  SREG x13, 8(x12) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x0f1f2d3c4b5a6879
 MisalignD_fsd_cg_cp_misalign_cross64_double_yes_2:
   fsd f13, 2(x12) # perform store to scratch memory
   # Check all 16 bytes of the window as signature
-  LREG x13, 0(x12)
+  LREG x13, 0(x12) # load store target for checking
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_2, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_2_str)
-  LREG x13, 8(x12)
+  LREG x13, 8(x12) # load store target for checking
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_2, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_2_str)
 
 # Testcase: cp_misalign_cross64_double (scratch+56 window, offset 3)
   LA(x12, scratch) # load base address
   addi x12, x12, 56 # scratch+56 window
-  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x12
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_0: x13 = 0x0000000044556677
-  sw x13, 0(x12) # store at offset 0
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_1: x13 = 0x0000000000112233
-  sw x13, 4(x12) # store at offset 4
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_2: x13 = 0x0000000089abcdef
-  sw x13, 8(x12) # store at offset 8
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_3: x13 = 0x0000000001234567
-  sw x13, 12(x12) # store at offset 12
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x0f1e2d3c4b5a6978
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0xd2691ea74db836e5
+  SREG x13, 0(x12) # fill store target with canary
+  SREG x13, 8(x12) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x0f1f2d3c4b5a6879
 MisalignD_fsd_cg_cp_misalign_cross64_double_yes_3:
   fsd f13, 3(x12) # perform store to scratch memory
   # Check all 16 bytes of the window as signature
-  LREG x13, 0(x12)
+  LREG x13, 0(x12) # load store target for checking
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_3, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_3_str)
-  LREG x13, 8(x12)
+  LREG x13, 8(x12) # load store target for checking
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_3, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_3_str)
 
 # Testcase: cp_misalign_cross64_double (scratch+56 window, offset 4)
   LA(x12, scratch) # load base address
   addi x12, x12, 56 # scratch+56 window
-  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x12
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_0: x13 = 0x0000000044556677
-  sw x13, 0(x12) # store at offset 0
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_1: x13 = 0x0000000000112233
-  sw x13, 4(x12) # store at offset 4
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_2: x13 = 0x0000000089abcdef
-  sw x13, 8(x12) # store at offset 8
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_3: x13 = 0x0000000001234567
-  sw x13, 12(x12) # store at offset 12
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x0f1e2d3c4b5a6978
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0xd2691ea74db836e5
+  SREG x13, 0(x12) # fill store target with canary
+  SREG x13, 8(x12) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x0f1f2d3c4b5a6879
 MisalignD_fsd_cg_cp_misalign_cross64_double_yes_4:
   fsd f13, 4(x12) # perform store to scratch memory
   # Check all 16 bytes of the window as signature
-  LREG x13, 0(x12)
+  LREG x13, 0(x12) # load store target for checking
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_4, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_4_str)
-  LREG x13, 8(x12)
+  LREG x13, 8(x12) # load store target for checking
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_4, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_4_str)
 
 # Testcase: cp_misalign_cross64_double (scratch+56 window, offset 5)
   LA(x12, scratch) # load base address
   addi x12, x12, 56 # scratch+56 window
-  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x12
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_0: x13 = 0x0000000044556677
-  sw x13, 0(x12) # store at offset 0
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_1: x13 = 0x0000000000112233
-  sw x13, 4(x12) # store at offset 4
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_2: x13 = 0x0000000089abcdef
-  sw x13, 8(x12) # store at offset 8
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_3: x13 = 0x0000000001234567
-  sw x13, 12(x12) # store at offset 12
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x0f1e2d3c4b5a6978
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0xd2691ea74db836e5
+  SREG x13, 0(x12) # fill store target with canary
+  SREG x13, 8(x12) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x0f1f2d3c4b5a6879
 MisalignD_fsd_cg_cp_misalign_cross64_double_yes_5:
   fsd f13, 5(x12) # perform store to scratch memory
   # Check all 16 bytes of the window as signature
-  LREG x13, 0(x12)
+  LREG x13, 0(x12) # load store target for checking
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_5, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_5_str)
-  LREG x13, 8(x12)
+  LREG x13, 8(x12) # load store target for checking
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_5, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_5_str)
 
 # Testcase: cp_misalign_cross64_double (scratch+56 window, offset 6)
   LA(x12, scratch) # load base address
   addi x12, x12, 56 # scratch+56 window
-  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x12
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_0: x13 = 0x0000000044556677
-  sw x13, 0(x12) # store at offset 0
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_1: x13 = 0x0000000000112233
-  sw x13, 4(x12) # store at offset 4
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_2: x13 = 0x0000000089abcdef
-  sw x13, 8(x12) # store at offset 8
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_3: x13 = 0x0000000001234567
-  sw x13, 12(x12) # store at offset 12
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x0f1e2d3c4b5a6978
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0xd2691ea74db836e5
+  SREG x13, 0(x12) # fill store target with canary
+  SREG x13, 8(x12) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x0f1f2d3c4b5a6879
 MisalignD_fsd_cg_cp_misalign_cross64_double_yes_6:
   fsd f13, 6(x12) # perform store to scratch memory
   # Check all 16 bytes of the window as signature
-  LREG x13, 0(x12)
+  LREG x13, 0(x12) # load store target for checking
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_6, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_6_str)
-  LREG x13, 8(x12)
+  LREG x13, 8(x12) # load store target for checking
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_6, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_6_str)
 
 # Testcase: cp_misalign_cross64_double (scratch+56 window, offset 7)
   LA(x12, scratch) # load base address
   addi x12, x12, 56 # scratch+56 window
-  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x12
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_0: x13 = 0x0000000044556677
-  sw x13, 0(x12) # store at offset 0
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_1: x13 = 0x0000000000112233
-  sw x13, 4(x12) # store at offset 4
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_2: x13 = 0x0000000089abcdef
-  sw x13, 8(x12) # store at offset 8
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_3: x13 = 0x0000000001234567
-  sw x13, 12(x12) # store at offset 12
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x0f1e2d3c4b5a6978
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0xd2691ea74db836e5
+  SREG x13, 0(x12) # fill store target with canary
+  SREG x13, 8(x12) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x0f1f2d3c4b5a6879
 MisalignD_fsd_cg_cp_misalign_cross64_double_yes_7:
   fsd f13, 7(x12) # perform store to scratch memory
   # Check all 16 bytes of the window as signature
-  LREG x13, 0(x12)
+  LREG x13, 0(x12) # load store target for checking
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_7, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_7_str)
-  LREG x13, 8(x12)
+  LREG x13, 8(x12) # load store target for checking
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_7, MisalignD_fsd_cg_cp_misalign_cross64_double_yes_7_str)
 
 # Testcase: cp_misalign_cross64_double (scratch+56 window, offset 8)
   LA(x12, scratch) # load base address
   addi x12, x12, 56 # scratch+56 window
-  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x12
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_0: x13 = 0x0000000044556677
-  sw x13, 0(x12) # store at offset 0
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_1: x13 = 0x0000000000112233
-  sw x13, 4(x12) # store at offset 4
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_2: x13 = 0x0000000089abcdef
-  sw x13, 8(x12) # store at offset 8
-  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load testdata_3: x13 = 0x0000000001234567
-  sw x13, 12(x12) # store at offset 12
-  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x0f1e2d3c4b5a6978
+  RVTEST_TESTDATA_LOAD_INT(x3, x13) # load store canary: x13 = 0xd2691ea74db836e5
+  SREG x13, 0(x12) # fill store target with canary
+  SREG x13, 8(x12) # fill store target with canary
+  RVTEST_TESTDATA_LOAD_FLOAT_DOUBLE(x3, f13) # load fs2: f13 = 0x0f1f2d3c4b5a6879
 MisalignD_fsd_cg_cp_misalign_cross64_double_no_8:
   fsd f13, 8(x12) # perform store to scratch memory
   # Check all 16 bytes of the window as signature
-  LREG x13, 0(x12)
+  LREG x13, 0(x12) # load store target for checking
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, MisalignD_fsd_cg_cp_misalign_cross64_double_no_8, MisalignD_fsd_cg_cp_misalign_cross64_double_no_8_str)
-  LREG x13, 8(x12)
+  LREG x13, 8(x12) # load store target for checking
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, MisalignD_fsd_cg_cp_misalign_cross64_double_no_8, MisalignD_fsd_cg_cp_misalign_cross64_double_no_8_str)
 
@@ -452,96 +344,42 @@ RVTEST_CODE_END
 RVTEST_DATA_BEGIN
 
 // Test data
-.dword 0x0000000044556677
-.dword 0x0000000000112233
-.dword 0x0000000089abcdef
-.dword 0x0000000001234567
-.dword 0x0f1e2d3c4b5a6978
-.dword 0x0000000044556677
-.dword 0x0000000000112233
-.dword 0x0000000089abcdef
-.dword 0x0000000001234567
-.dword 0x0f1e2d3c4b5a6978
-.dword 0x0000000044556677
-.dword 0x0000000000112233
-.dword 0x0000000089abcdef
-.dword 0x0000000001234567
-.dword 0x0f1e2d3c4b5a6978
-.dword 0x0000000044556677
-.dword 0x0000000000112233
-.dword 0x0000000089abcdef
-.dword 0x0000000001234567
-.dword 0x0f1e2d3c4b5a6978
-.dword 0x0000000044556677
-.dword 0x0000000000112233
-.dword 0x0000000089abcdef
-.dword 0x0000000001234567
-.dword 0x0f1e2d3c4b5a6978
-.dword 0x0000000044556677
-.dword 0x0000000000112233
-.dword 0x0000000089abcdef
-.dword 0x0000000001234567
-.dword 0x0f1e2d3c4b5a6978
-.dword 0x0000000044556677
-.dword 0x0000000000112233
-.dword 0x0000000089abcdef
-.dword 0x0000000001234567
-.dword 0x0f1e2d3c4b5a6978
-.dword 0x0000000044556677
-.dword 0x0000000000112233
-.dword 0x0000000089abcdef
-.dword 0x0000000001234567
-.dword 0x0f1e2d3c4b5a6978
-.dword 0x0000000044556677
-.dword 0x0000000000112233
-.dword 0x0000000089abcdef
-.dword 0x0000000001234567
-.dword 0x0f1e2d3c4b5a6978
-.dword 0x0000000044556677
-.dword 0x0000000000112233
-.dword 0x0000000089abcdef
-.dword 0x0000000001234567
-.dword 0x0f1e2d3c4b5a6978
-.dword 0x0000000044556677
-.dword 0x0000000000112233
-.dword 0x0000000089abcdef
-.dword 0x0000000001234567
-.dword 0x0f1e2d3c4b5a6978
-.dword 0x0000000044556677
-.dword 0x0000000000112233
-.dword 0x0000000089abcdef
-.dword 0x0000000001234567
-.dword 0x0f1e2d3c4b5a6978
-.dword 0x0000000044556677
-.dword 0x0000000000112233
-.dword 0x0000000089abcdef
-.dword 0x0000000001234567
-.dword 0x0f1e2d3c4b5a6978
-.dword 0x0000000044556677
-.dword 0x0000000000112233
-.dword 0x0000000089abcdef
-.dword 0x0000000001234567
-.dword 0x0f1e2d3c4b5a6978
-.dword 0x0000000044556677
-.dword 0x0000000000112233
-.dword 0x0000000089abcdef
-.dword 0x0000000001234567
-.dword 0x0f1e2d3c4b5a6978
-.dword 0x0000000044556677
-.dword 0x0000000000112233
-.dword 0x0000000089abcdef
-.dword 0x0000000001234567
-.dword 0x0f1e2d3c4b5a6978
-.dword 0x0000000044556677
-.dword 0x0000000000112233
-.dword 0x0000000089abcdef
-.dword 0x0000000001234567
-.dword 0x0f1e2d3c4b5a6978
-.dword 0x0000000044556677
-.dword 0x0000000000112233
-.dword 0x0000000089abcdef
-.dword 0x0000000001234567
-.dword 0x0f1e2d3c4b5a6978
+.dword 0xd2691ea74db836e5
+.dword 0x0f1f2d3c4b5a6879
+.dword 0xd2691ea74db836e5
+.dword 0x0f1f2d3c4b5a6879
+.dword 0xd2691ea74db836e5
+.dword 0x0f1f2d3c4b5a6879
+.dword 0xd2691ea74db836e5
+.dword 0x0f1f2d3c4b5a6879
+.dword 0xd2691ea74db836e5
+.dword 0x0f1f2d3c4b5a6879
+.dword 0xd2691ea74db836e5
+.dword 0x0f1f2d3c4b5a6879
+.dword 0xd2691ea74db836e5
+.dword 0x0f1f2d3c4b5a6879
+.dword 0xd2691ea74db836e5
+.dword 0x0f1f2d3c4b5a6879
+.dword 0xd2691ea74db836e5
+.dword 0x0f1f2d3c4b5a6879
+.dword 0xd2691ea74db836e5
+.dword 0x0f1f2d3c4b5a6879
+.dword 0xd2691ea74db836e5
+.dword 0x0f1f2d3c4b5a6879
+.dword 0xd2691ea74db836e5
+.dword 0x0f1f2d3c4b5a6879
+.dword 0xd2691ea74db836e5
+.dword 0x0f1f2d3c4b5a6879
+.dword 0xd2691ea74db836e5
+.dword 0x0f1f2d3c4b5a6879
+.dword 0xd2691ea74db836e5
+.dword 0x0f1f2d3c4b5a6879
+.dword 0xd2691ea74db836e5
+.dword 0x0f1f2d3c4b5a6879
+.dword 0xd2691ea74db836e5
+.dword 0x0f1f2d3c4b5a6879
+.dword 0xd2691ea74db836e5
+.dword 0x0f1f2d3c4b5a6879
 
 // Testcase strings
 MisalignD_fsd_cg_cp_misalign_0_str: .string "\"test: 1; cg: MisalignD_fsd_cg; cp: cp_misalign; bin: 0\""

@@ -624,7 +624,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 21)  # TW:   Timeout Wait
         | (1 << 22)  # TSR:  Trap SRET
         | (1 << 23)  # SPELP: Supervisor Previous Expect Landing Pad
-        | (0 << 24)  # SDT: not yet supported by Sail; TODO change to 1 when Ssdbltrp implemented
+        | (1 << 24)  # SDT: Supervisor Disable Trap
         | (1 << 31)  # SD for RV32 (probably shouldn't be tested for RV64, but seems to work ok)
         | (0 << 32)  # UXL:  User-Mode XLEN not supported by Sail.  Test in xlen suite.
         | (0 << 34)  # SXL:  Supervisor-Mode XLEN  not supported by Sail.  Test in xlen suite.
@@ -633,7 +633,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 38)
         | (1 << 39)
         | (1 << 41)  # MPELP: Machine Previous Expect Landing Pad
-        | (0 << 42)  # MDT:   not yet supported by Sail; TODO change to 1 when Smdbltrp implemented
+        | (1 << 42)  # MDT: Machine Disable Trap
         | (1 << 63)  # SD for RV64
     )
     mseccfg_mask = (
@@ -653,7 +653,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 6)  # CBCFE: Cache Block Clean and Flush Enable
         | (1 << 7)  # CBZE: Cache Block Zero Enable
         | (3 << 32)  # PMM: Pointer Masking
-        | (0 << 59)  # Double Trap not supported by Sail; TODO change to 1 when Smdbltrp implemented
+        | (1 << 59)  # DTE: Double Trap Enable
         | (0 << 60)  # Counter Delegation Smcdeleg not supported by Sail; TODO change to 1 when Smcdeleg implemented
         | (1 << 61)  # ADUE: A/D
         | (1 << 62)  # PBMTE: Page-Based Memory Type Enable
@@ -810,6 +810,43 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             maskedwrites=True,
         )
     )
+
+    # The walk runs with menvcfg.DTE = 0 (set by the boot code), where SDT is read-only zero.
+    # Check that SDT is writable once DTE = 1.
+    tc = test_data.new_test_chunk(test_chunks)
+    r_envcfg, r_status, r_bit, r_check = test_data.int_regs.get_registers(4)
+    tc.code.extend(
+        [
+            "",
+            "#ifdef SSDBLTRP_SUPPORTED",
+            "# mstatus.SDT with menvcfg.DTE = 1",
+            "#if __riscv_xlen == 64",
+            f"csrr x{r_envcfg}, menvcfg",
+            f"LI(x{r_bit}, {1 << 59})",
+            f"csrs menvcfg, x{r_bit}    # DTE = 1",
+            "#else",
+            f"csrr x{r_envcfg}, menvcfgh",
+            f"LI(x{r_bit}, {1 << 27})",
+            f"csrs menvcfgh, x{r_bit}    # DTE = 1",
+            "#endif",
+            f"csrr x{r_status}, mstatus",
+            f"LI(x{r_bit}, {1 << 24})",
+            f"csrs mstatus, x{r_bit}    # SDT = 1",
+            test_data.add_testcase("csrs_sdt", "cp_mstatus_sdt_dte", covergroup),
+            gen_csr_read_sigupd(r_check, ("mstatus", 1 << 24), test_data, r_bit),
+            f"csrc mstatus, x{r_bit}    # SDT = 0",
+            test_data.add_testcase("csrc_sdt", "cp_mstatus_sdt_dte", covergroup),
+            gen_csr_read_sigupd(r_check, ("mstatus", 1 << 24), test_data, r_bit),
+            f"csrw mstatus, x{r_status}",
+            "#if __riscv_xlen == 64",
+            f"csrw menvcfg, x{r_envcfg}",
+            "#else",
+            f"csrw menvcfgh, x{r_envcfg}",
+            "#endif",
+            "#endif // SSDBLTRP_SUPPORTED",
+        ]
+    )
+    test_data.int_regs.return_registers([r_envcfg, r_status, r_bit, r_check])
 
     for csr in csrm:
         if csr[0] in SM_VADDR_CSRS:

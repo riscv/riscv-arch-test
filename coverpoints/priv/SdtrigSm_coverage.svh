@@ -68,6 +68,37 @@ covergroup SdtrigSm_trig_module_reg_cg with function sample(ins_t ins);
     cp_tinfo_read_only:       cross priv_mode_m, triggernum, csr_tinfo, csr_access;                         // NTRIG
 endgroup
 
+`ifdef UDB_TCONTROL_AVAILABLE
+covergroup SdtrigSm_tcontrol_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_sdtrig_coverpoints.svh"
+
+    mte: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tcontrol", "mte")[0] {
+        bins disabled = {1'b0};
+        bins enabled  = {1'b1};
+    }
+    mpte: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tcontrol", "mpte")[0] {
+        bins disabled = {1'b0};
+        bins enabled  = {1'b1};
+    }
+    tdata2_pc: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.pc_rdata) {
+        bins pc = {1'b1};
+    }
+    illegal_insn: coverpoint ins.current.insn iff (ins.current.trap) {
+        bins zero = {32'h0};
+    }
+    mret: coverpoint ins.current.insn {
+        bins mret = {MRET};
+    }
+
+    // main coverpoints
+    cp_tcontrol_enable:     cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_execute_on, tdata1_select_adr, tdata1_action_breakpoint, tdata1_chain_disabled, tdata2_pc, mte;  // NTRIG * 2 mte
+    cp_tcontrol_mtrap:      cross priv_mode_m, mte, mpte, illegal_insn;                                                       // 2 mte * 2 mpte
+    cp_tcontrol_mret:       cross priv_mode_m, mte, mpte, mret;                                                               // 2 mte * 2 mpte
+endgroup
+`endif
+
 covergroup SdtrigSm_mcontrol6_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -79,13 +110,6 @@ covergroup SdtrigSm_mcontrol6_cg with function sample(ins_t ins);
     tdata1_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "m")[0] {
         bins disabled = {1'b0};
         bins enabled  = {1'b1};
-    }
-    // a trigger disabled for M-mode or chained to the next one cannot fire on its own
-    tdata1_m_on: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "m")[0] {
-        bins on = {1'b1};
-    }
-    tdata1_chain_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "chain")[0] {
-        bins disabled = {1'b0};
     }
     tdata1_xsl_store: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "execute")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "store")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "load")[0]} {
         bins store = {3'b010};
@@ -107,6 +131,22 @@ covergroup SdtrigSm_mcontrol6_cg with function sample(ins_t ins);
     tdata2_pc: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.pc_rdata) {
         bins pc   = {1'b1};
         bins zero = {1'b0} iff (ins.current.csr[CSR_TDATA2] == '0);
+    }
+    tdata2_ls_adr: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.rs1_val     ? 2'd0 :
+                               ins.current.csr[CSR_TDATA2] == ins.current.rs1_val + 8 ? 2'd1 :
+                               ins.current.csr[CSR_TDATA2] == '0                      ? 2'd2 : 2'd3) {
+        bins scratch        = {2'd0};
+        bins scratch_plus_8 = {2'd1};
+        bins zero           = {2'd2};
+    }
+    tdata1_size_ls: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "size")[2:0] {
+        bins any = {3'd0};
+        `ifdef UDB_SDTRIG_MCONTROL6_SIZE_AVAILABLE
+            bins b8  = {3'd1};
+            bins b16 = {3'd2};
+            bins b32 = {3'd3};
+            bins b64 = {3'd5};
+        `endif
     }
     tdata2_exec_data: coverpoint ins.current.csr[CSR_TDATA2] {
         bins addi_hint = {32'h00008013};
@@ -272,24 +312,27 @@ covergroup SdtrigSm_mcontrol6_cg with function sample(ins_t ins);
     }
 
     // main coverpoints
-    cp_sdtrig_mcontrol6_priv_mode: cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_adr, tdata1_xsl_store, tdata2_adr, sw { // NTRIG * 2 m modes
+    cp_mcontrol6_priv_mode: cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_adr, tdata1_xsl_store, tdata2_adr, sw { // NTRIG * 2 m modes
         ignore_bins no_match = binsof(tdata2_adr.zero);
     }
-    cp_sdtrig_mcontrol6_execute_adr:     cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_adr, tdata1_xsl, tdata2_pc, exec_adr_target;                                            // NTRIG * 8 xsl * 2 tdata2
-    cp_sdtrig_mcontrol6_load_store_adr:  cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_adr, tdata1_xsl, tdata2_adr, lw_sw;                                                     // NTRIG * 8 xsl * 2 tdata2 * 2 instrs
-    cp_sdtrig_mcontrol6_execute_data:    cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_data, tdata1_xsl, tdata2_exec_data, addi_hint;                                          // NTRIG * 8 xsl * 2 tdata2
-    cp_sdtrig_mcontrol6_load_store_data: cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_data, tdata1_xsl, lw_sw;                                                                // NTRIG * 8 xsl * 2 instrs
-    cp_sdtrig_mcontrol6_execute_size:    cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_select_data, tdata1_xsl_load_store_execute, tdata1_size, tdata2_exec_size, exec_size_instr;               // NTRIG * 7 sizes * 2 tdata2 * 2 instrs
-    cp_sdtrig_mcontrol6_load_store_size: cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_select_adr, tdata1_xsl_load_store, tdata1_size, tdata2_adr, load_store_instr;                  // NTRIG * 7 sizes * 2 tdata2 * instrs
-    cp_sdtrig_mcontrol6_match:           cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_size_any, tdata1_select_data, tdata1_xsl_store, tdata1_match_cmp, store_data_cmp, store_xlen;                   // NTRIG * 4 match * 5 values
+    cp_mcontrol6_execute_adr:     cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_adr, tdata1_xsl, tdata2_pc, exec_adr_target;                                            // NTRIG * 8 xsl * 2 tdata2
+    cp_mcontrol6_load_store_adr:  cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_adr, tdata1_xsl, tdata2_ls_adr, store_offset, lw_sw;                                    // NTRIG * 8 xsl * 3 tdata2 * 2 offsets * 2 instrs
+    cp_mcontrol6_execute_data:    cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_data, tdata1_xsl, tdata2_exec_data, addi_hint;                                          // NTRIG * 8 xsl * 2 tdata2
+    cp_mcontrol6_load_store_data: cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_select_data, tdata1_xsl, lw_sw;                                                                // NTRIG * 8 xsl * 2 instrs
+    cp_mcontrol6_execute_size:    cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_select_data, tdata1_xsl_load_store_execute, tdata1_size, tdata2_exec_size, exec_size_instr;               // NTRIG * 7 sizes * 2 tdata2 * 2 instrs
+    cp_mcontrol6_load_store_size: cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_match_equal, tdata1_select_adr, tdata1_xsl_load_store, tdata1_size_ls, tdata2_adr, load_store_instr;               // NTRIG * 5 sizes * 2 tdata2 * instrs
+    cp_mcontrol6_match:           cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_size_any, tdata1_select_data, tdata1_xsl_store, tdata1_match_cmp, store_data_cmp, store_xlen;                   // NTRIG * 4 match * 5 values
     `ifdef UDB_SDTRIG_MCONTROL6_MATCH_AVAILABLE
-        cp_sdtrig_mcontrol6_match_napot: cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_size_any, tdata1_select_data, tdata1_xsl_store, tdata1_match_napot, tdata2_napot, store_data_napot, store_xlen; // NTRIG * 2 match * (min(maskmax6, XLEN-1) - 1) tdata2 * 3 values
-        cp_sdtrig_mcontrol6_match_mask:  cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_size_any, tdata1_select_data, tdata1_xsl_store, tdata1_match_mask, store_data_mask, store_xlen;                 // NTRIG * 4 match * 11 values
+        cp_mcontrol6_match_napot: cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_size_any, tdata1_select_data, tdata1_xsl_store, tdata1_match_napot, tdata2_napot, store_data_napot, store_xlen; // NTRIG * 2 match * (min(maskmax6, XLEN-1) - 1) tdata2 * 3 values
+        cp_mcontrol6_match_mask:  cross priv_mode_m, triggernum, tdata1_type_mcontrol6, tdata1_m_on, tdata1_chain_disabled, tdata1_size_any, tdata1_select_data, tdata1_xsl_store, tdata1_match_mask, store_data_mask, store_xlen;                 // NTRIG * 4 match * 11 values
     `endif
-    cp_sdtrig_mcontrol6_chain_adr:       cross priv_mode_m, triggernum_chain, tdata1_type_mcontrol6, tdata1_m_on, tdata1_select_data, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_xsl_store, store_data_chain, store_offset, sw;                       // (NTRIG-1) * 2 data * 2 adr
+    cp_mcontrol6_chain_adr:       cross priv_mode_m, triggernum_chain, tdata1_type_mcontrol6, tdata1_m_on, tdata1_select_data, tdata1_chain_disabled, tdata1_match_equal, tdata1_size_any, tdata1_xsl_store, store_data_chain, store_offset, sw;                       // (NTRIG-1) * 2 data * 2 adr
 endgroup
 
 function void sdtrigsm_sample(int hart, int issue, ins_t ins);
     SdtrigSm_trig_module_reg_cg.sample(ins);
     SdtrigSm_mcontrol6_cg.sample(ins);
+    `ifdef UDB_TCONTROL_AVAILABLE
+        SdtrigSm_tcontrol_cg.sample(ins);
+    `endif
 endfunction

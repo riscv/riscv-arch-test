@@ -913,6 +913,7 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
       "type" : val = (val >> 60) & 64'hf;
 `endif
       // mcontrol6 fields
+      "action" : val = (val >> 12) & 'hf;
       "chain" : val = (val >> 11) & 'h1;
       "execute" : val = (val >> 2) & 'h1;
       "load" : val = val & 'h1;

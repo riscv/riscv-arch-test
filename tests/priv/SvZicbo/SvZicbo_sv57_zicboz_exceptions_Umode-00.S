@@ -34,8 +34,6 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 
-main:
-
 // Virtual addresses for code and test regions
 
 // Virtual address of rvtest_data_1
@@ -52,62 +50,63 @@ main:
 // accessible, so the code is mapped again at va_rvtest_code_begin. Registering
 // that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
 // to can fetch from.
+// SAVE_AREA_SETUP takes the M-mode save area in a0 and clobbers t0 and t1.
   LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL4)
 
   SATP_SETUP_RV64(sv57) // Enable address translation.
   sfence.vma
 
-  LI(t0, MENVCFG_CBZE)
-  # T-SBI call to execute instruction: csrs menvcfg, t0
-  # Copy rs1 (x5) to a1 for T-SBI call
-  mv a1, x5
+  LI(x13, MENVCFG_CBZE)
+  # T-SBI call to execute instruction: csrs menvcfg, x13
+  # Copy rs1 (x13) to a1 for T-SBI call
+  mv a1, x13
 
   # Copy rs2 (x0) to a2 for T-SBI call
   mv a2, x0
 
-  LI(a0, 0x30a5a073) # csrs menvcfg, t0
+  LI(a0, 0x30a5a073) # csrs menvcfg, x13
   ecall # T-SBI call to execute instruction at suitable privilege level
-  csrs senvcfg, t0
+  csrs senvcfg, x13
 
-  LI(a2, 0x800) // Test signature initialization
+  LI(x8, 0x800) // Test signature initialization
 
   // Test case 1: PTE.V unset | Test in U-Mode | expected = Store page fault
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data, LEVEL4)
   sfence.vma
 
-  LI(a5, (va_data >> 48) << 48)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 16
-  srli a0, a0, 16
-  add a5, a5, a0
+  LI(x9, (va_data >> 48) << 48)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 16
+  srli x13, x13, 16
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test1_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test1_zero, SvZicbo_cg_cp_zicboz_test1_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test1_zero, SvZicbo_cg_cp_zicboz_test1_zero_str)
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 2: Reserved W+X without R | Test in U-Mode | expected = Store page fault
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V), va_data, LEVEL4)
   sfence.vma
 
-  LI(a5, (va_data >> 48) << 48)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 16
-  srli a0, a0, 16
-  add a5, a5, a0
+  LI(x9, (va_data >> 48) << 48)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 16
+  srli x13, x13, 16
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test2_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test2_zero, SvZicbo_cg_cp_zicboz_test2_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test2_zero, SvZicbo_cg_cp_zicboz_test2_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -115,129 +114,129 @@ SvZicbo_cg_cp_zicboz_test2_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_V), va_data, LEVEL4)
   sfence.vma
 
-  LI(a5, (va_data >> 48) << 48)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 16
-  srli a0, a0, 16
-  add a5, a5, a0
+  LI(x9, (va_data >> 48) << 48)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 16
+  srli x13, x13, 16
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test3_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test3_zero, SvZicbo_cg_cp_zicboz_test3_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test3_zero, SvZicbo_cg_cp_zicboz_test3_zero_str)
 #endif
 
   // Test case 4: RX permissions | Test in U-Mode | expected = Store page fault
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_data, LEVEL4)
   sfence.vma
 
-  LI(a5, (va_data >> 48) << 48)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 16
-  srli a0, a0, 16
-  add a5, a5, a0
+  LI(x9, (va_data >> 48) << 48)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 16
+  srli x13, x13, 16
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test4_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test4_zero, SvZicbo_cg_cp_zicboz_test4_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test4_zero, SvZicbo_cg_cp_zicboz_test4_zero_str)
 
   // Test case 5: Supervisor page from U-Mode | Test in U-Mode | expected = Store page fault
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
   sfence.vma
 
-  LI(a5, (va_data >> 48) << 48)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 16
-  srli a0, a0, 16
-  add a5, a5, a0
+  LI(x9, (va_data >> 48) << 48)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 16
+  srli x13, x13, 16
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test5_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test5_zero, SvZicbo_cg_cp_zicboz_test5_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test5_zero, SvZicbo_cg_cp_zicboz_test5_zero_str)
 
   // Test case 6: PTE.A unset | Test in U-Mode | expected = Store page fault
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
   sfence.vma
 
-  LI(a5, (va_data >> 48) << 48)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 16
-  srli a0, a0, 16
-  add a5, a5, a0
+  LI(x9, (va_data >> 48) << 48)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 16
+  srli x13, x13, 16
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test6_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test6_zero, SvZicbo_cg_cp_zicboz_test6_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test6_zero, SvZicbo_cg_cp_zicboz_test6_zero_str)
 
   // Test case 7: PTE.D unset | Test in U-Mode | expected = No fault
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
   sfence.vma
 
-  LI(a5, (va_data >> 48) << 48)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 16
-  srli a0, a0, 16
-  add a5, a5, a0
+  LI(x9, (va_data >> 48) << 48)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 16
+  srli x13, x13, 16
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test7_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test7_zero, SvZicbo_cg_cp_zicboz_test7_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test7_zero, SvZicbo_cg_cp_zicboz_test7_zero_str)
 
   // Test case 8: Misaligned superpage | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
   sfence.vma
 
-  LI(a5, (va_data >> 48) << 48)
-  LI(a0, 0x0)
-  slli a0, a0, 16
-  srli a0, a0, 16
-  add a5, a5, a0
+  LI(x9, (va_data >> 48) << 48)
+  LI(x13, 0x0)
+  slli x13, x13, 16
+  srli x13, x13, 16
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test8_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test8_zero, SvZicbo_cg_cp_zicboz_test8_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test8_zero, SvZicbo_cg_cp_zicboz_test8_zero_str)
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
   // Test case 9: Leaf PTE points to the access-fault region | Test in U-Mode | expected = Store access fault
   SUPERPAGE_PTE_SETUP_SV57(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
   sfence.vma
 
-  LI(a5, (va_data >> 48) << 48)
-  LI(a0, RVMODEL_ACCESS_FAULT_ADDRESS)
-  slli a0, a0, 16
-  srli a0, a0, 16
-  add a5, a5, a0
+  LI(x9, (va_data >> 48) << 48)
+  LI(x13, RVMODEL_ACCESS_FAULT_ADDRESS)
+  slli x13, x13, 16
+  srli x13, x13, 16
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test9_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test9_zero, SvZicbo_cg_cp_zicboz_test9_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test9_zero, SvZicbo_cg_cp_zicboz_test9_zero_str)
 #endif
 
   // Test case 10: PTE.V unset | Test in U-Mode | expected = Store page fault
@@ -245,19 +244,19 @@ SvZicbo_cg_cp_zicboz_test9_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x9, (va_data >> 39) << 39)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test10_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test10_zero, SvZicbo_cg_cp_zicboz_test10_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test10_zero, SvZicbo_cg_cp_zicboz_test10_zero_str)
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 11: Reserved W+X without R | Test in U-Mode | expected = Store page fault
@@ -265,19 +264,19 @@ SvZicbo_cg_cp_zicboz_test10_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x9, (va_data >> 39) << 39)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test11_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test11_zero, SvZicbo_cg_cp_zicboz_test11_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test11_zero, SvZicbo_cg_cp_zicboz_test11_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -286,19 +285,19 @@ SvZicbo_cg_cp_zicboz_test11_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x9, (va_data >> 39) << 39)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test12_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test12_zero, SvZicbo_cg_cp_zicboz_test12_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test12_zero, SvZicbo_cg_cp_zicboz_test12_zero_str)
 #endif
 
   // Test case 13: RX permissions | Test in U-Mode | expected = Store page fault
@@ -306,95 +305,95 @@ SvZicbo_cg_cp_zicboz_test12_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x9, (va_data >> 39) << 39)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test13_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test13_zero, SvZicbo_cg_cp_zicboz_test13_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test13_zero, SvZicbo_cg_cp_zicboz_test13_zero_str)
 
   // Test case 14: Supervisor page from U-Mode | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x9, (va_data >> 39) << 39)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test14_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test14_zero, SvZicbo_cg_cp_zicboz_test14_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test14_zero, SvZicbo_cg_cp_zicboz_test14_zero_str)
 
   // Test case 15: PTE.A unset | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x9, (va_data >> 39) << 39)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test15_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test15_zero, SvZicbo_cg_cp_zicboz_test15_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test15_zero, SvZicbo_cg_cp_zicboz_test15_zero_str)
 
   // Test case 16: PTE.D unset | Test in U-Mode | expected = No fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x9, (va_data >> 39) << 39)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test16_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test16_zero, SvZicbo_cg_cp_zicboz_test16_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test16_zero, SvZicbo_cg_cp_zicboz_test16_zero_str)
 
   // Test case 17: Misaligned superpage | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LI(a0, 0x0)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x9, (va_data >> 39) << 39)
+  LI(x13, 0x0)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test17_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test17_zero, SvZicbo_cg_cp_zicboz_test17_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test17_zero, SvZicbo_cg_cp_zicboz_test17_zero_str)
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
   // Test case 18: Access fault on the page-table walk | Test in U-Mode | expected = Store access fault
@@ -402,19 +401,19 @@ SvZicbo_cg_cp_zicboz_test17_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x9, (va_data >> 39) << 39)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test18_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test18_zero, SvZicbo_cg_cp_zicboz_test18_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test18_zero, SvZicbo_cg_cp_zicboz_test18_zero_str)
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
@@ -423,19 +422,19 @@ SvZicbo_cg_cp_zicboz_test18_zero:
   SUPERPAGE_PTE_SETUP_SV57(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LI(a0, RVMODEL_ACCESS_FAULT_ADDRESS)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x9, (va_data >> 39) << 39)
+  LI(x13, RVMODEL_ACCESS_FAULT_ADDRESS)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test19_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test19_zero, SvZicbo_cg_cp_zicboz_test19_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test19_zero, SvZicbo_cg_cp_zicboz_test19_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -444,19 +443,19 @@ SvZicbo_cg_cp_zicboz_test19_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x9, (va_data >> 39) << 39)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test20_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test20_zero, SvZicbo_cg_cp_zicboz_test20_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test20_zero, SvZicbo_cg_cp_zicboz_test20_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -465,19 +464,19 @@ SvZicbo_cg_cp_zicboz_test20_zero:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x9, (va_data >> 39) << 39)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test21_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test21_zero, SvZicbo_cg_cp_zicboz_test21_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test21_zero, SvZicbo_cg_cp_zicboz_test21_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -486,19 +485,19 @@ SvZicbo_cg_cp_zicboz_test21_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x9, (va_data >> 39) << 39)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 25
+  srli x13, x13, 25
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test22_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test22_zero, SvZicbo_cg_cp_zicboz_test22_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test22_zero, SvZicbo_cg_cp_zicboz_test22_zero_str)
 #endif
 
   // Test case 23: PTE.V unset | Test in U-Mode | expected = Store page fault
@@ -507,19 +506,19 @@ SvZicbo_cg_cp_zicboz_test22_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x9, (va_data >> 30) << 30)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 34
+  srli x13, x13, 34
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test23_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test23_zero, SvZicbo_cg_cp_zicboz_test23_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test23_zero, SvZicbo_cg_cp_zicboz_test23_zero_str)
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 24: Reserved W+X without R | Test in U-Mode | expected = Store page fault
@@ -528,19 +527,19 @@ SvZicbo_cg_cp_zicboz_test23_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x9, (va_data >> 30) << 30)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 34
+  srli x13, x13, 34
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test24_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test24_zero, SvZicbo_cg_cp_zicboz_test24_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test24_zero, SvZicbo_cg_cp_zicboz_test24_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -550,19 +549,19 @@ SvZicbo_cg_cp_zicboz_test24_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x9, (va_data >> 30) << 30)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 34
+  srli x13, x13, 34
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test25_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test25_zero, SvZicbo_cg_cp_zicboz_test25_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test25_zero, SvZicbo_cg_cp_zicboz_test25_zero_str)
 #endif
 
   // Test case 26: RX permissions | Test in U-Mode | expected = Store page fault
@@ -571,19 +570,19 @@ SvZicbo_cg_cp_zicboz_test25_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x9, (va_data >> 30) << 30)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 34
+  srli x13, x13, 34
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test26_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test26_zero, SvZicbo_cg_cp_zicboz_test26_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test26_zero, SvZicbo_cg_cp_zicboz_test26_zero_str)
 
   // Test case 27: Supervisor page from U-Mode | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -591,19 +590,19 @@ SvZicbo_cg_cp_zicboz_test26_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x9, (va_data >> 30) << 30)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 34
+  srli x13, x13, 34
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test27_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test27_zero, SvZicbo_cg_cp_zicboz_test27_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test27_zero, SvZicbo_cg_cp_zicboz_test27_zero_str)
 
   // Test case 28: PTE.A unset | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -611,19 +610,19 @@ SvZicbo_cg_cp_zicboz_test27_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x9, (va_data >> 30) << 30)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 34
+  srli x13, x13, 34
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test28_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test28_zero, SvZicbo_cg_cp_zicboz_test28_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test28_zero, SvZicbo_cg_cp_zicboz_test28_zero_str)
 
   // Test case 29: PTE.D unset | Test in U-Mode | expected = No fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -631,19 +630,19 @@ SvZicbo_cg_cp_zicboz_test28_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x9, (va_data >> 30) << 30)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 34
+  srli x13, x13, 34
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test29_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test29_zero, SvZicbo_cg_cp_zicboz_test29_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test29_zero, SvZicbo_cg_cp_zicboz_test29_zero_str)
 
   // Test case 30: Misaligned superpage | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -651,19 +650,19 @@ SvZicbo_cg_cp_zicboz_test29_zero:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LI(a0, 0x0)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x9, (va_data >> 30) << 30)
+  LI(x13, 0x0)
+  slli x13, x13, 34
+  srli x13, x13, 34
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test30_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test30_zero, SvZicbo_cg_cp_zicboz_test30_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test30_zero, SvZicbo_cg_cp_zicboz_test30_zero_str)
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
   // Test case 31: Access fault on the page-table walk | Test in U-Mode | expected = Store access fault
@@ -672,19 +671,19 @@ SvZicbo_cg_cp_zicboz_test30_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x9, (va_data >> 30) << 30)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 34
+  srli x13, x13, 34
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test31_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test31_zero, SvZicbo_cg_cp_zicboz_test31_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test31_zero, SvZicbo_cg_cp_zicboz_test31_zero_str)
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
@@ -694,19 +693,19 @@ SvZicbo_cg_cp_zicboz_test31_zero:
   SUPERPAGE_PTE_SETUP_SV57(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LI(a0, RVMODEL_ACCESS_FAULT_ADDRESS)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x9, (va_data >> 30) << 30)
+  LI(x13, RVMODEL_ACCESS_FAULT_ADDRESS)
+  slli x13, x13, 34
+  srli x13, x13, 34
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test32_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test32_zero, SvZicbo_cg_cp_zicboz_test32_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test32_zero, SvZicbo_cg_cp_zicboz_test32_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -716,19 +715,19 @@ SvZicbo_cg_cp_zicboz_test32_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x9, (va_data >> 30) << 30)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 34
+  srli x13, x13, 34
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test33_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test33_zero, SvZicbo_cg_cp_zicboz_test33_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test33_zero, SvZicbo_cg_cp_zicboz_test33_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -738,19 +737,19 @@ SvZicbo_cg_cp_zicboz_test33_zero:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x9, (va_data >> 30) << 30)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 34
+  srli x13, x13, 34
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test34_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test34_zero, SvZicbo_cg_cp_zicboz_test34_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test34_zero, SvZicbo_cg_cp_zicboz_test34_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -760,19 +759,19 @@ SvZicbo_cg_cp_zicboz_test34_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x9, (va_data >> 30) << 30)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 34
+  srli x13, x13, 34
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test35_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test35_zero, SvZicbo_cg_cp_zicboz_test35_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test35_zero, SvZicbo_cg_cp_zicboz_test35_zero_str)
 #endif
 
   // Test case 36: PTE.V unset | Test in U-Mode | expected = Store page fault
@@ -782,19 +781,19 @@ SvZicbo_cg_cp_zicboz_test35_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x9, (va_data >> 21) << 21)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 43
+  srli x13, x13, 43
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test36_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test36_zero, SvZicbo_cg_cp_zicboz_test36_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test36_zero, SvZicbo_cg_cp_zicboz_test36_zero_str)
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 37: Reserved W+X without R | Test in U-Mode | expected = Store page fault
@@ -804,19 +803,19 @@ SvZicbo_cg_cp_zicboz_test36_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x9, (va_data >> 21) << 21)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 43
+  srli x13, x13, 43
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test37_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test37_zero, SvZicbo_cg_cp_zicboz_test37_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test37_zero, SvZicbo_cg_cp_zicboz_test37_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -827,19 +826,19 @@ SvZicbo_cg_cp_zicboz_test37_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x9, (va_data >> 21) << 21)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 43
+  srli x13, x13, 43
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test38_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test38_zero, SvZicbo_cg_cp_zicboz_test38_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test38_zero, SvZicbo_cg_cp_zicboz_test38_zero_str)
 #endif
 
   // Test case 39: RX permissions | Test in U-Mode | expected = Store page fault
@@ -849,19 +848,19 @@ SvZicbo_cg_cp_zicboz_test38_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x9, (va_data >> 21) << 21)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 43
+  srli x13, x13, 43
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test39_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test39_zero, SvZicbo_cg_cp_zicboz_test39_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test39_zero, SvZicbo_cg_cp_zicboz_test39_zero_str)
 
   // Test case 40: Supervisor page from U-Mode | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -870,19 +869,19 @@ SvZicbo_cg_cp_zicboz_test39_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x9, (va_data >> 21) << 21)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 43
+  srli x13, x13, 43
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test40_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test40_zero, SvZicbo_cg_cp_zicboz_test40_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test40_zero, SvZicbo_cg_cp_zicboz_test40_zero_str)
 
   // Test case 41: PTE.A unset | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -891,19 +890,19 @@ SvZicbo_cg_cp_zicboz_test40_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x9, (va_data >> 21) << 21)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 43
+  srli x13, x13, 43
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test41_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test41_zero, SvZicbo_cg_cp_zicboz_test41_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test41_zero, SvZicbo_cg_cp_zicboz_test41_zero_str)
 
   // Test case 42: PTE.D unset | Test in U-Mode | expected = No fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -912,19 +911,19 @@ SvZicbo_cg_cp_zicboz_test41_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x9, (va_data >> 21) << 21)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 43
+  srli x13, x13, 43
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test42_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test42_zero, SvZicbo_cg_cp_zicboz_test42_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test42_zero, SvZicbo_cg_cp_zicboz_test42_zero_str)
 
   // Test case 43: Misaligned superpage | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -933,19 +932,19 @@ SvZicbo_cg_cp_zicboz_test42_zero:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LI(a0, 0x0)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x9, (va_data >> 21) << 21)
+  LI(x13, 0x0)
+  slli x13, x13, 43
+  srli x13, x13, 43
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test43_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test43_zero, SvZicbo_cg_cp_zicboz_test43_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test43_zero, SvZicbo_cg_cp_zicboz_test43_zero_str)
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
   // Test case 44: Access fault on the page-table walk | Test in U-Mode | expected = Store access fault
@@ -955,19 +954,19 @@ SvZicbo_cg_cp_zicboz_test43_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x9, (va_data >> 21) << 21)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 43
+  srli x13, x13, 43
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test44_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test44_zero, SvZicbo_cg_cp_zicboz_test44_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test44_zero, SvZicbo_cg_cp_zicboz_test44_zero_str)
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
@@ -978,19 +977,19 @@ SvZicbo_cg_cp_zicboz_test44_zero:
   SUPERPAGE_PTE_SETUP_SV57(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LI(a0, RVMODEL_ACCESS_FAULT_ADDRESS)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x9, (va_data >> 21) << 21)
+  LI(x13, RVMODEL_ACCESS_FAULT_ADDRESS)
+  slli x13, x13, 43
+  srli x13, x13, 43
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test45_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test45_zero, SvZicbo_cg_cp_zicboz_test45_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test45_zero, SvZicbo_cg_cp_zicboz_test45_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -1001,19 +1000,19 @@ SvZicbo_cg_cp_zicboz_test45_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x9, (va_data >> 21) << 21)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 43
+  srli x13, x13, 43
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test46_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test46_zero, SvZicbo_cg_cp_zicboz_test46_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test46_zero, SvZicbo_cg_cp_zicboz_test46_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -1024,19 +1023,19 @@ SvZicbo_cg_cp_zicboz_test46_zero:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x9, (va_data >> 21) << 21)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 43
+  srli x13, x13, 43
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test47_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test47_zero, SvZicbo_cg_cp_zicboz_test47_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test47_zero, SvZicbo_cg_cp_zicboz_test47_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -1047,19 +1046,19 @@ SvZicbo_cg_cp_zicboz_test47_zero:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x9, (va_data >> 21) << 21)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 43
+  srli x13, x13, 43
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test48_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test48_zero, SvZicbo_cg_cp_zicboz_test48_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test48_zero, SvZicbo_cg_cp_zicboz_test48_zero_str)
 #endif
 
   // Test case 49: PTE.V unset | Test in U-Mode | expected = Store page fault
@@ -1070,19 +1069,19 @@ SvZicbo_cg_cp_zicboz_test48_zero:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x9, (va_data >> 12) << 12)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 52
+  srli x13, x13, 52
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test49_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test49_zero, SvZicbo_cg_cp_zicboz_test49_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test49_zero, SvZicbo_cg_cp_zicboz_test49_zero_str)
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
   // Test case 50: Reserved W+X without R | Test in U-Mode | expected = Store page fault
@@ -1093,19 +1092,19 @@ SvZicbo_cg_cp_zicboz_test49_zero:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x9, (va_data >> 12) << 12)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 52
+  srli x13, x13, 52
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test50_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test50_zero, SvZicbo_cg_cp_zicboz_test50_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test50_zero, SvZicbo_cg_cp_zicboz_test50_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -1117,19 +1116,19 @@ SvZicbo_cg_cp_zicboz_test50_zero:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x9, (va_data >> 12) << 12)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 52
+  srli x13, x13, 52
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test51_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test51_zero, SvZicbo_cg_cp_zicboz_test51_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test51_zero, SvZicbo_cg_cp_zicboz_test51_zero_str)
 #endif
 
   // Test case 52: RX permissions | Test in U-Mode | expected = Store page fault
@@ -1140,19 +1139,19 @@ SvZicbo_cg_cp_zicboz_test51_zero:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x9, (va_data >> 12) << 12)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 52
+  srli x13, x13, 52
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test52_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test52_zero, SvZicbo_cg_cp_zicboz_test52_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test52_zero, SvZicbo_cg_cp_zicboz_test52_zero_str)
 
   // Test case 53: Supervisor page from U-Mode | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -1162,19 +1161,19 @@ SvZicbo_cg_cp_zicboz_test52_zero:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x9, (va_data >> 12) << 12)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 52
+  srli x13, x13, 52
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test53_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test53_zero, SvZicbo_cg_cp_zicboz_test53_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test53_zero, SvZicbo_cg_cp_zicboz_test53_zero_str)
 
   // Test case 54: PTE.A unset | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -1184,19 +1183,19 @@ SvZicbo_cg_cp_zicboz_test53_zero:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x9, (va_data >> 12) << 12)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 52
+  srli x13, x13, 52
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test54_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test54_zero, SvZicbo_cg_cp_zicboz_test54_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test54_zero, SvZicbo_cg_cp_zicboz_test54_zero_str)
 
   // Test case 55: PTE.D unset | Test in U-Mode | expected = No fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -1206,19 +1205,19 @@ SvZicbo_cg_cp_zicboz_test54_zero:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x9, (va_data >> 12) << 12)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 52
+  srli x13, x13, 52
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test55_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test55_zero, SvZicbo_cg_cp_zicboz_test55_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test55_zero, SvZicbo_cg_cp_zicboz_test55_zero_str)
 
   // Test case 56: Pointer encoding (V only) in the leaf | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -1228,19 +1227,19 @@ SvZicbo_cg_cp_zicboz_test55_zero:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_U | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x9, (va_data >> 12) << 12)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 52
+  srli x13, x13, 52
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test56_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test56_zero, SvZicbo_cg_cp_zicboz_test56_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test56_zero, SvZicbo_cg_cp_zicboz_test56_zero_str)
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
   // Test case 57: Access fault on the page-table walk | Test in U-Mode | expected = Store access fault
@@ -1251,19 +1250,19 @@ SvZicbo_cg_cp_zicboz_test56_zero:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LI(a0, RVMODEL_ACCESS_FAULT_ADDRESS)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x9, (va_data >> 12) << 12)
+  LI(x13, RVMODEL_ACCESS_FAULT_ADDRESS)
+  slli x13, x13, 52
+  srli x13, x13, 52
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test57_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test57_zero, SvZicbo_cg_cp_zicboz_test57_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test57_zero, SvZicbo_cg_cp_zicboz_test57_zero_str)
 #endif
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
@@ -1275,19 +1274,19 @@ SvZicbo_cg_cp_zicboz_test57_zero:
   PTE_SETUP_SV57(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LI(a0, RVMODEL_ACCESS_FAULT_ADDRESS)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x9, (va_data >> 12) << 12)
+  LI(x13, RVMODEL_ACCESS_FAULT_ADDRESS)
+  slli x13, x13, 52
+  srli x13, x13, 52
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test58_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test58_zero, SvZicbo_cg_cp_zicboz_test58_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test58_zero, SvZicbo_cg_cp_zicboz_test58_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -1299,19 +1298,19 @@ SvZicbo_cg_cp_zicboz_test58_zero:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x9, (va_data >> 12) << 12)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 52
+  srli x13, x13, 52
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test59_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test59_zero, SvZicbo_cg_cp_zicboz_test59_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test59_zero, SvZicbo_cg_cp_zicboz_test59_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -1323,19 +1322,19 @@ SvZicbo_cg_cp_zicboz_test59_zero:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x9, (va_data >> 12) << 12)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 52
+  srli x13, x13, 52
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test60_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test60_zero, SvZicbo_cg_cp_zicboz_test60_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test60_zero, SvZicbo_cg_cp_zicboz_test60_zero_str)
 #endif
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -1347,19 +1346,19 @@ SvZicbo_cg_cp_zicboz_test60_zero:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x9, (va_data >> 12) << 12)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 52
+  srli x13, x13, 52
+  add x9, x9, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x8, x8, 16
 SvZicbo_cg_cp_zicboz_test61_zero:
-  cbo.zero (a5)
-  addi a4, a2, 4
+  cbo.zero (x9)
+  addi x15, x8, 4
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvZicbo_cg_cp_zicboz_test61_zero, SvZicbo_cg_cp_zicboz_test61_zero_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvZicbo_cg_cp_zicboz_test61_zero, SvZicbo_cg_cp_zicboz_test61_zero_str)
 #endif
 
 
@@ -1376,7 +1375,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi a4, a2, 4
+  addi x15, x8, 4
   jr ra
   nop
   .word 0xbeefcaf1

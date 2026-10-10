@@ -13,32 +13,35 @@ from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.pmp import helpers as pmp
 from testgen.priv.extensions.sv.access import virtual_address
 from testgen.priv.extensions.sv.assembly import DATA_REGION_ALIGNED
-from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
+from testgen.priv.extensions.sv.generate import SvRegs, begin_sv_test, end_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import SV32, SV39, SV48, SV57, PteFlags, SvMode, create_page_mapping
 from testgen.priv.extensions.sv.SvPMP import PMP_PTE_VAS
 from testgen.priv.registry import add_priv_test_generator
 
 _FAMILIES = {
-    "Zicbom": ("MENVCFG_CBCFE | MENVCFG_CBIE", ("cbo.clean (a5)", "cbo.flush (a5)", "cbo.inval (a5)")),
-    "Zicboz": ("MENVCFG_CBZE", ("cbo.zero (a5)",)),
+    "Zicbom": ("MENVCFG_CBCFE | MENVCFG_CBIE", ("cbo.clean", "cbo.flush", "cbo.inval")),
+    "Zicboz": ("MENVCFG_CBZE", ("cbo.zero",)),
 }
 
 
-def _setup_envcfg(extension: str, mode: str) -> tuple[str, ...]:
+def _setup_envcfg(extension: str, mode: str, scratch: int) -> tuple[str, ...]:
     mask = _FAMILIES[extension][0]
-    return (f"LI(t0, {mask})", "csrs menvcfg, t0", *(("csrs senvcfg, t0",) if mode == "Umode" else ()))
+    t = f"x{scratch}"
+    return (f"LI({t}, {mask})", f"csrs menvcfg, {t}", *((f"csrs senvcfg, {t}",) if mode == "Umode" else ()))
 
 
-def _add_operations(test_data: TestData, sv: SvMode, mode: str, level: int, extension: str, number: int) -> list[str]:
+def _add_operations(
+    test_data: TestData, sv: SvMode, regs: SvRegs, mode: str, level: int, extension: str, number: int
+) -> list[str]:
     enter = [] if mode == "Mmode" else [f"RVTEST_TSBI_GOTO_{mode.upper()}"]
     leave = [] if mode == "Mmode" else ["RVTEST_TSBI_GOTO_MMODE"]
-    lines = [*virtual_address(sv, "va_data", level), *enter]
+    lines = [*virtual_address(sv, "va_data", level, destination=regs.addr, scratch=regs.scratch), *enter]
     for operation in _FAMILIES[extension][1]:
-        name = operation.split()[0].replace(".", "_")
+        name = operation.replace(".", "_")
         lines.extend(
             [
                 test_data.add_testcase(f"test{number}_{name}", "cp_pmp_zicbo", "SvPMPZicbo_cg"),
-                operation,
+                f"{operation} (x{regs.addr})",
                 "nop",
             ]
         )
@@ -48,6 +51,7 @@ def _add_operations(test_data: TestData, sv: SvMode, mode: str, level: int, exte
 
 def _begin_test(
     test_data: TestData,
+    regs: SvRegs,
     sv: SvMode,
     mode: str,
     topic: str,
@@ -60,27 +64,34 @@ def _begin_test(
     min_granularity = 5 if topic == "pmp_on_pa" else None
     return begin_sv_test(
         test_data,
+        regs,
         sv,
         mode,
         f"{sv.name}_{topic}_{extension.lower()}_{mode}",
         coverpoint="cp_pmp_zicbo",
         code_prefix=pmp.napot_mask_defines(min_granularity),
-        sig_init="",
+        sig_init=None,
         va_defs=va_defs,
         va_code_override=va_code_override,
         pre_va_asm=pre_va_asm,
-        setup_asm=_setup_envcfg(extension, mode),
+        setup_asm=_setup_envcfg(extension, mode, regs.scratch),
     )
 
 
 def _make_on_pa(test_data: TestData, sv: SvMode, mode: str, extension: str) -> TestChunk:
+    regs = SvRegs.allocate(test_data)
     chunk = _begin_test(
         test_data,
+        regs,
         sv,
         mode,
         "pmp_on_pa",
         extension,
-        pre_va_asm=("RVTEST_PMP_SET_BACKGROUND x4", "", *pmp.set_pmpaddr("napot", 0, "rvtest_data_1")),
+        pre_va_asm=(
+            f"RVTEST_PMP_SET_BACKGROUND x{regs.scratch}",
+            "",
+            *pmp.set_pmpaddr("napot", 0, "rvtest_data_1"),
+        ),
     )
     chunk.code.extend(
         [
@@ -100,24 +111,26 @@ def _make_on_pa(test_data: TestData, sv: SvMode, mode: str, extension: str) -> T
                 *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                 "sfence.vma",
                 "",
-                *_add_operations(test_data, sv, mode, level, extension, number),
+                *_add_operations(test_data, sv, regs, mode, level, extension, number),
                 "",
             ]
         )
-    chunk.raw_data.extend(sv_data(sv, data_region_body=DATA_REGION_ALIGNED))
+    chunk.raw_data.extend(sv_data(sv, regs, data_region_body=DATA_REGION_ALIGNED))
     chunk.trap_sigupd_count = trap_sigupd_count(faults_per_case * sv.levels)
-    return test_data.end_test_chunk()
+    return end_sv_test(test_data, regs)
 
 
 def _make_on_pte(test_data: TestData, sv: SvMode, mode: str, extension: str) -> TestChunk:
     va_data, va_code = PMP_PTE_VAS[sv.name]
+    regs = SvRegs.allocate(test_data)
     chunk = _begin_test(
         test_data,
+        regs,
         sv,
         mode,
         "pmp_on_pte",
         extension,
-        pre_va_asm=("RVTEST_PMP_SET_BACKGROUND x4",),
+        pre_va_asm=(f"RVTEST_PMP_SET_BACKGROUND x{regs.scratch}",),
         va_defs=(("va_data", va_data),),
         va_code_override=va_code,
     )
@@ -144,15 +157,15 @@ def _make_on_pte(test_data: TestData, sv: SvMode, mode: str, extension: str) -> 
                 *create_page_mapping(sv, leaf_level=level, leaf_flags=permissions),
                 "sfence.vma",
                 "",
-                *_add_operations(test_data, sv, mode, level, extension, number),
+                *_add_operations(test_data, sv, regs, mode, level, extension, number),
             ]
         )
         if top:
             chunk.code.append(".endif")
         chunk.code.append("")
-    chunk.raw_data.extend(sv_data(sv, page_table_align="(UDB_PMP_GRANULARITY)"))
+    chunk.raw_data.extend(sv_data(sv, regs, page_table_align="(UDB_PMP_GRANULARITY)"))
     chunk.trap_sigupd_count = trap_sigupd_count(faults_per_case * sv.levels)
-    return test_data.end_test_chunk()
+    return end_sv_test(test_data, regs)
 
 
 def _make_svpmpzicbo(test_data: TestData, sv: SvMode, extension: str) -> list[TestChunk]:

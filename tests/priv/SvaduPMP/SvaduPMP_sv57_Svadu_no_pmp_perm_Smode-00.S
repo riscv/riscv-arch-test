@@ -37,9 +37,7 @@ RVTEST_BEGIN
 #define PMP_REGION_SIZE (((1 << (UDB_PMP_GRANULARITY - 2)) - 1) >> 1)
 #define PMP_MASK        ~PMP_REGION_SIZE
 
-main:
-
-  RVTEST_PMP_SET_BACKGROUND x4
+  RVTEST_PMP_SET_BACKGROUND x6
 
 // Virtual addresses for code and test regions
 
@@ -57,16 +55,17 @@ main:
 // accessible, so the code is mapped again at va_rvtest_code_begin. Registering
 // that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
 // to can fetch from.
+// SAVE_AREA_SETUP takes the M-mode save area in a0 and clobbers t0 and t1.
   LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL4)
 
   SATP_SETUP_RV64(sv57) // Enable address translation.
   sfence.vma
 
-  LI(t0, MENVCFG_ADUE)
-  csrs menvcfg, t0
+  LI(x6, MENVCFG_ADUE)
+  csrs menvcfg, x6
 
-  LI(a2, 0x800) // Test signature initialization
+  LI(x13, 0x800) // Test signature initialization
 
   LA(x5, rvtest_Sroot_pg_tbl)
   srl x5, x5, PMP_SHIFT
@@ -86,40 +85,40 @@ SvaduPMP_cp_pmpcfg_write_pmpcfg0:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
   sfence.vma
 
-  LI(a5, (va_data >> 48) << 48)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 16
-  srli a0, a0, 16
-  add a5, a5, a0
+  LI(x8, (va_data >> 48) << 48)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 16
+  srli x6, x6, 16
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_SMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test1_store:
-  sw a2, 20(a5)
+  sw x13, 20(x8)
   nop
 
 // Load
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test1_load:
-  lw a3, 20(a5)
+  lw x15, 20(x8)
   nop
 
 // Execute
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test1_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test1_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test1_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test1_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test1_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test1_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test1_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test1_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test1_exec, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test1_exec_str)
-  LA(a0, rvtest_Sroot_pg_tbl)
+  LA(x6, rvtest_Sroot_pg_tbl)
 SvaduPMP_cg_cp_ad_update_test1_read_pte:
-  ld a4, 0(a0)
+  ld x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cg_cp_ad_update_test1_read_pte, SvaduPMP_cg_cp_ad_update_test1_read_pte_str)
 
@@ -127,40 +126,40 @@ SvaduPMP_cg_cp_ad_update_test1_read_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
   sfence.vma
 
-  LI(a5, (va_data >> 48) << 48)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 16
-  srli a0, a0, 16
-  add a5, a5, a0
+  LI(x8, (va_data >> 48) << 48)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 16
+  srli x6, x6, 16
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_SMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test2_store:
-  sw a2, 20(a5)
+  sw x13, 20(x8)
   nop
 
 // Load
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test2_load:
-  lw a3, 20(a5)
+  lw x15, 20(x8)
   nop
 
 // Execute
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test2_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test2_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test2_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test2_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test2_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test2_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test2_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test2_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test2_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test2_exec, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test2_exec_str)
-  LA(a0, rvtest_Sroot_pg_tbl)
+  LA(x6, rvtest_Sroot_pg_tbl)
 SvaduPMP_cg_cp_ad_update_test2_read_pte:
-  ld a4, 0(a0)
+  ld x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cg_cp_ad_update_test2_read_pte, SvaduPMP_cg_cp_ad_update_test2_read_pte_str)
 
@@ -168,40 +167,40 @@ SvaduPMP_cg_cp_ad_update_test2_read_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
   sfence.vma
 
-  LI(a5, (va_data >> 48) << 48)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 16
-  srli a0, a0, 16
-  add a5, a5, a0
+  LI(x8, (va_data >> 48) << 48)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 16
+  srli x6, x6, 16
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_SMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test3_store:
-  sw a2, 20(a5)
+  sw x13, 20(x8)
   nop
 
 // Load
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test3_load:
-  lw a3, 20(a5)
+  lw x15, 20(x8)
   nop
 
 // Execute
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test3_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test3_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test3_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test3_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test3_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test3_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test3_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test3_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test3_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test3_exec, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test3_exec_str)
-  LA(a0, rvtest_Sroot_pg_tbl)
+  LA(x6, rvtest_Sroot_pg_tbl)
 SvaduPMP_cg_cp_ad_update_test3_read_pte:
-  ld a4, 0(a0)
+  ld x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cg_cp_ad_update_test3_read_pte, SvaduPMP_cg_cp_ad_update_test3_read_pte_str)
 
@@ -220,40 +219,40 @@ SvaduPMP_cg_cp_ad_update_test3_read_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x8, (va_data >> 39) << 39)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 25
+  srli x6, x6, 25
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_SMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test4_store:
-  sw a2, 20(a5)
+  sw x13, 20(x8)
   nop
 
 // Load
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test4_load:
-  lw a3, 20(a5)
+  lw x15, 20(x8)
   nop
 
 // Execute
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test4_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test4_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test4_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test4_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test4_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test4_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test4_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test4_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test4_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test4_exec, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test4_exec_str)
-  LA(a0, rvtest_slvl3_pg_tbl)
+  LA(x6, rvtest_slvl3_pg_tbl)
 SvaduPMP_cg_cp_ad_update_test4_read_pte:
-  ld a4, 0(a0)
+  ld x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cg_cp_ad_update_test4_read_pte, SvaduPMP_cg_cp_ad_update_test4_read_pte_str)
 
@@ -262,40 +261,40 @@ SvaduPMP_cg_cp_ad_update_test4_read_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x8, (va_data >> 39) << 39)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 25
+  srli x6, x6, 25
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_SMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test5_store:
-  sw a2, 20(a5)
+  sw x13, 20(x8)
   nop
 
 // Load
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test5_load:
-  lw a3, 20(a5)
+  lw x15, 20(x8)
   nop
 
 // Execute
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test5_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test5_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test5_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test5_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test5_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test5_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test5_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test5_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test5_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test5_exec, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test5_exec_str)
-  LA(a0, rvtest_slvl3_pg_tbl)
+  LA(x6, rvtest_slvl3_pg_tbl)
 SvaduPMP_cg_cp_ad_update_test5_read_pte:
-  ld a4, 0(a0)
+  ld x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cg_cp_ad_update_test5_read_pte, SvaduPMP_cg_cp_ad_update_test5_read_pte_str)
 
@@ -304,40 +303,40 @@ SvaduPMP_cg_cp_ad_update_test5_read_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x8, (va_data >> 39) << 39)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 25
+  srli x6, x6, 25
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_SMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test6_store:
-  sw a2, 20(a5)
+  sw x13, 20(x8)
   nop
 
 // Load
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test6_load:
-  lw a3, 20(a5)
+  lw x15, 20(x8)
   nop
 
 // Execute
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test6_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test6_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test6_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test6_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test6_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test6_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test6_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test6_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test6_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test6_exec, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test6_exec_str)
-  LA(a0, rvtest_slvl3_pg_tbl)
+  LA(x6, rvtest_slvl3_pg_tbl)
 SvaduPMP_cg_cp_ad_update_test6_read_pte:
-  ld a4, 0(a0)
+  ld x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cg_cp_ad_update_test6_read_pte, SvaduPMP_cg_cp_ad_update_test6_read_pte_str)
 
@@ -357,40 +356,40 @@ SvaduPMP_cg_cp_ad_update_test6_read_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x8, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_SMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test7_store:
-  sw a2, 20(a5)
+  sw x13, 20(x8)
   nop
 
 // Load
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test7_load:
-  lw a3, 20(a5)
+  lw x15, 20(x8)
   nop
 
 // Execute
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test7_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test7_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test7_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test7_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test7_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test7_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test7_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test7_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test7_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test7_exec, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test7_exec_str)
-  LA(a0, rvtest_slvl2_pg_tbl)
+  LA(x6, rvtest_slvl2_pg_tbl)
 SvaduPMP_cg_cp_ad_update_test7_read_pte:
-  ld a4, 0(a0)
+  ld x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cg_cp_ad_update_test7_read_pte, SvaduPMP_cg_cp_ad_update_test7_read_pte_str)
 
@@ -400,40 +399,40 @@ SvaduPMP_cg_cp_ad_update_test7_read_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x8, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_SMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test8_store:
-  sw a2, 20(a5)
+  sw x13, 20(x8)
   nop
 
 // Load
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test8_load:
-  lw a3, 20(a5)
+  lw x15, 20(x8)
   nop
 
 // Execute
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test8_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test8_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test8_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test8_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test8_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test8_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test8_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test8_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test8_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test8_exec, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test8_exec_str)
-  LA(a0, rvtest_slvl2_pg_tbl)
+  LA(x6, rvtest_slvl2_pg_tbl)
 SvaduPMP_cg_cp_ad_update_test8_read_pte:
-  ld a4, 0(a0)
+  ld x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cg_cp_ad_update_test8_read_pte, SvaduPMP_cg_cp_ad_update_test8_read_pte_str)
 
@@ -443,40 +442,40 @@ SvaduPMP_cg_cp_ad_update_test8_read_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x8, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_SMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test9_store:
-  sw a2, 20(a5)
+  sw x13, 20(x8)
   nop
 
 // Load
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test9_load:
-  lw a3, 20(a5)
+  lw x15, 20(x8)
   nop
 
 // Execute
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test9_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test9_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test9_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test9_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test9_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test9_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test9_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test9_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test9_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test9_exec, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test9_exec_str)
-  LA(a0, rvtest_slvl2_pg_tbl)
+  LA(x6, rvtest_slvl2_pg_tbl)
 SvaduPMP_cg_cp_ad_update_test9_read_pte:
-  ld a4, 0(a0)
+  ld x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cg_cp_ad_update_test9_read_pte, SvaduPMP_cg_cp_ad_update_test9_read_pte_str)
 
@@ -497,40 +496,40 @@ SvaduPMP_cg_cp_ad_update_test9_read_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x8, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_SMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test10_store:
-  sw a2, 20(a5)
+  sw x13, 20(x8)
   nop
 
 // Load
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test10_load:
-  lw a3, 20(a5)
+  lw x15, 20(x8)
   nop
 
 // Execute
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test10_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test10_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test10_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test10_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test10_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test10_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test10_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test10_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test10_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test10_exec, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test10_exec_str)
-  LA(a0, rvtest_slvl1_pg_tbl)
+  LA(x6, rvtest_slvl1_pg_tbl)
 SvaduPMP_cg_cp_ad_update_test10_read_pte:
-  ld a4, 0(a0)
+  ld x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cg_cp_ad_update_test10_read_pte, SvaduPMP_cg_cp_ad_update_test10_read_pte_str)
 
@@ -541,40 +540,40 @@ SvaduPMP_cg_cp_ad_update_test10_read_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x8, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_SMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test11_store:
-  sw a2, 20(a5)
+  sw x13, 20(x8)
   nop
 
 // Load
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test11_load:
-  lw a3, 20(a5)
+  lw x15, 20(x8)
   nop
 
 // Execute
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test11_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test11_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test11_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test11_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test11_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test11_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test11_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test11_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test11_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test11_exec, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test11_exec_str)
-  LA(a0, rvtest_slvl1_pg_tbl)
+  LA(x6, rvtest_slvl1_pg_tbl)
 SvaduPMP_cg_cp_ad_update_test11_read_pte:
-  ld a4, 0(a0)
+  ld x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cg_cp_ad_update_test11_read_pte, SvaduPMP_cg_cp_ad_update_test11_read_pte_str)
 
@@ -585,40 +584,40 @@ SvaduPMP_cg_cp_ad_update_test11_read_pte:
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x8, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_SMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test12_store:
-  sw a2, 20(a5)
+  sw x13, 20(x8)
   nop
 
 // Load
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test12_load:
-  lw a3, 20(a5)
+  lw x15, 20(x8)
   nop
 
 // Execute
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test12_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test12_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test12_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test12_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test12_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test12_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test12_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test12_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test12_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test12_exec, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test12_exec_str)
-  LA(a0, rvtest_slvl1_pg_tbl)
+  LA(x6, rvtest_slvl1_pg_tbl)
 SvaduPMP_cg_cp_ad_update_test12_read_pte:
-  ld a4, 0(a0)
+  ld x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cg_cp_ad_update_test12_read_pte, SvaduPMP_cg_cp_ad_update_test12_read_pte_str)
 
@@ -640,40 +639,40 @@ SvaduPMP_cg_cp_ad_update_test12_read_pte:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x8, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_SMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test13_store:
-  sw a2, 20(a5)
+  sw x13, 20(x8)
   nop
 
 // Load
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test13_load:
-  lw a3, 20(a5)
+  lw x15, 20(x8)
   nop
 
 // Execute
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test13_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test13_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test13_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test13_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test13_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test13_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test13_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test13_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test13_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test13_exec, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test13_exec_str)
-  LA(a0, rvtest_slvl0_pg_tbl)
+  LA(x6, rvtest_slvl0_pg_tbl)
 SvaduPMP_cg_cp_ad_update_test13_read_pte:
-  ld a4, 0(a0)
+  ld x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cg_cp_ad_update_test13_read_pte, SvaduPMP_cg_cp_ad_update_test13_read_pte_str)
 
@@ -685,40 +684,40 @@ SvaduPMP_cg_cp_ad_update_test13_read_pte:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x8, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_SMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test14_store:
-  sw a2, 20(a5)
+  sw x13, 20(x8)
   nop
 
 // Load
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test14_load:
-  lw a3, 20(a5)
+  lw x15, 20(x8)
   nop
 
 // Execute
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test14_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test14_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test14_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test14_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test14_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test14_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test14_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test14_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test14_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test14_exec, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test14_exec_str)
-  LA(a0, rvtest_slvl0_pg_tbl)
+  LA(x6, rvtest_slvl0_pg_tbl)
 SvaduPMP_cg_cp_ad_update_test14_read_pte:
-  ld a4, 0(a0)
+  ld x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cg_cp_ad_update_test14_read_pte, SvaduPMP_cg_cp_ad_update_test14_read_pte_str)
 
@@ -730,40 +729,40 @@ SvaduPMP_cg_cp_ad_update_test14_read_pte:
   PTE_SETUP_SV57(rvtest_data_1, (PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x8, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_SMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test15_store:
-  sw a2, 20(a5)
+  sw x13, 20(x8)
   nop
 
 // Load
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test15_load:
-  lw a3, 20(a5)
+  lw x15, 20(x8)
   nop
 
 // Execute
 SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test15_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test15_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test15_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test15_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test15_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test15_store, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test15_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test15_load, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test15_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test15_exec, SvaduPMP_cp_sv57_Svadu_no_pmp_perm_Smode_test15_exec_str)
-  LA(a0, rvtest_slvl0_pg_tbl)
+  LA(x6, rvtest_slvl0_pg_tbl)
 SvaduPMP_cg_cp_ad_update_test15_read_pte:
-  ld a4, 0(a0)
+  ld x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, SvaduPMP_cg_cp_ad_update_test15_read_pte, SvaduPMP_cg_cp_ad_update_test15_read_pte_str)
 
@@ -781,7 +780,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi a4, a2, 4
+  addi x14, x13, 4
   jr ra
   nop
   .word 0xbeefcaf1

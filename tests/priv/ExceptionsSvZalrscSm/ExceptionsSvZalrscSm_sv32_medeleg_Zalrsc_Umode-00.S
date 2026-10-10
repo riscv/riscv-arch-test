@@ -34,8 +34,6 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 
-main:
-
 // Virtual addresses for code and test regions
 
 // Virtual address of rvtest_data_1
@@ -53,37 +51,38 @@ main:
 // accessible, so the code is mapped again at va_rvtest_code_begin. Registering
 // that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
 // to can fetch from.
+// SAVE_AREA_SETUP takes the M-mode save area in a0 and clobbers t0 and t1.
   LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL1)
 
   SATP_SETUP_SV32 // Enable address translation.
   sfence.vma
 
-  csrr x9, medeleg
+  csrr x15, medeleg
 
-  LI(a2, 0x800) // Test signature initialization
+  LI(x14, 0x800) // Test signature initialization
 
-  LI(x8, 0x1)
-  csrw medeleg, x8
+  LI(x6, 0x1)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
   LI(x6, 100) # retry counter for constrained LR/SC loop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_sc:
-  sc.w a4, a2, (a5)
-  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_sc_success # SC succeeded, skip retry
+  sc.w x13, x14, (x8)
+  beqz x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_sc_success # SC succeeded, skip retry
   addi x6, x6, -1 # decrement retry count
   bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_sc_retry # retry LR/SC if not exhausted
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_sc_success:
@@ -91,57 +90,57 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_sc_success:
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test1_sc_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test2_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test2_sc:
-  sc.w a4, a2, (a5)
+  sc.w x13, x14, (x8)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test2_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test2_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test2_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test2_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test2_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test2_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test2_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test2_sc_str)
 
-  LI(x8, 0x2)
-  csrw medeleg, x8
+  LI(x6, 0x2)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
   LI(x6, 100) # retry counter for constrained LR/SC loop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_sc:
-  sc.w a4, a2, (a5)
-  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_sc_success # SC succeeded, skip retry
+  sc.w x13, x14, (x8)
+  beqz x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_sc_success # SC succeeded, skip retry
   addi x6, x6, -1 # decrement retry count
   bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_sc_retry # retry LR/SC if not exhausted
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_sc_success:
@@ -149,57 +148,57 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_sc_success:
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test3_sc_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test4_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test4_sc:
-  sc.w a4, a2, (a5)
+  sc.w x13, x14, (x8)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test4_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test4_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test4_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test4_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test4_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test4_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test4_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test4_sc_str)
 
-  LI(x8, 0x4)
-  csrw medeleg, x8
+  LI(x6, 0x4)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
   LI(x6, 100) # retry counter for constrained LR/SC loop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_sc:
-  sc.w a4, a2, (a5)
-  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_sc_success # SC succeeded, skip retry
+  sc.w x13, x14, (x8)
+  beqz x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_sc_success # SC succeeded, skip retry
   addi x6, x6, -1 # decrement retry count
   bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_sc_retry # retry LR/SC if not exhausted
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_sc_success:
@@ -207,57 +206,57 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_sc_success:
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test5_sc_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test6_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test6_sc:
-  sc.w a4, a2, (a5)
+  sc.w x13, x14, (x8)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test6_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test6_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test6_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test6_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test6_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test6_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test6_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test6_sc_str)
 
-  LI(x8, 0x8)
-  csrw medeleg, x8
+  LI(x6, 0x8)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
   LI(x6, 100) # retry counter for constrained LR/SC loop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_sc:
-  sc.w a4, a2, (a5)
-  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_sc_success # SC succeeded, skip retry
+  sc.w x13, x14, (x8)
+  beqz x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_sc_success # SC succeeded, skip retry
   addi x6, x6, -1 # decrement retry count
   bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_sc_retry # retry LR/SC if not exhausted
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_sc_success:
@@ -265,57 +264,57 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_sc_success:
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test7_sc_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test8_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test8_sc:
-  sc.w a4, a2, (a5)
+  sc.w x13, x14, (x8)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test8_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test8_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test8_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test8_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test8_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test8_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test8_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test8_sc_str)
 
-  LI(x8, 0x10)
-  csrw medeleg, x8
+  LI(x6, 0x10)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
   LI(x6, 100) # retry counter for constrained LR/SC loop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_sc:
-  sc.w a4, a2, (a5)
-  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_sc_success # SC succeeded, skip retry
+  sc.w x13, x14, (x8)
+  beqz x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_sc_success # SC succeeded, skip retry
   addi x6, x6, -1 # decrement retry count
   bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_sc_retry # retry LR/SC if not exhausted
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_sc_success:
@@ -323,57 +322,57 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_sc_success:
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test9_sc_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test10_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test10_sc:
-  sc.w a4, a2, (a5)
+  sc.w x13, x14, (x8)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test10_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test10_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test10_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test10_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test10_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test10_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test10_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test10_sc_str)
 
-  LI(x8, 0x20)
-  csrw medeleg, x8
+  LI(x6, 0x20)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
   LI(x6, 100) # retry counter for constrained LR/SC loop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_sc:
-  sc.w a4, a2, (a5)
-  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_sc_success # SC succeeded, skip retry
+  sc.w x13, x14, (x8)
+  beqz x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_sc_success # SC succeeded, skip retry
   addi x6, x6, -1 # decrement retry count
   bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_sc_retry # retry LR/SC if not exhausted
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_sc_success:
@@ -381,57 +380,57 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_sc_success:
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test11_sc_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test12_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test12_sc:
-  sc.w a4, a2, (a5)
+  sc.w x13, x14, (x8)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test12_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test12_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test12_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test12_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test12_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test12_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test12_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test12_sc_str)
 
-  LI(x8, 0x40)
-  csrw medeleg, x8
+  LI(x6, 0x40)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
   LI(x6, 100) # retry counter for constrained LR/SC loop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_sc:
-  sc.w a4, a2, (a5)
-  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_sc_success # SC succeeded, skip retry
+  sc.w x13, x14, (x8)
+  beqz x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_sc_success # SC succeeded, skip retry
   addi x6, x6, -1 # decrement retry count
   bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_sc_retry # retry LR/SC if not exhausted
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_sc_success:
@@ -439,57 +438,57 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_sc_success:
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test13_sc_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test14_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test14_sc:
-  sc.w a4, a2, (a5)
+  sc.w x13, x14, (x8)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test14_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test14_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test14_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test14_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test14_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test14_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test14_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test14_sc_str)
 
-  LI(x8, 0x80)
-  csrw medeleg, x8
+  LI(x6, 0x80)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
   LI(x6, 100) # retry counter for constrained LR/SC loop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_sc:
-  sc.w a4, a2, (a5)
-  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_sc_success # SC succeeded, skip retry
+  sc.w x13, x14, (x8)
+  beqz x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_sc_success # SC succeeded, skip retry
   addi x6, x6, -1 # decrement retry count
   bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_sc_retry # retry LR/SC if not exhausted
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_sc_success:
@@ -497,57 +496,57 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_sc_success:
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test15_sc_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test16_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test16_sc:
-  sc.w a4, a2, (a5)
+  sc.w x13, x14, (x8)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test16_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test16_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test16_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test16_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test16_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test16_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test16_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test16_sc_str)
 
-  LI(x8, 0x100)
-  csrw medeleg, x8
+  LI(x6, 0x100)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
   LI(x6, 100) # retry counter for constrained LR/SC loop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_sc:
-  sc.w a4, a2, (a5)
-  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_sc_success # SC succeeded, skip retry
+  sc.w x13, x14, (x8)
+  beqz x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_sc_success # SC succeeded, skip retry
   addi x6, x6, -1 # decrement retry count
   bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_sc_retry # retry LR/SC if not exhausted
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_sc_success:
@@ -555,57 +554,57 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_sc_success:
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test17_sc_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test18_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test18_sc:
-  sc.w a4, a2, (a5)
+  sc.w x13, x14, (x8)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test18_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test18_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test18_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test18_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test18_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test18_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test18_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test18_sc_str)
 
-  LI(x8, 0x1000)
-  csrw medeleg, x8
+  LI(x6, 0x1000)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
   LI(x6, 100) # retry counter for constrained LR/SC loop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_sc:
-  sc.w a4, a2, (a5)
-  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_sc_success # SC succeeded, skip retry
+  sc.w x13, x14, (x8)
+  beqz x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_sc_success # SC succeeded, skip retry
   addi x6, x6, -1 # decrement retry count
   bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_sc_retry # retry LR/SC if not exhausted
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_sc_success:
@@ -613,57 +612,57 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_sc_success:
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test19_sc_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test20_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test20_sc:
-  sc.w a4, a2, (a5)
+  sc.w x13, x14, (x8)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test20_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test20_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test20_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test20_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test20_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test20_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test20_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test20_sc_str)
 
-  LI(x8, 0x2000)
-  csrw medeleg, x8
+  LI(x6, 0x2000)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
   LI(x6, 100) # retry counter for constrained LR/SC loop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_sc:
-  sc.w a4, a2, (a5)
-  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_sc_success # SC succeeded, skip retry
+  sc.w x13, x14, (x8)
+  beqz x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_sc_success # SC succeeded, skip retry
   addi x6, x6, -1 # decrement retry count
   bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_sc_retry # retry LR/SC if not exhausted
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_sc_success:
@@ -671,57 +670,57 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_sc_success:
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test21_sc_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test22_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test22_sc:
-  sc.w a4, a2, (a5)
+  sc.w x13, x14, (x8)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test22_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test22_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test22_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test22_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test22_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test22_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test22_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test22_sc_str)
 
-  LI(x8, 0x8000)
-  csrw medeleg, x8
+  LI(x6, 0x8000)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
   LI(x6, 100) # retry counter for constrained LR/SC loop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_sc:
-  sc.w a4, a2, (a5)
-  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_sc_success # SC succeeded, skip retry
+  sc.w x13, x14, (x8)
+  beqz x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_sc_success # SC succeeded, skip retry
   addi x6, x6, -1 # decrement retry count
   bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_sc_retry # retry LR/SC if not exhausted
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_sc_success:
@@ -729,57 +728,57 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_sc_success:
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test23_sc_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test24_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test24_sc:
-  sc.w a4, a2, (a5)
+  sc.w x13, x14, (x8)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test24_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test24_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test24_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test24_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test24_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test24_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test24_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test24_sc_str)
 
-  LI(x8, 0xb1ff)
-  csrw medeleg, x8
+  LI(x6, 0xb1ff)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
   LI(x6, 100) # retry counter for constrained LR/SC loop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_sc_retry:
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_sc:
-  sc.w a4, a2, (a5)
-  beqz x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_sc_success # SC succeeded, skip retry
+  sc.w x13, x14, (x8)
+  beqz x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_sc_success # SC succeeded, skip retry
   addi x6, x6, -1 # decrement retry count
   bnez x6, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_sc_retry # retry LR/SC if not exhausted
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_sc_success:
@@ -787,37 +786,37 @@ ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_sc_success:
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test25_sc_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x8, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x8, x8, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x14, x14, 1
 
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test26_lr:
-  lr.w a3, (a5)
+  lr.w x9, (x8)
   nop
 ExceptionsSvZalrscSm_cg_cp_medeleg_u_test26_sc:
-  sc.w a4, a2, (a5)
+  sc.w x13, x14, (x8)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test26_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test26_lr_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test26_lr, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test26_lr_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test26_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test26_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test26_sc, ExceptionsSvZalrscSm_cg_cp_medeleg_u_test26_sc_str)
 
-  csrw medeleg, x9
+  csrw medeleg, x15
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -832,7 +831,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi a4, a2, 4
+  addi x13, x14, 4
   jr ra
   nop
   .word 0xbeefcaf1

@@ -34,8 +34,6 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 
-main:
-
 // Virtual addresses for code and test regions
 
 // Virtual address of rvtest_data_1
@@ -52,13 +50,14 @@ main:
 // accessible, so the code is mapped again at va_rvtest_code_begin. Registering
 // that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
 // to can fetch from.
+// SAVE_AREA_SETUP takes the M-mode save area in a0 and clobbers t0 and t1.
   LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL3)
 
   SATP_SETUP_RV64(sv48) // Enable address translation.
   sfence.vma
 
-  LI(a2, 0x800) // Test signature initialization
+  LI(x9, 0x800) // Test signature initialization
 
 
 // 512GB page at level 3
@@ -67,34 +66,34 @@ main:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 39) << 39)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 25
+  srli x6, x6, 25
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test1_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test1_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test1_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test1_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test1_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test1_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test1_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test1_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test1_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test1_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test1_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test1_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test1_exec_str)
 
 
 // 512GB page at level 3
@@ -103,34 +102,34 @@ Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test1_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 39) << 39)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 25
+  srli x6, x6, 25
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test2_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test2_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test2_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test2_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test2_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test2_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test2_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test2_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test2_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test2_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test2_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test2_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test2_exec_str)
 
 
 // 512GB page at level 3
@@ -139,34 +138,34 @@ Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test2_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 39) << 39)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 25
+  srli x6, x6, 25
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test3_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test3_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test3_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test3_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test3_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test3_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test3_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test3_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test3_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test3_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test3_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test3_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test3_exec_str)
 
 
 // 512GB page at level 3
@@ -175,34 +174,34 @@ Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test3_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 39) << 39)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 25
+  srli x6, x6, 25
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test4_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test4_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test4_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test4_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test4_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test4_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test4_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test4_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test4_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test4_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test4_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test4_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test4_exec_str)
 
 
 // 512GB page at level 3
@@ -211,34 +210,34 @@ Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test4_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_V), va_data, LEVEL3)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 39) << 39)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 25
+  srli x6, x6, 25
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test5_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test5_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test5_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test5_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test5_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test5_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test5_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test5_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test5_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test5_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test5_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test5_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test5_exec_str)
 
 
 // 1GB page at level 2
@@ -248,34 +247,34 @@ Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test5_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test6_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test6_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test6_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test6_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test6_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test6_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test6_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test6_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test6_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test6_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test6_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test6_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test6_exec_str)
 
 
 // 1GB page at level 2
@@ -285,34 +284,34 @@ Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test6_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test7_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test7_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test7_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test7_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test7_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test7_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test7_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test7_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test7_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test7_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test7_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test7_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test7_exec_str)
 
 
 // 1GB page at level 2
@@ -322,34 +321,34 @@ Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test7_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test8_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test8_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test8_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test8_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test8_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test8_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test8_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test8_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test8_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test8_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test8_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test8_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test8_exec_str)
 
 
 // 1GB page at level 2
@@ -359,34 +358,34 @@ Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test8_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test9_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test9_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test9_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test9_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test9_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test9_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test9_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test9_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test9_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test9_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test9_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test9_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test9_exec_str)
 
 
 // 1GB page at level 2
@@ -396,34 +395,34 @@ Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test9_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test10_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test10_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test10_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test10_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test10_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test10_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test10_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test10_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test10_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test10_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test10_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test10_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test10_exec_str)
 
 
 // 2MB page at level 1
@@ -434,34 +433,34 @@ Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test10_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test11_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test11_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test11_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test11_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test11_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test11_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test11_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test11_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test11_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test11_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test11_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test11_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test11_exec_str)
 
 
 // 2MB page at level 1
@@ -472,34 +471,34 @@ Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test11_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test12_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test12_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test12_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test12_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test12_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test12_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test12_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test12_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test12_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test12_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test12_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test12_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test12_exec_str)
 
 
 // 2MB page at level 1
@@ -510,34 +509,34 @@ Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test12_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test13_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test13_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test13_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test13_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test13_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test13_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test13_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test13_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test13_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test13_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test13_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test13_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test13_exec_str)
 
 
 // 2MB page at level 1
@@ -548,34 +547,34 @@ Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test13_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test14_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test14_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test14_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test14_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test14_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test14_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test14_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test14_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test14_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test14_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test14_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test14_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test14_exec_str)
 
 
 // 2MB page at level 1
@@ -586,34 +585,34 @@ Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test14_exec:
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test15_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test15_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test15_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test15_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test15_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test15_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test15_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test15_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test15_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test15_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test15_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test15_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test15_exec_str)
 
 
 // 4KB page at level 0
@@ -625,34 +624,34 @@ Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test15_exec:
   PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test16_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test16_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test16_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test16_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test16_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test16_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test16_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test16_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test16_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test16_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test16_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test16_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test16_exec_str)
 
 
 // 4KB page at level 0
@@ -664,34 +663,34 @@ Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test16_exec:
   PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test17_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test17_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test17_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test17_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test17_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test17_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test17_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test17_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test17_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test17_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test17_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test17_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test17_exec_str)
 
 
 // 4KB page at level 0
@@ -703,34 +702,34 @@ Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test17_exec:
   PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test18_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test18_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test18_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test18_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test18_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test18_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test18_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test18_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test18_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test18_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test18_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test18_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test18_exec_str)
 
 
 // 4KB page at level 0
@@ -742,34 +741,34 @@ Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test18_exec:
   PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test19_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test19_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test19_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test19_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test19_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test19_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test19_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test19_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test19_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test19_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test19_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test19_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test19_exec_str)
 
 
 // 4KB page at level 0
@@ -781,34 +780,34 @@ Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test19_exec:
   PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
-  addi a2, a2, 16
+  LI(x8, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x8, x8, x6
+  addi x9, x9, 16
 
 // Store
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test20_store:
-  sw a2, 20(a5)
+  sw x9, 20(x8)
   nop
 
 // Load
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test20_load:
-  lw a3, 20(a5)
+  lw x13, 20(x8)
   nop
 
 // Execute
 Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test20_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test20_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test20_store_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test20_store, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test20_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test20_load, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test20_load_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test20_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test20_exec_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test20_exec, Sv_cp_sv48_upage_mstatus_sum_unset_Smode_test20_exec_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -824,7 +823,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi a4, a2, 4
+  addi x15, x9, 4
   jr ra
   nop
   .word 0xbeefcaf1

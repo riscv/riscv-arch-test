@@ -12,7 +12,7 @@ from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.sv.access import add_rwx_test
-from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
+from testgen.priv.extensions.sv.generate import SvRegs, begin_sv_test, end_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import SV32, SV39, SV48, SV57, PteFlags, SvMode, create_page_mapping
 from testgen.priv.registry import add_priv_test_generator
 
@@ -26,13 +26,15 @@ _DA_CASES = (
 
 def _make_svade_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
     csr, mask = ("menvcfg", "MENVCFG_ADUE") if sv.xlen == 64 else ("menvcfgh", "MENVCFGH_ADUE")
+    regs = SvRegs.allocate(test_data)
     chunk = begin_sv_test(
         test_data,
+        regs,
         sv,
         mode,
         f"{sv.name}_Svade_{mode}",
         coverpoint="cp_ad_update",
-        setup_asm=(f"LI(t0, {mask})", tsbi_call(f"csrc {csr}, t0")),
+        setup_asm=(f"LI(x{regs.scratch}, {mask})", tsbi_call(f"csrc {csr}, x{regs.scratch}")),
     )
 
     umode = mode == "Umode"
@@ -57,6 +59,7 @@ def _make_svade_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     *add_rwx_test(
                         test_data,
                         sv,
+                        regs,
                         mode,
                         "va_data",
                         level,
@@ -67,9 +70,9 @@ def _make_svade_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                 ]
             )
 
-    chunk.raw_data.extend(sv_data(sv))
+    chunk.raw_data.extend(sv_data(sv, regs))
     chunk.trap_sigupd_count = trap_sigupd_count(faults)
-    return test_data.end_test_chunk()
+    return end_sv_test(test_data, regs)
 
 
 def _make_svade(test_data: TestData, sv: SvMode) -> list[TestChunk]:

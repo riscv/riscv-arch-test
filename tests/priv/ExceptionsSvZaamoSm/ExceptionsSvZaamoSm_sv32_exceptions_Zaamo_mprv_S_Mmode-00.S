@@ -34,8 +34,6 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 
-main:
-
 // Virtual addresses for code and test regions
 
 // Virtual address of rvtest_data_1
@@ -53,6 +51,7 @@ main:
 // accessible, so the code is mapped again at va_rvtest_code_begin. Registering
 // that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
 // to can fetch from.
+// SAVE_AREA_SETUP takes the M-mode save area in a0 and clobbers t0 and t1.
   LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL1)
 
@@ -61,90 +60,90 @@ main:
 
   csrr x9, medeleg
 
-  LI(a2, 0x800) // Test signature initialization
+  LI(x14, 0x800) // Test signature initialization
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test1_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test1_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test1_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test1_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test1_amoadd_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  addi a5, a5, 2
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  addi x13, x13, 2
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test2_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test2_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test2_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test2_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test2_amoadd_str)
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
   SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LI(a0, RVMODEL_ACCESS_FAULT_ADDRESS)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test3_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test3_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test3_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test3_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test3_amoadd_str)
 
 #endif
 
@@ -152,115 +151,115 @@ ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test3_amoadd:
   SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LI(a0, RVMODEL_ACCESS_FAULT_ADDRESS)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  addi a5, a5, 2
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  addi x13, x13, 2
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test4_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test4_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test4_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test4_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test4_amoadd_str)
 
 #endif
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test5_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test5_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test5_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test5_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test5_amoadd_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  addi a5, a5, 2
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  addi x13, x13, 2
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test6_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test6_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test6_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test6_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test6_amoadd_str)
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
   SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LI(a0, RVMODEL_ACCESS_FAULT_ADDRESS)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test7_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test7_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test7_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test7_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test7_amoadd_str)
 
 #endif
 
@@ -268,760 +267,760 @@ ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test7_amoadd:
   SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LI(a0, RVMODEL_ACCESS_FAULT_ADDRESS)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  addi a5, a5, 2
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LI(x6, RVMODEL_ACCESS_FAULT_ADDRESS)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  addi x13, x13, 2
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test8_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test8_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test8_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test8_amoadd, ExceptionsSvZaamoSm_cg_cp_misaligned_priority_m_test8_amoadd_str)
 
 #endif
 
-  LI(x8, 0x1)
-  csrw medeleg, x8
+  LI(x6, 0x1)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test9_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test9_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test9_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test9_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test9_amoadd_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test10_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test10_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test10_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test10_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test10_amoadd_str)
 
-  LI(x8, 0x2)
-  csrw medeleg, x8
+  LI(x6, 0x2)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test11_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test11_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test11_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test11_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test11_amoadd_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test12_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test12_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test12_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test12_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test12_amoadd_str)
 
-  LI(x8, 0x4)
-  csrw medeleg, x8
+  LI(x6, 0x4)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test13_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test13_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test13_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test13_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test13_amoadd_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test14_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test14_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test14_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test14_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test14_amoadd_str)
 
-  LI(x8, 0x8)
-  csrw medeleg, x8
+  LI(x6, 0x8)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test15_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test15_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test15_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test15_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test15_amoadd_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test16_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test16_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test16_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test16_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test16_amoadd_str)
 
-  LI(x8, 0x10)
-  csrw medeleg, x8
+  LI(x6, 0x10)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test17_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test17_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test17_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test17_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test17_amoadd_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test18_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test18_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test18_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test18_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test18_amoadd_str)
 
-  LI(x8, 0x20)
-  csrw medeleg, x8
+  LI(x6, 0x20)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test19_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test19_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test19_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test19_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test19_amoadd_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test20_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test20_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test20_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test20_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test20_amoadd_str)
 
-  LI(x8, 0x40)
-  csrw medeleg, x8
+  LI(x6, 0x40)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test21_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test21_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test21_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test21_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test21_amoadd_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test22_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test22_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test22_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test22_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test22_amoadd_str)
 
-  LI(x8, 0x80)
-  csrw medeleg, x8
+  LI(x6, 0x80)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test23_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test23_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test23_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test23_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test23_amoadd_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test24_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test24_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test24_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test24_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test24_amoadd_str)
 
-  LI(x8, 0x100)
-  csrw medeleg, x8
+  LI(x6, 0x100)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test25_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test25_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test25_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test25_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test25_amoadd_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test26_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test26_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test26_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test26_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test26_amoadd_str)
 
-  LI(x8, 0x1000)
-  csrw medeleg, x8
+  LI(x6, 0x1000)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test27_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test27_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test27_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test27_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test27_amoadd_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test28_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test28_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test28_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test28_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test28_amoadd_str)
 
-  LI(x8, 0x2000)
-  csrw medeleg, x8
+  LI(x6, 0x2000)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test29_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test29_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test29_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test29_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test29_amoadd_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test30_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test30_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test30_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test30_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test30_amoadd_str)
 
-  LI(x8, 0x8000)
-  csrw medeleg, x8
+  LI(x6, 0x8000)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test31_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test31_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test31_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test31_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test31_amoadd_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test32_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test32_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test32_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test32_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test32_amoadd_str)
 
-  LI(x8, 0xb1ff)
-  csrw medeleg, x8
+  LI(x6, 0xb1ff)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test33_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test33_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test33_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test33_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test33_amoadd_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  LI(t0, MSTATUS_MPRV)
-  csrs mstatus, t0
-  LI(t0, 0x1800)
-  csrc mstatus, t0
-  LI(t0, 0x800)
-  csrs mstatus, t0
-  addi a2, a2, 1
+  LI(x13, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x13, x13, x6
+  LI(x6, MSTATUS_MPRV)
+  csrs mstatus, x6
+  LI(x6, 0x1800)
+  csrc mstatus, x6
+  LI(x6, 0x800)
+  csrs mstatus, x6
+  addi x14, x14, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_m_test34_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x8, x14, (x13)
   nop
 
-  LI(t0, MSTATUS_MPRV)
-  csrc mstatus, t0
+  LI(x6, MSTATUS_MPRV)
+  csrc mstatus, x6
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test34_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test34_amoadd_str)
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test34_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_m_test34_amoadd_str)
 
   csrw medeleg, x9
 
@@ -1038,7 +1037,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi a4, a2, 4
+  addi x15, x14, 4
   jr ra
   nop
   .word 0xbeefcaf1

@@ -8,6 +8,7 @@
 
 """Unprivileged floating-point fcsr tests generator."""
 
+from collections.abc import Callable
 from typing import Literal
 
 from testgen.asm.csr import csr_access_test, csr_walk_test, gen_csr_read_sigupd, gen_csr_write_sigupd
@@ -251,6 +252,29 @@ def _tininess_cases(
     return lines
 
 
+def _guarded(test_data: TestData, condition: str, build: Callable[[], list[str]]) -> list[str]:
+    """Emit build()'s lines under a preprocessor condition.
+
+    When the condition is false, the data pointer skips the test data that the block would have loaded.
+    """
+    assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
+    first_value = len(test_data.test_chunk.data_values)
+    body = build()
+    loads = len(test_data.test_chunk.data_values) - first_value
+    lines = ["", f"#if {condition}", *body]
+    if loads:
+        data_reg = test_data.int_regs.data_reg
+        lines.extend(
+            [
+                "#else",
+                f"{INDENT}# increment data pointer to skip over these tests",
+                f"addi x{data_reg}, x{data_reg}, {loads * test_data.flen // 8}",
+            ]
+        )
+    lines.append("#endif")
+    return lines
+
+
 def _generate_instr_tests(test_data: TestData) -> list[str]:
     """Operations to set each flag."""
     ######################################
@@ -286,30 +310,42 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
     lines.append(
         comment_banner(
             "cp_underflow_after_rounding_*",
-            "Check underflow flag is determined after rounding.\n"
+            "Check underflow flag is determined after rounding (F extension, Subnormal Arithmetic).\n"
             "Each operand set is run under all five static rounding modes. Depending on the mode, the result\n"
             "is tiny before rounding but not after (UF = 0), or tiny after rounding even when the delivered\n"
-            "result is +/-2^emin (UF = 1).",
+            "result is +/-2^emin (UF = 1).\n"
+            "fmul_emin_*: 2^emin * (1 - 2^-p) is tiny after rounding in every mode, so UF = 1 even where the\n"
+            "delivered result is +/-2^emin.\n"
+            "fdiv_*: (2 - 2^-(p-2)) * 2^emin / (2 - 2^-(p-1)) rounds to +/-2^emin only when rounding away from zero,\n"
+            "with UF = 1. A quotient of p-bit significands never lies within 2^-p of 1 unless it is exact, so\n"
+            "fdiv cannot produce a result that is tiny before rounding but not after.",
         )
     )
 
     lines.extend(_tininess_cases(test_data, "fma_s", "fmadd.s", [0x3F00FBFF, 0x80000001, 0x807FFFFF], "single"))
     lines.extend(_tininess_cases(test_data, "fmul_s", "fmul.s", [0x00800001, 0x3F7FFFFE], "single"))
-    lines.append("\n#ifdef D_SUPPORTED")
+    lines.extend(_tininess_cases(test_data, "fmul_emin_s", "fmul.s", [0x00800000, 0x3F7FFFFF], "single"))
+    lines.extend(_tininess_cases(test_data, "fdiv_s", "fdiv.s", [0x00FFFFFE, 0x3FFFFFFF], "single"))
     lines.extend(
-        _tininess_cases(
-            test_data, "fma_d", "fmadd.d", [0x802FFFFFFFBFFEFF, 0x000FFFFFFFFFFFFE, 0x0010000000000000], "double"
+        _guarded(
+            test_data,
+            "defined(D_SUPPORTED)",
+            lambda: [
+                *_tininess_cases(
+                    test_data,
+                    "fma_d",
+                    "fmadd.d",
+                    [0x802FFFFFFFBFFEFF, 0x000FFFFFFFFFFFFE, 0x0010000000000000],
+                    "double",
+                ),
+                *_tininess_cases(test_data, "fmul_d", "fmul.d", [0x0010000000000001, 0xBFEFFFFFFFFFFFFE], "double"),
+                *_tininess_cases(test_data, "fcvt_s_d", "fcvt.s.d", [0xB80FFFFFFFFDFEFF], "double"),
+                *_tininess_cases(
+                    test_data, "fmul_emin_d", "fmul.d", [0x8010000000000000, 0x3FEFFFFFFFFFFFFF], "double"
+                ),
+                *_tininess_cases(test_data, "fdiv_d", "fdiv.d", [0x801FFFFFFFFFFFFE, 0x3FFFFFFFFFFFFFFF], "double"),
+            ],
         )
-    )
-    lines.extend(_tininess_cases(test_data, "fmul_d", "fmul.d", [0x0010000000000001, 0xBFEFFFFFFFFFFFFE], "double"))
-    lines.extend(_tininess_cases(test_data, "fcvt_s_d", "fcvt.s.d", [0xB80FFFFFFFFDFEFF], "double"))
-    lines.extend(
-        [
-            "#else",
-            f"{INDENT}# increment data pointer to skip over these tests",
-            f"addi x{test_data.int_regs.data_reg}, x{test_data.int_regs.data_reg}, {6 * test_data.flen // 8}",
-            "#endif",
-        ]
     )
     # Quads are not yet supported by Sail, and load_float_reg only writes out 8 bytes without Q.
     # Add these operand sets under #ifdef Q_SUPPORTED once support is ready:
@@ -317,26 +353,25 @@ def _generate_instr_tests(test_data: TestData) -> list[str]:
     #                     0x80010000000000000000000000000000
     #   fmul_q   fmul.q   0x0000FFFFFFFFFFFFFFFFFFFFFFFFFFFF, 0x3FFF0000000000000000000000000001
     #   fcvt_s_q fcvt.s.q 0x3F80FFFFFFFE0000000000FFFFFFFFFF
-    lines.append("\n#ifdef ZFH_SUPPORTED")
-    lines.extend(_tininess_cases(test_data, "fma_h", "fmadd.h", [0x0BC7, 0x03FF, 0x8400], "half"))
-    lines.extend(_tininess_cases(test_data, "fmul_h", "fmul.h", [0x0401, 0x3BFE], "half"))
     lines.extend(
-        [
-            "#else",
-            f"{INDENT}# increment data pointer to skip over these tests",
-            f"addi x{test_data.int_regs.data_reg}, x{test_data.int_regs.data_reg}, {5 * test_data.flen // 8}",
-            "#endif",
-            "\n#if defined(ZFHMIN_SUPPORTED) || defined(ZFH_SUPPORTED)",
-        ]
+        _guarded(
+            test_data,
+            "defined(ZFH_SUPPORTED)",
+            lambda: [
+                *_tininess_cases(test_data, "fma_h", "fmadd.h", [0x0BC7, 0x03FF, 0x8400], "half"),
+                # 0x0401 * 0x3BFE = (1 - 2^-20) * 2^-14: rounds to 2^-14 at 11 bits under RNE, RUP and RMM
+                *_tininess_cases(test_data, "fmul_h", "fmul.h", [0x0401, 0x3BFE], "half"),
+                *_tininess_cases(test_data, "fmul_emin_h", "fmul.h", [0x0400, 0x3BFF], "half"),
+                *_tininess_cases(test_data, "fdiv_h", "fdiv.h", [0x07FE, 0x3FFF], "half"),
+            ],
+        )
     )
-    lines.extend(_tininess_cases(test_data, "fcvt_h_s", "fcvt.h.s", [0x387FF000], "single"))
     lines.extend(
-        [
-            "#else",
-            f"{INDENT}# increment data pointer to skip over these tests",
-            f"addi x{test_data.int_regs.data_reg}, x{test_data.int_regs.data_reg}, {1 * test_data.flen // 8}",
-            "#endif",
-        ]
+        _guarded(
+            test_data,
+            "defined(ZFHMIN_SUPPORTED)",
+            lambda: _tininess_cases(test_data, "fcvt_h_s", "fcvt.h.s", [0x387FF000], "single"),
+        )
     )
 
     test_data.int_regs.return_registers([r1])
@@ -351,29 +386,178 @@ def _generate_frm_reserved_static_rm(test_data: TestData) -> list[str]:
     coverpoint = "cp_frm_reserved_static_rm"
     ######################################
 
+    one, neg_one, a1, a2, a3, dest = test_data.float_regs.get_registers(6)
+    # Each (augend, addend) pair is an inexact sum; the three results together differ in every rounding mode:
+    #   RNE (1+2u, -1, 1)  RTZ (1+u, -1, 1)  RDN (1+u, -1-u, 1)  RUP (1+2u, -1, 1+u)  RMM (1+2u, -1-u, 1)
+    # where u = 2^-23.
+    adds = (("tie_odd", one, a1), ("tie_even_neg", neg_one, a2), ("quarter_ulp", one, a3))
     lines = [
         comment_banner(
             coverpoint,
             "Set frm to each reserved value (5-7) and execute fadd.s with each static rounding mode.\n"
             "Only dynamic rounding depends on frm, so none of these trap.\n"
-            "1.0 + 2^-24 is an exact tie, so each rounding mode gives its own result.",
+            "Three adds per mode: 1 + 1.5*2^-23 (a tie between 1+2^-23 and 1+2^-22), -1 - 2^-24 (a tie\n"
+            "between -1 and -1-2^-23) and 1 + 2^-25 (below half an ulp). Together their results differ\n"
+            "in every rounding mode.",
         ),
-        load_float_reg("1.0", 10, 0x3F800000, test_data, "single"),
-        load_float_reg("2^-24", 11, 0x33800000, test_data, "single"),
+        load_float_reg("1.0", one, 0x3F800000, test_data, "single"),
+        load_float_reg("-1.0", neg_one, 0xBF800000, test_data, "single"),
+        load_float_reg("1.5*2^-23", a1, 0x34400000, test_data, "single"),
+        load_float_reg("-2^-24", a2, 0xB3800000, test_data, "single"),
+        load_float_reg("2^-25", a3, 0x33000000, test_data, "single"),
     ]
     for frm in (5, 6, 7):
         lines.append(f"csrwi frm, {frm}        # reserved rounding mode")
-        for rm in ("rne", "rtz", "rdn", "rup", "rmm"):
+        for rm in STATIC_RMS:
+            for name, fs1, fs2 in adds:
+                lines.extend(
+                    [
+                        "",
+                        "csrwi fflags, 0 # reset flags",
+                        test_data.add_testcase(f"frm{frm}_{rm}_{name}", coverpoint, covergroup),
+                        f"fadd.s f{dest}, f{fs1}, f{fs2}, {rm}",
+                        write_sigupd(dest, test_data, "float"),
+                    ]
+                )
+    lines.append("csrwi frm, 0        # back to a legal rounding mode")
+    test_data.float_regs.return_registers([one, neg_one, a1, a2, a3, dest])
+    return lines
+
+
+def _fma_cases(
+    test_data: TestData,
+    load_type: Literal["single", "double", "half"],
+    *,
+    inf: int,
+    qnan: int,
+    snan: int,
+    one: int,
+    a: int,
+    b: int,
+    product: int,
+    neg_product: int,
+) -> list[str]:
+    """FMA special cases in one precision.
+
+    load_type names the precision. inf, qnan, snan and one are that precision's encodings of +inf, a quiet NaN,
+    a signaling NaN and 1.0. a = 1 + 2^-k and b = 1 - 2^-k, so a*b = product = 1 - 2^-2k is exact;
+    neg_product is -product.
+    """
+    p = load_type[0]  # instruction suffix: s, d or h
+    covergroup = "ZicsrF_cg"
+    ops = ("fmadd", "fmsub", "fnmadd", "fnmsub")
+    fs1, fs2, fs3, fd = test_data.float_regs.get_registers(4)
+
+    coverpoint = f"cp_fma_inf_zero_{p}"
+    lines = [
+        comment_banner(
+            coverpoint,
+            "Each FMA with multiplicands +inf and +0 and a quiet NaN, signaling NaN or finite addend.\n"
+            "The result is the canonical NaN and NV is set, even for a quiet NaN addend (F extension,\n"
+            "Single-Precision Floating-Point Computational Instructions).",
+        )
+    ]
+    for op in ops:
+        for name, addend in (("qnan", qnan), ("snan", snan), ("one", one)):
+            lines.extend(
+                [
+                    "",
+                    load_float_reg("+inf", fs1, inf, test_data, load_type),
+                    load_float_reg("+0", fs2, 0, test_data, load_type),
+                    load_float_reg(name, fs3, addend, test_data, load_type),
+                    "csrwi fflags, 0 # reset flags",
+                    test_data.add_testcase(f"{op}_{name}", coverpoint, covergroup),
+                    f"{op}.{p} f{fd}, f{fs1}, f{fs2}, f{fs3}, rne",
+                    write_sigupd(fd, test_data, "float"),
+                ]
+            )
+
+    coverpoint = f"cp_fma_exact_zero_{p}"
+    lines.append(
+        comment_banner(
+            coverpoint,
+            "Each FMA with (1 + 2^-k)(1 - 2^-k) = 1 - 2^-2k exact, and an addend that cancels the product.\n"
+            "An exact zero sum is +0 in every rounding mode except RDN, where it is -0 (IEEE 754-2008 6.3).\n"
+            "fnmadd and fnmsub negate the product, not the sum, so they follow the same rule (F extension,\n"
+            "Single-Precision Floating-Point Computational Instructions).",
+        )
+    )
+    for op in ops:
+        # fmadd and fnmadd add -(+/-a*b); fmsub and fnmsub add +(+/-a*b)
+        addend = neg_product if op in ("fmadd", "fnmadd") else product
+        lines.extend(
+            [
+                "",
+                load_float_reg("1 + 2^-k", fs1, a, test_data, load_type),
+                load_float_reg("1 - 2^-k", fs2, b, test_data, load_type),
+                load_float_reg("cancelling addend", fs3, addend, test_data, load_type),
+            ]
+        )
+        for rm in STATIC_RMS:
             lines.extend(
                 [
                     "",
                     "csrwi fflags, 0 # reset flags",
-                    test_data.add_testcase(f"frm{frm}_{rm}", coverpoint, covergroup),
-                    f"fadd.s f7, f10, f11, {rm}",
-                    write_sigupd(7, test_data, "float"),
+                    test_data.add_testcase(f"{op}_{rm}", coverpoint, covergroup),
+                    f"{op}.{p} f{fd}, f{fs1}, f{fs2}, f{fs3}, {rm}",
+                    write_sigupd(fd, test_data, "float"),
                 ]
             )
-    lines.append("csrwi frm, 0        # back to a legal rounding mode")
+
+    test_data.float_regs.return_registers([fs1, fs2, fs3, fd])
+    return lines
+
+
+def _generate_fma(test_data: TestData) -> list[str]:
+    """FMA special cases in single, double and half precision."""
+    lines = _fma_cases(
+        test_data,
+        "single",
+        inf=0x7F800000,
+        qnan=0x7FC00000,
+        snan=0x7F800001,
+        one=0x3F800000,
+        a=0x3F800800,  # 1 + 2^-12
+        b=0x3F7FF000,  # 1 - 2^-12
+        product=0x3F7FFFFF,  # 1 - 2^-24
+        neg_product=0xBF7FFFFF,
+    )
+    lines.extend(
+        _guarded(
+            test_data,
+            "defined(D_SUPPORTED)",
+            lambda: _fma_cases(
+                test_data,
+                "double",
+                inf=0x7FF0000000000000,
+                qnan=0x7FF8000000000000,
+                snan=0x7FF0000000000001,
+                one=0x3FF0000000000000,
+                a=0x3FF0000004000000,  # 1 + 2^-26
+                b=0x3FEFFFFFF8000000,  # 1 - 2^-26
+                product=0x3FEFFFFFFFFFFFFE,  # 1 - 2^-52
+                neg_product=0xBFEFFFFFFFFFFFFE,
+            ),
+        )
+    )
+    lines.extend(
+        _guarded(
+            test_data,
+            "defined(ZFH_SUPPORTED)",
+            lambda: _fma_cases(
+                test_data,
+                "half",
+                inf=0x7C00,
+                qnan=0x7E00,
+                snan=0x7C01,
+                one=0x3C00,
+                a=0x3C20,  # 1 + 2^-5
+                b=0x3BC0,  # 1 - 2^-5
+                product=0x3BFE,  # 1 - 2^-10
+                neg_product=0xBBFE,
+            ),
+        )
+    )
     return lines
 
 
@@ -393,5 +577,8 @@ def make_zicsrf(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_generate_instr_tests(test_data))
     tc.code.extend(_generate_frm_reserved_static_rm(test_data))
 
+    test_chunks.append(test_data.end_test_chunk())
+    tc = test_data.begin_test_chunk("fma")
+    tc.code.extend(_generate_fma(test_data))
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

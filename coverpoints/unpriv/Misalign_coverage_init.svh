@@ -20,3 +20,23 @@
     Misalign_lwu_cg = new(); Misalign_lwu_cg.set_inst_name("obj_Misalign_lwu");
     Misalign_sd_cg = new(); Misalign_sd_cg.set_inst_name("obj_Misalign_sd");
 `endif
+`ifdef D_SUPPORTED
+    MisalignD_fld_cg = new(); MisalignD_fld_cg.set_inst_name("obj_MisalignD_fld");
+    MisalignD_fsd_cg = new(); MisalignD_fsd_cg.set_inst_name("obj_MisalignD_fsd");
+`endif
+`ifdef F_SUPPORTED
+    MisalignF_flw_cg = new(); MisalignF_flw_cg.set_inst_name("obj_MisalignF_flw");
+    MisalignF_fsw_cg = new(); MisalignF_fsw_cg.set_inst_name("obj_MisalignF_fsw");
+`endif
+`ifdef ZCA_SUPPORTED
+    MisalignZca_c_lw_cg = new(); MisalignZca_c_lw_cg.set_inst_name("obj_MisalignZca_c_lw");
+    MisalignZca_c_lwsp_cg = new(); MisalignZca_c_lwsp_cg.set_inst_name("obj_MisalignZca_c_lwsp");
+    MisalignZca_c_sw_cg = new(); MisalignZca_c_sw_cg.set_inst_name("obj_MisalignZca_c_sw");
+    MisalignZca_c_swsp_cg = new(); MisalignZca_c_swsp_cg.set_inst_name("obj_MisalignZca_c_swsp");
+`ifdef UDB_MXLEN_64
+    MisalignZca_c_ld_cg = new(); MisalignZca_c_ld_cg.set_inst_name("obj_MisalignZca_c_ld");
+    MisalignZca_c_ldsp_cg = new(); MisalignZca_c_ldsp_cg.set_inst_name("obj_MisalignZca_c_ldsp");
+    MisalignZca_c_sd_cg = new(); MisalignZca_c_sd_cg.set_inst_name("obj_MisalignZca_c_sd");
+    MisalignZca_c_sdsp_cg = new(); MisalignZca_c_sdsp_cg.set_inst_name("obj_MisalignZca_c_sdsp");
+`endif
+`endif

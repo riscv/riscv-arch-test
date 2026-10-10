@@ -90,6 +90,9 @@
   // The following epilog and checks are needed if there is any trap handler.  Right now, it is not
   // invoked unless there is STANDARD_SM_SUPPORTED.  A user with custom M-mode will need
   // to reimplement many parts of this macro.
+  // Start the end-of-test code and the trap handlers that follow it on a fresh page, so a
+  // test can map its own code for U-mode while keeping the handlers supervisor-only.
+  .p2align 12
   rvtest_code_end:
 
   // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved.

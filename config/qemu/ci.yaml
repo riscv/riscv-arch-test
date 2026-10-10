@@ -36,7 +36,21 @@ ci_enabled: true
 #    filed the same day, 4611 through 4617, so this exclusion will be needed for a while.
 # Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : QEMU CBOs do not fault on inaccessible addresses in bare mode, shifting trap signatures;
 # same issue as ExceptionsZicboU/S and SvZicbo (https://gitlab.com/qemu-project/qemu/-/work_items/3501).
-exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm"
+# ZicfissU, ZicfissS, ZicfissSm excluded due to QEMU bugs:
+#  1. sspopchk raises a software-check exception where a store/AMO access fault must take priority
+#     (https://gitlab.com/qemu-project/qemu/-/work_items/4379)
+#  2. the M-mode SSAMOSWAP access fault reports an mtval that disagrees with the reference model
+#     (https://gitlab.com/qemu-project/qemu/-/work_items/4380)
+#  3. ssp bits [1:0] are writable (https://gitlab.com/qemu-project/qemu/-/issues/4621)
+#  4. sspush and ssamoswap write RW/RWX pages and page-fault on X/RX pages
+#     (https://gitlab.com/qemu-project/qemu/-/issues/4622)
+#  5. sspopchk from a PMP read-only region does not fault
+#     (https://gitlab.com/qemu-project/qemu/-/issues/4623)
+#  6. cbo.clean/flush/inval to a shadow stack page execute once the page is in the TLB
+#     (https://gitlab.com/qemu-project/qemu/-/issues/4624)
+#  7. SSPOPCHK with satp.MODE=Bare below M does not fault (https://gitlab.com/qemu-project/qemu/-/work_items/4432)
+#  8. senvcfg.SSE keeps 1 after menvcfg.SSE is cleared (https://gitlab.com/qemu-project/qemu/-/work_items/4224)
+exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,ZicfissU,ZicfissS,ZicfissSm"
 # qemu-rv32-mu, qemu-rv64-mu: U-mode cbo.zero/clean/flush/inval raise illegal-instruction without S-mode
 #   because check_zicbo_envcfg() also requires senvcfg, which does not exist
 #   (https://gitlab.com/qemu-project/qemu/-/work_items/4596)

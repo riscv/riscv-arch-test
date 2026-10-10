@@ -98,7 +98,7 @@ include::norm/Zicfilp_norm_rules.adoc[]
 
 ==== Zicfiss Shadow Stack
 
-In Privileged section because it has both unpriv and privileged behaviors.  ZicfissU holds the instruction-behavior coverpoints, which ZicfissS and ZicfissH re-run in their own modes; ZicfissS and ZicfissSm add the supervisor and machine gating coverpoints.  ZicfissH covers VS/VU-mode (see <<t-ZicfissH-coverpoints>>).
+In Privileged section because it has both unpriv and privileged behaviors.  ZicfissU holds the instruction-behavior coverpoints, which ZicfissS and ZicfissH re-run in their own modes; ZicfissS and ZicfissSm add the supervisor and machine gating coverpoints.  ZicfissH covers VS/VU-mode (see <<t-ZicfissH-coverpoints>>).  ZicfissU also covers vector accesses to a shadow stack page when Zve32x is implemented.
 
 ===== ZicfissU User-Mode Shadow Stack
 

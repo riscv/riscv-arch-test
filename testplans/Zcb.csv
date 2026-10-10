@@ -1,4 +1,4 @@
-Instruction,Type,RV32,RV64,ExtraExtension,cp_asm_count,cp_rs1,cp_rs2,cp_rd,cp_rs1_edges,cp_rs2_edges,cr_rs1_rs2_edges,cmp_rs1_rs2,cmp_rd_rs1,cp_uimm
+Instruction,Type,RV32,RV64,ExtraExtensions,cp_asm_count,cp_rs1,cp_rs2,cp_rd,cp_rs1_edges,cp_rs2_edges,cr_rs1_rs2_edges,cmp_rs1_rs2,cmp_rd_rs1,cp_uimm
 c.lbu,CLB,x,x,,x,p,,p,,,,,c,2
 c.lh,CLH,x,x,,x,p,,p,,,,,c,2h
 c.lhu,CLH,x,x,,x,p,,p,,,,,c,2h

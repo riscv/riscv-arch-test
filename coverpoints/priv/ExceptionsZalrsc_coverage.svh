@@ -91,7 +91,7 @@ covergroup ExceptionsZalrsc_cg with function sample(ins_t ins);
         illegal_address_misaligned: coverpoint ins.current.rs1_val {
             bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS + 1};
         }
-        non_illegal_address: coverpoint ({{ins.current.imm + ins.current.rs1_val}[`UDB_MXLEN-1:3], 3'b000} != `RVMODEL_ACCESS_FAULT_ADDRESS) {
+        non_illegal_address: coverpoint (64'({{ins.current.imm + ins.current.rs1_val}[`UDB_MXLEN-1:3], 3'b000}) != `RVMODEL_ACCESS_FAULT_ADDRESS) {
             bins non_illegal = {1};
         }
         cp_load_address_misaligned:                cross lr, adr_LSBs, non_illegal_address;

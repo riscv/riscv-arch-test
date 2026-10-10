@@ -1,4 +1,4 @@
-Instruction,Type,RV32,RV64,ExtraExtension,cp_asm_count,cp_misalign,cp_misalign_cross64
+Instruction,Type,RV32,RV64,ExtraExtensions,cp_asm_count,cp_misalign,cp_misalign_cross64
 ld,L,,x,,x,x,double
 lh,L,x,x,,x,x,hword
 lhu,L,x,x,,x,x,hword

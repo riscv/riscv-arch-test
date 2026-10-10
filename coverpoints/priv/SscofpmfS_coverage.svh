@@ -33,6 +33,36 @@ covergroup SscofpmfS_cg with function sample(ins_t ins);
             bins one = {1};
     }
 
+    prev_mstatus_sie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0] {
+            bins one = {1};
+    }
+    sie_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sie", "sie")[15:0]) {
+            bins all_zeros = {16'b0};
+            // sie is WARL; unimplemented bits stay 0 after a write of all-1s, so "all
+            // ones" means all ones in the bits this coverpoint actually cares about
+            // (LCOFIE + the 3 standard S-mode enables), not a literal all-1s register.
+            wildcard bins all_ones = {16'b??1???1???1???1?};
+    }
+    lcofi_ip_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "lcofip")[0] {
+            bins one  = {1};
+    }
+    mip_other_pending_s: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "seip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "stip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "ssip")[0]} {
+            bins none = {3'b000};
+            `ifdef UDB_SEI_INTR_IMPL
+            bins seip = {3'b100};
+            `endif
+            `ifdef UDB_STI_INTR_IMPL
+            bins stip = {3'b010};
+            `endif
+            `ifdef UDB_SSI_INTR_IMPL
+            bins ssip = {3'b001};
+            `endif
+    }
+    mideleg_s_ints: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "lcofip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "seip")[0],
+                                get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "stip")[0],  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "ssip")[0]} {
+            bins delegated = {4'b1111};
+    }
+
     csr_access_pattern: coverpoint ins.current.insn {
         wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val ==  0);
         wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val == '1);
@@ -40,6 +70,26 @@ covergroup SscofpmfS_cg with function sample(ins_t ins);
         wildcard bins csrrc1    = {CSRRC} iff (ins.current.rs1_val == '1);
         wildcard bins read_only = {CSRRS} iff (ins.current.rs1_val ==  0);
     }
+
+    // The S-mode tests keep M-mode counting inhibited so the T-SBI trap handler never counts.
+    // These are the inhibit patterns in which S-mode still counts.
+    `ifdef UDB_MXLEN_64
+        mhpmevent_s_counts_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mhpmevent3", "mhpmevent3")[62:58]) {
+                bins minh_only = {5'b10000};
+                bins minh_uinh = {5'b10100};
+        }
+        mhpmevent_minh_only_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mhpmevent3", "mhpmevent3")[62:58] == 5'b10000) {
+                bins yes = {1};
+        }
+    `else
+        mhpmevent_s_counts_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mhpmevent3h", "mhpmevent3h")[30:26]) {
+                bins minh_only = {5'b10000};
+                bins minh_uinh = {5'b10100};
+        }
+        mhpmevent_minh_only_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mhpmevent3h", "mhpmevent3h")[30:26] == 5'b10000) {
+                bins yes = {1};
+        }
+    `endif
 
     mcounteren_all_ones_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "enable")[28:0] == '1) {
             bins yes = {1};
@@ -80,12 +130,7 @@ covergroup SscofpmfS_cg with function sample(ins_t ins);
     }
 
     cp_sinh_inhibits_smode:    cross priv_mode_s, mhpmevent_xinh_combos, mhpmevent_of_zero;
-    // The workload runs in S-mode, so with S-mode counting inhibited it cannot overflow the counter
-    // (only a hart counting the T-SBI round trip in M-mode could, and the test must not rely on that).
-    cp_of_set_on_overflow:     cross priv_mode_s, sip_lcofi_one, mie_clear, mhpmevent_of_one, mhpmevent_inhibits_pattern_state {
-        ignore_bins self_inhibited = binsof(mhpmevent_inhibits_pattern_state.sinh_only) ||
-                                     binsof(mhpmevent_inhibits_pattern_state.msu_set);
-    }
+    cp_of_set_on_overflow:     cross priv_mode_s, sip_lcofi_one, mie_clear, mhpmevent_of_one, mhpmevent_s_counts_pattern_state;
     // An overflow with OF already 1 leaves OF set and does not request LCOFI. The counter can wrap in any mode.
     cp_of_already_set:         cross mhpmevent_of_was_one, mhpmevent_of_one, mhpmcounter_wraps, sip_lcofi_zero;
     cp_overflow_hw_only:       cross priv_mode_s, sip_clear, mie_clear, mhpmcounter_extreme_state, mhpmevent_all_zero;
@@ -94,6 +139,7 @@ covergroup SscofpmfS_cg with function sample(ins_t ins);
     cp_scountovf_mcounteren:   cross priv_mode_s, of_write_pattern, mcounteren_stimulus_pattern_state;
     cp_sscofpmf_access:        cross priv_mode_s, csr_access_pattern, hpm_csr_target;
     cp_lcofi_sip_s:            cross priv_mode_s, sstatus_sie_set, sie_lcofi, sip_lcofi, lcofi_mideleg_one;
+    cp_lcofip_priority_s:      cross priv_mode_s, mhpmevent_minh_only_state, prev_mstatus_sie_one, sie_state, lcofi_ip_one, mip_other_pending_s, mideleg_s_ints;
 endgroup
 
 function void sscofpmfs_sample(int hart, int issue, ins_t ins);

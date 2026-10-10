@@ -21,8 +21,7 @@ _S_ACCESSIBLE_CSRS = ("sip", "sie", "sstatus", "scountovf")
 
 
 def _csr_number(csr: str) -> str:
-    """CSR number for the T-SBI macros: a macro is used as is, and a CSR name becomes its
-    CSR_* macro from encoding.h."""
+    """A macro is used as is, and a CSR name becomes its CSR_* macro from encoding.h."""
     return csr if csr.startswith(("CSR_", "RVTEST_CSR_")) else f"CSR_{csr.upper()}"
 
 
@@ -51,8 +50,7 @@ def csr_access(instr: str, mode: str) -> str:
 
 
 def clear_lcofip(r_tmp: int, priv_mode: str) -> list[str]:
-    """Clear a pending LCOFIP left by an earlier real overflow: through sip when S exists
-    and the suite runs below M, else through mip."""
+    """Clear LCOFIP through sip when S exists and the suite runs below M, else through mip."""
     set_bit = f"LI(x{r_tmp}, {hex(1 << 13)})"
     if priv_mode == "Sm":
         return [set_bit, f"csrc mip, x{r_tmp}   # clear LCOFIP"]
@@ -73,8 +71,8 @@ def clear_lcofip(r_tmp: int, priv_mode: str) -> list[str]:
 # counter would also count the round trip instead of just the workload.
 HIGHER_MODE_INHIBITS = {"Sm": 0, "S": 1 << 62, "U": (1 << 62) | (1 << 61)}
 HIGHER_MODE_INHIBITS_32 = {mode: bits >> 32 for mode, bits in HIGHER_MODE_INHIBITS.items()}
+HIGHER_MODE_PATTERN = {mode: bits >> 58 for mode, bits in HIGHER_MODE_INHIBITS.items()}
 
-# On RV32, the event high half[23:0] holds RVMODEL_MHPMEVENT_VAL[55:32].
 EVENT_VAL_HI = "(((RVMODEL_MHPMEVENT_VAL) >> 32) & 0xFFFFFF)"
 
 
@@ -88,8 +86,7 @@ def counted_since_all_ones(reg: int) -> list[str]:
 
 
 def write_event_pattern(r_val: int, r_hval: int, inhibit_pattern: int, priv_mode: str) -> list[str]:
-    """Write RVMODEL_MHPMEVENT_VAL with the MINH/SINH/UINH/VSINH/VUINH pattern at bits
-    62:58 and OF=0. On RV32 the pattern goes in the event high half."""
+    """Write RVMODEL_MHPMEVENT_VAL with the given MINH/SINH/UINH/VSINH/VUINH pattern and OF=0."""
     return [
         "#if __riscv_xlen == 32",
         f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
@@ -104,13 +101,22 @@ def write_event_pattern(r_val: int, r_hval: int, inhibit_pattern: int, priv_mode
 
 
 def write_counter_all_ones(r_temp: int, priv_mode: str) -> list[str]:
-    """Preload the 64-bit counter to all 1s so the next counted event overflows it."""
     return [
         f"LI(x{r_temp}, -1)",
         csr_access(f"csrw RVTEST_CSR_MHPMCOUNTER, x{r_temp}   # all 1s -> next count overflows", priv_mode),
         "#if __riscv_xlen == 32",
         csr_access(f"csrw RVTEST_CSR_MHPMCOUNTERH, x{r_temp}   # high half must also be all 1s", priv_mode),
         "#endif",
+    ]
+
+
+def prime_counter_overflow(r_val: int, r_hval: int, r_temp: int, r_addr: int, priv_mode: str) -> list[str]:
+    """Overflow the counter in the mode under test, which sets OF and raises LCOFIP."""
+    return [
+        *write_event_pattern(r_val, r_hval, HIGHER_MODE_PATTERN[priv_mode], priv_mode),
+        *write_counter_all_ones(r_temp, priv_mode),
+        f"LA(x{r_addr}, scratch)",
+        f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_val})",
     ]
 
 
@@ -128,7 +134,7 @@ def _generate_xinh_inhibits_tests(
     inh_prefix = _INHIBIT_PREFIX[priv_mode]
     coverpoint = f"cp_{inh_prefix}inh_inhibits_{_INHIBIT_MODE_SUFFIX[priv_mode]}"
     inh_bit_pos = _INHIBIT_BIT_POS[priv_mode]
-    inh_bit_pos_32 = inh_bit_pos - 32  # RV32 position within the event high half
+    inh_bit_pos_32 = inh_bit_pos - 32
 
     r_val, r_temp = test_data.int_regs.get_registers(2, exclude_regs=[0, 31])
 
@@ -170,8 +176,6 @@ def _generate_xinh_inhibits_tests(
                 "",
                 f"{indent}{test_data.add_testcase(binname, coverpoint, covergroup)}",
                 f"{indent}{csr_access(f'csrr x{r_temp}, RVTEST_CSR_MHPMCOUNTER', priv_mode)}",
-                # Normalize to nonzero/zero: counter must be nonzero iff xinh=0, regardless of
-                # how many events a given model counted.
                 f"{indent}snez x{r_temp}, x{r_temp}",
                 f"{indent}{write_sigupd(r_temp, test_data)}",
                 "",
@@ -212,8 +216,7 @@ def _generate_xinh_inhibits_tests(
         binname = f"xinh_combo_{combo:05b}_{priv_mode.lower()}_rv32"
         lines.extend(
             [
-                # The low half keeps RVMODEL_MHPMEVENT_VAL from the write above the loop.
-                f"{indent}LI(x{r_hval}, {EVENT_VAL_HI} | ({combo} << 26))",  # 58-32 = 26
+                f"{indent}LI(x{r_hval}, {EVENT_VAL_HI} | ({combo} << 26))",
                 f"{indent}{csr_access(f'csrw RVTEST_CSR_MHPMEVENTH, x{r_hval}', priv_mode)}",
                 "",
                 f"{indent}{test_data.add_testcase(binname, coverpoint, covergroup)}",
@@ -264,19 +267,16 @@ def _generate_xinh_inhibits_tests(
     return lines
 
 
-# MINH/SINH/UINH/VSINH/VUINH patterns crossed by mhpmevent_inhibits_pattern_state:
-# none set, M+S+U set, and each of MINH/SINH/UINH alone.
-_INHIBIT_PATTERNS = [
-    0b00000,
-    0b11100,
-    0b10000,
-    0b01000,
-    0b00100,
-]
+# Below M every pattern inhibits the modes above the one under test, so the T-SBI trap handler
+# never counts.
+_INHIBIT_PATTERNS = {
+    "Sm": [0b00000, 0b11100, 0b10000, 0b01000, 0b00100],
+    "S": [0b10000, 0b10100, 0b11000, 0b11100],
+    "U": [0b11000, 0b11100],
+}
 
 
 def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> list[str]:
-    """cp_of_set_on_overflow: OF bit is set when hpmcounter overflows."""
     ######################################
     covergroup = "Sscofpmf_cg"
     coverpoint = "cp_of_set_on_overflow"
@@ -285,8 +285,7 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
     r_val, r_temp, r_lcofip, r_addr, r_bool, r_hval = test_data.int_regs.get_registers(6, exclude_regs=[0, 31])
 
     def read_event_config_bits() -> list[str]:
-        """Read OF and the 5-bit inhibit field into x{r_temp}, masked to those bits:
-        bits 31:26 of the event high half on RV32 and bits 63:58 of the event CSR on RV64."""
+        """Read OF and the 5-bit inhibit field into x{r_temp}, masked to those bits."""
         return [
             "#if __riscv_xlen == 32",
             csr_access(f"csrr x{r_temp}, RVTEST_CSR_MHPMEVENTH   # sample point for mhpmevent_of", priv_mode),
@@ -299,7 +298,6 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
             "#endif",
         ]
 
-    # S reaches LCOFIP through its own sip/sie; Sm (and U without S) through mip/mie.
     pending_csr, enable_csr = ("sip", "sie") if priv_mode == "S" else ("mip", "mie")
     lcofip_csr = pending_csr
 
@@ -312,7 +310,7 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
         "",
     ]
 
-    for inhibit_pattern in _INHIBIT_PATTERNS:
+    for inhibit_pattern in _INHIBIT_PATTERNS[priv_mode]:
         binname = f"of_overflow_{priv_mode.lower()}_ei_{inhibit_pattern:05b}"
 
         lines.extend(
@@ -411,10 +409,7 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
                     ]
                 )
 
-    # OF already 1: the overflow must leave OF set and must not request LCOFI
-    # (norm:count_overflow_interrupt). OF is set together with the event code, before
-    # the counter is preset, so an overflow caused by the T-SBI round trip below M
-    # cannot raise LCOFIP either.
+    # OF already 1: the overflow must leave OF set and must not request LCOFI.
     already_set_coverpoint = "cp_of_already_set"
     if priv_mode == "U":
         lcofip_read = [
@@ -429,15 +424,15 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
     lines.extend(
         [
             "",
-            f"# Testcase: mode = {priv_mode}, inhibit pattern = 00000, OF initial = 1",
+            f"# Testcase: mode = {priv_mode}, inhibit pattern = {HIGHER_MODE_PATTERN[priv_mode]:05b}, OF initial = 1",
             csr_access("csrw mie, zero   # disable interrupts", priv_mode),
             "#if __riscv_xlen == 32",
             f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
             csr_access(f"csrw RVTEST_CSR_MHPMEVENT, x{r_val}", priv_mode),
-            f"LI(x{r_hval}, {EVENT_VAL_HI} | {hex(1 << 31)})   # OF = 1, no inhibits",
+            f"LI(x{r_hval}, {EVENT_VAL_HI} | {hex((1 << 31) | HIGHER_MODE_INHIBITS_32[priv_mode])})   # OF = 1",
             csr_access(f"csrw RVTEST_CSR_MHPMEVENTH, x{r_hval}", priv_mode),
             "#else",
-            f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | {hex(1 << 63)})   # OF = 1, no inhibits",
+            f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | {hex((1 << 63) | HIGHER_MODE_INHIBITS[priv_mode])})   # OF = 1",
             csr_access(f"csrw RVTEST_CSR_MHPMEVENT, x{r_val}", priv_mode),
             "#endif",
             *write_counter_all_ones(r_temp, priv_mode),
@@ -470,7 +465,6 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
 
 
 def _generate_overflow_hw_only_tests(test_data: TestData, priv_mode: str) -> list[str]:
-    """cp_overflow_hw_only: OF only set by hardware increments, not software writes."""
     ######################################
     covergroup = "Sscofpmf_cg"
     coverpoint = "cp_overflow_hw_only"
@@ -529,7 +523,6 @@ def _generate_lcofip_hw_only_tests(test_data: TestData, priv_mode: str) -> list[
     r_val, r_temp = test_data.int_regs.get_registers(2, exclude_regs=[0, 31])
 
     def set_of(op: str, desc: str) -> list[str]:
-        """Set or clear OF by software. OF is bit 31 of the event high half on RV32."""
         return [
             "#if __riscv_xlen == 32",
             f"LI(x{r_val}, {hex(1 << 31)})",
@@ -541,13 +534,12 @@ def _generate_lcofip_hw_only_tests(test_data: TestData, priv_mode: str) -> list[
         ]
 
     def readback(expect_desc: str) -> list[str]:
-        """Read LCOFIP through sip at S (or U with S), else through mip. Only LCOFIP
-        goes to the signature."""
+        """Read LCOFIP through sip at S (or U with S), else through mip."""
         if priv_mode == "Sm":
             read = [csr_access(f"csrr x{r_temp}, mip   # sample point -- LCOFIP {expect_desc}", priv_mode)]
         elif priv_mode == "S":
             read = [csr_access(f"csrr x{r_temp}, sip   # sample point -- LCOFIP {expect_desc}", priv_mode)]
-        else:  # priv_mode == "U": sip if S_SUPPORTED, else mip
+        else:
             read = [
                 "#ifdef S_SUPPORTED",
                 csr_access(f"csrr x{r_temp}, sip   # sample point -- LCOFIP {expect_desc}", priv_mode),
@@ -575,8 +567,7 @@ def _generate_lcofip_hw_only_tests(test_data: TestData, priv_mode: str) -> list[
         ),
         "",
         csr_access("csrw mie, zero   # disable interrupts", priv_mode),
-        # A real overflow earlier leaves LCOFIP pending on a counting hart; clear it so
-        # the readbacks below show whether the software OF write raised it.
+        # A real overflow earlier leaves LCOFIP pending on a counting hart.
         *clear_lcofip(r_temp, priv_mode),
         "",
         "# Testcase: software-set OF bit directly (no HW increment)",
@@ -607,7 +598,7 @@ NUM_OF_BITS = 29  # mhpmevent3..31
 
 
 def unknown_of_state() -> list[int | None]:
-    """OF state for write_of_pattern() when earlier tests in the file may have changed OF."""
+    """OF state for write_of_pattern() when earlier tests may have changed OF."""
     return [None] * NUM_OF_BITS
 
 
@@ -644,7 +635,6 @@ def write_of_pattern(
     ]
 
 
-# OF patterns for cp_scountovf_mcounteren, indexed by counter - 3.
 MCOUNTEREN_OF_PATTERNS: dict[str, Callable[[int], int]] = {
     "all_ones": lambda i: 1,
     "checker_even": lambda i: 1 if i % 2 == 0 else 0,
@@ -655,7 +645,6 @@ MCOUNTEREN_OF_PATTERNS: dict[str, Callable[[int], int]] = {
 def _generate_scountovf_mcounteren_tests(
     test_data: TestData, mode: str, of_state: list[int | None], of_names: list[str]
 ) -> list[str]:
-    """cp_scountovf_mcounteren: scountovf masked by mcounteren."""
     ######################################
     covergroup = "Sscofpmf_cg"
     coverpoint = "cp_scountovf_mcounteren"
@@ -789,7 +778,6 @@ def _walking_one(walk_idx: int) -> Callable[[int], int]:
     return lambda i: 1 if i == walk_idx else 0
 
 
-# OF patterns for cp_scountovf_shadow, keyed by the S-mode test file that runs them.
 # all_0s runs first so each walking pattern after it changes at most two OF bits.
 SHADOW_PATTERNS: dict[str, list[tuple[str, Callable[[int], int]]]] = {
     "shadow_walk_lo": [("all_0s", lambda i: 0), *((f"walking1_{w}", _walking_one(w)) for w in range(15))],
@@ -876,12 +864,10 @@ def generate_sscofpmf_suite(test_data: TestData, mode: str) -> list[TestChunk]:
         test_chunks.append(test_data.end_test_chunk())
         return test_chunks
 
-    # xINH toggles and inhibit combinations 00000-01111
     tc = test_data.begin_test_chunk(split_name="inhibit_lo")
     tc.code.extend(_generate_xinh_inhibits_tests(test_data, mode, combos=range(16)))
     test_chunks.append(test_data.end_test_chunk())
 
-    # inhibit combinations 10000-11111
     tc = test_data.begin_test_chunk(split_name="inhibit_hi")
     tc.code.extend(_generate_xinh_inhibits_tests(test_data, mode, combos=range(16, 32), toggles=False))
     test_chunks.append(test_data.end_test_chunk())
@@ -895,7 +881,6 @@ def generate_sscofpmf_suite(test_data: TestData, mode: str) -> list[TestChunk]:
     if mode == "U":  # scountovf is not accessible from U, so the scountovf tests are S-only
         return test_chunks
 
-    # One file per OF pattern. Each starts from boot, where every OF bit is 0.
     for of_name in MCOUNTEREN_OF_PATTERNS:
         tc = test_data.begin_test_chunk(split_name=f"mcounteren_{of_name}")
         tc.code.extend(_generate_scountovf_mcounteren_tests(test_data, mode, boot_of_state(), [of_name]))

@@ -169,3 +169,24 @@ coverpoints:
     bins: 2 pending * 2 enabled
     rules:
       - norm:sip_sie_Sscofpmf
+  - name: |-
+      cp_lcofip_priority_m
+      cp_lcofip_priority_s
+    goal: Priority of LCOFI interrupt
+    description: |-
+      xinh = 00000
+      For SscofpmfSm:
+          mstatus.MIE = 1
+          mie = all 0s.
+          mip = 1 in LCOFIP and {MEIP, MTIP, MSIP, none}
+          mie = all 1s
+      else for SscofpmfS:
+         sstatus.SIE = 1
+         sie = 0s
+         sip = 1 in LCOFIP and {SEIP, STIP, SSIP, none}
+         sie = all 1s
+    expectation: Highest priority interrupt fires.  LCOFIP only fires if none of the others are pending because it is lowest priority.
+    bins: 7 interrupts
+    rules:
+      - norm:intr_M_mode_pri
+      - norm:sip_sie_priority_bit_order

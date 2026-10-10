@@ -5,10 +5,10 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.SscofpmfCommon import generate_sscofpmf_suite
+from testgen.priv.extensions.SscofpmfCommon import generate_sscofpmf_suite, prime_counter_overflow
 from testgen.priv.registry import add_priv_test_generator
 
 
@@ -101,6 +101,124 @@ def _generate_lcofi_m_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _generate_lcofip_priority_sm_tests(test_data: TestData) -> list[str]:
+    ######################################
+    covergroup = "Sscofpmf_cg"
+    coverpoint = "cp_lcofip_priority_m"
+    ######################################
+
+    r_val, r_temp, r_temp2, r_addr = test_data.int_regs.get_registers(4, exclude_regs=[0, 31])
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            "LCOFI priority with MEIP, MTIP, MSIP, or no other pending interrupt.\n"
+            "LCOFIP is raised by a real hpmcounter overflow through RVMODEL_MHPMEVENT_CODE.\n"
+            "Each case holds with mie = all 0s (nothing fires), then with mie = all 1s:\n"
+            "the competing interrupt fires first and LCOFI only after it.",
+        ),
+        "",
+        "# Setup: mstatus.MIE=1, mstatus.SIE=1",
+        "csrsi mstatus, 0x8   # MIE",
+        "csrsi mstatus, 0x2   # SIE",
+        "csrw mie, zero      # mie = all 0s initially",
+        "",
+    ]
+
+    # Each competing interrupt is raised only where the platform implements it
+    other_interrupts = {
+        "meip": "UDB_MEI_INTR_IMPL",
+        "mtip": "UDB_MTI_INTR_IMPL",
+        "msip": "UDB_MSI_INTR_IMPL",
+        "none": None,
+    }
+
+    for other_int, guard in other_interrupts.items():
+        binname = f"lcofip_priority_{other_int}"
+
+        if guard:
+            lines.append(f"#ifdef {guard}")
+        lines.extend(
+            [
+                f"# Testcase: competing interrupt = {other_int}",
+                "csrw mip, zero   # clear LCOFIP and other pending bits",
+                "csrw mie, zero   # disable interrupts (clear LCOFIE)",
+                *prime_counter_overflow(r_val, r_temp2, r_temp, r_addr, "Sm"),
+                "# the overflow sets OF and raises LCOFIP; mie = 0, so nothing fires yet",
+                "",
+            ]
+        )
+
+        if other_int == "meip":
+            lines.append("RVTEST_SET_MEXT_INT_M")
+
+        elif other_int == "mtip":
+            lines.append("RVTEST_SET_MTIME_INT_M")
+
+        elif other_int == "msip":
+            lines.append("RVTEST_SET_MSW_INT_M")
+
+        lines.extend(
+            [
+                "",
+                test_data.add_testcase(
+                    f"{binname}_mie_off",
+                    coverpoint,
+                    covergroup,
+                ),
+                "# mie = all 0s: LCOFIP and the competing interrupt stay pending, nothing fires",
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
+                "",
+                f"LI(x{r_temp}, -1)",
+                test_data.add_testcase(
+                    binname,
+                    coverpoint,
+                    covergroup,
+                ),
+                f"csrw mie, x{r_temp}   # mie = all 1s: competing interrupt fires first, then LCOFI",
+                "",
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
+                "",
+                f"csrr x{r_temp2}, mip   # sample point for lcofip priority outcome",
+                write_sigupd(r_temp2, test_data),
+                "",
+            ]
+        )
+
+        if other_int == "meip":
+            lines.append("RVTEST_CLR_MEXT_INT_M")
+
+        elif other_int == "mtip":
+            lines.append("RVTEST_CLR_MTIME_INT_M")
+
+        elif other_int == "msip":
+            lines.append("RVTEST_CLR_MSW_INT_M")
+
+        lines.extend(
+            [
+                "csrw mip, zero   # clear LCOFIP for next iteration",
+                "csrw mie, zero",
+            ]
+        )
+        if guard:
+            lines.append("#endif")
+        lines.append("")
+
+    lines.extend(
+        [
+            "csrw RVTEST_CSR_MHPMEVENT, zero   # stop counting, clear OF",
+            "#if __riscv_xlen == 32",
+            "csrw RVTEST_CSR_MHPMEVENTH, zero",
+            "#endif",
+            "csrw RVTEST_CSR_MHPMCOUNTER, zero",
+        ]
+    )
+
+    test_data.int_regs.return_registers([r_val, r_temp, r_temp2, r_addr])
+
+    return lines
+
+
 @add_priv_test_generator(
     "SscofpmfSm",
     required_extensions=["Sm", "Sscofpmf"],
@@ -112,6 +230,7 @@ def make_sscofpmfsm(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
     tc.code.extend(_generate_lcofi_m_tests(test_data))
+    tc.code.extend(_generate_lcofip_priority_sm_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
     test_chunks.extend(generate_sscofpmf_suite(test_data, "Sm"))
     return test_chunks

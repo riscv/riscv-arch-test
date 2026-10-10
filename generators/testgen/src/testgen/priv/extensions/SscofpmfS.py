@@ -5,12 +5,13 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.asm.helpers import comment_banner
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.SscofpmfCommon import (
     csr_access,
     generate_sscofpmf_suite,
+    prime_counter_overflow,
 )
 from testgen.priv.registry import add_priv_test_generator
 
@@ -67,8 +68,6 @@ def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
                     f"{'csrs' if lcofie else 'csrc'} sie, x{r_temp}   # sie.LCOFIE = {lcofie}",
                     "",
                     test_data.add_testcase(binname, coverpoint, covergroup),
-                    # sstatus.SIE=1 and mideleg.LCOFI=1 held fixed; only sie.LCOFIE gates the
-                    # trap given sip.LCOFIP. Fires during the idle window below if both are set.
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
                     "",
                     f"csrc sip, x{r_temp}   # clear LCOFIP for next iteration (if it latched)" if lcofip else "",
@@ -93,6 +92,123 @@ def _generate_lcofi_sip_s_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _generate_lcofip_priority_s_tests(test_data: TestData) -> list[str]:
+
+    ######################################
+    covergroup = "Sscofpmf_cg"
+    coverpoint = "cp_lcofip_priority_s"
+    ######################################
+
+    LCOFI_BIT = 1 << 13
+    SIE_BIT = 0x2
+
+    r_val, r_temp, r_temp2, r_addr = test_data.int_regs.get_registers(4, exclude_regs=[0, 31])
+
+    lines = [
+        comment_banner(
+            coverpoint,
+            (
+                "Priority of LCOFI interrupt in S-mode (4 cases).\n"
+                "sstatus.SIE=1; LCOFIP is raised by a real hpmcounter overflow through\n"
+                "RVMODEL_MHPMEVENT_CODE, together with one of {SEIP,STIP,SSIP,none}.\n"
+                "Each case holds with sie = all 0s (nothing fires), then with sie = all 1s:\n"
+                "the competing interrupt fires first and LCOFI only after it (lowest priority).\n"
+                "The competing interrupts are raised through the RVTEST_SET_*_INT_S macros;\n"
+                "enables stay in sie, written only here."
+            ),
+        ),
+        "",
+        "csrw sie, zero      # disable all S-mode interrupts",
+        csr_access("csrw RVTEST_CSR_MHPMEVENT, zero", "S"),
+        f"csrsi sstatus, {hex(SIE_BIT)}   # sstatus.SIE = 1",
+    ]
+
+    # Each competing interrupt is raised only where the platform implements it
+    other_interrupts = {
+        "seip": "UDB_SEI_INTR_IMPL",
+        "stip": "UDB_STI_INTR_IMPL",
+        "ssip": "UDB_SSI_INTR_IMPL",
+        "none": None,
+    }
+
+    for other_int, guard in other_interrupts.items():
+        binname = f"lcofip_priority_s_{other_int}"
+
+        lines.append("")
+        if guard:
+            lines.append(f"#ifdef {guard}")
+        lines.extend(
+            [
+                f"# Testcase: competing interrupt = {other_int}",
+                "# RVTEST_CSR_MHPMEVENT/RVTEST_CSR_MHPMCOUNTER writes go via T-SBI from S-mode, per spec",
+                *prime_counter_overflow(r_val, r_temp2, r_temp, r_addr, "S"),
+                "# the overflow sets OF and raises LCOFIP; sie = 0, so nothing fires yet",
+            ]
+        )
+
+        if other_int == "seip":
+            lines.append("RVTEST_SET_SEXT_INT_S")
+
+        elif other_int == "stip":
+            lines.append("RVTEST_SET_STIME_INT_S")
+
+        elif other_int == "ssip":
+            lines.append("RVTEST_SET_SSW_INT_S")
+
+        lines.extend(
+            [
+                "",
+                test_data.add_testcase(f"{binname}_sie_off", coverpoint, covergroup),
+                "# sie = all 0s: LCOFIP and the competing interrupt stay pending, nothing fires",
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
+                "",
+                f"LI(x{r_temp}, -1)",
+                test_data.add_testcase(binname, coverpoint, covergroup),
+                csr_access(f"csrs sie, x{r_temp}   # sie = all 1s: competing interrupt fires first, then LCOFI", "S"),
+                "",
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{r_temp})",
+                f"csrr x{r_temp2}, sip   # sample point for lcofip priority outcome",
+                write_sigupd(r_temp2, test_data),
+                "",
+            ]
+        )
+
+        if other_int == "seip":
+            lines.append("RVTEST_CLR_SEXT_INT_S")
+
+        elif other_int == "stip":
+            lines.append("RVTEST_CLR_STIME_INT_S")
+
+        elif other_int == "ssip":
+            lines.append("RVTEST_CLR_SSW_INT_S")
+
+        lines.extend(
+            [
+                f"LI(x{r_val}, {hex(LCOFI_BIT)})",
+                f"csrc sip, x{r_val}   # clear LCOFIP for next iteration",
+                "csrw sie, zero   # disable all before next iteration",
+            ]
+        )
+        if guard:
+            lines.append("#endif")
+
+    lines.extend(
+        [
+            "",
+            f"csrci sstatus, {hex(SIE_BIT)}   # sstatus.SIE = 0",
+            csr_access("csrw RVTEST_CSR_MHPMEVENT, zero   # stop counting, clear OF", "S"),
+            "#if __riscv_xlen == 32",
+            csr_access("csrw RVTEST_CSR_MHPMEVENTH, zero", "S"),
+            "#endif",
+            csr_access("csrw RVTEST_CSR_MHPMCOUNTER, zero", "S"),
+        ]
+    )
+
+    test_data.int_regs.return_registers([r_val, r_temp, r_temp2, r_addr])
+
+    return lines
+
+
 @add_priv_test_generator(
     "SscofpmfS",
     required_extensions=["S", "Sscofpmf"],
@@ -104,6 +220,7 @@ def make_sscofpmfs(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk(split_name="interrupt")
     tc.code.extend(_generate_lcofi_sip_s_tests(test_data))
+    tc.code.extend(_generate_lcofip_priority_s_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
     test_chunks.extend(generate_sscofpmf_suite(test_data, "S"))
     return test_chunks

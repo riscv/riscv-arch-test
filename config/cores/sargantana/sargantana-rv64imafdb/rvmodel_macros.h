@@ -152,8 +152,11 @@
 // Sscofpmf //
 
 #define RVMODEL_HPM_COUNTER 3
-#define RVMODEL_MHPMEVENT_VAL 0
+// mhpmevent[55:0] selects one of 40 events by index (csr:hpm_counters.sv). Event 5 is a load
+// reaching the execute stage (core:top_drac.sv, pmu_flags.exe_load). The Sail reference counts
+// EV_FENCE for the same selector (sail.json) and triggers it with a fence (sail_macros.h).
+#define RVMODEL_MHPMEVENT_VAL 5
 #define RVMODEL_MHPMEVENT_CODE(_R1, _R2) \
-    nop
+    lw _R2, 0(_R1)
 
 #endif // _RVMODEL_MACROS_H

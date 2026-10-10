@@ -64,20 +64,16 @@ covergroup Sv_VA_cg with function sample(ins_t ins);
 
     `ifdef UDB_MXLEN_64
         VA_i: coverpoint ins.current.virt_adr_i {
-            bins all_zeros = {64'd0};
             bins all_ones  = {64'hFFFFFFFF_FFFFFFFC};
         }
         VA_d: coverpoint ins.current.virt_adr_d {
-            bins all_zeros = {64'd0};
             bins all_ones  = {64'hFFFFFFFF_FFFFFFFF};
         }
     `else
         VA_i: coverpoint ins.current.virt_adr_i {
-            bins all_zeros = {32'd0};
             bins all_ones  = {32'hFFFFFFFC};
         }
         VA_d: coverpoint ins.current.virt_adr_d {
-            bins all_zeros = {32'd0};
             bins all_ones  = {32'hFFFFFFFF};
         }
     `endif

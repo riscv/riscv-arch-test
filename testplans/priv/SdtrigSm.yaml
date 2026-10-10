@@ -163,7 +163,20 @@ coverpoints:
       - Sdtrig_mult_mem_access
   - name: cp_vector_mask
     goal: Masked vector operations do not match
-    description: WIP
+    description: |-
+      if ZVL32B_SUPPORTED
+      tdata2 = {scratch+8}
+      tdata1.select = 0 (adr)
+      tdata1.XSL = {010/001}
+      Vsetivli x0, 9, e{8/16/32/64}, m1, ta, mu
+      v0 = mask with the element at scratch+8 {active/inactive}
+      Perform v{l/s}e{8/16/32/64}.v to scratch, v0.t
+    expectation: |-
+      Breakpoint exception when the element at tdata2 is active
+      No breakpoint exception when the element at tdata2 is masked off
+    bins: 2 mask states * 4 SEW * 2 ops
+    rules:
+      - Sdtrig_mult_mem_access
   - name: cp_cm_pop_push
     goal: Accesses match as if happened individually
     description: |-
@@ -395,7 +408,7 @@ coverpoints:
       tdata1.chain = 0 (disabled)
       tdata1.match = 0 (equal)
       Perform an instruction that causes trigger to fire/not fire
-  - name: cp_sdtrig_mcontrol6_priv_mode
+  - name: cp_mcontrol6_priv_mode
     description: |-
       tdata2 = {scratch}
       tdata1.select = 0 (adr)
@@ -407,7 +420,7 @@ coverpoints:
     rules:
       - Sdtrig_mcontrol6_m
     notes: "comments on test results: Exceptions when m.1"
-  - name: cp_sdtrig_mcontrol6_execute_adr
+  - name: cp_mcontrol6_execute_adr
     description: |-
       tdata2 = {PC address of add x0, x1, x2/0}
       tdata1.select = 0 (adr)
@@ -421,23 +434,23 @@ coverpoints:
       - Sdtrig_mcontrol6_store
       - Sdtrig_mcontrol6_load
     notes: "comments on test results: Exceptions on triggers when execute = 1"
-  - name: cp_sdtrig_mcontrol6_load_store_adr
+  - name: cp_mcontrol6_load_store_adr
     description: |-
-      tdata2 = {scratch/0}
+      tdata2 = {scratch/scratch+8/0}
       tdata1.select = 0 (adr)
       tdata1.XSL = 8 combinations
-      perform {SW/ LW 0x12345678} to scratch
+      perform {SW/ LW 0x12345678} to scratch + {0/8}
     expectation: |-
       Breakpoint exception on LW if access address matches tdata2 and tdata1.load = 1
       Breakpoint exception on SW if access address matches tdata2 and tdata1.store = 1
-    bins: 2 addresses * 8 XSL * 2 ops
+    bins: 3 addresses * 8 XSL * 2 ops * 2 offsets
     rules:
       - Sdtrig_mcontrol6_select_address
       - Sdtrig_mcontrol6_execute
       - Sdtrig_mcontrol6_store
       - Sdtrig_mcontrol6_load
     notes: "comments on test results: Exceptions when XSL = 2 or 1 when tdata2 = scratch"
-  - name: cp_sdtrig_mcontrol6_execute_data
+  - name: cp_mcontrol6_execute_data
     description: |-
       tdata2 = {addi x0, x1, 0 opcode (0x00008013)/0x2}
       tdata1.select = 1 (data)
@@ -452,12 +465,12 @@ coverpoints:
       - Sdtrig_mcontrol6_store
       - Sdtrig_mcontrol6_load
     notes: "comments on test results: Exceptions when tdata2 = 0x00008013, and execute = 1"
-  - name: cp_sdtrig_mcontrol6_load_store_data
+  - name: cp_mcontrol6_load_store_data
     description: |-
-      tdata2 = {0x12345678/0}
+      tdata2 = {random value}
       tdata1.select = 1 (data)
       tdata1.XSL = 8 combinations
-      perform {SW/ LW 0x12345678} to scratch
+      perform {SW/ LW random value} to scratch
     expectation: |-
       Breakpoint exception on LW if access data matches tdata2 and tdata1.load = 1
       Breakpoint exception on SW if access data matches tdata2 and tdata1.store = 1
@@ -467,8 +480,8 @@ coverpoints:
       - Sdtrig_mcontrol6_execute
       - Sdtrig_mcontrol6_store
       - Sdtrig_mcontrol6_load
-    notes: "comments on test results: Exceptions when td2 = 0x12345678, and XSL = 1/2/3"
-  - name: cp_sdtrig_mcontrol6_execute_size
+    notes: "comments on test results: Exceptions when td2 = the stored value, and XSL = 1/2/3"
+  - name: cp_mcontrol6_execute_size
     description: |-
       tdata2 = {addi x0, x1, 0 opcode/c.nop opcode}
       tdata1.select = 1 (data)
@@ -487,31 +500,33 @@ coverpoints:
       - Sdtrig_mcontrol6_size_64bit
       - Sdtrig_mcontrol6_size_128bit
     notes: "comments on test results: Exceptions when td2 = op, size = 0. Note: warls size to zero"
-  - name: cp_sdtrig_mcontrol6_load_store_size
+  - name: cp_mcontrol6_load_store_size
     description: |-
       tdata2 = {scratch/0}
       tdata1.select = 0 (adr)
       tdata1.XSL = 011
-      tdata1.size = {0/1/2/3/4/5/6}
-      perform {lb/lbu/lh/lhu/lw/sb/sh/sw} to scratch with value 0x12345678
+      tdata1.size = {0/1/2/3/5}
+      perform {lb/lbu/lh/lhu/lw/sb/sh/sw} to scratch with a random value
       if RV64 supported, also perform {lwu/ld/sd}
       if F_SUPPORTED, also perform {flw/fsw}
       if D_SUPPORTED, also perform {fld/fsd}
       if ZFH_SUPPORTED, also perform {flh/fsh}
-      if Q_SUPPORTED also perform {flq/fsq}
+      if Q_SUPPORTED, also perform {flq/fsq}
       if ZCA_SUPPORTED, also perform c.{lw/sw/lwsp/swsp}
       if ZCA_SUPPORTED and RV64, also perform c.{ld/sd/ldsp/sdsp}
       if ZCB_SUPPORTED, also perform c.{lbu/lh/lhu/sb/sh}
       if ZCF_SUPPORTED and RV32, also perform c.{flw/flwsp/fsw/fswsp}
       if ZCD_SUPPORTED, also perform c.{fld/fldsp/fsd/fsdsp}
     expectation: Breakpoint exception if the size of the memory access matches the trigger size in mcontrol6
-    bins: 2 values * 7 sizes * up to 39 instructions
+    bins: 2 values * 5 sizes * up to 36 instructions
     rules:
+      - Sdtrig_mcontrol6_size_8bit
       - Sdtrig_mcontrol6_size_16bit
       - Sdtrig_mcontrol6_size_32bit
       - Sdtrig_mcontrol6_size_64bit
       - Sdtrig_mcontrol6_size_128bit
-  - name: cp_sdtrig_mcontrol6_match
+    notes: Sizes 4 (48-bit) and 6 (128-bit) are not tested
+  - name: cp_mcontrol6_match
     goal: Test boundaries for match conditions
     description: |-
       tdata1.select = 1 (data)
@@ -530,7 +545,7 @@ coverpoints:
       - Sdtrig_mcontrol6_match_ge
       - Sdtrig_mcontrol6_match_lt
       - Sdtrig_mcontrol6_match_not_equal
-  - name: cp_sdtrig_mcontrol6_match_napot
+  - name: cp_mcontrol6_match_napot
     description: |-
       tdata1.select = 1 (data)
       tdata1.XSL= 010
@@ -550,7 +565,7 @@ coverpoints:
     rules:
       - Sdtrig_mcontrol6_match_napot
       - Sdtrig_mcontrol6_match_not_napot
-  - name: cp_sdtrig_mcontrol6_match_mask
+  - name: cp_mcontrol6_match_mask
     description: |-
       tdata1.select = 1 (data)
       tdata1.XSL= 010
@@ -591,7 +606,7 @@ coverpoints:
       tdata1.chain = 0 (disabled)
       tdata1.match = 0 (equal)
       Perform an instruction that causes trigger to fire/not fire
-  - name: cp_sdtrig_mcontrol6_chain_adr
+  - name: cp_mcontrol6_chain_adr
     description: |-
       Trigger i (Tselect = i):
       tdata1.select = 0 (address)

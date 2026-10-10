@@ -25,7 +25,7 @@
       // This bits in this value control whether the corresponding
       // bits of the CSR are writable.  Note that bit 1 cannot be written
       // to as it is read-only zero.
-      "writable_bits": { "len": 32, "value": "0xFFFF_FFFD" }
+      "writable_bits": { "len": 32, "value": "0x0000_0000" }
     },
     "writable_fiom": true,
     // The top 29 bits in this value control whether the corresponding
@@ -46,7 +46,7 @@
     // the top 29 bits of `writable_hpm_counters`.
     "scounteren_writable_bits": {
       "len": 32,
-      "value": "0xFFFF_FFFF"
+      "value": "0x0000_0000"
     },
     // The bits in this value control whether the corresponding bits
     // of the `mcounteren` CSR that control access to HPM counters,
@@ -56,7 +56,7 @@
     // bit is read-only zero.
     "mcounteren_writable_bits": {
       "len": 32,
-      "value": "0xFFFF_FFFF"
+      "value": "0x0000_0000"
     },
     "hcounteren_writable_bits": {
       "len": 32,
@@ -115,7 +115,7 @@
       // not exist.
       "delegatable_bits": {
         "len": 64,
-        "value": "0x0000_0000_000c_b3ff"
+        "value": "0x0000_0000_0000_b3ff"
       }
     },
     "mideleg": {
@@ -194,7 +194,7 @@
       // - "ExtContext_TwoState" allows {Off, Dirty}, and writes of Initial and Clean get written as Dirty.
       // - "ExtContext_Off" allows only {Off}.  This makes the field read-only zero.
       "fs_legal_states": "ExtContext_FourState",
-      "vs_legal_states": "ExtContext_FourState"
+      "vs_legal_states": "ExtContext_Off"
     },
     // Set the version of the privileged ISA. `"Privileged_ISA_1_13"`
     // is the latest that the Sail model supports.  The other
@@ -245,7 +245,7 @@
         // (use `{"Some": "AlignmentException"}`).
         // This option controls scalar loads/stores.
         "load_store": {
-          "None": null
+          "Some": "AlignmentException"
         },
         // A misaligned vector load/store can be configured
         // independently of the scalar case above, but uses the same

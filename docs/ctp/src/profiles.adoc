@@ -2,32 +2,33 @@
 
 == Profiles & Test Suites
 
-This test plan addresses Phase 0, Phase 1, and Phase 2 RISC-V certification objectives, including the following ratified and unratified profiles.  The following is a summary of the Certification Requirement Documents (CRDs) for each phase, and changes to the CRDs supersede anything in this summary.
+This test plan contains test suites for all of the mandatory and optional extensions in the RVA23 and earlier profiles, and for various other extensions.
+Some of these profiles, ratified and unratified, are listed below:
 
-* https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVI20 Profile] (Ratified): Phase 0
-** RV{32/64}IMAFDC_Zifencei_Zicntr_Zihpm with no Sm machine mode, no PMP.  Zicsr instructions only access counters and floating-point CSRs. Optional support for misaligned loads/stores (MISALIGNED_LDST parameter).  TODO: Update to point to CRD when ready.
-* MC100 Microcontroller Profile: Phase 1
+* https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVI20 Profile] (Ratified)
+** RV{32/64}IMAFDC_Zifencei_Zicntr_Zihpm with no Sm machine mode, no PMP.  Zicsr instructions only access counters and floating-point CSRs. Optional support for misaligned loads/stores (MISALIGNED_LDST parameter).
+* MC100 Microcontroller Profile
 ** RV{32/64}IMZca_Zifencei_Zicsr_Zicntr with machine mode 1.11, counters, exceptions, interrupts, PMP16
-* https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVA22S64 Profile] (Ratified): Phase 1.5, stepping stone to phase 2
+* https://drive.google.com/file/d/1Kg7Ner5ZlxFDclf92-9Tz88JvmZWt5Wb/view[RVA22S64 Profile] (Ratified)
 ** Application processor without vector, hypervisor, and other newer extensions
-* https://github.com/riscv/riscv-profiles/blob/main/src/rvb23-profile.adoc#rvb23s64-profile[RVB23S64 Profile] (Ratified): Phase 1.8, stepping stone to phase 2
+* https://github.com/riscv/riscv-profiles/blob/main/src/rvb23-profile.adoc#rvb23s64-profile[RVB23S64 Profile] (Ratified)
 ** RVA23 less vector and hypervisor
-* RVA23 Profile (https://riscv.github.io/riscv-arch-test/crd/rva23_crd.html[RVA23 CRD]): Phase 2
+* RVA23 Profile (https://riscv.github.io/riscv-arch-test/crd/rva23_crd.html[RVA23 CRD])
 
 Where a CRD is available, it lists the mandatory and optional extensions and IN/OUT-OF_SCOPE parameters.
-TODO: Update links when CRDs are finalized.
 
 This test plan makes some further assumptions, which should be checked against the CRDs when they become available:
-* All certificates for profiles that support interrupts (Phase 1 and above) require that the platform be able to set and clear via software all interrupt pending bits defined by the certificate. TODO: Relax this.
+
+* All certificates for profiles that support interrupts require that the platform be able to set and clear via software all implemented interrupt pending bits
 * Although the RVI20 profile states that ecall causes a trap to the execution environment, it also says that Zicsr instructions are not supported independent of the Zicntr or F instructions, so there
 is no way to control mtvec and write a trap handler.  Therefore ecall is not exercised.
-* Atomics and fences are much more interesting in a multi-core / multi-master environment.  The base test plan just checks that they execute on a single core.  TODO: Add multi-master test plan.
+* Atomics and fences are much more interesting in a multi-core / multi-master environment.  The base test plan just checks that they execute on a single core.
 
 === Profile Coverage Matrix
 
 <<t-profiles>> summarizes the coverage files applicable to each profile. x indicates a mandatory extension, and o indicates an optional extension.  The certification test plan handles all mandatory and optional extensions.
 
-Coverage files with multiple extensions in the name apply when all the extensions are supported; for example, ZfaZfhD is used in a system supporting Zfa, Zfh, and D extensions.
+Coverage files with multiple extensions in the name apply when all the extensions are supported; for example, ZicsrF is used in a system supporting the Zicsr and F extensions.
 
 All privileged suites require at least version 1.12 of the privileged specification.  Features specific to version 1.13 are tested separately in the Sm1p13 and Ss1p13 suites.
 
@@ -47,9 +48,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zalrsc|Load Reserved / Store Cond|<<t-Zalrsc-coverpoints>>|o||x|x|x
 |Zca|Compressed|<<t-Zca-coverpoints>>|o|x|x|x|x
 |Zcb|Extra Compressed|<<t-Zcb-coverpoints>>||||x|x
-|ZcbM|Compressed Multiply|<<t-ZcbM-coverpoints>>||||x|x
-|ZcbZba|Compressed Zero Extend|<<t-ZcbZba-coverpoints>>||||x|x
-|ZcbZbb|Compressed Sign Extend|<<t-ZcbZbb-coverpoints>>||||x|x
 |Zcf|Compressed Float|<<t-Zcf-coverpoints>>|o||||
 |Zcd|Compressed Double|<<t-Zcd-coverpoints>>|o||x|x|x
 |F|Float|<<t-F-coverpoints>>|o||x|x|x
@@ -60,12 +58,8 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |MisalignF|Misaligned Float|<<t-MisalignF-coverpoints>>|o||o|o|o
 |MisalignD|Misaligned Double|<<t-MisalignD-coverpoints>>|o||o|o|o
 |Zfh|Half|<<t-Zfh-coverpoints>>|||o|o|o
-|ZfhD|Half-Double Converts|<<t-ZfhD-coverpoints>>|||o|o|o
 |Zfhmin|Half Converts|<<t-Zfhmin-coverpoints>>|||x|o|x
-|ZfaF|Additional Float|<<t-ZfaF-coverpoints>>||||x|x
-|ZfaD|Additional Double|<<t-ZfaD-coverpoints>>||||x|x
-|ZfaZfh|Additional Half|<<t-ZfaZfh-coverpoints>>||||o|o
-|ZfaZfhD|Additional Half-Double Converts|<<t-ZfaZfhD-coverpoints>>||||o|o
+|Zfa|Additional Float|<<t-Zfa-coverpoints>>||||x|x
 |Zba|Address Generation|<<t-Zba-coverpoints>>|||x|x|x
 |Zbb|Basic Bit Manipulation|<<t-Zbb-coverpoints>>|||x|x|x
 |Zbc|Carryless Multiplication|<<t-Zbc-coverpoints>>|||o|o|o
@@ -84,7 +78,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zicclsm|Misaligned Loads / Stores|<<t-Zicclsm-normative-rules>>|o|o|x|x|x
 |Zihintpause|Pause Hint|<<t-Zihintpause-coverpoints>>|||x|x|x
 |Zihintntl|Nontemporal Locality Hint|<<t-Zihintntl-coverpoints>>||||x|x
-|ZihintntlZca|Compressed Nontemporal Locality Hint|<<t-ZihintntlZca-coverpoints>>||||x|x
 |Zicbom|Cache Block Flush/Inval|<<t-Zicbom-coverpoints>>|||x|x|x
 |Zicboz|Cache Block Zero|<<t-Zicboz-coverpoints>>|||x|x|x
 |Zicbop|Cache Block Prefetch|<<t-Zicbop-coverpoints>>|||x|x|x
@@ -168,7 +161,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zvfhmin|Vector half conversions|<<t-Zvfhmin-coverpoints>>||||o|o
 |Zvfbfmin|Vector BF16 Convert|<<t-Zvfbfmin-coverpoints>>||||o|o
 |Zvfbfwma|Vector BF16 MAC|<<t-Zvfbfwma-coverpoints>>||||o|o
-|ZfaZvfh|fli for Vector Half|<<t-ZfaZvfh-coverpoints>>||||o|o
 |Zvbb8|Vector Bit Manip 8-bit|<<t-Zvbb-coverpoints>>||||o|x
 |Zvbb16|Vector Bit Manip 16-bit|<<t-Zvbb-coverpoints>>||||o|x
 |Zvbb32|Vector Bit Manip 32-bit|<<t-Zvbb-coverpoints>>||||o|x
@@ -225,7 +217,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |SsnpmH|Hypervisor Pointer Masking|<<t-SsnpmH-coverpoints>>|||||
 |Zacas|Atomic Compare-And-Swap|<<t-Zacas-coverpoints>>||||o|o
 |Zabha|Subword Atomics|<<t-Zabha-coverpoints>>||||o|o
-|ZacasZabha|Subword CAS|<<t-ZacasZabha-coverpoints>>||||o|o
 |Zama16b|Main memory PMA supports misaligned atomics within 16-byte regions|<<t-Zama16b-coverpoints>>|||||x
 |ZicfilpU|User Landing Pads|<<t-ZicfilpU-coverpoints>>||||o|o
 |ZicfilpSm|Machine Landing Pads|<<t-ZicfilpSm-coverpoints>>||||o|o
@@ -332,17 +323,3 @@ A hart with these features can still be certified if it meets all other requirem
 
 TODO:
 **** which of the Zicc extensions are tested by regular instructions?
-
-=== Certification Requirements
-
-Certification places basic requirements on the DUT.
-
-TODO: These should move to the CRD when it is ready.
-
-==== Conforming M-Mode
-
-The privileged testplan relies on a machine mode conforming to Sm1p12 machine architecture or later.  (See also, the privileged spec, link:https://risc-v-certification-steering-committee.github.io/riscv-isa-manual/snapshot/unprivileged/index.html#norm:m-mode-mandatory["All hardware implementations must provide M-mode"].)  The tests need to configure machine-mode CSRs that affect the behavior of lower privilege modes. This is done most easily by directly writing such registers using standard instructions in machine mode.  It is theoretically possible to write tests that only operate in S and U-mode, and use some sort of generalized SBI interface to request machine mode configurations even from non-conforming machine-mode implementations, but no such SBI interface exists at this time and the complexity seems to exceed the benefit.  Therefore, privileged tests rely on machine-mode, and also contain coverpoints and tests to check that privileged behaviors work correctly in machine mode.
-
-==== Consistent XLEN and Endianness
-
-The test plan requires that after the boot process, XLEN and endianness are the same in all privilege modes.  Specifically, MXLEN = SXLEN = UXLEN = HSXLEN = VSXLEN and MBE = SBE = UBE = VSBE.  If this is not the reset state of the DUT, the <<t-rvmodel, `RVMODEL_BOOT` macro>> may be able to place it in that state before testing.  If the DUT cannot be placed in this state, it cannot be certified because the tests assume XLEN and endianness do not change with privilege mode unless specifcially modified by a test. For example, a machine hardwired to 64-bit machine mode and 32-bit user mode is not certifiable. (Presently, only endian changes are tested; certifying multiple XLEN is not a priority.)

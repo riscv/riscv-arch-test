@@ -103,8 +103,6 @@ function string disassemble (logic [31:0] instrRaw);
     NTL_PALL:$sformat(decoded, "ntl.pall");
     NTL_P1:  $sformat(decoded, "ntl.p1");
     NTL_S1:  $sformat(decoded, "ntl.s1");
-  `endif
-  `ifdef ZIHINTNTLZCA_COVERAGE
     C_NTL_ALL: $sformat(decoded, "c.ntl.all");
     C_NTL_PALL: $sformat(decoded, "c.ntl.pall");
     C_NTL_P1: $sformat(decoded, "c.ntl.p1");

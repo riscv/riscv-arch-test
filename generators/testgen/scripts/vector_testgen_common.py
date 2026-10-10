@@ -1772,7 +1772,9 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
                                      f"#define RVTEST_SEW {sew}\n"
                                      f"#define VDSEW {vdsew}\n"
                                      + (f"\n{getPrivExtraDefines(sew)}" if priv else "")
-                                     + ("\n#define TRAP_SIGUPD_COUNT 12500" if test.startswith("SsstrictV") else "")))
+                                     # 1500 matches PRIV_TRAP_SIGUPD_COUNT in testgen.constants
+                                     + ("\n#define TRAP_SIGUPD_COUNT 12500" if test.startswith("SsstrictV")
+                                        else "\n#define TRAP_SIGUPD_COUNT 1500" if priv else "")))
 
 
     )

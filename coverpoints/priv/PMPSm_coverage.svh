@@ -427,7 +427,7 @@ covergroup PMPSm_cg with function sample(
 
     // pmpaddr[0] here is compared against an all-ones value, not a region address, so it needs no mask.
     pmp_addr_for_tor_nonoverlap3: coverpoint (((pmpaddr[1] & `PMP_PMPADDR_LOWMASK)==((`PMP_REGION_START>>2) & `PMP_PMPADDR_LOWMASK)) &&
-                                              (pmpaddr[0]==({$bits(pmpaddr[0][`EFFECTIVE_PMPADDR:0]){1'b1}} & `READ_ZERO_MASK))) { // pmpaddr0 >= pmpaddr1.
+                                              (pmpaddr[0]==(`UDB_MXLEN'({$bits(pmpaddr[0][`EFFECTIVE_PMPADDR:0]){1'b1}}) & `READ_ZERO_MASK))) { // pmpaddr0 >= pmpaddr1.
       bins range3 = {1};
     }
 
@@ -1109,7 +1109,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
   `ifdef UDB_MXLEN_32
       // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
       for (int i = 0; i < 16; i++) begin
-        logic [31:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + i, "pmpcfg", "pmpcfg");
+        logic [31:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + i, "pmpcfg", "pmpcfg");
         pmpcfg[i*4 + 0] = cfg_word[7:0];
         pmpcfg[i*4 + 1] = cfg_word[15:8];
         pmpcfg[i*4 + 2] = cfg_word[23:16];
@@ -1118,7 +1118,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
   `elsif UDB_MXLEN_64
       // Each pmpcfg CSR holds 8 region configs in 64-bit (8x 8-bit)
     for (int i = 0; i < 8; i++) begin
-      logic [63:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 2*i, "pmpcfg", "pmpcfg");
+      logic [63:0] cfg_word = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPCFG0) + 2*i, "pmpcfg", "pmpcfg");
       pmpcfg[i*8 + 0] = cfg_word[7:0];
       pmpcfg[i*8 + 1] = cfg_word[15:8];
       pmpcfg[i*8 + 2] = cfg_word[23:16];
@@ -1131,7 +1131,7 @@ function void pmpsm_sample(int hart, int issue, ins_t ins);
   `endif
 
   for (int j = 0; j < 63; j++) begin
-    pmpaddr[j] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPADDR0 + j, "pmpaddr", "pmpaddr");
+    pmpaddr[j] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, int'(CSR_PMPADDR0) + j, "pmpaddr", "pmpaddr");
   end
 
   for (int k = 0; k < 15; k++) begin  // Check for first 15 PMP regions

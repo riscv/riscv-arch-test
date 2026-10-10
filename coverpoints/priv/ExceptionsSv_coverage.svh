@@ -26,7 +26,8 @@ covergroup ExceptionsSv_cg with function sample(ins_t ins);
     store_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") == `UDB_MXLEN'(STORE_AMO_PAGE_FAULT)) {
         // auto fill 0/1
     }
-    i_virt_adr_misaligned: coverpoint ins.current.virt_adr_i[1:0] {
+    // The PC of the target: a fetch that spans two parcels may report either parcel in virt_adr_i
+    i_virt_adr_misaligned: coverpoint ins.current.pc_rdata[1:0] {
         bins aligned    = {2'b00};
         bins misaligned = {2'b10};
     }
@@ -88,24 +89,39 @@ covergroup ExceptionsSv_cg with function sample(ins_t ins);
 
     // Access fault coverpoints
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        // Accesses land at an offset into the faulting region, which is at least 128 bytes
         `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
-            i_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_i[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            i_phys_address_nonexistent: coverpoint ((64'(ins.current.phys_adr_i) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS)) < 64'd128) {
                 // auto fill 1/0 for the physical address being valid
             }
-            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            d_phys_address_nonexistent: coverpoint ((64'(ins.current.phys_adr_d) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS)) < 64'd128) {
                 // auto fill 1/0 for the physical address being valid
             }
         `else
-            i_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_i[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            i_phys_address_nonexistent: coverpoint ((64'(ins.current.phys_adr_i) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS)) < 64'd128) {
                 // auto fill 1/0 for the physical address being valid
             }
-            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+            d_phys_address_nonexistent: coverpoint ((64'(ins.current.phys_adr_d) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS)) < 64'd128) {
                 // auto fill 1/0 for the physical address being valid
             }
         `endif
-        cp_misaligned_priority_s:        cross priv_mode_s, memops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent;
+        cp_misaligned_priority_s:        cross priv_mode_s, memops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent {
+            `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
+                `ifndef UDB_MISALIGNED_LDST
+                    // The misaligned exception is raised before translation, so there is no PTE or physical address
+                    ignore_bins misaligned_before_translation = binsof(d_virt_adr_misaligned.misaligned);
+                `endif
+            `endif
+        }
         cp_misaligned_priority_fetch_s:  cross priv_mode_s, jalr,   i_virt_adr_misaligned, i_page_table_entry_invalid, i_phys_address_nonexistent;
-        cp_misaligned_priority_u:        cross priv_mode_u, memops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent;
+        cp_misaligned_priority_u:        cross priv_mode_u, memops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent {
+            `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
+                `ifndef UDB_MISALIGNED_LDST
+                    // The misaligned exception is raised before translation, so there is no PTE or physical address
+                    ignore_bins misaligned_before_translation = binsof(d_virt_adr_misaligned.misaligned);
+                `endif
+            `endif
+        }
         cp_misaligned_priority_fetch_u:  cross priv_mode_u, jalr,   i_virt_adr_misaligned, i_page_table_entry_invalid, i_phys_address_nonexistent;
     `endif
 

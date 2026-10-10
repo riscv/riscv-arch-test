@@ -298,7 +298,7 @@ def _parse_testplan_groups(csv_path: Path) -> dict[tuple[str, ...], Testplan]:
                     continue
                 if key == "Type":
                     # TODO: Expand the list of aliased types to avoid duplicate sample function templates
-                    sample_type = value.removesuffix("_RD_NX0")
+                    sample_type = value.removesuffix("_RD_NX0").removesuffix("_RS2_NX0")
                     cps.append(f"sample_{sample_type}")
                 else:
                     # For special entries, append the value as a suffix

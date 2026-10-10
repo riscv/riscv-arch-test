@@ -70,6 +70,47 @@ covergroup Svadu_cg with function sample(ins_t ins);
         }
     `endif
 
+    // A=0 leaf PTEs whose access must page fault before any A/D update
+    PTE_fault_reason_i: coverpoint ins.current.pte_i[6] {
+        bins upage           = {1'b0} iff (ins.current.pte_i[4]);
+        bins reserved_rwx    = {1'b0} iff (ins.current.pte_i[2:1] == 2'b10);
+        `ifdef UDB_MXLEN_64
+            bins reserved_bits   = {1'b0} iff (ins.current.pte_i[60:54] != 0);
+            bins pbmt_reserved   = {1'b0} iff (ins.current.pte_i[62:61] == 2'b11);
+            bins napot_reserved  = {1'b0} iff (ins.current.pte_i[63] & ((ins.current.pte_i[13:10] != 4'b1000) | (ins.current.page_type_i != 0)));
+            bins misaligned_page = {1'b0} iff (((ins.current.page_type_i == 2'b01) & (ins.current.pte_i[18:10] != 0)) |
+                                                 ((ins.current.page_type_i == 2'b10) & (ins.current.pte_i[27:10] != 0)) |
+                                                 ((ins.current.page_type_i == 2'b11) & (ins.current.pte_i[36:10] != 0)));
+        `else
+            bins misaligned_page = {1'b0} iff ((ins.current.page_type_i == 2'b01) & (ins.current.pte_i[19:10] != 0));
+        `endif
+    }
+    // A=0 leaf PTEs whose access must page fault before any A/D update
+    PTE_fault_reason_d: coverpoint ins.current.pte_d[6] {
+        bins upage           = {1'b0} iff (ins.current.pte_d[4]);
+        bins reserved_rwx    = {1'b0} iff (ins.current.pte_d[2:1] == 2'b10);
+        `ifdef UDB_MXLEN_64
+            bins reserved_bits   = {1'b0} iff (ins.current.pte_d[60:54] != 0);
+            bins pbmt_reserved   = {1'b0} iff (ins.current.pte_d[62:61] == 2'b11);
+            bins napot_reserved  = {1'b0} iff (ins.current.pte_d[63] & ((ins.current.pte_d[13:10] != 4'b1000) | (ins.current.page_type_d != 0)));
+            bins misaligned_page = {1'b0} iff (((ins.current.page_type_d == 2'b01) & (ins.current.pte_d[18:10] != 0)) |
+                                                 ((ins.current.page_type_d == 2'b10) & (ins.current.pte_d[27:10] != 0)) |
+                                                 ((ins.current.page_type_d == 2'b11) & (ins.current.pte_d[36:10] != 0)));
+        `else
+            bins misaligned_page = {1'b0} iff ((ins.current.page_type_d == 2'b01) & (ins.current.pte_d[19:10] != 0));
+        `endif
+    }
+
+    ins_page_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        bins ins_page_fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.trap);
+    }
+    load_page_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        bins load_page_fault = {LOAD_PAGE_FAULT} iff (ins.current.trap);
+    }
+    store_page_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap);
+    }
+
     exec_acc: coverpoint ins.current.execute_access {
         bins set = {1};
     }
@@ -98,6 +139,10 @@ covergroup Svadu_cg with function sample(ins_t ins);
     Abit_unset_write_u: cross PTE_Abit_unset_u_d, PageType_d, Svadu_enabled, write_acc, priv_mode_u;
     Dbit_unset_write_s: cross PTE_Dbit_unset_s_d, PageType_d, Svadu_enabled, write_acc, priv_mode_s;
     Dbit_unset_write_u: cross PTE_Dbit_unset_u_d, PageType_d, Svadu_enabled, write_acc, priv_mode_u;
+
+    fault_no_update_exec_s:  cross PTE_fault_reason_i, Svadu_enabled, exec_acc, ins_page_fault, priv_mode_s;
+    fault_no_update_read_s:  cross PTE_fault_reason_d, Svadu_enabled, read_acc, load_page_fault, priv_mode_s;
+    fault_no_update_write_s: cross PTE_fault_reason_d, Svadu_enabled, write_acc, store_page_fault, priv_mode_s;
 
 endgroup
 

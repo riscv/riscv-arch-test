@@ -49,7 +49,7 @@ def generate_instr_adr_misaligned_branch_tests(test_data: TestData, covergroup: 
         [
             "#ifdef ZIBI_SUPPORTED",
             ".option push",
-            ".option arch, +zibi",
+            # ".option arch, +zibi", TODO: uncomment this when Zibi is no longer experimental
             comment_banner(zibi_coverpoint, "Instruction Address Misaligned Zibi branch (taken)"),
             test_data.add_testcase("beqi_taken_branch_pc_6", zibi_coverpoint, covergroup),
             f"beqi x{temp_reg}, 1, .+6",
@@ -103,7 +103,7 @@ def generate_instr_adr_misaligned_branch_nottaken(test_data: TestData, covergrou
         [
             "#ifdef ZIBI_SUPPORTED",
             ".option push",
-            ".option arch, +zibi",
+            # ".option arch, +zibi", TODO: uncomment this when Zibi is no longer experimental
             comment_banner(zibi_coverpoint, "Zibi branch to an unaligned address is not taken"),
             test_data.add_testcase("beqi_nottaken_branch_pc_6", zibi_coverpoint, covergroup),
             f"beqi x{temp_reg}, 2, .+6",

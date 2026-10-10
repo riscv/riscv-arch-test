@@ -6,7 +6,7 @@
 #include "rvtest_config.h"
 #include "derived_config.h"
 #include "encoding.h"
-#ifdef RVTEST_EXPERIMENTAL
+#ifdef ENABLE_EXPERIMENTAL_EXTENSIONS
   #include "rvtest_experimental.h"
 #endif
 #include "utils.h"

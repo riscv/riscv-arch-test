@@ -51,6 +51,7 @@ class RawSweep:
     template: str
     length: int = 32
     exclusion: tuple[str, ...] = ()
+    xlen: int | None = None  # emit only when __riscv_xlen equals this value
 
 
 SetupFn = Callable[[list[str], TestData, int], None]
@@ -175,13 +176,15 @@ def _emit_raw_words(
     label: tuple[str, str, str] | None = None,
     section_header: str | None = None,
     split_name: str | None = None,
+    xlen: int | None = None,
 ) -> None:
     """Emit a template's encodings as one or more self-contained .word/.hword chunks.
 
     Each chunk re-runs `setup` so it is valid wherever the file splitter places
     it. `label` and `section_header` are attached to the first chunk only.
     Templates over MAX_WORDS_PER_CHUNK encodings are split across chunks so no
-    single block produces an oversized file.
+    single block produces an oversized file. If `xlen` is set, the encodings are
+    assembled only when __riscv_xlen equals it.
     """
     seed(reproducible_hash(template))  # reproducible register/immediate choices per template
     directive = ".word" if length == 32 else ".hword"
@@ -210,12 +213,16 @@ def _emit_raw_words(
             bin_name, coverpoint, covergroup = label
             lines.append(f"\t{test_data.add_testcase(bin_name, coverpoint, covergroup)}")
         lines.append("")
+        if xlen is not None:
+            lines.append(f"#if __riscv_xlen == {xlen}")
         if length == 32:
             lines.append("\t.balign 4")
         part = f" part {grp_start // MAX_WORDS_PER_CHUNK}" if total > MAX_WORDS_PER_CHUNK else ""
         lines.append(f"# {comment}{part}  ({len(group)} of {total} encodings) template {template}")
         for enc in group:
             lines.append(f"\t{directive} 0b{enc}")
+        if xlen is not None:
+            lines.append("#endif")
         tc.num_testcases += len(group)
         _finalize_chunk(test_data, lines, test_chunks)
     test_data.int_regs.return_register(scratch_base)
@@ -246,6 +253,7 @@ def _emit_raw_sweeps(
             label=next_label,
             section_header=next_header,
             split_name=next_split_name,
+            xlen=sweep.xlen,
         )
         next_label = None
         next_header = None
@@ -623,8 +631,14 @@ def _generate_compressed_instr(
 ) -> list[TestChunk]:
     """Exhaustive 16-bit quadrant sweeps (testplan cp_illegal_compressed_instruction).
 
-    Compressed encodings need no scratch setup; sp-relative and jump/branch
-    encodings are excluded so no chunk corrupts the signature area.
+    Compressed encodings need no scratch setup. Loads, stores, jumps, branches,
+    and writes to x2 (the signature pointer) are excluded so no chunk faults,
+    jumps away, or corrupts the signature area. The reserved code points inside
+    those ranges are swept separately with operands that are harmless if a hart
+    executes them as the neighboring legal instruction: c.lwsp/c.ldsp with
+    rd=x0 only read x2+uimm (at most 504 bytes into the signature and trap
+    signature regions), c.addi16sp with nzimm=0 adds 0 to x2, and c.addiw with
+    rd=x0 writes x0.
     """
     test_chunks: list[TestChunk] = []
     compressed_sweeps = [
@@ -655,7 +669,7 @@ def _generate_compressed_instr(
             exclusion=(
                 "101XXXXXXXXXXX01",  # c.j — random jump
                 "11XXXXXXXXXXXX01",  # c.beqz/c.bnez — random branch
-                "001XXXXXXXXXXX01",  # c.jal (RV32) — random jump
+                "001XXXXXXXXXXX01",  # c.jal (RV32) — random jump; c.addiw (RV64)
                 "0XXX00010XXXXX01",  # rd = x2 — clobbers signature pointer
             ),
         ),
@@ -665,20 +679,25 @@ def _generate_compressed_instr(
             "EEEEEEEEEEEEEE10",
             length=16,
             exclusion=(
-                "1000XXXXX0000010",  # c.jr rs1!=0 — random jump
+                "1000XXXXX0000010",  # c.jr — random jump
                 "1001XXXXX0000010",  # c.jalr/c.ebreak — random jump or debug trap
-                "X01XXXXXXXXXXX10",  # c.fldsp/c.fsdsp — sp-relative, corrupts signature area
-                "X10XXXXXXXXXXX10",  # c.lwsp/c.swsp — sp-relative, corrupts signature area
-                "011XXXXXXXXXXX10",  # c.ldsp/c.flwsp — sp-relative store
+                "X01XXXXXXXXXXX10",  # c.fldsp/c.fsdsp — sp-relative load into rd / store into signature area
+                "X10XXXXXXXXXXX10",  # c.lwsp/c.swsp — sp-relative load into rd / store into signature area
+                "011XXXXXXXXXXX10",  # c.ldsp/c.flwsp — sp-relative load into rd
                 "1001000000000010",  # c.ebreak — legal, tested elsewhere
                 "0X0X00010XXXXX10",  # CI with rd = x2 (sp) — clobbers signature pointer
                 "100X00010XXXXX10",  # CR with rd = x2 (sp) — clobbers signature pointer
-                "1100XXXXXXXXXX10",  # c.swsp with rs2=x2 — stores sp to random address
-                "111XXXXXXXXXXX10",  # c.sdsp/c.fswsp — sp-relative store
-                "1010XXXXXXXXXX10",  # nop-like edge — unpredictable on some platforms
+                "111XXXXXXXXXXX10",  # c.sdsp/c.fswsp — sp-relative store into signature area
             ),
         ),
+        # Reserved code points inside the excluded ranges above
         RawSweep("cp_compressed10 illegal_c_jr", "1000000000000010", length=16),
+        RawSweep("cp_compressed10 illegal_c_lwsp", "010E00000EEEEE10", length=16),
+        # c.ldsp rd=x0 is reserved on RV64 and on RV32 with Zclsd; on RV32 with Zcf it is c.flwsp f0
+        RawSweep("cp_compressed10 illegal_c_ldsp", "011E00000EEEEE10", length=16),
+        RawSweep("cp_compressed01 illegal_c_addi16sp", "0110000100000001", length=16),
+        # On RV32 these encodings are c.jal
+        RawSweep("cp_compressed01 illegal_c_addiw", "001E00000EEEEE01", length=16, xlen=64),
     ]
     _emit_raw_sweeps(
         test_data,

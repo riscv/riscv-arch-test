@@ -26,7 +26,7 @@ coverpoints:
     bins: Same as SsstrictSm cp_illegal_instruction, U-mode priv_mode context
   - name: cp_illegal_compressed_instruction
     goal: Illegal Compressed Instructions
-    description: Same compressed quadrant sweep as SsstrictSm/S but from U-mode.
+    description: Same compressed quadrant sweep (00/01/10) as SsstrictSm/S, including the separately swept reserved code points (c.jr with rs1 = x0, c.lwsp and c.ldsp with rd = x0, c.addi16sp with nzimm = 0, and c.addiw with rd = x0 on RV64), but from U-mode.
     expectation: All reserved encodings trap from U-mode.
     bins: Same as SsstrictSm cp_illegal_compressed_instruction, U-mode context
   - name: cp_upperreg

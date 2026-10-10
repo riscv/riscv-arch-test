@@ -977,7 +977,7 @@
       // `sbreak` test in `riscv-tests`.
       "breakpoint_reentrancy": "No_reentrancy_support",
       "etrigger": {
-        "supported": true,
+        "supported": false,
         // A bit set to 1 in this value specifies that the
         // corresponding exception is supported by the trigger.
         // Triggers for reserved exceptions are not supported.  This
@@ -987,7 +987,7 @@
       "hcontext": { "supported": false },
       // Triggers
       "icount": {
-        "supported": true,
+        "supported": false,
         "count_hardwired_one": false,
         // Whether a `tdata1` write to an `icount` trigger with
         // `count`=1 also makes it pending when that write's instruction
@@ -995,7 +995,7 @@
         "self_write_sets_pending": false
       },
       "itrigger": {
-        "supported": true,
+        "supported": false,
         // A bit set to 1 in this value specifies that the
         // corresponding interrupt is supported by the trigger.
         // Triggers for reserved interrupts are not supported.  This

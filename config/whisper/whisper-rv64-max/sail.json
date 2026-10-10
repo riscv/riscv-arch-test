@@ -937,7 +937,7 @@
       // . `No_reentrancy_support`: no specific support for reentrancy
       // Note: `Use_tcontrol` hardwires medeleg[3] to 0, which breaks the
       // `sbreak` test in `riscv-tests`.
-      "breakpoint_reentrancy": "No_reentrancy_support",
+      "breakpoint_reentrancy": "Use_interrupt_enables",
       "etrigger": {
         "supported": true,
         // A bit set to 1 in this value specifies that the

@@ -993,7 +993,7 @@
       // Triggers
       "icount": {
         "supported": true,
-        "count_hardwired_one": false,
+        "count_hardwired_one": true,
         // Whether a `tdata1` write to an `icount` trigger with
         // `count`=1 also makes it pending when that write's instruction
         // matches the trigger.

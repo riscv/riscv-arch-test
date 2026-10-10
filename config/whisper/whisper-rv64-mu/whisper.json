@@ -134,5 +134,43 @@
   "wfi_timeout": 0,
   "mmode_perf_event_map": {
     "Load": 11
-  }
+  },
+
+  "trigger_actions": [
+    "raisebreak",
+    "enterdebug",
+    "starttrace",
+    "stoptrace",
+    "emittrace"
+  ],
+  "trigger_types": [
+    "none",
+    "disabled",
+    "mcontrol6",
+    "icount",
+    "itrigger",
+    "etrigger"
+  ],
+  "triggers": [
+    {
+      "reset": [0, 0, 0, "0x8078"],
+      "mask": ["0xf800000001ffffff", "0xffffffffffffffff", "0x0", 0],
+      "poke_mask": ["0xf800000001ffffff", "0xffffffffffffffff", "0x0", 0]
+    },
+    {
+      "reset": [0, 0, 0, "0x8078"],
+      "mask": ["0xf800000001ffffff", "0xffffffffffffffff", "0x0", 0],
+      "poke_mask": ["0xf800000001ffffff", "0xffffffffffffffff", "0x0", 0]
+    },
+    {
+      "reset": [0, 0, 0, "0x8078"],
+      "mask": ["0xf800000001ffffff", "0xffffffffffffffff", "0x0", 0],
+      "poke_mask": ["0xf800000001ffffff", "0xffffffffffffffff", "0x0", 0]
+    },
+    {
+      "reset": [0, 0, 0, "0x8078"],
+      "mask": ["0xf800000001ffffff", "0xffffffffffffffff", "0x0", 0],
+      "poke_mask": ["0xf800000001ffffff", "0xffffffffffffffff", "0x0", 0]
+    }
+  ]
 }

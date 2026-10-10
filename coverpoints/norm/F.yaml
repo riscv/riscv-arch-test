@@ -244,6 +244,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "{F_fcvt_w_s_cg, F_fcvt_wu_s_cg, F_fcvt_l_s_cg, F_fcvt_lu_s_cg}/cr_fs1_edges_frm",
+        "{F_fcvt_w_s_cg, F_fcvt_wu_s_cg, F_fcvt_l_s_cg, F_fcvt_lu_s_cg}/cp_fs1_cvt_exact_S_I",
       ]
   # All floating-point to integer and integer to floating-point conversion instructions
   # round according to the rm field.
@@ -252,7 +253,9 @@ normative_rule_definitions:
     coverpoint:
       [
         "{F_fcvt_w_s_cg, F_fcvt_l_s_cg}/cr_fs1_edges_frm",
-        "{F_fcvt_s_w_cg, F_fcvt_s_l_cg}/cp_frm_2",
+        "{F_fcvt_w_s_cg, F_fcvt_l_s_cg}/cr_fs1_cvt_edges_frm_S_I",
+        "F_fcvt_s_w_cg/cr_rs1_cvt_edges_frm_W_S",
+        "F_fcvt_s_l_cg/cr_rs1_cvt_edges_frm_L_S",
       ]
   # All floating-point conversion instructions set the Inexact exception flag if the
   # rounded result differs from the operand value and the Invalid exception flag is not
@@ -286,7 +289,7 @@ normative_rule_definitions:
   # register rd. The bits are not modified in the transfer, and in particular, the
   # payloads of non-canonical NaNs are preserved.
   - name: fmv-w-x_op
-    coverpoint: ["F_fmv_w_x_cg/{cp_rs1, cp_rs1_edges, cp_fd}"]
+    coverpoint: ["F_fmv_w_x_cg/{cp_rs1, cp_rs1_edges, cp_fd, cp_rs1_fp_edges}"]
   # Floating-point compare instructions (insn:feq.s[], insn:flt.s[], insn:fle.s[])
   # perform the specified comparison between floating-point registers (rs1 = rs2, rs1
   # &lt; rs2, rs1 ≤ rs2) writing 1 to the integer register rd if the condition holds,

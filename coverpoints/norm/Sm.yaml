@@ -1402,8 +1402,7 @@ normative_rule_definitions:
       ]
 
   # For other traps, mtval is set to zero
-  # ECALL entries record mtval. Interrupt entries do not; the trap handler checks mtval is zero, and
-  # cp_trigger leaves it nonzero first.
+  # ECALL and interrupt entries record mtval; cp_trigger leaves it nonzero before each interrupt.
   - name: mtval_other_traps_zero
     coverpoint: ["ExceptionsSm_cg/cp_ecall_m", "InterruptsSm_cg/cp_trigger"]
 

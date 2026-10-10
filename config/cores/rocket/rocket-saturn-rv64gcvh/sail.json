@@ -1,0 +1,978 @@
+{
+  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.15/sail_riscv_config_schema.json",
+  "base": {
+    "xlen": 64,
+    "E": false,
+    // Whether a `mhpmcounter` increments if the event it is counting
+    // was generated during a write to its corresponding `mhpmevent`
+    // CSR (which could change the monitored event).
+    // Rocket counts the events of the writing instruction with the previous selector
+    // (RocketCore.scala:1215, CSR.scala:1305 in rocket-chip src/main/scala/rocket/), which
+    // Sail cannot express; it does not count them with the new one.
+    "hpmcounter_increments_in_self_hpmevent_write": false,
+    // The precision of the HPM counter, upto 64 bits.
+    // Rocket: hpmWidth = 40 (rocket-chip src/main/scala/rocket/CSR.scala:212).
+    "hpmcounter_width_bits": 40,
+    // The width of the `mhpmevent` CSRs, upto 64 bits, if Sscofpmf is
+    // not supported.  On RV32 without Sscofpmf, this can be upto 32,
+    // since the `mhpmeventh` CSRs are not accessible.
+    // If Sscofpmf is supported, the `mhpmevent` CSRs are always 64
+    // bits; this value then defines the number, upto 56, of the lowest
+    // bits of the CSRs that are used as the event selector.
+    // Rocket: mhpmevent keeps bits 1:0 (event set, 3 sets) and 25:8 (event mask, 18 events in
+    // the largest set): Events.scala:30-35 and RocketCore.scala:178-222 in rocket-chip
+    // src/main/scala/rocket/. Bits 7:2 read 0 on Rocket; Sail models only a low field.
+    "hpmevent_width_bits": 26,
+    // Rocket: CY, IR and HPM3-31 are writable (rocket-chip src/main/scala/rocket/CSR.scala:591,1308).
+    "mcountinhibit": {
+      // Whether the `mcountinhibit` CSR is implemented.
+      "supported": true,
+      // This bits in this value control whether the corresponding
+      // bits of the CSR are writable.  Note that bit 1 cannot be written
+      // to as it is read-only zero.
+      "writable_bits": { "len": 32, "value": "0xFFFF_FFFD" }
+    },
+    "writable_fiom": true,
+    "writable_hpm_counters": {
+      "len": 32,
+      "value": "0xFFFF_FFF8"
+    },
+    "scounteren_writable_bits": {
+      "len": 32,
+      "value": "0xFFFF_FFFF"
+    },
+    "mcounteren_writable_bits": {
+      "len": 32,
+      "value": "0xFFFF_FFFF"
+    },
+    "hcounteren_writable_bits": {
+      "len": 32,
+      "value": "0xFFFF_FFFF"
+    },
+    "mtvec": {
+      "direct": {
+        "supported": true,
+        "base_alignment": 2
+      },
+      "vectored": {
+        "supported": true,
+        "base_alignment": 8
+      }
+    },
+    "stvec": {
+      "direct": {
+        "supported": true
+      },
+      "vectored": {
+        "supported": true,
+        "base_alignment": 8
+      }
+    },
+    "vstvec": {
+      "direct": {
+        "supported": true
+      },
+      "vectored": {
+        "supported": true,
+        "base_alignment": 8
+      }
+    },
+    "medeleg": {
+      "delegatable_bits": {
+        "len": 64,
+        "value": "0x0000_0000_00F0_B55D"
+      }
+    },
+    "mideleg": {
+      "delegatable_bits": {
+        "len": "xlen",
+        "value": "0x0000_0000_0000_0222"
+      }
+    },
+    "xtval_nonzero": {
+      "illegal_instruction": true,
+      "virtual_instruction": false,
+      "load_guest_page_fault": true,
+      "samo_guest_page_fault": true,
+      "fetch_guest_page_fault": true,
+      "software_breakpoint": true,
+      "hardware_breakpoint": true,
+      "load_address_misaligned": true,
+      "load_access_fault": true,
+      "load_page_fault": true,
+      "samo_address_misaligned": true,
+      "samo_access_fault": true,
+      "samo_page_fault": true,
+      "fetch_address_misaligned": false,
+      "fetch_access_fault": true,
+      "fetch_page_fault": true,
+      "software_check": true,
+      "hardware_error": true,
+      "reserved_exceptions": false
+    },
+    "reserved_behavior": {
+      "amocas_odd_register": "AMOCAS_Illegal",
+      "fcsr_rm": "Fcsr_RM_Illegal",
+      "pmpcfg_write_only": "PMP_ClearPermissions",
+      "xenvcfg_cbie": "Xenvcfg_ClearPermissions",
+      "xtvec_mode": "Xtvec_Ignore",
+      "rv32zdinx_odd_register": "Zdinx_Illegal"
+    },
+    "mstatus": {
+      "fs_legal_states": "ExtContext_TwoState",
+      "vs_legal_states": "ExtContext_FourState"
+    },
+    "privileged_isa_version": "Privileged_ISA_1_12"
+  },
+  "memory": {
+    // Rocket implements 32 physical address bits. 56 is used because Sail masks the virtual
+    // address it reports in xtval on a translated access to physaddr_bits.
+    "physaddr_bits": 56,
+    "asidlen": 0,
+    "vmidlen": 0,
+    "pmp": {
+      "grain": 10,
+      "count": 16,
+      "usable_count": 8,
+      "tor_supported": true,
+      "na4_supported": false,
+      "napot_supported": true
+    },
+    "misaligned": {
+      "exceptions": {
+        "load_store": {
+          "None": null
+        },
+        "vector": {
+          "Some": "AlignmentException"
+        },
+        "amo": {
+          "None": null
+        },
+        "lrsc": {
+          "None": null
+        }
+      },
+      "order_decreasing": false,
+      "default_allowed_within_exp": 0,
+      "byte_by_byte": false
+    },
+    "dtb_address": {
+      "len": 64,
+      "value": "0x1000"
+    },
+    "regions": [
+      {
+        "base": {
+          "len": 64,
+          "value": "0x1000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x1000"
+        },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": true,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": {
+              "Some": "AccessFault"
+            },
+            "vector": {
+              "Some": "AccessFault"
+            },
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": false
+      },
+      {
+        "base": {
+          "len": 64,
+          "value": "0x10000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x10000"
+        },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": true,
+          "executable": true,
+          "readable": true,
+          "writable": false,
+          "read_idempotent": true,
+          "write_idempotent": true,
+          "misaligned_exceptions": {
+            "load_store": {
+              "Some": "AlignmentException"
+            },
+            "vector": {
+              "Some": "AlignmentException"
+            },
+            "amo": "AlignmentException",
+            "lrsc": "AlignmentException"
+          },
+          "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": false
+      },
+      {
+        "base": {
+          "len": 64,
+          "value": "0x2000000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x10000"
+        },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": true,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": {
+              "Some": "AccessFault"
+            },
+            "vector": {
+              "Some": "AccessFault"
+            },
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": false
+      },
+      {
+        "base": {
+          "len": 64,
+          "value": "0x8000000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x10000"
+        },
+        "attributes": {
+          "mem_type": "MainMemory",
+          "cacheable": true,
+          "coherent": true,
+          "executable": true,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": true,
+          "write_idempotent": true,
+          "misaligned_exceptions": {
+            "load_store": {
+              "Some": "AlignmentException"
+            },
+            "vector": {
+              "Some": "AlignmentException"
+            },
+            "amo": "AlignmentException",
+            "lrsc": "AlignmentException"
+          },
+          "atomic_support": "AMOArithmetic",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
+          "reservability": "RsrvEventual",
+          "supports_cbo_zero": false,
+          "supports_pte_read": true,
+          "supports_pte_write": true
+        },
+        "include_in_device_tree": false
+      },
+      {
+        "base": {
+          "len": 64,
+          "value": "0xc000000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x4000000"
+        },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": true,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": {
+              "Some": "AccessFault"
+            },
+            "vector": {
+              "Some": "AccessFault"
+            },
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": false
+      },
+      {
+        "base": {
+          "len": 64,
+          "value": "0x10020000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x1000"
+        },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": true,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": {
+              "Some": "AccessFault"
+            },
+            "vector": {
+              "Some": "AccessFault"
+            },
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": false
+      },
+      {
+        "base": {
+          "len": 64,
+          "value": "0x80000000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x10000000"
+        },
+        "attributes": {
+          "mem_type": "MainMemory",
+          "cacheable": true,
+          "coherent": true,
+          "executable": true,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": true,
+          "write_idempotent": true,
+          "misaligned_exceptions": {
+            "load_store": {
+              "Some": "AlignmentException"
+            },
+            "vector": {
+              "Some": "AlignmentException"
+            },
+            "amo": "AlignmentException",
+            "lrsc": "AlignmentException"
+          },
+          "atomic_support": "AMOArithmetic",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
+          "reservability": "RsrvEventual",
+          "supports_cbo_zero": false,
+          "supports_pte_read": true,
+          "supports_pte_write": true
+        },
+        "include_in_device_tree": true
+      }
+    ]
+  },
+  "platform": {
+    "vendorid": 0,
+    "archid": 1,
+    "impid": 538447876,
+    "hartid": 0,
+    "cache_block_size_exp": 6,
+    "reservation": {
+      "reservation_set_size_exp": 6,
+      "require_exact_reservation_addr": false,
+      "invalidate_on_same_hart_store": false
+    },
+    "interrupts": {
+      "machine": {
+        "software": {
+          "supported": true
+        },
+        "external": {
+          "supported": true
+        },
+        "timer": {
+          "supported": true
+        }
+      }
+    },
+    "clint": {
+      "supported": true,
+      "base": 33554432,
+      "size": 65536
+    },
+    "simple_interrupt_generator": {
+      "supported": true,
+      "base": 201326592
+    },
+    "clock_frequency": 1000000000,
+    "instructions_per_tick": 2,
+    "wfi_is_nop": false,
+    "wfi_available_to_user_mode": true,
+    "max_time_to_wait": 200,
+    // The model can generate the following events that can be tracked
+    // using the HPM counters:
+    // - EV_FENCE
+    // - EV_MISALIGNED_LOAD_EXCEPTION
+    // - EV_MISALIGNED_STORE_EXCEPTION
+    // - EV_TLB_MISS
+    //
+    // An event can be mapped to a selector value, that when written
+    // to the event field of an `mhpmeventNN` CSR, will increment the
+    // corresponding `mhpmcounterNN` CSR as per the specification
+    // (e.g. the `Sscofpmf` extension).
+    //
+    // The selector values need to fit into the event field of an
+    // `mhpmeventNN` CSR. When Sscofpmf is not supported, this field
+    // is `base.hpmevent_width_bits` wide; with Sscofpmf, this field
+    // is the lowest 56 bits of the 64-bit `mhpeventNN` CSR.
+    //
+    // The `event_selectors` list can contain any subset of these
+    // supported events.  Events cannot be repeated in the list, and
+    // the selector values should be unique.  These selector values
+    // are always specified as 64-bit, but their values must fit the
+    // width restrictions mentioned above.
+    "event_selectors": []
+  },
+  "extensions": {
+    // Rocket: misa is writable in M, A, F, D, V and C
+    // (rocket-chip src/main/scala/rocket/CSR.scala:635-641,1259-1266).
+    "M": {
+      "mutable_misa": true,
+      "supported": true
+    },
+    "A": {
+      "mutable_misa": true,
+      "supported": true
+    },
+    "F": {
+      "mutable_misa": true,
+      "supported": true,
+      "fflags_dirty_policy": "Fflags_Dirty_Precise"
+    },
+    "D": {
+      "mutable_misa": true,
+      "supported": true
+    },
+    "C": {
+      "mutable_misa": true
+    },
+    "V": {
+      "mutable_misa": true,
+      "support_level": "Full",
+      "vlen_exp": 7,
+      "elen_exp": 6,
+      "reserved_behavior": {
+        "illegal_vtype": "IllegalVtype_SetVill",
+        "vstart_out_of_bounds": "Vstart_Ignore"
+      },
+      "vl_use_ceil": false,
+      "max_index_eew_exp": 6,
+      "vstart": {
+        "zero_required": {
+          "arith": true,
+          "scalar_move": true
+        }
+      }
+    },
+    "B": {
+      "mutable_misa": false,
+      "supported": false
+    },
+    "S": {
+      "mutable_misa": false,
+      "supported": true,
+      "interrupts": {
+        "software": {
+          "supported": true
+        },
+        "external": {
+          "supported": true
+        },
+        "timer": {
+          "supported": true
+        }
+      }
+    },
+    "U": {
+      "mutable_misa": false,
+      "supported": true
+    },
+    "H": {
+      "mutable_misa": false,
+      "supported": true,
+      "geilen": 0,
+      "guest_page_fault_writes_htval": true,
+      // Whether a trap into M or HS mode caused by the specified exception
+      // writes the transformed trapping instruction to `mtinst`/`htinst`.
+      // This applies to integer and floating-point loads and stores
+      // (including compressed forms), LR/SC, AMOs, HLV/HLVX/HSV and CBOs.
+      // If false, zero is written instead.
+      // Rocket writes no transformed instruction: mtinst/htinst hold 0x3000 for a guest-page
+      // fault on an implicit VS-stage PTE access, otherwise 0
+      // (CSR.scala:589,1076,1089 and RocketCore.scala:892 in rocket-chip src/main/scala/rocket/).
+      "transformed_instruction": {
+        "load_access_fault": false,
+        "load_address_misaligned": false,
+        "load_guest_page_fault": false,
+        "load_page_fault": false,
+        "samo_access_fault": false,
+        "samo_address_misaligned": false,
+        "samo_guest_page_fault": false,
+        "samo_page_fault": false
+      },
+      "hgatp_modes": {
+        "Sv32x4": false,
+        "Sv39x4": true,
+        "Sv48x4": true,
+        "Sv57x4": false
+      },
+      "vsatp_modes": {
+        "Sv32": false,
+        "Sv39": true,
+        "Sv48": true,
+        "Sv57": false
+      }
+    },
+    "Sha": {
+      "supported": false
+    },
+    "Shcounterenw": {
+      "supported": true
+    },
+    "Shgatpa": {
+      "supported": true
+    },
+    "Shtvala": {
+      "supported": true
+    },
+    "Shvsatpa": {
+      "supported": true
+    },
+    "Shvstvala": {
+      "supported": false
+    },
+    "Shvstvecd": {
+      "supported": true
+    },
+    "Sstvecd": {
+      "supported": true
+    },
+    "Svukte": {
+      "supported": false
+    },
+    "Zilx": {
+      "supported": false
+    },
+    "Zibi": {
+      "supported": false
+    },
+    "Zic64b": {
+      "supported": false
+    },
+    "Zicbom": {
+      "supported": false
+    },
+    "Zicbop": {
+      "supported": false
+    },
+    "Zicboz": {
+      "supported": false
+    },
+    "Ziccamoa": {
+      "supported": false
+    },
+    "Ziccamoc": {
+      "supported": false
+    },
+    "Ziccif": {
+      "supported": false
+    },
+    "Zicclsm": {
+      "supported": false
+    },
+    "Ziccrse": {
+      "supported": false
+    },
+    "Zicfilp": {
+      "supported": false
+    },
+    "Zicfiss": {
+      "supported": false
+    },
+    "Zicond": {
+      "supported": false
+    },
+    // Sail-only: Zicntr is not claimed in the UDB configuration because Rocket has no time CSR,
+    // but Rocket implements cycle and instret (rocket-chip src/main/scala/rocket/CSR.scala:731-732),
+    // which Sail 0.15 makes accessible only with Zicntr. Sail then also allows reads of time.
+    "Zicntr": {
+      "supported": true
+    },
+    "Zicsr": {
+      "supported": true
+    },
+    "Zifencei": {
+      "supported": true
+    },
+    "Zihintntl": {
+      "supported": false
+    },
+    "Zihintpause": {
+      "supported": false
+    },
+    "Zihpm": {
+      "supported": true
+    },
+    "Zimop": {
+      "supported": false
+    },
+    "Zmmul": {
+      "supported": true
+    },
+    "Zaamo": {
+      "supported": true
+    },
+    "Zabha": {
+      "supported": false
+    },
+    "Zacas": {
+      "supported": false
+    },
+    "Zalrsc": {
+      "supported": true
+    },
+    "Zama16b": {
+      "supported": false
+    },
+    "Zawrs": {
+      "supported": false,
+      "nto": {
+        "is_nop": false
+      },
+      "sto": {
+        "is_nop": false
+      }
+    },
+    "Zfa": {
+      "supported": false
+    },
+    "Zfbfmin": {
+      "supported": false
+    },
+    "Zfh": {
+      "supported": true
+    },
+    "Zfhmin": {
+      "supported": true
+    },
+    "Zfinx": {
+      "supported": false
+    },
+    "Zdinx": {
+      "supported": false
+    },
+    "Zca": {
+      "supported": true
+    },
+    "Zcf": {
+      "supported": false
+    },
+    "Zcd": {
+      "supported": true
+    },
+    "Zcb": {
+      "supported": false
+    },
+    "Zcmop": {
+      "supported": false
+    },
+    "Zba": {
+      "supported": true
+    },
+    "Zbb": {
+      "supported": true
+    },
+    "Zbs": {
+      "supported": true
+    },
+    "Zbc": {
+      "supported": false
+    },
+    "Zbkb": {
+      "supported": false
+    },
+    "Zbkc": {
+      "supported": false
+    },
+    "Zbkx": {
+      "supported": false
+    },
+    "Zknd": {
+      "supported": false
+    },
+    "Zkne": {
+      "supported": false
+    },
+    "Zknh": {
+      "supported": false
+    },
+    "Zkr": {
+      "supported": false,
+      "sseed_reset_value": false,
+      "useed_reset_value": false,
+      "sseed_read_only_zero": false,
+      "useed_read_only_zero": false
+    },
+    "Zksed": {
+      "supported": false
+    },
+    "Zksh": {
+      "supported": false
+    },
+    "Zkt": {
+      "supported": false
+    },
+    "Zhinx": {
+      "supported": false
+    },
+    "Zhinxmin": {
+      "supported": false
+    },
+    "Zvabd": {
+      "supported": false
+    },
+    "Zvfbfmin": {
+      "supported": false
+    },
+    "Zvfbfwma": {
+      "supported": false
+    },
+    "Zvfh": {
+      "supported": true
+    },
+    "Zvfhmin": {
+      "supported": true
+    },
+    "Zvbb": {
+      "supported": true
+    },
+    "Zvbc": {
+      "supported": false
+    },
+    "Zvkb": {
+      "supported": true
+    },
+    "Zvkg": {
+      "supported": false
+    },
+    "Zvkned": {
+      "supported": false
+    },
+    "Zvknha": {
+      "supported": false
+    },
+    "Zvknhb": {
+      "supported": false
+    },
+    "Zvksed": {
+      "supported": false
+    },
+    "Zvksh": {
+      "supported": false
+    },
+    "Zvkt": {
+      "supported": false
+    },
+    "Ssccptr": {
+      "supported": false
+    },
+    "Sscofpmf": {
+      "supported": false
+    },
+    "Sscounterenw": {
+      "supported": true
+    },
+    "Sstc": {
+      "supported": false
+    },
+    "Sstvala": {
+      "supported": false
+    },
+    "Svade": {
+      "supported": true
+    },
+    "Svadu": {
+      "supported": false
+    },
+    "Svinval": {
+      "supported": false
+    },
+    "Svrsw60t59b": {
+      "supported": false
+    },
+    "Svnapot": {
+      "supported": false
+    },
+    "Ssnpm": {
+      "supported": false,
+      "supported_pmlen_7": true,
+      "supported_pmlen_16": true
+    },
+    "Smnpm": {
+      "supported": false,
+      "supported_pmlen_7": true,
+      "supported_pmlen_16": true
+    },
+    "Smmpm": {
+      "supported": false,
+      "supported_pmlen_7": true,
+      "supported_pmlen_16": true
+    },
+    "Smcntrpmf": {
+      "supported": false
+    },
+    "Svbare": {
+      "supported": true,
+      "sfence_vma_illegal_if_svbare_only": true
+    },
+    "Sv32": {
+      "supported": false
+    },
+    "Sv39": {
+      "supported": true
+    },
+    "Sv48": {
+      "supported": true
+    },
+    "Sv57": {
+      "supported": false
+    },
+    "Stateen": {
+      "Smstateen": {
+        "supported": false
+      },
+      "Ssstateen": {
+        "supported": false
+      },
+      "C_readonly_zero": true,
+      "SE0_readonly_zero": false
+    },
+    "Ssqosid": {
+      "supported": false,
+      "rcid_length": 12,
+      "mcid_length": 12
+    },
+    "Svpbmt": {
+      "supported": false
+    },
+    "Svvptc": {
+      "supported": false
+    },
+    // Sdtrig, Smdbltrp, Ssdbltrp and Ssstrict are not claimed in the UDB configuration.
+    "Sdtrig": {
+      "supported": false,
+      // `breakpoint_reentrancy` must be one of the below strings:
+      // . `Use_tcontrol`: use the `mte` and `mpte` bits in the `tcontrol` CSR (this also makes the `tcontrol` CSR available)
+      // . `Use_interrupt_enables`: use `mstatus.MIE` and the `SIE` bits in `sstatus` and `vsstatus`
+      // . `No_reentrancy_support`: no specific support for reentrancy
+      // Note: `Use_tcontrol` hardwires medeleg[3] to 0, which breaks the
+      // `sbreak` test in `riscv-tests`.
+      "breakpoint_reentrancy": "No_reentrancy_support",
+      "etrigger": {
+        "supported": false,
+        // A bit set to 1 in this value specifies that the
+        // corresponding exception is supported by the trigger.
+        // Triggers for reserved exceptions are not supported.  This
+        // value is ignored when `etrigger` is not supported.
+        "supported_exceptions": { "len": "xlen", "value": "0" }
+      },
+      "hcontext": { "supported": false },
+      // Triggers
+      "icount": {
+        "supported": false,
+        "count_hardwired_one": false,
+        // Whether a `tdata1` write to an `icount` trigger with
+        // `count`=1 also makes it pending when that write's instruction
+        // matches the trigger.
+        "self_write_sets_pending": false
+      },
+      "itrigger": {
+        "supported": false,
+        // A bit set to 1 in this value specifies that the
+        // corresponding interrupt is supported by the trigger.
+        // Triggers for reserved interrupts are not supported.  This
+        // value is ignored when `itrigger` is not supported.
+        "supported_interrupts": { "len": "xlen", "value": "0" }
+      },
+      // CSRs
+      "mcontext": { "supported": false },
+      // The number of supported triggers.  This has to be
+      // non-negative, and greater than 0 if Sdtrig is supported.
+      // The model does not support more than 16 triggers.
+      "num_triggers": 0,
+      "scontext": { "supported": false }
+    },
+    "Smdbltrp": { "supported": false },
+    "Ssdbltrp": { "supported": false },
+    "Ssstrict": { "supported": false }
+  }
+}

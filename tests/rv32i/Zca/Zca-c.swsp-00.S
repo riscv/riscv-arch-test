@@ -16,7 +16,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 226
+#define SIGUPD_COUNT 118
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -36,42 +36,54 @@ RVTEST_BEGIN
 # Testcase cp_rs2 (Test source rs2 = x0)
   mv x18, x2 # switch signature pointer register to avoid conflict with test
   RVTEST_TESTDATA_LOAD_INT(x3, x0) # load rs2: x0 = 0xe8d11d7c
-  addi sp, x18, -32  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x3, x19) # load store canary: x19 = 0x4db836e5
+  SREG x19, 0(x2) # fill store target with canary
+  addi sp, sp, -32  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b0:
   c.swsp x0, 32(sp) # perform store
-  LREG x19, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 32 # remove offset from sp
+  LREG x19, 0(x2) # load store target for checking
   # Check if x19 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x19, Zca_c_swsp_cg_cp_rs2_b0, Zca_c_swsp_cg_cp_rs2_b0_str)
 
 # Testcase cp_rs2 (Test source rs2 = x1)
   RVTEST_TESTDATA_LOAD_INT(x3, x1) # load rs2: x1 = 0x591f45ae
-  addi sp, x18, -16  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x3, x26) # load store canary: x26 = 0x4db836e5
+  SREG x26, 0(x2) # fill store target with canary
+  addi sp, sp, -16  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b1:
   c.swsp x1, 16(sp) # perform store
-  LREG x26, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 16 # remove offset from sp
+  LREG x26, 0(x2) # load store target for checking
   # Check if x26 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x26, Zca_c_swsp_cg_cp_rs2_b1, Zca_c_swsp_cg_cp_rs2_b1_str)
 
 # Testcase cp_rs2 (Test source rs2 = x2)
   RVTEST_TESTDATA_LOAD_INT(x3, x2) # load rs2: x2 = 0x9d8de685
-  addi sp, x18, -168  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x3, x7) # load store canary: x7 = 0x4db836e5
+  SREG x7, 0(x2) # fill store target with canary
+  addi sp, sp, -168  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b2:
   c.swsp x2, 168(sp) # perform store
-  LREG x7, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 168 # remove offset from sp
+  LREG x7, 0(x2) # load store target for checking
   # Check if x7 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x7, Zca_c_swsp_cg_cp_rs2_b2, Zca_c_swsp_cg_cp_rs2_b2_str)
 
   mv x12, x3 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x3)
   RVTEST_TESTDATA_LOAD_INT(x12, x3) # load rs2: x3 = 0xd104c81e
-  addi sp, x18, -16  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x12, x28) # load store canary: x28 = 0x4db836e5
+  SREG x28, 0(x2) # fill store target with canary
+  addi sp, sp, -16  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b3:
   c.swsp x3, 16(sp) # perform store
-  LREG x28, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 16 # remove offset from sp
+  LREG x28, 0(x2) # load store target for checking
   # Check if x28 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x28, Zca_c_swsp_cg_cp_rs2_b3, Zca_c_swsp_cg_cp_rs2_b3_str)
 
@@ -79,92 +91,119 @@ Zca_c_swsp_cg_cp_rs2_b3:
   mv x14, x5 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x4)
   RVTEST_TESTDATA_LOAD_INT(x12, x4) # load rs2: x4 = 0x9f0117a2
-  addi sp, x18, -132  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x12, x29) # load store canary: x29 = 0x4db836e5
+  SREG x29, 0(x2) # fill store target with canary
+  addi sp, sp, -132  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b4:
   c.swsp x4, 132(sp) # perform store
-  LREG x29, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 132 # remove offset from sp
+  LREG x29, 0(x2) # load store target for checking
   # Check if x29 contains the expected result. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x18, x14, x13, x29, Zca_c_swsp_cg_cp_rs2_b4, Zca_c_swsp_cg_cp_rs2_b4_str)
 
 # Testcase cp_rs2 (Test source rs2 = x5)
   RVTEST_TESTDATA_LOAD_INT(x12, x5) # load rs2: x5 = 0x87601cbc
-  addi sp, x18, -120  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x12, x27) # load store canary: x27 = 0x4db836e5
+  SREG x27, 0(x2) # fill store target with canary
+  addi sp, sp, -120  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b5:
   c.swsp x5, 120(sp) # perform store
-  LREG x27, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 120 # remove offset from sp
+  LREG x27, 0(x2) # load store target for checking
   # Check if x27 contains the expected result. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x18, x14, x13, x27, Zca_c_swsp_cg_cp_rs2_b5, Zca_c_swsp_cg_cp_rs2_b5_str)
 
 # Testcase cp_rs2 (Test source rs2 = x6)
   RVTEST_TESTDATA_LOAD_INT(x12, x6) # load rs2: x6 = 0xc8131b35
-  addi sp, x18, -232  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x12, x29) # load store canary: x29 = 0x4db836e5
+  SREG x29, 0(x2) # fill store target with canary
+  addi sp, sp, -232  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b6:
   c.swsp x6, 232(sp) # perform store
-  LREG x29, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 232 # remove offset from sp
+  LREG x29, 0(x2) # load store target for checking
   # Check if x29 contains the expected result. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x18, x14, x13, x29, Zca_c_swsp_cg_cp_rs2_b6, Zca_c_swsp_cg_cp_rs2_b6_str)
 
 # Testcase cp_rs2 (Test source rs2 = x7)
   RVTEST_TESTDATA_LOAD_INT(x12, x7) # load rs2: x7 = 0x6cbdaad0
-  addi sp, x18, -144  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x12, x17) # load store canary: x17 = 0x4db836e5
+  SREG x17, 0(x2) # fill store target with canary
+  addi sp, sp, -144  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b7:
   c.swsp x7, 144(sp) # perform store
-  LREG x17, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 144 # remove offset from sp
+  LREG x17, 0(x2) # load store target for checking
   # Check if x17 contains the expected result. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x18, x14, x13, x17, Zca_c_swsp_cg_cp_rs2_b7, Zca_c_swsp_cg_cp_rs2_b7_str)
 
 # Testcase cp_rs2 (Test source rs2 = x8)
   RVTEST_TESTDATA_LOAD_INT(x12, x8) # load rs2: x8 = 0x555a5752
-  addi sp, x18, -212  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x12, x31) # load store canary: x31 = 0x4db836e5
+  SREG x31, 0(x2) # fill store target with canary
+  addi sp, sp, -212  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b8:
   c.swsp x8, 212(sp) # perform store
-  LREG x31, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 212 # remove offset from sp
+  LREG x31, 0(x2) # load store target for checking
   # Check if x31 contains the expected result. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x18, x14, x13, x31, Zca_c_swsp_cg_cp_rs2_b8, Zca_c_swsp_cg_cp_rs2_b8_str)
 
 # Testcase cp_rs2 (Test source rs2 = x9)
   RVTEST_TESTDATA_LOAD_INT(x12, x9) # load rs2: x9 = 0x04ceeabd
-  addi sp, x18, -200  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x12, x17) # load store canary: x17 = 0x4db836e5
+  SREG x17, 0(x2) # fill store target with canary
+  addi sp, sp, -200  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b9:
   c.swsp x9, 200(sp) # perform store
-  LREG x17, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 200 # remove offset from sp
+  LREG x17, 0(x2) # load store target for checking
   # Check if x17 contains the expected result. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x18, x14, x13, x17, Zca_c_swsp_cg_cp_rs2_b9, Zca_c_swsp_cg_cp_rs2_b9_str)
 
 # Testcase cp_rs2 (Test source rs2 = x10)
   RVTEST_TESTDATA_LOAD_INT(x12, x10) # load rs2: x10 = 0x55e4ef36
-  addi sp, x18, -252  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x12, x9) # load store canary: x9 = 0x4db836e5
+  SREG x9, 0(x2) # fill store target with canary
+  addi sp, sp, -252  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b10:
   c.swsp x10, 252(sp) # perform store
-  LREG x9, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 252 # remove offset from sp
+  LREG x9, 0(x2) # load store target for checking
   # Check if x9 contains the expected result. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x18, x14, x13, x9, Zca_c_swsp_cg_cp_rs2_b10, Zca_c_swsp_cg_cp_rs2_b10_str)
 
 # Testcase cp_rs2 (Test source rs2 = x11)
   RVTEST_TESTDATA_LOAD_INT(x12, x11) # load rs2: x11 = 0xa66bff60
-  addi sp, x18, -140  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x12, x23) # load store canary: x23 = 0x4db836e5
+  SREG x23, 0(x2) # fill store target with canary
+  addi sp, sp, -140  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b11:
   c.swsp x11, 140(sp) # perform store
-  LREG x23, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 140 # remove offset from sp
+  LREG x23, 0(x2) # load store target for checking
   # Check if x23 contains the expected result. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x18, x14, x13, x23, Zca_c_swsp_cg_cp_rs2_b11, Zca_c_swsp_cg_cp_rs2_b11_str)
 
   mv x1, x12 # switch data pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x12)
   RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs2: x12 = 0x057efa00
-  addi sp, x18, -8  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x5) # load store canary: x5 = 0x4db836e5
+  SREG x5, 0(x2) # fill store target with canary
+  addi sp, sp, -8  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b12:
   c.swsp x12, 8(sp) # perform store
-  LREG x5, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 8 # remove offset from sp
+  LREG x5, 0(x2) # load store target for checking
   # Check if x5 contains the expected result. x18 is the signature ptr, x14 is the link ptr, x13 is a temp reg.
   RVTEST_SIGUPD(x18, x14, x13, x5, Zca_c_swsp_cg_cp_rs2_b12, Zca_c_swsp_cg_cp_rs2_b12_str)
 
@@ -172,194 +211,251 @@ Zca_c_swsp_cg_cp_rs2_b12:
   mv x5, x14 # switch link pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x13)
   RVTEST_TESTDATA_LOAD_INT(x1, x13) # load rs2: x13 = 0x75a5e894
-  addi sp, x18, -24  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load store canary: x7 = 0x4db836e5
+  SREG x7, 0(x2) # fill store target with canary
+  addi sp, sp, -24  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b13:
   c.swsp x13, 24(sp) # perform store
-  LREG x7, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 24 # remove offset from sp
+  LREG x7, 0(x2) # load store target for checking
   # Check if x7 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x7, Zca_c_swsp_cg_cp_rs2_b13, Zca_c_swsp_cg_cp_rs2_b13_str)
 
 # Testcase cp_rs2 (Test source rs2 = x14)
   RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0xd8c8c4d7
-  addi sp, x18, -88  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load store canary: x23 = 0x4db836e5
+  SREG x23, 0(x2) # fill store target with canary
+  addi sp, sp, -88  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b14:
   c.swsp x14, 88(sp) # perform store
-  LREG x23, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 88 # remove offset from sp
+  LREG x23, 0(x2) # load store target for checking
   # Check if x23 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x23, Zca_c_swsp_cg_cp_rs2_b14, Zca_c_swsp_cg_cp_rs2_b14_str)
 
 # Testcase cp_rs2 (Test source rs2 = x15)
   RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0x1a2b315a
-  addi sp, x18, -232  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load store canary: x19 = 0x4db836e5
+  SREG x19, 0(x2) # fill store target with canary
+  addi sp, sp, -232  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b15:
   c.swsp x15, 232(sp) # perform store
-  LREG x19, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 232 # remove offset from sp
+  LREG x19, 0(x2) # load store target for checking
   # Check if x19 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x19, Zca_c_swsp_cg_cp_rs2_b15, Zca_c_swsp_cg_cp_rs2_b15_str)
 
 # Testcase cp_rs2 (Test source rs2 = x16)
   RVTEST_TESTDATA_LOAD_INT(x1, x16) # load rs2: x16 = 0xd30b461b
-  addi sp, x18, -100  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load store canary: x17 = 0x4db836e5
+  SREG x17, 0(x2) # fill store target with canary
+  addi sp, sp, -100  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b16:
   c.swsp x16, 100(sp) # perform store
-  LREG x17, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 100 # remove offset from sp
+  LREG x17, 0(x2) # load store target for checking
   # Check if x17 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x17, Zca_c_swsp_cg_cp_rs2_b16, Zca_c_swsp_cg_cp_rs2_b16_str)
 
 # Testcase cp_rs2 (Test source rs2 = x17)
   RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs2: x17 = 0xa2490b06
-  addi sp, x18, -72  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load store canary: x25 = 0x4db836e5
+  SREG x25, 0(x2) # fill store target with canary
+  addi sp, sp, -72  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b17:
   c.swsp x17, 72(sp) # perform store
-  LREG x25, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 72 # remove offset from sp
+  LREG x25, 0(x2) # load store target for checking
   # Check if x25 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x25, Zca_c_swsp_cg_cp_rs2_b17, Zca_c_swsp_cg_cp_rs2_b17_str)
 
   mv x21, x18 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x18)
   RVTEST_TESTDATA_LOAD_INT(x1, x18) # load rs2: x18 = 0x551fb063
-  addi sp, x21, -24  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load store canary: x13 = 0x4db836e5
+  SREG x13, 0(x2) # fill store target with canary
+  addi sp, sp, -24  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b18:
   c.swsp x18, 24(sp) # perform store
-  LREG x13, 0(x21) # load stored value for checking
-  addi x21, x21, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 24 # remove offset from sp
+  LREG x13, 0(x2) # load store target for checking
   # Check if x13 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x13, Zca_c_swsp_cg_cp_rs2_b18, Zca_c_swsp_cg_cp_rs2_b18_str)
 
 # Testcase cp_rs2 (Test source rs2 = x19)
   RVTEST_TESTDATA_LOAD_INT(x1, x19) # load rs2: x19 = 0x7e4eba92
-  addi sp, x21, 0  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load store canary: x27 = 0x4db836e5
+  SREG x27, 0(x2) # fill store target with canary
+  addi sp, sp, 0  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b19:
   c.swsp x19, 0(sp) # perform store
-  LREG x27, 0(x21) # load stored value for checking
-  addi x21, x21, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 0 # remove offset from sp
+  LREG x27, 0(x2) # load store target for checking
   # Check if x27 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x27, Zca_c_swsp_cg_cp_rs2_b19, Zca_c_swsp_cg_cp_rs2_b19_str)
 
 # Testcase cp_rs2 (Test source rs2 = x20)
   RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs2: x20 = 0xb9fdf264
-  addi sp, x21, -80  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load store canary: x14 = 0x4db836e5
+  SREG x14, 0(x2) # fill store target with canary
+  addi sp, sp, -80  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b20:
   c.swsp x20, 80(sp) # perform store
-  LREG x14, 0(x21) # load stored value for checking
-  addi x21, x21, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 80 # remove offset from sp
+  LREG x14, 0(x2) # load store target for checking
   # Check if x14 contains the expected result. x21 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x21, x5, x4, x14, Zca_c_swsp_cg_cp_rs2_b20, Zca_c_swsp_cg_cp_rs2_b20_str)
 
   mv x26, x21 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x21)
   RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs2: x21 = 0x8f5b81c0
-  addi sp, x26, -112  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load store canary: x31 = 0x4db836e5
+  SREG x31, 0(x2) # fill store target with canary
+  addi sp, sp, -112  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b21:
   c.swsp x21, 112(sp) # perform store
-  LREG x31, 0(x26) # load stored value for checking
-  addi x26, x26, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 112 # remove offset from sp
+  LREG x31, 0(x2) # load store target for checking
   # Check if x31 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x26, x5, x4, x31, Zca_c_swsp_cg_cp_rs2_b21, Zca_c_swsp_cg_cp_rs2_b21_str)
 
 # Testcase cp_rs2 (Test source rs2 = x22)
   RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs2: x22 = 0x405e92c1
-  addi sp, x26, -216  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load store canary: x11 = 0x4db836e5
+  SREG x11, 0(x2) # fill store target with canary
+  addi sp, sp, -216  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b22:
   c.swsp x22, 216(sp) # perform store
-  LREG x11, 0(x26) # load stored value for checking
-  addi x26, x26, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 216 # remove offset from sp
+  LREG x11, 0(x2) # load store target for checking
   # Check if x11 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x26, x5, x4, x11, Zca_c_swsp_cg_cp_rs2_b22, Zca_c_swsp_cg_cp_rs2_b22_str)
 
 # Testcase cp_rs2 (Test source rs2 = x23)
   RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs2: x23 = 0x22443a39
-  addi sp, x26, -132  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load store canary: x21 = 0x4db836e5
+  SREG x21, 0(x2) # fill store target with canary
+  addi sp, sp, -132  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b23:
   c.swsp x23, 132(sp) # perform store
-  LREG x21, 0(x26) # load stored value for checking
-  addi x26, x26, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 132 # remove offset from sp
+  LREG x21, 0(x2) # load store target for checking
   # Check if x21 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x26, x5, x4, x21, Zca_c_swsp_cg_cp_rs2_b23, Zca_c_swsp_cg_cp_rs2_b23_str)
 
 # Testcase cp_rs2 (Test source rs2 = x24)
   RVTEST_TESTDATA_LOAD_INT(x1, x24) # load rs2: x24 = 0x5850a4db
-  addi sp, x26, -88  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load store canary: x12 = 0x4db836e5
+  SREG x12, 0(x2) # fill store target with canary
+  addi sp, sp, -88  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b24:
   c.swsp x24, 88(sp) # perform store
-  LREG x12, 0(x26) # load stored value for checking
-  addi x26, x26, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 88 # remove offset from sp
+  LREG x12, 0(x2) # load store target for checking
   # Check if x12 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x26, x5, x4, x12, Zca_c_swsp_cg_cp_rs2_b24, Zca_c_swsp_cg_cp_rs2_b24_str)
 
 # Testcase cp_rs2 (Test source rs2 = x25)
   RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs2: x25 = 0xc3e6b871
-  addi sp, x26, -220  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load store canary: x12 = 0x4db836e5
+  SREG x12, 0(x2) # fill store target with canary
+  addi sp, sp, -220  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b25:
   c.swsp x25, 220(sp) # perform store
-  LREG x12, 0(x26) # load stored value for checking
-  addi x26, x26, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 220 # remove offset from sp
+  LREG x12, 0(x2) # load store target for checking
   # Check if x12 contains the expected result. x26 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x26, x5, x4, x12, Zca_c_swsp_cg_cp_rs2_b25, Zca_c_swsp_cg_cp_rs2_b25_str)
 
   mv x18, x26 # switch signature pointer register to avoid conflict with test
 # Testcase cp_rs2 (Test source rs2 = x26)
   RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs2: x26 = 0x62195e13
-  addi sp, x18, -40  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load store canary: x10 = 0x4db836e5
+  SREG x10, 0(x2) # fill store target with canary
+  addi sp, sp, -40  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b26:
   c.swsp x26, 40(sp) # perform store
-  LREG x10, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 40 # remove offset from sp
+  LREG x10, 0(x2) # load store target for checking
   # Check if x10 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x10, Zca_c_swsp_cg_cp_rs2_b26, Zca_c_swsp_cg_cp_rs2_b26_str)
 
 # Testcase cp_rs2 (Test source rs2 = x27)
   RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs2: x27 = 0x7e1dfdcf
-  addi sp, x18, -40  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load store canary: x10 = 0x4db836e5
+  SREG x10, 0(x2) # fill store target with canary
+  addi sp, sp, -40  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b27:
   c.swsp x27, 40(sp) # perform store
-  LREG x10, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 40 # remove offset from sp
+  LREG x10, 0(x2) # load store target for checking
   # Check if x10 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x10, Zca_c_swsp_cg_cp_rs2_b27, Zca_c_swsp_cg_cp_rs2_b27_str)
 
 # Testcase cp_rs2 (Test source rs2 = x28)
   RVTEST_TESTDATA_LOAD_INT(x1, x28) # load rs2: x28 = 0x6adc2353
-  addi sp, x18, -132  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load store canary: x22 = 0x4db836e5
+  SREG x22, 0(x2) # fill store target with canary
+  addi sp, sp, -132  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b28:
   c.swsp x28, 132(sp) # perform store
-  LREG x22, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 132 # remove offset from sp
+  LREG x22, 0(x2) # load store target for checking
   # Check if x22 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x22, Zca_c_swsp_cg_cp_rs2_b28, Zca_c_swsp_cg_cp_rs2_b28_str)
 
 # Testcase cp_rs2 (Test source rs2 = x29)
   RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs2: x29 = 0x8c68a879
-  addi sp, x18, -60  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load store canary: x17 = 0x4db836e5
+  SREG x17, 0(x2) # fill store target with canary
+  addi sp, sp, -60  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b29:
   c.swsp x29, 60(sp) # perform store
-  LREG x17, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 60 # remove offset from sp
+  LREG x17, 0(x2) # load store target for checking
   # Check if x17 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x17, Zca_c_swsp_cg_cp_rs2_b29, Zca_c_swsp_cg_cp_rs2_b29_str)
 
 # Testcase cp_rs2 (Test source rs2 = x30)
   RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs2: x30 = 0x74da8db4
-  addi sp, x18, -128  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load store canary: x19 = 0x4db836e5
+  SREG x19, 0(x2) # fill store target with canary
+  addi sp, sp, -128  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b30:
   c.swsp x30, 128(sp) # perform store
-  LREG x19, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 128 # remove offset from sp
+  LREG x19, 0(x2) # load store target for checking
   # Check if x19 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x19, Zca_c_swsp_cg_cp_rs2_b30, Zca_c_swsp_cg_cp_rs2_b30_str)
 
 # Testcase cp_rs2 (Test source rs2 = x31)
   RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs2: x31 = 0xff67d63c
-  addi sp, x18, -152  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load store canary: x15 = 0x4db836e5
+  SREG x15, 0(x2) # fill store target with canary
+  addi sp, sp, -152  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_b31:
   c.swsp x31, 152(sp) # perform store
-  LREG x15, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 152 # remove offset from sp
+  LREG x15, 0(x2) # load store target for checking
   # Check if x15 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x15, Zca_c_swsp_cg_cp_rs2_b31, Zca_c_swsp_cg_cp_rs2_b31_str)
 
@@ -369,121 +465,157 @@ Zca_c_swsp_cg_cp_rs2_b31:
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x00000000)
   RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0x00000000
-  addi sp, x18, -16  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load store canary: x6 = 0x4db836e5
+  SREG x6, 0(x2) # fill store target with canary
+  addi sp, sp, -16  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_edges_0x0:
   c.swsp x9, 16(sp) # perform store
-  LREG x6, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 16 # remove offset from sp
+  LREG x6, 0(x2) # load store target for checking
   # Check if x6 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x6, Zca_c_swsp_cg_cp_rs2_edges_0x0, Zca_c_swsp_cg_cp_rs2_edges_0x0_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x00000001)
   RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs2: x23 = 0x00000001
-  addi sp, x18, -144  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load store canary: x19 = 0x4db836e5
+  SREG x19, 0(x2) # fill store target with canary
+  addi sp, sp, -144  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_edges_0x1:
   c.swsp x23, 144(sp) # perform store
-  LREG x19, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 144 # remove offset from sp
+  LREG x19, 0(x2) # load store target for checking
   # Check if x19 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x19, Zca_c_swsp_cg_cp_rs2_edges_0x1, Zca_c_swsp_cg_cp_rs2_edges_0x1_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x00000002)
   RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs2: x11 = 0x00000002
-  addi sp, x18, -44  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x20) # load store canary: x20 = 0x4db836e5
+  SREG x20, 0(x2) # fill store target with canary
+  addi sp, sp, -44  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_edges_0x2:
   c.swsp x11, 44(sp) # perform store
-  LREG x20, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 44 # remove offset from sp
+  LREG x20, 0(x2) # load store target for checking
   # Check if x20 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x20, Zca_c_swsp_cg_cp_rs2_edges_0x2, Zca_c_swsp_cg_cp_rs2_edges_0x2_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x80000000)
   RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs2: x25 = 0x80000000
-  addi sp, x18, -112  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load store canary: x27 = 0x4db836e5
+  SREG x27, 0(x2) # fill store target with canary
+  addi sp, sp, -112  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_edges_0x80000000:
   c.swsp x25, 112(sp) # perform store
-  LREG x27, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 112 # remove offset from sp
+  LREG x27, 0(x2) # load store target for checking
   # Check if x27 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x27, Zca_c_swsp_cg_cp_rs2_edges_0x80000000, Zca_c_swsp_cg_cp_rs2_edges_0x80000000_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x80000001)
   RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs2: x11 = 0x80000001
-  addi sp, x18, -212  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load store canary: x26 = 0x4db836e5
+  SREG x26, 0(x2) # fill store target with canary
+  addi sp, sp, -212  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_edges_0x80000001:
   c.swsp x11, 212(sp) # perform store
-  LREG x26, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 212 # remove offset from sp
+  LREG x26, 0(x2) # load store target for checking
   # Check if x26 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x26, Zca_c_swsp_cg_cp_rs2_edges_0x80000001, Zca_c_swsp_cg_cp_rs2_edges_0x80000001_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x7fffffff)
   RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs2: x12 = 0x7fffffff
-  addi sp, x18, -28  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load store canary: x15 = 0x4db836e5
+  SREG x15, 0(x2) # fill store target with canary
+  addi sp, sp, -28  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_edges_0x7fffffff:
   c.swsp x12, 28(sp) # perform store
-  LREG x15, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 28 # remove offset from sp
+  LREG x15, 0(x2) # load store target for checking
   # Check if x15 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x15, Zca_c_swsp_cg_cp_rs2_edges_0x7fffffff, Zca_c_swsp_cg_cp_rs2_edges_0x7fffffff_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x7ffffffe)
   RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs2: x23 = 0x7ffffffe
-  addi sp, x18, -240  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load store canary: x6 = 0x4db836e5
+  SREG x6, 0(x2) # fill store target with canary
+  addi sp, sp, -240  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_edges_0x7ffffffe:
   c.swsp x23, 240(sp) # perform store
-  LREG x6, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 240 # remove offset from sp
+  LREG x6, 0(x2) # load store target for checking
   # Check if x6 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x6, Zca_c_swsp_cg_cp_rs2_edges_0x7ffffffe, Zca_c_swsp_cg_cp_rs2_edges_0x7ffffffe_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xffffffff)
   RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs2: x11 = 0xffffffff
-  addi sp, x18, -128  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load store canary: x21 = 0x4db836e5
+  SREG x21, 0(x2) # fill store target with canary
+  addi sp, sp, -128  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_edges_0xffffffff:
   c.swsp x11, 128(sp) # perform store
-  LREG x21, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 128 # remove offset from sp
+  LREG x21, 0(x2) # load store target for checking
   # Check if x21 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x21, Zca_c_swsp_cg_cp_rs2_edges_0xffffffff, Zca_c_swsp_cg_cp_rs2_edges_0xffffffff_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xfffffffe)
   RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs2: x20 = 0xfffffffe
-  addi sp, x18, -144  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load store canary: x28 = 0x4db836e5
+  SREG x28, 0(x2) # fill store target with canary
+  addi sp, sp, -144  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_edges_0xfffffffe:
   c.swsp x20, 144(sp) # perform store
-  LREG x28, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 144 # remove offset from sp
+  LREG x28, 0(x2) # load store target for checking
   # Check if x28 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x28, Zca_c_swsp_cg_cp_rs2_edges_0xfffffffe, Zca_c_swsp_cg_cp_rs2_edges_0xfffffffe_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x5bbc8872)
   RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs2: x29 = 0x5bbc8872
-  addi sp, x18, -196  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load store canary: x26 = 0x4db836e5
+  SREG x26, 0(x2) # fill store target with canary
+  addi sp, sp, -196  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_edges_0x5bbc8872:
   c.swsp x29, 196(sp) # perform store
-  LREG x26, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 196 # remove offset from sp
+  LREG x26, 0(x2) # load store target for checking
   # Check if x26 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x26, Zca_c_swsp_cg_cp_rs2_edges_0x5bbc8872, Zca_c_swsp_cg_cp_rs2_edges_0x5bbc8872_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0xaaaaaaaa)
   RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs2: x20 = 0xaaaaaaaa
-  addi sp, x18, -172  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load store canary: x23 = 0x4db836e5
+  SREG x23, 0(x2) # fill store target with canary
+  addi sp, sp, -172  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_edges_0xaaaaaaaa:
   c.swsp x20, 172(sp) # perform store
-  LREG x23, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 172 # remove offset from sp
+  LREG x23, 0(x2) # load store target for checking
   # Check if x23 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x23, Zca_c_swsp_cg_cp_rs2_edges_0xaaaaaaaa, Zca_c_swsp_cg_cp_rs2_edges_0xaaaaaaaa_str)
 
 # Testcase cp_rs2_edges (Test source rs2 value = 0x55555555)
   RVTEST_TESTDATA_LOAD_INT(x1, x16) # load rs2: x16 = 0x55555555
-  addi sp, x18, -32  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load store canary: x19 = 0x4db836e5
+  SREG x19, 0(x2) # fill store target with canary
+  addi sp, sp, -32  # adjust for offset
 Zca_c_swsp_cg_cp_rs2_edges_0x55555555:
   c.swsp x16, 32(sp) # perform store
-  LREG x19, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 32 # remove offset from sp
+  LREG x19, 0(x2) # load store target for checking
   # Check if x19 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x19, Zca_c_swsp_cg_cp_rs2_edges_0x55555555, Zca_c_swsp_cg_cp_rs2_edges_0x55555555_str)
 
@@ -493,641 +625,833 @@ Zca_c_swsp_cg_cp_rs2_edges_0x55555555:
 
 # Testcase cp_imm_mul_4sp: imm=0
   RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0x3748c810
-  addi sp, x18, 0  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load store canary: x24 = 0x4db836e5
+  SREG x24, 0(x2) # fill store target with canary
+  addi sp, sp, 0  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x0:
   c.swsp x14, 0(sp) # perform store
-  LREG x24, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 0 # remove offset from sp
+  LREG x24, 0(x2) # load store target for checking
   # Check if x24 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x24, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x0, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x0_str)
 
 # Testcase cp_imm_mul_4sp: imm=4
   RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs2: x21 = 0x212852d1
-  addi sp, x18, -4  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load store canary: x12 = 0x4db836e5
+  SREG x12, 0(x2) # fill store target with canary
+  addi sp, sp, -4  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x4:
   c.swsp x21, 4(sp) # perform store
-  LREG x12, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 4 # remove offset from sp
+  LREG x12, 0(x2) # load store target for checking
   # Check if x12 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x12, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x4, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x4_str)
 
 # Testcase cp_imm_mul_4sp: imm=8
   RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0xde9d49fb
-  addi sp, x18, -8  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load store canary: x27 = 0x4db836e5
+  SREG x27, 0(x2) # fill store target with canary
+  addi sp, sp, -8  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x8:
   c.swsp x14, 8(sp) # perform store
-  LREG x27, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 8 # remove offset from sp
+  LREG x27, 0(x2) # load store target for checking
   # Check if x27 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x27, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x8, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x8_str)
 
 # Testcase cp_imm_mul_4sp: imm=12
   RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs2: x26 = 0xd63152f0
-  addi sp, x18, -12  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load store canary: x31 = 0x4db836e5
+  SREG x31, 0(x2) # fill store target with canary
+  addi sp, sp, -12  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc:
   c.swsp x26, 12(sp) # perform store
-  LREG x31, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 12 # remove offset from sp
+  LREG x31, 0(x2) # load store target for checking
   # Check if x31 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x31, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc_str)
 
 # Testcase cp_imm_mul_4sp: imm=16
   RVTEST_TESTDATA_LOAD_INT(x1, x16) # load rs2: x16 = 0xc38312ff
-  addi sp, x18, -16  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x14) # load store canary: x14 = 0x4db836e5
+  SREG x14, 0(x2) # fill store target with canary
+  addi sp, sp, -16  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x10:
   c.swsp x16, 16(sp) # perform store
-  LREG x14, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 16 # remove offset from sp
+  LREG x14, 0(x2) # load store target for checking
   # Check if x14 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x14, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x10, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x10_str)
 
 # Testcase cp_imm_mul_4sp: imm=20
   RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs2: x23 = 0xbe081e73
-  addi sp, x18, -20  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load store canary: x30 = 0x4db836e5
+  SREG x30, 0(x2) # fill store target with canary
+  addi sp, sp, -20  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x14:
   c.swsp x23, 20(sp) # perform store
-  LREG x30, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 20 # remove offset from sp
+  LREG x30, 0(x2) # load store target for checking
   # Check if x30 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x30, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x14, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x14_str)
 
 # Testcase cp_imm_mul_4sp: imm=24
   RVTEST_TESTDATA_LOAD_INT(x1, x29) # load rs2: x29 = 0xeaf691d2
-  addi sp, x18, -24  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load store canary: x17 = 0x4db836e5
+  SREG x17, 0(x2) # fill store target with canary
+  addi sp, sp, -24  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x18:
   c.swsp x29, 24(sp) # perform store
-  LREG x17, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 24 # remove offset from sp
+  LREG x17, 0(x2) # load store target for checking
   # Check if x17 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x17, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x18, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x18_str)
 
 # Testcase cp_imm_mul_4sp: imm=28
   RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs2: x6 = 0x68bd767c
-  addi sp, x18, -28  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load store canary: x3 = 0x4db836e5
+  SREG x3, 0(x2) # fill store target with canary
+  addi sp, sp, -28  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x1c:
   c.swsp x6, 28(sp) # perform store
-  LREG x3, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 28 # remove offset from sp
+  LREG x3, 0(x2) # load store target for checking
   # Check if x3 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x3, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x1c, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x1c_str)
 
 # Testcase cp_imm_mul_4sp: imm=32
   RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs2: x25 = 0xb3a35dad
-  addi sp, x18, -32  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x7) # load store canary: x7 = 0x4db836e5
+  SREG x7, 0(x2) # fill store target with canary
+  addi sp, sp, -32  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x20:
   c.swsp x25, 32(sp) # perform store
-  LREG x7, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 32 # remove offset from sp
+  LREG x7, 0(x2) # load store target for checking
   # Check if x7 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x7, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x20, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x20_str)
 
 # Testcase cp_imm_mul_4sp: imm=36
   RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs2: x21 = 0xf7c9a307
-  addi sp, x18, -36  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load store canary: x22 = 0x4db836e5
+  SREG x22, 0(x2) # fill store target with canary
+  addi sp, sp, -36  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x24:
   c.swsp x21, 36(sp) # perform store
-  LREG x22, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 36 # remove offset from sp
+  LREG x22, 0(x2) # load store target for checking
   # Check if x22 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x22, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x24, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x24_str)
 
 # Testcase cp_imm_mul_4sp: imm=40
   RVTEST_TESTDATA_LOAD_INT(x1, x11) # load rs2: x11 = 0x2dc2d097
-  addi sp, x18, -40  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load store canary: x8 = 0x4db836e5
+  SREG x8, 0(x2) # fill store target with canary
+  addi sp, sp, -40  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x28:
   c.swsp x11, 40(sp) # perform store
-  LREG x8, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 40 # remove offset from sp
+  LREG x8, 0(x2) # load store target for checking
   # Check if x8 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x8, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x28, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x28_str)
 
 # Testcase cp_imm_mul_4sp: imm=44
   RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0x6e9d4158
-  addi sp, x18, -44  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load store canary: x28 = 0x4db836e5
+  SREG x28, 0(x2) # fill store target with canary
+  addi sp, sp, -44  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x2c:
   c.swsp x15, 44(sp) # perform store
-  LREG x28, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 44 # remove offset from sp
+  LREG x28, 0(x2) # load store target for checking
   # Check if x28 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x28, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x2c, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x2c_str)
 
 # Testcase cp_imm_mul_4sp: imm=48
   RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs2: x20 = 0x025588f2
-  addi sp, x18, -48  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load store canary: x22 = 0x4db836e5
+  SREG x22, 0(x2) # fill store target with canary
+  addi sp, sp, -48  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x30:
   c.swsp x20, 48(sp) # perform store
-  LREG x22, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 48 # remove offset from sp
+  LREG x22, 0(x2) # load store target for checking
   # Check if x22 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x22, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x30, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x30_str)
 
 # Testcase cp_imm_mul_4sp: imm=52
   RVTEST_TESTDATA_LOAD_INT(x1, x12) # load rs2: x12 = 0xd6d5ceed
-  addi sp, x18, -52  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load store canary: x23 = 0x4db836e5
+  SREG x23, 0(x2) # fill store target with canary
+  addi sp, sp, -52  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x34:
   c.swsp x12, 52(sp) # perform store
-  LREG x23, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 52 # remove offset from sp
+  LREG x23, 0(x2) # load store target for checking
   # Check if x23 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x23, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x34, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x34_str)
 
 # Testcase cp_imm_mul_4sp: imm=56
   RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0xbcc0102f
-  addi sp, x18, -56  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load store canary: x28 = 0x4db836e5
+  SREG x28, 0(x2) # fill store target with canary
+  addi sp, sp, -56  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x38:
   c.swsp x9, 56(sp) # perform store
-  LREG x28, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 56 # remove offset from sp
+  LREG x28, 0(x2) # load store target for checking
   # Check if x28 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x28, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x38, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x38_str)
 
 # Testcase cp_imm_mul_4sp: imm=60
   RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0xdf3eea06
-  addi sp, x18, -60  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load store canary: x6 = 0x4db836e5
+  SREG x6, 0(x2) # fill store target with canary
+  addi sp, sp, -60  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x3c:
   c.swsp x9, 60(sp) # perform store
-  LREG x6, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 60 # remove offset from sp
+  LREG x6, 0(x2) # load store target for checking
   # Check if x6 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x6, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x3c, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x3c_str)
 
 # Testcase cp_imm_mul_4sp: imm=64
   RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs2: x26 = 0x2db624b0
-  addi sp, x18, -64  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x13) # load store canary: x13 = 0x4db836e5
+  SREG x13, 0(x2) # fill store target with canary
+  addi sp, sp, -64  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x40:
   c.swsp x26, 64(sp) # perform store
-  LREG x13, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 64 # remove offset from sp
+  LREG x13, 0(x2) # load store target for checking
   # Check if x13 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x13, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x40, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x40_str)
 
 # Testcase cp_imm_mul_4sp: imm=68
   RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs2: x21 = 0xccf3cd83
-  addi sp, x18, -68  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load store canary: x3 = 0x4db836e5
+  SREG x3, 0(x2) # fill store target with canary
+  addi sp, sp, -68  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x44:
   c.swsp x21, 68(sp) # perform store
-  LREG x3, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 68 # remove offset from sp
+  LREG x3, 0(x2) # load store target for checking
   # Check if x3 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x3, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x44, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x44_str)
 
 # Testcase cp_imm_mul_4sp: imm=72
   RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs2: x17 = 0x688d5237
-  addi sp, x18, -72  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load store canary: x8 = 0x4db836e5
+  SREG x8, 0(x2) # fill store target with canary
+  addi sp, sp, -72  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x48:
   c.swsp x17, 72(sp) # perform store
-  LREG x8, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 72 # remove offset from sp
+  LREG x8, 0(x2) # load store target for checking
   # Check if x8 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x8, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x48, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x48_str)
 
 # Testcase cp_imm_mul_4sp: imm=76
   RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs2: x27 = 0x1b13aa7d
-  addi sp, x18, -76  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load store canary: x17 = 0x4db836e5
+  SREG x17, 0(x2) # fill store target with canary
+  addi sp, sp, -76  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x4c:
   c.swsp x27, 76(sp) # perform store
-  LREG x17, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 76 # remove offset from sp
+  LREG x17, 0(x2) # load store target for checking
   # Check if x17 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x17, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x4c, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x4c_str)
 
 # Testcase cp_imm_mul_4sp: imm=80
   RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs2: x27 = 0x64c46502
-  addi sp, x18, -80  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load store canary: x31 = 0x4db836e5
+  SREG x31, 0(x2) # fill store target with canary
+  addi sp, sp, -80  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x50:
   c.swsp x27, 80(sp) # perform store
-  LREG x31, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 80 # remove offset from sp
+  LREG x31, 0(x2) # load store target for checking
   # Check if x31 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x31, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x50, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x50_str)
 
 # Testcase cp_imm_mul_4sp: imm=84
   RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0xd0d5a125
-  addi sp, x18, -84  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load store canary: x27 = 0x4db836e5
+  SREG x27, 0(x2) # fill store target with canary
+  addi sp, sp, -84  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x54:
   c.swsp x9, 84(sp) # perform store
-  LREG x27, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 84 # remove offset from sp
+  LREG x27, 0(x2) # load store target for checking
   # Check if x27 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x27, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x54, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x54_str)
 
 # Testcase cp_imm_mul_4sp: imm=88
   RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs2: x30 = 0x2ef80023
-  addi sp, x18, -88  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load store canary: x29 = 0x4db836e5
+  SREG x29, 0(x2) # fill store target with canary
+  addi sp, sp, -88  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x58:
   c.swsp x30, 88(sp) # perform store
-  LREG x29, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 88 # remove offset from sp
+  LREG x29, 0(x2) # load store target for checking
   # Check if x29 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x29, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x58, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x58_str)
 
 # Testcase cp_imm_mul_4sp: imm=92
   RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs2: x25 = 0x007aeb44
-  addi sp, x18, -92  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load store canary: x23 = 0x4db836e5
+  SREG x23, 0(x2) # fill store target with canary
+  addi sp, sp, -92  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x5c:
   c.swsp x25, 92(sp) # perform store
-  LREG x23, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 92 # remove offset from sp
+  LREG x23, 0(x2) # load store target for checking
   # Check if x23 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x23, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x5c, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x5c_str)
 
 # Testcase cp_imm_mul_4sp: imm=96
   RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs2: x20 = 0x1a9509f6
-  addi sp, x18, -96  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x10) # load store canary: x10 = 0x4db836e5
+  SREG x10, 0(x2) # fill store target with canary
+  addi sp, sp, -96  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x60:
   c.swsp x20, 96(sp) # perform store
-  LREG x10, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 96 # remove offset from sp
+  LREG x10, 0(x2) # load store target for checking
   # Check if x10 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x10, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x60, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x60_str)
 
 # Testcase cp_imm_mul_4sp: imm=100
   RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs2: x3 = 0xc18c3264
-  addi sp, x18, -100  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load store canary: x6 = 0x4db836e5
+  SREG x6, 0(x2) # fill store target with canary
+  addi sp, sp, -100  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x64:
   c.swsp x3, 100(sp) # perform store
-  LREG x6, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 100 # remove offset from sp
+  LREG x6, 0(x2) # load store target for checking
   # Check if x6 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x6, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x64, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x64_str)
 
 # Testcase cp_imm_mul_4sp: imm=104
   RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs2: x31 = 0xd7d19c00
-  addi sp, x18, -104  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load store canary: x11 = 0x4db836e5
+  SREG x11, 0(x2) # fill store target with canary
+  addi sp, sp, -104  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x68:
   c.swsp x31, 104(sp) # perform store
-  LREG x11, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 104 # remove offset from sp
+  LREG x11, 0(x2) # load store target for checking
   # Check if x11 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x11, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x68, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x68_str)
 
 # Testcase cp_imm_mul_4sp: imm=108
   RVTEST_TESTDATA_LOAD_INT(x1, x22) # load rs2: x22 = 0x087a85ad
-  addi sp, x18, -108  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x6) # load store canary: x6 = 0x4db836e5
+  SREG x6, 0(x2) # fill store target with canary
+  addi sp, sp, -108  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x6c:
   c.swsp x22, 108(sp) # perform store
-  LREG x6, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 108 # remove offset from sp
+  LREG x6, 0(x2) # load store target for checking
   # Check if x6 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x6, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x6c, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x6c_str)
 
 # Testcase cp_imm_mul_4sp: imm=112
   RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs2: x21 = 0x068e9e00
-  addi sp, x18, -112  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load store canary: x8 = 0x4db836e5
+  SREG x8, 0(x2) # fill store target with canary
+  addi sp, sp, -112  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x70:
   c.swsp x21, 112(sp) # perform store
-  LREG x8, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 112 # remove offset from sp
+  LREG x8, 0(x2) # load store target for checking
   # Check if x8 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x8, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x70, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x70_str)
 
 # Testcase cp_imm_mul_4sp: imm=116
   RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs2: x0 = 0xe87a0869
-  addi sp, x18, -116  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load store canary: x12 = 0x4db836e5
+  SREG x12, 0(x2) # fill store target with canary
+  addi sp, sp, -116  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x74:
   c.swsp x0, 116(sp) # perform store
-  LREG x12, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 116 # remove offset from sp
+  LREG x12, 0(x2) # load store target for checking
   # Check if x12 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x12, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x74, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x74_str)
 
 # Testcase cp_imm_mul_4sp: imm=120
   RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs2: x21 = 0x25bff6fb
-  addi sp, x18, -120  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load store canary: x9 = 0x4db836e5
+  SREG x9, 0(x2) # fill store target with canary
+  addi sp, sp, -120  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x78:
   c.swsp x21, 120(sp) # perform store
-  LREG x9, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 120 # remove offset from sp
+  LREG x9, 0(x2) # load store target for checking
   # Check if x9 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x9, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x78, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x78_str)
 
 # Testcase cp_imm_mul_4sp: imm=124
   RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs2: x25 = 0x7e22c6d5
-  addi sp, x18, -124  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load store canary: x19 = 0x4db836e5
+  SREG x19, 0(x2) # fill store target with canary
+  addi sp, sp, -124  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x7c:
   c.swsp x25, 124(sp) # perform store
-  LREG x19, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 124 # remove offset from sp
+  LREG x19, 0(x2) # load store target for checking
   # Check if x19 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x19, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x7c, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x7c_str)
 
 # Testcase cp_imm_mul_4sp: imm=128
   RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs2: x30 = 0x06c2ea11
-  addi sp, x18, -128  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load store canary: x19 = 0x4db836e5
+  SREG x19, 0(x2) # fill store target with canary
+  addi sp, sp, -128  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x80:
   c.swsp x30, 128(sp) # perform store
-  LREG x19, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 128 # remove offset from sp
+  LREG x19, 0(x2) # load store target for checking
   # Check if x19 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x19, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x80, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x80_str)
 
 # Testcase cp_imm_mul_4sp: imm=132
   RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs2: x20 = 0x030293c6
-  addi sp, x18, -132  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x26) # load store canary: x26 = 0x4db836e5
+  SREG x26, 0(x2) # fill store target with canary
+  addi sp, sp, -132  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x84:
   c.swsp x20, 132(sp) # perform store
-  LREG x26, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 132 # remove offset from sp
+  LREG x26, 0(x2) # load store target for checking
   # Check if x26 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x26, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x84, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x84_str)
 
 # Testcase cp_imm_mul_4sp: imm=136
   RVTEST_TESTDATA_LOAD_INT(x1, x0) # load rs2: x0 = 0x12be5c00
-  addi sp, x18, -136  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x25) # load store canary: x25 = 0x4db836e5
+  SREG x25, 0(x2) # fill store target with canary
+  addi sp, sp, -136  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x88:
   c.swsp x0, 136(sp) # perform store
-  LREG x25, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 136 # remove offset from sp
+  LREG x25, 0(x2) # load store target for checking
   # Check if x25 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x25, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x88, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x88_str)
 
 # Testcase cp_imm_mul_4sp: imm=140
   RVTEST_TESTDATA_LOAD_INT(x1, x9) # load rs2: x9 = 0xd0f0cbd2
-  addi sp, x18, -140  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x17) # load store canary: x17 = 0x4db836e5
+  SREG x17, 0(x2) # fill store target with canary
+  addi sp, sp, -140  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x8c:
   c.swsp x9, 140(sp) # perform store
-  LREG x17, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 140 # remove offset from sp
+  LREG x17, 0(x2) # load store target for checking
   # Check if x17 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x17, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x8c, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x8c_str)
 
 # Testcase cp_imm_mul_4sp: imm=144
   RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs2: x20 = 0x2a4c1092
-  addi sp, x18, -144  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x9) # load store canary: x9 = 0x4db836e5
+  SREG x9, 0(x2) # fill store target with canary
+  addi sp, sp, -144  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x90:
   c.swsp x20, 144(sp) # perform store
-  LREG x9, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 144 # remove offset from sp
+  LREG x9, 0(x2) # load store target for checking
   # Check if x9 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x9, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x90, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x90_str)
 
 # Testcase cp_imm_mul_4sp: imm=148
   RVTEST_TESTDATA_LOAD_INT(x1, x31) # load rs2: x31 = 0x01d0e558
-  addi sp, x18, -148  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load store canary: x28 = 0x4db836e5
+  SREG x28, 0(x2) # fill store target with canary
+  addi sp, sp, -148  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x94:
   c.swsp x31, 148(sp) # perform store
-  LREG x28, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 148 # remove offset from sp
+  LREG x28, 0(x2) # load store target for checking
   # Check if x28 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x28, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x94, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x94_str)
 
 # Testcase cp_imm_mul_4sp: imm=152
   RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs2: x25 = 0x9147f96e
-  addi sp, x18, -152  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load store canary: x27 = 0x4db836e5
+  SREG x27, 0(x2) # fill store target with canary
+  addi sp, sp, -152  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x98:
   c.swsp x25, 152(sp) # perform store
-  LREG x27, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 152 # remove offset from sp
+  LREG x27, 0(x2) # load store target for checking
   # Check if x27 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x27, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x98, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x98_str)
 
 # Testcase cp_imm_mul_4sp: imm=156
   RVTEST_TESTDATA_LOAD_INT(x1, x7) # load rs2: x7 = 0x6eefa15a
-  addi sp, x18, -156  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load store canary: x11 = 0x4db836e5
+  SREG x11, 0(x2) # fill store target with canary
+  addi sp, sp, -156  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0x9c:
   c.swsp x7, 156(sp) # perform store
-  LREG x11, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 156 # remove offset from sp
+  LREG x11, 0(x2) # load store target for checking
   # Check if x11 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x11, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x9c, Zca_c_swsp_cg_cp_imm_mul_4sp_b0x9c_str)
 
 # Testcase cp_imm_mul_4sp: imm=160
   RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs2: x26 = 0x12412a8a
-  addi sp, x18, -160  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load store canary: x21 = 0x4db836e5
+  SREG x21, 0(x2) # fill store target with canary
+  addi sp, sp, -160  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa0:
   c.swsp x26, 160(sp) # perform store
-  LREG x21, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 160 # remove offset from sp
+  LREG x21, 0(x2) # load store target for checking
   # Check if x21 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x21, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa0, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa0_str)
 
 # Testcase cp_imm_mul_4sp: imm=164
   RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0x1719b70c
-  addi sp, x18, -164  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load store canary: x21 = 0x4db836e5
+  SREG x21, 0(x2) # fill store target with canary
+  addi sp, sp, -164  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa4:
   c.swsp x15, 164(sp) # perform store
-  LREG x21, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 164 # remove offset from sp
+  LREG x21, 0(x2) # load store target for checking
   # Check if x21 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x21, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa4, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa4_str)
 
 # Testcase cp_imm_mul_4sp: imm=168
   RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs2: x30 = 0xaf6fdcc0
-  addi sp, x18, -168  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load store canary: x12 = 0x4db836e5
+  SREG x12, 0(x2) # fill store target with canary
+  addi sp, sp, -168  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa8:
   c.swsp x30, 168(sp) # perform store
-  LREG x12, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 168 # remove offset from sp
+  LREG x12, 0(x2) # load store target for checking
   # Check if x12 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x12, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa8, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xa8_str)
 
 # Testcase cp_imm_mul_4sp: imm=172
   RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs2: x3 = 0x72762c57
-  addi sp, x18, -172  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x27) # load store canary: x27 = 0x4db836e5
+  SREG x27, 0(x2) # fill store target with canary
+  addi sp, sp, -172  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xac:
   c.swsp x3, 172(sp) # perform store
-  LREG x27, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 172 # remove offset from sp
+  LREG x27, 0(x2) # load store target for checking
   # Check if x27 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x27, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xac, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xac_str)
 
 # Testcase cp_imm_mul_4sp: imm=176
   RVTEST_TESTDATA_LOAD_INT(x1, x6) # load rs2: x6 = 0x81c76166
-  addi sp, x18, -176  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x28) # load store canary: x28 = 0x4db836e5
+  SREG x28, 0(x2) # fill store target with canary
+  addi sp, sp, -176  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb0:
   c.swsp x6, 176(sp) # perform store
-  LREG x28, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 176 # remove offset from sp
+  LREG x28, 0(x2) # load store target for checking
   # Check if x28 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x28, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb0, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb0_str)
 
 # Testcase cp_imm_mul_4sp: imm=180
   RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs2: x3 = 0xccacd523
-  addi sp, x18, -180  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load store canary: x23 = 0x4db836e5
+  SREG x23, 0(x2) # fill store target with canary
+  addi sp, sp, -180  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb4:
   c.swsp x3, 180(sp) # perform store
-  LREG x23, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 180 # remove offset from sp
+  LREG x23, 0(x2) # load store target for checking
   # Check if x23 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x23, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb4, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb4_str)
 
 # Testcase cp_imm_mul_4sp: imm=184
   RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs2: x10 = 0x9f2e744b
-  addi sp, x18, -184  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load store canary: x15 = 0x4db836e5
+  SREG x15, 0(x2) # fill store target with canary
+  addi sp, sp, -184  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb8:
   c.swsp x10, 184(sp) # perform store
-  LREG x15, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 184 # remove offset from sp
+  LREG x15, 0(x2) # load store target for checking
   # Check if x15 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x15, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb8, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xb8_str)
 
 # Testcase cp_imm_mul_4sp: imm=188
   RVTEST_TESTDATA_LOAD_INT(x1, x26) # load rs2: x26 = 0x0b5a9947
-  addi sp, x18, -188  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x19) # load store canary: x19 = 0x4db836e5
+  SREG x19, 0(x2) # fill store target with canary
+  addi sp, sp, -188  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xbc:
   c.swsp x26, 188(sp) # perform store
-  LREG x19, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 188 # remove offset from sp
+  LREG x19, 0(x2) # load store target for checking
   # Check if x19 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x19, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xbc, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xbc_str)
 
 # Testcase cp_imm_mul_4sp: imm=192
   RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs2: x3 = 0xcdaf39df
-  addi sp, x18, -192  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x11) # load store canary: x11 = 0x4db836e5
+  SREG x11, 0(x2) # fill store target with canary
+  addi sp, sp, -192  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc0:
   c.swsp x3, 192(sp) # perform store
-  LREG x11, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 192 # remove offset from sp
+  LREG x11, 0(x2) # load store target for checking
   # Check if x11 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x11, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc0, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc0_str)
 
 # Testcase cp_imm_mul_4sp: imm=196
   RVTEST_TESTDATA_LOAD_INT(x1, x27) # load rs2: x27 = 0xa5fdc85b
-  addi sp, x18, -196  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x8) # load store canary: x8 = 0x4db836e5
+  SREG x8, 0(x2) # fill store target with canary
+  addi sp, sp, -196  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc4:
   c.swsp x27, 196(sp) # perform store
-  LREG x8, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 196 # remove offset from sp
+  LREG x8, 0(x2) # load store target for checking
   # Check if x8 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x8, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc4, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc4_str)
 
 # Testcase cp_imm_mul_4sp: imm=200
   RVTEST_TESTDATA_LOAD_INT(x1, x25) # load rs2: x25 = 0x0ace2b10
-  addi sp, x18, -200  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x31) # load store canary: x31 = 0x4db836e5
+  SREG x31, 0(x2) # fill store target with canary
+  addi sp, sp, -200  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc8:
   c.swsp x25, 200(sp) # perform store
-  LREG x31, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 200 # remove offset from sp
+  LREG x31, 0(x2) # load store target for checking
   # Check if x31 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x31, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc8, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xc8_str)
 
 # Testcase cp_imm_mul_4sp: imm=204
   RVTEST_TESTDATA_LOAD_INT(x1, x17) # load rs2: x17 = 0xec4e4dbb
-  addi sp, x18, -204  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x16) # load store canary: x16 = 0x4db836e5
+  SREG x16, 0(x2) # fill store target with canary
+  addi sp, sp, -204  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xcc:
   c.swsp x17, 204(sp) # perform store
-  LREG x16, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 204 # remove offset from sp
+  LREG x16, 0(x2) # load store target for checking
   # Check if x16 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x16, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xcc, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xcc_str)
 
 # Testcase cp_imm_mul_4sp: imm=208
   RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs2: x10 = 0xfe63f0d7
-  addi sp, x18, -208  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load store canary: x22 = 0x4db836e5
+  SREG x22, 0(x2) # fill store target with canary
+  addi sp, sp, -208  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd0:
   c.swsp x10, 208(sp) # perform store
-  LREG x22, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 208 # remove offset from sp
+  LREG x22, 0(x2) # load store target for checking
   # Check if x22 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x22, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd0, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd0_str)
 
 # Testcase cp_imm_mul_4sp: imm=212
   RVTEST_TESTDATA_LOAD_INT(x1, x3) # load rs2: x3 = 0x4d0e9cdf
-  addi sp, x18, -212  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x30) # load store canary: x30 = 0x4db836e5
+  SREG x30, 0(x2) # fill store target with canary
+  addi sp, sp, -212  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd4:
   c.swsp x3, 212(sp) # perform store
-  LREG x30, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 212 # remove offset from sp
+  LREG x30, 0(x2) # load store target for checking
   # Check if x30 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x30, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd4, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd4_str)
 
 # Testcase cp_imm_mul_4sp: imm=216
   RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0xfe3a31b4
-  addi sp, x18, -216  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load store canary: x21 = 0x4db836e5
+  SREG x21, 0(x2) # fill store target with canary
+  addi sp, sp, -216  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd8:
   c.swsp x14, 216(sp) # perform store
-  LREG x21, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 216 # remove offset from sp
+  LREG x21, 0(x2) # load store target for checking
   # Check if x21 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x21, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd8, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xd8_str)
 
 # Testcase cp_imm_mul_4sp: imm=220
   RVTEST_TESTDATA_LOAD_INT(x1, x15) # load rs2: x15 = 0x1a38a42b
-  addi sp, x18, -220  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x29) # load store canary: x29 = 0x4db836e5
+  SREG x29, 0(x2) # fill store target with canary
+  addi sp, sp, -220  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xdc:
   c.swsp x15, 220(sp) # perform store
-  LREG x29, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 220 # remove offset from sp
+  LREG x29, 0(x2) # load store target for checking
   # Check if x29 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x29, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xdc, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xdc_str)
 
 # Testcase cp_imm_mul_4sp: imm=224
   RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs2: x8 = 0x50912704
-  addi sp, x18, -224  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x21) # load store canary: x21 = 0x4db836e5
+  SREG x21, 0(x2) # fill store target with canary
+  addi sp, sp, -224  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe0:
   c.swsp x8, 224(sp) # perform store
-  LREG x21, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 224 # remove offset from sp
+  LREG x21, 0(x2) # load store target for checking
   # Check if x21 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x21, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe0, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe0_str)
 
 # Testcase cp_imm_mul_4sp: imm=228
   RVTEST_TESTDATA_LOAD_INT(x1, x14) # load rs2: x14 = 0xdb21878d
-  addi sp, x18, -228  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x3) # load store canary: x3 = 0x4db836e5
+  SREG x3, 0(x2) # fill store target with canary
+  addi sp, sp, -228  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe4:
   c.swsp x14, 228(sp) # perform store
-  LREG x3, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 228 # remove offset from sp
+  LREG x3, 0(x2) # load store target for checking
   # Check if x3 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x3, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe4, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe4_str)
 
 # Testcase cp_imm_mul_4sp: imm=232
   RVTEST_TESTDATA_LOAD_INT(x1, x21) # load rs2: x21 = 0xbcc1dfe0
-  addi sp, x18, -232  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x23) # load store canary: x23 = 0x4db836e5
+  SREG x23, 0(x2) # fill store target with canary
+  addi sp, sp, -232  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe8:
   c.swsp x21, 232(sp) # perform store
-  LREG x23, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 232 # remove offset from sp
+  LREG x23, 0(x2) # load store target for checking
   # Check if x23 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x23, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe8, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xe8_str)
 
 # Testcase cp_imm_mul_4sp: imm=236
   RVTEST_TESTDATA_LOAD_INT(x1, x8) # load rs2: x8 = 0x6cf3621e
-  addi sp, x18, -236  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load store canary: x15 = 0x4db836e5
+  SREG x15, 0(x2) # fill store target with canary
+  addi sp, sp, -236  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xec:
   c.swsp x8, 236(sp) # perform store
-  LREG x15, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 236 # remove offset from sp
+  LREG x15, 0(x2) # load store target for checking
   # Check if x15 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x15, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xec, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xec_str)
 
 # Testcase cp_imm_mul_4sp: imm=240
   RVTEST_TESTDATA_LOAD_INT(x1, x23) # load rs2: x23 = 0xdfc67ab8
-  addi sp, x18, -240  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x22) # load store canary: x22 = 0x4db836e5
+  SREG x22, 0(x2) # fill store target with canary
+  addi sp, sp, -240  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf0:
   c.swsp x23, 240(sp) # perform store
-  LREG x22, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 240 # remove offset from sp
+  LREG x22, 0(x2) # load store target for checking
   # Check if x22 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x22, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf0, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf0_str)
 
 # Testcase cp_imm_mul_4sp: imm=244
   RVTEST_TESTDATA_LOAD_INT(x1, x10) # load rs2: x10 = 0x1e17df6a
-  addi sp, x18, -244  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x15) # load store canary: x15 = 0x4db836e5
+  SREG x15, 0(x2) # fill store target with canary
+  addi sp, sp, -244  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf4:
   c.swsp x10, 244(sp) # perform store
-  LREG x15, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 244 # remove offset from sp
+  LREG x15, 0(x2) # load store target for checking
   # Check if x15 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x15, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf4, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf4_str)
 
 # Testcase cp_imm_mul_4sp: imm=248
   RVTEST_TESTDATA_LOAD_INT(x1, x30) # load rs2: x30 = 0xc611b086
-  addi sp, x18, -248  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x12) # load store canary: x12 = 0x4db836e5
+  SREG x12, 0(x2) # fill store target with canary
+  addi sp, sp, -248  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf8:
   c.swsp x30, 248(sp) # perform store
-  LREG x12, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 248 # remove offset from sp
+  LREG x12, 0(x2) # load store target for checking
   # Check if x12 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x12, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf8, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xf8_str)
 
 # Testcase cp_imm_mul_4sp: imm=252
   RVTEST_TESTDATA_LOAD_INT(x1, x20) # load rs2: x20 = 0x6b889049
-  addi sp, x18, -252  # copy sig_reg to sp and adjust for offset
+  LA(sp, scratch) # point base at scratch
+  RVTEST_TESTDATA_LOAD_INT(x1, x24) # load store canary: x24 = 0x4db836e5
+  SREG x24, 0(x2) # fill store target with canary
+  addi sp, sp, -252  # adjust for offset
 Zca_c_swsp_cg_cp_imm_mul_4sp_b0xfc:
   c.swsp x20, 252(sp) # perform store
-  LREG x24, 0(x18) # load stored value for checking
-  addi x18, x18, SIG_STRIDE # increment signature pointer
+  addi sp, sp, 252 # remove offset from sp
+  LREG x24, 0(x2) # load store target for checking
   # Check if x24 contains the expected result. x18 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x18, x5, x4, x24, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xfc, Zca_c_swsp_cg_cp_imm_mul_4sp_b0xfc_str)
 
@@ -1141,113 +1465,221 @@ RVTEST_DATA_BEGIN
 
 // Test data
 .word 0xe8d11d7c
+.word 0x4db836e5
 .word 0x591f45ae
+.word 0x4db836e5
 .word 0x9d8de685
+.word 0x4db836e5
 .word 0xd104c81e
+.word 0x4db836e5
 .word 0x9f0117a2
+.word 0x4db836e5
 .word 0x87601cbc
+.word 0x4db836e5
 .word 0xc8131b35
+.word 0x4db836e5
 .word 0x6cbdaad0
+.word 0x4db836e5
 .word 0x555a5752
+.word 0x4db836e5
 .word 0x04ceeabd
+.word 0x4db836e5
 .word 0x55e4ef36
+.word 0x4db836e5
 .word 0xa66bff60
+.word 0x4db836e5
 .word 0x057efa00
+.word 0x4db836e5
 .word 0x75a5e894
+.word 0x4db836e5
 .word 0xd8c8c4d7
+.word 0x4db836e5
 .word 0x1a2b315a
+.word 0x4db836e5
 .word 0xd30b461b
+.word 0x4db836e5
 .word 0xa2490b06
+.word 0x4db836e5
 .word 0x551fb063
+.word 0x4db836e5
 .word 0x7e4eba92
+.word 0x4db836e5
 .word 0xb9fdf264
+.word 0x4db836e5
 .word 0x8f5b81c0
+.word 0x4db836e5
 .word 0x405e92c1
+.word 0x4db836e5
 .word 0x22443a39
+.word 0x4db836e5
 .word 0x5850a4db
+.word 0x4db836e5
 .word 0xc3e6b871
+.word 0x4db836e5
 .word 0x62195e13
+.word 0x4db836e5
 .word 0x7e1dfdcf
+.word 0x4db836e5
 .word 0x6adc2353
+.word 0x4db836e5
 .word 0x8c68a879
+.word 0x4db836e5
 .word 0x74da8db4
+.word 0x4db836e5
 .word 0xff67d63c
+.word 0x4db836e5
 .word 0x00000000
+.word 0x4db836e5
 .word 0x00000001
+.word 0x4db836e5
 .word 0x00000002
+.word 0x4db836e5
 .word 0x80000000
+.word 0x4db836e5
 .word 0x80000001
+.word 0x4db836e5
 .word 0x7fffffff
+.word 0x4db836e5
 .word 0x7ffffffe
+.word 0x4db836e5
 .word 0xffffffff
+.word 0x4db836e5
 .word 0xfffffffe
+.word 0x4db836e5
 .word 0x5bbc8872
+.word 0x4db836e5
 .word 0xaaaaaaaa
+.word 0x4db836e5
 .word 0x55555555
+.word 0x4db836e5
 .word 0x3748c810
+.word 0x4db836e5
 .word 0x212852d1
+.word 0x4db836e5
 .word 0xde9d49fb
+.word 0x4db836e5
 .word 0xd63152f0
+.word 0x4db836e5
 .word 0xc38312ff
+.word 0x4db836e5
 .word 0xbe081e73
+.word 0x4db836e5
 .word 0xeaf691d2
+.word 0x4db836e5
 .word 0x68bd767c
+.word 0x4db836e5
 .word 0xb3a35dad
+.word 0x4db836e5
 .word 0xf7c9a307
+.word 0x4db836e5
 .word 0x2dc2d097
+.word 0x4db836e5
 .word 0x6e9d4158
+.word 0x4db836e5
 .word 0x025588f2
+.word 0x4db836e5
 .word 0xd6d5ceed
+.word 0x4db836e5
 .word 0xbcc0102f
+.word 0x4db836e5
 .word 0xdf3eea06
+.word 0x4db836e5
 .word 0x2db624b0
+.word 0x4db836e5
 .word 0xccf3cd83
+.word 0x4db836e5
 .word 0x688d5237
+.word 0x4db836e5
 .word 0x1b13aa7d
+.word 0x4db836e5
 .word 0x64c46502
+.word 0x4db836e5
 .word 0xd0d5a125
+.word 0x4db836e5
 .word 0x2ef80023
+.word 0x4db836e5
 .word 0x007aeb44
+.word 0x4db836e5
 .word 0x1a9509f6
+.word 0x4db836e5
 .word 0xc18c3264
+.word 0x4db836e5
 .word 0xd7d19c00
+.word 0x4db836e5
 .word 0x087a85ad
+.word 0x4db836e5
 .word 0x068e9e00
+.word 0x4db836e5
 .word 0xe87a0869
+.word 0x4db836e5
 .word 0x25bff6fb
+.word 0x4db836e5
 .word 0x7e22c6d5
+.word 0x4db836e5
 .word 0x06c2ea11
+.word 0x4db836e5
 .word 0x030293c6
+.word 0x4db836e5
 .word 0x12be5c00
+.word 0x4db836e5
 .word 0xd0f0cbd2
+.word 0x4db836e5
 .word 0x2a4c1092
+.word 0x4db836e5
 .word 0x01d0e558
+.word 0x4db836e5
 .word 0x9147f96e
+.word 0x4db836e5
 .word 0x6eefa15a
+.word 0x4db836e5
 .word 0x12412a8a
+.word 0x4db836e5
 .word 0x1719b70c
+.word 0x4db836e5
 .word 0xaf6fdcc0
+.word 0x4db836e5
 .word 0x72762c57
+.word 0x4db836e5
 .word 0x81c76166
+.word 0x4db836e5
 .word 0xccacd523
+.word 0x4db836e5
 .word 0x9f2e744b
+.word 0x4db836e5
 .word 0x0b5a9947
+.word 0x4db836e5
 .word 0xcdaf39df
+.word 0x4db836e5
 .word 0xa5fdc85b
+.word 0x4db836e5
 .word 0x0ace2b10
+.word 0x4db836e5
 .word 0xec4e4dbb
+.word 0x4db836e5
 .word 0xfe63f0d7
+.word 0x4db836e5
 .word 0x4d0e9cdf
+.word 0x4db836e5
 .word 0xfe3a31b4
+.word 0x4db836e5
 .word 0x1a38a42b
+.word 0x4db836e5
 .word 0x50912704
+.word 0x4db836e5
 .word 0xdb21878d
+.word 0x4db836e5
 .word 0xbcc1dfe0
+.word 0x4db836e5
 .word 0x6cf3621e
+.word 0x4db836e5
 .word 0xdfc67ab8
+.word 0x4db836e5
 .word 0x1e17df6a
+.word 0x4db836e5
 .word 0xc611b086
+.word 0x4db836e5
 .word 0x6b889049
+.word 0x4db836e5
 
 // Testcase strings
 Zca_c_swsp_cg_cp_rs2_b0_str: .string "\"test: 1; cg: Zca_c.swsp_cg; cp: cp_rs2; bin: b0\""

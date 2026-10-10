@@ -99,7 +99,8 @@
 --override cpu*/Smmpm=48_57 # (Enumeration) (default=none) (default) Specify Smmpm implemented modes
 
 # More extensions
---override cpu*/Smdbltrp=T
+# Smdbltrp off to match imperas-rv64-m.yaml (Sail 0.14.1 rejects cause 16, #2403)
+--override cpu*/Smdbltrp=F
 --override cpu*/d_requires_f=T
 
 # PMA Settings

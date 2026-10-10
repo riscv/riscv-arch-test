@@ -17,6 +17,8 @@ FENCEI_RD = 1
 FENCEI_RS1 = 2
 RD_SENTINEL = "0x5A5A5A5A"
 RS1_VALUE = "0x0F0F0F0F"
+# Alignment of each fence.i, so each patched instruction is in its own cache line of up to 128 bytes.
+PATCH_ALIGN = 128
 
 
 def encode_addi(rd: int, rs1: int, imm: int) -> int:
@@ -35,7 +37,10 @@ def make_custom_fence_i(instr_name: str, instr_type: str, coverpoint: str, test_
 
     Each testcase patches the instruction after the fence.i and checks that the patched one runs.
     rd, rs1 and imm are reserved and must be ignored (norm:fence_i_rsv), so the nonzero-rd case
-    also checks that rd is not written.
+    also checks that rd is not written. Two testcases read the instruction as data before the
+    store, so that the store finds the line in any data cache; the other two store without a
+    prior read. Each fence.i starts a 128-byte block, so no two patched instructions share a
+    cache line of up to 128 bytes and one testcase's read cannot bring another's line in.
     """
     if instr_name != "fence.i":
         raise ValueError(f"cp_custom_fencei generator only supports fence.i instruction, got {instr_name}")
@@ -47,15 +52,16 @@ def make_custom_fence_i(instr_name: str, instr_type: str, coverpoint: str, test_
     if asm:
         tc.code.append(asm)
 
-    # (bin name, description, fence.i encoding, addi immediate for the patched instruction)
+    # (bin name, description, fence.i encoding, addi immediate for the patched instruction,
+    #  read the instruction as data before the store)
     cases = [
-        ("fencei", "normal fence.i", None, 5),
-        ("fencei_nonzerors1", "fence.i with nonzero rs1", encode_fence_i(rs1=FENCEI_RS1), 7),
-        ("fencei_nonzerord", "fence.i with nonzero rd", encode_fence_i(rd=FENCEI_RD), 9),
-        ("fencei_nonzerof12", "fence.i with nonzero funct12", encode_fence_i(imm=1), 13),
+        ("fencei", "normal fence.i", None, 5, True),
+        ("fencei_nonzerors1", "fence.i with nonzero rs1", encode_fence_i(rs1=FENCEI_RS1), 7, False),
+        ("fencei_nonzerord", "fence.i with nonzero rd", encode_fence_i(rd=FENCEI_RD), 9, False),
+        ("fencei_nonzerof12", "fence.i with nonzero funct12", encode_fence_i(imm=1), 13, True),
     ]
 
-    for bin_name, desc, fence_encoding, add_val in cases:
+    for bin_name, desc, fence_encoding, add_val, read_first in cases:
         # Get free registers
         reg1, reg2, reg3 = test_data.int_regs.get_registers(3, exclude_regs=[0])
 
@@ -70,12 +76,14 @@ def make_custom_fence_i(instr_name: str, instr_type: str, coverpoint: str, test_
             tc.code.append(f"LI(x{FENCEI_RS1}, {RS1_VALUE}) # nonzero value in the ignored rs1")
         if bin_name == "fencei_nonzerord":
             tc.code.append(f"LI(x{FENCEI_RD}, {RD_SENTINEL}) # fence.i must not write the ignored rd")
+        tc.code.extend([f"LI(x{reg1}, 3)", f"LA(x{reg3}, {label})"])
+        if read_first:
+            tc.code.append(f"lw x{reg2}, 0(x{reg3}) # read the instruction as data before the store")
         tc.code.extend(
             [
-                f"LI(x{reg1}, 3)",
-                f"LA(x{reg3}, {label})",
                 load_int_reg(f"addi x{reg1}, x{reg1}, {add_val}", reg2, encoded_instr, test_data),
                 f"sw x{reg2}, 0(x{reg3})",
+                f".balign {PATCH_ALIGN} # keep each patched instruction in its own cache line",
                 test_data.add_testcase(bin_name, "cp_custom_fencei"),
                 f"{fence_instr} # {desc}",
                 f"{label}:",

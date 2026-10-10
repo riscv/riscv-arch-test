@@ -37,8 +37,10 @@ RVTEST_BEGIN
 # Testcase fencei: normal fence.i
   LI(x17, 3)
   LA(x9, selfmodify_0)
+  lw x6, 0(x9) # read the instruction as data before the store
   RVTEST_TESTDATA_LOAD_INT(x3, x6) # load addi x17, x17, 5: x6 = 0x00588893
   sw x6, 0(x9)
+  .balign 128 # keep each patched instruction in its own cache line
 Zifencei_fence_i_cg_cp_custom_fencei_fencei:
   fence.i # normal fence.i
 selfmodify_0:
@@ -52,6 +54,7 @@ selfmodify_0:
   LA(x20, selfmodify_1)
   RVTEST_TESTDATA_LOAD_INT(x3, x9) # load addi x24, x24, 7: x9 = 0x007c0c13
   sw x9, 0(x20)
+  .balign 128 # keep each patched instruction in its own cache line
 Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerors1:
   .insn 0x0001100f # fence.i with nonzero rs1
 selfmodify_1:
@@ -65,6 +68,7 @@ selfmodify_1:
   LA(x19, selfmodify_2)
   RVTEST_TESTDATA_LOAD_INT(x3, x13) # load addi x11, x11, 9: x13 = 0x00958593
   sw x13, 0(x19)
+  .balign 128 # keep each patched instruction in its own cache line
 Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerord:
   .insn 0x0000108f # fence.i with nonzero rd
 selfmodify_2:
@@ -77,8 +81,10 @@ selfmodify_2:
 # Testcase fencei_nonzerof12: fence.i with nonzero funct12
   LI(x17, 3)
   LA(x14, selfmodify_3)
+  lw x6, 0(x14) # read the instruction as data before the store
   RVTEST_TESTDATA_LOAD_INT(x3, x6) # load addi x17, x17, 13: x6 = 0x00d88893
   sw x6, 0(x14)
+  .balign 128 # keep each patched instruction in its own cache line
 Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerof12:
   .insn 0x0010100f # fence.i with nonzero funct12
 selfmodify_3:

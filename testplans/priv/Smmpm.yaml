@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Smmpm
+source: https://docs.google.com/spreadsheets/d/15yJhyhBB5X9cq4SDQ-YCPzo2oPQnDBh5wEIZhi0-9Ps/edit?gid=645084995#gid=645084995
+notes: |
+  Smmpm is a machine-level extension that provides pointer masking for M-mode.
+  Exactly same coverpoints as Ssnpm except delete cp_pmm_uxl_clear, add the following, and run in M-mode:
+  - all addresses are physical, all tests run in Bare/ M-mode .
+  - drop cp_pmlen_zicfiss_amo and cp_pmlen_zicfiss_ssp because Zicfiss cannot be activated in M-mode: SSAMOSWAP always raises a store/AMO access fault, and SSPUSH and SSPOPCHK revert to their Zimop/Zcmop behavior and do not access memory.
+  - MPRV is tested here only with MPP=M, where mseccfg.PMM governs. MPP=U and MPP=S are governed by senvcfg.PMM and menvcfg.PMM, so they are in the SsnpmSm, SmnpmSSm and SmnpmUSm suites.
+  the JALR cross is kept separate from MXR and not guarded by S_SUPPORTED , since implicit fetch must be verified as never masked regardless of whether S-mode (and hence MXR) is implemented.
+coverpoints:
+  - heading: "- For cp_hardware_csr_* , traps are being handled in M mode and mtval will be checked."
+  - name: cp_pm_mprv_mpp_m
+    goal: Verify that mseccfg.PMM governs pointer masking when M-mode accesses memory with MPRV=1 and MPP=M.
+    description: |-
+      MPRV affect pointer masking as well, causing the pointer masking settings of the effective privilege mode to be applied.
+      With MPP=M the effective privilege mode stays M, so mseccfg.PMM applies. satp and MXR do not apply to M-mode accesses, so they are not swept.
+
+      Test Environment:
+       In M-mode set mstatus.MPRV=1 and mstatus.MPP=M
+       Place known value_old in scratch. Let A' = scratch (upper bits = 0x0000).
+      For each mseccfg.PMM in {00, 10, 11}:
+      For each A_upper_bits in {0x0000, 0x0001, 0x0200}:
+      Set A = A' with upper bits replaced by A_upper_bits
+      For read (lw): read directly from A in M-mode with MPRV=1, sigupd(value), record any traps.
+      For write (sw): write unique known value_new to A in M-mode with MPRV=1, read back from scratch (A'), sigupd(value), record any traps.
+    expectation: "When mseccfg.PMM=10/11: A patterns whose upper bits fall within PMLEN resolve to scratch, reads return known value_old, write readbacks return known value_new. When mseccfg.PMM=00: masking disabled : only A=0x0000 resolves to scratch; all other patterns cause a trap."
+    bins: 3 mseccfg.PMM * 1 MPRV * 1 MPP (M) * 3 addresses * 2 instructions (lw, sw)
+    rules:
+      - pm_mprv_spvp
+  - name: cp_pm_csr_software_access
+    goal: Ensure pointer masking is not applied to software CSR reads and writes
+    description: |-
+      Pointer masking is not applied to software CSR reads and writes.
+
+      Test Environment:
+       In M-mode, set mseccfg.PMM={10(PMLEN=7),11(PMLEN=16)}.
+      Write XLEN test patterns with upper PMLEN bits set to RW CSRs {mepc,  mscratch} , using {csrrw, csrrs, csrrc, csrrwi}. Read back the same CSR using CSR read instructions then compare written and read values.
+    expectation: |-
+      No masking applied; read-back value matches written value (subject to WARL constraints).
+      The implemented WARL width of CSRs is unaffected by pointer masking
+    bins: 2 PMM * 4 (csrrw / csrrc / 4csrrs /csrrwi) * 1 mode (M ) * 3 csr
+    rules:
+      - pm_no_csr_sw
+      - pm_warl_unaffected

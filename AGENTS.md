@@ -46,7 +46,7 @@
 - Privileged test generators are under `generators/testgen/src/testgen/priv/extensions/`. They write assembly under `tests/priv/`. Handwritten privileged functional coverage is under `coverpoints/priv/`.
 - A testcase checks one coverpoint bin. A `TestChunk` is an unsplittable group of testcases. A test file is one `.S` or `.c` file. A test suite is one extension directory.
 - Test headers are strict YAML between `START_TEST_CONFIG` and `END_TEST_CONFIG`. Supported keys are `REQUIRED_EXTENSIONS`, `FORBIDDEN_EXTENSIONS`, `MARCH`, `NEEDS_SIGNATURE`, `MIN_HARTS`, and `params`. Unknown keys fail validation.
-- CSV columns start with `Instruction`, `Type`, `RV32`, and `RV64`, followed by coverpoints. `Type` must name a registered formatter. Coverpoint columns must name registered generators. Use `testplans/I.csv` as a reference.
+- CSV columns start with `Instruction`, `Type`, `RV32`, and `RV64`, followed by an optional `ExtraExtensions` column (see `docs/DeveloperGuide.md`) and the coverpoints. `Type` must name a registered formatter. Coverpoint columns must name registered generators. Use `testplans/I.csv` as a reference.
 - Registry modules are discovered automatically. Use the registry decorators and do not add manual imports. Files with names that start with `_` are not discovered.
 
 | Subsystem              | Decorator                                    | Directory                                          |
@@ -56,6 +56,7 @@
 | Privileged generators  | `@add_priv_test_generator("Suite", ...)`     | `generators/testgen/src/testgen/priv/extensions/`  |
 
 - Keep expected architectural behavior explicit. Each generated testcase must map to meaningful functional coverage.
+- Use `ignore_bins` only for bins that are architecturally unreachable. When a test skips a legal case because a reference model or tool does not support it yet, leave the bins in place so coverage reports them as missing until a test hits them.
 - The framework installs trap handlers for unprivileged tests when standard machine mode is available. Unexpected traps fail the test.
 - Privileged tests should boot into their intended mode. Use T-SBI calls for operations that require a higher privilege level. Use `tsbi_call()` for supported CSR or memory instructions and `RVTEST_TSBI_GOTO_*` for mode changes.
 - Allocate registers through `TestData` register allocators. Do not hard-code or separately exclude registers already reserved by the framework. Framework routines and T-SBI can clobber `ra` and `a0` through `a2`, so `generate/priv.py` removes them from the privileged-test pool so they are never allocated.
@@ -68,7 +69,6 @@
 
 - `test_config.yaml` references the UDB configuration, linker script, DUT include directory, compiler, and reference model. Paths are relative to `test_config.yaml`.
 - Audit every field copied from another DUT. The UDB configuration, `sail.json`, linker script, and DUT behavior must agree. For example, mismatched `mtvec` modes or alignment can break trap-handler setup.
-- Use a nonzero `TEST_BASE`. If a DUT starts at address zero, use a runner boot stub to jump to the test image.
 - Keep `.text.rvmodel` after `.data` in linker scripts. Otherwise, DUT and reference-model ELFs can assign different addresses to test data. If the ELF base changes, update the memory map in `sail.json`.
 - `run_cmd.txt` contains one command. `run_tests.py` appends the ELF path. Use `{debug:...}` for debug-only arguments, `__TRACEFILE__` for a separate trace, and `__SUMMARYFILE__` for redirected console summaries.
 - CI discovers matrices from `config/*/ci.yaml` and `run_cmd.txt`. Run `make tests` before `.github/scripts/ci_config.py` because generated tests determine shard weights.

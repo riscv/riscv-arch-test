@@ -20,6 +20,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
+#define TRAP_SIGUPD_COUNT 1500
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -548,7 +549,7 @@ RVTEST_DATA_BEGIN
   .option push
   .option norvc
 TEST_FOR_EXECUTION_0:
-  .rept (PMP_TOR_REGION_BYTES / 4)
+  .rept PMP_NAPOT_REGION_PAD_WORDS
   jr ra
   .endr
   .option pop

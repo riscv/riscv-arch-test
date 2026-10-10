@@ -177,11 +177,11 @@ def generate_test_dict(tests_dir: Path, extensions: str, exclude: str = "") -> d
 
     extension_list: list[str] = []
     if extensions != "all":
-        extension_list.extend(ext.strip() for ext in extensions.split(","))
+        extension_list.extend(ext.strip() for ext in extensions.split(",") if ext.strip())
 
     exclude_list: list[str] = []
     if exclude:
-        exclude_list.extend(ext.strip() for ext in exclude.split(","))
+        exclude_list.extend(ext.strip() for ext in exclude.split(",") if ext.strip())
 
     test_list: dict[str, TestMetadata] = {}
 

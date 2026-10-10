@@ -9,3 +9,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
     SdtrigSm_trig_module_reg_cg = new();       SdtrigSm_trig_module_reg_cg.set_inst_name("obj_SdtrigSm_trig_module_reg");
+    SdtrigSm_mcontrol6_cg = new();             SdtrigSm_mcontrol6_cg.set_inst_name("obj_SdtrigSm_mcontrol6");
+    `ifdef UDB_TCONTROL_AVAILABLE
+        SdtrigSm_tcontrol_cg = new();               SdtrigSm_tcontrol_cg.set_inst_name("obj_SdtrigSm_tcontrol");
+    `endif

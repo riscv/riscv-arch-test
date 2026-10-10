@@ -17,7 +17,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 28
+#define SIGUPD_COUNT 82
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 
@@ -34,8 +34,8 @@ RVTEST_BEGIN
 // cp_misalign
 /////////////////////////////////
 
-# Start by placing 0x01234567_89ABCDEF_00112233_44556677 into 16 bytes starting at scratch address to facilitate misaligned load tests
   LA(x15, scratch) # load base address
+  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x15
   RVTEST_TESTDATA_LOAD_INT(x3, x8) # load testdata_0: x8 = 0x44556677
   sw x8, 0(x15) # store at offset 0
   RVTEST_TESTDATA_LOAD_INT(x3, x8) # load testdata_1: x8 = 0x00112233
@@ -45,68 +45,315 @@ RVTEST_BEGIN
   RVTEST_TESTDATA_LOAD_INT(x3, x8) # load testdata_3: x8 = 0x01234567
   sw x8, 12(x15) # store at offset 12
 
-# Testcase: cp_misalign (imm[2:0] = 000)
+# Testcase: cp_misalign (scratch+0 window, offset 0)
   LA(x15, scratch) # load base address
 MisalignF_flw_cg_cp_misalign_0:
   flw f8, 0(x15) # perform load
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, MisalignF_flw_cg_cp_misalign_0, MisalignF_flw_cg_cp_misalign_0_str)
 
-# Testcase: cp_misalign (imm[2:0] = 001)
+# Testcase: cp_misalign (scratch+0 window, offset 1)
   LA(x15, scratch) # load base address
 MisalignF_flw_cg_cp_misalign_1:
   flw f8, 1(x15) # perform load
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, MisalignF_flw_cg_cp_misalign_1, MisalignF_flw_cg_cp_misalign_1_str)
 
-# Testcase: cp_misalign (imm[2:0] = 010)
+# Testcase: cp_misalign (scratch+0 window, offset 2)
   LA(x15, scratch) # load base address
 MisalignF_flw_cg_cp_misalign_2:
   flw f8, 2(x15) # perform load
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, MisalignF_flw_cg_cp_misalign_2, MisalignF_flw_cg_cp_misalign_2_str)
 
-# Testcase: cp_misalign (imm[2:0] = 011)
+# Testcase: cp_misalign (scratch+0 window, offset 3)
   LA(x15, scratch) # load base address
 MisalignF_flw_cg_cp_misalign_3:
   flw f8, 3(x15) # perform load
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, MisalignF_flw_cg_cp_misalign_3, MisalignF_flw_cg_cp_misalign_3_str)
 
-# Testcase: cp_misalign (imm[2:0] = 100)
+# Testcase: cp_misalign (scratch+0 window, offset 4)
   LA(x15, scratch) # load base address
 MisalignF_flw_cg_cp_misalign_4:
   flw f8, 4(x15) # perform load
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, MisalignF_flw_cg_cp_misalign_4, MisalignF_flw_cg_cp_misalign_4_str)
 
-# Testcase: cp_misalign (imm[2:0] = 101)
+# Testcase: cp_misalign (scratch+0 window, offset 5)
   LA(x15, scratch) # load base address
 MisalignF_flw_cg_cp_misalign_5:
   flw f8, 5(x15) # perform load
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, MisalignF_flw_cg_cp_misalign_5, MisalignF_flw_cg_cp_misalign_5_str)
 
-# Testcase: cp_misalign (imm[2:0] = 110)
+# Testcase: cp_misalign (scratch+0 window, offset 6)
   LA(x15, scratch) # load base address
 MisalignF_flw_cg_cp_misalign_6:
   flw f8, 6(x15) # perform load
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, MisalignF_flw_cg_cp_misalign_6, MisalignF_flw_cg_cp_misalign_6_str)
 
-# Testcase: cp_misalign (imm[2:0] = 111)
+# Testcase: cp_misalign (scratch+0 window, offset 7)
   LA(x15, scratch) # load base address
 MisalignF_flw_cg_cp_misalign_7:
   flw f8, 7(x15) # perform load
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
   RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, MisalignF_flw_cg_cp_misalign_7, MisalignF_flw_cg_cp_misalign_7_str)
 
-# Testcase: cp_misalign (imm[2:0] = 1000)
+# Testcase: cp_misalign (scratch+0 window, offset 8)
   LA(x15, scratch) # load base address
-MisalignF_flw_cg_cp_misalign_8:
+MisalignF_flw_cg_cp_misalign_8_wrap:
   flw f8, 8(x15) # perform load
   # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
-  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, MisalignF_flw_cg_cp_misalign_8, MisalignF_flw_cg_cp_misalign_8_str)
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, MisalignF_flw_cg_cp_misalign_8_wrap, MisalignF_flw_cg_cp_misalign_8_wrap_str)
+
+  LA(x15, scratch) # load base address
+  # Place 0xFEDCBA98_76543210_FFEEDDCC_BBAA9988 into the 16-byte window at x15
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load testdata_0: x8 = 0xbbaa9988
+  sw x8, 0(x15) # store at offset 0
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load testdata_1: x8 = 0xffeeddcc
+  sw x8, 4(x15) # store at offset 4
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load testdata_2: x8 = 0x76543210
+  sw x8, 8(x15) # store at offset 8
+  RVTEST_TESTDATA_LOAD_INT(x3, x8) # load testdata_3: x8 = 0xfedcba98
+  sw x8, 12(x15) # store at offset 12
+
+# Testcase: cp_misalign (scratch+0 window, offset 0_inv)
+  LA(x15, scratch) # load base address
+MisalignF_flw_cg_cp_misalign_0_inv:
+  flw f8, 0(x15) # perform load
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, MisalignF_flw_cg_cp_misalign_0_inv, MisalignF_flw_cg_cp_misalign_0_inv_str)
+
+# Testcase: cp_misalign (scratch+0 window, offset 1_inv)
+  LA(x15, scratch) # load base address
+MisalignF_flw_cg_cp_misalign_1_inv:
+  flw f8, 1(x15) # perform load
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, MisalignF_flw_cg_cp_misalign_1_inv, MisalignF_flw_cg_cp_misalign_1_inv_str)
+
+# Testcase: cp_misalign (scratch+0 window, offset 2_inv)
+  LA(x15, scratch) # load base address
+MisalignF_flw_cg_cp_misalign_2_inv:
+  flw f8, 2(x15) # perform load
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, MisalignF_flw_cg_cp_misalign_2_inv, MisalignF_flw_cg_cp_misalign_2_inv_str)
+
+# Testcase: cp_misalign (scratch+0 window, offset 3_inv)
+  LA(x15, scratch) # load base address
+MisalignF_flw_cg_cp_misalign_3_inv:
+  flw f8, 3(x15) # perform load
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, MisalignF_flw_cg_cp_misalign_3_inv, MisalignF_flw_cg_cp_misalign_3_inv_str)
+
+# Testcase: cp_misalign (scratch+0 window, offset 4_inv)
+  LA(x15, scratch) # load base address
+MisalignF_flw_cg_cp_misalign_4_inv:
+  flw f8, 4(x15) # perform load
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, MisalignF_flw_cg_cp_misalign_4_inv, MisalignF_flw_cg_cp_misalign_4_inv_str)
+
+# Testcase: cp_misalign (scratch+0 window, offset 5_inv)
+  LA(x15, scratch) # load base address
+MisalignF_flw_cg_cp_misalign_5_inv:
+  flw f8, 5(x15) # perform load
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, MisalignF_flw_cg_cp_misalign_5_inv, MisalignF_flw_cg_cp_misalign_5_inv_str)
+
+# Testcase: cp_misalign (scratch+0 window, offset 6_inv)
+  LA(x15, scratch) # load base address
+MisalignF_flw_cg_cp_misalign_6_inv:
+  flw f8, 6(x15) # perform load
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, MisalignF_flw_cg_cp_misalign_6_inv, MisalignF_flw_cg_cp_misalign_6_inv_str)
+
+# Testcase: cp_misalign (scratch+0 window, offset 7_inv)
+  LA(x15, scratch) # load base address
+MisalignF_flw_cg_cp_misalign_7_inv:
+  flw f8, 7(x15) # perform load
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, MisalignF_flw_cg_cp_misalign_7_inv, MisalignF_flw_cg_cp_misalign_7_inv_str)
+
+# Testcase: cp_misalign (scratch+0 window, offset 8_inv)
+  LA(x15, scratch) # load base address
+MisalignF_flw_cg_cp_misalign_8_wrap_inv:
+  flw f8, 8(x15) # perform load
+  # Check if f8 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f8, MisalignF_flw_cg_cp_misalign_8_wrap_inv, MisalignF_flw_cg_cp_misalign_8_wrap_inv_str)
+
+
+/////////////////////////////////
+// cp_misalign_cross64_word
+/////////////////////////////////
+
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+  # Place 0x01234567_89ABCDEF_00112233_44556677 into the 16-byte window at x9
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_0: x14 = 0x44556677
+  sw x14, 0(x9) # store at offset 0
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_1: x14 = 0x00112233
+  sw x14, 4(x9) # store at offset 4
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_2: x14 = 0x89abcdef
+  sw x14, 8(x9) # store at offset 8
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_3: x14 = 0x01234567
+  sw x14, 12(x9) # store at offset 12
+
+# Testcase: cp_misalign_cross64_word (scratch+56 window, offset 0)
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+MisalignF_flw_cg_cp_misalign_cross64_word_no_0:
+  flw f14, 0(x9) # perform load
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, MisalignF_flw_cg_cp_misalign_cross64_word_no_0, MisalignF_flw_cg_cp_misalign_cross64_word_no_0_str)
+
+# Testcase: cp_misalign_cross64_word (scratch+56 window, offset 1)
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+MisalignF_flw_cg_cp_misalign_cross64_word_no_1:
+  flw f14, 1(x9) # perform load
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, MisalignF_flw_cg_cp_misalign_cross64_word_no_1, MisalignF_flw_cg_cp_misalign_cross64_word_no_1_str)
+
+# Testcase: cp_misalign_cross64_word (scratch+56 window, offset 2)
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+MisalignF_flw_cg_cp_misalign_cross64_word_no_2:
+  flw f14, 2(x9) # perform load
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, MisalignF_flw_cg_cp_misalign_cross64_word_no_2, MisalignF_flw_cg_cp_misalign_cross64_word_no_2_str)
+
+# Testcase: cp_misalign_cross64_word (scratch+56 window, offset 3)
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+MisalignF_flw_cg_cp_misalign_cross64_word_no_3:
+  flw f14, 3(x9) # perform load
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, MisalignF_flw_cg_cp_misalign_cross64_word_no_3, MisalignF_flw_cg_cp_misalign_cross64_word_no_3_str)
+
+# Testcase: cp_misalign_cross64_word (scratch+56 window, offset 4)
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+MisalignF_flw_cg_cp_misalign_cross64_word_no_4:
+  flw f14, 4(x9) # perform load
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, MisalignF_flw_cg_cp_misalign_cross64_word_no_4, MisalignF_flw_cg_cp_misalign_cross64_word_no_4_str)
+
+# Testcase: cp_misalign_cross64_word (scratch+56 window, offset 5)
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+MisalignF_flw_cg_cp_misalign_cross64_word_yes_5:
+  flw f14, 5(x9) # perform load
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, MisalignF_flw_cg_cp_misalign_cross64_word_yes_5, MisalignF_flw_cg_cp_misalign_cross64_word_yes_5_str)
+
+# Testcase: cp_misalign_cross64_word (scratch+56 window, offset 6)
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+MisalignF_flw_cg_cp_misalign_cross64_word_yes_6:
+  flw f14, 6(x9) # perform load
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, MisalignF_flw_cg_cp_misalign_cross64_word_yes_6, MisalignF_flw_cg_cp_misalign_cross64_word_yes_6_str)
+
+# Testcase: cp_misalign_cross64_word (scratch+56 window, offset 7)
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+MisalignF_flw_cg_cp_misalign_cross64_word_yes_7:
+  flw f14, 7(x9) # perform load
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, MisalignF_flw_cg_cp_misalign_cross64_word_yes_7, MisalignF_flw_cg_cp_misalign_cross64_word_yes_7_str)
+
+# Testcase: cp_misalign_cross64_word (scratch+56 window, offset 8)
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+MisalignF_flw_cg_cp_misalign_cross64_word_no_8:
+  flw f14, 8(x9) # perform load
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, MisalignF_flw_cg_cp_misalign_cross64_word_no_8, MisalignF_flw_cg_cp_misalign_cross64_word_no_8_str)
+
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+  # Place 0xFEDCBA98_76543210_FFEEDDCC_BBAA9988 into the 16-byte window at x9
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_0: x14 = 0xbbaa9988
+  sw x14, 0(x9) # store at offset 0
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_1: x14 = 0xffeeddcc
+  sw x14, 4(x9) # store at offset 4
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_2: x14 = 0x76543210
+  sw x14, 8(x9) # store at offset 8
+  RVTEST_TESTDATA_LOAD_INT(x3, x14) # load testdata_3: x14 = 0xfedcba98
+  sw x14, 12(x9) # store at offset 12
+
+# Testcase: cp_misalign_cross64_word (scratch+56 window, offset 0_inv)
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+MisalignF_flw_cg_cp_misalign_cross64_word_no_0_inv:
+  flw f14, 0(x9) # perform load
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, MisalignF_flw_cg_cp_misalign_cross64_word_no_0_inv, MisalignF_flw_cg_cp_misalign_cross64_word_no_0_inv_str)
+
+# Testcase: cp_misalign_cross64_word (scratch+56 window, offset 1_inv)
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+MisalignF_flw_cg_cp_misalign_cross64_word_no_1_inv:
+  flw f14, 1(x9) # perform load
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, MisalignF_flw_cg_cp_misalign_cross64_word_no_1_inv, MisalignF_flw_cg_cp_misalign_cross64_word_no_1_inv_str)
+
+# Testcase: cp_misalign_cross64_word (scratch+56 window, offset 2_inv)
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+MisalignF_flw_cg_cp_misalign_cross64_word_no_2_inv:
+  flw f14, 2(x9) # perform load
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, MisalignF_flw_cg_cp_misalign_cross64_word_no_2_inv, MisalignF_flw_cg_cp_misalign_cross64_word_no_2_inv_str)
+
+# Testcase: cp_misalign_cross64_word (scratch+56 window, offset 3_inv)
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+MisalignF_flw_cg_cp_misalign_cross64_word_no_3_inv:
+  flw f14, 3(x9) # perform load
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, MisalignF_flw_cg_cp_misalign_cross64_word_no_3_inv, MisalignF_flw_cg_cp_misalign_cross64_word_no_3_inv_str)
+
+# Testcase: cp_misalign_cross64_word (scratch+56 window, offset 4_inv)
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+MisalignF_flw_cg_cp_misalign_cross64_word_no_4_inv:
+  flw f14, 4(x9) # perform load
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, MisalignF_flw_cg_cp_misalign_cross64_word_no_4_inv, MisalignF_flw_cg_cp_misalign_cross64_word_no_4_inv_str)
+
+# Testcase: cp_misalign_cross64_word (scratch+56 window, offset 5_inv)
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+MisalignF_flw_cg_cp_misalign_cross64_word_yes_5_inv:
+  flw f14, 5(x9) # perform load
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, MisalignF_flw_cg_cp_misalign_cross64_word_yes_5_inv, MisalignF_flw_cg_cp_misalign_cross64_word_yes_5_inv_str)
+
+# Testcase: cp_misalign_cross64_word (scratch+56 window, offset 6_inv)
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+MisalignF_flw_cg_cp_misalign_cross64_word_yes_6_inv:
+  flw f14, 6(x9) # perform load
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, MisalignF_flw_cg_cp_misalign_cross64_word_yes_6_inv, MisalignF_flw_cg_cp_misalign_cross64_word_yes_6_inv_str)
+
+# Testcase: cp_misalign_cross64_word (scratch+56 window, offset 7_inv)
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+MisalignF_flw_cg_cp_misalign_cross64_word_yes_7_inv:
+  flw f14, 7(x9) # perform load
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, MisalignF_flw_cg_cp_misalign_cross64_word_yes_7_inv, MisalignF_flw_cg_cp_misalign_cross64_word_yes_7_inv_str)
+
+# Testcase: cp_misalign_cross64_word (scratch+56 window, offset 8_inv)
+  LA(x9, scratch) # load base address
+  addi x9, x9, 56 # scratch+56 window
+MisalignF_flw_cg_cp_misalign_cross64_word_no_8_inv:
+  flw f14, 8(x9) # perform load
+  # Check if f14 contains the expected result. Also checks fflags. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg, f4 is a floating point temp reg.
+  RVTEST_SIGUPD_F(x2, x5, x4, f4, f14, MisalignF_flw_cg_cp_misalign_cross64_word_no_8_inv, MisalignF_flw_cg_cp_misalign_cross64_word_no_8_inv_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -120,6 +367,18 @@ RVTEST_DATA_BEGIN
 .word 0x00112233
 .word 0x89abcdef
 .word 0x01234567
+.word 0xbbaa9988
+.word 0xffeeddcc
+.word 0x76543210
+.word 0xfedcba98
+.word 0x44556677
+.word 0x00112233
+.word 0x89abcdef
+.word 0x01234567
+.word 0xbbaa9988
+.word 0xffeeddcc
+.word 0x76543210
+.word 0xfedcba98
 
 // Testcase strings
 MisalignF_flw_cg_cp_misalign_0_str: .string "\"test: 1; cg: MisalignF_flw_cg; cp: cp_misalign; bin: 0\""
@@ -130,7 +389,34 @@ MisalignF_flw_cg_cp_misalign_4_str: .string "\"test: 5; cg: MisalignF_flw_cg; cp
 MisalignF_flw_cg_cp_misalign_5_str: .string "\"test: 6; cg: MisalignF_flw_cg; cp: cp_misalign; bin: 5\""
 MisalignF_flw_cg_cp_misalign_6_str: .string "\"test: 7; cg: MisalignF_flw_cg; cp: cp_misalign; bin: 6\""
 MisalignF_flw_cg_cp_misalign_7_str: .string "\"test: 8; cg: MisalignF_flw_cg; cp: cp_misalign; bin: 7\""
-MisalignF_flw_cg_cp_misalign_8_str: .string "\"test: 9; cg: MisalignF_flw_cg; cp: cp_misalign; bin: 8\""
+MisalignF_flw_cg_cp_misalign_8_wrap_str: .string "\"test: 9; cg: MisalignF_flw_cg; cp: cp_misalign; bin: 8_wrap\""
+MisalignF_flw_cg_cp_misalign_0_inv_str: .string "\"test: 10; cg: MisalignF_flw_cg; cp: cp_misalign; bin: 0_inv\""
+MisalignF_flw_cg_cp_misalign_1_inv_str: .string "\"test: 11; cg: MisalignF_flw_cg; cp: cp_misalign; bin: 1_inv\""
+MisalignF_flw_cg_cp_misalign_2_inv_str: .string "\"test: 12; cg: MisalignF_flw_cg; cp: cp_misalign; bin: 2_inv\""
+MisalignF_flw_cg_cp_misalign_3_inv_str: .string "\"test: 13; cg: MisalignF_flw_cg; cp: cp_misalign; bin: 3_inv\""
+MisalignF_flw_cg_cp_misalign_4_inv_str: .string "\"test: 14; cg: MisalignF_flw_cg; cp: cp_misalign; bin: 4_inv\""
+MisalignF_flw_cg_cp_misalign_5_inv_str: .string "\"test: 15; cg: MisalignF_flw_cg; cp: cp_misalign; bin: 5_inv\""
+MisalignF_flw_cg_cp_misalign_6_inv_str: .string "\"test: 16; cg: MisalignF_flw_cg; cp: cp_misalign; bin: 6_inv\""
+MisalignF_flw_cg_cp_misalign_7_inv_str: .string "\"test: 17; cg: MisalignF_flw_cg; cp: cp_misalign; bin: 7_inv\""
+MisalignF_flw_cg_cp_misalign_8_wrap_inv_str: .string "\"test: 18; cg: MisalignF_flw_cg; cp: cp_misalign; bin: 8_wrap_inv\""
+MisalignF_flw_cg_cp_misalign_cross64_word_no_0_str: .string "\"test: 19; cg: MisalignF_flw_cg; cp: cp_misalign_cross64_word; bin: no_0\""
+MisalignF_flw_cg_cp_misalign_cross64_word_no_1_str: .string "\"test: 20; cg: MisalignF_flw_cg; cp: cp_misalign_cross64_word; bin: no_1\""
+MisalignF_flw_cg_cp_misalign_cross64_word_no_2_str: .string "\"test: 21; cg: MisalignF_flw_cg; cp: cp_misalign_cross64_word; bin: no_2\""
+MisalignF_flw_cg_cp_misalign_cross64_word_no_3_str: .string "\"test: 22; cg: MisalignF_flw_cg; cp: cp_misalign_cross64_word; bin: no_3\""
+MisalignF_flw_cg_cp_misalign_cross64_word_no_4_str: .string "\"test: 23; cg: MisalignF_flw_cg; cp: cp_misalign_cross64_word; bin: no_4\""
+MisalignF_flw_cg_cp_misalign_cross64_word_yes_5_str: .string "\"test: 24; cg: MisalignF_flw_cg; cp: cp_misalign_cross64_word; bin: yes_5\""
+MisalignF_flw_cg_cp_misalign_cross64_word_yes_6_str: .string "\"test: 25; cg: MisalignF_flw_cg; cp: cp_misalign_cross64_word; bin: yes_6\""
+MisalignF_flw_cg_cp_misalign_cross64_word_yes_7_str: .string "\"test: 26; cg: MisalignF_flw_cg; cp: cp_misalign_cross64_word; bin: yes_7\""
+MisalignF_flw_cg_cp_misalign_cross64_word_no_8_str: .string "\"test: 27; cg: MisalignF_flw_cg; cp: cp_misalign_cross64_word; bin: no_8\""
+MisalignF_flw_cg_cp_misalign_cross64_word_no_0_inv_str: .string "\"test: 28; cg: MisalignF_flw_cg; cp: cp_misalign_cross64_word; bin: no_0_inv\""
+MisalignF_flw_cg_cp_misalign_cross64_word_no_1_inv_str: .string "\"test: 29; cg: MisalignF_flw_cg; cp: cp_misalign_cross64_word; bin: no_1_inv\""
+MisalignF_flw_cg_cp_misalign_cross64_word_no_2_inv_str: .string "\"test: 30; cg: MisalignF_flw_cg; cp: cp_misalign_cross64_word; bin: no_2_inv\""
+MisalignF_flw_cg_cp_misalign_cross64_word_no_3_inv_str: .string "\"test: 31; cg: MisalignF_flw_cg; cp: cp_misalign_cross64_word; bin: no_3_inv\""
+MisalignF_flw_cg_cp_misalign_cross64_word_no_4_inv_str: .string "\"test: 32; cg: MisalignF_flw_cg; cp: cp_misalign_cross64_word; bin: no_4_inv\""
+MisalignF_flw_cg_cp_misalign_cross64_word_yes_5_inv_str: .string "\"test: 33; cg: MisalignF_flw_cg; cp: cp_misalign_cross64_word; bin: yes_5_inv\""
+MisalignF_flw_cg_cp_misalign_cross64_word_yes_6_inv_str: .string "\"test: 34; cg: MisalignF_flw_cg; cp: cp_misalign_cross64_word; bin: yes_6_inv\""
+MisalignF_flw_cg_cp_misalign_cross64_word_yes_7_inv_str: .string "\"test: 35; cg: MisalignF_flw_cg; cp: cp_misalign_cross64_word; bin: yes_7_inv\""
+MisalignF_flw_cg_cp_misalign_cross64_word_no_8_inv_str: .string "\"test: 36; cg: MisalignF_flw_cg; cp: cp_misalign_cross64_word; bin: no_8_inv\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

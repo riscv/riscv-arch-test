@@ -33,29 +33,40 @@ normative_rule_definitions:
   # NTL.S1 is encoded as ADD x0, x0, x4.
   - name: ntl-s1_enc
     coverpoint: ["Zihintntl_ntl_s1_cg/cp_asm_count"]
+  # If the ext:c[] or ext:zca[] extension is provided, compressed variants of these HINTs
+  # are also provided: insn:c.ntl.p1[] is encoded as insn:c.add[x0,x2]; insn:c.ntl.pall[]
+  # is encoded as insn:c.add[x0,x3]; insn:c.ntl.s1[] is encoded as insn:c.add[x0,x4]; and
+  # insn:c.ntl.all[] is encoded as insn:c.add[x0,x5].
+  - name: ntl_compressed_variants
+    coverpoint:
+      [
+        "{ZihintntlZca_c_ntl_p1_cg, ZihintntlZca_c_ntl_pall_cg, ZihintntlZca_c_ntl_s1_cg, ZihintntlZca_c_ntl_all_cg}/cp_asm_count",
+      ]
 
   # The NTL instructions do not change architectural state, nor do they alter the
   # architecturally visible effects of the target instruction.
   - name: ntl_target_definition
-    coverpoint: ["Untested - hint"]
+    # Each NTL retires without trapping or writing a register; no test yet applies an NTL
+    # to a load or store and checks the target's result
+    coverpoint:
+      [
+        "{Zihintntl_ntl_p1_cg, Zihintntl_ntl_pall_cg, Zihintntl_ntl_s1_cg, Zihintntl_ntl_all_cg}/cp_asm_count",
+      ]
 
   # The NTL instructions affect all memory-access instructions except the
   # cache-management instructions in the Zicbom extension.
   - name: ntl_range
-    coverpoint: ["not tested - no architectural observable effects"]
+    coverpoint: ["Not tested: no architecturally visible effect"]
 
   # When an NTL instruction is applied to a prefetch hint in the Zicbop extension,
   # it indicates that a cache line should be prefetched into a cache that is outer
   # from the level specified by the NTL.
   - name: ntl_Zicbop_prefetch_outer
-    coverpoint: ["not tested - no architectural observable effects"]
+    coverpoint: ["Not tested: no architecturally visible effect"]
 
+  # In the event that a trap is taken on the target instruction, implementations are
+  # discouraged from applying the NTL to the first instruction in the trap handler.
+  # Instead, implementations are recommended to ignore the HINT in this case.
   - name: ntl_trap_behavior
-    coverpoint: ["TODO"]
-
-  # Since the NTL instructions are encoded as ADDs, they can be used within LR/SC
-  # loops without voiding the forward-progress guarantee. But, since using other
-  # loads and stores within an LR/SC loop does void the forward-progress guarantee,
-  # the only reason to use an NTL within such a loop is to modify the LR or the SC.
-  - name: ntl_lr_sc_exception
-    coverpoint: ["TODO"]
+    coverpoint:
+      ["Not tested: recommendation with no architecturally visible effect"]

@@ -10,4 +10,4 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ZicntrH_counters_cg = new();         ZicntrH_counters_cg.set_inst_name("obj_ZicntrH");
+    ZicntrH_cg = new();         ZicntrH_cg.set_inst_name("obj_ZicntrH");

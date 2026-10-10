@@ -1,8 +1,7 @@
 # jcarlin@hmc.edu 2 July 2026
 # SPDX-License-Identifier: Apache-2.0
 #
-# Shared job setup: mise (Ruby + uv), uv package cache, and optionally the
-# UDB gem cache for jobs that run act/UDB (elfs builds, CI discovery).
+# Shared job setup: mise (Ruby + uv), uv package cache, and the UDB gem cache.
 
 name: Set up tools
 description: Set up mise and cache CI tools, uv packages, and UDB gems
@@ -15,7 +14,7 @@ inputs:
   sail-version:
     description: Sail RISC-V version
     required: false
-    default: "0.14.1"
+    default: "0.15"
   riscv-toolchain-version:
     description: RISC-V GCC toolchain version
     required: false
@@ -24,16 +23,12 @@ inputs:
     description: LLVM version
     required: false
     default: "23"
-  udb-gems:
-    description: Cache UDB gems and configure Bundler's install path (for jobs that run UDB via act)
-    required: false
-    default: "false"
 
 runs:
   using: composite
   steps:
     - name: Set up mise
-      uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
+      uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5
 
     - name: Cache prek hook environments
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
@@ -170,7 +165,6 @@ runs:
     # Install UDB gems into a dedicated directory so they can be cached
     # independently of the mise-managed Ruby installation.
     - name: Configure Bundler path
-      if: inputs.udb-gems == 'true'
       shell: bash
       run: bundle config set --global path "${GITHUB_WORKSPACE}/.bundle-gems"
 
@@ -178,7 +172,6 @@ runs:
     # at install time; a restored gem cache skips `bundle install`, so the
     # binaries must be cached along with the gems.
     - name: Cache UDB gems
-      if: inputs.udb-gems == 'true'
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
       with:
         path: |
@@ -188,4 +181,15 @@ runs:
 
     - name: Install project dependencies
       shell: bash
-      run: mise deps
+      run: |
+        for attempt in 1 2 3; do
+          if mise deps; then
+            exit 0
+          fi
+          if [[ "${attempt}" -eq 3 ]]; then
+            exit 1
+          fi
+          delay=$((attempt * 10))
+          echo "mise deps failed; retrying in ${delay}s (attempt $((attempt + 1))/3)..."
+          sleep "${delay}"
+        done

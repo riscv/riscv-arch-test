@@ -31,7 +31,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_cfg_A_all
+// cp_cfg_A_all_even and cp_cfg_A_all_odd
 //   Write A = NAPOT, OFF into every byte of every pmpcfg CSR and read it back.
 /////////////////////////////////
 
@@ -55,115 +55,115 @@ RVTEST_BEGIN
 #else
   LI(x4, ((PMP_NAPOT&0xFF) << PMP0_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP1_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP2_CFG_SHIFT)|((PMP_NAPOT&0xFF) << PMP3_CFG_SHIFT))
 #endif
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg0:
+PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg0:
   # Write x4 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg0, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg0_str)
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg2:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x4, PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg0, PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg0_str)
+PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg2:
   # Write x4 to pmpcfg2, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg2, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg2, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg2_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg2, x4, PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg2, PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg2_str)
 #if __riscv_xlen == 32
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg1:
+PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg1:
   # Write x4 to pmpcfg1, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg1, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg1, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg1_str)
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg3:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg1, x4, PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg1, PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg1_str)
+PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg3:
   # Write x4 to pmpcfg3, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg3, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg3, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg3_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg3, x4, PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg3, PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg3_str)
 #endif
 #if UDB_NUM_PMP_ENTRIES == 64
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg4:
+PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg4:
   # Write x4 to pmpcfg4, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg4_str)
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg6:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x4, PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg4, PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg4_str)
+PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg6:
   # Write x4 to pmpcfg6, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg6, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg6, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg6_str)
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg8:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg6, x4, PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg6, PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg6_str)
+PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg8:
   # Write x4 to pmpcfg8, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg8, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg8, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg8_str)
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg10:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg8, x4, PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg8, PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg8_str)
+PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg10:
   # Write x4 to pmpcfg10, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg10, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg10, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg10_str)
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg12:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg10, x4, PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg10, PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg10_str)
+PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg12:
   # Write x4 to pmpcfg12, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg12, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg12, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg12_str)
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg14:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg12, x4, PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg12, PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg12_str)
+PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg14:
   # Write x4 to pmpcfg14, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg14, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg14, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg14_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg14, x4, PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg14, PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg14_str)
 #endif
 #if UDB_NUM_PMP_ENTRIES == 64 && __riscv_xlen == 32
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg5:
+PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg5:
   # Write x4 to pmpcfg5, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg5, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg5, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg5_str)
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg7:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg5, x4, PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg5, PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg5_str)
+PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg7:
   # Write x4 to pmpcfg7, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg7, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg7, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg7_str)
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg9:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg7, x4, PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg7, PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg7_str)
+PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg9:
   # Write x4 to pmpcfg9, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg9, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg9, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg9_str)
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg11:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg9, x4, PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg9, PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg9_str)
+PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg11:
   # Write x4 to pmpcfg11, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg11, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg11, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg11_str)
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg13:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg11, x4, PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg11, PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg11_str)
+PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg13:
   # Write x4 to pmpcfg13, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg13, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg13, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg13_str)
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg15:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg13, x4, PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg13, PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg13_str)
+PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg15:
   # Write x4 to pmpcfg15, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg15, x4, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg15, PMPSm_cp_cfg_A_all_NAPOT_pmpcfg15_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg15, x4, PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg15, PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg15_str)
 #endif
 
 // PMP configuration: write A = OFF to every byte of every pmpcfg CSR
-PMPSm_cp_cfg_A_all_OFF_pmpcfg0:
+PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg0:
   # Write x0 to pmpcfg0, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg0, PMPSm_cp_cfg_A_all_OFF_pmpcfg0_str)
-PMPSm_cp_cfg_A_all_OFF_pmpcfg2:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg0, x0, PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg0, PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg0_str)
+PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg2:
   # Write x0 to pmpcfg2, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg2, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg2, PMPSm_cp_cfg_A_all_OFF_pmpcfg2_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg2, x0, PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg2, PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg2_str)
 #if __riscv_xlen == 32
-PMPSm_cp_cfg_A_all_OFF_pmpcfg1:
+PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg1:
   # Write x0 to pmpcfg1, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg1, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg1, PMPSm_cp_cfg_A_all_OFF_pmpcfg1_str)
-PMPSm_cp_cfg_A_all_OFF_pmpcfg3:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg1, x0, PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg1, PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg1_str)
+PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg3:
   # Write x0 to pmpcfg3, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg3, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg3, PMPSm_cp_cfg_A_all_OFF_pmpcfg3_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg3, x0, PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg3, PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg3_str)
 #endif
 #if UDB_NUM_PMP_ENTRIES == 64
-PMPSm_cp_cfg_A_all_OFF_pmpcfg4:
+PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg4:
   # Write x0 to pmpcfg4, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg4, PMPSm_cp_cfg_A_all_OFF_pmpcfg4_str)
-PMPSm_cp_cfg_A_all_OFF_pmpcfg6:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg4, x0, PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg4, PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg4_str)
+PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg6:
   # Write x0 to pmpcfg6, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg6, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg6, PMPSm_cp_cfg_A_all_OFF_pmpcfg6_str)
-PMPSm_cp_cfg_A_all_OFF_pmpcfg8:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg6, x0, PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg6, PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg6_str)
+PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg8:
   # Write x0 to pmpcfg8, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg8, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg8, PMPSm_cp_cfg_A_all_OFF_pmpcfg8_str)
-PMPSm_cp_cfg_A_all_OFF_pmpcfg10:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg8, x0, PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg8, PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg8_str)
+PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg10:
   # Write x0 to pmpcfg10, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg10, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg10, PMPSm_cp_cfg_A_all_OFF_pmpcfg10_str)
-PMPSm_cp_cfg_A_all_OFF_pmpcfg12:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg10, x0, PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg10, PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg10_str)
+PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg12:
   # Write x0 to pmpcfg12, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg12, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg12, PMPSm_cp_cfg_A_all_OFF_pmpcfg12_str)
-PMPSm_cp_cfg_A_all_OFF_pmpcfg14:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg12, x0, PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg12, PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg12_str)
+PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg14:
   # Write x0 to pmpcfg14, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg14, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg14, PMPSm_cp_cfg_A_all_OFF_pmpcfg14_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg14, x0, PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg14, PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg14_str)
 #endif
 #if UDB_NUM_PMP_ENTRIES == 64 && __riscv_xlen == 32
-PMPSm_cp_cfg_A_all_OFF_pmpcfg5:
+PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg5:
   # Write x0 to pmpcfg5, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg5, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg5, PMPSm_cp_cfg_A_all_OFF_pmpcfg5_str)
-PMPSm_cp_cfg_A_all_OFF_pmpcfg7:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg5, x0, PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg5, PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg5_str)
+PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg7:
   # Write x0 to pmpcfg7, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg7, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg7, PMPSm_cp_cfg_A_all_OFF_pmpcfg7_str)
-PMPSm_cp_cfg_A_all_OFF_pmpcfg9:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg7, x0, PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg7, PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg7_str)
+PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg9:
   # Write x0 to pmpcfg9, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg9, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg9, PMPSm_cp_cfg_A_all_OFF_pmpcfg9_str)
-PMPSm_cp_cfg_A_all_OFF_pmpcfg11:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg9, x0, PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg9, PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg9_str)
+PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg11:
   # Write x0 to pmpcfg11, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg11, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg11, PMPSm_cp_cfg_A_all_OFF_pmpcfg11_str)
-PMPSm_cp_cfg_A_all_OFF_pmpcfg13:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg11, x0, PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg11, PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg11_str)
+PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg13:
   # Write x0 to pmpcfg13, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg13, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg13, PMPSm_cp_cfg_A_all_OFF_pmpcfg13_str)
-PMPSm_cp_cfg_A_all_OFF_pmpcfg15:
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg13, x0, PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg13, PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg13_str)
+PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg15:
   # Write x0 to pmpcfg15, read back and check against expected.
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfg15, x0, PMPSm_cp_cfg_A_all_OFF_pmpcfg15, PMPSm_cp_cfg_A_all_OFF_pmpcfg15_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfg15, x0, PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg15, PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg15_str)
 #endif
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -176,38 +176,38 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg0_str: .string "\"test: 22; cg: PMPSm; cp: cp_cfg_A_all; bin: NAPOT_pmpcfg0\""
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg2_str: .string "\"test: 23; cg: PMPSm; cp: cp_cfg_A_all; bin: NAPOT_pmpcfg2\""
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg1_str: .string "\"test: 24; cg: PMPSm; cp: cp_cfg_A_all; bin: NAPOT_pmpcfg1\""
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg3_str: .string "\"test: 25; cg: PMPSm; cp: cp_cfg_A_all; bin: NAPOT_pmpcfg3\""
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg4_str: .string "\"test: 26; cg: PMPSm; cp: cp_cfg_A_all; bin: NAPOT_pmpcfg4\""
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg6_str: .string "\"test: 27; cg: PMPSm; cp: cp_cfg_A_all; bin: NAPOT_pmpcfg6\""
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg8_str: .string "\"test: 28; cg: PMPSm; cp: cp_cfg_A_all; bin: NAPOT_pmpcfg8\""
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg10_str: .string "\"test: 29; cg: PMPSm; cp: cp_cfg_A_all; bin: NAPOT_pmpcfg10\""
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg12_str: .string "\"test: 30; cg: PMPSm; cp: cp_cfg_A_all; bin: NAPOT_pmpcfg12\""
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg14_str: .string "\"test: 31; cg: PMPSm; cp: cp_cfg_A_all; bin: NAPOT_pmpcfg14\""
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg5_str: .string "\"test: 32; cg: PMPSm; cp: cp_cfg_A_all; bin: NAPOT_pmpcfg5\""
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg7_str: .string "\"test: 33; cg: PMPSm; cp: cp_cfg_A_all; bin: NAPOT_pmpcfg7\""
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg9_str: .string "\"test: 34; cg: PMPSm; cp: cp_cfg_A_all; bin: NAPOT_pmpcfg9\""
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg11_str: .string "\"test: 35; cg: PMPSm; cp: cp_cfg_A_all; bin: NAPOT_pmpcfg11\""
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg13_str: .string "\"test: 36; cg: PMPSm; cp: cp_cfg_A_all; bin: NAPOT_pmpcfg13\""
-PMPSm_cp_cfg_A_all_NAPOT_pmpcfg15_str: .string "\"test: 37; cg: PMPSm; cp: cp_cfg_A_all; bin: NAPOT_pmpcfg15\""
-PMPSm_cp_cfg_A_all_OFF_pmpcfg0_str: .string "\"test: 38; cg: PMPSm; cp: cp_cfg_A_all; bin: OFF_pmpcfg0\""
-PMPSm_cp_cfg_A_all_OFF_pmpcfg2_str: .string "\"test: 39; cg: PMPSm; cp: cp_cfg_A_all; bin: OFF_pmpcfg2\""
-PMPSm_cp_cfg_A_all_OFF_pmpcfg1_str: .string "\"test: 40; cg: PMPSm; cp: cp_cfg_A_all; bin: OFF_pmpcfg1\""
-PMPSm_cp_cfg_A_all_OFF_pmpcfg3_str: .string "\"test: 41; cg: PMPSm; cp: cp_cfg_A_all; bin: OFF_pmpcfg3\""
-PMPSm_cp_cfg_A_all_OFF_pmpcfg4_str: .string "\"test: 42; cg: PMPSm; cp: cp_cfg_A_all; bin: OFF_pmpcfg4\""
-PMPSm_cp_cfg_A_all_OFF_pmpcfg6_str: .string "\"test: 43; cg: PMPSm; cp: cp_cfg_A_all; bin: OFF_pmpcfg6\""
-PMPSm_cp_cfg_A_all_OFF_pmpcfg8_str: .string "\"test: 44; cg: PMPSm; cp: cp_cfg_A_all; bin: OFF_pmpcfg8\""
-PMPSm_cp_cfg_A_all_OFF_pmpcfg10_str: .string "\"test: 45; cg: PMPSm; cp: cp_cfg_A_all; bin: OFF_pmpcfg10\""
-PMPSm_cp_cfg_A_all_OFF_pmpcfg12_str: .string "\"test: 46; cg: PMPSm; cp: cp_cfg_A_all; bin: OFF_pmpcfg12\""
-PMPSm_cp_cfg_A_all_OFF_pmpcfg14_str: .string "\"test: 47; cg: PMPSm; cp: cp_cfg_A_all; bin: OFF_pmpcfg14\""
-PMPSm_cp_cfg_A_all_OFF_pmpcfg5_str: .string "\"test: 48; cg: PMPSm; cp: cp_cfg_A_all; bin: OFF_pmpcfg5\""
-PMPSm_cp_cfg_A_all_OFF_pmpcfg7_str: .string "\"test: 49; cg: PMPSm; cp: cp_cfg_A_all; bin: OFF_pmpcfg7\""
-PMPSm_cp_cfg_A_all_OFF_pmpcfg9_str: .string "\"test: 50; cg: PMPSm; cp: cp_cfg_A_all; bin: OFF_pmpcfg9\""
-PMPSm_cp_cfg_A_all_OFF_pmpcfg11_str: .string "\"test: 51; cg: PMPSm; cp: cp_cfg_A_all; bin: OFF_pmpcfg11\""
-PMPSm_cp_cfg_A_all_OFF_pmpcfg13_str: .string "\"test: 52; cg: PMPSm; cp: cp_cfg_A_all; bin: OFF_pmpcfg13\""
-PMPSm_cp_cfg_A_all_OFF_pmpcfg15_str: .string "\"test: 53; cg: PMPSm; cp: cp_cfg_A_all; bin: OFF_pmpcfg15\""
+PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg0_str: .string "\"test: 22; cg: PMPSm_cg; cp: cp_cfg_A_all_even; bin: NAPOT_pmpcfg0\""
+PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg2_str: .string "\"test: 23; cg: PMPSm_cg; cp: cp_cfg_A_all_even; bin: NAPOT_pmpcfg2\""
+PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg1_str: .string "\"test: 24; cg: PMPSm_cg; cp: cp_cfg_A_all_odd; bin: NAPOT_pmpcfg1\""
+PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg3_str: .string "\"test: 25; cg: PMPSm_cg; cp: cp_cfg_A_all_odd; bin: NAPOT_pmpcfg3\""
+PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg4_str: .string "\"test: 26; cg: PMPSm_cg; cp: cp_cfg_A_all_even; bin: NAPOT_pmpcfg4\""
+PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg6_str: .string "\"test: 27; cg: PMPSm_cg; cp: cp_cfg_A_all_even; bin: NAPOT_pmpcfg6\""
+PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg8_str: .string "\"test: 28; cg: PMPSm_cg; cp: cp_cfg_A_all_even; bin: NAPOT_pmpcfg8\""
+PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg10_str: .string "\"test: 29; cg: PMPSm_cg; cp: cp_cfg_A_all_even; bin: NAPOT_pmpcfg10\""
+PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg12_str: .string "\"test: 30; cg: PMPSm_cg; cp: cp_cfg_A_all_even; bin: NAPOT_pmpcfg12\""
+PMPSm_cg_cp_cfg_A_all_even_NAPOT_pmpcfg14_str: .string "\"test: 31; cg: PMPSm_cg; cp: cp_cfg_A_all_even; bin: NAPOT_pmpcfg14\""
+PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg5_str: .string "\"test: 32; cg: PMPSm_cg; cp: cp_cfg_A_all_odd; bin: NAPOT_pmpcfg5\""
+PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg7_str: .string "\"test: 33; cg: PMPSm_cg; cp: cp_cfg_A_all_odd; bin: NAPOT_pmpcfg7\""
+PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg9_str: .string "\"test: 34; cg: PMPSm_cg; cp: cp_cfg_A_all_odd; bin: NAPOT_pmpcfg9\""
+PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg11_str: .string "\"test: 35; cg: PMPSm_cg; cp: cp_cfg_A_all_odd; bin: NAPOT_pmpcfg11\""
+PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg13_str: .string "\"test: 36; cg: PMPSm_cg; cp: cp_cfg_A_all_odd; bin: NAPOT_pmpcfg13\""
+PMPSm_cg_cp_cfg_A_all_odd_NAPOT_pmpcfg15_str: .string "\"test: 37; cg: PMPSm_cg; cp: cp_cfg_A_all_odd; bin: NAPOT_pmpcfg15\""
+PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg0_str: .string "\"test: 38; cg: PMPSm_cg; cp: cp_cfg_A_all_even; bin: OFF_pmpcfg0\""
+PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg2_str: .string "\"test: 39; cg: PMPSm_cg; cp: cp_cfg_A_all_even; bin: OFF_pmpcfg2\""
+PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg1_str: .string "\"test: 40; cg: PMPSm_cg; cp: cp_cfg_A_all_odd; bin: OFF_pmpcfg1\""
+PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg3_str: .string "\"test: 41; cg: PMPSm_cg; cp: cp_cfg_A_all_odd; bin: OFF_pmpcfg3\""
+PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg4_str: .string "\"test: 42; cg: PMPSm_cg; cp: cp_cfg_A_all_even; bin: OFF_pmpcfg4\""
+PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg6_str: .string "\"test: 43; cg: PMPSm_cg; cp: cp_cfg_A_all_even; bin: OFF_pmpcfg6\""
+PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg8_str: .string "\"test: 44; cg: PMPSm_cg; cp: cp_cfg_A_all_even; bin: OFF_pmpcfg8\""
+PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg10_str: .string "\"test: 45; cg: PMPSm_cg; cp: cp_cfg_A_all_even; bin: OFF_pmpcfg10\""
+PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg12_str: .string "\"test: 46; cg: PMPSm_cg; cp: cp_cfg_A_all_even; bin: OFF_pmpcfg12\""
+PMPSm_cg_cp_cfg_A_all_even_OFF_pmpcfg14_str: .string "\"test: 47; cg: PMPSm_cg; cp: cp_cfg_A_all_even; bin: OFF_pmpcfg14\""
+PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg5_str: .string "\"test: 48; cg: PMPSm_cg; cp: cp_cfg_A_all_odd; bin: OFF_pmpcfg5\""
+PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg7_str: .string "\"test: 49; cg: PMPSm_cg; cp: cp_cfg_A_all_odd; bin: OFF_pmpcfg7\""
+PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg9_str: .string "\"test: 50; cg: PMPSm_cg; cp: cp_cfg_A_all_odd; bin: OFF_pmpcfg9\""
+PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg11_str: .string "\"test: 51; cg: PMPSm_cg; cp: cp_cfg_A_all_odd; bin: OFF_pmpcfg11\""
+PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg13_str: .string "\"test: 52; cg: PMPSm_cg; cp: cp_cfg_A_all_odd; bin: OFF_pmpcfg13\""
+PMPSm_cg_cp_cfg_A_all_odd_OFF_pmpcfg15_str: .string "\"test: 53; cg: PMPSm_cg; cp: cp_cfg_A_all_odd; bin: OFF_pmpcfg15\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

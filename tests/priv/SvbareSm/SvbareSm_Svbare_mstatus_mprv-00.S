@@ -30,53 +30,53 @@ RVTEST_BEGIN
 main:
   LI(a2, 0x800)
   csrw satp, x0
-SvbareSm_cg_cp_satp_satp_bare:
+SvbareSm_cg_satp_bare_satp_bare:
   # Read satp into x14 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(satp, x14, SvbareSm_cg_cp_satp_satp_bare, SvbareSm_cg_cp_satp_satp_bare_str)
+  RVTEST_SIGUPD_CSR_READ(satp, x14, SvbareSm_cg_satp_bare_satp_bare, SvbareSm_cg_satp_bare_satp_bare_str)
   LI(t0, MSTATUS_MPRV)
   csrs mstatus, t0
   LI(t0, 0x1800)
   csrc mstatus, t0
   LI(t0, 0x800)
   csrs mstatus, t0
-SvbareSm_cg_cp_mprv_test1_mstatus:
+SvbareSm_cg_mprv_mstatus_test1_mstatus:
   # Read mstatus into x14 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(mstatus, x14, SvbareSm_cg_cp_mprv_test1_mstatus, SvbareSm_cg_cp_mprv_test1_mstatus_str)
+  RVTEST_SIGUPD_CSR_READ(mstatus, x14, SvbareSm_cg_mprv_mstatus_test1_mstatus, SvbareSm_cg_mprv_mstatus_test1_mstatus_str)
   LA(a5, rvtest_data_1)
   addi a2, a2, 16
-SvbareSm_cg_cp_bare_access_test1_store:
+SvbareSm_cg_cp_satp_bare_mprv_store_test1_store:
   sw a2, 20(a5)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvbareSm_cg_cp_bare_access_test1_store, SvbareSm_cg_cp_bare_access_test1_store_str)
-SvbareSm_cg_cp_bare_access_test1_load:
+  RVTEST_SIGUPD(x2, x5, x4, x12, SvbareSm_cg_cp_satp_bare_mprv_store_test1_store, SvbareSm_cg_cp_satp_bare_mprv_store_test1_store_str)
+SvbareSm_cg_cp_satp_bare_mprv_load_test1_load:
   lw a3, 20(a5)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvbareSm_cg_cp_bare_access_test1_load, SvbareSm_cg_cp_bare_access_test1_load_str)
-SvbareSm_cg_cp_bare_access_test1_exec:
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvbareSm_cg_cp_satp_bare_mprv_load_test1_load, SvbareSm_cg_cp_satp_bare_mprv_load_test1_load_str)
+SvbareSm_cg_cp_satp_bare_mprv_exec_test1_exec:
   jalr ra, a5, 0
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvbareSm_cg_cp_bare_access_test1_exec, SvbareSm_cg_cp_bare_access_test1_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, SvbareSm_cg_cp_satp_bare_mprv_exec_test1_exec, SvbareSm_cg_cp_satp_bare_mprv_exec_test1_exec_str)
   LI(t0, MSTATUS_MPRV)
   csrs mstatus, t0
   LI(t0, 0x1800)
   csrc mstatus, t0
-SvbareSm_cg_cp_mprv_test2_mstatus:
+SvbareSm_cg_mprv_mstatus_test2_mstatus:
   # Read mstatus into x14 and check against expected.
-  RVTEST_SIGUPD_CSR_READ(mstatus, x14, SvbareSm_cg_cp_mprv_test2_mstatus, SvbareSm_cg_cp_mprv_test2_mstatus_str)
+  RVTEST_SIGUPD_CSR_READ(mstatus, x14, SvbareSm_cg_mprv_mstatus_test2_mstatus, SvbareSm_cg_mprv_mstatus_test2_mstatus_str)
   LA(a5, rvtest_data_1)
   addi a2, a2, 16
-SvbareSm_cg_cp_bare_access_test2_store:
+SvbareSm_cg_cp_satp_bare_mprv_store_test2_store:
   sw a2, 20(a5)
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvbareSm_cg_cp_bare_access_test2_store, SvbareSm_cg_cp_bare_access_test2_store_str)
-SvbareSm_cg_cp_bare_access_test2_load:
+  RVTEST_SIGUPD(x2, x5, x4, x12, SvbareSm_cg_cp_satp_bare_mprv_store_test2_store, SvbareSm_cg_cp_satp_bare_mprv_store_test2_store_str)
+SvbareSm_cg_cp_satp_bare_mprv_load_test2_load:
   lw a3, 20(a5)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvbareSm_cg_cp_bare_access_test2_load, SvbareSm_cg_cp_bare_access_test2_load_str)
-SvbareSm_cg_cp_bare_access_test2_exec:
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvbareSm_cg_cp_satp_bare_mprv_load_test2_load, SvbareSm_cg_cp_satp_bare_mprv_load_test2_load_str)
+SvbareSm_cg_cp_satp_bare_mprv_exec_test2_exec:
   jalr ra, a5, 0
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvbareSm_cg_cp_bare_access_test2_exec, SvbareSm_cg_cp_bare_access_test2_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, SvbareSm_cg_cp_satp_bare_mprv_exec_test2_exec, SvbareSm_cg_cp_satp_bare_mprv_exec_test2_exec_str)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -98,15 +98,15 @@ rvtest_data_1:
   jr ra
 
 // Testcase strings
-SvbareSm_cg_cp_satp_satp_bare_str: .string "\"test: 1; cg: SvbareSm_cg; cp: cp_satp; bin: satp_bare\""
-SvbareSm_cg_cp_mprv_test1_mstatus_str: .string "\"test: 2; cg: SvbareSm_cg; cp: cp_mprv; bin: test1_mstatus\""
-SvbareSm_cg_cp_bare_access_test1_store_str: .string "\"test: 3; cg: SvbareSm_cg; cp: cp_bare_access; bin: test1_store\""
-SvbareSm_cg_cp_bare_access_test1_load_str: .string "\"test: 4; cg: SvbareSm_cg; cp: cp_bare_access; bin: test1_load\""
-SvbareSm_cg_cp_bare_access_test1_exec_str: .string "\"test: 5; cg: SvbareSm_cg; cp: cp_bare_access; bin: test1_exec\""
-SvbareSm_cg_cp_mprv_test2_mstatus_str: .string "\"test: 6; cg: SvbareSm_cg; cp: cp_mprv; bin: test2_mstatus\""
-SvbareSm_cg_cp_bare_access_test2_store_str: .string "\"test: 7; cg: SvbareSm_cg; cp: cp_bare_access; bin: test2_store\""
-SvbareSm_cg_cp_bare_access_test2_load_str: .string "\"test: 8; cg: SvbareSm_cg; cp: cp_bare_access; bin: test2_load\""
-SvbareSm_cg_cp_bare_access_test2_exec_str: .string "\"test: 9; cg: SvbareSm_cg; cp: cp_bare_access; bin: test2_exec\""
+SvbareSm_cg_satp_bare_satp_bare_str: .string "\"test: 1; cg: SvbareSm_cg; cp: satp_bare; bin: satp_bare\""
+SvbareSm_cg_mprv_mstatus_test1_mstatus_str: .string "\"test: 2; cg: SvbareSm_cg; cp: mprv_mstatus; bin: test1_mstatus\""
+SvbareSm_cg_cp_satp_bare_mprv_store_test1_store_str: .string "\"test: 3; cg: SvbareSm_cg; cp: cp_satp_bare_mprv_store; bin: test1_store\""
+SvbareSm_cg_cp_satp_bare_mprv_load_test1_load_str: .string "\"test: 4; cg: SvbareSm_cg; cp: cp_satp_bare_mprv_load; bin: test1_load\""
+SvbareSm_cg_cp_satp_bare_mprv_exec_test1_exec_str: .string "\"test: 5; cg: SvbareSm_cg; cp: cp_satp_bare_mprv_exec; bin: test1_exec\""
+SvbareSm_cg_mprv_mstatus_test2_mstatus_str: .string "\"test: 6; cg: SvbareSm_cg; cp: mprv_mstatus; bin: test2_mstatus\""
+SvbareSm_cg_cp_satp_bare_mprv_store_test2_store_str: .string "\"test: 7; cg: SvbareSm_cg; cp: cp_satp_bare_mprv_store; bin: test2_store\""
+SvbareSm_cg_cp_satp_bare_mprv_load_test2_load_str: .string "\"test: 8; cg: SvbareSm_cg; cp: cp_satp_bare_mprv_load; bin: test2_load\""
+SvbareSm_cg_cp_satp_bare_mprv_exec_test2_exec_str: .string "\"test: 9; cg: SvbareSm_cg; cp: cp_satp_bare_mprv_exec; bin: test2_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -24,7 +24,7 @@ covergroup SvinvalSm_cg with function sample(ins_t ins);
         bins zero = {0};
         bins set  = {1};
     }
-    cr_svinival : cross cp_instr, priv_mode_m_s_u, cp_tvm {
+    cp_svinval : cross cp_instr, priv_mode_m_s_u, cp_tvm {
         // each instruction executed in every mode with mstatus.TVM clear and set
     }
  endgroup

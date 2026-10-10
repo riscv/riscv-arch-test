@@ -37,48 +37,48 @@ RVTEST_BEGIN
 //   the readback, skipping the reserved R=0/W=1 encoding and the A=TOR and A=NA4 bits.
 /////////////////////////////////
 
-PMPSm_cp_pmpcfg_walk_bit56:
+PMPSm_cg_cp_pmpcfg_walk_bit56:
 // Write 1 << 56 to every pmpcfg CSR
   .set pmpcfgi, CSR_PMPCFG0
   .rept UDB_NUM_PMP_ENTRIES / (UDB_MXLEN / 8)
 1:  LI(t2, 1 << 56)
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_bit56_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cg_cp_pmpcfg_walk_bit56_str)
   .set pmpcfgi, pmpcfgi + (UDB_MXLEN / 32)
   .endr
 
-PMPSm_cp_pmpcfg_walk_bit58:
+PMPSm_cg_cp_pmpcfg_walk_bit58:
 // Write 1 << 58 to every pmpcfg CSR
   .set pmpcfgi, CSR_PMPCFG0
   .rept UDB_NUM_PMP_ENTRIES / (UDB_MXLEN / 8)
 1:  LI(t2, 1 << 58)
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_bit58_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cg_cp_pmpcfg_walk_bit58_str)
   .set pmpcfgi, pmpcfgi + (UDB_MXLEN / 32)
   .endr
 
-PMPSm_cp_pmpcfg_walk_bit61:
+PMPSm_cg_cp_pmpcfg_walk_bit61:
 // Write 1 << 61 to every pmpcfg CSR
   .set pmpcfgi, CSR_PMPCFG0
   .rept UDB_NUM_PMP_ENTRIES / (UDB_MXLEN / 8)
 1:  LI(t2, 1 << 61)
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_bit61_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cg_cp_pmpcfg_walk_bit61_str)
   .set pmpcfgi, pmpcfgi + (UDB_MXLEN / 32)
   .endr
 
-PMPSm_cp_pmpcfg_walk_bit62:
+PMPSm_cg_cp_pmpcfg_walk_bit62:
 // Write 1 << 62 to every pmpcfg CSR
   .set pmpcfgi, CSR_PMPCFG0
   .rept UDB_NUM_PMP_ENTRIES / (UDB_MXLEN / 8)
 1:  LI(t2, 1 << 62)
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_bit62_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cg_cp_pmpcfg_walk_bit62_str)
   .set pmpcfgi, pmpcfgi + (UDB_MXLEN / 32)
   .endr
 
-PMPSm_cp_pmpcfg_walk_bit63:
+PMPSm_cg_cp_pmpcfg_walk_bit63:
 // Write 1 << 63 to every pmpcfg CSR
   .set pmpcfgi, CSR_PMPCFG0
   .rept UDB_NUM_PMP_ENTRIES / (UDB_MXLEN / 8)
 1:  LI(t2, 1 << 63)
-  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cp_pmpcfg_walk_bit63_str)
+  RVTEST_SIGUPD_CSR_WRITE(pmpcfgi, t2, 1b, PMPSm_cg_cp_pmpcfg_walk_bit63_str)
   .set pmpcfgi, pmpcfgi + (UDB_MXLEN / 32)
   .endr
 
@@ -92,11 +92,11 @@ RVTEST_DATA_BEGIN
 
 
 // Testcase strings
-PMPSm_cp_pmpcfg_walk_bit56_str: .string "\"test: 16; cg: PMPSm; cp: cp_pmpcfg_walk; bin: bit56\""
-PMPSm_cp_pmpcfg_walk_bit58_str: .string "\"test: 17; cg: PMPSm; cp: cp_pmpcfg_walk; bin: bit58\""
-PMPSm_cp_pmpcfg_walk_bit61_str: .string "\"test: 18; cg: PMPSm; cp: cp_pmpcfg_walk; bin: bit61\""
-PMPSm_cp_pmpcfg_walk_bit62_str: .string "\"test: 19; cg: PMPSm; cp: cp_pmpcfg_walk; bin: bit62\""
-PMPSm_cp_pmpcfg_walk_bit63_str: .string "\"test: 20; cg: PMPSm; cp: cp_pmpcfg_walk; bin: bit63\""
+PMPSm_cg_cp_pmpcfg_walk_bit56_str: .string "\"test: 16; cg: PMPSm_cg; cp: cp_pmpcfg_walk; bin: bit56\""
+PMPSm_cg_cp_pmpcfg_walk_bit58_str: .string "\"test: 17; cg: PMPSm_cg; cp: cp_pmpcfg_walk; bin: bit58\""
+PMPSm_cg_cp_pmpcfg_walk_bit61_str: .string "\"test: 18; cg: PMPSm_cg; cp: cp_pmpcfg_walk; bin: bit61\""
+PMPSm_cg_cp_pmpcfg_walk_bit62_str: .string "\"test: 19; cg: PMPSm_cg; cp: cp_pmpcfg_walk; bin: bit62\""
+PMPSm_cg_cp_pmpcfg_walk_bit63_str: .string "\"test: 20; cg: PMPSm_cg; cp: cp_pmpcfg_walk; bin: bit63\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

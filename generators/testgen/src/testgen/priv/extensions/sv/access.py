@@ -9,6 +9,7 @@
 """Generate direct virtual-memory access sequences."""
 
 from collections.abc import Mapping, Sequence
+from typing import NamedTuple
 
 from testgen.asm.helpers import write_sigupd
 from testgen.data.state import TestData
@@ -41,6 +42,31 @@ def virtual_address(
     ]
 
 
+class Crosses(NamedTuple):
+    """A covergroup and its crosses that sample the store, load and execute testcases of an access test."""
+
+    covergroup: str
+    store: str
+    load: str
+    execute: str
+
+    def by_operation(self) -> dict[str, str]:
+        return {"store": self.store, "load": self.load, "exec": self.execute}
+
+
+def cross_names(*crosses: Crosses) -> str:
+    """List the crosses of a test chunk for its banner."""
+    return ", ".join(dict.fromkeys(name for cross in crosses for name in (cross.store, cross.load, cross.execute)))
+
+
+def ad_crosses(covergroup: str, mode: str, *, accessed: bool, infix: str = "") -> Crosses:
+    """The Svade and Svadu crosses for one A/D case. PTE.A governs every access, and PTE.D matters only
+    to a store to a page with PTE.A set."""
+    m = mode[0].lower()
+    store = f"Dbit_unset{infix}_write_{m}" if accessed else f"Abit_unset{infix}_write_{m}"
+    return Crosses(covergroup, store, f"Abit_unset{infix}_read_{m}", f"Abit_unset{infix}_exec_{m}")
+
+
 def mode_switch(mode: str, driver_mode: str | None) -> tuple[list[str], list[str]]:
     """Return the T-SBI calls that enter ``mode`` from ``driver_mode`` and return."""
     if driver_mode is None or mode == driver_mode:
@@ -65,13 +91,17 @@ def add_rwx_test(
     include_exec: bool = True,
     coverpoints: Mapping[str, str] | None = None,
     covergroup: str | None = None,
+    crosses: Crosses | None = None,
 ) -> list[str]:
     """Add native records and code for one virtual-memory access test.
 
     ``address`` replaces the default sequence that builds ``va`` in a5. ``repeat_setup`` reruns ``setup`` after
-    the store and the load, because a trap taken in M-mode changes mstatus.MPP.
+    the store and the load, because a trap taken in M-mode changes mstatus.MPP. ``crosses`` names the
+    covergroup and crosses of the testcases, in place of ``covergroup`` and ``coverpoints``.
     """
     assert test_data.test_chunk is not None
+    if crosses is not None:
+        coverpoints, covergroup = crosses.by_operation(), crosses.covergroup
     default_coverpoint = f"cp_{test_data.test_chunk.split_name}"
     operations = ("store", "load", "exec") if include_exec else ("store", "load")
     labels = {

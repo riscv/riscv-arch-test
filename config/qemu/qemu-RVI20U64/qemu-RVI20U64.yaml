@@ -48,7 +48,7 @@ params:
   MEI_INTR_IMPL: false
   MSI_INTR_IMPL: true
   MTI_INTR_IMPL: true
-  WFI_FINITE: true
+  WFI_FINITE: false
   MXLEN: 64
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true

@@ -18,3 +18,8 @@ normative_rule_definitions:
   # The counters are accessible from M-mode regardless of the counter-enable registers.
   - name: Zihpm_op_sz_mode_acc_priv
     coverpoint: ["ZicntrSm_cg/{cp_mcounteren_access_m, cp_scounteren_access_m}"]
+
+  # As ECALL and EBREAK cause synchronous exceptions, they are not considered to
+  # retire, and should not increment the minstret CSR.
+  - name: ecall_ebreak_no_minstret_inc
+    coverpoint: ["ZicntrSm_cg/{cp_instret_ecall, cp_instret_ebreak}"]

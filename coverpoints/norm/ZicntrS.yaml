@@ -27,5 +27,5 @@ normative_rule_definitions:
   # retire, and should not increment the minstret CSR.
   - name: ecall_ebreak_no_minstret_inc
     # The instret difference spans T-SBI ecalls; ebreak is not exercised
-    # (PR #1801 adds directed ecall/ebreak minstret tests)
+    # (directed ecall/ebreak instret tests are in ZicntrSm and ZicntrU)
     coverpoint: ["ZicntrS_cg/cp_mcounter_inc_inaccessible"]

@@ -92,7 +92,7 @@ params:
   # Zicntr params
   TIME_CSR_IMPLEMENTED: true
   # U params
-  WFI_U_MODE: true
+  WFI_U_MODE: false
   MUTABLE_MISA_U: false
   U_MODE_ENDIANNESS: dynamic
   UXLEN: [32]
@@ -164,7 +164,7 @@ params:
   MEI_INTR_IMPL: true
   MSI_INTR_IMPL: true
   MTI_INTR_IMPL: true
-  WFI_FINITE: true
+  WFI_FINITE: false
   MXLEN: 32
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true

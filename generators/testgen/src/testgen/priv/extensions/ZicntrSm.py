@@ -10,7 +10,12 @@
 
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.ZicntrCommon import counteren_walk_tests
+from testgen.priv.extensions.ZicntrCommon import (
+    counteren_walk_tests,
+    instret_exception_tests,
+    instret_interrupt_tests,
+    instret_retire_tests,
+)
 from testgen.priv.registry import add_priv_test_generator
 
 covergroup = "ZicntrSm_cg"
@@ -20,10 +25,9 @@ covergroup = "ZicntrSm_cg"
     "ZicntrSm",
     required_extensions=[
         "Sm",
-        "U",
         "Zicntr",
-    ],  # don't bother to generate if U is not supported, because it would be empty
-    march_extensions=["Zicntr", "Zihpm"],
+    ],
+    march_extensions=["Zicntr", "Zihpm", "Zawrs"],
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_zicntrsm(test_data: TestData) -> list[TestChunk]:
@@ -31,6 +35,7 @@ def make_zicntrsm(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
 
+    tc.code.append("#ifdef U_SUPPORTED")
     tc.code.extend(
         counteren_walk_tests(
             test_data,
@@ -41,6 +46,7 @@ def make_zicntrsm(test_data: TestData) -> list[TestChunk]:
             mode="M",
         )
     )
+    tc.code.append("#endif // U_SUPPORTED")
     tc.code.append("#ifdef S_SUPPORTED")
     for setting in ("ones", "zeros"):
         tc.code.extend(
@@ -56,6 +62,10 @@ def make_zicntrsm(test_data: TestData) -> list[TestChunk]:
             )
         )
     tc.code.append("#endif // S_SUPPORTED")
+
+    tc.code.extend(instret_retire_tests(test_data, covergroup, "M"))
+    tc.code.extend(instret_exception_tests(test_data, covergroup, "M"))
+    tc.code.extend(instret_interrupt_tests(test_data, covergroup, "M"))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

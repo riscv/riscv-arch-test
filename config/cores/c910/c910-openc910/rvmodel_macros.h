@@ -34,14 +34,21 @@
 #     supervisor software and timer interrupts into sip/mip.
 #       https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/cp0/rtl/ct_cp0_regs.v#L2116-L2117
 #
-# (2) Enable the caches and branch prediction, which reset off.  mcor (0x7C2) = 0x70011
+# (2) Set msmpr.SMPEN (0x7F3 bit 0), which resets to 0.  The user manual (16.1.10.1)
+#     requires SMPEN=1 before the D-cache is enabled.  Instruction-fetch refills snoop
+#     the D-cache only when SMPEN=1, so without it fence.i does not make a store to a
+#     code line held in the D-cache visible to instruction fetch.
+#       https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/ciu/rtl/ct_ciu_regs_kid.v#L185-L191
+#       https://github.com/T-head-Semi/openc910/blob/b91c90914c19f114d35c8f6b73408eb241ed847c/C910_RTL_FACTORY/gen_rtl/ciu/rtl/ct_ciu_snb_sab_entry.v#L1963-L1964
+#
+# (3) Enable the caches and branch prediction, which reset off.  mcor (0x7C2) = 0x70011
 #     invalidates the I-cache, D-cache and BTB; mhcr (0x7C1) |= 0x11fb is the setting
 #     the user manual (13.1) gives for best performance, 0x11ff, without WA (bit 2).
-#     With write-allocate on, fence.i does not make a prior store visible to
-#     instruction fetch and Zifencei fails.  The simulation is several times faster.
+#     The simulation is several times faster.
 #define RVMODEL_BOOT                                            \
   li   t0, (1 << 22) | (1 << 21)                               ;\
   csrc 0x7c0, t0        /* mxstatus: THEADISAEE=0, MAEE=0 */   ;\
+  csrsi 0x7f3, 1        /* msmpr: SMPEN=1 */                   ;\
   li   t0, 0x70011                                             ;\
   csrw 0x7c2, t0        /* mcor: invalidate I$, D$ and BTB */  ;\
   li   t0, 0x11fb                                              ;\

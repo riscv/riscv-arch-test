@@ -42,10 +42,17 @@
     }
     compressed01 : coverpoint ins.current.insn[15:2] iff (ins.current.insn[1:0] == 2'b01) {
         // exhaustive test of 2^14 compressed instructions with op = 01 with following exceptions that would be hard to test
-        wildcard ignore_bins c_rd_x2 = {14'b0???00010?????}; // CI-type instructions with rd = x2 are hard to test — clobbers signature pointer
+        wildcard ignore_bins c_rd_x2 = {14'b00??00010?????, 14'b010?00010?????}; // c.addi/c.addiw/c.li with rd = x2 clobber the signature pointer
+        ignore_bins c_addi16sp = {[14'b011_0_00010_00001:14'b011_0_00010_11111], [14'b011_1_00010_00000:14'b011_1_00010_11111]}; // c.addi16sp with nzimm != 0 moves the signature pointer
+        bins illegal_c_addi16sp = {14'b011_0_00010_00000}; // c.addi16sp with nzimm = 0 is reserved
         bins c01[] = {[0:14'b00011111111111]};
-        ignore_bins c_jal = {[14'b00100000000000:14'b00111111111111]};
-        bins c01b[] = {[14'b01000000000000:14'b10001_111111111]};
+        `ifdef UDB_MXLEN_32
+            ignore_bins c_jal = {[14'b00100000000000:14'b00111111111111]}; // c.jal jumps to a random place
+        `else
+            bins illegal_c_addiw[] = {[14'b001_0_00000_00000:14'b001_0_00000_11111], [14'b001_1_00000_00000:14'b001_1_00000_11111]}; // RV64 c.addiw with rd = x0 is reserved
+            ignore_bins c_addiw = {[14'b001_0_00001_00000:14'b001_0_11111_11111], [14'b001_1_00001_00000:14'b001_1_11111_11111]}; // legal RV64 c.addiw is not swept
+        `endif
+        bins c01b[] = {[14'b01000000000000:14'b011_0_00001_11111], [14'b011_0_00010_00001:14'b10001_111111111]};
         `ifdef UDB_MXLEN_32
             ignore_bins c_srli_srai_custom = {[14'b10010_000000000:14'b10010_111111111]}; // reserved for custom use in RV32Zca; behavior is unpredictable
         `else
@@ -66,8 +73,11 @@
             bins c_slli_rv64[] = {[14'b0001_0000000000:14'b0001_1111111111]}; // RV64Zca c.slli with shift amount of 32-63
         `endif
         ignore_bins c_fldsp = {[14'b001_00000000000:14'b001_11111111111]}; // c.fldsp throws exceptions for bad addresses.
-        ignore_bins c_lwsp  = {[14'b010_00000000000:14'b010_11111111111]}; // c.lwsp throws exceptions for bad addresses.
-        ignore_bins c_ldsp  = {[14'b011_00000000000:14'b011_11111111111]}; // c.ldsp/f.lwsp throws exceptions for bad addresses.
+        bins illegal_c_lwsp[] = {[14'b010_0_00000_00000:14'b010_0_00000_11111], [14'b010_1_00000_00000:14'b010_1_00000_11111]}; // c.lwsp with rd = x0 is reserved
+        ignore_bins c_lwsp  = {[14'b010_0_00001_00000:14'b010_0_11111_11111], [14'b010_1_00001_00000:14'b010_1_11111_11111]}; // c.lwsp with rd != x0 is a legal load into rd
+        // c.ldsp with rd = x0 is reserved on RV64 and on RV32 with Zclsd; on RV32 with Zcf it is c.flwsp f0
+        bins illegal_c_ldsp[] = {[14'b011_0_00000_00000:14'b011_0_00000_11111], [14'b011_1_00000_00000:14'b011_1_00000_11111]};
+        ignore_bins c_ldsp  = {[14'b011_0_00001_00000:14'b011_0_11111_11111], [14'b011_1_00001_00000:14'b011_1_11111_11111]}; // c.ldsp/c.flwsp with rd != x0 is a legal load into rd
         bins illegal_c_jr     = {14'b10000000000000}; // jr illegal for rs1 = 0
         ignore_bins c_jr      = {[14'b1000_0000000001:14'b1000_1111111111]};   // c.jr causes test program to go to random place.  This ignore excludes some instructions with insn[7:2] != 00000 that ought to be covered.  Including these would be cumbersome and illegalinstrtests.py generates test to hit them anyway, so the coverpoint is written this way for simplicity.
         ignore_bins c_ebreak  = {14'b1001_0000000000}; // c.ebreak causes exception, already tested in exceptions

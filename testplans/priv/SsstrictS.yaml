@@ -45,7 +45,7 @@ coverpoints:
       mstatus.FS/VS must be enabled from M-mode before switching.
   - name: cp_illegal_compressed_instruction
     goal: Illegal Compressed Instructions
-    description: Same compressed quadrant sweep (00/01/10) as SsstrictSm but from S-mode.
+    description: Same compressed quadrant sweep (00/01/10) as SsstrictSm, including the separately swept reserved code points (c.jr with rs1 = x0, c.lwsp and c.ldsp with rd = x0, c.addi16sp with nzimm = 0, and c.addiw with rd = x0 on RV64), but from S-mode.
     expectation: Same as SsstrictSm — each reserved encoding traps.
     bins: Same as SsstrictSm cp_illegal_compressed_instruction but S-mode context
     notes: "Switch to S-mode before #include of SsstrictInstrCompressed-Tests.h."

@@ -14,7 +14,7 @@
 covergroup SscofpmfS_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-    `include "RISCV_coverage_sscofpmf.svh"
+    `include "general/RISCV_coverage_sscofpmf.svh"
 
     sip_lcofi: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sip", "lcofip")[0] {}
     sip_lcofi_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sip", "lcofip")[0] {

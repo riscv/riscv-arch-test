@@ -16,7 +16,7 @@
 // TRAP_SIGUPD_COUNT is the number of expected traps. Each trap uses 4 signature
 // words, or 6 when H is supported.
 #ifndef TRAP_SIGUPD_COUNT
-  #define TRAP_SIGUPD_COUNT 3750
+  #define TRAP_SIGUPD_COUNT 0
 #endif
 
 #ifdef H_SUPPORTED

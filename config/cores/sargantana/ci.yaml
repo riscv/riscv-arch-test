@@ -13,10 +13,9 @@ ci_enabled: true
 #   cvfpu: https://github.com/openhwgroup/cvfpu/blob/84066933/src/
 #   F             FMA sets UF when the result rounds up to the smallest normal: cvfpu:fpnew_fma_multi.sv#L801-L803
 #   ZicsrF        fmul.s has the same UF bug: cvfpu:fpnew_fma_multi.sv#L801-L803
-#   ZfaF          fleq.s/fltq.s raise NV on a quiet NaN: fpu:zfa_post_process.sv#L88-L98
-#   ZfaD          fleq/fltq raise NV on a quiet NaN; fround.s/froundnx.s ignore NaN-boxing; fcvtmod.w.d drops NX
-#   Zfhmin        fcvt.s.h ignores NaN-boxing; fcvt.h.s rounds a tiny value up under RMM: fpu:conv_zfhmin.sv
-#   ZfhminD       fcvt.d.h/fcvt.s.h ignore NaN-boxing; fcvt.h.d rounds a tiny value up under RMM: fpu:conv_zfhmin.sv
+#   Zfa           fleq/fltq raise NV on a quiet NaN: fpu:zfa_post_process.sv#L88-L98; fround.s/froundnx.s ignore
+#                 NaN-boxing; fcvtmod.w.d drops NX
+#   Zfhmin        fcvt.s.h/fcvt.d.h ignore NaN-boxing; fcvt.h.s/fcvt.h.d round a tiny value up under RMM: fpu:conv_zfhmin.sv
 #   SmF           csrr mstatus just after an FP write reads SD = 0: csr:csr_bsc.sv#L1009
 #   Zicntr        Testbench: time is tied to 0: tile:simulator/sim_top.sv#L263-L268
 #   ZicntrS       U mode may read a counter if mcounteren or scounteren allows it: csr:csr_bsc.sv#L2411
@@ -36,7 +35,8 @@ ci_enabled: true
 #   H             hedeleg[10] and hedeleg[23:20] are writable but must be read-only zero: csr:csr_bsc.sv#L1320-L1339;
 #                 an hlv.d page fault in HS mode matches Sail's cause and tval but not the rest of its trap signature
 #                 (status/GVA/htinst; HS-mode trap CSR writes: csr:csr_bsc.sv#L2086-L2099)
-exclude_extensions: "F,ZicsrF,ZfaF,ZfaD,Zfhmin,ZfhminD,SmF,Zicntr,ZicntrS,ZicntrU,Zifencei,Sm,S,InterruptsSm,Sv,SvZicbo,ExceptionsSv,ExceptionsSvZalrsc,H"
+exclude_extensions: "F,ZicsrF,Zfa,Zfhmin,SmF,Zicntr,ZicntrS,ZicntrU,Zifencei,Sm,S,InterruptsSm,Sv,SvZicbo,ExceptionsSv,ExceptionsSvZalrsc,H"
+
 apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler libboost-dev libboost-regex-dev libboost-system-dev"
 install_script: ".github/scripts/install-sargantana.sh"
 setup_script: ".github/scripts/setup-sargantana.sh"

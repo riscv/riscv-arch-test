@@ -954,7 +954,7 @@
         // value is ignored when `etrigger` is not supported.
         "supported_exceptions": { "len": "xlen", "value": "0" }
       },
-      "hcontext": { "supported": false },
+      "hcontext": { "supported": true },
       // Triggers
       "icount": {
         "supported": true,
@@ -973,12 +973,12 @@
         "supported_interrupts": { "len": "xlen", "value": "0" }
       },
       // CSRs
-      "mcontext": { "supported": false },
+      "mcontext": { "supported": true },
       // The number of supported triggers.  This has to be
       // non-negative, and greater than 0 if Sdtrig is supported.
       // The model does not support more than 16 triggers.
       "num_triggers": 16,
-      "scontext": { "supported": false }
+      "scontext": { "supported": true }
     },
     "Smdbltrp": { "supported": true },
     "Ssdbltrp": { "supported": true },

@@ -15,7 +15,7 @@
 covergroup SscofpmfU_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-    `include "RISCV_coverage_sscofpmf.svh"
+    `include "general/RISCV_coverage_sscofpmf.svh"
 
     `ifdef S_SUPPORTED
 

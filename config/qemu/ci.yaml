@@ -13,7 +13,7 @@ ci_enabled: true
 #     mstatus.MPELP not writable (#4220)
 # S:  sie mismatches on bit 13 (LCOFIE) https://gitlab.com/qemu-project/qemu/-/work_items/3969;
 #     QEMU accepts UXL=1, which Sail cannot model yet (https://github.com/riscv/sail-riscv/issues/1150)
-# Zacas/ZacasZabha: amocas with rd=x0 corrupts subsequent branch on x0 (https://gitlab.com/qemu-project/qemu/-/work_items/3526)
+# Zacas: amocas with rd=x0 corrupts subsequent branch on x0 (https://gitlab.com/qemu-project/qemu/-/work_items/3526)
 # InterruptsSm/InterruptsS: https://gitlab.com/qemu-project/qemu/-/work_items/3969 seems to apply to mip.LCOFIP not writable either
 # ExceptionsZalrsc/ExceptionsSvZalrsc/ExceptionsSvZalrscSm: sc.w to no-permission region returns failure instead of raising
 #        store/AMO access fault (https://gitlab.com/qemu-project/qemu/-/work_items/4100, still failing in v11.1.1)
@@ -37,7 +37,7 @@ ci_enabled: true
 #    filed the same day, 4611 through 4617, so this exclusion will be needed for a while.
 # Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : QEMU CBOs do not fault on inaccessible addresses in bare mode, shifting trap signatures;
 # same issue as ExceptionsZicboU/S and SvZicbo (https://gitlab.com/qemu-project/qemu/-/work_items/3501).
-exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,ZacasZabha,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,SscofpmfSm,SscofpmfS,SscofpmfU"
+exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,SscofpmfSm,SscofpmfS,SscofpmfU"
 # qemu-rv32-mu, qemu-rv64-mu: U-mode cbo.zero/clean/flush/inval raise illegal-instruction without S-mode
 #   because check_zicbo_envcfg() also requires senvcfg, which does not exist
 #   (https://gitlab.com/qemu-project/qemu/-/work_items/4596)

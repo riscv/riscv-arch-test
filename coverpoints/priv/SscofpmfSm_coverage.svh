@@ -14,7 +14,7 @@
 covergroup SscofpmfSm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-    `include "RISCV_coverage_sscofpmf.svh"
+    `include "general/RISCV_coverage_sscofpmf.svh"
 
     // M-mode access sweep also touches mhpmeventNh (RV32 only) -- kept local to Sm so the
     // own generator never exercises there.

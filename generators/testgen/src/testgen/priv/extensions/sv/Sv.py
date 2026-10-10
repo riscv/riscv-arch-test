@@ -331,26 +331,34 @@ def _t_mstatus_mxr(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
         test_chunks.append(test_data.end_test_chunk())
 
 
-def _t_nleaf_pte_dau(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
-    for mode in ("Smode", "Umode"):
+def _nleaf_pte_bits(
+    test_data: TestData,
+    test_chunks: list[TestChunk],
+    sv: SvMode,
+    name: str,
+    modes: tuple[str, ...],
+    cases: list[tuple[str, str, str]],
+) -> None:
+    """Set each (description, PTE bit expression, expected) case in each non-leaf PTE of a level-0 walk."""
+    for mode in modes:
         chunk = begin_sv_test(
             test_data,
             sv,
             mode,
-            f"{sv.name}_nleaf_pte_DAU_{mode}",
+            f"{sv.name}_nleaf_pte_{name}_{mode}",
             code_prefix=("#ifdef S1P12P0_OR_LATER_SUPPORTED", ""),
         )
         number = 0
         for table_level in range(sv.levels - 1, 0, -1):
-            for bit in ("PTE_D", "PTE_A", "PTE_U"):
+            for description, bit, expected in cases:
                 number += 1
                 permissions = PteFlags(user=mode == "Umode")
                 chunk.code.extend(
                     [
                         *level_header(sv, 0),
                         (
-                            f"// Test case {number}: Non-leaf {bit.removeprefix('PTE_')} bit set at level {table_level}"
-                            f" | Test in {mode[0]}-Mode | expected = RWX fault"
+                            f"// Test case {number}: Non-leaf {description} set at level {table_level}"
+                            f" | Test in {mode[0]}-Mode | expected = {expected}"
                         ),
                         *create_page_mapping(
                             sv,
@@ -368,6 +376,27 @@ def _t_nleaf_pte_dau(test_data: TestData, test_chunks: list[TestChunk], sv: SvMo
         chunk.raw_data.extend(sv_data(sv, (0,)))
         chunk.trap_sigupd_count = trap_sigupd_count(number * 3)
         test_chunks.append(test_data.end_test_chunk())
+
+
+def _t_nleaf_pte_dau(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
+    cases = [(f"{bit.removeprefix('PTE_')} bit", bit, "RWX fault") for bit in ("PTE_D", "PTE_A", "PTE_U")]
+    _nleaf_pte_bits(test_data, test_chunks, sv, "DAU", ("Smode", "Umode"), cases)
+
+
+def _t_nleaf_pte_reserved(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
+    """Walk a 1 through bits 63:54 of each non-leaf PTE.
+
+    N, PBMT, and bits 58:54 are all reserved in non-leaf PTEs whether or not Svnapot and Svpbmt are implemented,
+    so those accesses fault. Bits 60:59 are reserved unless Svrsw60t59b is implemented, in which case they are
+    ignored and the accesses complete; the reference model decides which.
+    """
+    if sv.name == "sv32":
+        return
+    cases = [
+        (f"bit {bit}", f"(1 << {bit})", "RWX fault unless Svrsw60t59b" if bit in (59, 60) else "RWX fault")
+        for bit in range(54, 64)
+    ]
+    _nleaf_pte_bits(test_data, test_chunks, sv, "reserved", ("Smode",), cases)
 
 
 def _t_nleaf_pte_level0(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
@@ -941,6 +970,7 @@ def _make_sv(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     _t_page_perm_topics(test_data, test_chunks, sv)
     _t_va_all(test_data, test_chunks, sv)
     _t_satp_access(test_data, test_chunks, sv)
+    _t_nleaf_pte_reserved(test_data, test_chunks, sv)
     return test_chunks
 
 

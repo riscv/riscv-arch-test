@@ -425,7 +425,11 @@ normative_rule_definitions:
   # must be zeroed by software for forward compatibility. If any of these bits are set,
   # a page-fault exception is raised
   - name: Sv39_pte_future_rsv
-    coverpoint: ["Sv_add_feature_cg/cp_reserved_{read,write,exec}_fault"]
+    coverpoint:
+      [
+        "Sv_add_feature_cg/cp_reserved_{read,write,exec}_fault",
+        "Sv_vm_permissions_cg/cp_PTE_rsv_nleaf_{read,write,exec}_s",
+      ]
 
   # SXLEN=64
   - name: Sv48_sxlen

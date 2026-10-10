@@ -209,6 +209,11 @@
             ins.add_rs2(1);
             ins.add_imm_addr(2);
         end
+        "beqi"     : begin
+            ins.add_rs1(0);
+            ins.add_imm2(1);
+            ins.add_imm_addr(2);
+        end
         "bext"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
@@ -252,6 +257,11 @@
         "bne"     : begin
             ins.add_rs1(0);
             ins.add_rs2(1);
+            ins.add_imm_addr(2);
+        end
+        "bnei"     : begin
+            ins.add_rs1(0);
+            ins.add_imm2(1);
             ins.add_imm_addr(2);
         end
         "brev8"     : begin

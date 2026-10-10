@@ -16,7 +16,7 @@
 // TRAP_SIGUPD_COUNT is the number of expected traps. Each trap uses 4 signature
 // words, or 6 when H is supported.
 #ifndef TRAP_SIGUPD_COUNT
-  #define TRAP_SIGUPD_COUNT 3750
+  #define TRAP_SIGUPD_COUNT 0
 #endif
 
 #ifdef H_SUPPORTED
@@ -74,16 +74,20 @@
   #endif
 #endif
 
+#ifndef RVMODEL_MAX_CYCLES_PER_TIMER_TICK
+  #define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
+#endif
+
+// Interrupt macros are used only by the trap handler and privileged tests, which need a
+// standard M-mode or S-mode. A DUT with neither need not define them.
+#if defined(STANDARD_SM_SUPPORTED) || defined(S_SUPPORTED)
+
 ##### Interrupt Delays #####
 #ifndef RVMODEL_INTERRUPT_LATENCY
   #error "RVMODEL_INTERRUPT_LATENCY not defined. Make sure to define it in rvmodel_macros.h."
 #endif
 #ifndef RVMODEL_TIMER_INT_SOON_DELAY
   #error "RVMODEL_TIMER_INT_SOON_DELAY not defined. Make sure to define it in rvmodel_macros.h."
-#endif
-
-#ifndef RVMODEL_MAX_CYCLES_PER_TIMER_TICK
-  #define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 #endif
 
 ##### Machine Interrupts #####
@@ -153,6 +157,8 @@
     #endif
   #endif
 #endif
+
+#endif // STANDARD_SM_SUPPORTED || S_SUPPORTED
 
 ##### Configuration Limitations #####
 #if UDB_NUM_PMP_ENTRIES > 0

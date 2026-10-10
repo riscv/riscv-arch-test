@@ -15,7 +15,7 @@ from itertools import combinations
 
 from testgen.asm.csr import write_stce
 from testgen.asm.helpers import comment_banner, write_sigupd
-from testgen.asm.tsbi import tsbi_call
+from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 
@@ -32,8 +32,43 @@ int_bit = machine_ints | supervisor_ints | reg_ints | sstc_ints
 int_guard = {"MIP_SEIP": "UDB_SEI_INTR_IMPL", "MIP_SSIP": "UDB_SSI_INTR_IMPL", "SIP_SSIP": "UDB_SSI_INTR_IMPL"}
 int_guard |= {"LCOFI": "SSCOFPMF_SUPPORTED", "SIP_LCOFIP": "SSCOFPMF_SUPPORTED"}
 int_guard |= {name: "SSTC_SUPPORTED" for name in sstc_ints}
-int_coverpoint = {name: "cp_trigger_reg" for name in reg_ints}
+# sip.LCOFIP writes land in the plain cp_trigger cross; the other register writes have their own crosses.
+int_coverpoint = {
+    "MIP_SEIP": "cp_trigger_reg_mip_seip",
+    "MIP_SSIP": "cp_trigger_reg_mip_ssip",
+    "SIP_SSIP": "cp_trigger_reg_sip_ssip",
+}
 int_coverpoint |= {name: "cp_trigger_sti_sstc" for name in sstc_ints}
+
+
+def label_coverpoint(
+    suite: "InterruptSuite", coverpoint: str, priv: str, int_type: str = "", delegated: bool = False
+) -> str:
+    """Coverpoint a testcase label names: ``coverpoint``, or its ``_tsbi`` twin when the coverage model
+    records the case on the T-SBI xret back to the test (the interrupt is raised through T-SBI because
+    ``priv`` cannot reach its pending bit). Mirrors the tsbi ignore_bins of <suite>_coverage.svh.
+    """
+    lower = priv != suite.boot
+    if suite.boot == "M":  # InterruptsSm
+        tsbi = {
+            "cp_trigger": (lower and int_type in ("MSI", "MTI"))
+            or (priv == "U" and int_type in ("STI", "LCOFI", "SIP_LCOFIP"))
+            or (priv == "S" and int_type in ("LCOFI", "SIP_LCOFIP") and not delegated),
+            "cp_trigger_sti_sstc": priv == "U" and int_type == "SSTC_STCE1",
+            "cp_enable_one": lower and int_type in ("MSI", "MTI", "STI", "LCOFI"),
+            "cp_priority_mip": lower,
+            "cp_priority_mie": lower,
+            "cp_priority_mideleg": lower,
+        }
+    else:  # InterruptsS
+        tsbi = {
+            "cp_trigger": priv == "U" and int_type in ("STI", "LCOFI", "SIP_LCOFIP"),
+            "cp_trigger_sti_sstc": priv == "U" and int_type == "SSTC_STCE1",
+            "cp_enable_one": int_type in ("STI", "LCOFI"),
+            "cp_priority_sip": lower,
+            "cp_priority_sie": lower,
+        }
+    return f"{coverpoint}_tsbi" if tsbi.get(coverpoint, False) else coverpoint
 
 
 def guard_symbol(int_type: str) -> str:
@@ -46,11 +81,6 @@ def guard_symbol(int_type: str) -> str:
 # _M hooks (raw csrw, no T-SBI) are used for both raise and claim.
 int_macro = {"MEI": "MEXT", "MTI": "MTIME", "MSI": "MSW", "SEI": "SEXT", "STI": "STIME", "SSI": "SSW"}
 int_macro |= {name: name for name in ["LCOFI", *reg_ints, *sstc_ints]}
-
-# Privilege needed to access a CSR, keyed by name prefix, and privilege held by each test mode.
-# HS-mode can reach h* and vs* CSRs directly; VS-mode reaches only its own s* aliases.
-_CSR_LEVEL = {"m": 3, "h": 2, "vs": 2, "s": 1}
-_MODE_LEVEL = {"M": 3, "S": 2, "VS": 1, "U": 0, "VU": 0}
 
 
 @dataclass(frozen=True)
@@ -76,25 +106,6 @@ class InterruptSuite:
 Generator = Callable[[TestData, list[TestChunk], InterruptSuite, str], None]
 
 
-def _csr_level(instr: str) -> int:
-    """Privilege level of the CSR named in a csr* instruction (0 for unprivileged CSRs)."""
-    mnemonic, operands = instr.split("#", 1)[0].split(None, 1)
-    fields = [f.strip() for f in operands.split(",")]
-    csr = fields[1] if mnemonic.startswith("csrr") else fields[0]
-    for prefix, level in _CSR_LEVEL.items():
-        if csr.startswith(prefix):
-            return level
-    return 0
-
-
-def csr_access(instr: str, mode: str) -> str:
-    """A CSR instruction issued directly when ``mode`` can access the CSR, otherwise through T-SBI.
-
-    U-mode reaches m*, s*, h*, and vs* CSRs through T-SBI; S-mode reaches m* CSRs through T-SBI.
-    """
-    return instr if _MODE_LEVEL[mode] >= _csr_level(instr) else tsbi_call(instr)
-
-
 def mode_enter(suite: InterruptSuite, priv: str) -> list[str]:
     """Switch from the suite's boot mode into ``priv``.
 
@@ -117,13 +128,13 @@ def generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite:
     """Raise each interrupt with only its enable bit set, then with every enable bit but its own."""
 
     ######################################
-    coverpoint = "cp_enable"
+    banner = "cp_enable_one / cp_enable_zero"
     ######################################
     ie = suite.ie
     status = suite.status
     tc = test_data.new_test_chunk(test_chunks, f"enable_{priv}")
     tc.section_header = comment_banner(
-        coverpoint,
+        banner,
         f"Enable each interrupt in {priv} mode with {status['csr']}.{status['field']} = 1, {ie} = only/others",
     )
     tmp_reg = test_data.int_regs.get_register()
@@ -141,7 +152,11 @@ def generate_cp_enable(test_data: TestData, test_chunks: list[TestChunk], suite:
                 f"csrs {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = 1",
                 f"LI(x{tmp_reg}, {ie_val})",
                 f"csrw {ie}, x{tmp_reg} # {ie} = {int_type} {enable}",
-                test_data.add_testcase(f"priv_{priv}_{int_type}_{ie}_{enable}", coverpoint, suite.covergroup),
+                test_data.add_testcase(
+                    f"priv_{priv}_{int_type}_{ie}_{enable}",
+                    label_coverpoint(suite, "cp_enable_one", priv, int_type) if enable == "only" else "cp_enable_zero",
+                    suite.covergroup,
+                ),
                 *mode_enter(suite, priv),
                 f"RVTEST_SET_{macro}_INT_{priv} # Set the interrupt",
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
@@ -239,14 +254,14 @@ def generate_cp_priority(
                 *mode_enter(suite, priv),
                 *_raise(raised, pair, "SET", priv),
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait until every raised interrupt is pending",
-                test_data.add_testcase(bin_name, coverpoint, suite.covergroup),
-                csr_access(f"csrr x{check_reg}, {suite.ip}", priv),
+                test_data.add_testcase(bin_name, label_coverpoint(suite, coverpoint, priv), suite.covergroup),
+                tsbi_call_or_direct(f"csrr x{check_reg}, {suite.ip}", priv),
                 f"LI(x{tmp_reg}, {raised_mask:#x})",
                 f"and x{check_reg}, x{check_reg}, x{tmp_reg} # raised interrupts that are pending",
                 write_sigupd(check_reg, test_data),
                 # Enable last, so the pending interrupts are arbitrated together and taken in priority order
                 f"LI(x{tmp_reg}, {ie_after})",
-                csr_access(f"csrw {ie}, x{tmp_reg} # {ie} = {ie_after:#x}", priv),
+                tsbi_call_or_direct(f"csrw {ie}, x{tmp_reg} # {ie} = {ie_after:#x}", priv),
                 *_raise(raised, pair, "CLR", priv),
                 *mode_exit(suite, priv),
                 f"#endif // {guard_symbol(second)}",
@@ -307,12 +322,17 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
                 *suite.deleg,
                 *(write_stce(test_data, True, boot) if wfi["stce"] else []),
                 f"LI(x{tmp_reg}, 0x200000)",
-                csr_access(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", boot),
+                tsbi_call_or_direct(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", boot),
                 f"LI(x{tmp_reg}, {status['mask']:#x})",
                 f"{enablecmd} {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = {enable}",
                 f"LI(x{tmp_reg}, {ie_mask:#x})",
                 f"csrw {suite.ie}, x{tmp_reg} # {suite.ie}.{ie_name} = 1",
-                test_data.add_testcase(f"priv_{priv}_tw_{tw}_{status['field']}_{enable}", coverpoint, suite.covergroup),
+                test_data.add_testcase(
+                    f"priv_{priv}_tw_{tw}_{status['field']}_{enable}",
+                    # InterruptsSm records M-mode WFI in cp_wfi_m
+                    "cp_wfi_m" if priv == "M" else coverpoint,
+                    suite.covergroup,
+                ),
                 *mode_enter(suite, priv),
                 # Below M-mode the SOON macro reaches the timer through T-SBI traps; RVMODEL_TIMER_INT_SOON_DELAY
                 # is sized so the interrupt cannot fire before those return and the trap count is sampled.
@@ -385,13 +405,15 @@ def generate_cp_wfi_timeout(
                         else []
                     ),
                     f"LI(x{tmp_reg}, 0x200000)",
-                    csr_access(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", suite.boot),
+                    tsbi_call_or_direct(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", suite.boot),
                     f"LI(x{tmp_reg}, {status['mask']:#x})",
                     f"{enablecmd} {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = {enable}",
                     f"LI(x{tmp_reg}, {ie * ie_mask:#x})",
                     f"csrw {suite.ie}, x{tmp_reg} # {suite.ie}.{ie_name} = {ie}",
                     test_data.add_testcase(
-                        f"priv_{priv}_tw_{tw}_{status['field']}_{enable}_{ie_name}_{ie}", coverpoint, suite.covergroup
+                        f"priv_{priv}_tw_{tw}_{status['field']}_{enable}_{ie_name}_{ie}",
+                        coverpoint if tw == 1 else "cp_wfi_timeout_tw_zero",
+                        suite.covergroup,
                     ),
                     *mode_enter(suite, priv),
                     "wfi # nothing is pending, so this times out and traps as an illegal instruction",

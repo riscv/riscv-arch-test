@@ -42,8 +42,15 @@
             with a pad of return instructions, which is there to make sure we fetch a proper instruction
             from the background region; the region under test follows that pad.
  */
-`define PMP_PAD_START      32'h80005000 // pad ahead of the region under test
-`define PMP_SPECIAL_REGION_START 32'h80005000 // Zicbo + Zaamo tests
+`ifdef UDB_MXLEN_64
+  `define PMP_PAD_START      64'h80005000 // pad ahead of the region under test
+  `define PMP_SPECIAL_REGION_START 64'h80005000 // Zicbo + Zaamo tests
+  `define PMP_MASK_BASE      64'h4000
+`else
+  `define PMP_PAD_START      32'h80005000 // pad ahead of the region under test
+  `define PMP_SPECIAL_REGION_START 32'h80005000 // Zicbo + Zaamo tests
+  `define PMP_MASK_BASE      32'h4000
+`endif
 
 // Calculate region size g in bytes.
 `define g_tor       (2 ** (`UDB_PMP_GRANULARITY))
@@ -80,8 +87,8 @@
 // coverpoints on those low bits (byte address & 0x3FFF, or pmpaddr & 0xFFF) so coverage fires no matter
 // where .data landed. pmpaddr values in these tests are sparse (region / 0 / all-ones), so the low-bit
 // match has no false positives. Assumes the linker's .data ALIGN of 0x4000 (which the DUT/ref share).
-`define PMP_ADDR_LOWMASK      ('h4000 - 1)            // low 14 bits of a byte address  = .data ALIGN(0x4000)
-`define PMP_PMPADDR_LOWMASK   (('h4000 - 1) >> 2)     // low 12 bits of a pmpaddr        = address low bits >> 2
+`define PMP_ADDR_LOWMASK      (`PMP_MASK_BASE - 1)        // low 14 bits of a byte address
+`define PMP_PMPADDR_LOWMASK   ((`PMP_MASK_BASE - 1) >> 2) // low 12 bits of a pmpaddr
 
 // UDB_MXLEN_64 -> [53:0] & UDB_MXLEN_32 -> [31:0]
 `define EFFECTIVE_PMPADDR (`ifdef UDB_MXLEN_64 53 `else 31 `endif)
@@ -494,7 +501,7 @@ endfunction
 
 
 // CSR address conversion
-function int get_csr_addr(int hart, string s);
+function bit [11:0] get_csr_addr(int hart, string s);
   import RISCV_decode_pkg::*;
   case(s)
     "fflags": return CSR_FFLAGS;
@@ -952,5 +959,6 @@ function int get_csr_addr(int hart, string s);
     "mhpmcounter29h": return CSR_MHPMCOUNTER29H;
     "mhpmcounter30h": return CSR_MHPMCOUNTER30H;
     "mhpmcounter31h": return CSR_MHPMCOUNTER31H;
+    default: $fatal(1, "get_csr_addr: unknown CSR name %s", s);
   endcase
 endfunction

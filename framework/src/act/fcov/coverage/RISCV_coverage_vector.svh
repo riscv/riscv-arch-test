@@ -49,7 +49,7 @@ endfunction
 
 function int get_vlmax_params(int hart, int issue, logic[2:0] vsew, logic[2:0] vlmul);
 
-    int vlen = get_csr_val(hart, issue, 0, "vlenb", "vlenb") * 8;
+    int vlen = int'(get_csr_val(hart, issue, 0, "vlenb", "vlenb") * 8);
     int vlen_times_lmul;
     int vlmax;
 
@@ -291,97 +291,80 @@ typedef enum {
     None
 } edge_vs2_ls_values_t;
 
-function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BITS val);
-
-  logic all_values_within_range = 1'b1;
-
-  `XLEN_BITS vsew               = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew");
-  int vlmax                     = get_vtype_vlmax(hart, issue, `SAMPLE_BEFORE);
-
-  if (val == 0) begin
-    return zero;
-  end
-
-  //------------------------------------------
-  // Walk across VAL in chunks of size SEW
-  //------------------------------------------
-  case (vsew)
-    //--------------------------------------------------------------
-    //  8-bit elements
-    //--------------------------------------------------------------
-    0: begin : SEW8
-      for (int idx = 1; idx <= `UDB_VLEN / 8; ++idx) begin
-        logic [7:0] elem = val[idx*8-1 -: 8];
-
-        if (signed'(elem) > vlmax*2 | signed'(elem) < -vlmax*2)   all_values_within_range = 1'b0; // if out of range fail coverage
-        if (signed'(elem) < 0)                                    all_values_within_range = 1'b0; // if element is negative and length is less than XLEN then fail coverage as it will be zero extended instead of treated as signed
-      end
-    end
-    //--------------------------------------------------------------
-    // 16-bit elements
-    //--------------------------------------------------------------
-    1: begin : SEW16
-      for (int idx = 1; idx <= `UDB_VLEN / 16; ++idx) begin
-        logic [15:0] elem = val[idx*16-1 -: 16];
-
-        if (signed'(elem) > vlmax*2 | signed'(elem) < -vlmax*2)   all_values_within_range = 1'b0; // if out of range fail coverage
-        `ifndef COVER_E
-        if (signed'(elem) < 0)                                    all_values_within_range = 1'b0; // if element is negative and length is less than XLEN then fail coverage as it will be zero extended instead of treated as signed
-        `endif
-      end
-    end
-    //--------------------------------------------------------------
-    // 32-bit elements
-    //--------------------------------------------------------------
-    2: begin : SEW32
-      for (int idx = 1; idx <= `UDB_VLEN / 32; ++idx) begin
-        logic [31:0] elem = val[idx*32-1 -: 32];
-
-        if (signed'(elem) > vlmax*2 | signed'(elem) < -vlmax*2)   all_values_within_range = 1'b0; // if out of range fail coverage
-        `ifdef UDB_MXLEN_64
-        if (signed'(elem) < 0)                                    all_values_within_range = 1'b0; // if element is negative and length is less than XLEN then fail coverage as it will be zero extended instead of treated as signed
-        `endif
-      end
-    end
-    //--------------------------------------------------------------
-    // 64-bit elements
-    //--------------------------------------------------------------
-    3: begin : SEW64
-      for (int idx = 1; idx <= `UDB_VLEN / 64; ++idx) begin
-        logic [63:0] elem = val[idx*64-1 -: 64];
-
-        if (signed'(elem) > vlmax*2 | signed'(elem) < -vlmax*2)   all_values_within_range = 1'b0; // if out of range fail coverage
-      end
-    end
-    //--------------------------------------------------------------
-    default : begin
-      $error("ERROR: SystemVerilog Functional Coverage: Unsupported VSEW: %s", vsew);
-      $fatal(1);
-    end
+// Index EEW of an indexed load or store, from its width field; 0 if the width is not an index width
+function int index_eew(bit [2:0] width);
+  case (width)
+    3'b000:  return 8;
+    3'b101:  return 16;
+    3'b110:  return 32;
+    3'b111:  return 64;
+    default: return 0;
   endcase
+endfunction
 
-  if (all_values_within_range) begin
-    return random_in_range;
+// val is the first register of the index operand of an indexed load or store, and insn is the
+// instruction.  Only the body elements (index < vl) supply addresses, so only they are checked.
+// The elements are as wide as the index EEW from the width field, not vtype.vsew.  An index is in
+// range when it is below 2*VLMAX times the segment size (nf * SEW/8, rounded up to a power of two).
+function edge_vs2_ls_values_t vs2_ls_edges_check (int hart, int issue, `VLEN_BITS val, logic [31:0] insn);
+  int vl            = int'(get_csr_val(hart, issue, `SAMPLE_BEFORE, "vl", "vl"));
+  logic [2:0] vsew  = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew")[2:0];
+  int vlmax         = get_vtype_vlmax(hart, issue, `SAMPLE_BEFORE);
+  bit [2:0] nf      = insn[31:29];
+  bit [2:0] width   = insn[14:12];
+  int segments      = int'(nf) + 1;
+  int segment_bytes = segments * (2 ** (unsigned'(vsew)));  // nf * SEW/8
+  int scale         = 1;
+  int eew           = index_eew(width);
+  int elements;
+  longint unsigned bound;
+  longint unsigned elem;
+  logic all_zero    = 1'b1;
+  logic all_in_range = 1'b1;
+
+  if (eew == 0) begin
+    $error("ERROR: SystemVerilog Functional Coverage: Unsupported index width field: %b", width);
+    $fatal(1);
   end
 
+  while (scale < segment_bytes) scale = scale * 2;
+  bound = longint'(2 * vlmax) * scale;
+
+  // vs2_val holds only the first register of the index group
+  elements = (vl < `UDB_VLEN / eew) ? vl : `UDB_VLEN / eew;
+  if (elements == 0) return None;
+
+  for (int idx = 0; idx < elements; ++idx) begin
+    case (eew)
+      8:       elem = 64'(val[idx*8  +: 8]);
+      16:      elem = 64'(val[idx*16 +: 16]);
+      32:      elem = 64'(val[idx*32 +: 32]);
+      default: elem = val[idx*64 +: 64];
+    endcase
+    if (elem != 0)     all_zero     = 1'b0;
+    if (elem >= bound) all_in_range = 1'b0;  // indices are zero-extended, so compare unsigned
+  end
+
+  if (all_zero)     return zero;
+  if (all_in_range) return random_in_range;
   return None;
 endfunction
 
 function logic[63:0] get_vr_element_zero(int hart, int issue, `VLEN_BITS val);
-    `XLEN_BITS vsew = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew");
+    logic [2:0] vsew = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew")[2:0];
 
     case (vsew)
     `ifdef SEW8_SUPPORTED
-    2'b00:   return {56'b0, val[7:0]};
+    3'b000: return {56'b0, val[7:0]};
     `endif
     `ifdef SEW16_SUPPORTED
-    2'b01:  return {48'b0, val[15:0]};
+    3'b001: return {48'b0, val[15:0]};
     `endif
     `ifdef SEW32_SUPPORTED
-    2'b10:  return {32'b0, val[31:0]};
+    3'b010: return {32'b0, val[31:0]};
     `endif
     `ifdef SEW64_SUPPORTED
-    2'b11:  return val[63:0];
+    3'b011: return val[63:0];
     `endif
     default: begin
       $error("ERROR: SystemVerilog Functional Coverage: Unsupported SEW: %s", vsew);
@@ -395,17 +378,17 @@ endfunction
 // Like get_vr_element_zero but extracts at 2*SEW for widening instructions
 // where the operand (e.g. vs1 accumulator in vfwredosum) is at double width.
 function logic[63:0] get_vr_element_zero_widen(int hart, int issue, `VLEN_BITS val);
-    `XLEN_BITS vsew = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew");
+    logic [2:0] vsew = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew")[2:0];
 
     case (vsew)
     `ifdef SEW8_SUPPORTED
-    2'b00:  return {48'b0, val[15:0]};   // 2*SEW = 16
+    3'b000: return {48'b0, val[15:0]};   // 2*SEW = 16
     `endif
     `ifdef SEW16_SUPPORTED
-    2'b01:  return {32'b0, val[31:0]};   // 2*SEW = 32
+    3'b001: return {32'b0, val[31:0]};   // 2*SEW = 32
     `endif
     `ifdef SEW32_SUPPORTED
-    2'b10:  return val[63:0];            // 2*SEW = 64
+    3'b010: return val[63:0];            // 2*SEW = 64
     `endif
     default: begin
       $error("ERROR: SystemVerilog Functional Coverage: Unsupported SEW for widening: %s", vsew);
@@ -481,8 +464,8 @@ typedef enum {
 } vl_t;
 
 function vl_t vl_check(int hart, int issue, int egs = 1);
-  `XLEN_BITS vl = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vl", "vl");
-  `XLEN_BITS vstart = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vstart", "vstart");
+  int vl = int'(get_csr_val(hart, issue, `SAMPLE_BEFORE, "vl", "vl"));
+  int vstart = int'(get_csr_val(hart, issue, `SAMPLE_BEFORE, "vstart", "vstart"));
   int vlmax = get_vtype_vlmax(hart, issue, `SAMPLE_BEFORE);
   bit legal;
   if (vl <= vlmax & vl > vstart) legal = 1'b1; // check legal condition
@@ -509,7 +492,7 @@ typedef enum {
 } vstart_t;
 
 function vstart_t vstart_check(int hart, int issue);
-  `XLEN_BITS vstart = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vstart", "vstart");
+  int vstart = int'(get_csr_val(hart, issue, `SAMPLE_BEFORE, "vstart", "vstart"));
   int vlmax = get_vtype_vlmax(hart, issue, `SAMPLE_BEFORE);
   bit legal;
   if (vstart < vlmax) legal = 1'b1; // check legal condition
@@ -561,23 +544,19 @@ function logic[7:0] shangmi_round_subbyte(logic[127:0] vd, logic[127:0] vs2, int
 endfunction
 
 function int data_overlap(int hart, int issue, bit[2:0] width, `VLEN_BITS val);
-  `XLEN_BITS vl = get_csr_val(hart, issue, `SAMPLE_BEFORE, "vl", "vl");
+  int vl = int'(get_csr_val(hart, issue, `SAMPLE_BEFORE, "vl", "vl"));
   int capped_vl;
-  int index_sew;
+  int index_sew = index_eew(width);
   bit seen[logic[63:0]];
 
-  case (width)
-    3'b000: index_sew = 8;
-    3'b101: index_sew = 16;
-    3'b110: index_sew = 32;
-    3'b111: index_sew = 64;
-    default: return 0;
-  endcase
+  if (index_sew == 0) return 0;
 
   capped_vl = (vl < `UDB_VLEN / index_sew) ? vl : `UDB_VLEN / index_sew;
 
   for (int i = 0; i < capped_vl; i++) begin
-    logic[63:0] slice = (val >> (i * index_sew)) & ((64'b1 << index_sew) - 1);
+    logic[63:0] shifted = 64'(val >> (i * index_sew));
+    logic[63:0] mask = (64'b1 << index_sew) - 1;
+    logic[63:0] slice = shifted & mask;
     if (seen.exists(slice)) return 1;
     else seen[slice] = 1;
   end

@@ -8,6 +8,7 @@
 
 """Assembly generation helpers for test code."""
 
+from functools import lru_cache
 from typing import Literal
 
 from testgen.constants import INDENT
@@ -38,8 +39,9 @@ def comment_banner(title: str, description: str | None = None) -> str:
 
 
 def arch_block(lines: list[str], *extensions: str) -> list[str]:
-    """Bracket a block of code with `.option arch, +ext...` so the extensions are enabled
-    only where they are needed, instead of in the test's MARCH string."""
+    """Enable *extensions* around *lines*, or return *lines* unchanged if none are given."""
+    if not extensions:
+        return lines
     adds = ", ".join(f"+{e.lower()}" for e in extensions)
     return [".option push", f".option arch, {adds}", *lines, ".option pop"]
 
@@ -68,6 +70,7 @@ def lrsc_retry_loop(label: str, counter_reg: int, sc_rd: int) -> tuple[list[str]
     return opening, closing
 
 
+@lru_cache(maxsize=4096)
 def to_hex(value: int, bits: int) -> str:
     """
     Convert an integer to a hex string for assembly output.
@@ -153,6 +156,49 @@ def write_sigupd(
         )
     else:
         raise ValueError(f"Unknown sig_type: {sig_type}")
+
+
+# Bytes written by each S/FS-type store
+STORE_BYTES = {"sb": 1, "sh": 2, "sw": 4, "sd": 8, "fsh": 2, "fsw": 4, "fsd": 8, "fsq": 16}
+
+# Background pattern for store targets.
+# Its bytes differ from each other and from common edge-value bytes.
+STORE_CANARY = 0xD2691EA74DB836E5
+
+
+def store_area_offsets(area_bytes: int, test_data: TestData) -> range:
+    """Byte offsets of the XLEN words that cover area_bytes."""
+    xlen_bytes = test_data.xlen // 8
+    words = max(1, -(-area_bytes // xlen_bytes))
+    return range(0, words * xlen_bytes, xlen_bytes)
+
+
+def fill_store_target(base_reg: int, temp_reg: int, test_data: TestData, *, area_bytes: int) -> list[str]:
+    """Fill the XLEN words that cover area_bytes at base_reg with STORE_CANARY.
+
+    A store that is dropped, goes to another address, or writes too many bytes then changes the readback.
+    """
+    canary = STORE_CANARY & ((1 << test_data.xlen) - 1)
+    return [
+        load_int_reg("store canary", temp_reg, canary, test_data),
+        *(
+            f"SREG x{temp_reg}, {offset}(x{base_reg}) # fill store target with canary"
+            for offset in store_area_offsets(area_bytes, test_data)
+        ),
+    ]
+
+
+def check_store_target(base_reg: int, temp_reg: int, test_data: TestData, *, area_bytes: int) -> list[str]:
+    """Load the XLEN words that cover area_bytes at base_reg and add each to the signature."""
+    lines: list[str] = []
+    for offset in store_area_offsets(area_bytes, test_data):
+        lines.extend(
+            [
+                f"LREG x{temp_reg}, {offset}(x{base_reg}) # load store target for checking",
+                write_sigupd(temp_reg, test_data),
+            ]
+        )
+    return lines
 
 
 def reproducible_hash(s: str) -> int:

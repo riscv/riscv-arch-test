@@ -7,6 +7,7 @@
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
+    compute_egs_vlen,
     handle_parameter_exclusions,
     load_test_vtype,
     load_vec_regs,
@@ -58,6 +59,20 @@ vvvp_config = InstructionTypeConfig(
 vcompress_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
     vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs1"), ("vd", "vs2"), ("vs1", "vs2")}),
+)
+vvv_egs4_config = InstructionTypeConfig(
+    required_params={"vd", "vs1", "vs2"},
+    vector_data=VectorTypeConfig(
+        egs=4,
+    ),
+)
+vvv_sha_egs4_config = InstructionTypeConfig(
+    required_params={"vd", "vs1", "vs2"},
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs1"), ("vd", "vs2")}, egs=4),
+)
+vvv_sm_egs8_config = InstructionTypeConfig(
+    required_params={"vd", "vs1", "vs2"},
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, egs=8),
 )
 
 
@@ -153,6 +168,27 @@ def format_vcompress(
     return format_vvv_like_type(instr_str, test_data, params, "VCOMPRESS")
 
 
+@add_instruction_formatter("VVV_EGS4", vvv_egs4_config)
+def format_vvv_egs4(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    return format_vvv_like_type(instr_str, test_data, params, "VVV_EGS4", egs=4)
+
+
+@add_instruction_formatter("VVV_SHA_EGS4", vvv_sha_egs4_config)
+def format_vvv_sha_egs4(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    return format_vvv_like_type(instr_str, test_data, params, "VVV_SHA_EGS4", egs=4)
+
+
+@add_instruction_formatter("VVV_SM_EGS8", vvv_sm_egs8_config)
+def format_vvv_sm_egs8(
+    instr_str: str, test_data: TestData, params: InstructionParams
+) -> tuple[list[str], list[str], list[str]]:
+    return format_vvv_like_type(instr_str, test_data, params, "VVV_SM_EGS8", egs=8)
+
+
 def format_vvv_like_type(
     instr_str: str,
     test_data: TestData,
@@ -161,6 +197,7 @@ def format_vvv_like_type(
     *,
     widen: set[str] | None = None,
     enable_vs2_preload: bool = False,
+    egs: int = 1,
 ) -> tuple[list[str], list[str], list[str]]:
     assert params.vs1 is not None and params.vs1_val_pointer is not None, (
         f"vs1 and vs1_val_pointer must be provided for {type_name}-type instructions"
@@ -174,6 +211,9 @@ def format_vvv_like_type(
     assert params.temp_reg is not None, f"temp_reg must be provided for {type_name}-type instructions"
     assert params.sew is not None, f"sew must be provided for {type_name}-type instructions"
     assert params.lmul is not None, f"lmul must be provided for {type_name}-type instructions"
+    assert not isinstance(params.vl, int) or params.vl % egs == 0, (
+        f"params.vl must be a multiple of {egs} for EGS={egs} instruction, got: {params.vl}"
+    )
     assert test_data.test_chunk is not None, f"format_{type_name.lower()}_type must be used with an active TestChunk"
 
     if widen is None:
@@ -201,13 +241,13 @@ def format_vvv_like_type(
     vs2_vl = params.vl if params.vector_suite == "base" or not enable_vs2_preload else "vlmax"
 
     to_load = [
-        VectorLoad(reg="vd", widen="vd" in widen, vl=vd_vl, no_fractional_load=True),
-        VectorLoad(reg="vs2", widen="vs2" in widen, vl=vs2_vl),
+        VectorLoad(reg="vd", widen="vd" in widen, vl=vd_vl, no_fractional_load=True, egs=egs),
+        VectorLoad(reg="vs2", widen="vs2" in widen, vl=vs2_vl, egs=egs),
     ]
 
     if not (params.vs1 == params.vs2 and params.vector_suite == "length" and enable_vs2_preload):
         # Don't overwrite vs2 in this case
-        to_load.append(VectorLoad(reg="vs1", widen="vs1" in widen))
+        to_load.append(VectorLoad(reg="vs1", widen="vs1" in widen, egs=egs))
 
     load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
     setup.extend(load_code)
@@ -231,12 +271,13 @@ def format_vvv_like_type(
         sig_lmul = params.lmul * (2 if "vd" in widen else 1)
         check = [*write_sigupd_v_len(test_data, params, sig_lmul, widen_vd="vd" in widen, vcompress=vcompress)]
     else:
-        check = [*write_sigupd_v(test_data, params, widen_vd="vd" in widen)]
+        check = [*write_sigupd_v(test_data, params, widen_vd="vd" in widen, egs=egs)]
 
     # This can only be released after sigupd
     if params.maskval:
         test_data.vec_regs.return_register(0)
 
-    handle_parameter_exclusions(params.lmul, setup, check)
+    min_vlen = compute_egs_vlen(params.sew, params.lmul, egs)
+    handle_parameter_exclusions(params.lmul, setup, check, min_vlen=min_vlen)
 
     return (setup, test, check)

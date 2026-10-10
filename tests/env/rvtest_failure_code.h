@@ -2573,7 +2573,8 @@
     trap_diag_hint_tval_str:
         .ascii  "RVCP: HINT: XTVAL mismatch. For illegal instructions, xtval should contain the\n"
         .ascii  "RVCP:       instruction encoding (or 0). For address faults, it should contain the\n"
-        .asciz  "RVCP:       faulting address. Check DUT's xtval reporting behavior.\n"
+        .ascii  "RVCP:       faulting address. On an interrupt it must be 0. Check DUT's xtval\n"
+        .asciz  "RVCP:       reporting behavior.\n"
     trap_diag_hint_ip_str:
         .ascii  "RVCP: HINT: XIP mismatch means interrupt pending bits differ. Check: interrupt\n"
         .ascii  "RVCP:       controller configuration, RVMODEL interrupt set/clear macros, timer\n"

@@ -399,6 +399,7 @@ normative_rule_definitions:
   # For other traps, stval is set to zero, but a future standard may redefine
   # stval’s setting for other traps.
   # ecall from S traps to M, so it does not show this; a delegated ecall from U is not recorded.
+  # Interrupt entries record stval; cp_trigger leaves it nonzero before each interrupt.
   - name: stval_op_other_traps
     coverpoint: ["InterruptsS_cg/cp_trigger"]
 

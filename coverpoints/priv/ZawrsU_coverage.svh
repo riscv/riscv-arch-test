@@ -65,13 +65,13 @@ covergroup ZawrsU_cg with function sample(ins_t ins);
         bins one = {1};
     }
 
-    mip_any_ones: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip") ||
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "meip") ||
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "msip")
+    mip_any_ones: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")[0] ||
+                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "meip")[0] ||
+                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "msip")[0]
                            `ifdef S_SUPPORTED
-                        || get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "stip") ||
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "seip") ||
-                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "ssip")
+                        || get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "stip")[0] ||
+                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "seip")[0] ||
+                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "ssip")[0]
                            `endif){
         bins any_ones = {1};
     }

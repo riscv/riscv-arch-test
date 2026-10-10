@@ -53,7 +53,7 @@ include::norm/D_norm_rules.adoc[]
 
 ==== Zfh Half-Precision FP
 
-The rows of <<t-Zfh-coverpoints>> with D in the ExtraExtension column apply only when D is also supported. They cover fcvt.d.h, fcvt.h.d, and NaN-boxing of half-precision values in 64-bit registers.
+The rows of <<t-Zfh-coverpoints>> with D in the ExtraExtensions column apply only when D is also supported. They cover fcvt.d.h, fcvt.h.d, and NaN-boxing of half-precision values in 64-bit registers.
 
 include::{testplansdir}/Zfh.adoc[]
 
@@ -63,7 +63,7 @@ include::norm/Zfh_norm_rules.adoc[]
 
 ===== Zfhmin
 
-The rows of <<t-Zfhmin-coverpoints>> with D in the ExtraExtension column apply only when D is also supported. They cover fcvt.d.h, fcvt.h.d, and NaN-boxing of half-precision values in 64-bit registers.
+The rows of <<t-Zfhmin-coverpoints>> with D in the ExtraExtensions column apply only when D is also supported. They cover fcvt.d.h, fcvt.h.d, and NaN-boxing of half-precision values in 64-bit registers.
 
 include::{testplansdir}/Zfhmin.adoc[]
 
@@ -73,24 +73,14 @@ include::norm/Zfhmin_norm_rules.adoc[]
 
 ==== Zfa Additional FP
 
-The rows of <<t-Zfa-coverpoints>> with an entry in the ExtraExtension column apply only when that extension is also supported.
+The rows of <<t-Zfa-coverpoints>> with an entry in the ExtraExtensions column apply only when those extensions are also supported.
 The D rows cover the double-precision instructions and NaN-boxing of single-precision values in 64-bit registers, and the Zfh rows cover the half-precision instructions.
+The Zfh:D rows, which need both Zfh and D, cover NaN-boxing of half-precision values in 64-bit registers.
 The Zvfh row covers fli.h, which Zfa provides with Zvfh even when Zfh is not supported.
 
 include::{testplansdir}/Zfa.adoc[]
 
 include::norm/Zfa_norm_rules.adoc[]
-
-
-
-===== ZfaZfhD
-
-When Zfa is supported with both Zfh and D, there are additional
-NAN-Boxing tests for 16-bit values in 64-bit registers.
-
-include::{testplansdir}/ZfaZfhD.adoc[]
-
-include::norm/ZfaZfhD_norm_rules.adoc[]
 
 
 

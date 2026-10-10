@@ -652,7 +652,7 @@
     "Svukte": { "supported": false },
     "Zilx": { "supported": false },
     "Zibi": {
-      "supported": true
+      "supported": false
     },
     // This extension just asserts that the cache block size is 64 bytes.
     // If you enable this you also need to ensure `platform.cache_block_size_exp`
@@ -799,7 +799,7 @@
       "supported": false
     },
     "Zbkc": {
-      "supported": false
+      "supported": true
     },
     "Zbkx": {
       "supported": false
@@ -886,7 +886,7 @@
       "supported": true
     },
     "Sscofpmf": {
-      "supported": false
+      "supported": true
     },
     "Sscounterenw": {
       "supported": true
@@ -1008,12 +1008,12 @@
         "supported_interrupts": { "len": "xlen", "value": "0" }
       },
       // CSRs
-      "mcontext": { "supported": false },
+      "mcontext": { "supported": true },
       // The number of supported triggers.  This has to be
       // non-negative, and greater than 0 if Sdtrig is supported.
       // The model does not support more than 16 triggers.
       "num_triggers": 16,
-      "scontext": { "supported": false }
+      "scontext": { "supported": true }
     },
     "Smdbltrp": { "supported": true },
     "Ssdbltrp": { "supported": false },

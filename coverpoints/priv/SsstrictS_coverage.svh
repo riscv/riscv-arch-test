@@ -93,8 +93,8 @@ endgroup
 covergroup SsstrictS_instr_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-    `include "RISCV_coverage_instr.svh"
-    `include "priv/RISCV_coverage_vect_instr.svh"
+    `include "general/RISCV_coverage_instr.svh"
+    `include "general/RISCV_coverage_vect_instr.svh"
 
     // main coverpoints
     cp_illegal:           cross priv_mode_s, illegal;
@@ -193,7 +193,7 @@ endgroup
 covergroup SsstrictS_comp_instr_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-    `include "RISCV_coverage_comp_instr.svh"
+    `include "general/RISCV_coverage_comp_instr.svh"
 
     // main coverpoints
     cp_compressed00: cross priv_mode_s, compressed00;

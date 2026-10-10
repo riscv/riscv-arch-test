@@ -4,7 +4,7 @@
 ==== Zacas Atomic Compare-and-Swap
 
 <<t-Zacas-coverpoints>> summarizes the coverpoints for the Zacas extension.
-The rows with Zabha in the ExtraExtension column, amocas.b and amocas.h, apply only when Zabha is also supported.
+The rows with Zabha in the ExtraExtensions column, amocas.b and amocas.h, apply only when Zabha is also supported.
 
 [[t-Zacas-coverpoints]]
 .Zacas Instruction Coverpoints

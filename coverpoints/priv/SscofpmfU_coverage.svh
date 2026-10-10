@@ -27,6 +27,10 @@ covergroup SscofpmfU_cg with function sample(ins_t ins);
         sip_lcofi_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sip", "lcofip")[0] {
             bins zero = {0};
         }
+        // With S, LCOFIP is cleared through sip, so check sip rather than mip here.
+        sip_clear: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sip", "sip") == 0) {
+                bins yes = {1};
+        }
 
         sret_insn: coverpoint ins.current.insn {
                 type_option.weight = 0;
@@ -51,11 +55,40 @@ covergroup SscofpmfU_cg with function sample(ins_t ins);
     cp_uinh_inhibits_umode:    cross priv_mode_u, mhpmevent_xinh_combos, mhpmevent_of_zero;
     `ifdef S_SUPPORTED
 
-        cp_of_set_on_overflow: cross priv_mode_u, sip_lcofi_one, mie_clear, mhpmevent_of_one, mhpmevent_inhibits_pattern_state;
+        // The U-mode tests keep counting inhibited in the modes above U so the T-SBI trap handler
+        // never counts. This is the inhibit pattern in which U-mode still counts.
+        `ifdef UDB_MXLEN_64
+            mhpmevent_u_counts_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mhpmevent3", "mhpmevent3")[62:58]) {
+                    bins minh_sinh = {5'b11000};
+            }
+        `else
+            mhpmevent_u_counts_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mhpmevent3h", "mhpmevent3h")[30:26]) {
+                    bins minh_sinh = {5'b11000};
+            }
+        `endif
+        cp_of_set_on_overflow: cross priv_mode_u, sip_lcofi_one, mie_clear, mhpmevent_of_one, mhpmevent_u_counts_pattern_state;
     `else
-        cp_of_set_on_overflow: cross priv_mode_u, lcofi_ip_one, mie_clear, mhpmevent_of_one, mhpmevent_inhibits_pattern_state;
+        // The U-mode tests keep counting inhibited in the modes above U so the T-SBI trap handler
+        // never counts. This is the inhibit pattern in which U-mode still counts.
+        `ifdef UDB_MXLEN_64
+            mhpmevent_u_counts_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mhpmevent3", "mhpmevent3")[62:58]) {
+                    bins minh_only = {5'b10000};   // SINH is read-only zero without S-mode
+            }
+        `else
+            mhpmevent_u_counts_pattern_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mhpmevent3h", "mhpmevent3h")[30:26]) {
+                    bins minh_only = {5'b10000};   // SINH is read-only zero without S-mode
+            }
+        `endif
+        cp_of_set_on_overflow: cross priv_mode_u, lcofi_ip_one, mie_clear, mhpmevent_of_one, mhpmevent_u_counts_pattern_state;
     `endif
-    cp_overflow_hw_only:       cross priv_mode_u, mip_clear, mie_clear, mhpmcounter_extreme_state, mhpmevent_all_zero;
+    // An overflow with OF already 1 leaves OF set and does not request LCOFI. The counter can wrap in any mode.
+    `ifdef S_SUPPORTED
+        cp_overflow_hw_only:   cross priv_mode_u, sip_clear, mie_clear, mhpmcounter_extreme_state, mhpmevent_all_zero;
+        cp_of_already_set:     cross mhpmevent_of_was_one, mhpmevent_of_one, mhpmcounter_wraps, sip_lcofi_zero;
+    `else
+        cp_overflow_hw_only:   cross priv_mode_u, mip_clear, mie_clear, mhpmcounter_extreme_state, mhpmevent_all_zero;
+        cp_of_already_set:     cross mhpmevent_of_was_one, mhpmevent_of_one, mhpmcounter_wraps, lcofi_ip_zero;
+    `endif
     `ifdef S_SUPPORTED
 
         cp_lcofip_hw_only:     cross priv_mode_u, mhpmevent_of, sip_lcofi_zero ;

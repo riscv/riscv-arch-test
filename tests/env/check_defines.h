@@ -160,6 +160,22 @@
 
 #endif // STANDARD_SM_SUPPORTED || S_SUPPORTED
 
+##### Sscofpmf #####
+#ifdef SSCOFPMF_SUPPORTED
+  #if !defined(RVMODEL_HPM_COUNTER) || !defined(RVMODEL_MHPMEVENT_VAL) || !defined(RVMODEL_MHPMEVENT_CODE)
+    #error "Sscofpmf is implemented but RVMODEL_HPM_COUNTER, RVMODEL_MHPMEVENT_VAL or RVMODEL_MHPMEVENT_CODE is not defined. Define them in rvmodel_macros.h."
+  #endif
+  #if (RVMODEL_HPM_COUNTER < 3) || (RVMODEL_HPM_COUNTER > 31)
+    #error "RVMODEL_HPM_COUNTER must be an HPM counter index from 3 to 31."
+  #endif
+
+  // CSRs of the HPM counter selected by RVMODEL_HPM_COUNTER. The high halves exist only on RV32.
+  #define RVTEST_CSR_MHPMEVENT    (CSR_MHPMEVENT3 + RVMODEL_HPM_COUNTER - 3)
+  #define RVTEST_CSR_MHPMCOUNTER  (CSR_MHPMCOUNTER3 + RVMODEL_HPM_COUNTER - 3)
+  #define RVTEST_CSR_MHPMEVENTH   (CSR_MHPMEVENT3H + RVMODEL_HPM_COUNTER - 3)
+  #define RVTEST_CSR_MHPMCOUNTERH (CSR_MHPMCOUNTER3H + RVMODEL_HPM_COUNTER - 3)
+#endif
+
 ##### Configuration Limitations #####
 #if UDB_NUM_PMP_ENTRIES > 0
   #ifndef UDB_PMP_NAPOT_SUPPORTED

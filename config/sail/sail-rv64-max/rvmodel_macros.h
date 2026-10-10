@@ -140,4 +140,13 @@
   li _R2, SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear SSW interrupt */ \
 
+##### Sscofpmf #####
+
+#define RVMODEL_HPM_COUNTER 3   // HPM counter used by the Sscofpmf tests (3 to 31)
+// Selector 1 is mapped to EV_FENCE by base.event_selectors in sail.json. A fence raises
+// the event in every privilege mode and never traps.
+#define RVMODEL_MHPMEVENT_VAL 0x1
+#define RVMODEL_MHPMEVENT_CODE(_R1, _R2) \
+    fence
+
 #endif // _RVMODEL_MACROS_H

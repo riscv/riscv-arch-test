@@ -2214,6 +2214,129 @@ tsbi_instr_table:
                 sfence.vma                       // TSBI_SFENCE_VMA
                 ret
         #endif  // S_SUPPORTED
+        // Sscofpmf performance-monitoring CSRs. They sit at the end of the table so the dispatcher's
+        // linear scan does not pass them on the way to any other entry.
+        #ifdef SSCOFPMF_SUPPORTED
+        TSBI_CSR_INSTR_TABLE(0xB03) // mhpmcounter3
+        TSBI_CSR_INSTR_TABLE(0xDA0) // scountovf
+        TSBI_CSR_INSTR_TABLE(0x323) // mhpmevent3
+        TSBI_CSR_INSTR_TABLE(0x324) // mhpmevent4
+        TSBI_CSR_INSTR_TABLE(0x325) // mhpmevent5
+        TSBI_CSR_INSTR_TABLE(0x326) // mhpmevent6
+        TSBI_CSR_INSTR_TABLE(0x327) // mhpmevent7
+        TSBI_CSR_INSTR_TABLE(0x328) // mhpmevent8
+        TSBI_CSR_INSTR_TABLE(0x329) // mhpmevent9
+        TSBI_CSR_INSTR_TABLE(0x32A) // mhpmevent10
+        TSBI_CSR_INSTR_TABLE(0x32B) // mhpmevent11
+        TSBI_CSR_INSTR_TABLE(0x32C) // mhpmevent12
+        TSBI_CSR_INSTR_TABLE(0x32D) // mhpmevent13
+        TSBI_CSR_INSTR_TABLE(0x32E) // mhpmevent14
+        TSBI_CSR_INSTR_TABLE(0x32F) // mhpmevent15
+        TSBI_CSR_INSTR_TABLE(0x330) // mhpmevent16
+        TSBI_CSR_INSTR_TABLE(0x331) // mhpmevent17
+        TSBI_CSR_INSTR_TABLE(0x332) // mhpmevent18
+        TSBI_CSR_INSTR_TABLE(0x333) // mhpmevent19
+        TSBI_CSR_INSTR_TABLE(0x334) // mhpmevent20
+        TSBI_CSR_INSTR_TABLE(0x335) // mhpmevent21
+        TSBI_CSR_INSTR_TABLE(0x336) // mhpmevent22
+        TSBI_CSR_INSTR_TABLE(0x337) // mhpmevent23
+        TSBI_CSR_INSTR_TABLE(0x338) // mhpmevent24
+        TSBI_CSR_INSTR_TABLE(0x339) // mhpmevent25
+        TSBI_CSR_INSTR_TABLE(0x33A) // mhpmevent26
+        TSBI_CSR_INSTR_TABLE(0x33B) // mhpmevent27
+        TSBI_CSR_INSTR_TABLE(0x33C) // mhpmevent28
+        TSBI_CSR_INSTR_TABLE(0x33D) // mhpmevent29
+        TSBI_CSR_INSTR_TABLE(0x33E) // mhpmevent30
+        TSBI_CSR_INSTR_TABLE(0x33F) // mhpmevent31
+        TSBI_CSR_INSTR_TABLE(0xB04) // mhpmcounter4
+        TSBI_CSR_INSTR_TABLE(0xB05) // mhpmcounter5
+        TSBI_CSR_INSTR_TABLE(0xB06) // mhpmcounter6
+        TSBI_CSR_INSTR_TABLE(0xB07) // mhpmcounter7
+        TSBI_CSR_INSTR_TABLE(0xB08) // mhpmcounter8
+        TSBI_CSR_INSTR_TABLE(0xB09) // mhpmcounter9
+        TSBI_CSR_INSTR_TABLE(0xB0A) // mhpmcounter10
+        TSBI_CSR_INSTR_TABLE(0xB0B) // mhpmcounter11
+        TSBI_CSR_INSTR_TABLE(0xB0C) // mhpmcounter12
+        TSBI_CSR_INSTR_TABLE(0xB0D) // mhpmcounter13
+        TSBI_CSR_INSTR_TABLE(0xB0E) // mhpmcounter14
+        TSBI_CSR_INSTR_TABLE(0xB0F) // mhpmcounter15
+        TSBI_CSR_INSTR_TABLE(0xB10) // mhpmcounter16
+        TSBI_CSR_INSTR_TABLE(0xB11) // mhpmcounter17
+        TSBI_CSR_INSTR_TABLE(0xB12) // mhpmcounter18
+        TSBI_CSR_INSTR_TABLE(0xB13) // mhpmcounter19
+        TSBI_CSR_INSTR_TABLE(0xB14) // mhpmcounter20
+        TSBI_CSR_INSTR_TABLE(0xB15) // mhpmcounter21
+        TSBI_CSR_INSTR_TABLE(0xB16) // mhpmcounter22
+        TSBI_CSR_INSTR_TABLE(0xB17) // mhpmcounter23
+        TSBI_CSR_INSTR_TABLE(0xB18) // mhpmcounter24
+        TSBI_CSR_INSTR_TABLE(0xB19) // mhpmcounter25
+        TSBI_CSR_INSTR_TABLE(0xB1A) // mhpmcounter26
+        TSBI_CSR_INSTR_TABLE(0xB1B) // mhpmcounter27
+        TSBI_CSR_INSTR_TABLE(0xB1C) // mhpmcounter28
+        TSBI_CSR_INSTR_TABLE(0xB1D) // mhpmcounter29
+        TSBI_CSR_INSTR_TABLE(0xB1E) // mhpmcounter30
+        TSBI_CSR_INSTR_TABLE(0xB1F) // mhpmcounter31
+          #if (UDB_MXLEN==32)
+        TSBI_CSR_INSTR_TABLE(0x723) // mhpmevent3h
+        TSBI_CSR_INSTR_TABLE(0xB83) // mhpmcounter3h
+        TSBI_CSR_INSTR_TABLE(0x724) // mhpmevent4h
+        TSBI_CSR_INSTR_TABLE(0x725) // mhpmevent5h
+        TSBI_CSR_INSTR_TABLE(0x726) // mhpmevent6h
+        TSBI_CSR_INSTR_TABLE(0x727) // mhpmevent7h
+        TSBI_CSR_INSTR_TABLE(0x728) // mhpmevent8h
+        TSBI_CSR_INSTR_TABLE(0x729) // mhpmevent9h
+        TSBI_CSR_INSTR_TABLE(0x72A) // mhpmevent10h
+        TSBI_CSR_INSTR_TABLE(0x72B) // mhpmevent11h
+        TSBI_CSR_INSTR_TABLE(0x72C) // mhpmevent12h
+        TSBI_CSR_INSTR_TABLE(0x72D) // mhpmevent13h
+        TSBI_CSR_INSTR_TABLE(0x72E) // mhpmevent14h
+        TSBI_CSR_INSTR_TABLE(0x72F) // mhpmevent15h
+        TSBI_CSR_INSTR_TABLE(0x730) // mhpmevent16h
+        TSBI_CSR_INSTR_TABLE(0x731) // mhpmevent17h
+        TSBI_CSR_INSTR_TABLE(0x732) // mhpmevent18h
+        TSBI_CSR_INSTR_TABLE(0x733) // mhpmevent19h
+        TSBI_CSR_INSTR_TABLE(0x734) // mhpmevent20h
+        TSBI_CSR_INSTR_TABLE(0x735) // mhpmevent21h
+        TSBI_CSR_INSTR_TABLE(0x736) // mhpmevent22h
+        TSBI_CSR_INSTR_TABLE(0x737) // mhpmevent23h
+        TSBI_CSR_INSTR_TABLE(0x738) // mhpmevent24h
+        TSBI_CSR_INSTR_TABLE(0x739) // mhpmevent25h
+        TSBI_CSR_INSTR_TABLE(0x73A) // mhpmevent26h
+        TSBI_CSR_INSTR_TABLE(0x73B) // mhpmevent27h
+        TSBI_CSR_INSTR_TABLE(0x73C) // mhpmevent28h
+        TSBI_CSR_INSTR_TABLE(0x73D) // mhpmevent29h
+        TSBI_CSR_INSTR_TABLE(0x73E) // mhpmevent30h
+        TSBI_CSR_INSTR_TABLE(0x73F) // mhpmevent31h
+        TSBI_CSR_INSTR_TABLE(0xB84) // mhpmcounter4h
+        TSBI_CSR_INSTR_TABLE(0xB85) // mhpmcounter5h
+        TSBI_CSR_INSTR_TABLE(0xB86) // mhpmcounter6h
+        TSBI_CSR_INSTR_TABLE(0xB87) // mhpmcounter7h
+        TSBI_CSR_INSTR_TABLE(0xB88) // mhpmcounter8h
+        TSBI_CSR_INSTR_TABLE(0xB89) // mhpmcounter9h
+        TSBI_CSR_INSTR_TABLE(0xB8A) // mhpmcounter10h
+        TSBI_CSR_INSTR_TABLE(0xB8B) // mhpmcounter11h
+        TSBI_CSR_INSTR_TABLE(0xB8C) // mhpmcounter12h
+        TSBI_CSR_INSTR_TABLE(0xB8D) // mhpmcounter13h
+        TSBI_CSR_INSTR_TABLE(0xB8E) // mhpmcounter14h
+        TSBI_CSR_INSTR_TABLE(0xB8F) // mhpmcounter15h
+        TSBI_CSR_INSTR_TABLE(0xB90) // mhpmcounter16h
+        TSBI_CSR_INSTR_TABLE(0xB91) // mhpmcounter17h
+        TSBI_CSR_INSTR_TABLE(0xB92) // mhpmcounter18h
+        TSBI_CSR_INSTR_TABLE(0xB93) // mhpmcounter19h
+        TSBI_CSR_INSTR_TABLE(0xB94) // mhpmcounter20h
+        TSBI_CSR_INSTR_TABLE(0xB95) // mhpmcounter21h
+        TSBI_CSR_INSTR_TABLE(0xB96) // mhpmcounter22h
+        TSBI_CSR_INSTR_TABLE(0xB97) // mhpmcounter23h
+        TSBI_CSR_INSTR_TABLE(0xB98) // mhpmcounter24h
+        TSBI_CSR_INSTR_TABLE(0xB99) // mhpmcounter25h
+        TSBI_CSR_INSTR_TABLE(0xB9A) // mhpmcounter26h
+        TSBI_CSR_INSTR_TABLE(0xB9B) // mhpmcounter27h
+        TSBI_CSR_INSTR_TABLE(0xB9C) // mhpmcounter28h
+        TSBI_CSR_INSTR_TABLE(0xB9D) // mhpmcounter29h
+        TSBI_CSR_INSTR_TABLE(0xB9E) // mhpmcounter30h
+        TSBI_CSR_INSTR_TABLE(0xB9F) // mhpmcounter31h
+          #endif
+        #endif  // SSCOFPMF_SUPPORTED
         .word 0 // sentinel to mark end of table
 
 .endif
@@ -2787,8 +2910,10 @@ excpt_\__MODE__\()hndlr_tbl:
         la      T2, resto_\__MODE__\()rtn
         jr      T2
 
-\__MODE__\()clr_Lcof_int:                            // local counter overflow interrupt: xIP.LCOFIP already cleared
-        la      T2, resto_\__MODE__\()rtn
+\__MODE__\()clr_Lcof_int:                            // local counter overflow interrupt
+        LI(     T2, MIP_LCOFIP)
+        csrc    CSR_XIP, T2                           // xIP.LCOFIP is writable in mip and sip
+        LA(     T2, resto_\__MODE__\()rtn)
         jr      T2
 
 .popsection                                          // end of .text.rvmodel section

@@ -830,8 +830,8 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
 
         //pte.20
         cp_reserved_read_fault:  cross reserved_PTE_d, load_page_fault, read_acc, mode;
-        cp_reserved_write_fault: cross reserved_PTE_d, store_page_fault, read_acc, mode;
-        cp_reserved_exec_fault:  cross reserved_PTE_i, ins_page_fault, read_acc, mode;
+        cp_reserved_write_fault: cross reserved_PTE_d, store_page_fault, write_acc, mode;
+        cp_reserved_exec_fault:  cross reserved_PTE_i, ins_page_fault, exec_acc, mode;
 
         //pte.17&19&20
         cp_read_nofault:  cross zeros_PTE_d, read_acc, mode;

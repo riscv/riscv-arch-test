@@ -15,7 +15,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 34
+#define SIGUPD_COUNT 36
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
@@ -41,6 +41,8 @@ main:
 // Virtual address of rvtest_data_1
   .set va_data, 0x140802000
   .set va_data_invalid, 0x1c0802000
+  .set va_cross_1, 0x140802000
+  .set va_cross_2, va_cross_1 + 0x1000
 
 // Virtual address of the code region
   .set va_rvtest_code_begin, 0x180000000
@@ -333,6 +335,48 @@ ExceptionsSv_cg_cp_misaligned_priority_fetch_s_test8_exec:
 
 #endif
 
+// The first page faults
+  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_cross_1, LEVEL2)
+  PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_cross_1, LEVEL1)
+  PTE_SETUP_SV39(rvtest_cross_page, (0), va_cross_1, LEVEL0)
+  PTE_SETUP_SV39(rvtest_cross_page + 4096, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_cross_2, LEVEL0)
+  sfence.vma
+  LI(a5, va_cross_2 - 2)
+
+ExceptionsSv_cg_cp_misaligned_inst_page_fault_s_first_exec:
+  jalr ra, a5, 0
+  nop
+ExceptionsSv_cg_cp_misaligned_load_page_fault_s_first_load:
+  lw a3, 0(a5)
+  nop
+ExceptionsSv_cg_cp_misaligned_store_page_fault_s_first_store:
+  sw a2, 0(a5)
+  nop
+
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSv_cg_cp_misaligned_load_page_fault_s_first_load, ExceptionsSv_cg_cp_misaligned_load_page_fault_s_first_load_str)
+
+// The second page faults
+  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_cross_1, LEVEL2)
+  PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_cross_1, LEVEL1)
+  PTE_SETUP_SV39(rvtest_cross_page, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_cross_1, LEVEL0)
+  PTE_SETUP_SV39(rvtest_cross_page + 4096, (0), va_cross_2, LEVEL0)
+  sfence.vma
+  LI(a5, va_cross_2 - 2)
+
+ExceptionsSv_cg_cp_misaligned_inst_page_fault_s_second_exec:
+  jalr ra, a5, 0
+  nop
+ExceptionsSv_cg_cp_misaligned_load_page_fault_s_second_load:
+  lw a3, 0(a5)
+  nop
+ExceptionsSv_cg_cp_misaligned_store_page_fault_s_second_store:
+  sw a2, 0(a5)
+  nop
+
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSv_cg_cp_misaligned_load_page_fault_s_second_load, ExceptionsSv_cg_cp_misaligned_load_page_fault_s_second_load_str)
+
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -362,6 +406,15 @@ rvtest_slvl0_pg_tbl:
   .p2align 12
 rvtest_slvl1_pg_tbl:
   .skip(4096)
+// Two pages that a misaligned access spans
+  .p2align 12
+rvtest_cross_page:
+  .skip 4096 - 2
+  .option push
+  .option norvc
+  jr ra
+  .option pop
+  .skip 4096 - 2
 
 // Testcase strings
 ExceptionsSv_cg_cp_store_page_fault_s_test1_store_str: .string "\"test: 1; cg: ExceptionsSv_cg; cp: cp_store_page_fault_s; bin: test1_store\""
@@ -388,6 +441,12 @@ ExceptionsSv_cg_cp_instr_page_fault_s_test7_exec_str: .string "\"test: 21; cg: E
 ExceptionsSv_cg_cp_misaligned_priority_s_test8_store_str: .string "\"test: 22; cg: ExceptionsSv_cg; cp: cp_misaligned_priority_s; bin: test8_store\""
 ExceptionsSv_cg_cp_misaligned_priority_s_test8_load_str: .string "\"test: 23; cg: ExceptionsSv_cg; cp: cp_misaligned_priority_s; bin: test8_load\""
 ExceptionsSv_cg_cp_misaligned_priority_fetch_s_test8_exec_str: .string "\"test: 24; cg: ExceptionsSv_cg; cp: cp_misaligned_priority_fetch_s; bin: test8_exec\""
+ExceptionsSv_cg_cp_misaligned_inst_page_fault_s_first_exec_str: .string "\"test: 25; cg: ExceptionsSv_cg; cp: cp_misaligned_inst_page_fault_s; bin: first_exec\""
+ExceptionsSv_cg_cp_misaligned_load_page_fault_s_first_load_str: .string "\"test: 26; cg: ExceptionsSv_cg; cp: cp_misaligned_load_page_fault_s; bin: first_load\""
+ExceptionsSv_cg_cp_misaligned_store_page_fault_s_first_store_str: .string "\"test: 27; cg: ExceptionsSv_cg; cp: cp_misaligned_store_page_fault_s; bin: first_store\""
+ExceptionsSv_cg_cp_misaligned_inst_page_fault_s_second_exec_str: .string "\"test: 28; cg: ExceptionsSv_cg; cp: cp_misaligned_inst_page_fault_s; bin: second_exec\""
+ExceptionsSv_cg_cp_misaligned_load_page_fault_s_second_load_str: .string "\"test: 29; cg: ExceptionsSv_cg; cp: cp_misaligned_load_page_fault_s; bin: second_load\""
+ExceptionsSv_cg_cp_misaligned_store_page_fault_s_second_store_str: .string "\"test: 30; cg: ExceptionsSv_cg; cp: cp_misaligned_store_page_fault_s; bin: second_store\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

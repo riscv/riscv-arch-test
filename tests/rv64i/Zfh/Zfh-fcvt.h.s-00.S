@@ -2339,6 +2339,7 @@ Zfh_fcvt_h_s_cg_cp_csr_frm_rmm:
 /////////////////////////////////
 
 # Testcase cp_NaNBox_S_H (Test NaN-Boxed inputs)
+  RVTEST_TESTDATA_LOAD_FLOAT_SINGLE(x3, f16) # load fd: f16 = 0x89abcdef
   RVTEST_TESTDATA_LOAD_FLOAT_HALF(x3, f11) # load fs1: f11 = 0x9ca1
   fsflagsi 0b00000 # clear all fflags
 Zfh_fcvt_h_s_cg_cp_NaNBox_S_H_NaNBox:
@@ -2629,6 +2630,7 @@ RVTEST_DATA_BEGIN
 .dword 0x000000006af54ccb
 .dword 0xffffffffd5c8caad
 .dword 0x000000000ad8f763
+.dword 0x0000000089abcdef
 .dword 0x000000007ae69ca1
 
 // Testcase strings

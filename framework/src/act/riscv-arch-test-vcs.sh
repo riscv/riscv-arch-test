@@ -66,7 +66,7 @@ if ! vcs -q -full64 -sverilog testbench -o simv >vcs.log 2>&1; then
 fi
 
 # Simulate
-if ! ./simv -vcs_assert off +traceFileList="${TRACEFILELIST}" >simv.log 2>&1; then
+if ! ./simv -exitstatus -vcs_assert off +traceFileList="${TRACEFILELIST}" >simv.log 2>&1; then
   echo "ERROR collecting coverage. simv run failed; see ${WKDIR}/simv.log" >&2
   exit 1
 fi

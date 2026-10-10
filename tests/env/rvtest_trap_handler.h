@@ -74,9 +74,9 @@
 //    4. common_Xhandler: save T5, restore xSCRATCH, load tentry_addr, jr
 //    5. common_Xentry: save T4..T1, read xcause into T5
 //    6. Ecall detection -> T-SBI dispatch (if ecall and SBI call) OR normal trap sig
-//    7. Normal path: record trap signature (vect+mode, cause, epc/ip, tval/intID)
+//    7. Normal path: record trap signature (vect+mode, cause, epc/ip, tval)
 //    8. Exception: record xEPC, bump past trapping instruction
-//    9. Interrupt: check xtval == 0, clear interrupt source via dispatch table
+//    9. Interrupt: record xIP and xtval, clear interrupt source via dispatch table
 //   10. resto_Xrtn: restore T1..T6 and sp, xret to resume execution
 //
 //  T-SBI (TEST SUPERVISOR BINARY INTERFACE)
@@ -2226,37 +2226,29 @@ tsbi_instr_table:
 // or a genuine ecall exception that should be recorded in the signature).
 //
 // This section:
-//   1. Calculates the trap signature entry size (3, 4, or 6 words)
+//   1. Calculates the trap signature entry size (4, or 6 words for M and HS with H)
 //   2. Pre-increments the trap signature pointer and checks for overrun
-//   3. Records: vect+mode word, xcause, xepc/xip, xtval/intID
+//   3. Records: vect+mode word, xcause, xepc/xip, xtval (with H, second trap value and xtinst)
 //   4. For exceptions: records xEPC and bumps past the trapping instruction
 //   5. For interrupts: dispatches to interrupt clearing routines
 //   6. Restores registers and returns via xret
 //==============================================================================
 
 \__MODE__\()trapsig_ptr_upd:                     // pre-update trap signature pointer
-        li      T2, 4*REGWIDTH                    // T2 = default entry size (4 words for exceptions)
-        bgez    T5, \__MODE__\()xcpt_sig_sv       // if xcause MSB=0 -> exception, keep 4-word size
+        li      T2, 4*REGWIDTH                    // T2 = entry size (4 words)
 
-\__MODE__\()int_sig_sv:                          // interrupt path: determine 3 or 4 word entry
-        slli    T3, T5, 1                          // T3 = xcause << 1 (remove MSB)
-        addi    T3, T3, -(IRQ_M_TIMER)<<1          // compare against timer interrupt threshold
-        bgez    T3, \__MODE__\()trap_sig_sv        // if cause >= timer -> external int (4 words, keep T2)
-        li      T2, 3*REGWIDTH                    // cause < timer -> SW or timer int (3 words)
-        j       \__MODE__\()trap_sig_sv            // go to pointer update
-
-\__MODE__\()xcpt_sig_sv:                          // exception: check for hypervisor (6-word entry)
-// M and HS exception entries add mtval2/htval and mtinst/htinst when H is supported.
+\__MODE__\()trap_sig_sz:                          // check for hypervisor (6-word entry)
+// M and HS entries add mtval2/htval and mtinst/htinst when H is supported.
 .ifc \__MODE__ , M
 #ifdef H_SUPPORTED
-        li      T2, 6*REGWIDTH                  // hypervisor build: 6-word exception entries
+        li      T2, 6*REGWIDTH                  // hypervisor build: 6-word entries
 #endif
 .else
   .ifc \__MODE__ , V
         // VS-mode entries keep 4 words
   .else
 #ifdef H_SUPPORTED
-        li      T2, 6*REGWIDTH                    // S/HS on a hypervisor build: 6-word exception entries
+        li      T2, 6*REGWIDTH                    // S/HS on a hypervisor build: 6-word entries
 #endif
   .endif
 .endif
@@ -2479,6 +2471,10 @@ adj_\__MODE__\()epc_rtn:
         csrw    CSR_XEPC, T3
 
 skp_adj_\__MODE__\()epc:
+// Words 3-5 are also recorded for interrupts, which write zero to xtval
+// (norm:mtval_other_traps_zero) and, with H, to the second trap value and
+// xtinst (norm:H_trap_xtinst_interrupt).
+sv_\__MODE__\()tval_words:
         csrr    T3, CSR_XTVAL                         // T3 = xtval (trap value: faulting addr or instruction)
 
 sv_\__MODE__\()tval:
@@ -2487,7 +2483,7 @@ sv_\__MODE__\()tval:
 skp_\__MODE__\()tval:
 
 // --- Hypervisor-specific fields: second trap value (word 4), xtinst (word 5) ---
-// Must match the entry width chosen in \__MODE__\()xcpt_sig_sv.
+// Must match the entry width chosen in \__MODE__\()trap_sig_sz.
 // xtinst may be written with zero instead of the transformed instruction.
   .ifc \__MODE__ , M
         #ifdef H_SUPPORTED
@@ -2512,6 +2508,7 @@ skp_\__MODE__\()tval:
   .endif
 
 1:
+        bltz    T5, dispatch_\__MODE__\()int_handler  // interrupt -> clear its source
 // --- Dispatch special exception handlers ---
 dispatch_\__MODE__\()spcl_excpt_handler:
         li      T2, int_hndlr_tblsz                // T2 = offset to exception dispatch table
@@ -2541,8 +2538,8 @@ dispatch_\__MODE__\()spcl_excpt_handler:
 
 //==============================================================================
 // INTERRUPT HANDLER
-// Records xIP in the trap signature, checks that xtval (and with H, the second
-// trap value and xtinst) is zero, and clears the interrupt source.
+// Records xIP and, through the exception path's word 3-5 code, xtval (and with
+// H, the second trap value and xtinst), then clears the interrupt source.
 //==============================================================================
 
 common_\__MODE__\()int_handler:
@@ -2555,34 +2552,9 @@ common_\__MODE__\()int_handler:
 sv_\__MODE__\()ip:
         TRAP_SIGUPD(T4, T3, 2, sv_\__MODE__\()ip, sv_\__MODE__\()ip_str) // write word 2: xIP
 
-// An interrupt writes zero to xtval (norm:mtval_other_traps_zero), and with H to the second
-// trap value (mtval2/htval) and xtinst (norm:H_trap_xtinst_interrupt). The interrupt entry
-// does not record them, so check them here.
-        csrr    T3, CSR_XTVAL
-ck_\__MODE__\()int_tval:
-        TRAP_CHECK_ZERO(T3, ck_\__MODE__\()int_tval, ck_\__MODE__\()int_tval_str)
-  .ifc \__MODE__ , M
-        #ifdef H_SUPPORTED
-        csrr    T3, CSR_MTVAL2
-ck_\__MODE__\()int_tval2:
-        TRAP_CHECK_ZERO(T3, ck_\__MODE__\()int_tval2, ck_Mint_tval2_str)
-        csrr    T3, CSR_MTINST
-ck_\__MODE__\()int_tinst:
-        TRAP_CHECK_ZERO(T3, ck_\__MODE__\()int_tinst, ck_Mint_tinst_str)
-        #endif
-  .else
-    .ifnc \__MODE__ , V
-      #ifdef H_SUPPORTED
-        csrr    T3, CSR_HTVAL
-ck_\__MODE__\()int_tval2:
-        TRAP_CHECK_ZERO(T3, ck_\__MODE__\()int_tval2, ck_Hint_tval2_str)
-        csrr    T3, CSR_HTINST
-ck_\__MODE__\()int_tinst:
-        TRAP_CHECK_ZERO(T3, ck_\__MODE__\()int_tinst, ck_Hint_tinst_str)
-      #endif
-    .endif
-  .endif
+        j       sv_\__MODE__\()tval_words           // words 3-5: xtval and, with H, second trap value and xtinst
 
+dispatch_\__MODE__\()int_handler:
         LI(     T2, 0)                               // T2 = 0 (offset for interrupt dispatch table)
 
 //==============================================================================

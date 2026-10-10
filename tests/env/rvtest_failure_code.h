@@ -1149,50 +1149,6 @@
         j trap_diag_field_identified
     1:
 
-        //--- Interrupt zero checks (not recorded in the trap signature) ---
-        // x6 = failure string pointer passed by TRAP_CHECK_ZERO; match it to a known string
-        la x7, ck_Mint_tval_str                      # x7 = address of the nonzero-mtval string
-        bne x6, x7, 1f                               # not this string: try the next one
-        li x8, 10                                    # subtype: nonzero xtval on an interrupt
-        li x9, 0                                     # mode: M
-        j trap_diag_field_identified                 # record subtype and mode
-    1:
-        la x7, ck_Mint_tval2_str                     # x7 = address of the nonzero-mtval2 string
-        bne x6, x7, 1f                               # not this string: try the next one
-        li x8, 11                                    # subtype: nonzero second trap value on an interrupt
-        li x9, 0                                     # mode: M
-        j trap_diag_field_identified                 # record subtype and mode
-    1:
-        la x7, ck_Mint_tinst_str                     # x7 = address of the nonzero-mtinst string
-        bne x6, x7, 1f                               # not this string: try the next one
-        li x8, 12                                    # subtype: nonzero xtinst on an interrupt
-        li x9, 0                                     # mode: M
-        j trap_diag_field_identified                 # record subtype and mode
-    1:
-        la x7, ck_Sint_tval_str                      # x7 = address of the nonzero-stval string
-        bne x6, x7, 1f                               # not this string: try the next one
-        li x8, 10                                    # subtype: nonzero xtval on an interrupt
-        li x9, 1                                     # mode: S/HS
-        j trap_diag_field_identified                 # record subtype and mode
-    1:
-        la x7, ck_Hint_tval2_str                     # x7 = address of the nonzero-htval string
-        bne x6, x7, 1f                               # not this string: try the next one
-        li x8, 11                                    # subtype: nonzero second trap value on an interrupt
-        li x9, 1                                     # mode: S/HS
-        j trap_diag_field_identified                 # record subtype and mode
-    1:
-        la x7, ck_Hint_tinst_str                     # x7 = address of the nonzero-htinst string
-        bne x6, x7, 1f                               # not this string: try the next one
-        li x8, 12                                    # subtype: nonzero xtinst on an interrupt
-        li x9, 1                                     # mode: S/HS
-        j trap_diag_field_identified                 # record subtype and mode
-    1:
-        la x7, ck_Vint_tval_str                      # x7 = address of the nonzero-vstval string
-        bne x6, x7, 1f                               # not this string: try the next one
-        li x8, 10                                    # subtype: nonzero xtval on an interrupt
-        li x9, 3                                     # mode: VS
-        j trap_diag_field_identified                 # record subtype and mode
-    1:
         //--- External interrupt ID mismatch checks ---
         // These use Xclr_Yext_int_str format
         la x7, Mclr_Mext_int_str
@@ -1653,7 +1609,7 @@
         // ---- Subtype 0: Unknown / generic ----
         beqz x8, trap_report_generic
 
-        // ---- Subtypes 1-8 and 10-12: Field-specific mismatches ----
+        // ---- Subtypes 1-8: Field-specific mismatches ----
         j trap_report_field_mismatch
 
     //--------------------------------------------------------------
@@ -1768,12 +1724,6 @@
         beq a0, a1, trap_field_tinst
         li a1, 8
         beq a0, a1, trap_field_intid
-        li a1, 10
-        beq a0, a1, trap_field_int_tval
-        li a1, 11
-        beq a0, a1, trap_field_int_tval2
-        li a1, 12
-        beq a0, a1, trap_field_int_tinst
         LA(a0, trap_diag_field_unknown_str)
         j trap_field_print
     trap_field_vect:
@@ -1799,15 +1749,6 @@
         j trap_field_print
     trap_field_intid:
         LA(a0, trap_diag_field_intid_str)
-        j trap_field_print
-    trap_field_int_tval:
-        LA(a0, trap_diag_field_int_tval_str)
-        j trap_field_print
-    trap_field_int_tval2:
-        LA(a0, trap_diag_field_int_tval2_str)
-        j trap_field_print
-    trap_field_int_tinst:
-        LA(a0, trap_diag_field_int_tinst_str)
     trap_field_print:
         call rvmodel_io_write_str
 
@@ -1887,13 +1828,6 @@
         bne a0, a1, 1f
         // xip mismatch hints
         LA(a0, trap_diag_hint_ip_str)
-        call rvmodel_io_write_str
-        j failedtest_report_end
-    1:
-        li a1, 10
-        bltu a0, a1, 1f
-        // nonzero xtval, second trap value, or xtinst on an interrupt
-        LA(a0, trap_diag_hint_int_zero_str)
         call rvmodel_io_write_str
         j failedtest_report_end
     1:
@@ -2204,7 +2138,6 @@
     .p2align 4
     trap_diag_subtype:                           # 0=unknown, 1=vect, 2=cause, 3=epc, 4=tval,
                                                  # 5=xip, 6=mtval2, 7=xtinst, 8=intID, 9=offset
-                                                 # 10/11/12=nonzero xtval/tval2/xtinst on an interrupt
         .word 0
     trap_diag_mode:                              # 0=M, 1=S, 2=HS, 3=VS
         .word 0
@@ -2475,20 +2408,6 @@
         .string "\"Mismatch in mtinst value! Trap was being handled in M-Mode.\"";
     sv_Htinst_str:
         .string "\"Mismatch in htinst value! Trap was being handled in HS-Mode.\"";
-    ck_Mint_tval_str:
-        .string "\"Nonzero mtval on an interrupt! Trap was being handled in M-Mode.\"";
-    ck_Sint_tval_str:
-        .string "\"Nonzero stval on an interrupt! Trap was being handled in S-Mode.\"";
-    ck_Vint_tval_str:
-        .string "\"Nonzero vstval on an interrupt! Trap was being handled in VS-Mode.\"";
-    ck_Mint_tval2_str:
-        .string "\"Nonzero mtval2 on an interrupt! Trap was being handled in M-Mode.\"";
-    ck_Mint_tinst_str:
-        .string "\"Nonzero mtinst on an interrupt! Trap was being handled in M-Mode.\"";
-    ck_Hint_tval2_str:
-        .string "\"Nonzero htval on an interrupt! Trap was being handled in HS-Mode.\"";
-    ck_Hint_tinst_str:
-        .string "\"Nonzero htinst on an interrupt! Trap was being handled in HS-Mode.\"";
     sv_Mip_str:
         .string "\"Mismatch in mip value! Trap was being handled in M-Mode.\"";
     sv_Sip_str:
@@ -2622,12 +2541,6 @@
         .string "XTINST (trap signature word 5, hypervisor)\n"
     trap_diag_field_intid_str:
         .string "External Interrupt ID (trap signature word 3)\n"
-    trap_diag_field_int_tval_str:
-        .string "XTVAL on an interrupt (checked for zero, not recorded)\n"
-    trap_diag_field_int_tval2_str:
-        .string "MTVAL2/HTVAL on an interrupt (checked for zero, not recorded)\n"
-    trap_diag_field_int_tinst_str:
-        .string "XTINST on an interrupt (checked for zero, not recorded)\n"
     trap_diag_field_unknown_str:
         .string "Unknown field\n"
 
@@ -2660,11 +2573,8 @@
     trap_diag_hint_tval_str:
         .ascii  "RVCP: HINT: XTVAL mismatch. For illegal instructions, xtval should contain the\n"
         .ascii  "RVCP:       instruction encoding (or 0). For address faults, it should contain the\n"
-        .asciz  "RVCP:       faulting address. Check DUT's xtval reporting behavior.\n"
-    trap_diag_hint_int_zero_str:
-        .ascii  "RVCP: HINT: An interrupt must write zero to xtval and, with H, to mtval2/htval\n"
-        .ascii  "RVCP:       and xtinst. Check that the interrupt trap path writes these CSRs\n"
-        .asciz  "RVCP:       instead of leaving the value from an earlier trap or CSR write.\n"
+        .ascii  "RVCP:       faulting address. On an interrupt it must be 0. Check DUT's xtval\n"
+        .asciz  "RVCP:       reporting behavior.\n"
     trap_diag_hint_ip_str:
         .ascii  "RVCP: HINT: XIP mismatch means interrupt pending bits differ. Check: interrupt\n"
         .ascii  "RVCP:       controller configuration, RVMODEL interrupt set/clear macros, timer\n"

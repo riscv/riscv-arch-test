@@ -75,6 +75,10 @@ covergroup ExceptionsZicboSm_cg with function sample(ins_t ins);
     }
 
     // main coverpoints
+    `ifdef ZICBOM_SUPPORTED
+        // cbo.inval data check in M-mode, where no xenvcfg.CBIE applies
+        cp_cbo_inval_data: cross cbo_inval, priv_mode_m;
+    `endif
     `ifdef SM1P12P0_OR_LATER_SUPPORTED
         `ifdef U_SUPPORTED
             `ifdef ZICBOM_SUPPORTED

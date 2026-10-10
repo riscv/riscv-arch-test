@@ -30,7 +30,7 @@ include::norm/Zifencei_norm_rules.adoc[]
 |cp_custom_fencei|4|Executes normal `fence.i` and `fence.i` instructions with nonzero rs1, rd, and funct12 fields to verify that they execute without trapping.
 |===
 
-The Zifencei tests must write an instruction to an address, execute `fence.i`, and then execute the instruction to check that the new instruction is executed.
+The Zifencei tests must write an instruction to an address, execute `fence.i`, and then execute the instruction to check that the new instruction is executed. The normal and nonzero-funct12 cases first read the instruction as data, so that the store finds the line in any data cache; the other two cases store without a prior read.
 
 
 

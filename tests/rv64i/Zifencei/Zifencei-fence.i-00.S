@@ -37,6 +37,7 @@ RVTEST_BEGIN
 # Testcase fencei: normal fence.i
   LI(x17, 3)
   LA(x9, selfmodify_0)
+  lw x6, 0(x9) # read the instruction as data before the store
   RVTEST_TESTDATA_LOAD_INT(x3, x6) # load addi x17, x17, 5: x6 = 0x0000000000588893
   sw x6, 0(x9)
 Zifencei_fence_i_cg_cp_custom_fencei_fencei:
@@ -77,6 +78,7 @@ selfmodify_2:
 # Testcase fencei_nonzerof12: fence.i with nonzero funct12
   LI(x17, 3)
   LA(x14, selfmodify_3)
+  lw x6, 0(x14) # read the instruction as data before the store
   RVTEST_TESTDATA_LOAD_INT(x3, x6) # load addi x17, x17, 13: x6 = 0x0000000000d88893
   sw x6, 0(x14)
 Zifencei_fence_i_cg_cp_custom_fencei_fencei_nonzerof12:

@@ -13,8 +13,13 @@
 `define PMPZICBO_REGION_SHIFT ((`UDB_PMP_GRANULARITY > 12) ? `UDB_PMP_GRANULARITY : 12)
 `define PMPZICBO_PMPADDR_MASK ((2 ** (`PMPZICBO_REGION_SHIFT - 3)) - 1)
 `define PMPZICBO_STANDARD_REGION ((`PMP_SPECIAL_REGION_START >> 2) | `PMPZICBO_PMPADDR_MASK)
+`define PMPZICBO_REGION_BYTES (2 ** `PMPZICBO_REGION_SHIFT)
+// cp_none_cbo: the same-size NAPOT regions just above and just below the region under test
+`define PMPZICBO_ABOVE_REGION (((`PMP_SPECIAL_REGION_START + `PMPZICBO_REGION_BYTES) >> 2) | `PMPZICBO_PMPADDR_MASK)
+`define PMPZICBO_BELOW_REGION (((`PMP_SPECIAL_REGION_START - `PMPZICBO_REGION_BYTES) >> 2) | `PMPZICBO_PMPADDR_MASK)
 
-covergroup PMPZicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, logic [`UDB_MXLEN-1:0] pmpaddr [62:0]);
+covergroup PMPZicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, logic [`UDB_MXLEN-1:0] pmpaddr [62:0],
+                                              logic [1:0] pmp_none);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
@@ -77,6 +82,22 @@ covergroup PMPZicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0]
         bins cfg_l011 = {8'b10011011};
     }
 
+    // Entry 0 over the region, L=0, A=NAPOT
+    unlocked_xwr: coverpoint pmpcfg[0] {
+        bins cfg_000 = {8'b00011000};
+        bins cfg_001 = {8'b00011001};
+    }
+
+    // No entry matches the region; pmp_none = {active, off} from pmpzicbo_sample
+    none_cfg: coverpoint pmp_none {
+        bins off    = {2'b01};
+        bins active = {2'b10};
+    }
+
+    mprv_off: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0] {
+        bins mprv_0 = {0};
+    }
+
     cp_prefetch_w: cross priv_mode_m, legal_lxwr, cfg_for_menvcfg, prefetch_w_instr, addr_in_region;
     cp_prefetch_r: cross priv_mode_m, legal_lxwr, cfg_for_menvcfg, prefetch_r_instr, addr_in_region;
     cp_prefetch_i: cross priv_mode_m, legal_lxwr, cfg_for_menvcfg, prefetch_i_instr, addr_in_region;
@@ -86,6 +107,16 @@ covergroup PMPZicbo_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0]
     cp_cbo_flush: cross priv_mode_m, wr_combinations, pmpaddr_region, cfg_for_menvcfg, cbo_flush_instr;
     cp_cbo_clean: cross priv_mode_m, wr_combinations, pmpaddr_region, cfg_for_menvcfg, cbo_clean_instr;
 
+    cp_cfg_L_access_cbo_zero:  cross priv_mode_m, unlocked_xwr, pmpaddr_region, addr_in_region, cfg_for_menvcfg, mprv_off, cbo_zero_instr;
+    cp_cfg_L_access_cbo_clean: cross priv_mode_m, unlocked_xwr, pmpaddr_region, addr_in_region, cfg_for_menvcfg, mprv_off, cbo_clean_instr;
+    cp_cfg_L_access_cbo_flush: cross priv_mode_m, unlocked_xwr, pmpaddr_region, addr_in_region, cfg_for_menvcfg, mprv_off, cbo_flush_instr;
+    cp_cfg_L_access_cbo_inval: cross priv_mode_m, unlocked_xwr, pmpaddr_region, addr_in_region, cfg_for_menvcfg, mprv_off, cbo_inval_instr;
+
+    cp_none_cbo_zero:  cross priv_mode_m, none_cfg, addr_in_region, cfg_for_menvcfg, mprv_off, cbo_zero_instr;
+    cp_none_cbo_clean: cross priv_mode_m, none_cfg, addr_in_region, cfg_for_menvcfg, mprv_off, cbo_clean_instr;
+    cp_none_cbo_flush: cross priv_mode_m, none_cfg, addr_in_region, cfg_for_menvcfg, mprv_off, cbo_flush_instr;
+    cp_none_cbo_inval: cross priv_mode_m, none_cfg, addr_in_region, cfg_for_menvcfg, mprv_off, cbo_inval_instr;
+
 endgroup
 
 function void pmpzicbo_sample(int hart, int issue, ins_t ins);
@@ -93,6 +124,8 @@ function void pmpzicbo_sample(int hart, int issue, ins_t ins);
   logic [7:0] pmpcfg [63:0];
   logic [`UDB_MXLEN-1:0] pmpaddr [62:0];
   logic [14:0] pmp_hit;   // for first 15 Regions
+  logic       others_off; // entries 2-63 are OFF
+  logic [1:0] pmp_none;   // {active, off} configurations of cp_none_cbo
 
   `ifdef UDB_MXLEN_32
     // Each pmpcfg CSR holds 4 region configs in 32-bit (4x 8-bit)
@@ -127,5 +160,19 @@ function void pmpzicbo_sample(int hart, int issue, ins_t ins);
                   (`PMPZICBO_STANDARD_REGION & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)); // above the grain, as pmpaddr_region
   end
 
-  PMPZicbo_cg.sample(ins, pmpcfg, pmp_hit, pmpaddr);
+  // cp_none_cbo: no entry matches the region. off: every entry is OFF. active: entry 0 (L=1, A=NAPOT,
+  // XWR=000) covers the region just above, entry 1 (L=0, A=NAPOT, XWR=000) the region just below,
+  // and every other entry is OFF.
+  others_off = 1;
+  for (int i = 2; i < 64; i++) begin
+    if (pmpcfg[i][4:3] != 2'b00) others_off = 0;
+  end
+  pmp_none[0] = others_off & (pmpcfg[0][4:3] == 2'b00) & (pmpcfg[1][4:3] == 2'b00);
+  pmp_none[1] = others_off & (pmpcfg[0] == 8'b10011000) & (pmpcfg[1] == 8'b00011000) &
+                ((pmpaddr[0] & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK) ==
+                 (`PMPZICBO_ABOVE_REGION & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK)) &
+                ((pmpaddr[1] & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK) ==
+                 (`PMPZICBO_BELOW_REGION & `PMP_PMPADDR_LOWMASK & `READ_ZERO_MASK));
+
+  PMPZicbo_cg.sample(ins, pmpcfg, pmp_hit, pmpaddr, pmp_none);
 endfunction

@@ -839,7 +839,6 @@ def prep_vstart(
                     f"{INDENT}addi x{vstart_reg}, x{vlmax_reg}, 0",
                     "2:",
                     "#endif",
-                    f"addi x{vstart_reg}, x{vstart_reg}, 2",
                 ]
             )
 

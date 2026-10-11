@@ -159,18 +159,15 @@ def cp_vstart(
         # lmul = 2 ** random_range(0, int(math.log2(max_lmul)))
         lmul = max_lmul
 
-        max_sigupd_length = 0
-
         # Initialize test chunk
         tc = test_data.begin_test_chunk()
         desc = f"{coverpoint} (vstart = {vstart_val})"
-        bin_name = vstart_val
         tc.code.append(f"# Testcase {desc}")
-        label_line = test_data.add_testcase(bin_name, coverpoint, f"{test_data.config.testsuite}_{instr_name}_cg")
 
         # Generate Per-SEW tests (ifdef'ed by UDB_SEW_MIN)
-        first = True
         for sew in sews_supported:
+            bin_name = f"{vstart_val}_sew_{sew}"
+            label_line = test_data.add_testcase(bin_name, coverpoint, f"{test_data.config.testsuite}_{instr_name}_cg")
             register_data = get_register_data_labels(instr_info, instr_type_config, sew, test_data)
             params = generate_random_vector_params(
                 test_data, instr_name, instr_type, lmul, suite="length", vl="vlmax", sew=sew, **register_data
@@ -196,7 +193,7 @@ def cp_vstart(
             arch_post = ".option pop" if sew * max_multiplier > 32 else ""
             tc.code.extend(
                 [
-                    f"#{'if' if first else 'elif'} (UDB_SEW_MIN <= {int(sew * max_multiplier)} && {int(sew * max_multiplier)} <= UDB_ELEN)",
+                    f"#if (UDB_SEW_MIN <= {int(sew * max_multiplier)} && {int(sew * max_multiplier)} <= UDB_ELEN)",
                     arch_preamble,
                     setup,
                     pre_vstart,
@@ -205,17 +202,11 @@ def cp_vstart(
                     post_vstart,
                     check,
                     arch_post,
+                    "#endif",
                 ]
             )
             return_testcase_registers(test_data, params)
-            first = False
 
-            # Prevent overcounting of SIGUPDs for tests that don't run
-            max_sigupd_length = max(max_sigupd_length, tc.sigupd_count)
-            tc.sigupd_count = 0
-
-        tc.code.append("#endif")
-        tc.sigupd_count = max_sigupd_length
         tc = test_data.end_test_chunk()
         test_chunks.append(tc)
 

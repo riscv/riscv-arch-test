@@ -85,7 +85,7 @@ def parse_vector_instruction_info(instruction: str, instruction_type: str) -> Ve
 
     vext_multiplier = 1 / int(instruction[-1]) if instruction_type == "VEXT" else None
 
-    whole_register_match = re.search(r"v[ls](\d)r", instruction)
+    whole_register_match = re.search(r"v(?:[ls]|mv)(\d)r", instruction)
     whole_registers = int(whole_register_match.group(1)) if whole_register_match else None
 
     return VectorInstructionInfo(

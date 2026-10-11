@@ -196,9 +196,9 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
     // S-specific gating: menvcfg.SSE gates, senvcfg.SSE must not.
     cp_ssp_csr_gating_s:           cross priv_mode_s, csrops, ssp_csr, s_sse_state;
 
-    // SS page encoding is recognised only when menvcfg.SSE=1. With menvcfg.SSE=0 the SS
-    // instructions are inert MOPs and never reach the page.
+    // SS page encoding is recognised only when menvcfg.SSE=1.
     cp_ss_page_enc:                cross priv_mode_s, ss_mem_instr, pte_ss_page, menvcfg_sse {
+        // With menvcfg.SSE=0 the SS instructions are inert MOPs and never reach the page.
         ignore_bins inert_when_sse_off = binsof(menvcfg_sse.sse_off);
     }
     cp_ss_page_enc_load:           cross priv_mode_s, ordinary_loadops, pte_ss_page, menvcfg_sse;

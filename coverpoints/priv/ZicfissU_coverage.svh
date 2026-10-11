@@ -387,9 +387,8 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
 
     // ── Main coverpoints ──────────────────────────────────────────────────
     // Instruction behaviour (Zicfiss active)
-    // The immediate CSR forms carry a 5-bit uimm, so rs1_val can never be all-ones
-    // for them. Excluded as unreachable rather than left as a permanent hole.
     cp_ssp_access:                 cross priv_mode_u, csrops, ssp_csr, ssp_write_pattern {
+        // The immediate CSR forms carry a 5-bit uimm, so rs1_val can never be all-ones for them.
         ignore_bins imm_cannot_be_all_ones =
             (binsof(csrops.csrrwi) || binsof(csrops.csrrsi) || binsof(csrops.csrrci)) &&
             binsof(ssp_write_pattern.all_ones);

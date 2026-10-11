@@ -25,20 +25,21 @@ from testgen.priv.extensions.ZicfissCommon import (
     MOP_FORMS,
     POP_FORMS,
     PUSH_FORMS,
+    SATP_OFF,
+    SSAMOSWAP_WIDTHS,
+    enable_translation,
     map_zicfiss_pages,
     page_table_data_section,
-    restore_link_regs,
-    rv64_only,
-    save_link_regs,
     set_envcfg_sse,
     ss_forms_against,
     ss_instr,
+    ssamoswap_forms,
+    ssamoswap_only,
     zcmop_only,
 )
 from testgen.priv.registry import add_priv_test_generator
 
 _CG = "ZicfissSm_cg"
-_SATP_OFF = ["csrwi satp, 0", "sfence.vma"]
 _CSR_OPS = (
     ("csrrw", "csrrw x{rd}, ssp, x{v}"),
     ("csrrs", "csrrs x{rd}, ssp, x{v}"),
@@ -62,21 +63,26 @@ def _generate_ssamoswap_mmode_fault(test_data: TestData) -> list[str]:
     recorded after the fault to show that neither changed.
     """
     coverpoint = "cp_ssamoswap_mmode_fault"
-    addr_reg, rd_reg, rs2_reg = test_data.int_regs.get_registers(3)
     lines: list[str] = [
         comment_banner(coverpoint, "SSAMOSWAP.W/.D always faults when the effective privilege mode is M")
     ]
     for sse in (0, 1):
         for satp_mode in ("bare", "translating"):
-            setup = [*map_zicfiss_pages(user=False), "ZICFISS_SATP_SETUP"] if satp_mode == "translating" else _SATP_OFF
-            lines.extend(
-                [
-                    f"# --- menvcfg.SSE={sse}, satp.MODE {satp_mode} ---",
-                    *(["#ifdef ZICFISS_VM_SUPPORTED", *setup, "#endif"] if satp_mode == "translating" else setup),
-                    *set_envcfg_sse("menvcfg", sse, test_data, mode="M"),
-                ]
-            )
-            for width in ("w", "d"):
+            lines.append(f"# --- menvcfg.SSE={sse}, satp.MODE {satp_mode} ---")
+            if satp_mode == "translating":
+                lines.extend(
+                    [
+                        "#ifdef ZICFISS_VM_SUPPORTED",
+                        *map_zicfiss_pages(test_data, user=False),
+                        *enable_translation(test_data, mode="M"),
+                        "#endif",
+                    ]
+                )
+            else:
+                lines.extend(SATP_OFF)
+            lines.extend(set_envcfg_sse("menvcfg", sse, test_data, mode="M"))
+            addr_reg, rd_reg, rs2_reg = test_data.int_regs.get_registers(3)
+            for width in SSAMOSWAP_WIDTHS:
                 case = [
                     f"LA(x{addr_reg}, rvtest_zicfiss_ss_page)",
                     f"LI(x{rs2_reg}, 0x5EED5EED)",
@@ -89,10 +95,10 @@ def _generate_ssamoswap_mmode_fault(test_data: TestData) -> list[str]:
                     f"LREG x{rd_reg}, 0(x{addr_reg})   # memory must still hold the seed",
                     write_sigupd(rd_reg, test_data),
                 ]
-                body = rv64_only(width, case)
+                body = ssamoswap_only(width, case)
                 lines.extend(["#ifdef ZICFISS_VM_SUPPORTED", *body, "#endif"] if satp_mode == "translating" else body)
-    lines.extend(_SATP_OFF)
-    test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg])
+            test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg])
+    lines.extend(SATP_OFF)
     return lines
 
 
@@ -105,27 +111,31 @@ def _generate_menvcfg_gating(test_data: TestData) -> list[str]:
     """menvcfg.SSE gates ssp CSR access, and the SS page encoding, for every mode below M.
 
     ssp is accessible from M-mode for both values of menvcfg.SSE, the positive control. From
-    S-mode it is accessible only with menvcfg.SSE=1. With menvcfg.SSE=0 the xwr=010 encoding
+    S-mode it is accessible only with menvcfg.SSE=1. Each access records rd, which an
+    illegal-instruction exception leaves unchanged. With menvcfg.SSE=0 the xwr=010 encoding
     is reserved, so an ordinary load or store to such a page raises a page fault from S- and
     U-mode alike; with menvcfg.SSE=1 the page is an SS page, which loads may read and stores
     may not write.
     """
-    rd_reg, val_reg, addr_reg = test_data.int_regs.get_registers(3)
     lines: list[str] = [comment_banner("cp_menvcfg_sse_gating", "menvcfg.SSE gates ssp CSR access below M-mode")]
-
+    rd_reg, val_reg = test_data.int_regs.get_registers(2)
     for sse in (0, 1):
         lines.extend(set_envcfg_sse("menvcfg", sse, test_data, mode="M"))
         for mode in ("M", "S"):
             lines.extend(["RVTEST_TSBI_GOTO_SMODE"] if mode == "S" else [])
+            # An XLEN-aligned ssp value, different per mode so that each successful write shows
             lines.append(f"LI(x{val_reg}, {'0x2000' if mode == 'S' else '0x1000'})")
             for op, form in _CSR_OPS:
                 lines.extend(
                     [
+                        f"LI(x{rd_reg}, 0x0DDBA11)",
                         test_data.add_testcase(f"ssp_{op}_{mode.lower()}mode_sse{sse}", "cp_menvcfg_sse_gating", _CG),
                         form.format(rd=rd_reg, v=val_reg),
+                        write_sigupd(rd_reg, test_data),
                     ]
                 )
             lines.extend(["RVTEST_TSBI_GOTO_MMODE"] if mode == "S" else [])
+    test_data.int_regs.return_registers([rd_reg, val_reg])
 
     # The SS page encoding, from S-mode (supervisor pages) and U-mode (user pages). senvcfg.SSE
     # follows menvcfg.SSE so Zicfiss is fully on or fully off for U-mode too.
@@ -142,10 +152,15 @@ def _generate_menvcfg_gating(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     f"# --- menvcfg.SSE={sse}, {mode}-mode ---",
-                    *map_zicfiss_pages(user=mode == "U"),
-                    "ZICFISS_SATP_SETUP",
+                    *map_zicfiss_pages(test_data, user=mode == "U"),
+                    *enable_translation(test_data, mode="M"),
                     *[ln for csr, value in envcfg for ln in set_envcfg_sse(csr, value, test_data, mode="M")],
                     f"RVTEST_TSBI_GOTO_{mode}MODE",
+                ]
+            )
+            addr_reg, rd_reg, val_reg = test_data.int_regs.get_registers(3)
+            lines.extend(
+                [
                     f"LI(x{addr_reg}, ZICFISS_VA_SS + 0x800)",
                     f"LI(x{rd_reg}, 0x0DDBA11)   # kept if the load faults",
                     test_data.add_testcase(f"load_{mode.lower()}mode_sse{sse}", coverpoint, _CG),
@@ -155,11 +170,11 @@ def _generate_menvcfg_gating(test_data: TestData) -> list[str]:
                     test_data.add_testcase(f"store_{mode.lower()}mode_sse{sse}", coverpoint, _CG),
                     f"SREG x{val_reg}, 0(x{addr_reg})",
                     "RVTEST_TSBI_GOTO_MMODE",
-                    *_SATP_OFF,
+                    *SATP_OFF,
                 ]
             )
+            test_data.int_regs.return_registers([addr_reg, rd_reg, val_reg])
     lines.append("#endif  // ZICFISS_VM_SUPPORTED")
-    test_data.int_regs.return_registers([rd_reg, val_reg, addr_reg])
     return lines
 
 
@@ -201,7 +216,8 @@ def _generate_envcfg_rdonly0(test_data: TestData) -> list[str]:
     # Leg B: menvcfg.SSE=1 (still set from leg A); with henvcfg.SSE=0, and =1 as the positive
     # control, write both values into senvcfg.SSE from VS-mode and read it back. Its coverpoint
     # is in ZicfissH_cg.
-    # With Smstateen, VS-mode reaches senvcfg only when mstateen0.ENVCFG and hstateen0.ENVCFG are set.
+    # VS-mode reaches senvcfg only when hstateen0.ENVCFG is set (Ssstateen), and HS-mode reaches
+    # hstateen0.ENVCFG only when mstateen0.ENVCFG is set (Smstateen).
     lines.extend(
         [
             "#ifdef H_SUPPORTED",
@@ -209,11 +225,16 @@ def _generate_envcfg_rdonly0(test_data: TestData) -> list[str]:
             "#if __riscv_xlen == 64",
             f"LI(x{val_reg}, MSTATEEN0_HENVCFG)",
             f"csrs mstateen0, x{val_reg}",
-            f"LI(x{val_reg}, HSTATEEN0_SENVCFG)",
-            f"csrs hstateen0, x{val_reg}",
             "#else",
             f"LI(x{val_reg}, MSTATEEN0H_HENVCFG)",
             f"csrs mstateen0h, x{val_reg}",
+            "#endif",
+            "#endif",
+            "#ifdef SSSTATEEN_SUPPORTED",
+            "#if __riscv_xlen == 64",
+            f"LI(x{val_reg}, HSTATEEN0_SENVCFG)",
+            f"csrs hstateen0, x{val_reg}",
+            "#else",
             f"LI(x{val_reg}, HSTATEEN0H_SENVCFG)",
             f"csrs hstateen0h, x{val_reg}",
             "#endif",
@@ -256,28 +277,32 @@ def _generate_envcfg_rdonly0(test_data: TestData) -> list[str]:
 def _generate_pmp_permissions(test_data: TestData) -> list[str]:
     """Shadow stack instructions require PMP read-write, including the read-only SSPOPCHK.
 
-    Only M-mode can program PMP. Entry 0 covers the shadow stack page and entry 1 grants
-    everything else; the lowest matching entry wins. The link register is set so that a pop
-    would also mismatch, so the denied cases double as the fault-priority check.
+    Only M-mode can program PMP. Entry 0 covers the shadow stack page as one 4 KiB NAPOT
+    region, so this needs NAPOT and a PMP granularity of at most 4 KiB; entry 1 grants
+    everything else, and the lowest matching entry wins. The link register is set so that a
+    pop would also mismatch, so the denied cases double as the fault-priority check.
     """
     coverpoint = "cp_ss_pmp_permissions"
     lines: list[str] = [
         comment_banner(coverpoint, "PMP read-write requirement and fault priority"),
         "#ifdef ZICFISS_VM_SUPPORTED",
-        "#if defined(UDB_NUM_USABLE_PMP_ENTRIES) && UDB_NUM_USABLE_PMP_ENTRIES >= 2  // entry 0: SS page, entry 1: rest",
+        "#if defined(UDB_PMP_NAPOT_SUPPORTED) && UDB_PMP_GRANULARITY <= 12 && UDB_NUM_USABLE_PMP_ENTRIES >= 2",
     ]
 
     # pmp0cfg: A=NAPOT (0x18) plus the R/W bits under test. pmp1cfg = 0x1F allows the rest.
     # R=0 with W=1 is reserved, so it is not a configuration that can be tested.
     for tag, rw in (("none", 0x0), ("r", 0x1), ("rw", 0x3)):
-        addr_reg, cfg_reg = test_data.int_regs.get_registers(2)
-        save_x1, save_x5, save_lines = save_link_regs(test_data)
         lines.extend(
             [
                 f"# --- pmp0cfg R/W = {tag} ---",
-                "ZICFISS_SATP_SETUP",
-                *map_zicfiss_pages(user=False),
+                *enable_translation(test_data, mode="M"),
+                *map_zicfiss_pages(test_data, user=False),
                 *set_envcfg_sse("menvcfg", 1, test_data, mode="M"),
+            ]
+        )
+        addr_reg, cfg_reg = test_data.int_regs.get_registers(2)
+        lines.extend(
+            [
                 f"LA(x{addr_reg}, rvtest_zicfiss_ss_page)",
                 f"srli x{addr_reg}, x{addr_reg}, 2",
                 f"LI(x{cfg_reg}, 0x1FF)",
@@ -289,7 +314,11 @@ def _generate_pmp_permissions(test_data: TestData) -> list[str]:
                 f"csrw pmpcfg0, x{cfg_reg}",
                 "sfence.vma",
                 "RVTEST_TSBI_GOTO_SMODE",
-                *save_lines,
+            ]
+        )
+        test_data.int_regs.return_registers([addr_reg, cfg_reg])
+        lines.extend(
+            [
                 *ss_forms_against(
                     test_data,
                     PUSH_FORMS + POP_FORMS,
@@ -299,25 +328,14 @@ def _generate_pmp_permissions(test_data: TestData) -> list[str]:
                     coverpoint,
                     _CG,
                 ),
+                *ssamoswap_forms(test_data, "ZICFISS_VA_SS", f"pmp_{tag}", coverpoint, _CG),
+                "RVTEST_TSBI_GOTO_MMODE",
+                *SATP_OFF,
             ]
         )
-        for width in ("w", "d"):
-            lines.extend(
-                rv64_only(
-                    width,
-                    [
-                        f"LI(x{addr_reg}, ZICFISS_VA_SS)",
-                        f"LI(x{cfg_reg}, 0x11223344)",
-                        test_data.add_testcase(f"ssamoswap_{width}_pmp_{tag}", coverpoint, _CG),
-                        f"ssamoswap.{width} x{cfg_reg}, x{cfg_reg}, (x{addr_reg})",
-                    ],
-                )
-            )
+        addr_reg, cfg_reg = test_data.int_regs.get_registers(2)
         lines.extend(
             [
-                *restore_link_regs(save_x1, save_x5),
-                "RVTEST_TSBI_GOTO_MMODE",
-                *_SATP_OFF,
                 f"LI(x{addr_reg}, -1)",
                 f"csrw pmpaddr0, x{addr_reg}",
                 f"LI(x{cfg_reg}, 0x1F)",
@@ -325,8 +343,8 @@ def _generate_pmp_permissions(test_data: TestData) -> list[str]:
                 "sfence.vma",
             ]
         )
-        test_data.int_regs.return_registers([addr_reg, cfg_reg, save_x1, save_x5])
-    lines.append("#endif  // UDB_NUM_USABLE_PMP_ENTRIES >= 2")
+        test_data.int_regs.return_registers([addr_reg, cfg_reg])
+    lines.append("#endif  // PMP NAPOT, granularity <= 4 KiB, at least 2 usable entries")
     lines.append("#endif  // ZICFISS_VM_SUPPORTED")
     return lines
 
@@ -340,18 +358,17 @@ def _generate_satp_bare(test_data: TestData) -> list[str]:
     """Below M-mode, an SS instruction with satp.MODE=Bare raises a store/AMO access fault.
 
     ssp and the SSAMOSWAP address point at the shadow stack page's physical address. No page
-    tables are involved, so this runs on configurations without Sv39/Sv32 too.
+    tables are involved, so this runs on configurations without Sv39/Sv32 too. Each testcase
+    records ssp or rd, which the fault leaves unchanged.
     """
     coverpoint = "cp_ss_satp_bare"
-    addr_reg, data_reg = test_data.int_regs.get_registers(2)
-    save_x1, save_x5, save_lines = save_link_regs(test_data)
     lines: list[str] = [
         comment_banner(coverpoint, "SS instructions in S- and U-mode with satp.MODE=Bare"),
-        *_SATP_OFF,
+        *SATP_OFF,
         *set_envcfg_sse("menvcfg", 1, test_data, mode="M"),
         *set_envcfg_sse("senvcfg", 1, test_data, mode="M"),
-        *save_lines,
     ]
+    addr_reg, data_reg, rd_reg = test_data.int_regs.get_registers(3)
     for mode in ("S", "U"):
         tag = f"{mode.lower()}mode_bare"
         lines.append(f"RVTEST_TSBI_GOTO_{mode}MODE")
@@ -362,22 +379,25 @@ def _generate_satp_bare(test_data: TestData) -> list[str]:
                 f"LI({form.link_reg}, 0x0BADF00D)",
                 test_data.add_testcase(f"{form.name}_{tag}", coverpoint, _CG),
                 *ss_instr(form),
+                f"csrr x{rd_reg}, ssp",
+                write_sigupd(rd_reg, test_data),
             ]
             lines.extend(zcmop_only(form.compressed, case))
         lines.extend([f"LA(x{addr_reg}, rvtest_zicfiss_ss_page)", f"LI(x{data_reg}, 0x11223344)"])
-        for width in ("w", "d"):
+        for width in SSAMOSWAP_WIDTHS:
             lines.extend(
-                rv64_only(
+                ssamoswap_only(
                     width,
                     [
+                        f"LI(x{rd_reg}, 0x0DDBA11)   # kept by the fault",
                         test_data.add_testcase(f"ssamoswap_{width}_{tag}", coverpoint, _CG),
-                        f"ssamoswap.{width} x{data_reg}, x{data_reg}, (x{addr_reg})",
+                        f"ssamoswap.{width} x{rd_reg}, x{data_reg}, (x{addr_reg})",
+                        write_sigupd(rd_reg, test_data),
                     ],
                 )
             )
         lines.append("RVTEST_TSBI_GOTO_MMODE")
-    lines.extend(restore_link_regs(save_x1, save_x5))
-    test_data.int_regs.return_registers([addr_reg, data_reg, save_x1, save_x5])
+    test_data.int_regs.return_registers([addr_reg, data_reg, rd_reg])
     return lines
 
 
@@ -393,17 +413,15 @@ def _generate_swcheck_mtval(test_data: TestData) -> list[str]:
     software-check exception is not delegated.
     """
     coverpoint = "cp_ss_swcheck_mtval"
-    addr_reg = test_data.int_regs.get_register()
-    save_x1, save_x5, save_lines = save_link_regs(test_data)
     lines = [
-        comment_banner(coverpoint, "SSPOPCHK mismatch in S-mode reports mtval=3 in M-mode"),
+        comment_banner(coverpoint, "SSPOPCHK mismatch in S-mode reports the shadow stack fault code in mtval"),
         "#ifdef ZICFISS_VM_SUPPORTED",
-        "ZICFISS_SATP_SETUP",
-        *map_zicfiss_pages(user=False),
+        *enable_translation(test_data, mode="M"),
+        *map_zicfiss_pages(test_data, user=False),
         *set_envcfg_sse("menvcfg", 1, test_data, mode="M"),
-        *save_lines,
         "RVTEST_TSBI_GOTO_SMODE",
     ]
+    addr_reg = test_data.int_regs.get_register()
     for pop in POP_FORMS:
         case = [
             f"LI(x{addr_reg}, ZICFISS_VA_SS + 0x800)",
@@ -413,10 +431,12 @@ def _generate_swcheck_mtval(test_data: TestData) -> list[str]:
             f"LI({pop.link_reg}, 0x0BADF00D)   # no longer matches what the shadow stack holds",
             test_data.add_testcase(f"{pop.name}_mismatch", coverpoint, _CG),
             *ss_instr(pop),
+            f"csrr x{addr_reg}, ssp   # unchanged by the failed check",
+            write_sigupd(addr_reg, test_data),
         ]
         lines.extend(zcmop_only(pop.compressed, case))
-    lines.extend(["RVTEST_TSBI_GOTO_MMODE", *restore_link_regs(save_x1, save_x5), *_SATP_OFF, "#endif"])
-    test_data.int_regs.return_registers([addr_reg, save_x1, save_x5])
+    lines.extend(["RVTEST_TSBI_GOTO_MMODE", *SATP_OFF, "#endif"])
+    test_data.int_regs.return_registers([addr_reg])
     return lines
 
 
@@ -438,8 +458,6 @@ def _generate_instr_inactive(test_data: TestData) -> list[str]:
     ]
     for mode, menvcfg, senvcfg in (("m", 0, 0), ("m", 1, 0), ("m", 1, 1), ("s", 0, 0)):
         leg = f"{mode}_men{menvcfg}_sen{senvcfg}"
-        addr_reg, rd_reg = test_data.int_regs.get_registers(2)
-        save_x1, save_x5, save_lines = save_link_regs(test_data)
         # Clear senvcfg.SSE before menvcfg.SSE, and set it after, so the pair never
         # passes through the unreachable menvcfg.SSE=0, senvcfg.SSE=1 state.
         envcfg = [("menvcfg", menvcfg), ("senvcfg", senvcfg)]
@@ -448,12 +466,12 @@ def _generate_instr_inactive(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"# --- {mode.upper()}-mode, menvcfg.SSE={menvcfg}, senvcfg.SSE={senvcfg} ---",
-                "ZICFISS_SATP_SETUP",
-                *map_zicfiss_pages(user=False),
+                *enable_translation(test_data, mode="M"),
+                *map_zicfiss_pages(test_data, user=False),
                 *[ln for csr, value in envcfg for ln in set_envcfg_sse(csr, value, test_data, mode="M")],
-                *save_lines,
             ]
         )
+        addr_reg, rd_reg = test_data.int_regs.get_registers(2)
         for state, addr in (
             ("valid", "ZICFISS_VA_SS + 0x800"),
             ("unaligned", "ZICFISS_VA_SS + 0x804"),
@@ -471,8 +489,8 @@ def _generate_instr_inactive(test_data: TestData) -> list[str]:
                 lines.extend(zcmop_only(form.compressed, [f"LI({form.link_reg}, {value})", label, *ss_instr(form)]))
             lines.extend(["RVTEST_TSBI_GOTO_MMODE"] if mode == "s" else [])
             lines.extend([f"csrr x{rd_reg}, ssp   # unchanged", write_sigupd(rd_reg, test_data)])
-        lines.extend([*restore_link_regs(save_x1, save_x5), *_SATP_OFF])
-        test_data.int_regs.return_registers([addr_reg, rd_reg, save_x1, save_x5])
+        lines.extend(SATP_OFF)
+        test_data.int_regs.return_registers([addr_reg, rd_reg])
     lines.append("#endif  // ZICFISS_VM_SUPPORTED")
     return lines
 

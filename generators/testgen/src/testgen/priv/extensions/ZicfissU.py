@@ -19,7 +19,7 @@ page tables and set the SSE bits, drops back to U-mode, turns translation on (se
 is the ZicfissU sheet linked from docs/ctp/src/privmisc23.adoc.
 """
 
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -29,23 +29,25 @@ from testgen.priv.extensions.ZicfissCommon import (
     PTE_RW,
     PTE_SS,
     PUSH_FORMS,
-    SSAMOSWAP_SWEEP_BASE,
+    SSAMOSWAP_WIDTHS,
     XWR_PERMS,
+    enable_translation,
     map_zicfiss_pages,
     page_table_data_section,
-    restore_link_regs,
     rv64_only,
-    save_link_regs,
     set_envcfg_sse,
     ss_forms_against,
     ss_instr,
-    ssamoswap_sweep_offsets,
+    ssamoswap_forms,
+    ssamoswap_only,
+    vm_section,
     zcmop_only,
 )
 from testgen.priv.registry import add_priv_test_generator
 
 _CG = "ZicfissU_cg"
-_SATP_OFF = tsbi_call("csrw satp, x0")  # turn translation off from U-mode
+# Turn translation off from U-mode.
+_SATP_OFF = [tsbi_call("csrw satp, x0")]
 
 
 def _umode_prologue(
@@ -55,57 +57,28 @@ def _umode_prologue(
     senvcfg: int = 1,
     ss_perms: str = PTE_SS,
     ss_page_user: bool | None = None,
-    extra_mappings: list[str] | None = None,
+    extra_mappings: tuple[str, ...] = (),
 ) -> list[str]:
     """Build the page tables and SSE state in S-mode, then enable translation from U-mode.
 
-    The image map makes the test body a user page, so S-mode cannot fetch it once
-    translation is on: an S-mode ``csrw satp`` here would fault on the next fetch. satp is
-    therefore written from U-mode through T-SBI. The ecall is delegated to the S-mode T-SBI
-    handler, which runs from the supervisor-only pages above rvtest_code_end, performs the
-    write there and returns to U-mode, whose next fetch is from a user page.
-
-    The S-mode trap handler records trap signatures in the signature region, which the image
-    map makes user-accessible, so sstatus.SUM is set to let it write there.
+    The test body is mapped as user pages, which S-mode cannot fetch, so satp is written
+    through T-SBI from U-mode. sstatus.SUM lets the S-mode trap handler record trap signatures
+    in the user-mapped signature region. Arguments other than ``test_data`` are those of
+    ``map_zicfiss_pages`` and the SSE values; ``extra_mappings`` adds page-table lines.
     """
-    return [
+    sum_reg = test_data.int_regs.get_register()
+    lines = [
         "RVTEST_TSBI_GOTO_SMODE",
-        *map_zicfiss_pages(ss_perms=ss_perms, user=True, ss_page_user=ss_page_user),
-        *(extra_mappings or []),
-        "LI(t0, SSTATUS_SUM)",
-        "csrs sstatus, t0   # the S-mode handler writes trap signatures to user pages",
+        *map_zicfiss_pages(test_data, ss_perms=ss_perms, user=True, ss_page_user=ss_page_user),
+        *extra_mappings,
+        f"LI(x{sum_reg}, SSTATUS_SUM)",
+        f"csrs sstatus, x{sum_reg}",
         *set_envcfg_sse("menvcfg", menvcfg, test_data, mode="S"),
         *set_envcfg_sse("senvcfg", senvcfg, test_data, mode="S"),
         "RVTEST_TSBI_GOTO_UMODE",
-        "# Enable translation: T-SBI satp write from U-mode (see _umode_prologue)",
-        "LA(t0, rvtest_Sroot_pg_tbl)",
-        "srli t0, t0, 12",
-        "LI(t1, ZICFISS_SATP_MODE)",
-        "or t0, t0, t1",
-        tsbi_call("csrw satp, t0"),
+        *enable_translation(test_data, mode="U"),
     ]
-
-
-def _vm_section(title: str, description: str, lines: list[str]) -> list[str]:
-    """A section banner, and ``lines`` guarded on the configuration supporting Sv39/Sv32."""
-    return [comment_banner(title, description), "#ifdef ZICFISS_VM_SUPPORTED", *lines, "#endif"]
-
-
-def _ssamoswap_forms(test_data: TestData, addr: str, addr_reg: int, tag: str, coverpoint: str) -> list[str]:
-    """SSAMOSWAP.W, and SSAMOSWAP.D on RV64, against ``addr``."""
-    rd_reg, rs2_reg = test_data.int_regs.get_registers(2)
-    lines = [f"LI(x{addr_reg}, {addr})", f"LI(x{rs2_reg}, 0x11223344)"]
-    for width in ("w", "d"):
-        lines.extend(
-            rv64_only(
-                width,
-                [
-                    test_data.add_testcase(f"ssamoswap_{width}_{tag}", coverpoint, _CG),
-                    f"ssamoswap.{width} x{rd_reg}, x{rs2_reg}, (x{addr_reg})",
-                ],
-            )
-        )
-    test_data.int_regs.return_registers([rd_reg, rs2_reg])
+    test_data.int_regs.return_registers([sum_reg])
     return lines
 
 
@@ -116,8 +89,8 @@ def _ssamoswap_forms(test_data: TestData, addr: str, addr_reg: int, tag: str, co
 
 def _generate_ssp_access(test_data: TestData) -> list[str]:
     coverpoint = "cp_ssp_access"
-    val_reg, rd_reg = test_data.int_regs.get_registers(2)
     lines = _umode_prologue(test_data)
+    val_reg, rd_reg = test_data.int_regs.get_registers(2)
 
     # Write all-ones and all-zeros through each register form.
     for op in ("csrrw", "csrrs", "csrrc"):
@@ -163,9 +136,9 @@ def _generate_ssp_access(test_data: TestData) -> list[str]:
                 ]
             )
 
-    lines.append(_SATP_OFF)
+    lines.extend(_SATP_OFF)
     test_data.int_regs.return_registers([val_reg, rd_reg])
-    return _vm_section(coverpoint, "ssp CSR access, width, and read-only-zero low bits", lines)
+    return vm_section(coverpoint, "ssp CSR access, width, and read-only-zero low bits", lines)
 
 
 # ---------------------------------------------------------------------------
@@ -176,10 +149,8 @@ def _generate_ssp_access(test_data: TestData) -> list[str]:
 def _generate_push_pop(test_data: TestData) -> list[str]:
     # Start ssp near the top of the SS page so pushes have room to grow down.
     ssp_top = "ZICFISS_VA_SS + 0x800"
-    addr_reg, rd_reg = test_data.int_regs.get_registers(2)
     lines = _umode_prologue(test_data)
-    save_x1, save_x5, save_lines = save_link_regs(test_data)
-    lines.extend(save_lines)
+    addr_reg, rd_reg = test_data.int_regs.get_registers(2)
 
     # cp_sspush -- each encoding pushes all-zeros, all-ones and a pattern; read back ssp
     # and the pushed value.
@@ -229,13 +200,14 @@ def _generate_push_pop(test_data: TestData) -> list[str]:
                 f"LI({pop.link_reg}, {popped})   # no longer matches the shadow copy",
                 test_data.add_testcase(f"{pop.name}_mismatch{edge}", "cp_sspopchk_mismatch", _CG),
                 *ss_instr(pop),
+                f"csrr x{rd_reg}, ssp   # unchanged by the failed check",
+                write_sigupd(rd_reg, test_data),
             ]
             lines.extend(zcmop_only(pop.compressed, case))
 
-    lines.extend(restore_link_regs(save_x1, save_x5))
-    lines.append(_SATP_OFF)
-    test_data.int_regs.return_registers([addr_reg, rd_reg, save_x1, save_x5])
-    return _vm_section("cp_sspush/cp_sspopchk", "Shadow stack push and pop, matching and mismatching", lines)
+    lines.extend(_SATP_OFF)
+    test_data.int_regs.return_registers([addr_reg, rd_reg])
+    return vm_section("cp_sspush/cp_sspopchk", "Shadow stack push and pop, matching and mismatching", lines)
 
 
 # ---------------------------------------------------------------------------
@@ -251,30 +223,23 @@ def _generate_fault_priority(test_data: TestData) -> list[str]:
     fault may be reported.
     """
     coverpoint = "cp_sspopchk_fault_priority"
-    lines = _umode_prologue(test_data)
-    save_x1, save_x5, save_lines = save_link_regs(test_data)
-    lines.extend(save_lines)
-    lines.extend(
-        ss_forms_against(test_data, POP_FORMS, "ZICFISS_VA_UNMAPPED", "0x0BADF00D", "fault_priority", coverpoint, _CG)
-    )
-    lines.extend(restore_link_regs(save_x1, save_x5))
-    lines.append(_SATP_OFF)
-    test_data.int_regs.return_registers([save_x1, save_x5])
-    return _vm_section(coverpoint, "Memory fault on the pop outranks the software-check exception", lines)
+    lines = [
+        *_umode_prologue(test_data),
+        *ss_forms_against(test_data, POP_FORMS, "ZICFISS_VA_UNMAPPED", "0x0BADF00D", "fault_priority", coverpoint, _CG),
+        *_SATP_OFF,
+    ]
+    return vm_section(coverpoint, "Memory fault on the pop outranks the software-check exception", lines)
 
 
 # ---------------------------------------------------------------------------
-# cp_ss_call_return
+# Call/return round trip
 # ---------------------------------------------------------------------------
 
 
 def _generate_call_return(test_data: TestData) -> list[str]:
-    """Nested non-leaf prologue/epilogue round trip, emitted straight-line (no asm loops)."""
-    coverpoint = "cp_ss_call_return"
-    addr_reg, rd_reg = test_data.int_regs.get_registers(2)
+    """Nested prologue pushes and epilogue pops of x1, then a subverted return address."""
     lines = _umode_prologue(test_data)
-    save_x1, save_x5, save_lines = save_link_regs(test_data)
-    lines.extend(save_lines)
+    addr_reg, rd_reg = test_data.int_regs.get_registers(2)
     lines.extend([f"LI(x{addr_reg}, ZICFISS_VA_SS + 0x800)", f"csrw ssp, x{addr_reg}"])
 
     # Three nested prologues: each spills the link register to the shadow stack.
@@ -282,7 +247,7 @@ def _generate_call_return(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"LI(x1, {hex(0xC0DE0000 + depth)})   # simulated return address at depth {depth}",
-                test_data.add_testcase(f"call_prologue_depth{depth}", coverpoint, _CG),
+                test_data.add_testcase(f"call_prologue_depth{depth}", "cp_sspush", _CG),
                 "sspush x1",
             ]
         )
@@ -291,7 +256,7 @@ def _generate_call_return(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"LI(x1, {hex(0xC0DE0000 + depth)})   # link register reloaded from the regular stack",
-                test_data.add_testcase(f"return_epilogue_depth{depth}", coverpoint, _CG),
+                test_data.add_testcase(f"return_epilogue_depth{depth}", "cp_sspopchk_match", _CG),
                 "sspopchk x1",
             ]
         )
@@ -300,20 +265,19 @@ def _generate_call_return(test_data: TestData) -> list[str]:
     # Subverted return address: the epilogue compare must catch it.
     lines.extend(
         [
-            f"LI(x{addr_reg}, ZICFISS_VA_SS + 0x800)",
-            f"csrw ssp, x{addr_reg}",
             "LI(x1, 0xC0DE1234)",
             "sspush x1",
             "LI(x1, 0xBAD00BAD)   # attacker-supplied return address",
-            test_data.add_testcase("return_subverted", coverpoint, _CG),
+            test_data.add_testcase("return_subverted", "cp_sspopchk_mismatch", _CG),
             "sspopchk x1",
+            f"csrr x{rd_reg}, ssp   # unchanged by the failed check",
+            write_sigupd(rd_reg, test_data),
         ]
     )
 
-    lines.extend(restore_link_regs(save_x1, save_x5))
-    lines.append(_SATP_OFF)
-    test_data.int_regs.return_registers([addr_reg, rd_reg, save_x1, save_x5])
-    return _vm_section(coverpoint, "Non-leaf prologue/epilogue round trip across nested depth", lines)
+    lines.extend(_SATP_OFF)
+    test_data.int_regs.return_registers([addr_reg, rd_reg])
+    return vm_section("call/return", "Non-leaf prologue/epilogue round trip across nested depth", lines)
 
 
 # ---------------------------------------------------------------------------
@@ -323,10 +287,8 @@ def _generate_call_return(test_data: TestData) -> list[str]:
 
 def _generate_ssrdp(test_data: TestData) -> list[str]:
     coverpoint = "cp_ssrdp"
-    addr_reg, rd_reg = test_data.int_regs.get_registers(2)
     lines = _umode_prologue(test_data)
-    save_x1, save_x5, save_lines = save_link_regs(test_data)
-    lines.extend(save_lines)
+    addr_reg, rd_reg = test_data.int_regs.get_registers(2)
     lines.extend(
         [
             f"LI(x{addr_reg}, ZICFISS_VA_SS + 0x800)",
@@ -339,12 +301,11 @@ def _generate_ssrdp(test_data: TestData) -> list[str]:
             test_data.add_testcase("ssrdp_after_push", coverpoint, _CG),
             f"ssrdp x{rd_reg}   # must equal ssp after the push",
             write_sigupd(rd_reg, test_data),
+            *_SATP_OFF,
         ]
     )
-    lines.extend(restore_link_regs(save_x1, save_x5))
-    lines.append(_SATP_OFF)
-    test_data.int_regs.return_registers([addr_reg, rd_reg, save_x1, save_x5])
-    return _vm_section(coverpoint, "SSRDP moves ssp into rd", lines)
+    test_data.int_regs.return_registers([addr_reg, rd_reg])
+    return vm_section(coverpoint, "SSRDP moves ssp into rd", lines)
 
 
 # ---------------------------------------------------------------------------
@@ -354,12 +315,12 @@ def _generate_ssrdp(test_data: TestData) -> list[str]:
 
 def _generate_ssamoswap(test_data: TestData) -> list[str]:
     coverpoint = "cp_ssamoswap"
-    addr_reg, rd_reg, rs2_reg, seed_reg = test_data.int_regs.get_registers(4)
     lines = _umode_prologue(test_data)
+    addr_reg, rd_reg, rs2_reg, seed_reg = test_data.int_regs.get_registers(4)
 
     # The loaded value's bit 31 (the sign bit RV64 SSAMOSWAP.W extends) and, on RV64, whether
     # rs2[63:32] is non-zero, which SSAMOSWAP.W must ignore.
-    for width in ("w", "d"):
+    for width in SSAMOSWAP_WIDTHS:
         block: list[str] = []
         for msb in (0, 1):
             for upper in (0, 1):
@@ -367,36 +328,36 @@ def _generate_ssamoswap(test_data: TestData) -> list[str]:
                 case = [
                     f"LI(x{addr_reg}, ZICFISS_VA_SS)",
                     f"LI(x{seed_reg}, {'0x80000000' if msb else '0x7FFFFFFF'})",
-                    # Seed the SS page through a shadow stack store: ordinary stores to an
-                    # SS page raise an access fault, so the seeding swap is the only way to
-                    # give the location under test a defined value.
+                    # Ordinary stores to an SS page raise an access fault, so a swap seeds the location.
                     f"ssamoswap.{width} x{rd_reg}, x{seed_reg}, (x{addr_reg})",
                     f"LI(x{rs2_reg}, {'0xAAAAAAAA12345678' if upper else '0x12345678'})",
                     test_data.add_testcase(name, coverpoint, _CG),
                     f"ssamoswap.{width} x{rd_reg}, x{rs2_reg}, (x{addr_reg})",
                     write_sigupd(rd_reg, test_data),
                 ]
-                block.extend(["#if __riscv_xlen == 64", *case, "#endif"] if upper else case)
-        lines.extend(rv64_only(width, block))
+                block.extend(rv64_only(case) if upper else case)
+        lines.extend(ssamoswap_only(width, block))
 
-    for width in ("w", "d"):
+    for width in SSAMOSWAP_WIDTHS:
         block = []
         # cp_ssamoswap_aqrl: all four ordering-bit encodings.
         for aq, rl, suffix in ((0, 0, ""), (0, 1, ".rl"), (1, 0, ".aq"), (1, 1, ".aqrl")):
             block.extend(
                 [
                     f"LI(x{addr_reg}, ZICFISS_VA_SS)",
-                    f"LI(x{rs2_reg}, 0x5A5A5A5A)",
+                    f"LI(x{rs2_reg}, {hex(0x5A5A5A50 + 2 * aq + rl)})",
                     test_data.add_testcase(f"ssamoswap_{width}_aq{aq}_rl{rl}", "cp_ssamoswap_aqrl", _CG),
                     f"ssamoswap.{width}{suffix} x{rd_reg}, x{rs2_reg}, (x{addr_reg})",
+                    write_sigupd(rd_reg, test_data),
                 ]
             )
-        # cp_ssamoswap_reg_edges: all distinct, rd=x0, rs2=x0, rd==rs1.
-        for name, form in (
-            ("distinct", f"ssamoswap.{width} x{rd_reg}, x{rs2_reg}, (x{addr_reg})"),
-            ("rd_x0", f"ssamoswap.{width} x0, x{rs2_reg}, (x{addr_reg})"),
-            ("rs2_x0", f"ssamoswap.{width} x{rd_reg}, x0, (x{addr_reg})"),
-            ("rd_eq_rs1", f"ssamoswap.{width} x{addr_reg}, x{rs2_reg}, (x{addr_reg})"),
+        # cp_ssamoswap_reg_edges: all distinct, rd=x0, rs2=x0, rd==rs1. rd records the value the
+        # previous swap stored; a load of the location records what this one stored.
+        for name, form, rd in (
+            ("distinct", f"ssamoswap.{width} x{rd_reg}, x{rs2_reg}, (x{addr_reg})", rd_reg),
+            ("rd_x0", f"ssamoswap.{width} x0, x{rs2_reg}, (x{addr_reg})", None),
+            ("rs2_x0", f"ssamoswap.{width} x{rd_reg}, x0, (x{addr_reg})", rd_reg),
+            ("rd_eq_rs1", f"ssamoswap.{width} x{addr_reg}, x{rs2_reg}, (x{addr_reg})", addr_reg),
         ):
             block.extend(
                 [
@@ -404,13 +365,17 @@ def _generate_ssamoswap(test_data: TestData) -> list[str]:
                     f"LI(x{rs2_reg}, 0x3C3C3C3C)",
                     test_data.add_testcase(f"ssamoswap_{width}_{name}", "cp_ssamoswap_reg_edges", _CG),
                     form,
+                    *([write_sigupd(rd, test_data)] if rd is not None else []),
+                    f"LI(x{addr_reg}, ZICFISS_VA_SS)",
+                    f"l{width} x{rd_reg}, 0(x{addr_reg})   # the stored value",
+                    write_sigupd(rd_reg, test_data),
                 ]
             )
-        lines.extend(rv64_only(width, block))
+        lines.extend(ssamoswap_only(width, block))
 
-    lines.append(_SATP_OFF)
+    lines.extend(_SATP_OFF)
     test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg, seed_reg])
-    return _vm_section(coverpoint, "SSAMOSWAP.W/.D swap, sign-extension, ordering bits and register edges", lines)
+    return vm_section(coverpoint, "SSAMOSWAP.W/.D swap, sign-extension, ordering bits and register edges", lines)
 
 
 # ---------------------------------------------------------------------------
@@ -419,43 +384,41 @@ def _generate_ssamoswap(test_data: TestData) -> list[str]:
 
 
 def _generate_alignment(test_data: TestData) -> list[str]:
-    """Sweep addr[2:0] for ssp and for SSAMOSWAP; see SSAMOSWAP_SWEEP_BASE."""
-    addr_reg, rd_reg, rs2_reg = test_data.int_regs.get_registers(3)
+    """Sweep addr[2:0] for ssp and for SSAMOSWAP; every misaligned SSAMOSWAP faults."""
     lines = _umode_prologue(test_data)
-    save_x1, save_x5, save_lines = save_link_regs(test_data)
-    lines.extend(save_lines)
+    addr_reg, rd_reg, rs2_reg = test_data.int_regs.get_registers(3)
 
     for offset in range(8):
         addr = f"ZICFISS_VA_SS + {hex(0x400 + offset)}"
         lines.extend(
-            ss_forms_against(
-                test_data, PUSH_FORMS, addr, "0xDEADBEEF", f"ssp_off{offset}", "cp_ss_address_alignment_ssp", _CG
-            )
-        )
-        lines.extend(
-            ss_forms_against(
-                test_data, POP_FORMS, addr, "0xDEADBEEF", f"ssp_off{offset}", "cp_ss_address_alignment_pop", _CG
-            )
+            [
+                *ss_forms_against(
+                    test_data, PUSH_FORMS, addr, "0xDEADBEEF", f"ssp_off{offset}", "cp_ss_address_alignment_ssp", _CG
+                ),
+                *ss_forms_against(
+                    test_data, POP_FORMS, addr, "0xDEADBEEF", f"ssp_off{offset}", "cp_ss_address_alignment_pop", _CG
+                ),
+            ]
         )
 
-    # SSAMOSWAP address alignment sweep; see SSAMOSWAP_SWEEP_BASE.
-    for width in ("w", "d"):
+    for width in SSAMOSWAP_WIDTHS:
         block: list[str] = []
-        for offset in ssamoswap_sweep_offsets(width):
+        for offset in range(8):
             block.extend(
                 [
-                    f"LI(x{addr_reg}, ZICFISS_VA_SS + {hex(SSAMOSWAP_SWEEP_BASE + offset)})",
+                    f"LI(x{addr_reg}, ZICFISS_VA_SS + {hex(0x400 + offset)})",
                     f"LI(x{rs2_reg}, 0x11223344)",
+                    f"LI(x{rd_reg}, 0x0DDBA11)   # kept if the swap faults",
                     test_data.add_testcase(f"ssamoswap_{width}_off{offset}", "cp_ss_address_alignment_swap", _CG),
                     f"ssamoswap.{width} x{rd_reg}, x{rs2_reg}, (x{addr_reg})",
+                    write_sigupd(rd_reg, test_data),
                 ]
             )
-        lines.extend(rv64_only(width, block))
+        lines.extend(ssamoswap_only(width, block))
 
-    lines.extend(restore_link_regs(save_x1, save_x5))
-    lines.append(_SATP_OFF)
-    test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg, save_x1, save_x5])
-    return _vm_section("cp_ss_address_alignment", "ssp and SSAMOSWAP address alignment sweep over addr[2:0]", lines)
+    lines.extend(_SATP_OFF)
+    test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg])
+    return vm_section("cp_ss_address_alignment", "ssp and SSAMOSWAP address alignment sweep over addr[2:0]", lines)
 
 
 # ---------------------------------------------------------------------------
@@ -466,59 +429,50 @@ def _generate_alignment(test_data: TestData) -> list[str]:
 def _generate_target_page(test_data: TestData) -> list[str]:
     """Remap the shadow stack page with each of the eight pte.xwr encodings."""
     coverpoint = "cp_ss_instr_target_page"
+    # Aim at the middle of the page: sspush decrements ssp before storing, so a pointer at
+    # the page base would push into the preceding page instead.
+    mid = "ZICFISS_VA_SS + 0x800"
     lines: list[str] = []
     for xwr, perms in XWR_PERMS.items():
-        addr_reg = test_data.int_regs.get_register()
-        save_x1, save_x5, save_lines = save_link_regs(test_data)
-        # Aim at the middle of the page: sspush decrements ssp before storing, so a
-        # pointer at the page base would push into the preceding page instead.
-        mid = "ZICFISS_VA_SS + 0x800"
         lines.extend(
             [
                 f"# --- pte.xwr = {xwr} ---",
                 *_umode_prologue(test_data, ss_perms=perms),
-                *save_lines,
                 *ss_forms_against(test_data, PUSH_FORMS + POP_FORMS, mid, "0xDEADBEEF", f"xwr{xwr}", coverpoint, _CG),
-                *_ssamoswap_forms(test_data, mid, addr_reg, f"xwr{xwr}", coverpoint),
-                *restore_link_regs(save_x1, save_x5),
-                _SATP_OFF,
+                *ssamoswap_forms(test_data, mid, f"xwr{xwr}", coverpoint, _CG),
+                *_SATP_OFF,
             ]
         )
-        test_data.int_regs.return_registers([addr_reg, save_x1, save_x5])
-    return _vm_section(coverpoint, "SS instructions against every pte.xwr encoding", lines)
+    return vm_section(coverpoint, "SS instructions against every pte.xwr encoding", lines)
 
 
 def _generate_target_page_mxr_u(test_data: TestData) -> list[str]:
     """Sweep sstatus.MXR and the SS page's U bit against the SS instructions."""
     coverpoint = "cp_ss_instr_target_page_u_mxr"
+    mid = "ZICFISS_VA_SS + 0x800"
     lines: list[str] = []
     for u_bit in (0, 1):
-        addr_reg, mask_reg = test_data.int_regs.get_registers(2)
-        save_x1, save_x5, save_lines = save_link_regs(test_data)
-        # The image is mapped user-accessible for the U-mode testcases; ss_page_user leaves
-        # the SS page's U bit to this sweep.
+        # ss_page_user=False leaves the SS page's U bit to ss_perms.
         lines.extend(
             [
                 f"# --- pte.U = {u_bit} ---",
                 *_umode_prologue(test_data, ss_perms=PTE_SS + (" | PTE_U" if u_bit else ""), ss_page_user=False),
-                *save_lines,
             ]
         )
         for mxr in (0, 1):
             tag = f"u{u_bit}_mxr{mxr}"
+            mask_reg = test_data.int_regs.get_register()
             lines.extend(
                 [
                     f"LI(x{mask_reg}, SSTATUS_MXR)",
                     tsbi_call(f"{'csrs' if mxr else 'csrc'} sstatus, x{mask_reg}"),
-                    *ss_forms_against(
-                        test_data, PUSH_FORMS + POP_FORMS, "ZICFISS_VA_SS + 0x800", "0x4D4D4D4D", tag, coverpoint, _CG
-                    ),
-                    *_ssamoswap_forms(test_data, "ZICFISS_VA_SS + 0x800", addr_reg, tag, coverpoint),
+                    *ss_forms_against(test_data, PUSH_FORMS + POP_FORMS, mid, "0x4D4D4D4D", tag, coverpoint, _CG),
+                    *ssamoswap_forms(test_data, mid, tag, coverpoint, _CG),
                 ]
             )
-        lines.extend([*restore_link_regs(save_x1, save_x5), _SATP_OFF])
-        test_data.int_regs.return_registers([addr_reg, mask_reg, save_x1, save_x5])
-    return _vm_section(coverpoint, "MXR and pte.U axes on the shadow stack page", lines)
+            test_data.int_regs.return_registers([mask_reg])
+        lines.extend(_SATP_OFF)
+    return vm_section(coverpoint, "MXR and pte.U axes on the shadow stack page", lines)
 
 
 # ---------------------------------------------------------------------------
@@ -530,9 +484,6 @@ def _generate_page_crossing(test_data: TestData) -> list[str]:
     """A push at a page base writes into the preceding page; a pop reads its own page."""
     coverpoint = "cp_ss_page_crossing"
     lines = _umode_prologue(test_data)
-    save_x1, save_x5, save_lines = save_link_regs(test_data)
-    lines.extend(save_lines)
-
     # a_base: ssp at the SS page base, so ssp-XLEN/8 lands on the unmapped page below.
     # b_below_valid: ssp on the ordinary RW page, so ssp-XLEN/8 lands back on the SS page.
     # The boundary cases stay inside the SS page: a push from one slot above the base
@@ -544,11 +495,8 @@ def _generate_page_crossing(test_data: TestData) -> list[str]:
         ("near_top", "ZICFISS_VA_SS + 0x1000 - REGWIDTH"),
     ):
         lines.extend(ss_forms_against(test_data, PUSH_FORMS + POP_FORMS, va, "0xC0DECAFE", case, coverpoint, _CG))
-
-    lines.extend(restore_link_regs(save_x1, save_x5))
-    lines.append(_SATP_OFF)
-    test_data.int_regs.return_registers([save_x1, save_x5])
-    return _vm_section(coverpoint, "Shadow stack accesses that straddle a page boundary", lines)
+    lines.extend(_SATP_OFF)
+    return vm_section(coverpoint, "Shadow stack accesses that straddle a page boundary", lines)
 
 
 # ---------------------------------------------------------------------------
@@ -559,27 +507,21 @@ def _generate_page_crossing(test_data: TestData) -> list[str]:
 def _generate_page_ad_bits(test_data: TestData) -> list[str]:
     """D is required by the writing SS instructions but not by SSPOPCHK; A by all."""
     coverpoint = "cp_ss_page_ad_bits"
+    mid = "ZICFISS_VA_SS + 0x800"
     lines: list[str] = []
     for a_bit, d_bit in ((0, 0), (1, 0), (0, 1), (1, 1)):
         perms = " | ".join(["PTE_W", "PTE_V"] + (["PTE_A"] if a_bit else []) + (["PTE_D"] if d_bit else []))
         tag = f"a{a_bit}_d{d_bit}"
-        addr_reg = test_data.int_regs.get_register()
-        save_x1, save_x5, save_lines = save_link_regs(test_data)
         lines.extend(
             [
                 f"# --- pte.A={a_bit}, pte.D={d_bit} ---",
                 *_umode_prologue(test_data, ss_perms=perms),
-                *save_lines,
-                *ss_forms_against(
-                    test_data, PUSH_FORMS + POP_FORMS, "ZICFISS_VA_SS + 0x800", "0xADADADAD", tag, coverpoint, _CG
-                ),
-                *_ssamoswap_forms(test_data, "ZICFISS_VA_SS + 0x800", addr_reg, tag, coverpoint),
-                *restore_link_regs(save_x1, save_x5),
-                _SATP_OFF,
+                *ss_forms_against(test_data, PUSH_FORMS + POP_FORMS, mid, "0xADADADAD", tag, coverpoint, _CG),
+                *ssamoswap_forms(test_data, mid, tag, coverpoint, _CG),
+                *_SATP_OFF,
             ]
         )
-        test_data.int_regs.return_registers([addr_reg, save_x1, save_x5])
-    return _vm_section(coverpoint, "PTE A/D bits on the shadow stack page", lines)
+    return vm_section(coverpoint, "PTE A/D bits on the shadow stack page", lines)
 
 
 # ---------------------------------------------------------------------------
@@ -588,35 +530,42 @@ def _generate_page_ad_bits(test_data: TestData) -> list[str]:
 
 
 def _generate_non_idempotent(test_data: TestData) -> list[str]:
-    """PBMT=IO makes the page non-idempotent, which SS instructions must reject."""
+    """Svpbmt NC memory is idempotent and IO memory is not, so SS instructions fault only on IO.
+
+    menvcfg.PBMTE is set for this section, without which a nonzero PBMT is reserved. SSAMOSWAP
+    is left out on NC pages, because an implementation may also override the AMO PMA there
+    (norm:Svpbmt_impl_may_override_pmas), so its outcome is implementation-defined.
+    """
     coverpoint = "cp_ss_non_idempotent"
-    lines = ["#if defined(SVPBMT_SUPPORTED) && __riscv_xlen == 64"]
+    mid = "ZICFISS_VA_SS + 0x800"
+    pbmte_reg = test_data.int_regs.get_register()
+    lines = [
+        "#if defined(SVPBMT_SUPPORTED) && __riscv_xlen == 64",
+        f"LI(x{pbmte_reg}, MENVCFG_PBMTE)",
+        tsbi_call(f"csrs menvcfg, x{pbmte_reg}"),
+    ]
+    test_data.int_regs.return_registers([pbmte_reg])
     # pte.PBMT is bits [62:61]: 00 PMA, 01 NC, 10 IO.
     for tag, pbmt in (("pma", 0), ("nc", 1), ("io", 2)):
-        addr_reg = test_data.int_regs.get_register()
-        save_x1, save_x5, save_lines = save_link_regs(test_data)
         lines.extend(
             [
                 f"# --- pte.PBMT = {tag} ---",
                 *_umode_prologue(test_data, ss_perms=f"{PTE_SS} | ({pbmt} << 61)"),
-                *save_lines,
-                *ss_forms_against(
-                    test_data,
-                    PUSH_FORMS + POP_FORMS,
-                    "ZICFISS_VA_SS + 0x800",
-                    "0x1D1D1D1D",
-                    f"pbmt_{tag}",
-                    coverpoint,
-                    _CG,
-                ),
-                *_ssamoswap_forms(test_data, "ZICFISS_VA_SS + 0x800", addr_reg, f"pbmt_{tag}", coverpoint),
-                *restore_link_regs(save_x1, save_x5),
-                _SATP_OFF,
+                *ss_forms_against(test_data, PUSH_FORMS + POP_FORMS, mid, "0x1D1D1D1D", f"pbmt_{tag}", coverpoint, _CG),
+                *(ssamoswap_forms(test_data, mid, f"pbmt_{tag}", coverpoint, _CG) if tag != "nc" else []),
+                *_SATP_OFF,
             ]
         )
-        test_data.int_regs.return_registers([addr_reg, save_x1, save_x5])
-    lines.append("#endif  // SVPBMT_SUPPORTED && RV64")
-    return _vm_section(coverpoint, "Non-idempotent shadow stack memory via Svpbmt PBMT=IO", lines)
+    pbmte_reg = test_data.int_regs.get_register()
+    lines.extend(
+        [
+            f"LI(x{pbmte_reg}, MENVCFG_PBMTE)",
+            tsbi_call(f"csrc menvcfg, x{pbmte_reg}"),
+            "#endif  // SVPBMT_SUPPORTED && RV64",
+        ]
+    )
+    test_data.int_regs.return_registers([pbmte_reg])
+    return vm_section(coverpoint, "Svpbmt NC and IO memory types on the shadow stack page", lines)
 
 
 # ---------------------------------------------------------------------------
@@ -625,34 +574,35 @@ def _generate_non_idempotent(test_data: TestData) -> list[str]:
 
 
 def _generate_page_access(test_data: TestData) -> list[str]:
+    """Ordinary, atomic and cache-block accesses to an SS page.
+
+    Loads and LR succeed; stores, AMOs, SC and CBOs raise a store/AMO access fault. Each
+    testcase records rd, or for the stores and CBOs, the location read back afterwards.
+    """
+    lines = _umode_prologue(test_data)
     addr_reg, data_reg, mxr_reg = test_data.int_regs.get_registers(3)
-    lines = [*_umode_prologue(test_data), f"LI(x{addr_reg}, ZICFISS_VA_SS)"]
 
-    def rv64(ops: list[str]) -> list[str]:
-        return ["#if __riscv_xlen == 64", *ops, "#endif"]
-
-    def access(mnemonic: str, form: str, coverpoint: str, tag: str = "", sig: bool = False) -> list[str]:
-        name = f"{mnemonic.replace('.', '_')}_on_ss_page{tag}"
+    def access(mnemonic: str, form: str, coverpoint: str, tag: str = "", read_back: bool = False) -> list[str]:
         return [
-            test_data.add_testcase(name, coverpoint, _CG),
+            test_data.add_testcase(f"{mnemonic.replace('.', '_')}_on_ss_page{tag}", coverpoint, _CG),
             form,
-            *([write_sigupd(data_reg, test_data)] if sig else []),
+            *([f"LREG x{data_reg}, 0(x{addr_reg})   # unchanged"] if read_back else []),
+            write_sigupd(data_reg, test_data),
         ]
 
+    lines.append(f"LI(x{addr_reg}, ZICFISS_VA_SS)")
     for mnemonic in ("sb", "sh", "sw", "sd"):
         store = [
             f"LI(x{data_reg}, 0xDEADBEEF)",
-            *access(mnemonic, f"{mnemonic} x{data_reg}, 0(x{addr_reg})", "cp_ss_page_access_store"),
+            *access(mnemonic, f"{mnemonic} x{data_reg}, 0(x{addr_reg})", "cp_ss_page_access_store", read_back=True),
         ]
-        lines.extend(rv64(store) if mnemonic == "sd" else store)
+        lines.extend(rv64_only(store) if mnemonic == "sd" else store)
 
     for mxr in (0, 1):
         lines.extend([f"LI(x{mxr_reg}, SSTATUS_MXR)", tsbi_call(f"{'csrs' if mxr else 'csrc'} sstatus, x{mxr_reg}")])
         for mnemonic in ("lb", "lh", "lw", "lbu", "lhu", "ld", "lwu"):
-            load = access(
-                mnemonic, f"{mnemonic} x{data_reg}, 0(x{addr_reg})", "cp_ss_page_access_load", f"_mxr{mxr}", sig=True
-            )
-            lines.extend(rv64(load) if mnemonic in ("ld", "lwu") else load)
+            load = access(mnemonic, f"{mnemonic} x{data_reg}, 0(x{addr_reg})", "cp_ss_page_access_load", f"_mxr{mxr}")
+            lines.extend(rv64_only(load) if mnemonic in ("ld", "lwu") else load)
 
     # Zicfiss requires Zaamo, so the ordinary AMOs are always present.
     for mnemonic in ("amoswap.w", "amoadd.w", "amoor.w", "amoswap.d", "amoadd.d"):
@@ -660,45 +610,74 @@ def _generate_page_access(test_data: TestData) -> list[str]:
             f"LI(x{data_reg}, 0x1)",
             *access(mnemonic, f"{mnemonic} x{data_reg}, x{data_reg}, (x{addr_reg})", "cp_ss_page_access_amo"),
         ]
-        lines.extend(rv64(amo) if mnemonic.endswith(".d") else amo)
+        lines.extend(rv64_only(amo) if mnemonic.endswith(".d") else amo)
 
-    # Cache-block ops are themselves gated by menvcfg/senvcfg CBIE/CBCFE/CBZE. Without
-    # those enabled the CBO would trap on its own gating rather than on the SS page.
+    # The CBOs are gated by the CBIE, CBCFE and CBZE fields of menvcfg and senvcfg; enable them so
+    # that a CBO traps on the SS page rather than on its own gating.
+    def cbo_enables(op: str) -> list[str]:
+        return [
+            f"LI(x{data_reg}, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE)",
+            tsbi_call(f"{op} menvcfg, x{data_reg}"),
+            f"LI(x{data_reg}, SENVCFG_CBIE | SENVCFG_CBCFE | SENVCFG_CBZE)",
+            tsbi_call(f"{op} senvcfg, x{data_reg}"),
+        ]
+
     lines.extend(
         [
-            f"LI(x{data_reg}, 0xD0)   # CBIE=01, CBCFE=1, CBZE=1",
-            tsbi_call(f"csrs menvcfg, x{data_reg}"),
-            tsbi_call(f"csrs senvcfg, x{data_reg}"),
+            *cbo_enables("csrs"),
             "#ifdef ZICBOM_SUPPORTED",
             ".option push",
             ".option arch, +zicbom",
+            *access("cbo.clean", f"cbo.clean (x{addr_reg})", "cp_ss_page_access_cbo", read_back=True),
+            *access("cbo.flush", f"cbo.flush (x{addr_reg})", "cp_ss_page_access_cbo", read_back=True),
+            *access("cbo.inval", f"cbo.inval (x{addr_reg})", "cp_ss_page_access_cbo", read_back=True),
+            ".option pop",
+            "#endif",
+            "#ifdef ZICBOZ_SUPPORTED",
+            ".option push",
+            ".option arch, +zicboz",
+            *access("cbo.zero", f"cbo.zero (x{addr_reg})", "cp_ss_page_access_cboz", read_back=True),
+            ".option pop",
+            "#endif",
+            *cbo_enables("csrc"),
         ]
     )
-    for mnemonic in ("cbo.clean", "cbo.flush", "cbo.inval"):
-        lines.extend(access(mnemonic, f"{mnemonic} (x{addr_reg})", "cp_ss_page_access_cbo"))
-    lines.extend([".option pop", "#endif", "#ifdef ZICBOZ_SUPPORTED", ".option push", ".option arch, +zicboz"])
-    lines.extend(access("cbo.zero", f"cbo.zero (x{addr_reg})", "cp_ss_page_access_cboz"))
-    lines.extend([".option pop", "#endif", "#ifdef ZALRSC_SUPPORTED", ".option push", ".option arch, +a"])
-    for mnemonic in ("lr.w", "sc.w", "lr.d", "sc.d"):
-        form = (
-            f"{mnemonic} x{data_reg}, (x{addr_reg})"
-            if mnemonic.startswith("lr")
-            else f"{mnemonic} x{data_reg}, x{data_reg}, (x{addr_reg})"
-        )
-        lrsc = access(mnemonic, form, "cp_ss_page_access_lrsc")
-        lines.extend(rv64(lrsc) if mnemonic.endswith(".d") else lrsc)
-    lines.extend([".option pop", "#endif", "#ifdef ZACAS_SUPPORTED", ".option push", ".option arch, +zacas"])
-    for mnemonic in ("amocas.w", "amocas.d"):
-        cas = [
-            f"LI(x{data_reg}, 0x1)",
-            *access(mnemonic, f"{mnemonic} x{data_reg}, x{data_reg}, (x{addr_reg})", "cp_ss_page_access_amocas"),
-        ]
-        lines.extend(rv64(cas) if mnemonic.endswith(".d") else cas)
-    lines.extend([".option pop", "#endif"])
 
-    lines.append(_SATP_OFF)
+    lines.extend(
+        [
+            "#ifdef ZALRSC_SUPPORTED",
+            ".option push",
+            ".option arch, +a",
+            *access("lr.w", f"lr.w x{data_reg}, (x{addr_reg})", "cp_ss_page_access_lrsc"),
+            *access("sc.w", f"sc.w x{data_reg}, x{data_reg}, (x{addr_reg})", "cp_ss_page_access_lrsc"),
+            *rv64_only(
+                [
+                    *access("lr.d", f"lr.d x{data_reg}, (x{addr_reg})", "cp_ss_page_access_lrsc"),
+                    *access("sc.d", f"sc.d x{data_reg}, x{data_reg}, (x{addr_reg})", "cp_ss_page_access_lrsc"),
+                ]
+            ),
+            ".option pop",
+            "#endif",
+            "#ifdef ZACAS_SUPPORTED",
+            ".option push",
+            ".option arch, +zacas",
+            f"LI(x{data_reg}, 0x1)",
+            *access("amocas.w", f"amocas.w x{data_reg}, x{data_reg}, (x{addr_reg})", "cp_ss_page_access_amocas"),
+            *rv64_only(
+                [
+                    f"LI(x{data_reg}, 0x1)",
+                    *access(
+                        "amocas.d", f"amocas.d x{data_reg}, x{data_reg}, (x{addr_reg})", "cp_ss_page_access_amocas"
+                    ),
+                ]
+            ),
+            ".option pop",
+            "#endif",
+            *_SATP_OFF,
+        ]
+    )
     test_data.int_regs.return_registers([addr_reg, data_reg, mxr_reg])
-    return _vm_section("cp_ss_page_access", "Non-SS accessors against an SS page", lines)
+    return vm_section("cp_ss_page_access", "Non-SS accessors against an SS page", lines)
 
 
 # ---------------------------------------------------------------------------
@@ -718,14 +697,14 @@ def _generate_vector(test_data: TestData) -> list[str]:
     The page below the shadow stack page is also mapped, as a second view of the read/write
     page, so a strided or indexed access can begin there and run up into the SS page.
     """
-    addr_reg, tmp_reg, stride_reg = test_data.int_regs.get_registers(3)
     below = f"ZICFISS_PTE_SETUP(rvtest_zicfiss_rw_page, ({PTE_RW} | PTE_U), (ZICFISS_VA_SS - 0x1000), LEVEL0)"
     lines = [
         "#ifdef ZVE32X_SUPPORTED",
-        *_umode_prologue(test_data, extra_mappings=[below, "sfence.vma"]),
+        *_umode_prologue(test_data, extra_mappings=(below, "sfence.vma")),
         ".option push",
         ".option arch, +zve32x",
     ]
+    addr_reg, tmp_reg, stride_reg = test_data.int_regs.get_registers(3)
 
     # Unit-stride loads succeed, whether or not MXR is set; the SS page has R=0.
     for mxr in (0, 1):
@@ -778,9 +757,9 @@ def _generate_vector(test_data: TestData) -> list[str]:
                 ]
             )
 
-    lines.extend([".option pop", _SATP_OFF, "#endif  // ZVE32X_SUPPORTED"])
+    lines.extend([".option pop", *_SATP_OFF, "#endif  // ZVE32X_SUPPORTED"])
     test_data.int_regs.return_registers([addr_reg, tmp_reg, stride_reg])
-    return _vm_section("cp_ss_vector_*", "Vector accesses to a shadow stack page", lines)
+    return vm_section("cp_ss_vector_*", "Vector accesses to a shadow stack page", lines)
 
 
 # ---------------------------------------------------------------------------
@@ -792,18 +771,19 @@ def _generate_sse_gating(test_data: TestData) -> list[str]:
     """Sweep the reachable (menvcfg.SSE, senvcfg.SSE) states from U-mode.
 
     menvcfg.SSE=0 makes senvcfg.SSE read-only zero, so (0, 1) is the same state as (0, 0).
+    Each ssp access records rd, which an illegal-instruction exception leaves unchanged.
     """
     lines: list[str] = []
     for menvcfg, senvcfg in ((1, 1), (1, 0), (0, 0)):
         tag = f"m{menvcfg}s{senvcfg}"
-        addr_reg, rd_reg = test_data.int_regs.get_registers(2)
         lines.extend(
             [
                 f"# --- menvcfg.SSE={menvcfg}, senvcfg.SSE={senvcfg} ---",
                 *_umode_prologue(test_data, menvcfg=menvcfg, senvcfg=senvcfg),
-                f"LI(x{addr_reg}, ZICFISS_VA_SS)",
             ]
         )
+        addr_reg, rd_reg = test_data.int_regs.get_registers(2)
+        lines.append(f"LI(x{addr_reg}, ZICFISS_VA_SS)")
         # ssp CSR access: allowed only when both bits are set, else illegal-instruction.
         for op, form in (
             ("csrrw", f"csrrw x{rd_reg}, ssp, x{addr_reg}"),
@@ -813,17 +793,22 @@ def _generate_sse_gating(test_data: TestData) -> list[str]:
             ("csrrsi", f"csrrsi x{rd_reg}, ssp, 1"),
             ("csrrci", f"csrrci x{rd_reg}, ssp, 1"),
         ):
-            lines.extend([test_data.add_testcase(f"ssp_{op}_{tag}", "cp_ssp_csr_gating_u", _CG), form])
+            lines.extend(
+                [
+                    f"LI(x{rd_reg}, 0x0DDBA11)",
+                    test_data.add_testcase(f"ssp_{op}_{tag}", "cp_ssp_csr_gating_u", _CG),
+                    form,
+                    write_sigupd(rd_reg, test_data),
+                ]
+            )
+        test_data.int_regs.return_registers([addr_reg, rd_reg])
 
         if not (menvcfg and senvcfg):
             # SSAMOSWAP is AMO-encoded, so unlike the MOP-encoded instructions it traps
             # rather than becoming inert. The inert case is cp_ss_instr_inactive_u.
-            lines.extend(
-                _ssamoswap_forms(test_data, "ZICFISS_VA_SS", addr_reg, f"gated_{tag}", "cp_ssamoswap_sse_gating")
-            )
-        lines.append(_SATP_OFF)
-        test_data.int_regs.return_registers([addr_reg, rd_reg])
-    return _vm_section("cp_ssp_csr_gating_u", "SSE enable chain seen from U-mode", lines)
+            lines.extend(ssamoswap_forms(test_data, "ZICFISS_VA_SS", f"gated_{tag}", "cp_ssamoswap_sse_gating", _CG))
+        lines.extend(_SATP_OFF)
+    return vm_section("cp_ssp_csr_gating_u", "SSE enable chain seen from U-mode", lines)
 
 
 # ---------------------------------------------------------------------------
@@ -839,10 +824,8 @@ def _generate_instr_inactive_u(test_data: TestData) -> list[str]:
     values would fault or raise a software check if the instruction were not inert.
     """
     coverpoint = "cp_ss_instr_inactive_u"
-    addr_reg, rd_reg = test_data.int_regs.get_registers(2)
     lines = _umode_prologue(test_data)
-    save_x1, save_x5, save_lines = save_link_regs(test_data)
-    lines.extend(save_lines)
+    addr_reg, rd_reg = test_data.int_regs.get_registers(2)
 
     for gate, cleared in (("men1_sen0", ("senvcfg",)), ("men0_sen0", ("senvcfg", "menvcfg"))):
         for state, addr in (
@@ -868,14 +851,18 @@ def _generate_instr_inactive_u(test_data: TestData) -> list[str]:
                 value = "0xDEADBEEF" if state == "mismatch" else "0"
                 case = [f"LI({form.link_reg}, {value})", test_data.add_testcase(name, coverpoint, _CG), *ss_instr(form)]
                 lines.extend(zcmop_only(form.compressed, case))
-            lines.extend(set_envcfg_sse("menvcfg", 1, test_data, mode="U"))
-            lines.extend(set_envcfg_sse("senvcfg", 1, test_data, mode="U"))
-            lines.extend([f"csrr x{rd_reg}, ssp   # unchanged", write_sigupd(rd_reg, test_data)])
+            lines.extend(
+                [
+                    *set_envcfg_sse("menvcfg", 1, test_data, mode="U"),
+                    *set_envcfg_sse("senvcfg", 1, test_data, mode="U"),
+                    f"csrr x{rd_reg}, ssp   # unchanged",
+                    write_sigupd(rd_reg, test_data),
+                ]
+            )
 
-    lines.extend(restore_link_regs(save_x1, save_x5))
-    lines.append(_SATP_OFF)
-    test_data.int_regs.return_registers([addr_reg, rd_reg, save_x1, save_x5])
-    return _vm_section(coverpoint, "SS instructions inert in U-mode while Zicfiss is inactive", lines)
+    lines.extend(_SATP_OFF)
+    test_data.int_regs.return_registers([addr_reg, rd_reg])
+    return vm_section(coverpoint, "SS instructions inert in U-mode while Zicfiss is inactive", lines)
 
 
 # ---------------------------------------------------------------------------
@@ -888,29 +875,34 @@ def _generate_instr_inactive_u(test_data: TestData) -> list[str]:
     required_extensions=["S", "Zicfiss"],
     # Zicfiss implies Zimop and Zaamo; name them for the assembler.
     march_extensions=["Zicfiss", "Zimop", "Zaamo"],
+    extra_defines=["#define BOOT_TO_UMODE"],
 )
 def make_zicfissu(test_data: TestData) -> list[TestChunk]:
-    """Generate the ZicfissU test suite."""
+    """Generate the ZicfissU test suite.
+
+    The sections go into three files, each under 100k instructions: the instructions and the
+    SSE enable chain, the page types and non-SS accessors, and the page A/D bits.
+    """
     test_chunks: list[TestChunk] = []
-    for section in (
-        _generate_ssp_access,
-        _generate_push_pop,
-        _generate_fault_priority,
-        _generate_call_return,
-        _generate_ssrdp,
-        _generate_ssamoswap,
-        _generate_alignment,
-        _generate_target_page,
-        _generate_target_page_mxr_u,
-        _generate_page_crossing,
-        _generate_page_ad_bits,
-        _generate_non_idempotent,
-        _generate_page_access,
-        _generate_vector,
-        _generate_sse_gating,
-        _generate_instr_inactive_u,
+    for section, split_name in (
+        (_generate_ssp_access, None),
+        (_generate_push_pop, None),
+        (_generate_fault_priority, None),
+        (_generate_call_return, None),
+        (_generate_ssrdp, None),
+        (_generate_ssamoswap, None),
+        (_generate_alignment, None),
+        (_generate_sse_gating, None),
+        (_generate_instr_inactive_u, None),
+        (_generate_target_page, "pages"),
+        (_generate_target_page_mxr_u, None),
+        (_generate_page_crossing, None),
+        (_generate_non_idempotent, None),
+        (_generate_page_access, None),
+        (_generate_vector, None),
+        (_generate_page_ad_bits, "page_ad_bits"),
     ):
-        tc = test_data.begin_test_chunk()
+        tc = test_data.begin_test_chunk(split_name)
         tc.code.extend(page_table_data_section())
         tc.code.extend(section(test_data))
         test_chunks.append(test_data.end_test_chunk())

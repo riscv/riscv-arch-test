@@ -8,41 +8,20 @@
 
 """Shared helpers for the Zicfiss shadow stack test generators.
 
-Register constraints
---------------------
-SSPUSH/SSPOPCHK are architecturally defined only for x1 and x5, but the ACT
-framework already owns both: x1 is the call return address (reserved in
-``priv_exclude_regs``) and x5 is ``link_reg``, used as a scratch pointer inside
-``RVTEST_SIGUPD``. Every SS sequence therefore brackets itself with
-``save_link_regs`` / ``restore_link_regs`` and only calls ``write_sigupd`` once
-x1/x5 have been restored.
+SSPUSH and SSPOPCHK name x1 or x5, which the tests load freely: x1 is kept out of the allocator
+because framework calls clobber it, and x5 is the SIGUPD link register, written only on the
+failure path.
 
-Compressed encodings
---------------------
-The tests are assembled without Zca or Zcmop, so every instruction keeps its 32-bit
-encoding. The compressed shadow stack instructions exist only with Zcmop: ``ss_instr``
-enables Zcmop around each one, and ``zcmop_only`` guards its testcase with
-``#ifdef ZCMOP_SUPPORTED``.
+The compressed forms need Zcmop, which the tests are not assembled with: ``ss_instr`` enables it
+around each one, and ``zcmop_only`` guards the testcase.
 
-XLEN
-----
-Every test body is emitted once. The XLEN-dependent values -- the virtual addresses,
-the page-table geometry and satp.MODE -- are preprocessor symbols defined by
-``page_table_data_section`` from the translation mode the configuration supports:
-Sv39 on RV64 and Sv32 on RV32. A configuration with neither skips the tests that
-need translation (``ZICFISS_VM_SUPPORTED`` undefined).
-
-Page-table layout
------------------
-Three leaf pages share one leaf page table so a single PTE chain covers all of them:
-  ZICFISS_VA_SS -- the shadow stack page,  pte.xwr = 010
-  ZICFISS_VA_RW -- an ordinary read/write page, pte.xwr = 011
-  ZICFISS_VA_RO -- a read-only page, pte.xwr = 001
-ZICFISS_VA_UNMAPPED is deliberately left unmapped, and its walk fails above the leaf level.
+``page_table_data_section`` defines the XLEN-dependent addresses and page-table geometry, and
+the shadow stack (SS), read/write (RW) and read-only (RO) pages, which share one leaf table.
 """
 
-from typing import NamedTuple
+from typing import Literal, NamedTuple
 
+from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 
@@ -62,18 +41,14 @@ XWR_PERMS = {
     "110": "PTE_D | PTE_A | PTE_X | PTE_W | PTE_V",
     "111": "PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V",
 }
+# Perms of every page of the test image's identity map, matching the superpage the boot code installs.
+_IMAGE_PERMS = "PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V"
 
-# The misaligned atomicity granule applies only to Zaamo, Zabha and Zacas AMOs (norm:pma_mag_insts,
-# riscv-isa-manual#3426), so every misaligned SSAMOSWAP faults. Sail 0.14.1 wrongly executes one that
-# lies within a granule; sail-riscv#1980 fixes this. The alignment sweep starts 8 bytes into a 16-byte
-# granule so that every misaligned access crosses it and faults on Sail 0.14.1 too. SSAMOSWAP.W with
-# addr[2:0] of 1-3 cannot cross, so it is left out until ACT moves past Sail 0.14.1.
-SSAMOSWAP_SWEEP_BASE = 0x408
+# Turn translation off from S- or M-mode.
+SATP_OFF = ["csrw satp, x0", "sfence.vma"]
 
-
-def ssamoswap_sweep_offsets(width: str) -> list[int]:
-    """addr[2:0] values swept for SSAMOSWAP.W ("w") or SSAMOSWAP.D ("d"); see SSAMOSWAP_SWEEP_BASE."""
-    return [0, 4, 5, 6, 7] if width == "w" else list(range(8))
+SsamoswapWidth = Literal["w", "d"]
+SSAMOSWAP_WIDTHS: tuple[SsamoswapWidth, ...] = ("w", "d")
 
 
 class SsForm(NamedTuple):
@@ -112,53 +87,63 @@ def zcmop_only(compressed: bool, lines: list[str]) -> list[str]:
     return ["#ifdef ZCMOP_SUPPORTED", *lines, "#endif"] if compressed else lines
 
 
+def rv64_only(lines: list[str]) -> list[str]:
+    """Return ``lines``, guarded to RV64."""
+    return ["#if __riscv_xlen == 64", *lines, "#endif"]
+
+
+def ssamoswap_only(width: SsamoswapWidth, lines: list[str]) -> list[str]:
+    """Return ``lines`` for SSAMOSWAP.``width``, guarded to RV64 for SSAMOSWAP.D."""
+    return lines if width == "w" else rv64_only(lines)
+
+
+def vm_section(title: str, description: str, lines: list[str]) -> list[str]:
+    """A section banner, and ``lines`` guarded on the configuration supporting Sv39/Sv32."""
+    return [comment_banner(title, description), "#ifdef ZICFISS_VM_SUPPORTED", *lines, "#endif"]
+
+
 def ss_forms_against(
     test_data: TestData, forms: list[SsForm], addr: str, value: str, tag: str, coverpoint: str, cg: str
 ) -> list[str]:
-    """One testcase per push/pop form: ssp = ``addr`` and the form's link register = ``value``."""
-    addr_reg = test_data.int_regs.get_register()
+    """One testcase per push/pop form, with ssp = ``addr`` and the form's link register = ``value``.
+
+    Each testcase records ssp afterwards, which shows whether the access completed.
+    """
+    ssp_reg = test_data.int_regs.get_register()
     lines: list[str] = []
     for form in forms:
         case = [
-            f"LI(x{addr_reg}, {addr})",
-            f"csrw ssp, x{addr_reg}",
+            f"LI(x{ssp_reg}, {addr})",
+            f"csrw ssp, x{ssp_reg}",
             f"LI({form.link_reg}, {value})",
             test_data.add_testcase(f"{form.name}_{tag}", coverpoint, cg),
             *ss_instr(form),
+            f"csrr x{ssp_reg}, ssp",
+            write_sigupd(ssp_reg, test_data),
         ]
         lines.extend(zcmop_only(form.compressed, case))
-    test_data.int_regs.return_registers([addr_reg])
+    test_data.int_regs.return_registers([ssp_reg])
     return lines
 
 
-def rv64_only(width: str, lines: list[str]) -> list[str]:
-    """Return ``lines``, guarded to RV64 when ``width`` is "d" (SSAMOSWAP.D is RV64-only)."""
-    return lines if width == "w" else ["#if __riscv_xlen == 64", *lines, "#endif"]
-
-
-def save_link_regs(test_data: TestData) -> tuple[int, int, list[str]]:
-    """Save x1 and x5 into freshly allocated registers.
-
-    Returns (save_x1, save_x5, lines). The caller must pass both back to
-    ``restore_link_regs`` and return them to the allocator.
-    """
-    save_x1, save_x5 = test_data.int_regs.get_registers(2)
-    return (
-        save_x1,
-        save_x5,
-        [
-            f"mv x{save_x1}, x1   # preserve framework return address",
-            f"mv x{save_x5}, x5   # preserve RVTEST_SIGUPD link register",
-        ],
-    )
-
-
-def restore_link_regs(save_x1: int, save_x5: int) -> list[str]:
-    """Restore x1 and x5 after an SS sequence."""
-    return [
-        f"mv x1, x{save_x1}   # restore framework return address",
-        f"mv x5, x{save_x5}   # restore RVTEST_SIGUPD link register",
-    ]
+def ssamoswap_forms(test_data: TestData, addr: str, tag: str, coverpoint: str, cg: str) -> list[str]:
+    """SSAMOSWAP.W, and SSAMOSWAP.D on RV64, against ``addr``, each recording rd afterwards."""
+    addr_reg, rd_reg, rs2_reg = test_data.int_regs.get_registers(3)
+    lines = [f"LI(x{addr_reg}, {addr})", f"LI(x{rs2_reg}, 0x11223344)"]
+    for width in SSAMOSWAP_WIDTHS:
+        lines.extend(
+            ssamoswap_only(
+                width,
+                [
+                    f"LI(x{rd_reg}, 0x0DDBA11)   # kept if the swap faults",
+                    test_data.add_testcase(f"ssamoswap_{width}_{tag}", coverpoint, cg),
+                    f"ssamoswap.{width} x{rd_reg}, x{rs2_reg}, (x{addr_reg})",
+                    write_sigupd(rd_reg, test_data),
+                ],
+            )
+        )
+    test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg])
+    return lines
 
 
 def set_envcfg_sse(csr: str, value: int, test_data: TestData, *, mode: str) -> list[str]:
@@ -173,6 +158,24 @@ def set_envcfg_sse(csr: str, value: int, test_data: TestData, *, mode: str) -> l
     direct = mode == "M" or (mode == "S" and csr == "senvcfg")
     lines = [f"LI(x{reg}, {csr.upper()}_SSE)", instr if direct else tsbi_call(instr)]
     test_data.int_regs.return_registers([reg])
+    return lines
+
+
+def enable_translation(test_data: TestData, *, mode: Literal["M", "S", "U"]) -> list[str]:
+    """Point satp at rvtest_Sroot_pg_tbl in Sv39 or Sv32 mode, through T-SBI from U-mode.
+
+    ``mode`` is the privilege mode this runs in.
+    """
+    satp_reg, mode_reg = test_data.int_regs.get_registers(2)
+    write = f"csrw satp, x{satp_reg}"
+    lines = [
+        f"LA(x{satp_reg}, rvtest_Sroot_pg_tbl)",
+        f"srli x{satp_reg}, x{satp_reg}, 12",
+        f"LI(x{mode_reg}, ZICFISS_SATP_MODE)",
+        f"or x{satp_reg}, x{satp_reg}, x{mode_reg}",
+        tsbi_call(write) if mode == "U" else write,
+    ]
+    test_data.int_regs.return_registers([satp_reg, mode_reg])
     return lines
 
 
@@ -191,9 +194,9 @@ def page_table_data_section() -> list[str]:
         "#define ZICFISS_VA_RO       0x140302000",
         "#define ZICFISS_VA_UNMAPPED 0x140400000   // not mapped: the walk fails at level 1",
         "#define ZICFISS_PTE_SETUP(PA, PERMS, VA, LEVEL) PTE_SETUP_SV39(PA, PERMS, VA, LEVEL)",
-        "#define ZICFISS_SATP_SETUP  SATP_SETUP_RV64(sv39)",
         "#define ZICFISS_SATP_MODE   ((SATP64_MODE) & (SATP_MODE_SV39 << 60))",
         "#define ZICFISS_ROOT_SHIFT  30      // VA shift of the root-level VPN",
+        "#define ZICFISS_LEAF_SPAN   21      // log2 of the bytes one leaf table maps",
         "#define ZICFISS_VPN_MASK    0x1FF",
         "#define ZICFISS_PTE_LOG2    3       // log2 of the PTE size",
         "#elif defined(SV32_SUPPORTED)",
@@ -203,9 +206,9 @@ def page_table_data_section() -> list[str]:
         "#define ZICFISS_VA_RO       0xC0302000",
         "#define ZICFISS_VA_UNMAPPED 0xC0400000    // not mapped: the walk fails at level 1",
         "#define ZICFISS_PTE_SETUP(PA, PERMS, VA, LEVEL) PTE_SETUP_SV32(PA, PERMS, VA, LEVEL)",
-        "#define ZICFISS_SATP_SETUP  SATP_SETUP_SV32",
         "#define ZICFISS_SATP_MODE   SATP32_MODE",
         "#define ZICFISS_ROOT_SHIFT  22",
+        "#define ZICFISS_LEAF_SPAN   22",
         "#define ZICFISS_VPN_MASK    0x3FF",
         "#define ZICFISS_PTE_LOG2    2",
         "#endif",
@@ -238,153 +241,130 @@ def page_table_data_section() -> list[str]:
     ]
 
 
-# Perms carried by every page of the identity map: D|A|R|W|X|V, matching the superpage the
-# boot code installs.
-_IMAGE_PERMS = "PTE_D | PTE_A | PTE_R | PTE_W | PTE_X | PTE_V"
+def _table_entry(test_data: TestData, table: str, shift: str, dest: int) -> list[str]:
+    """Set x``dest`` to the entry of ``table`` that maps rvtest_code_begin, whose VPN is at VA bit ``shift``."""
+    tmp = test_data.int_regs.get_register()
+    lines = [
+        f"LA(x{dest}, rvtest_code_begin)",
+        f"srli x{dest}, x{dest}, {shift}",
+        f"andi x{dest}, x{dest}, ZICFISS_VPN_MASK",
+        f"slli x{dest}, x{dest}, ZICFISS_PTE_LOG2",
+        f"LA(x{tmp}, {table})",
+        f"add x{dest}, x{dest}, x{tmp}",
+    ]
+    test_data.int_regs.return_registers([tmp])
+    return lines
 
 
-def identity_map() -> list[str]:
-    """Identity superpage covering code+data, supervisor-only, PC-relative.
+def _identity_map(test_data: TestData) -> list[str]:
+    """Map the root-level superpage holding the test image to itself, supervisor-only.
 
-    Hand-rolled rather than SUPERPAGE_PTE_SETUP_* because that macro needs a constant VA,
-    and this must map whatever PA the linker chose for rvtest_code_begin back to itself.
+    The superpage is taken from the PC, because the image may be linked anywhere.
     """
-    return [
+    pte, entry = test_data.int_regs.get_registers(2)
+    lines = [
         "# identity superpage for code+data",
-        "auipc t0, 0",
-        "LI(t1, ~((1 << ZICFISS_ROOT_SHIFT) - 1))",
-        "and t0, t0, t1",
-        "srli t0, t0, 12",
-        "slli t0, t0, 10",
-        f"LI(t1, ({_IMAGE_PERMS}))",
-        "or t0, t0, t1",
-        "LA(t2, rvtest_Sroot_pg_tbl)",
-        "LA(t1, rvtest_code_begin)",
-        "srli t1, t1, ZICFISS_ROOT_SHIFT",
-        "andi t1, t1, ZICFISS_VPN_MASK",
-        "slli t1, t1, ZICFISS_PTE_LOG2",
-        "add t2, t2, t1",
-        "SREG t0, 0(t2)",
+        f"auipc x{pte}, 0",
+        f"srli x{pte}, x{pte}, ZICFISS_ROOT_SHIFT",
+        f"slli x{pte}, x{pte}, ZICFISS_ROOT_SHIFT",
+        f"srli x{pte}, x{pte}, 12",
+        f"slli x{pte}, x{pte}, 10",
+        f"ori x{pte}, x{pte}, ({_IMAGE_PERMS})",
+        *_table_entry(test_data, "rvtest_Sroot_pg_tbl", "ZICFISS_ROOT_SHIFT", entry),
+        f"SREG x{pte}, 0(x{entry})",
         "sfence.vma",
     ]
+    test_data.int_regs.return_registers([pte, entry])
+    return lines
 
 
-def _umode_image_map() -> list[str]:
-    """Identity-map the test image at 4 KiB granularity, splitting user from supervisor.
+def _umode_image_map(test_data: TestData) -> list[str]:
+    """Identity-map the test image with 4 KiB pages, user-accessible where U-mode needs it.
 
-    U-mode has to fetch the test body and write the signature area, while the trap handler
-    that boot-time delegation sends S-mode traps to has to fetch its own code -- and S-mode
-    cannot execute from a user page (SUM covers loads and stores, never instruction fetch).
-    The framework's own layout already separates the two: the handlers follow
-    ``rvtest_code_end``, which RVTEST_CODE_END page-aligns, and the signature area follows
-    ``rvtest_data_begin``. So
-
-      [image start, rvtest_code_end)   PTE_U -- the test body, fetched from U-mode
-      [rvtest_code_end, data page)     supervisor only -- trap handlers and save areas
-      [data page, _end)                PTE_U -- test data and the signature region
-
-    where ``data page`` is ``rvtest_data_begin`` rounded UP, so the page holding the
-    S-mode save area stays supervisor-only. The handler still writes trap
-    signatures into the user-mapped signature region, which is why the caller also sets
-    ``sstatus.SUM``.
-
-    Emitted with translation disabled; the root entry is written last either way. One leaf
-    table covers 2 MiB (Sv39) or 4 MiB (Sv32), which is far more than a priv test image needs
-    -- anything past it is simply left unmapped rather than silently mismapped.
+    The test body, below rvtest_code_end, and the data from the page above rvtest_data_begin are
+    user pages. The trap handlers and save areas between them stay supervisor-only, because
+    S-mode cannot fetch from a user page. Pages past the 2 MiB (Sv39) or 4 MiB (Sv32) that one
+    leaf table maps are left unmapped. The leaf table is filled once per file; the root entry is
+    rewritten every time because ``_identity_map`` may have replaced it.
     """
-    return [
-        "# 4 KiB identity map of the test image, user pages only where U-mode needs them.",
-        "# The leaf table is filled once per test file; the root entry is rewritten every",
-        "# time, because identity_map() may have replaced it with a supervisor superpage.",
-        "LA(t0, rvtest_uimg_mapped)",
-        "LREG t1, 0(t0)",
-        "bnez t1, 2f",
-        "LA(t0, rvtest_code_begin)",
-        "srli t0, t0, 12",
-        "slli t0, t0, 12",
-        "# t2 = &leaf[index of the first page]",
-        "LA(t2, rvtest_uimg_lvl0_pg_tbl)",
-        "srli t1, t0, 12",
-        "andi t1, t1, ZICFISS_VPN_MASK",
-        "slli t1, t1, ZICFISS_PTE_LOG2",
-        "add t2, t2, t1",
-        "LA(t1, _end)",
-        "LA(t3, rvtest_code_end)   # first page that must not be user-executable",
-        "LI(t6, 4096)",
-        "# Round rvtest_data_begin UP: the S-mode save area sits just below it and the",
-        "# T-SBI S-mode handler executes its CSR instruction out of that save area, so its",
-        "# page must stay supervisor-only or S-mode cannot fetch the scratch code.",
-        "LA(t4, rvtest_data_begin)",
-        "add t4, t4, t6",
-        "addi t4, t4, -1",
-        "srli t4, t4, 12",
-        "slli t4, t4, 12          # first page of the user-writable data region",
+    page, pte, entry, tmp = test_data.int_regs.get_registers(4)
+    lines = [
+        f"LA(x{tmp}, rvtest_uimg_mapped)",
+        f"LREG x{tmp}, 0(x{tmp})",
+        f"bnez x{tmp}, 2f",
+        f"LA(x{page}, rvtest_code_begin)",
+        f"srli x{page}, x{page}, 12",
+        f"slli x{page}, x{page}, 12",
         "1:",
-        "bgeu t0, t1, 2f",
-        "LA(t5, rvtest_uimg_lvl0_pg_tbl + 4096)",
-        "bgeu t2, t5, 2f          # leaf table full: leave the rest unmapped",
-        "srli t5, t0, 12",
-        "slli t5, t5, 10",
-        f"ori t5, t5, ({_IMAGE_PERMS})",
-        "bltu t0, t3, 3f          # in the test body -> user",
-        "bltu t0, t4, 4f          # handlers and save areas -> supervisor only",
+        f"LA(x{tmp}, _end)",
+        f"bgeu x{page}, x{tmp}, 2f",
+        f"LA(x{tmp}, rvtest_code_begin)",
+        f"xor x{tmp}, x{tmp}, x{page}",
+        f"srli x{tmp}, x{tmp}, ZICFISS_LEAF_SPAN",
+        f"bnez x{tmp}, 2f          # past what the leaf table maps",
+        f"srli x{pte}, x{page}, 12",
+        f"slli x{pte}, x{pte}, 10",
+        f"ori x{pte}, x{pte}, ({_IMAGE_PERMS})",
+        f"LA(x{tmp}, rvtest_code_end)",
+        f"bltu x{page}, x{tmp}, 3f   # the test body: user",
+        "# The S-mode save area ends at rvtest_data_begin, so its page stays supervisor-only.",
+        f"LA(x{tmp}, rvtest_data_begin + 0xFFF)",
+        f"srli x{tmp}, x{tmp}, 12",
+        f"slli x{tmp}, x{tmp}, 12",
+        f"bltu x{page}, x{tmp}, 4f   # trap handlers and save areas: supervisor only",
         "3:",
-        "ori t5, t5, PTE_U",
+        f"ori x{pte}, x{pte}, PTE_U",
         "4:",
-        "SREG t5, 0(t2)",
-        "addi t2, t2, (1 << ZICFISS_PTE_LOG2)",
-        "add t0, t0, t6",
+        f"srli x{entry}, x{page}, 12",
+        f"andi x{entry}, x{entry}, ZICFISS_VPN_MASK",
+        f"slli x{entry}, x{entry}, ZICFISS_PTE_LOG2",
+        f"LA(x{tmp}, rvtest_uimg_lvl0_pg_tbl)",
+        f"add x{entry}, x{entry}, x{tmp}",
+        f"SREG x{pte}, 0(x{entry})",
+        f"LI(x{tmp}, 0x1000)",
+        f"add x{page}, x{page}, x{tmp}",
         "j 1b",
         "2:",
         "#ifdef SV39_SUPPORTED",
-        "# Link the leaf table into the level-1 table",
-        "LA(t5, rvtest_uimg_lvl0_pg_tbl)",
-        "srli t5, t5, 12",
-        "slli t5, t5, 10",
-        "ori t5, t5, PTE_V",
-        "LA(t2, rvtest_uimg_lvl1_pg_tbl)",
-        "LA(t1, rvtest_code_begin)",
-        "srli t1, t1, 21",
-        "andi t1, t1, 0x1FF",
-        "slli t1, t1, 3",
-        "add t2, t2, t1",
-        "sd t5, 0(t2)",
-        "# Link the level-1 table into the root",
-        "LA(t5, rvtest_uimg_lvl1_pg_tbl)",
+        f"LA(x{pte}, rvtest_uimg_lvl0_pg_tbl)",
+        f"srli x{pte}, x{pte}, 12",
+        f"slli x{pte}, x{pte}, 10",
+        f"ori x{pte}, x{pte}, PTE_V",
+        *_table_entry(test_data, "rvtest_uimg_lvl1_pg_tbl", "ZICFISS_LEAF_SPAN", entry),
+        f"SREG x{pte}, 0(x{entry})",
+        f"LA(x{pte}, rvtest_uimg_lvl1_pg_tbl)",
         "#else",
-        "LA(t5, rvtest_uimg_lvl0_pg_tbl)",
+        f"LA(x{pte}, rvtest_uimg_lvl0_pg_tbl)",
         "#endif",
-        "srli t5, t5, 12",
-        "slli t5, t5, 10",
-        "ori t5, t5, PTE_V",
-        "LA(t2, rvtest_Sroot_pg_tbl)",
-        "LA(t1, rvtest_code_begin)",
-        "srli t1, t1, ZICFISS_ROOT_SHIFT",
-        "andi t1, t1, ZICFISS_VPN_MASK",
-        "slli t1, t1, ZICFISS_PTE_LOG2",
-        "add t2, t2, t1",
-        "SREG t5, 0(t2)",
-        "LA(t0, rvtest_uimg_mapped)",
-        "LI(t1, 1)",
-        "SREG t1, 0(t0)",
+        f"srli x{pte}, x{pte}, 12",
+        f"slli x{pte}, x{pte}, 10",
+        f"ori x{pte}, x{pte}, PTE_V",
+        *_table_entry(test_data, "rvtest_Sroot_pg_tbl", "ZICFISS_ROOT_SHIFT", entry),
+        f"SREG x{pte}, 0(x{entry})",
+        f"LA(x{tmp}, rvtest_uimg_mapped)",
+        f"LI(x{pte}, 1)",
+        f"SREG x{pte}, 0(x{tmp})",
         "sfence.vma",
     ]
+    test_data.int_regs.return_registers([page, pte, entry, tmp])
+    return lines
 
 
-def map_zicfiss_pages(*, ss_perms: str = PTE_SS, user: bool = True, ss_page_user: bool | None = None) -> list[str]:
-    """Wire up the PTE chain mapping the SS / RW / RO pages.
+def map_zicfiss_pages(
+    test_data: TestData, *, ss_perms: str = PTE_SS, user: bool = True, ss_page_user: bool | None = None
+) -> list[str]:
+    """Map the test image and the SS, RW and RO pages. Runs in S- or M-mode.
 
-    ``ss_perms`` lets a caller remap the shadow stack page with a different
-    encoding (e.g. PTE_RO) to exercise the wrong-page-type coverpoints.
-    ``user`` adds PTE_U to every leaf, required when the testcases run in U-mode, and
-    selects the split 4 KiB image map over the plain supervisor superpage.
-    ``ss_page_user`` overrides ``user`` for the shadow stack page alone; False leaves its
-    U bit to ``ss_perms``.
+    ``ss_perms`` remaps the shadow stack page with a different encoding (e.g. PTE_RO).
+    ``user`` adds PTE_U to every leaf and maps the image with user pages for U-mode testcases;
+    otherwise the image is one supervisor superpage. ``ss_page_user`` overrides ``user`` for the
+    shadow stack page; False leaves its U bit to ``ss_perms``. The PTE_SETUP macros clobber
+    a0, a1, t0 and t1.
     """
     u = " | PTE_U" if user else ""
     ss_u = u if ss_page_user is None else (" | PTE_U" if ss_page_user else "")
     return [
-        *(_umode_image_map() if user else identity_map()),
+        *(_umode_image_map(test_data) if user else _identity_map(test_data)),
         "#ifdef SV39_SUPPORTED",
         "ZICFISS_PTE_SETUP(rvtest_slvl1_pg_tbl, (PTE_V), ZICFISS_VA_SS, LEVEL2)",
         "#endif",

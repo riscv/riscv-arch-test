@@ -58,7 +58,9 @@ vvvp_config = InstructionTypeConfig(
 )
 vcompress_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
-    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs1"), ("vd", "vs2"), ("vs1", "vs2")}),
+    vector_data=VectorTypeConfig(
+        overlap_constraints={("vd", "vs1"), ("vd", "vs2"), ("vs1", "vs2")}, require_zero_vstart=True
+    ),
 )
 vvv_egs4_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},

@@ -94,6 +94,7 @@ mm_config = InstructionTypeConfig(
     vector_data=VectorTypeConfig(
         mask_regs={"vd", "vs2"},
         overlap_constraints={("vd", "vs2")},
+        require_zero_vstart=True,
     ),
 )
 

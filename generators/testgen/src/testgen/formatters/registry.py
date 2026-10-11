@@ -51,6 +51,8 @@ class VectorTypeConfig:
         scalar_regs: Set of registers used as scalar registers
         widened_regs: Set of registers that are widened
         random_element_generator: Add custom random element generation (used in unordered operations)
+        egs: Element Group Size
+        require_zero_vstart: Nonzero vstart will trap with an illegal instruction exception
     """
 
     overlap_constraints: set[tuple[str, str]] = field(default_factory=set)
@@ -60,6 +62,7 @@ class VectorTypeConfig:
     widened_regs: set[str] = field(default_factory=set)
     random_element_generator: Callable[[int, int, str], list[int]] | None = None
     egs: int = 1
+    require_zero_vstart: bool = False
 
 
 @dataclass

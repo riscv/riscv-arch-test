@@ -54,7 +54,13 @@ class VectorInstructionInfo:
 
 @cache
 def parse_vector_instruction_info(instruction: str, instruction_type: str) -> VectorInstructionInfo:
-    """Parse vector instruction facts encoded in an instruction name."""
+    """
+    Parse vector instruction facts encoded in an instruction name.
+
+    Arguments:
+        instruction: str
+        instruction_type: str
+    """
 
     # Extract Segments
     # Generally, a segmented load/store looks like: vl___seg<nf>__.v or vl<nf>re_.v

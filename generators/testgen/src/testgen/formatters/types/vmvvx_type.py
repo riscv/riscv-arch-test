@@ -19,7 +19,9 @@ from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
 
 vmvvx_config = InstructionTypeConfig(required_params={"vd", "rs1"}, vector_data=VectorTypeConfig())
-vmvsx_config = InstructionTypeConfig(required_params={"vd", "rs1"}, vector_data=VectorTypeConfig(scalar_regs={"vd"}))
+vmvsx_config = InstructionTypeConfig(
+    required_params={"vd", "rs1"}, vector_data=VectorTypeConfig(scalar_regs={"vd"}, require_zero_vstart=True)
+)
 
 
 @add_instruction_formatter("VMVVX", vmvvx_config)

@@ -436,12 +436,10 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     `ifdef SVPBMT_SUPPORTED
         // PBMT=IO makes the page non-idempotent, which SS instructions must reject; NC memory is
         // idempotent.
-        cp_ss_non_idempotent:      cross priv_mode_u, ss_mem_instr, pte_pbmt, menvcfg_pbmte {
-            // An implementation may also override the AMO PMA of an NC page
-            // (norm:Svpbmt_impl_may_override_pmas), so SSAMOSWAP there has no defined outcome.
-            ignore_bins ssamoswap_nc = (binsof(ss_mem_instr.ssamoswap_w) || binsof(ss_mem_instr.ssamoswap_d)) &&
-                                       binsof(pte_pbmt.nc);
-        }
+        // Known coverage gap: the SSAMOSWAP x PBMT=NC bins are not tested. An implementation may
+        // override the AMO PMA of an NC page (norm:Svpbmt_impl_may_override_pmas), so the outcome
+        // is implementation-defined, and no UDB parameter yet says which behavior a DUT has.
+        cp_ss_non_idempotent:      cross priv_mode_u, ss_mem_instr, pte_pbmt, menvcfg_pbmte;
     `endif
     cp_ss_page_access_store:       cross priv_mode_u, ordinary_storeops, pte_ss_page;
     cp_ss_page_access_load:        cross priv_mode_u, ordinary_loadops, pte_ss_page, sstatus_mxr;

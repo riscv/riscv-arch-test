@@ -534,7 +534,8 @@ def _generate_non_idempotent(test_data: TestData) -> list[str]:
 
     menvcfg.PBMTE is set for this section, without which a nonzero PBMT is reserved. SSAMOSWAP
     is left out on NC pages, because an implementation may also override the AMO PMA there
-    (norm:Svpbmt_impl_may_override_pmas), so its outcome is implementation-defined.
+    (norm:Svpbmt_impl_may_override_pmas), so its outcome is implementation-defined and no UDB
+    parameter says which behavior a DUT has. Those coverage bins stay as a known gap.
     """
     coverpoint = "cp_ss_non_idempotent"
     mid = "ZICFISS_VA_SS + 0x800"

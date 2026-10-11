@@ -25,12 +25,12 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
         "V": re.compile(r"v(\d+) <- 0x([0-9a-fA-F]+)"),
     }
 
-    # Page-table walks (Sail --trace-ptw): one "PTW: Step" per level, ending in "PTW: Success" or "PTW: failed".
+    # Page-table walks (Sail --trace-ptw): one "PTW: Step" per level, ending in "PTW: Success" or "PTW: Failed".
     # The last step holds the PTE the walk stopped on. A data walk belongs to the instruction being logged;
     # an instruction fetch walk (access_type X) is logged just before the instruction it fetches.
-    ptw_start_pattern = re.compile(r"PTW: Start, vpn=0x([0-9a-fA-F]+), access_type=(\S+),")
-    ptw_step_pattern = re.compile(r"PTW: Step, level=\d+, pte=0x([0-9a-fA-F]+)")
-    ptw_end_pattern = re.compile(r"PTW: (Success, final_ppn=0x([0-9a-fA-F]+)|failed)")
+    ptw_start_pattern = re.compile(r"PTW: Start, (?:stage=\S+, level=\d+, )?vpn=0x([0-9a-fA-F]+), access_type=(\S+),")
+    ptw_step_pattern = re.compile(r"PTW: Step, (?:stage=\S+, )?level=\d+, pte=0x([0-9a-fA-F]+)")
+    ptw_end_pattern = re.compile(r"PTW: (Success, (?:stage=\S+, level=\d+, )?final_ppn=0x([0-9a-fA-F]+)|[Ff]ailed)")
     # Sail caches successful walks in its TLB, so a repeated access to a page logs no walk. The leaf PTE of
     # each walk is kept until the next TLB flush so that TLB hits still report their PTE: by physical page
     # for accesses that reach memory, and by virtual page for accesses that fault before reaching it.

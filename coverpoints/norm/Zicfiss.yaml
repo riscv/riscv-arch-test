@@ -97,7 +97,7 @@ normative_rule_definitions:
 
   # When S-mode is not implemented, then xSSE is 0 at both M and U privilege modes.
   - name: Zicfiss_smode_xsse
-    # TODO no test yet: needs a build with S-mode absent
+    # Not tested: every Zicfiss suite requires S-mode.
     coverpoint: [""]
 
   # The encoding R=0, W=1, and X=0, is defined to represent an SS page.
@@ -150,7 +150,8 @@ normative_rule_definitions:
   # Implicit accesses, including instruction fetches to an SS page, are not permitted.
   # Such accesses will raise an access-fault exception appropriate to the access type.
   - name: ssmp_ss_implicit_access_fault
-    coverpoint: ["TODO: no test yet fetches an instruction from an SS page"]
+    # Not tested: no test makes an implicit access, such as an instruction fetch, to an SS page.
+    coverpoint: [""]
   # However, the shadow stack is readable by all instructions that only load from memory.
   - name: ssmp_ss_load
     # Representative coverpoints; also cp_ss_page_perm_priority_load and
@@ -310,7 +311,7 @@ normative_rule_definitions:
   # exception with xtval set to shadow stack fault (code=3).
   - name: sspopchk_shadow_return_pop
     # Representative coverpoints; also cp_sspopchk_fault_priority, cp_ss_page_crossing,
-    # cp_ss_call_return, cp_sspopchk_fault_priority_s and cp_ss_pmp_permissions
+    # cp_sspopchk_fault_priority_s and cp_ss_pmp_permissions
     coverpoint:
       [
         "{ZicfissU_cg}/{cp_sspopchk_match,cp_sspopchk_mismatch}",

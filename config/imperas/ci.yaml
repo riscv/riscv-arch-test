@@ -34,10 +34,11 @@
 #      store/AMO page fault (ZicfissS, cp_ss_page_perm_priority).
 #   3. CBO.CLEAN/FLUSH/INVAL/ZERO on a shadow stack page do not raise the store/AMO access fault,
 #      and CBO.ZERO zeroes the page (ZicfissU, cp_ss_page_access).
-#   Not yet filed: SSRDP in M-mode, where Zicfiss is inactive, writes ssp to rd instead of 0
-#   (ZicfissSm, cp_ss_instr_inactive_m).
-#   The misaligned SSAMOSWAP divergence (cp_ss_address_alignment_swap*) comes from Zam=T in
-#   imperas.ic, which disagrees with MISALIGNED_AMO: false; that config is fixed separately.
+#   Two more model bugs are filed as https://solvnetplus.synopsys.com/s/case/500WQ00002CDBVbYAP:
+#   SSRDP in M-mode, where Zicfiss is inactive, writes ssp to rd instead of 0
+#   (ZicfissSm, cp_ss_instr_inactive_m), and SSAMOSWAP performs a misaligned access when Zam=T
+#   instead of trapping (cp_ss_address_alignment_swap*). The Zam=T in
+#   imperas.ic, which disagrees with MISALIGNED_AMO: false, is fixed separately (PR #2769).
 #
 ci_enabled: false
 exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,Svnapot,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,ZicfissU,ZicfissS,ZicfissSm"

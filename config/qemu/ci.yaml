@@ -39,7 +39,8 @@ ci_enabled: true
 # ZicfissU, ZicfissS, ZicfissSm excluded due to QEMU bugs:
 #  1. sspopchk raises a software-check exception where a store/AMO access fault must take priority
 #     (https://gitlab.com/qemu-project/qemu/-/work_items/4379)
-#  2. the M-mode SSAMOSWAP access fault reports an mtval that disagrees with the reference model
+#  2. the M-mode SSAMOSWAP access fault leaves mtval=0, while QEMU's other store/AMO access faults
+#     report the address (REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT)
 #     (https://gitlab.com/qemu-project/qemu/-/work_items/4380)
 #  3. ssp bits [1:0] are writable (https://gitlab.com/qemu-project/qemu/-/issues/4621)
 #  4. sspush and ssamoswap write RW/RWX pages and page-fault on X/RX pages
@@ -50,6 +51,8 @@ ci_enabled: true
 #     (https://gitlab.com/qemu-project/qemu/-/issues/4624)
 #  7. SSPOPCHK with satp.MODE=Bare below M does not fault (https://gitlab.com/qemu-project/qemu/-/work_items/4432)
 #  8. senvcfg.SSE keeps 1 after menvcfg.SSE is cleared (https://gitlab.com/qemu-project/qemu/-/work_items/4224)
+#  9. on RV32, a write to mstateen0 clears mstateen0h.ENVCFG, so the S-mode senvcfg setup in ZicfissU and
+#     ZicfissS raises an illegal instruction (https://gitlab.com/qemu-project/qemu/-/issues/4611)
 exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,ZicfissU,ZicfissS,ZicfissSm"
 # qemu-rv32-mu, qemu-rv64-mu: U-mode cbo.zero/clean/flush/inval raise illegal-instruction without S-mode
 #   because check_zicbo_envcfg() also requires senvcfg, which does not exist

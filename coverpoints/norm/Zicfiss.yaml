@@ -207,7 +207,12 @@ normative_rule_definitions:
   # instructions is not idempotent, then the instructions cause a store/AMO
   # access-fault exception.
   - name: ssmp_ss_idempotent_memory
-    coverpoint: ["{ZicfissU_cg}/{cp_ss_non_idempotent}"]
+    coverpoint:
+      [
+        "{ZicfissSm_cg}/{cp_ssamoswap_mprv_non_idempotent}",
+        "{ZicfissS_cg}/{cp_ss_non_idempotent_s}",
+        "{ZicfissU_cg}/{cp_ss_non_idempotent}",
+      ]
 
   # When G-stage page tables are active, the shadow stack instructions that access
   # memory require the G-stage page table to have read-write permission for the

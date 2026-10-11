@@ -66,10 +66,25 @@ coverpoints:
     id: menvcfg_sse_rdonly0
     rules:
       - "[norm:menvcfg_sse_rdonly0]"
+  - name: cp_ss_non_idempotent_s_zicfiss
+    goal: Verify S-mode SS instructions fault when the shadow stack page is non-idempotent (Svpbmt), across menvcfg.PBMTE
+    description: |-
+      The S-mode counterpart of cp_ss_non_idempotent_zicfiss, with menvcfg.PBMTE added as an axis. Requires Svpbmt (RV64 only).
+      From S-mode with menvcfg.SSE=1, map the shadow stack page (xwr=010, supervisor) with pte.PBMT = PMA, NC and IO in turn, for menvcfg.PBMTE = 1 and then 0, and execute each SS instruction that accesses memory against it: SSPUSH x1/x5, C.SSPUSH x1, SSPOPCHK x1/x5, C.SSPOPCHK x5, SSAMOSWAP.W and SSAMOSWAP.D (RV64).
+      SSAMOSWAP is not executed on an NC page while PBMTE=1: an implementation may also override the AMO PMA of an NC page ([norm:Svpbmt_impl_may_override_pmas]), so its outcome is implementation-defined and no UDB parameter yet says which behavior a DUT has. Those two bins are a known coverage gap.
+    expectation: |-
+      PBMTE=1, PBMT=IO: the memory is non-idempotent, so every SS instruction raises a store/AMO access-fault (cause=7) with stval = the faulting VA (ssp-XLEN/8 for a push, ssp for a pop, rs1 for SSAMOSWAP). ssp, rd and memory are unchanged.
+      PBMTE=1, PBMT=NC or PMA: the memory is idempotent, so the access is performed. A push stores and decrements ssp, a pop loads and compares, and SSAMOSWAP swaps.
+      PBMTE=0, PBMT=NC or IO: the implementation behaves as though Svpbmt were not implemented ([norm:menvcfg_pbmte_op]), so a nonzero PBMT is reserved and the walk raises a store/AMO page-fault (cause=15) before any memory-type check.
+      PBMTE=0, PBMT=PMA: the access is performed, as for PBMTE=1.
+    bins: priv_mode {S} x instr {SSPUSH x1, SSPUSH x5, C.SSPUSH x1, SSPOPCHK x1, SSPOPCHK x5, C.SSPOPCHK x5, SSAMOSWAP.W, SSAMOSWAP.D} x pte.PBMT {PMA, NC, IO} x menvcfg.PBMTE {0, 1}
+    id: ssmp_ss_idempotent_memory
+    rules:
+      - "[norm:ssmp_ss_idempotent_memory]"
   - name: (reused) ZicfissU instruction coverpoints, re-run from S-mode
     goal: Re-run the ZicfissU coverpoints with the hart booted in S-mode instead of U-mode
     description: |-
-      BOOKKEEPING ROW, not a new coverpoint. These 16 ZicfissU coverpoints are re-run unchanged with an S-mode boot; coverage is sampled into the S-mode covergroup via the priv_mode_s coverpoint:
+      BOOKKEEPING ROW, not a new coverpoint. These 15 ZicfissU coverpoints are re-run unchanged with an S-mode boot; coverage is sampled into the S-mode covergroup via the priv_mode_s coverpoint:
        cp_ssp_access_zicfiss
        cp_sspush_zicfiss
        cp_sspopchk_match_zicfiss
@@ -85,8 +100,7 @@ coverpoints:
        cp_ssamoswap_sse_gating_zicfiss
        cp_ss_page_crossing_zicfiss
        cp_ss_page_ad_bits_zicfiss
-       cp_ss_non_idempotent_zicfiss
-      Only cp_ssp_csr_gating_u_zicfiss is NOT re-run: senvcfg.SSE gates U-mode only, so S/HS has its own cp_ssp_csr_gating_s_zicfiss on this sheet.
+      NOT re-run: cp_ssp_csr_gating_u_zicfiss, because senvcfg.SSE gates U-mode only, so S/HS has its own cp_ssp_csr_gating_s_zicfiss on this sheet; and cp_ss_non_idempotent_zicfiss, whose S-mode version is cp_ss_non_idempotent_s_zicfiss on this sheet.
       Two S-mode differences apply to every re-run: the enable chain is menvcfg.SSE alone (senvcfg.SSE does not gate S/HS), and the identity map carries no PTE_U, so the S-mode trap handler can fetch and traps may be delegated normally.
     expectation: |-
       Identical architectural results to the U-mode runs -- SS instruction behaviour does not depend on S vs U, only the enable chain does.

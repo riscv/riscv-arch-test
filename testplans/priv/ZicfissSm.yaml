@@ -10,12 +10,27 @@ coverpoints:
       Also exercise the effective-privilege path: M-mode with mstatus.MPRV=1 and MPP=U.
     expectation: |-
       Store/AMO access-fault raised whenever the EFFECTIVE privilege mode is M, independent of menvcfg.SSE and satp.MODE.
-      Note MPRV: with mstatus.MPRV=1 and MPP < M the effective privilege mode is no longer M, so this rule does not apply and the access may succeed. MPRV is therefore left 0 here and is not a coverage axis.
+      Note MPRV: with mstatus.MPRV=1 and MPP < M the effective privilege mode is no longer M, so this rule does not apply and the access may succeed. MPRV is therefore left 0 here; the MPRV=1 case is cp_ssamoswap_mprv_non_idempotent_zicfiss.
       Memory and rd are unchanged.
     bins: instr {SSAMOSWAP.W, SSAMOSWAP.D} x menvcfg.SSE {0,1} x satp.MODE {Bare, Sv}
     id: ssmp_ssamoswap
     rules:
       - "[norm:ssmp_ssamoswap]"
+  - name: cp_ssamoswap_mprv_non_idempotent_zicfiss
+    goal: Verify SSAMOSWAP from M-mode with MPRV=1, MPP=S follows the S-mode non-idempotent memory rule (Svpbmt)
+    description: |-
+      SSAMOSWAP is not gated by xSSE in M-mode, and with mstatus.MPRV=1 and MPP=S its access is translated as an S-mode access, so Svpbmt applies to it although the hart runs in M-mode. Requires Svpbmt (RV64 only).
+      With menvcfg.SSE=1, menvcfg.PBMTE=1 and Sv39 on, map the shadow stack page (xwr=010, supervisor) with pte.PBMT = PMA and then IO. From M-mode set MPRV=1 and MPP=S and execute SSAMOSWAP.W and SSAMOSWAP.D (RV64) against it.
+      PBMT=NC is not tested, for the reason given in cp_ss_non_idempotent_s_zicfiss on the ZicfissS sheet.
+      A trap taken in M-mode sets MPP to M, so MPRV and MPP are set again before each swap.
+    expectation: |-
+      The effective privilege mode is S, so [norm:ssmp_ssamoswap] does not apply and the S-mode shadow stack rules do.
+      PBMT=PMA: the swap is performed.
+      PBMT=IO: the memory is non-idempotent, so the swap raises a store/AMO access-fault (cause=7) taken in M-mode, with mtval = the faulting VA. rd and memory are unchanged.
+    bins: priv_mode {M} x instr {SSAMOSWAP.W, SSAMOSWAP.D} x {mstatus.MPRV=1, MPP=S} x pte.xwr {010} x pte.PBMT {PMA, IO}
+    id: ssmp_ss_idempotent_memory
+    rules:
+      - "[norm:ssmp_ss_idempotent_memory]"
   - name: cp_menvcfg_sse_gating_zicfiss
     goal: Verify menvcfg.SSE is the top of the enable chain for both ssp CSR access and the SS page encoding
     description: |-

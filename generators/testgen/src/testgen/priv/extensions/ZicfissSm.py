@@ -13,7 +13,8 @@ M-mode to set up or observe. Use of Zicfiss in M-mode is not supported by the
 architecture, so what is testable here is the gating (menvcfg.SSE at the top of the
 enable chain, and the read-only-zero propagation into senvcfg/henvcfg), PMP, satp.MODE=Bare,
 the software-check exception taken in M-mode, and the one M-mode instruction behaviour the
-spec does define -- SSAMOSWAP always faults at M.
+spec does define -- SSAMOSWAP always faults at M, unless mstatus.MPRV lowers the effective
+privilege mode.
 
 The suite boots to M-mode, so medeleg is zero and every trap is taken in M-mode.
 """
@@ -24,6 +25,7 @@ from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZicfissCommon import (
     MOP_FORMS,
     POP_FORMS,
+    PTE_SS,
     PUSH_FORMS,
     SATP_OFF,
     SSAMOSWAP_WIDTHS,
@@ -99,6 +101,71 @@ def _generate_ssamoswap_mmode_fault(test_data: TestData) -> list[str]:
                 lines.extend(["#ifdef ZICFISS_VM_SUPPORTED", *body, "#endif"] if satp_mode == "translating" else body)
             test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg])
     lines.extend(SATP_OFF)
+    return lines
+
+
+# ---------------------------------------------------------------------------
+# cp_ssamoswap_mprv_non_idempotent
+# ---------------------------------------------------------------------------
+
+
+def _generate_mprv_non_idempotent(test_data: TestData) -> list[str]:
+    """SSAMOSWAP in M-mode with mstatus.MPRV=1 and MPP=S accesses memory as S-mode.
+
+    The effective privilege mode is then S, so the access is translated and the S-mode shadow
+    stack rules apply: it completes on a PBMT=PMA shadow stack page and raises a store/AMO access
+    fault on a PBMT=IO one, which is non-idempotent. PBMT=NC is left out for the reason given in
+    cp_ss_non_idempotent. A trap taken in M-mode sets MPP to M and mret then lowers it, so MPRV
+    and MPP are set before each swap, and MPRV is cleared before its result is recorded.
+    """
+    coverpoint = "cp_ssamoswap_mprv_non_idempotent"
+    lines: list[str] = [
+        comment_banner(coverpoint, "SSAMOSWAP at M with MPRV=1, MPP=S on PBMT=PMA and PBMT=IO shadow stack pages"),
+        "#ifdef ZICFISS_VM_SUPPORTED",
+        "#if defined(SVPBMT_SUPPORTED) && __riscv_xlen == 64",
+        *set_envcfg_sse("menvcfg", 1, test_data, mode="M"),
+    ]
+    pbmte_reg = test_data.int_regs.get_register()
+    lines.extend([f"LI(x{pbmte_reg}, MENVCFG_PBMTE)", f"csrs menvcfg, x{pbmte_reg}"])
+    test_data.int_regs.return_registers([pbmte_reg])
+    # pte.PBMT is bits [62:61]: 00 PMA, 10 IO.
+    for tag, pbmt in (("pma", 0), ("io", 2)):
+        lines.extend(
+            [
+                f"# --- pte.PBMT = {tag} ---",
+                *map_zicfiss_pages(test_data, ss_perms=f"{PTE_SS} | ({pbmt} << 61)", user=False),
+                *enable_translation(test_data, mode="M"),
+            ]
+        )
+        addr_reg, rd_reg, rs2_reg, mask_reg = test_data.int_regs.get_registers(4)
+        lines.extend([f"LI(x{addr_reg}, ZICFISS_VA_SS + 0x800)", f"LI(x{rs2_reg}, 0x11223344)"])
+        for width in SSAMOSWAP_WIDTHS:
+            case = [
+                f"LI(x{rd_reg}, 0x0DDBA11)   # kept if the swap faults",
+                f"LI(x{mask_reg}, MSTATUS_MPP)",
+                f"csrc mstatus, x{mask_reg}",
+                f"LI(x{mask_reg}, MSTATUS_MPRV | MPP_SMODE)",
+                f"csrs mstatus, x{mask_reg}",
+                "sfence.vma   # each swap walks, so the trace logs the PTE it used",
+                test_data.add_testcase(f"ssamoswap_{width}_mprv_pbmt_{tag}", coverpoint, _CG),
+                f"ssamoswap.{width} x{rd_reg}, x{rs2_reg}, (x{addr_reg})",
+                f"LI(x{mask_reg}, MSTATUS_MPRV)",
+                f"csrc mstatus, x{mask_reg}",
+                write_sigupd(rd_reg, test_data),
+            ]
+            lines.extend(ssamoswap_only(width, case))
+        test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg, mask_reg])
+        lines.extend(SATP_OFF)
+    pbmte_reg = test_data.int_regs.get_register()
+    lines.extend(
+        [
+            f"LI(x{pbmte_reg}, MENVCFG_PBMTE)",
+            f"csrc menvcfg, x{pbmte_reg}",
+            "#endif  // SVPBMT_SUPPORTED && RV64",
+            "#endif  // ZICFISS_VM_SUPPORTED",
+        ]
+    )
+    test_data.int_regs.return_registers([pbmte_reg])
     return lines
 
 
@@ -512,6 +579,7 @@ def make_zicfisssm(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
     for section in (
         _generate_ssamoswap_mmode_fault,
+        _generate_mprv_non_idempotent,
         _generate_menvcfg_gating,
         _generate_envcfg_rdonly0,
         _generate_pmp_permissions,

@@ -140,10 +140,29 @@ coverpoints:
     id: sspop_exception mtval_swchk_lead-in mtval_swchk_list hedeleg_op medeleg_mideleg_op1
     rules:
       - "[norm:sspop_exception] [norm:mtval_swchk_lead-in] [norm:mtval_swchk_list] [norm:hedeleg_op] [norm:medeleg_mideleg_op1]"
+  - name: cp_ss_non_idempotent_virt_zicfiss
+    goal: Verify VS/VU-mode SS instructions fault on non-idempotent memory under two-stage Svpbmt (VS-stage and G-stage PBMT)
+    description: |-
+      The two-stage counterpart of cp_ss_non_idempotent_zicfiss. Requires Svpbmt (RV64 only).
+      With V=1, menvcfg.SSE=1, henvcfg.SSE=1 (and senvcfg.SSE=1 for VU), map the shadow stack page with a VS-stage PTE of xwr=010 and a G-stage PTE with R=W=1, U=1. Sweep the VS-stage PBMT and the G-stage PBMT independently over {PMA, NC, IO}, and execute each SS instruction that accesses memory from VS-mode and from VU-mode: SSPUSH x1/x5, C.SSPUSH x1, SSPOPCHK x1/x5, C.SSPOPCHK x5, SSAMOSWAP.W and SSAMOSWAP.D.
+      Repeat with henvcfg.PBMTE=0 (menvcfg.PBMTE=1), and with menvcfg.PBMTE=0, which makes henvcfg.PBMTE read-only zero.
+      Svpbmt applies the two stages in order: "if hgatp.MODE is not equal to zero, non-zero G-stage PTE PBMT bits override the attributes in the PMA to produce an intermediate set of attributes" ([norm:Svpbmt_hgatp_stage_override_rule]), then "if vsatp.MODE is not equal to zero, non-zero VS-stage PTE PBMT bits override the intermediate attributes to produce the final set of attributes used by accesses to the page in question" ([norm:Svpbmt_vsatp_stage_override_rule]).
+      SSAMOSWAP is not executed where the final type is NC, for the reason given in cp_ss_non_idempotent_s_zicfiss on the ZicfissS sheet.
+    expectation: |-
+      menvcfg.PBMTE=1 and henvcfg.PBMTE=1: the final memory type is the VS-stage PBMT if it is nonzero, else the G-stage PBMT if it is nonzero, else the PMA.
+       Final type IO is non-idempotent: store/AMO access-fault (cause=7), with the faulting guest VA in the tval register of the mode the trap is taken in. This covers VS=IO over any G-stage PBMT, and VS=PMA over G=IO.
+       Final type NC or PMA is idempotent: the access is performed. In particular a VS-stage NC page over a G-stage IO page is idempotent, because the nonzero VS-stage PBMT overrides the G-stage one.
+      henvcfg.PBMTE=0: a nonzero VS-stage PBMT is reserved, so the VS-stage walk raises a store/AMO page-fault (cause=15) whatever the G-stage PBMT. The G-stage PBMT still applies under a VS-stage PMA page.
+      menvcfg.PBMTE=0: henvcfg.PBMTE is read-only zero, so a nonzero VS-stage PBMT raises a store/AMO page-fault (cause=15), and a nonzero G-stage PBMT is reserved, so the G-stage walk raises a store/AMO guest-page-fault (cause=23).
+      ssp, rd and memory are unchanged by every fault.
+    bins: mode {VS, VU} x instr {SSPUSH x1, SSPUSH x5, C.SSPUSH x1, SSPOPCHK x1, SSPOPCHK x5, C.SSPOPCHK x5, SSAMOSWAP.W, SSAMOSWAP.D} x vs_pte.PBMT {PMA, NC, IO} x g_pte.PBMT {PMA, NC, IO} x {menvcfg.PBMTE, henvcfg.PBMTE} {11, 10, 00}
+    id: ssmp_ss_idempotent_memory Svpbmt_hgatp_stage_override_rule Svpbmt_vsatp_stage_override_rule
+    rules:
+      - "[norm:ssmp_ss_idempotent_memory] [norm:Svpbmt_hgatp_stage_override_rule] [norm:Svpbmt_vsatp_stage_override_rule]"
   - name: (reused) ZicfissU instruction coverpoints, re-run from VS-mode and VU-mode
     goal: Re-run the ZicfissU coverpoints with the hart in VS/VU instead of U
     description: |-
-      BOOKKEEPING ROW, not a new coverpoint. These 14 ZicfissU coverpoints are re-run with V=1, sampled into the H covergroup via priv_mode_vs / priv_mode_vu:
+      BOOKKEEPING ROW, not a new coverpoint. These 13 ZicfissU coverpoints are re-run with V=1, sampled into the H covergroup via priv_mode_vs / priv_mode_vu:
        cp_ssp_access_zicfiss
        cp_sspush_zicfiss
        cp_sspopchk_match_zicfiss
@@ -157,8 +176,7 @@ coverpoints:
        cp_ss_page_access_zicfiss
        cp_ss_page_crossing_zicfiss
        cp_ss_page_ad_bits_zicfiss
-       cp_ss_non_idempotent_zicfiss
-      NOT re-run: cp_ssp_csr_gating_u_zicfiss, cp_ss_instr_inactive_zicfiss and cp_ssamoswap_sse_gating_zicfiss -- their virtualised equivalents are cp_ssp_csr_gating_virt_zicfiss, cp_ss_enable_chain_cross_zicfiss and cp_ssamoswap_sse_gating_virt_zicfiss on this sheet.
+      NOT re-run: cp_ssp_csr_gating_u_zicfiss, cp_ss_instr_inactive_zicfiss, cp_ssamoswap_sse_gating_zicfiss and cp_ss_non_idempotent_zicfiss -- their virtualised equivalents are cp_ssp_csr_gating_virt_zicfiss, cp_ss_enable_chain_cross_zicfiss, cp_ssamoswap_sse_gating_virt_zicfiss and cp_ss_non_idempotent_virt_zicfiss on this sheet.
       Two V=1 differences apply to every re-run: translation is two-stage, so a fault may surface as a guest-page-fault (cause 23) instead of 15; and the gating flavour differs, ILLEGAL for menvcfg versus VIRTUAL for henvcfg/senvcfg.
     expectation: Identical architectural results to the U-mode runs except where two-stage translation or the enable-chain flavour changes the reported cause, as described above.
     bins: priv_mode {vs, vu} x (all bins of each reused coverpoint)

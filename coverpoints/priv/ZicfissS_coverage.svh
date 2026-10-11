@@ -126,6 +126,19 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
     pte_ss_page: coverpoint ins.current.pte_d[3:1] {
         bins ss_page = {3'b010};
     }
+    `ifdef SVPBMT_SUPPORTED
+        // pte.PBMT is bits [62:61]: 00 PMA, 01 NC, 10 IO. IO is non-idempotent.
+        pte_pbmt: coverpoint ins.current.pte_d[62:61] {
+            bins pma = {2'b00};
+            bins nc  = {2'b01};
+            bins io  = {2'b10};
+        }
+        // Without menvcfg.PBMTE a nonzero PBMT is reserved, so the walk page-faults.
+        menvcfg_pbmte: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "pbmte") {
+            bins disabled = {1'b0};
+            bins enabled  = {1'b1};
+        }
+    `endif
     // ssp[1:0] are read-only zero, and so is ssp[2] unless UXLEN or SXLEN can be 32.
     ssp_LSBs: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp")[2:0] {
         bins aligned_8 = {3'b000};
@@ -235,6 +248,16 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
     // (norm:pma_mag_insts), so every misaligned SSAMOSWAP faults.
     cp_ss_address_alignment_swap_s: cross priv_mode_s, ssamoswap_instr, ssamoswap_adr_LSBs;
     cp_ss_instr_target_page_s:     cross priv_mode_s, ss_mem_instr, pte_xwr;
+
+    `ifdef SVPBMT_SUPPORTED
+        // PBMT=IO makes the page non-idempotent, which SS instructions must reject; NC memory is
+        // idempotent. With PBMTE=0 a nonzero PBMT is reserved instead.
+        // Known coverage gap: the SSAMOSWAP x PBMT=NC x PBMTE=1 bins are not tested. An
+        // implementation may override the AMO PMA of an NC page (norm:Svpbmt_impl_may_override_pmas),
+        // so the outcome is implementation-defined, and no UDB parameter yet says which behavior a
+        // DUT has.
+        cp_ss_non_idempotent_s:    cross priv_mode_s, ss_mem_instr, pte_pbmt, menvcfg_pbmte;
+    `endif
 
     // The U/SUM/MXR permission check resolves before any shadow stack rule, so where
     // the two disagree the translation fault is what gets reported.

@@ -171,6 +171,21 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     pte_ss_page: coverpoint ins.current.pte_d[3:1] {
         bins ss_page = {3'b010};
     }
+    `ifdef SVPBMT_SUPPORTED
+        // pte.PBMT is bits [62:61]: 00 PMA, 10 IO. IO is non-idempotent.
+        pte_pbmt_pma_io: coverpoint ins.current.pte_d[62:61] {
+            bins pma = {2'b00};
+            bins io  = {2'b10};
+        }
+    `endif
+    // mstatus.MPRV with MPP=S makes M-mode loads and stores S-mode accesses.
+    mprv_clear: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
+        bins clear = {1'b0};
+    }
+    mprv_mpp_s: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0],
+                            get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
+        bins mprv_mpp_s = {3'b101};
+    }
 
     // ── Enable-chain building blocks ──────────────────────────────────────
     menvcfg_sse: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") {
@@ -209,8 +224,14 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     }
     // ── Main coverpoints ──────────────────────────────────────────────────
     // SSAMOSWAP at M faults unconditionally — sweep every axis that might wrongly
-    // be treated as a precondition.
-    cp_ssamoswap_mmode_fault:      cross priv_mode_m, ssamoswap_instr, menvcfg_sse, satp_mode;
+    // be treated as a precondition. MPRV=0 keeps the effective privilege mode M.
+    cp_ssamoswap_mmode_fault:      cross priv_mode_m, ssamoswap_instr, menvcfg_sse, satp_mode, mprv_clear;
+
+    // With MPRV=1 and MPP=S the effective privilege mode is S, so SSAMOSWAP follows the S-mode
+    // shadow stack rules: it completes on a PBMT=PMA page and faults on a non-idempotent PBMT=IO one.
+    `ifdef SVPBMT_SUPPORTED
+        cp_ssamoswap_mprv_non_idempotent: cross priv_mode_m, ssamoswap_instr, mprv_mpp_s, pte_ss_page, pte_pbmt_pma_io;
+    `endif
 
     // menvcfg.SSE gates ssp CSR access from S/HS.
     cp_menvcfg_sse_gating:         cross priv_mode_m_s, csrops, ssp_csr, menvcfg_sse;

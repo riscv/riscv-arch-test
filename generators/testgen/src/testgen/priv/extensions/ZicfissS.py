@@ -22,6 +22,7 @@ T-SBI.
 """
 
 from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.ZicfissCommon import (
@@ -310,6 +311,48 @@ def _generate_target_page_s(test_data: TestData) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
+# cp_ss_non_idempotent_s
+# ---------------------------------------------------------------------------
+
+
+def _generate_non_idempotent_s(test_data: TestData) -> list[str]:
+    """Svpbmt NC memory is idempotent and IO memory is not, so SS instructions fault only on IO.
+
+    menvcfg.PBMTE is swept: with PBMTE=0 a nonzero PBMT is reserved and the walk page-faults.
+    With PBMTE=1, SSAMOSWAP is left out on NC pages, because an implementation may also override
+    the AMO PMA there (norm:Svpbmt_impl_may_override_pmas), so its outcome is implementation-defined
+    and no UDB parameter says which behavior a DUT has. Those coverage bins stay as a known gap.
+    """
+    coverpoint = "cp_ss_non_idempotent_s"
+    mid = "ZICFISS_VA_SS + 0x800"
+    lines = ["#if defined(SVPBMT_SUPPORTED) && __riscv_xlen == 64"]
+    for pbmte in (1, 0):
+        pbmte_reg = test_data.int_regs.get_register()
+        lines.extend(
+            [
+                f"# --- menvcfg.PBMTE = {pbmte} ---",
+                f"LI(x{pbmte_reg}, MENVCFG_PBMTE)",
+                tsbi_call(f"{'csrs' if pbmte else 'csrc'} menvcfg, x{pbmte_reg}"),
+            ]
+        )
+        test_data.int_regs.return_registers([pbmte_reg])
+        # pte.PBMT is bits [62:61]: 00 PMA, 01 NC, 10 IO.
+        for tag, pbmt in (("pma", 0), ("nc", 1), ("io", 2)):
+            name = f"pbmte{pbmte}_pbmt_{tag}_s"
+            lines.extend(
+                [
+                    f"# --- pte.PBMT = {tag} ---",
+                    *_smode_prologue(test_data, ss_perms=f"{PTE_SS} | ({pbmt} << 61)"),
+                    *ss_forms_against(test_data, PUSH_FORMS + POP_FORMS, mid, "0x1D1D1D1D", name, coverpoint, _CG),
+                    *(ssamoswap_forms(test_data, mid, name, coverpoint, _CG) if (pbmte, tag) != (1, "nc") else []),
+                    *SATP_OFF,
+                ]
+            )
+    lines.append("#endif  // SVPBMT_SUPPORTED && RV64")
+    return vm_section(coverpoint, "Svpbmt memory types on the shadow stack page, by menvcfg.PBMTE", lines)
+
+
+# ---------------------------------------------------------------------------
 # cp_ss_page_perm_priority
 # ---------------------------------------------------------------------------
 
@@ -425,6 +468,7 @@ def make_zicfisss(test_data: TestData) -> list[TestChunk]:
         _generate_instr_s,
         _generate_alignment_s,
         _generate_target_page_s,
+        _generate_non_idempotent_s,
         _generate_perm_priority_s,
         _generate_senvcfg_rdonly0_s,
     ):

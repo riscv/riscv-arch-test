@@ -22,6 +22,40 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZICFISSSM
+
+// The PMP test covers the 4 KiB shadow stack page with PMP entry 0 as one NAPOT region and the
+// rest of memory with entry 1. It needs NAPOT, a granularity of at most 4 KiB (G <= 12) and two
+// usable entries.
+`ifdef UDB_PMP_NAPOT_SUPPORTED
+`ifndef UDB_NUM_USABLE_PMP_ENTRIES_0
+`ifndef UDB_NUM_USABLE_PMP_ENTRIES_1
+    `ifdef UDB_PMP_GRANULARITY_2
+        `define ZICFISS_PMP_TEST
+    `elsif UDB_PMP_GRANULARITY_3
+        `define ZICFISS_PMP_TEST
+    `elsif UDB_PMP_GRANULARITY_4
+        `define ZICFISS_PMP_TEST
+    `elsif UDB_PMP_GRANULARITY_5
+        `define ZICFISS_PMP_TEST
+    `elsif UDB_PMP_GRANULARITY_6
+        `define ZICFISS_PMP_TEST
+    `elsif UDB_PMP_GRANULARITY_7
+        `define ZICFISS_PMP_TEST
+    `elsif UDB_PMP_GRANULARITY_8
+        `define ZICFISS_PMP_TEST
+    `elsif UDB_PMP_GRANULARITY_9
+        `define ZICFISS_PMP_TEST
+    `elsif UDB_PMP_GRANULARITY_10
+        `define ZICFISS_PMP_TEST
+    `elsif UDB_PMP_GRANULARITY_11
+        `define ZICFISS_PMP_TEST
+    `elsif UDB_PMP_GRANULARITY_12
+        `define ZICFISS_PMP_TEST
+    `endif
+`endif
+`endif
+`endif
+
 covergroup ZicfissSm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -90,17 +124,12 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     }
     // pmp0cfg R is bit 0, W is bit 1. Shadow stack instructions require read-write.
     // R=0 with W=1 is a reserved combination, so it cannot be configured.
-    // The PMP test needs two usable entries: entry 0 for the SS page, entry 1 for the rest.
-    `ifdef UDB_NUM_USABLE_PMP_ENTRIES
-    `ifndef UDB_NUM_USABLE_PMP_ENTRIES_0
-    `ifndef UDB_NUM_USABLE_PMP_ENTRIES_1
+    `ifdef ZICFISS_PMP_TEST
         pmp0_rw: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmp0cfg_xwr")[1:0] {
             bins no_perm    = {2'b00};
             bins read_only  = {2'b01};
             bins read_write = {2'b11};
         }
-    `endif
-    `endif
     `endif
     csrops: coverpoint ins.current.insn {
         wildcard bins csrrw  = {CSRRW};
@@ -152,18 +181,6 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     s_sse_inactive: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") {
         bins sse_off = {1'b0};
     }
-    // What senvcfg.SSE actually reads back afterwards. With menvcfg.SSE=0 this must
-    // stay zero no matter what was written.
-    senvcfg_sse_readback: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "senvcfg", "sse") {
-        bins reads_zero = {1'b0};
-        bins reads_one  = {1'b1};
-    }
-    `ifdef H_SUPPORTED
-        henvcfg_sse_readback: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "henvcfg", "sse") {
-            bins reads_zero = {1'b0};
-            bins reads_one  = {1'b1};
-        }
-    `endif
 
     // ── Translation-mode building blocks ──────────────────────────────────
     // SSAMOSWAP must fault at M regardless of satp.MODE, so sweep Bare vs non-Bare.
@@ -201,19 +218,16 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     // Shadow stack instructions require PMP read-write permission, including SSPOPCHK
     // which only reads. The denied case also proves the PMP fault outranks the
     // software-check exception a value mismatch would raise.
-    `ifdef UDB_NUM_USABLE_PMP_ENTRIES
-    `ifndef UDB_NUM_USABLE_PMP_ENTRIES_0
-    `ifndef UDB_NUM_USABLE_PMP_ENTRIES_1
+    `ifdef ZICFISS_PMP_TEST
         cp_ss_pmp_permissions:         cross priv_mode_s, ss_mem_instr, pmp0_rw;
-    `endif
-    `endif
     `endif
 
     // Below M-mode with satp.MODE=Bare, every SS memory access raises a store/AMO access fault.
     cp_ss_satp_bare:               cross priv_mode_s_u, ss_mem_instr, ss_active_below_m, satp_bare;
 
     // This suite boots to M-mode, which leaves medeleg at zero, so a software-check exception
-    // from S-mode is taken in M-mode and reports shadow stack fault (code 3) in mtval.
+    // from S-mode is taken in M-mode and reports shadow stack fault (code 3) in mtval, or 0 if
+    // the implementation provides no information.
     // Guarded on the trap being taken by this instruction, since the CSR array is persistent.
     sw_check_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "mcause")
                 iff (ins.current.csr_wb[CSR_MEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mepc", "mepc") == ins.current.pc_rdata)) {
@@ -221,7 +235,11 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     }
     mtval_ss_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mtval", "mtval")
                     iff (ins.current.csr_wb[CSR_MEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mepc", "mepc") == ins.current.pc_rdata)) {
-        bins ss_fault = {3};
+        `ifdef UDB_REPORT_CAUSE_IN_MTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
+            bins ss_fault = {3};
+        `else
+            bins no_info = {0};
+        `endif
     }
     cp_ss_swcheck_mtval:           cross priv_mode_s, ss_pop_instr, sw_check_m, mtval_ss_fault;
 
@@ -235,30 +253,13 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     // page-fault; with menvcfg.SSE=1 it is an SS page, readable by loads and not writable by stores.
     cp_menvcfg_sse_ss_page:        cross priv_mode_s_u, ls_op, pte_ss_page, menvcfg_sse;
 
-    // menvcfg.SSE=0 forces senvcfg.SSE (and henvcfg.SSE) read-only zero.
-    cp_envcfg_sse_rdonly0_senvcfg: cross priv_mode_m, senvcfg_csr, menvcfg_sse, sse_bit_write, senvcfg_sse_readback {
-        // The write that is sampled here is logged with its legalized value, so a read-back
-        // of 1 while menvcfg.SSE=0 is an error.
-        illegal_bins rdonly0_cannot_read_one =
-            binsof(menvcfg_sse.sse_off) && binsof(senvcfg_sse_readback.reads_one);
-        // With menvcfg.SSE=1 the field is writable and reads back what was written.
-        ignore_bins writable_reads_back =
-            binsof(menvcfg_sse.sse_on) &&
-            ((binsof(sse_bit_write.set_sse) && binsof(senvcfg_sse_readback.reads_zero)) ||
-             (binsof(sse_bit_write.clear_sse) && binsof(senvcfg_sse_readback.reads_one)));
-    }
+    // Set and clear senvcfg.SSE and henvcfg.SSE under both values of menvcfg.SSE; the signature
+    // checks that they read back 0 whenever menvcfg.SSE is 0.
+    cp_envcfg_sse_rdonly0_senvcfg: cross priv_mode_m, senvcfg_csr, menvcfg_sse, sse_bit_write;
     // The V=1 leg, henvcfg.SSE=0 forcing senvcfg.SSE read-only zero, belongs to
     // ZicfissH_cg (cp_envcfg_sse_rdonly0_virt).
     `ifdef H_SUPPORTED
-        cp_envcfg_sse_rdonly0_henvcfg: cross priv_mode_m, henvcfg_csr, menvcfg_sse, sse_bit_write, henvcfg_sse_readback {
-            illegal_bins rdonly0_cannot_read_one =
-                binsof(menvcfg_sse.sse_off) && binsof(henvcfg_sse_readback.reads_one);
-            // With menvcfg.SSE=1 henvcfg.SSE is writable and reads back what was written.
-            ignore_bins writable_reads_back =
-                binsof(menvcfg_sse.sse_on) &&
-                ((binsof(sse_bit_write.set_sse) && binsof(henvcfg_sse_readback.reads_zero)) ||
-                 (binsof(sse_bit_write.clear_sse) && binsof(henvcfg_sse_readback.reads_one)));
-        }
+        cp_envcfg_sse_rdonly0_henvcfg: cross priv_mode_m, henvcfg_csr, menvcfg_sse, sse_bit_write;
     `endif
 
 endgroup

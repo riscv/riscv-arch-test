@@ -177,10 +177,6 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
         bins set_sse   = {4'b0101};
         bins clear_sse = {4'b0111};
     }
-    senvcfg_sse_readback: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "senvcfg", "sse") {
-        bins reads_zero = {1'b0};
-        bins reads_one  = {1'b1};
-    }
     senvcfg_csr: coverpoint ins.current.insn[31:20] {
         bins senvcfg = {CSR_SENVCFG};
     }
@@ -209,11 +205,16 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
     cp_ss_page_enc_store:          cross priv_mode_s, ordinary_storeops, pte_ss_page, menvcfg_sse;
 
     // S-mode re-run of the ZicfissU instruction coverpoints.
-    // On a software-check exception the trap value register reports shadow stack fault (code 3).
+    // On a software-check exception stval reports shadow stack fault (code 3), or 0 if the
+    // implementation provides no information.
     // Guarded on the trap being taken by this instruction, since the CSR array is persistent.
     stval_ss_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval")
                     iff (ins.current.csr_wb[CSR_SEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sepc", "sepc") == ins.current.pc_rdata)) {
-        bins ss_fault = {3};
+        `ifdef UDB_REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
+            bins ss_fault = {3};
+        `else
+            bins no_info = {0};
+        `endif
     }
 
     cp_sspush_s:                   cross priv_mode_s, ss_push_instr, pte_ss_page;
@@ -230,14 +231,9 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
     cp_ssamoswap_s:                cross priv_mode_s, ssamoswap_instr, pte_ss_page;
     cp_ss_address_alignment_ssp_s: cross priv_mode_s, ss_push_instr, ssp_LSBs;
     cp_ss_address_alignment_pop_s: cross priv_mode_s, ss_pop_instr, ssp_LSBs;
-    cp_ss_address_alignment_swap_s: cross priv_mode_s, ssamoswap_instr, ssamoswap_adr_LSBs {
-        // A misaligned SSAMOSWAP.W at addr[2:0] of 1-3 stays inside one misaligned atomicity
-        // granule. The granule applies only to Zaamo, Zabha and Zacas AMOs (norm:pma_mag_insts),
-        // so the access must fault, but Sail 0.14.1 executes it (fixed by sail-riscv#1980).
-        // These bins come back when ACT moves past Sail 0.14.1.
-        ignore_bins w_within_granule =
-            binsof(ssamoswap_instr.ssamoswap_w) && binsof(ssamoswap_adr_LSBs) intersect {[3'd1:3'd3]};
-    }
+    // The misaligned atomicity granule applies only to Zaamo, Zabha and Zacas AMOs
+    // (norm:pma_mag_insts), so every misaligned SSAMOSWAP faults.
+    cp_ss_address_alignment_swap_s: cross priv_mode_s, ssamoswap_instr, ssamoswap_adr_LSBs;
     cp_ss_instr_target_page_s:     cross priv_mode_s, ss_mem_instr, pte_xwr;
 
     // The U/SUM/MXR permission check resolves before any shadow stack rule, so where
@@ -246,18 +242,9 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
     cp_ss_page_perm_priority_load: cross priv_mode_s, ordinary_loadops, pte_u, sstatus_sum, sstatus_mxr;
     cp_ss_page_perm_priority_store: cross priv_mode_s, ordinary_storeops, pte_u, sstatus_sum, sstatus_mxr;
 
-    // senvcfg.SSE reads back 0 from S-mode whenever menvcfg.SSE is 0.
-    cp_senvcfg_sse_rdonly0_s:      cross priv_mode_s, senvcfg_csr, menvcfg_sse, sse_bit_write, senvcfg_sse_readback {
-        // menvcfg.SSE=0 forces senvcfg.SSE read-only zero, and the write that is sampled here
-        // is logged with its legalized value, so a read-back of 1 is an error.
-        illegal_bins rdonly0_cannot_read_one =
-            binsof(menvcfg_sse.sse_off) && binsof(senvcfg_sse_readback.reads_one);
-        // With menvcfg.SSE=1 the field is writable and reads back what was written.
-        ignore_bins writable_reads_back =
-            binsof(menvcfg_sse.sse_on) &&
-            ((binsof(sse_bit_write.set_sse) && binsof(senvcfg_sse_readback.reads_zero)) ||
-             (binsof(sse_bit_write.clear_sse) && binsof(senvcfg_sse_readback.reads_one)));
-    }
+    // Set and clear senvcfg.SSE under both values of menvcfg.SSE; the signature checks that it
+    // reads back 0 whenever menvcfg.SSE is 0.
+    cp_senvcfg_sse_rdonly0_s:      cross priv_mode_s, senvcfg_csr, menvcfg_sse, sse_bit_write;
 
 endgroup
 

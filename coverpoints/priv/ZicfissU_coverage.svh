@@ -118,19 +118,6 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     ssp_wr_low_bits: coverpoint ins.current.rs1_val[2:0] {
         // auto fills 00 through 11
     }
-    // ssp[1:0] are always read-only zero. ssp[2] is read-only zero as well when UXLEN
-    // and SXLEN can never be 32, so sample all three and let the signature comparison
-    // against the reference model decide which bits this config holds at zero.
-    `ifdef UDB_MXLEN_64
-        ssp_rd_low_bits: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "ssp", "ssp")[2:0] {
-            bins read_only_zero = {3'b000};
-        }
-    `else
-        ssp_rd_low_bits: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "ssp", "ssp")[1:0] {
-            bins read_only_zero = {2'b00};
-        }
-    `endif
-
     // SSPUSH x5 pushes x5; SSPUSH x1 and C.SSPUSH x1 push x1.
     ss_push_value: coverpoint ((ins.current.insn[1:0] == 2'b11 && ins.current.insn[24:20] == 5'd5) ?
                                ins.prev.x_wdata[5] : ins.prev.x_wdata[1]) {
@@ -195,11 +182,16 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
         bins matched    = {1'b0};
         bins mismatched = {1'b1};
     }
-    // On a software-check exception the trap value register reports shadow stack fault (code 3).
+    // On a software-check exception stval reports shadow stack fault (code 3), or 0 if the
+    // implementation provides no information.
     // Guarded on the trap being taken by this instruction, since the CSR array is persistent.
     stval_ss_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval")
                     iff (ins.current.csr_wb[CSR_SEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sepc", "sepc") == ins.current.pc_rdata)) {
-        bins ss_fault = {3};
+        `ifdef UDB_REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
+            bins ss_fault = {3};
+        `else
+            bins no_info = {0};
+        `endif
     }
 
     // ── Enable-chain (SSE) building blocks ────────────────────────────────
@@ -260,6 +252,10 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
             bins pma = {2'b00};
             bins nc  = {2'b01};
             bins io  = {2'b10};
+        }
+        // Without menvcfg.PBMTE a nonzero PBMT is reserved.
+        menvcfg_pbmte: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "pbmte") {
+            bins enabled = {1'b1};
         }
     `endif
     // MXR governs whether an R=0 page is readable; the SS page is R=0 by construction.
@@ -368,10 +364,6 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     `endif
 
     // ── Fault-priority building block ─────────────────────────────────────
-    // SSPOPCHK's base is implicitly ssp, so the faulting address is ssp itself
-    // rather than rs1+imm. Pointing ssp at the model's access-fault address while a
-    // value mismatch is ALSO present is what makes this a real priority test: the
-    // access-fault must win over the software-check exception.
     // ssp pointed at an unmapped VA so the pop's load faults. The memory fault must
     // outrank the software-check exception that the value mismatch would otherwise raise.
     ssp_fault_address: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp") {
@@ -402,7 +394,7 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
             (binsof(csrops.csrrwi) || binsof(csrops.csrrsi) || binsof(csrops.csrrci)) &&
             binsof(ssp_write_pattern.all_ones);
     }
-    cp_ssp_low_bits_ro_zero:       cross priv_mode_u, csr_reg_ops, ssp_csr, ssp_wr_low_bits, ssp_rd_low_bits;
+    cp_ssp_low_bits_ro_zero:       cross priv_mode_u, csr_reg_ops, ssp_csr, ssp_wr_low_bits;
     cp_sspush:                     cross priv_mode_u, ss_push_instr, ss_push_value, pte_ss_page;
     cp_sspopchk_match:             cross priv_mode_u, ss_pop_instr, sspopchk_outcome, pte_ss_page {
         // Mismatching pops trap and are counted in cp_sspopchk_mismatch.
@@ -413,7 +405,6 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
         ignore_bins match = binsof(sspopchk_outcome.matched);
     }
     cp_sspopchk_fault_priority:    cross priv_mode_u, ss_pop_instr, ssp_fault_address;
-    cp_ss_call_return:             cross priv_mode_u, ss_pop_instr, sspopchk_outcome, pte_ss_page;
     cp_ssrdp:                      cross priv_mode_u, ssrdp_instr, u_sse_active;
     `ifdef UDB_MXLEN_64
         cp_ssamoswap:              cross priv_mode_u, ssamoswap_instr, swap_loaded_msb, swap_rs2_upper, pte_ss_page;
@@ -426,14 +417,9 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     // Alignment
     cp_ss_address_alignment_ssp:   cross priv_mode_u, ss_push_instr, ssp_LSBs;
     cp_ss_address_alignment_pop:   cross priv_mode_u, ss_pop_instr, ssp_LSBs;
-    cp_ss_address_alignment_swap:  cross priv_mode_u, ssamoswap_instr, ssamoswap_adr_LSBs {
-        // A misaligned SSAMOSWAP.W at addr[2:0] of 1-3 stays inside one misaligned atomicity
-        // granule. The granule applies only to Zaamo, Zabha and Zacas AMOs (norm:pma_mag_insts),
-        // so the access must fault, but Sail 0.14.1 executes it (fixed by sail-riscv#1980).
-        // These bins come back when ACT moves past Sail 0.14.1.
-        ignore_bins w_within_granule =
-            binsof(ssamoswap_instr.ssamoswap_w) && binsof(ssamoswap_adr_LSBs) intersect {[3'd1:3'd3]};
-    }
+    // The misaligned atomicity granule applies only to Zaamo, Zabha and Zacas AMOs
+    // (norm:pma_mag_insts), so every misaligned SSAMOSWAP faults.
+    cp_ss_address_alignment_swap:  cross priv_mode_u, ssamoswap_instr, ssamoswap_adr_LSBs;
 
     // Page / PMA behaviour
     cp_ss_instr_target_page:       cross priv_mode_u, ss_mem_instr, pte_xwr;
@@ -449,8 +435,14 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     cp_ss_page_ad_bits:            cross priv_mode_u, ss_mem_instr, pte_ad;
 
     `ifdef SVPBMT_SUPPORTED
-        // PBMT=IO makes the page non-idempotent, which SS instructions must reject.
-        cp_ss_non_idempotent:      cross priv_mode_u, ss_mem_instr, pte_pbmt;
+        // PBMT=IO makes the page non-idempotent, which SS instructions must reject; NC memory is
+        // idempotent.
+        cp_ss_non_idempotent:      cross priv_mode_u, ss_mem_instr, pte_pbmt, menvcfg_pbmte {
+            // An implementation may also override the AMO PMA of an NC page
+            // (norm:Svpbmt_impl_may_override_pmas), so SSAMOSWAP there has no defined outcome.
+            ignore_bins ssamoswap_nc = (binsof(ss_mem_instr.ssamoswap_w) || binsof(ss_mem_instr.ssamoswap_d)) &&
+                                       binsof(pte_pbmt.nc);
+        }
     `endif
     cp_ss_page_access_store:       cross priv_mode_u, ordinary_storeops, pte_ss_page;
     cp_ss_page_access_load:        cross priv_mode_u, ordinary_loadops, pte_ss_page, sstatus_mxr;

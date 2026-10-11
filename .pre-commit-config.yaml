@@ -64,7 +64,7 @@ repos:
 
   # Ensure uv lock file is up to date
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: e0db454a41cc9086a0b33a5d5638e834cf8efe1a # frozen: 0.11.33
+    rev: a1785f8e81fe9936d828bef574e6db07e8c8c374 # frozen: 0.12.23
     hooks:
       - id: uv-lock
 

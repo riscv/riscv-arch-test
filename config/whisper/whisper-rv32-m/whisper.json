@@ -45,9 +45,8 @@
   },
 
   "csr": {
-    "misa": { "reset": "0x4020112f" }, // acdfimv + B (bit 1). Whisper only derives misa from the
-    // ISA string under --newlib/--linux, so set it explicitly.
-    // TODO: delete misa override in all whisper configs when https://github.com/tenstorrent/whisper/issues/48 merged
+    "misa": { "reset": "0x4020112f" }, // acdfimv + B (bit 1). Whisper derives misa from the
+    // ISA string but always sets S and U, so set it explicitly.
     "vstart": {
       "mask": "0xff",
       "poke_mask": "0xff"

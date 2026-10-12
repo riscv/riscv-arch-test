@@ -17,7 +17,7 @@ implemented_extensions:
   - { name: Sdext, version: "= 1.0.0" }
   - { name: Sdtrig, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.13.0" }
-  - { name: Smaia, version: "= 1.0.0" }
+  # - { name: Smaia, version: "= 1.0.0" } # not in --isa: spike smaia also enables Ssaia, replacing the PLIC that RVMODEL_SET_MEXT_INT uses
   - { name: Smcntrpmf, version: "= 1.0.0" }
   - { name: Smepmp, version: "= 1.0.0" }
   # - { name: Smrnmi, version: "= 1.0.0" } # spike does not support Smrnmi

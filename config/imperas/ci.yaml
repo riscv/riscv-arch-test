@@ -3,27 +3,46 @@
 # CI configuration for Imperas simulator
 # Imperas is proprietary and cannot run in public CI.
 
-# These exclusions don't affect CI because it doesn't run, but they help tracking incomplete features
+# These exclusions don't affect CI because it doesn't run, but they help tracking incomplete features.
+# Items marked "fixed in Imperas-HMC101126-eng-build" apply to stock ImperasDV Y-2026.09 but pass with that engineering build of
+# the Imperas RISC-V model (HMC's fixes for the Solvnet cases below; at HMC:
+# export IMPERAS_VLNV=/proj/wally/imperas/Imperas-HMC101126-eng-build/lib/Linux64/ImperasLib), so they are commented out of
+# exclude_extensions at the end of this file. Use the commented-out line when running stock Y-2026.09.
 # - SsstrictSm/S/U: on the vector configs, Imperas does not enforce the vector register-group
 #   overlap constraints, so it executes reserved widening encodings such as
 #   vwmaccu.vv v14, v9, v15, v0.t instead of raising an illegal instruction:
-#   https://solvnetplus.synopsys.com/s/case/500WQ0000230O4P/imperas-treats-vwmaccuvv-v14-v9-v15-v0t-as-legal
+#   https://solvnetplus.synopsys.com/s/case/500WQ0000230O4PYAU/imperas-treats-vwmaccuvv-v14-v9-v15-v0t-as-legal
+#   imperas-rv32gcv also executed the draft Zvqmac encodings in VectorInstr-00/-03; that is worked around
+#   in its imperas.ic (Zvqmac=F):
+#   https://solvnetplus.synopsys.com/s/case/500WQ00002CEtKrYAL/the-vqmacc-draft-zvqmac-encodings-execute-on-named-v-variants-with-vectorversion10ratified
 #   The VectorInstr tests are the only Ssstrict failures; rv32gck, which has no vector unit, passes all three.
-# - Smstateen:
-#   - imperas-rv64-max: Imperas lets mstateen0.P1P13 be written on RV64:
-#     https://solvnetplus.synopsys.com/s/case/500WQ0000289tyxYAA/mstateen0p1p13-should-be-readonly-zero-on-rv64
-#   - imperas-rv64-mu: Imperas implements scontext but keeps mstateen0.CONTEXT read-only zero, which Sail
-#     cannot model yet (https://github.com/riscv/sail-riscv/issues/2013)
-#   imperas-rv32gck and rv32gcv pass.
+#   Both issues are fixed in Imperas-HMC101126-eng-build.
+# - Smstateen: imperas-rv64-max: Imperas lets mstateen0.P1P13 be written on RV64:
+#   https://solvnetplus.synopsys.com/s/case/500WQ0000289tyxYAA/mstateen0p1p13-should-be-readonly-zero-on-rv64
+#   (fixed in Imperas-HMC101126-eng-build). The other configs pass.
 # - ExceptionsVx: https://solvnetplus.synopsys.com/s/case/500WQ000023l1CPYAY/vmvnrrv-does-not-raise-an-illegalinstruction-exception-when-vtypevill-1
-# - Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
+#   (fixed in Imperas-HMC101126-eng-build)
+# - SdtrigS, SdtrigU: Sail has no mcontrol/mcontrol6 (a type-6 tdata1 write reads back as type 15), so its
+#   expected signatures contain no breakpoints and the Mcontrol6 tests fail at the first trigger that fires
+#   (https://github.com/riscv/sail-riscv/issues/222). SdtrigSm passes, but only because no M-mode trigger fires
+#   (Imperas implements tcontrol and the test never sets tcontrol.mte), so it is no longer excluded.
 # - Svnapot: Imperas accepts N=1 on superpage leaf PTEs instead of page faulting
-#   (validSvnapotEntry checks only for a leaf, not level 0, and fillTLBEntry skips the alignment check)
+#   (validSvnapotEntry checks only for a leaf, not level 0, and fillTLBEntry skips the alignment check):
+#   https://solvnetplus.synopsys.com/s/case/500WQ00002AsSN9YAN/svnapot-n1-accepted-on-superpage-leaf-ptes-instead-of-raising-a-page-fault
+#   (fixed in Imperas-HMC101126-eng-build)
 # - Zama16b is not declared. The model has no misaligned atomicity granule: Zam=T performs every
 #   misaligned AMO, including SSAMOSWAP (riscv-isa-manual#3426), so the configs use Zam=F, where
 #   misaligned AMOs, SSAMOSWAP and LR/SC raise store/AMO access faults.
 # - Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm:Imperas still applies pointer masking when MXR is set, contradicting the spec rule.
 #   Issue filed (https://solvnetplus.synopsys.com/s/case/500WQ000025qNCkYAM/pointer-masking-should-be-disabled-when-mxr1)
+#   The MXR part is fixed in Imperas-HMC101126-eng-build. These suites still fail on their xtval checks: for a faulting
+#   address at or above 2^PHYS_ADDR_WIDTH, Imperas writes the full address and Sail truncates it
+#   (https://github.com/riscv/sail-riscv/issues/1962); norm:mtval_inv_addr_conv allows both, so the tests are
+#   over-strict. With Sail's physaddr_bits raised to 64, all seven pass on Imperas.
+# - SsstrictV passes on stock Y-2026.09 and is no longer excluded.
 #
 ci_enabled: false
-exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,SsstrictV,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,Svnapot,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm"
+# Stock ImperasDV Y-2026.09:
+# exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,Smstateen,ExceptionsVx,SdtrigS,SdtrigU,Svnapot,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm"
+# Imperas-HMC101126-eng-build:
+exclude_extensions: "SdtrigS,SdtrigU,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm"

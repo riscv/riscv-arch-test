@@ -36,6 +36,11 @@
 --override cpu*/Zvfh=T
 --override cpu*/Zvfhmin=T
 --override cpu*/unalignedV=F # Disallow misaligned accesses on one imperas sim to test both cases
+# Workaround for an Imperas issue: the RV32GCV variant enables the obsolete V 0.8-0.10 draft extension
+# Zvqmac by default, so it executes reserved OP-V encodings such as 0xf2e68457 as vqmaccu.vv instead of
+# raising an illegal-instruction exception (SsstrictSm/S/U VectorInstr-00/-03).
+# https://solvnetplus.synopsys.com/s/case/500WQ00002CEtKrYAL/the-vqmacc-draft-zvqmac-encodings-execute-on-named-v-variants-with-vectorversion10ratified
+--override cpu*/Zvqmac=F
 
 # Miscellaneous extensions
 --override cpu*/Zicond=T

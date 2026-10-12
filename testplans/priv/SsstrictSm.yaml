@@ -29,11 +29,17 @@ coverpoints:
     bins: One bin per distinct template×exhaustive-bit combination from illegalinstrtests.py. Templates use R=random, E=exhaustive, 0/1=fixed bits.
   - name: cp_illegal_compressed_instruction
     goal: Illegal Compressed Instructions
-    description: Exhaustively test all 2^14 encodings in each 16-bit quadrant (quadrant 00 = bits[1:0]=00, quadrant 01, quadrant 10), covering reserved encodings in Zca/Zcb/Zcd/Zcf/Zcmt/Zcmp.
-    expectation: Each reserved compressed encoding raises illegal-instruction. Legal encodings succeed or cause addressable exceptions for memory ops.
+    description: |-
+      Exhaustively test all 2^14 encodings in each 16-bit quadrant (quadrant 00 = bits[1:0]=00, quadrant 01, quadrant 10), covering reserved encodings in Zca/Zcb/Zcd/Zcf/Zcmt/Zcmp.
+      Encodings whose legal execution could fault, jump, or corrupt the signature pointer (x2) are excluded: quadrant 00 loads and stores; c.jal (RV32), c.addiw (RV64), c.j, c.beqz, c.bnez, and rd = x2 in quadrant 01; sp-relative loads and stores, c.jr, c.jalr, c.ebreak, and rd = x2 in quadrant 10.
+      The reserved code points inside those ranges are swept separately: c.jr with rs1 = x0; c.lwsp with rd = x0; c.ldsp with rd = x0; c.addi16sp with nzimm = 0; and, on RV64 only, c.addiw with rd = x0 (on RV32 these encodings are c.jal).
+    expectation: |-
+      Each reserved compressed encoding raises illegal-instruction. Legal encodings succeed or cause addressable exceptions for memory ops.
+      c.ldsp with rd = x0 is reserved on RV64 and on RV32 with Zclsd. On RV32 with Zcf the same encodings are the legal c.flwsp f0, and on RV32 without Zcf or Zclsd they are unimplemented.
+      The separately swept reserved encodings are harmless on a hart that wrongly executes them as the neighboring legal instruction: c.lwsp and c.ldsp with rd = x0 only read x2+uimm (at most 504 bytes into the signature and trap-signature regions) and discard the result, c.addi16sp with nzimm = 0 adds 0 to x2, and c.addiw with rd = x0 writes x0.
     bins: |-
-      ~16384 per quadrant minus excluded branches/jumps/memory ops tested separately.
-      Final sanity-check instructions for excluded memory encodings: c.fld, c.fsd, c.lw, c.sw, c.lbu, c.lhu, c.lh, c.sb, c.sh, c.lwsp, c.swsp, c.fldsp, c.fsdsp, c.jalr-rs1=0 (illegal), c.jr-rs1=0 (illegal).
+      One bin per swept encoding in each quadrant, except the excluded ranges.
+      Reserved code points in excluded ranges: cp_compressed10 illegal_c_jr (1 bin), illegal_c_lwsp (64 bins), illegal_c_ldsp (64 bins); cp_compressed01 illegal_c_addi16sp (1 bin), illegal_c_addiw (64 bins, RV64 only).
   - name: cp_upperreg
     goal: Instructions using x16-x31
     description: "For each register x16–x31 as rd, rs1, or rs2, execute: ADD rd,rs1,rs2 / ADDI rd,rs1,0 / ADDI rd,rs1,-1 / MUL rd,rs1,rs2 (integer). Also: FADD.S fd,fs1,fs2 / FMV.X.W rd,fs1 / FMV.W.X fd,rs1 (float). Sweeps all 16 upper register positions in each operand slot."

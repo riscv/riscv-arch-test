@@ -37,32 +37,32 @@ normative_rule_definitions:
   # Zca rules
   # c.addi16sp is valid only when nzimm≠0; the code point with nzimm=0 is reserved.
   - name: c-addi16sp_rsv
-    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed01"]
+    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed01/illegal_c_addi16sp"]
   # c.addi4spn is valid only when nzuimm≠0; the code points with nzuimm=0 are reserved.
   - name: c-addi4spn_rsv
     coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed00"]
   # c.addiw is valid only when rd≠x0; the code points with rd=x0 are reserved.
   - name: c-addiw_rsv
-    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed01"]
+    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed01/illegal_c_addiw"]
   # c.jr is valid only when rs1≠x0; the code point with rs1=x0 is reserved.
   - name: c-jr_rsv
-    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10"]
+    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10/illegal_c_jr"]
   # c.ldsp is valid only when rd≠x0; the code points with rd=x0 are reserved.
   - name: c-ldsp_rsv
-    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10"]
+    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10/illegal_c_ldsp"]
   # c.lui is valid only when rd≠x2, and when the immediate is not equal to zero. The code points with
   # imm=0 are reserved. The code points with rd=x2 and imm≠0 correspond to the c.addi16sp instruction.
   - name: c-lui_rsv
     coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed01"]
   # c.lwsp is valid only when rd≠x0; the code points with rd=x0 are reserved.
   - name: c-lwsp_rsv
-    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10"]
+    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10/illegal_c_lwsp"]
 
   # Zilsd/Zclsd rules
   # For c.ldsp, usage of x0 as the destination is reserved.
   - name: Zilsd_c-ldsp_x0
-    # RV32 c.ldsp with rd = x0
-    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10"]
+    # RV32 c.ldsp with rd = x0; on RV32 configurations with Zcf this encoding is c.flwsp f0
+    coverpoint: ["SsstrictS_comp_instr_cg/cp_compressed10/illegal_c_ldsp"]
 
   # F rules
   # The behavior of floating-point instructions that depend on rounding mode when executed with a

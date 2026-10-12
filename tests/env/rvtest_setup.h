@@ -826,11 +826,20 @@
 /**** - Save areas for each priv mode trap handler                                      ****/
 /**** - Defines the start of the test data region                                       ****/
 /*******************************************************************************************/
+// Size of the scratch region in bytes. The default 264 bytes = 33 doublewords is enough for
+// atomic reservation tests with offsets up to 256 bytes. A test that loads or stores at larger
+// offsets defines SCRATCH_SIZE before including riscv_arch_test.h.
+#ifndef SCRATCH_SIZE
+  #define SCRATCH_SIZE 264
+#endif
+#if SCRATCH_SIZE < 264
+  #error "SCRATCH_SIZE must be at least 264"
+#endif
+
 .macro RVTEST_DATA_BEGIN
   // Scratch region of memory for tests (ie for loads/stores that are not part of signature)
-  // Initialized with distinct values so tests can detect unintended zeroing or aliasing,
-  // while remaining obviously recognizable as uninitialized scratch defaults.
-  // 264 bytes = 33 doublewords (needed for atomic reservation tests with offsets up to 256 bytes)
+  // The first 264 bytes are initialized with distinct values so tests can detect unintended
+  // zeroing or aliasing, while remaining obviously recognizable as uninitialized scratch defaults.
   .data
   .p2align 8
   scratch:
@@ -851,6 +860,7 @@
     .dword 0xDEAD001DFFE2BEEF, 0xDEAD001EFFE1BEEF
     .dword 0xDEAD001FFFE0BEEF, 0xDEAD0020FFDFBEEF
     .dword 0xDEAD0021FFDEBEEF
+    .fill SCRATCH_SIZE - 264, 1, 0 // rest of a larger SCRATCH_SIZE
 
   // Temporary memory for RVTEST_SIGUPD_F.
   .p2align 4

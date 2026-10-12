@@ -132,8 +132,15 @@ def _gen_encodings(
     return results
 
 
+# The sweeps include legal loads and stores with random 12-bit offsets (such as the scalar FP widths
+# of the vector load/store opcodes). The suites enlarge the scratch region to 4 KiB plus the widest
+# access (16 bytes) and point the base at its middle, so every access stays inside it.
+SCRATCH_SIZE = 4096 + 16
+SCRATCH_SIZE_DEFINE = f"#define SCRATCH_SIZE {SCRATCH_SIZE}"
+
+
 def _scratch_setup(lines: list[str], test_data: TestData, scratch_base: int) -> None:
-    """Per-chunk setup: point the scratch base register at the scratch region.
+    """Per-chunk setup: point the scratch base register at the middle of the scratch region.
 
     Each chunk may begin a fresh split file, so it must re-establish the scratch
     base. Memory templates use this register as rs1, so it is the only one that
@@ -145,7 +152,7 @@ def _scratch_setup(lines: list[str], test_data: TestData, scratch_base: int) -> 
         f"\t# x{scratch_base} = scratch base pointer",
         "\tnop",
         "\tnop",
-        f"\tla x{scratch_base}, scratch",
+        f"\tla x{scratch_base}, scratch+2048",
         "",
     ]
 

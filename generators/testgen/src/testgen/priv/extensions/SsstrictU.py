@@ -29,6 +29,7 @@ Structure
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.SsstrictCommon import (
+    SCRATCH_SIZE_DEFINE,
     USER_CUSTOM_CSR_RANGES,
     csr_range_set,
     generate_ssstrict_suite,
@@ -59,7 +60,7 @@ _U_CSR_SKIP: frozenset[int] = frozenset(
         "I",
         "V",
     ],
-    extra_defines=["#define RVTEST_USE_FAST_TRAP_HANDLER"],
+    extra_defines=["#define RVTEST_USE_FAST_TRAP_HANDLER", SCRATCH_SIZE_DEFINE],
 )
 def make_ssstrictu(test_data: TestData) -> list[TestChunk]:
     """SsstrictU — user-mode strict compliance tests."""

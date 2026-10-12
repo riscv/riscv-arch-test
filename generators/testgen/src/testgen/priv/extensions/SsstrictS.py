@@ -25,6 +25,7 @@ from testgen.priv.extensions.SsstrictCommon import (
     H_CUSTOM_CSR_RANGES,
     M_PRIV_CSR_RANGES,
     S_CUSTOM_CSR_RANGES,
+    SCRATCH_SIZE_DEFINE,
     USER_CUSTOM_CSR_RANGES,
     csr_range_set,
     generate_ssstrict_suite,
@@ -54,7 +55,7 @@ _S_CSR_SKIP: frozenset[int] = frozenset(
         "I",
         "V",  # V included: sets vl/vtype for vector loads and stores in the encoding sweep
     ],
-    extra_defines=["#define RVTEST_USE_FAST_TRAP_HANDLER", "#define BOOT_TO_SMODE"],
+    extra_defines=["#define RVTEST_USE_FAST_TRAP_HANDLER", SCRATCH_SIZE_DEFINE, "#define BOOT_TO_SMODE"],
 )
 def make_ssstrictss(test_data: TestData) -> list[TestChunk]:
     """SsstrictS — supervisor-mode strict compliance tests."""

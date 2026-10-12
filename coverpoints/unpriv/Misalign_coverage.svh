@@ -166,9 +166,285 @@ covergroup Misalign_sd_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 `endif
+`ifdef D_SUPPORTED
+covergroup MisalignD_fld_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "fld"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_double : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:56]};
+        bins yes = {[57:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup MisalignD_fsd_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "fsd"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_double : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:56]};
+        bins yes = {[57:63]};
+    }
+
+endgroup
+// ---------------------
+`endif
+`ifdef F_SUPPORTED
+covergroup MisalignF_flw_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "flw"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_word : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:60]};
+        bins yes = {[61:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup MisalignF_fsw_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "fsw"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_word : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:60]};
+        bins yes = {[61:63]};
+    }
+
+endgroup
+// ---------------------
+`endif
+`ifdef ZCA_SUPPORTED
+covergroup MisalignZca_c_lw_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "c.lw"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_word : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:60]};
+        bins yes = {[61:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup MisalignZca_c_lwsp_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "c.lwsp"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_word : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:60]};
+        bins yes = {[61:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup MisalignZca_c_sw_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "c.sw"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_word : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:60]};
+        bins yes = {[61:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup MisalignZca_c_swsp_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "c.swsp"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_word : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 4-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:60]};
+        bins yes = {[61:63]};
+    }
+
+endgroup
+// ---------------------
+`ifdef UDB_MXLEN_64
+covergroup MisalignZca_c_ld_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "c.ld"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_double : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:56]};
+        bins yes = {[57:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup MisalignZca_c_ldsp_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "c.ldsp"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_double : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:56]};
+        bins yes = {[57:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup MisalignZca_c_sd_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "c.sd"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_double : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:56]};
+        bins yes = {[57:63]};
+    }
+
+endgroup
+// ---------------------
+covergroup MisalignZca_c_sdsp_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cp_asm_count : coverpoint ins.ins_str == "c.sdsp"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_misalign : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+        // all 8 byte offsets within a doubleword
+    }
+
+    cp_misalign_cross64_double : coverpoint {ins.current.rs1_val + ins.current.imm}[5:0] iff (ins.trap == 0) {
+        // Does the 8-byte access cross a 64-byte boundary (and so a 16-, 32- or 64-byte cache line or bus beat)?
+        bins no  = {[0:56]};
+        bins yes = {[57:63]};
+    }
+
+endgroup
+// ---------------------
+`endif
+`endif
 function void misalign_sample(int hart, int issue, ins_t ins);
 
     case (traceDataQ[hart][issue][0].inst_name)
+`ifdef ZCA_SUPPORTED
+        "c.lw"     : begin
+            MisalignZca_c_lw_cg.sample(ins);
+        end
+`endif
+`ifdef ZCA_SUPPORTED
+        "c.lwsp"     : begin
+            MisalignZca_c_lwsp_cg.sample(ins);
+        end
+`endif
+`ifdef ZCA_SUPPORTED
+        "c.sw"     : begin
+            MisalignZca_c_sw_cg.sample(ins);
+        end
+`endif
+`ifdef ZCA_SUPPORTED
+        "c.swsp"     : begin
+            MisalignZca_c_swsp_cg.sample(ins);
+        end
+`endif
+`ifdef D_SUPPORTED
+        "fld"     : begin
+            MisalignD_fld_cg.sample(ins);
+        end
+`endif
+`ifdef F_SUPPORTED
+        "flw"     : begin
+            MisalignF_flw_cg.sample(ins);
+        end
+`endif
+`ifdef D_SUPPORTED
+        "fsd"     : begin
+            MisalignD_fsd_cg.sample(ins);
+        end
+`endif
+`ifdef F_SUPPORTED
+        "fsw"     : begin
+            MisalignF_fsw_cg.sample(ins);
+        end
+`endif
         "lh"     : begin
             Misalign_lh_cg.sample(ins);
         end
@@ -185,6 +461,26 @@ function void misalign_sample(int hart, int issue, ins_t ins);
             Misalign_sw_cg.sample(ins);
         end
 `ifdef UDB_MXLEN_64
+`ifdef ZCA_SUPPORTED
+        "c.ld"     : begin
+            MisalignZca_c_ld_cg.sample(ins);
+        end
+`endif
+`ifdef ZCA_SUPPORTED
+        "c.ldsp"     : begin
+            MisalignZca_c_ldsp_cg.sample(ins);
+        end
+`endif
+`ifdef ZCA_SUPPORTED
+        "c.sd"     : begin
+            MisalignZca_c_sd_cg.sample(ins);
+        end
+`endif
+`ifdef ZCA_SUPPORTED
+        "c.sdsp"     : begin
+            MisalignZca_c_sdsp_cg.sample(ins);
+        end
+`endif
         "ld"     : begin
             Misalign_ld_cg.sample(ins);
         end

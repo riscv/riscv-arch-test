@@ -80,7 +80,7 @@
 # Misaligned access (Zicclsm) is supported
 --override cpu*/unaligned=T
 --override cpu*/unaligned_low_pri=T
---override cpu*/Zam=T # misaligned AMOs are supported (needed for Zama16b)
+--override cpu*/Zam=F # misaligned AMOs and SSAMOSWAP raise store/AMO access faults (no Zama16b granule)
 
 --override cpu*/Sscofpmf=F # not supported without S-mode
 
@@ -102,6 +102,9 @@
 # More extensions
 --override cpu*/Smdbltrp=T
 --override cpu*/d_requires_f=T
+
+# Debug triggers
+--override cpu*/scontext_undefined=T # no scontext or its mscontext alias: they hold the supervisor context and this hart has no S-mode
 
 # PMA Settings
 # 'r': read access allowed

@@ -32,7 +32,7 @@ repos:
 
   # Format pyproject.toml files
   - repo: https://github.com/tox-dev/pyproject-fmt
-    rev: 59e7b26529dc6f15c43063064b8b06ded60d0910 # frozen: v2.29.4
+    rev: a72ae8edd6eeddb9d942168912362945651212f8 # frozen: v2.30.1
     hooks:
       - id: pyproject-fmt
 
@@ -115,7 +115,7 @@ repos:
 
   # Validate Renovate configuration
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 9d9eb861defcce16d342a0e77ff2f6cb65dc2841 # frozen: 44.116.0
+    rev: 10fdc03ca37596bb7eb39ea7d3994cecbf4439ab # frozen: 44.133.0
     hooks:
       - id: renovate-config-validator
 

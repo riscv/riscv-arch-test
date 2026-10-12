@@ -223,6 +223,9 @@ def _emit_raw_words(
         lines.append(f"# {comment}{part}  ({len(group)} of {total} encodings) template {template}")
         for enc in group:
             lines.append(f"\t{directive} 0b{enc}")
+        if length == 16:
+            # Without Zca (IALIGN=32) the hart can reach only 4-byte-aligned code after an odd count of halfwords
+            lines.append("\t.balign 4")
         tc.num_testcases += len(group)
         _finalize_chunk(test_data, lines, test_chunks)
     test_data.int_regs.return_register(scratch_base)

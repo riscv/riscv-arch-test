@@ -2935,6 +2935,8 @@ rtn_fm_mmode:
 //  lhu (not lw) is used because xEPC is only guaranteed 2-byte aligned; a
 //  4-byte lw at a 2 mod 4 address would misalign on cores without hardware
 //  misaligned-load support. bits[1:0] fit in the loaded 16 bits.
+//  Without Zca, IALIGN=32 and xEPC[1] is always zero, so the handler always
+//  advances by 4; advancing by 2 would return to the same instruction.
 //
 //  Register usage:
 //    a0, a1 (x10, x11) — the ONLY scratch registers (CSR reads, instruction
@@ -3023,6 +3025,7 @@ fast_Millegalinstruction:
         RVTEST_SIGUPD_FAST_TRAP(x2, a1, a0, CSR_MEPC, SIG_STRIDE, fast_Mepc_mismatch)
         RVTEST_SIGUPD_FAST_TRAP(x2, a1, a0, CSR_MTVAL, 2*SIG_STRIDE, fast_Mtval_mismatch)
         addi x2, x2, 3*SIG_STRIDE
+#ifdef ZCA_SUPPORTED
         // mepc advance using only a0 — reads bits[1:0] from *mepc using lhu
         // (lhu because mepc is only guaranteed 2-byte aligned).
         csrr a0, mepc
@@ -3034,6 +3037,7 @@ fast_Mcompressed:
         csrr a0, mepc
         addi a0, a0, 2                  // 16-bit instruction: advance mepc by 2
         j    fast_Mdone
+#endif
 fast_Muncompressed:
         csrr a0, mepc
         addi a0, a0, 4                  // 32-bit instruction: advance mepc by 4
@@ -3092,6 +3096,7 @@ fast_Sillegalinstruction:
         RVTEST_SIGUPD_FAST_TRAP(x2, a1, a0, CSR_SEPC, SIG_STRIDE, fast_Sepc_mismatch)
         RVTEST_SIGUPD_FAST_TRAP(x2, a1, a0, CSR_STVAL, 2*SIG_STRIDE, fast_Stval_mismatch)
         addi x2, x2, 3*SIG_STRIDE
+#ifdef ZCA_SUPPORTED
         // Width detection: lhu at sepc (2-byte aligned -> no misalign trap).
         csrr a0, sepc
         lhu  a0, 0(a0)                  // load lower 16 bits of faulting instruction
@@ -3102,6 +3107,7 @@ fast_Scompressed:
         csrr a0, sepc
         addi a0, a0, 2                  // 16-bit instruction: advance sepc by 2
         j    fast_Sdone
+#endif
 fast_Suncompressed:
         csrr a0, sepc
         addi a0, a0, 4                  // 32-bit instruction: advance sepc by 4

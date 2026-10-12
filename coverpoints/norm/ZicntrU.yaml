@@ -33,6 +33,4 @@ normative_rule_definitions:
   # As ECALL and EBREAK cause synchronous exceptions, they are not considered to
   # retire, and should not increment the minstret CSR.
   - name: ecall_ebreak_no_minstret_inc
-    # The instret difference spans T-SBI ecalls; ebreak is not exercised
-    # (PR #1801 adds directed ecall/ebreak minstret tests)
-    coverpoint: ["ZicntrU_cg/cp_mcounter_inc_inaccessible"]
+    coverpoint: ["ZicntrU_cg/{cp_instret_ecall, cp_instret_ebreak}"]

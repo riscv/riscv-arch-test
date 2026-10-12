@@ -85,7 +85,7 @@ params:
   MEI_INTR_IMPL: true
   MSI_INTR_IMPL: true
   MTI_INTR_IMPL: true
-  WFI_FINITE: true
+  WFI_FINITE: false
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true # VERIFIED -- User Manual, Exceptions and Interrupts: "All exceptions are precise"
   MARCHID_IMPLEMENTED: true # VERIFIED -- marchid CSR (0xF12) in CSR map
   MIMPID_IMPLEMENTED: true # VERIFIED -- mimpid CSR (0xF13) in CSR map

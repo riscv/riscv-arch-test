@@ -370,7 +370,7 @@
   // RVMODEL_INTERRUPT_LATENCY iterations, so the interrupt is not taken again
   // when the test next enables it. The _SU flavor reads mip through T-SBI.
   .macro RVTEST_WAIT_MIP_CLEAR_M mask
-    LI(a2, RVMODEL_INTERRUPT_LATENCY)
+    LA(a2, RVMODEL_INTERRUPT_LATENCY)
     1:
     csrr a0, mip
     andi a0, a0, \mask
@@ -382,7 +382,7 @@
   .endm
 
   .macro RVTEST_WAIT_MIP_CLEAR_SU mask
-    LI(a2, RVMODEL_INTERRUPT_LATENCY)
+    LA(a2, RVMODEL_INTERRUPT_LATENCY)
     1:
     RVTEST_TSBI_CSR_READ(CSR_MIP) // a0 = mip; a2 is preserved
     andi a0, a0, \mask

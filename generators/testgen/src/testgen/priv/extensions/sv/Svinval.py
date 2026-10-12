@@ -42,7 +42,6 @@ def make_svinval(test_data: TestData) -> list[TestChunk]:
     chunk = test_data.begin_test_chunk("Svinval")
     chunk.code.extend(
         [
-            "main:",
             *add_operations(test_data, 1),
             "RVTEST_TSBI_GOTO_UMODE",
             *add_operations(test_data, 2),

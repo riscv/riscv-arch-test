@@ -34,8 +34,6 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 
-main:
-
 // Virtual addresses for code and test regions
 
 // Virtual address of rvtest_data_1
@@ -52,292 +50,293 @@ main:
 // accessible, so the code is mapped again at va_rvtest_code_begin. Registering
 // that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
 // to can fetch from.
+// SAVE_AREA_SETUP takes the M-mode save area in a0 and clobbers t0 and t1.
   LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL3)
 
   SATP_SETUP_RV64(sv48) // Enable address translation.
   sfence.vma
 
-  LI(   t0, MSTATUS_SBE)
-  csrs  mstatus, t0
-  LI(   t0, MSTATUS_SUM)
-  csrs  mstatus, t0
+  LI(   x8, MSTATUS_SBE)
+  csrs  mstatus, x8
+  LI(   x8, MSTATUS_SUM)
+  csrs  mstatus, x8
 
-  LI(a2, 0x800) // Test signature initialization
+  LI(x13, 0x800) // Test signature initialization
 
-  li a3, 0
-  li a4, 0
-  li a5, 56
+  li x15, 0
+  li x9, 0
+  li x14, 56
   .rept(8)
-  andi a3, a0, 0xFF
-  srli a0, a0, 8
-  sll a3, a3, a5
-  or a4, a4, a3
-  addi a5, a5, -8
+  andi x15, x10, 0xFF
+  srli x10, x10, 8
+  sll x15, x15, x14
+  or x9, x9, x15
+  addi x14, x14, -8
   .endr
-  SREG a4, 0(t1)
+  SREG x9, 0(x6)
 // The S-mode accesses run from the boot identity map, so its root PTE must be big-endian too.
-  LA(t0, rvtest_code_begin)
-  srli t0, t0, 39
-  andi t0, t0, 0x1FF
-  slli t0, t0, 3
-  LA(t1, rvtest_Sroot_pg_tbl)
-  add t1, t1, t0
-  LREG a0, 0(t1)
-  li a3, 0
-  li a4, 0
-  li a5, 56
+  LA(x14, rvtest_code_begin)
+  srli x14, x14, 39
+  andi x14, x14, 0x1FF
+  slli x14, x14, 3
+  LA(x8, rvtest_Sroot_pg_tbl)
+  add x8, x8, x14
+  LREG x6, 0(x8)
+  li x15, 0
+  li x9, 0
+  li x14, 56
   .rept(8)
-  andi a3, a0, 0xFF
-  srli a0, a0, 8
-  sll a3, a3, a5
-  or a4, a4, a3
-  addi a5, a5, -8
+  andi x15, x6, 0xFF
+  srli x6, x6, 8
+  sll x15, x15, x14
+  or x9, x9, x15
+  addi x14, x14, -8
   .endr
-  SREG a4, 0(t1)
+  SREG x9, 0(x8)
 
 // 512GB page at level 3
 
 // Test case 1: Big-endian PTE | Test in S-Mode | RWX bit set | expected = No Fault
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
-  li a3, 0
-  li a4, 0
-  li a5, 56
+  li x15, 0
+  li x9, 0
+  li x14, 56
   .rept(8)
-  andi a3, a0, 0xFF
-  srli a0, a0, 8
-  sll a3, a3, a5
-  or a4, a4, a3
-  addi a5, a5, -8
+  andi x15, x10, 0xFF
+  srli x10, x10, 8
+  sll x15, x15, x14
+  or x9, x9, x15
+  addi x14, x14, -8
   .endr
-  SREG a4, 0(t1)
+  SREG x9, 0(x6)
   sfence.vma
 
-  LI(a5, (va_data >> 39) << 39)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 25
-  srli a0, a0, 25
-  add a5, a5, a0
+  LI(x14, (va_data >> 39) << 39)
+  LA(x8, rvtest_data_1)
+  slli x8, x8, 25
+  srli x8, x8, 25
+  add x14, x14, x8
   RVTEST_TSBI_GOTO_SMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test1_store:
-  sw a2, 20(a5)
+  sw x13, 20(x14)
   nop
 
 // Load
 SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test1_load:
-  lw a3, 20(a5)
+  lw x15, 20(x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test1_store, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test1_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test1_load, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test1_store, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test1_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test1_load, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test1_load_str)
 
 
 // 1GB page at level 2
 
 // Test case 2: Big-endian PTE | Test in S-Mode | RWX bit set | expected = No Fault
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
-  li a3, 0
-  li a4, 0
-  li a5, 56
+  li x15, 0
+  li x9, 0
+  li x14, 56
   .rept(8)
-  andi a3, a0, 0xFF
-  srli a0, a0, 8
-  sll a3, a3, a5
-  or a4, a4, a3
-  addi a5, a5, -8
+  andi x15, x10, 0xFF
+  srli x10, x10, 8
+  sll x15, x15, x14
+  or x9, x9, x15
+  addi x14, x14, -8
   .endr
-  SREG a4, 0(t1)
+  SREG x9, 0(x6)
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
-  li a3, 0
-  li a4, 0
-  li a5, 56
+  li x15, 0
+  li x9, 0
+  li x14, 56
   .rept(8)
-  andi a3, a0, 0xFF
-  srli a0, a0, 8
-  sll a3, a3, a5
-  or a4, a4, a3
-  addi a5, a5, -8
+  andi x15, x10, 0xFF
+  srli x10, x10, 8
+  sll x15, x15, x14
+  or x9, x9, x15
+  addi x14, x14, -8
   .endr
-  SREG a4, 0(t1)
+  SREG x9, 0(x6)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x14, (va_data >> 30) << 30)
+  LA(x8, rvtest_data_1)
+  slli x8, x8, 34
+  srli x8, x8, 34
+  add x14, x14, x8
   RVTEST_TSBI_GOTO_SMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test2_store:
-  sw a2, 20(a5)
+  sw x13, 20(x14)
   nop
 
 // Load
 SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test2_load:
-  lw a3, 20(a5)
+  lw x15, 20(x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test2_store, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test2_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test2_load, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test2_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test2_store, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test2_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test2_load, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test2_load_str)
 
 
 // 2MB page at level 1
 
 // Test case 3: Big-endian PTE | Test in S-Mode | RWX bit set | expected = No Fault
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
-  li a3, 0
-  li a4, 0
-  li a5, 56
+  li x15, 0
+  li x9, 0
+  li x14, 56
   .rept(8)
-  andi a3, a0, 0xFF
-  srli a0, a0, 8
-  sll a3, a3, a5
-  or a4, a4, a3
-  addi a5, a5, -8
+  andi x15, x10, 0xFF
+  srli x10, x10, 8
+  sll x15, x15, x14
+  or x9, x9, x15
+  addi x14, x14, -8
   .endr
-  SREG a4, 0(t1)
+  SREG x9, 0(x6)
   PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  li a3, 0
-  li a4, 0
-  li a5, 56
+  li x15, 0
+  li x9, 0
+  li x14, 56
   .rept(8)
-  andi a3, a0, 0xFF
-  srli a0, a0, 8
-  sll a3, a3, a5
-  or a4, a4, a3
-  addi a5, a5, -8
+  andi x15, x10, 0xFF
+  srli x10, x10, 8
+  sll x15, x15, x14
+  or x9, x9, x15
+  addi x14, x14, -8
   .endr
-  SREG a4, 0(t1)
+  SREG x9, 0(x6)
   SUPERPAGE_PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
-  li a3, 0
-  li a4, 0
-  li a5, 56
+  li x15, 0
+  li x9, 0
+  li x14, 56
   .rept(8)
-  andi a3, a0, 0xFF
-  srli a0, a0, 8
-  sll a3, a3, a5
-  or a4, a4, a3
-  addi a5, a5, -8
+  andi x15, x10, 0xFF
+  srli x10, x10, 8
+  sll x15, x15, x14
+  or x9, x9, x15
+  addi x14, x14, -8
   .endr
-  SREG a4, 0(t1)
+  SREG x9, 0(x6)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x14, (va_data >> 21) << 21)
+  LA(x8, rvtest_data_1)
+  slli x8, x8, 43
+  srli x8, x8, 43
+  add x14, x14, x8
   RVTEST_TSBI_GOTO_SMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test3_store:
-  sw a2, 20(a5)
+  sw x13, 20(x14)
   nop
 
 // Load
 SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test3_load:
-  lw a3, 20(a5)
+  lw x15, 20(x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test3_store, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test3_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test3_load, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test3_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test3_store, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test3_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test3_load, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test3_load_str)
 
 
 // 4KB page at level 0
 
 // Test case 4: Big-endian PTE | Test in S-Mode | RWX bit set | expected = No Fault
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
-  li a3, 0
-  li a4, 0
-  li a5, 56
+  li x15, 0
+  li x9, 0
+  li x14, 56
   .rept(8)
-  andi a3, a0, 0xFF
-  srli a0, a0, 8
-  sll a3, a3, a5
-  or a4, a4, a3
-  addi a5, a5, -8
+  andi x15, x10, 0xFF
+  srli x10, x10, 8
+  sll x15, x15, x14
+  or x9, x9, x15
+  addi x14, x14, -8
   .endr
-  SREG a4, 0(t1)
+  SREG x9, 0(x6)
   PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  li a3, 0
-  li a4, 0
-  li a5, 56
+  li x15, 0
+  li x9, 0
+  li x14, 56
   .rept(8)
-  andi a3, a0, 0xFF
-  srli a0, a0, 8
-  sll a3, a3, a5
-  or a4, a4, a3
-  addi a5, a5, -8
+  andi x15, x10, 0xFF
+  srli x10, x10, 8
+  sll x15, x15, x14
+  or x9, x9, x15
+  addi x14, x14, -8
   .endr
-  SREG a4, 0(t1)
+  SREG x9, 0(x6)
   PTE_SETUP_SV48(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  li a3, 0
-  li a4, 0
-  li a5, 56
+  li x15, 0
+  li x9, 0
+  li x14, 56
   .rept(8)
-  andi a3, a0, 0xFF
-  srli a0, a0, 8
-  sll a3, a3, a5
-  or a4, a4, a3
-  addi a5, a5, -8
+  andi x15, x10, 0xFF
+  srli x10, x10, 8
+  sll x15, x15, x14
+  or x9, x9, x15
+  addi x14, x14, -8
   .endr
-  SREG a4, 0(t1)
+  SREG x9, 0(x6)
   PTE_SETUP_SV48(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
-  li a3, 0
-  li a4, 0
-  li a5, 56
+  li x15, 0
+  li x9, 0
+  li x14, 56
   .rept(8)
-  andi a3, a0, 0xFF
-  srli a0, a0, 8
-  sll a3, a3, a5
-  or a4, a4, a3
-  addi a5, a5, -8
+  andi x15, x10, 0xFF
+  srli x10, x10, 8
+  sll x15, x15, x14
+  or x9, x9, x15
+  addi x14, x14, -8
   .endr
-  SREG a4, 0(t1)
+  SREG x9, 0(x6)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x14, (va_data >> 12) << 12)
+  LA(x8, rvtest_data_1)
+  slli x8, x8, 52
+  srli x8, x8, 52
+  add x14, x14, x8
   RVTEST_TSBI_GOTO_SMODE
-  addi a2, a2, 16
+  addi x13, x13, 16
 
 // Store
 SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test4_store:
-  sw a2, 20(a5)
+  sw x13, 20(x14)
   nop
 
 // Load
 SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test4_load:
-  lw a3, 20(a5)
+  lw x15, 20(x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test4_store, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test4_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test4_load, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test4_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test4_store, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test4_store_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test4_load, SvSm_cp_sv48_mstatus_sbe_and_sum_set_Smode_test4_load_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -353,7 +352,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi a4, a2, 4
+  addi x9, x13, 4
   jr ra
   nop
   .word 0xbeefcaf1

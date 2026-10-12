@@ -34,8 +34,6 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 
-main:
-
 // Virtual addresses for code and test regions
 
 // Virtual address of rvtest_data_1
@@ -53,90 +51,91 @@ main:
 // accessible, so the code is mapped again at va_rvtest_code_begin. Registering
 // that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
 // to can fetch from.
+// SAVE_AREA_SETUP takes the M-mode save area in a0 and clobbers t0 and t1.
   LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL1)
 
   SATP_SETUP_SV32 // Enable address translation.
   sfence.vma
 
-  LI(a2, 0x800) // Test signature initialization
+  LI(x13, 0x800) // Test signature initialization
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  addi a2, a2, 1
+  LI(x9, (va_data >> 22) << 22)
+  LA(x8, rvtest_data_1)
+  slli x8, x8, 10
+  srli x8, x8, 10
+  add x9, x9, x8
+  addi x13, x13, 1
 
   LI(x8, 100) # retry counter for constrained LR/SC loop
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc_retry:
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_lr:
-  lr.w a3, (a5)
+  lr.w x14, (x9)
   nop
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc:
-  sc.w a4, a2, (a5)
-  beqz x14, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc_success # SC succeeded, skip retry
+  sc.w x15, x13, (x9)
+  beqz x15, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc_success # SC succeeded, skip retry
   addi x8, x8, -1 # decrement retry count
   bnez x8, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc_retry # retry LR/SC if not exhausted
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc_success:
   nop
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_lr_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_lr_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test1_sc_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  addi a5, a5, 2
-  addi a2, a2, 1
+  LI(x9, (va_data >> 22) << 22)
+  LA(x8, rvtest_data_1)
+  slli x8, x8, 10
+  srli x8, x8, 10
+  add x9, x9, x8
+  addi x9, x9, 2
+  addi x13, x13, 1
 
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test2_lr:
-  lr.w a3, (a5)
+  lr.w x14, (x9)
   nop
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test2_sc:
-  sc.w a4, a2, (a5)
+  sc.w x15, x13, (x9)
   nop
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test2_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test2_lr_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test2_sc, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test2_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test2_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test2_lr_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test2_sc, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test2_sc_str)
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
   SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LI(a0, RVMODEL_ACCESS_FAULT_ADDRESS)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  addi a2, a2, 1
+  LI(x9, (va_data >> 22) << 22)
+  LI(x8, RVMODEL_ACCESS_FAULT_ADDRESS)
+  slli x8, x8, 10
+  srli x8, x8, 10
+  add x9, x9, x8
+  addi x13, x13, 1
 
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test3_lr:
-  lr.w a3, (a5)
+  lr.w x14, (x9)
   nop
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test3_sc:
-  sc.w a4, a2, (a5)
+  sc.w x15, x13, (x9)
   nop
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test3_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test3_lr_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test3_sc, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test3_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test3_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test3_lr_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test3_sc, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test3_sc_str)
 
 #endif
 
@@ -144,99 +143,99 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test3_sc:
   SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LI(a0, RVMODEL_ACCESS_FAULT_ADDRESS)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  addi a5, a5, 2
-  addi a2, a2, 1
+  LI(x9, (va_data >> 22) << 22)
+  LI(x8, RVMODEL_ACCESS_FAULT_ADDRESS)
+  slli x8, x8, 10
+  srli x8, x8, 10
+  add x9, x9, x8
+  addi x9, x9, 2
+  addi x13, x13, 1
 
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test4_lr:
-  lr.w a3, (a5)
+  lr.w x14, (x9)
   nop
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test4_sc:
-  sc.w a4, a2, (a5)
+  sc.w x15, x13, (x9)
   nop
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test4_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test4_lr_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test4_sc, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test4_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test4_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test4_lr_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test4_sc, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test4_sc_str)
 
 #endif
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  addi a2, a2, 1
+  LI(x9, (va_data >> 22) << 22)
+  LA(x8, rvtest_data_1)
+  slli x8, x8, 10
+  srli x8, x8, 10
+  add x9, x9, x8
+  addi x13, x13, 1
 
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test5_lr:
-  lr.w a3, (a5)
+  lr.w x14, (x9)
   nop
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test5_sc:
-  sc.w a4, a2, (a5)
+  sc.w x15, x13, (x9)
   nop
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test5_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test5_lr_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test5_sc, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test5_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test5_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test5_lr_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test5_sc, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test5_sc_str)
 
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  addi a5, a5, 2
-  addi a2, a2, 1
+  LI(x9, (va_data >> 22) << 22)
+  LA(x8, rvtest_data_1)
+  slli x8, x8, 10
+  srli x8, x8, 10
+  add x9, x9, x8
+  addi x9, x9, 2
+  addi x13, x13, 1
 
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test6_lr:
-  lr.w a3, (a5)
+  lr.w x14, (x9)
   nop
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test6_sc:
-  sc.w a4, a2, (a5)
+  sc.w x15, x13, (x9)
   nop
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test6_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test6_lr_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test6_sc, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test6_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test6_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test6_lr_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test6_sc, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test6_sc_str)
 
 #ifdef RVMODEL_ACCESS_FAULT_ADDRESS
   SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LI(a0, RVMODEL_ACCESS_FAULT_ADDRESS)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  addi a2, a2, 1
+  LI(x9, (va_data >> 22) << 22)
+  LI(x8, RVMODEL_ACCESS_FAULT_ADDRESS)
+  slli x8, x8, 10
+  srli x8, x8, 10
+  add x9, x9, x8
+  addi x13, x13, 1
 
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test7_lr:
-  lr.w a3, (a5)
+  lr.w x14, (x9)
   nop
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test7_sc:
-  sc.w a4, a2, (a5)
+  sc.w x15, x13, (x9)
   nop
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test7_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test7_lr_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test7_sc, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test7_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test7_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test7_lr_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test7_sc, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test7_sc_str)
 
 #endif
 
@@ -244,26 +243,26 @@ ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test7_sc:
   SUPERPAGE_PTE_SETUP_SV32(RVMODEL_ACCESS_FAULT_ADDRESS, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LI(a0, RVMODEL_ACCESS_FAULT_ADDRESS)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
-  addi a5, a5, 2
-  addi a2, a2, 1
+  LI(x9, (va_data >> 22) << 22)
+  LI(x8, RVMODEL_ACCESS_FAULT_ADDRESS)
+  slli x8, x8, 10
+  srli x8, x8, 10
+  add x9, x9, x8
+  addi x9, x9, 2
+  addi x13, x13, 1
 
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test8_lr:
-  lr.w a3, (a5)
+  lr.w x14, (x9)
   nop
 ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test8_sc:
-  sc.w a4, a2, (a5)
+  sc.w x15, x13, (x9)
   nop
 
 
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test8_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test8_lr_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test8_sc, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test8_sc_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test8_lr, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test8_lr_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test8_sc, ExceptionsSvZalrsc_cg_cp_misaligned_priority_s_test8_sc_str)
 
 #endif
 
@@ -281,7 +280,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi a4, a2, 4
+  addi x15, x13, 4
   jr ra
   nop
   .word 0xbeefcaf1

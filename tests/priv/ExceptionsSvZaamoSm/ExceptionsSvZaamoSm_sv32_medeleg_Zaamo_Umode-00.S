@@ -34,8 +34,6 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 
-main:
-
 // Virtual addresses for code and test regions
 
 // Virtual address of rvtest_data_1
@@ -53,31 +51,32 @@ main:
 // accessible, so the code is mapped again at va_rvtest_code_begin. Registering
 // that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
 // to can fetch from.
+// SAVE_AREA_SETUP takes the M-mode save area in a0 and clobbers t0 and t1.
   LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL1)
 
   SATP_SETUP_SV32 // Enable address translation.
   sfence.vma
 
-  csrr x8, medeleg
+  csrr x15, medeleg
 
-  LI(a2, 0x800) // Test signature initialization
+  LI(x9, 0x800) // Test signature initialization
 
-  LI(x9, 0x1)
-  csrw medeleg, x9
+  LI(x6, 0x1)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test1_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -88,16 +87,16 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test1_amoadd:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test2_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -105,21 +104,21 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test2_amoadd:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test2_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test2_amoadd_str)
 
-  LI(x9, 0x2)
-  csrw medeleg, x9
+  LI(x6, 0x2)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test3_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -130,16 +129,16 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test3_amoadd:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test4_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -147,21 +146,21 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test4_amoadd:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test4_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test4_amoadd_str)
 
-  LI(x9, 0x4)
-  csrw medeleg, x9
+  LI(x6, 0x4)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test5_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -172,16 +171,16 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test5_amoadd:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test6_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -189,21 +188,21 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test6_amoadd:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test6_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test6_amoadd_str)
 
-  LI(x9, 0x8)
-  csrw medeleg, x9
+  LI(x6, 0x8)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test7_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -214,16 +213,16 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test7_amoadd:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test8_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -231,21 +230,21 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test8_amoadd:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test8_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test8_amoadd_str)
 
-  LI(x9, 0x10)
-  csrw medeleg, x9
+  LI(x6, 0x10)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test9_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -256,16 +255,16 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test9_amoadd:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test10_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -273,21 +272,21 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test10_amoadd:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test10_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test10_amoadd_str)
 
-  LI(x9, 0x20)
-  csrw medeleg, x9
+  LI(x6, 0x20)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test11_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -298,16 +297,16 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test11_amoadd:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test12_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -315,21 +314,21 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test12_amoadd:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test12_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test12_amoadd_str)
 
-  LI(x9, 0x40)
-  csrw medeleg, x9
+  LI(x6, 0x40)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test13_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -340,16 +339,16 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test13_amoadd:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test14_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -357,21 +356,21 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test14_amoadd:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test14_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test14_amoadd_str)
 
-  LI(x9, 0x80)
-  csrw medeleg, x9
+  LI(x6, 0x80)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test15_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -382,16 +381,16 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test15_amoadd:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test16_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -399,21 +398,21 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test16_amoadd:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test16_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test16_amoadd_str)
 
-  LI(x9, 0x100)
-  csrw medeleg, x9
+  LI(x6, 0x100)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test17_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -424,16 +423,16 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test17_amoadd:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test18_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -441,21 +440,21 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test18_amoadd:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test18_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test18_amoadd_str)
 
-  LI(x9, 0x1000)
-  csrw medeleg, x9
+  LI(x6, 0x1000)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test19_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -466,16 +465,16 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test19_amoadd:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test20_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -483,21 +482,21 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test20_amoadd:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test20_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test20_amoadd_str)
 
-  LI(x9, 0x2000)
-  csrw medeleg, x9
+  LI(x6, 0x2000)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test21_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -508,16 +507,16 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test21_amoadd:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test22_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -525,21 +524,21 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test22_amoadd:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test22_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test22_amoadd_str)
 
-  LI(x9, 0x8000)
-  csrw medeleg, x9
+  LI(x6, 0x8000)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test23_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -550,16 +549,16 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test23_amoadd:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test24_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -567,21 +566,21 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test24_amoadd:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test24_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test24_amoadd_str)
 
-  LI(x9, 0xb1ff)
-  csrw medeleg, x9
+  LI(x6, 0xb1ff)
+  csrw medeleg, x6
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test25_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -592,16 +591,16 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test25_amoadd:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data_invalid, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data_invalid >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x14, (va_data_invalid >> 22) << 22)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  add x14, x14, x6
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 1
+  addi x9, x9, 1
 
 ExceptionsSvZaamoSm_cg_cp_medeleg_u_test26_amoadd:
-  amoadd.w a3, a2, (a5)
+  amoadd.w x13, x9, (x14)
   nop
 
   RVTEST_TSBI_GOTO_MMODE
@@ -609,7 +608,7 @@ ExceptionsSvZaamoSm_cg_cp_medeleg_u_test26_amoadd:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test26_amoadd, ExceptionsSvZaamoSm_cg_cp_medeleg_u_test26_amoadd_str)
 
-  csrw medeleg, x8
+  csrw medeleg, x15
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -624,7 +623,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi a4, a2, 4
+  addi x8, x9, 4
   jr ra
   nop
   .word 0xbeefcaf1

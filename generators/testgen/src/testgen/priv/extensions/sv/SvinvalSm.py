@@ -20,18 +20,19 @@ from testgen.priv.registry import add_priv_test_generator
     extra_defines=["#define BOOT_TO_MMODE"],
 )
 def make_svinvalsm_tvm(test_data: TestData) -> list[TestChunk]:
+    tvm_reg = test_data.int_regs.get_register(exclude_regs=[0])
     chunk = test_data.begin_test_chunk("Svinval_mstatus_tvm")
     tvm_label = test_data.add_testcase("tvm", "cp_svinval_tvm", "SvinvalSm_cg").removesuffix(":")
     number = 0
-    code = ["main:"]
+    code: list[str] = []
     for tvm in (0, 1):
         if tvm:
             code.extend(
                 [
-                    "LI(a0, MSTATUS_TVM)",
-                    "csrs mstatus, a0",
+                    f"LI(x{tvm_reg}, MSTATUS_TVM)",
+                    f"csrs mstatus, x{tvm_reg}",
                     f"{tvm_label}:",
-                    f"RVTEST_SIGUPD_CSR_READ(mstatus, a4, {tvm_label}, {tvm_label}_str)",
+                    f"RVTEST_SIGUPD_CSR_READ(mstatus, x{tvm_reg}, {tvm_label}, {tvm_label}_str)",
                 ]
             )
         previous = "Mmode"
@@ -45,4 +46,5 @@ def make_svinvalsm_tvm(test_data: TestData) -> list[TestChunk]:
     chunk.code.extend(code)
     chunk.sigupd_count = 1
     chunk.trap_sigupd_count = 20
+    test_data.int_regs.return_register(tvm_reg)
     return [test_data.end_test_chunk()]

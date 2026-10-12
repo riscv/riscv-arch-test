@@ -13,7 +13,7 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.pmp import helpers as pmp
 from testgen.priv.extensions.sv.access import add_rwx_test
-from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
+from testgen.priv.extensions.sv.generate import SvRegs, begin_sv_test, end_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import SV32, SV39, SV48, SV57, PteFlags, SvMode, create_page_mapping
 from testgen.priv.registry import add_priv_test_generator
 
@@ -25,28 +25,30 @@ _AD_CASES = (
 )
 
 
-def _add_pte_readback(test_data: TestData, sv: SvMode, level: int, number: int) -> list[str]:
+def _add_pte_readback(test_data: TestData, sv: SvMode, regs: SvRegs, level: int, number: int) -> list[str]:
     label = test_data.add_testcase(f"test{number}_read_pte", "cp_ad_update", "SvaduPMP_cg").removesuffix(":")
     return [
-        f"LA(a0, {sv.page_table_label(level)})",
+        f"LA(x{regs.scratch}, {sv.page_table_label(level)})",
         f"{label}:",
-        f"{'lw' if sv.xlen == 32 else 'ld'} a4, 0(a0)",
-        write_sigupd(14, test_data, label=label),
+        f"{'lw' if sv.xlen == 32 else 'ld'} x{regs.result}, 0(x{regs.scratch})",
+        write_sigupd(regs.result, test_data, label=label),
     ]
 
 
 def _make_svadupmp_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
     csr, mask = ("menvcfg", "MENVCFG_ADUE") if sv.xlen == 64 else ("menvcfgh", "MENVCFGH_ADUE")
+    regs = SvRegs.allocate(test_data)
     chunk = begin_sv_test(
         test_data,
+        regs,
         sv,
         mode,
         f"{sv.name}_Svadu_no_pmp_perm_{mode}",
         coverpoint="cp_ad_update",
         code_prefix=pmp.napot_mask_defines(),
         va_defs=(("va_data", _VA_DATA[sv.name]),),
-        pre_va_asm=("RVTEST_PMP_SET_BACKGROUND x4",),
-        setup_asm=(f"LI(t0, {mask})", f"csrs {csr}, t0"),
+        pre_va_asm=(f"RVTEST_PMP_SET_BACKGROUND x{regs.scratch}",),
+        setup_asm=(f"LI(x{regs.scratch}, {mask})", f"csrs {csr}, x{regs.scratch}"),
     )
     number = 0
     for level in sv.levels_desc:
@@ -81,18 +83,19 @@ def _make_svadupmp_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk
                     *add_rwx_test(
                         test_data,
                         sv,
+                        regs,
                         mode,
                         "va_data",
                         level,
                         f"test{number}",
                         driver_mode="Mmode",
                     ),
-                    *_add_pte_readback(test_data, sv, level, number),
+                    *_add_pte_readback(test_data, sv, regs, level, number),
                     "",
                 ]
             )
-    chunk.raw_data.extend(sv_data(sv, page_table_align="(UDB_PMP_GRANULARITY)"))
-    return test_data.end_test_chunk()
+    chunk.raw_data.extend(sv_data(sv, regs, page_table_align="(UDB_PMP_GRANULARITY)"))
+    return end_sv_test(test_data, regs)
 
 
 def _make_svadupmp(test_data: TestData, sv: SvMode) -> list[TestChunk]:

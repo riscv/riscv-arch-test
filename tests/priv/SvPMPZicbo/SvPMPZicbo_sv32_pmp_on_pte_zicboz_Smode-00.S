@@ -37,9 +37,7 @@ RVTEST_BEGIN
 #define PMP_REGION_SIZE (((1 << (UDB_PMP_GRANULARITY - 2)) - 1) >> 1)
 #define PMP_MASK        ~PMP_REGION_SIZE
 
-main:
-
-  RVTEST_PMP_SET_BACKGROUND x4
+  RVTEST_PMP_SET_BACKGROUND x8
 
 // Virtual addresses for code and test regions
 
@@ -57,14 +55,15 @@ main:
 // accessible, so the code is mapped again at va_rvtest_code_begin. Registering
 // that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
 // to can fetch from.
+// SAVE_AREA_SETUP takes the M-mode save area in a0 and clobbers t0 and t1.
   LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL1)
 
   SATP_SETUP_SV32 // Enable address translation.
   sfence.vma
 
-  LI(t0, MENVCFG_CBZE)
-  csrs menvcfg, t0
+  LI(x8, MENVCFG_CBZE)
+  csrs menvcfg, x8
 
   LA(x5, rvtest_Sroot_pg_tbl)
   srl x5, x5, PMP_SHIFT
@@ -83,14 +82,14 @@ SvPMPZicbo_cp_pmpcfg_write_pmpcfg0:
   SUPERPAGE_PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 22) << 22)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 10
-  srli a0, a0, 10
-  add a5, a5, a0
+  LI(x13, (va_data >> 22) << 22)
+  LA(x8, rvtest_data_1)
+  slli x8, x8, 10
+  srli x8, x8, 10
+  add x13, x13, x8
   RVTEST_TSBI_GOTO_SMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test1_cbo_zero:
-  cbo.zero (a5)
+  cbo.zero (x13)
   nop
   RVTEST_TSBI_GOTO_MMODE
   .endif
@@ -109,10 +108,10 @@ SvPMPZicbo_cg_cp_pmp_zicbo_test1_cbo_zero:
   PTE_SETUP_SV32(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, va_data)
+  LI(x13, va_data)
   RVTEST_TSBI_GOTO_SMODE
 SvPMPZicbo_cg_cp_pmp_zicbo_test2_cbo_zero:
-  cbo.zero (a5)
+  cbo.zero (x13)
   nop
   RVTEST_TSBI_GOTO_MMODE
 
@@ -130,7 +129,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi a4, a2, 4
+  addi x14, x9, 4
   jr ra
   nop
   .word 0xbeefcaf1

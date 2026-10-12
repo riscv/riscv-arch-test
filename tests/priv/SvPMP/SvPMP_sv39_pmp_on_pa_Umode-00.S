@@ -42,9 +42,7 @@ RVTEST_BEGIN
 #define PMP_REGION_SIZE (((1 << (PMP_REGION_SHIFT - 2)) - 1) >> 1)
 #define PMP_MASK        ~PMP_REGION_SIZE
 
-main:
-
-  RVTEST_PMP_SET_BACKGROUND x4
+  RVTEST_PMP_SET_BACKGROUND x13
 
   LA(x5, rvtest_data_1)
   srl x5, x5, PMP_SHIFT
@@ -71,13 +69,14 @@ main:
 // accessible, so the code is mapped again at va_rvtest_code_begin. Registering
 // that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
 // to can fetch from.
+// SAVE_AREA_SETUP takes the M-mode save area in a0 and clobbers t0 and t1.
   LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL2)
 
   SATP_SETUP_RV64(sv39) // Enable address translation.
   sfence.vma
 
-  LI(a2, 0x800) // Test signature initialization
+  LI(x15, 0x800) // Test signature initialization
 
   LI(x4, (((PMP_R | PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(1)))
 SvPMP_cp_pmpcfg_pmpcfg0_rx:
@@ -89,74 +88,74 @@ SvPMP_cp_pmpcfg_pmpcfg0_rx:
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x8, (va_data >> 30) << 30)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 34
+  srli x13, x13, 34
+  add x8, x8, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x15, x15, 16
 
 // Store
 SvPMP_cp_sv39_pmp_on_pa_Umode_test1_store:
-  sw a2, 20(a5)
+  sw x15, 20(x8)
   nop
 
 // Load
 SvPMP_cp_sv39_pmp_on_pa_Umode_test1_load:
-  lw a3, 20(a5)
+  lw x14, 20(x8)
   nop
 
 // Execute
 SvPMP_cp_sv39_pmp_on_pa_Umode_test1_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvPMP_cp_sv39_pmp_on_pa_Umode_test1_store, SvPMP_cp_sv39_pmp_on_pa_Umode_test1_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvPMP_cp_sv39_pmp_on_pa_Umode_test1_load, SvPMP_cp_sv39_pmp_on_pa_Umode_test1_load_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvPMP_cp_sv39_pmp_on_pa_Umode_test1_store, SvPMP_cp_sv39_pmp_on_pa_Umode_test1_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvPMP_cp_sv39_pmp_on_pa_Umode_test1_exec, SvPMP_cp_sv39_pmp_on_pa_Umode_test1_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, SvPMP_cp_sv39_pmp_on_pa_Umode_test1_load, SvPMP_cp_sv39_pmp_on_pa_Umode_test1_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SvPMP_cp_sv39_pmp_on_pa_Umode_test1_exec, SvPMP_cp_sv39_pmp_on_pa_Umode_test1_exec_str)
 
 // Test case 2: translated access with (((PMP_R | PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(1))
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x8, (va_data >> 21) << 21)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 43
+  srli x13, x13, 43
+  add x8, x8, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x15, x15, 16
 
 // Store
 SvPMP_cp_sv39_pmp_on_pa_Umode_test2_store:
-  sw a2, 20(a5)
+  sw x15, 20(x8)
   nop
 
 // Load
 SvPMP_cp_sv39_pmp_on_pa_Umode_test2_load:
-  lw a3, 20(a5)
+  lw x14, 20(x8)
   nop
 
 // Execute
 SvPMP_cp_sv39_pmp_on_pa_Umode_test2_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvPMP_cp_sv39_pmp_on_pa_Umode_test2_store, SvPMP_cp_sv39_pmp_on_pa_Umode_test2_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvPMP_cp_sv39_pmp_on_pa_Umode_test2_load, SvPMP_cp_sv39_pmp_on_pa_Umode_test2_load_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvPMP_cp_sv39_pmp_on_pa_Umode_test2_store, SvPMP_cp_sv39_pmp_on_pa_Umode_test2_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvPMP_cp_sv39_pmp_on_pa_Umode_test2_exec, SvPMP_cp_sv39_pmp_on_pa_Umode_test2_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, SvPMP_cp_sv39_pmp_on_pa_Umode_test2_load, SvPMP_cp_sv39_pmp_on_pa_Umode_test2_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SvPMP_cp_sv39_pmp_on_pa_Umode_test2_exec, SvPMP_cp_sv39_pmp_on_pa_Umode_test2_exec_str)
 
 // Test case 3: translated access with (((PMP_R | PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(1))
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -164,37 +163,37 @@ SvPMP_cp_sv39_pmp_on_pa_Umode_test2_exec:
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x8, (va_data >> 12) << 12)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 52
+  srli x13, x13, 52
+  add x8, x8, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x15, x15, 16
 
 // Store
 SvPMP_cp_sv39_pmp_on_pa_Umode_test3_store:
-  sw a2, 20(a5)
+  sw x15, 20(x8)
   nop
 
 // Load
 SvPMP_cp_sv39_pmp_on_pa_Umode_test3_load:
-  lw a3, 20(a5)
+  lw x14, 20(x8)
   nop
 
 // Execute
 SvPMP_cp_sv39_pmp_on_pa_Umode_test3_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvPMP_cp_sv39_pmp_on_pa_Umode_test3_store, SvPMP_cp_sv39_pmp_on_pa_Umode_test3_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvPMP_cp_sv39_pmp_on_pa_Umode_test3_load, SvPMP_cp_sv39_pmp_on_pa_Umode_test3_load_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvPMP_cp_sv39_pmp_on_pa_Umode_test3_store, SvPMP_cp_sv39_pmp_on_pa_Umode_test3_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvPMP_cp_sv39_pmp_on_pa_Umode_test3_exec, SvPMP_cp_sv39_pmp_on_pa_Umode_test3_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, SvPMP_cp_sv39_pmp_on_pa_Umode_test3_load, SvPMP_cp_sv39_pmp_on_pa_Umode_test3_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SvPMP_cp_sv39_pmp_on_pa_Umode_test3_exec, SvPMP_cp_sv39_pmp_on_pa_Umode_test3_exec_str)
 
   LI(x4, (((PMP_R | PMP_W | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(1)))
 SvPMP_cp_pmpcfg_pmpcfg0_rw:
@@ -206,74 +205,74 @@ SvPMP_cp_pmpcfg_pmpcfg0_rw:
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x8, (va_data >> 30) << 30)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 34
+  srli x13, x13, 34
+  add x8, x8, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x15, x15, 16
 
 // Store
 SvPMP_cp_sv39_pmp_on_pa_Umode_test4_store:
-  sw a2, 20(a5)
+  sw x15, 20(x8)
   nop
 
 // Load
 SvPMP_cp_sv39_pmp_on_pa_Umode_test4_load:
-  lw a3, 20(a5)
+  lw x14, 20(x8)
   nop
 
 // Execute
 SvPMP_cp_sv39_pmp_on_pa_Umode_test4_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvPMP_cp_sv39_pmp_on_pa_Umode_test4_store, SvPMP_cp_sv39_pmp_on_pa_Umode_test4_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvPMP_cp_sv39_pmp_on_pa_Umode_test4_load, SvPMP_cp_sv39_pmp_on_pa_Umode_test4_load_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvPMP_cp_sv39_pmp_on_pa_Umode_test4_store, SvPMP_cp_sv39_pmp_on_pa_Umode_test4_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvPMP_cp_sv39_pmp_on_pa_Umode_test4_exec, SvPMP_cp_sv39_pmp_on_pa_Umode_test4_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, SvPMP_cp_sv39_pmp_on_pa_Umode_test4_load, SvPMP_cp_sv39_pmp_on_pa_Umode_test4_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SvPMP_cp_sv39_pmp_on_pa_Umode_test4_exec, SvPMP_cp_sv39_pmp_on_pa_Umode_test4_exec_str)
 
 // Test case 5: translated access with (((PMP_R | PMP_W | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(1))
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x8, (va_data >> 21) << 21)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 43
+  srli x13, x13, 43
+  add x8, x8, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x15, x15, 16
 
 // Store
 SvPMP_cp_sv39_pmp_on_pa_Umode_test5_store:
-  sw a2, 20(a5)
+  sw x15, 20(x8)
   nop
 
 // Load
 SvPMP_cp_sv39_pmp_on_pa_Umode_test5_load:
-  lw a3, 20(a5)
+  lw x14, 20(x8)
   nop
 
 // Execute
 SvPMP_cp_sv39_pmp_on_pa_Umode_test5_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvPMP_cp_sv39_pmp_on_pa_Umode_test5_store, SvPMP_cp_sv39_pmp_on_pa_Umode_test5_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvPMP_cp_sv39_pmp_on_pa_Umode_test5_load, SvPMP_cp_sv39_pmp_on_pa_Umode_test5_load_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvPMP_cp_sv39_pmp_on_pa_Umode_test5_store, SvPMP_cp_sv39_pmp_on_pa_Umode_test5_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvPMP_cp_sv39_pmp_on_pa_Umode_test5_exec, SvPMP_cp_sv39_pmp_on_pa_Umode_test5_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, SvPMP_cp_sv39_pmp_on_pa_Umode_test5_load, SvPMP_cp_sv39_pmp_on_pa_Umode_test5_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SvPMP_cp_sv39_pmp_on_pa_Umode_test5_exec, SvPMP_cp_sv39_pmp_on_pa_Umode_test5_exec_str)
 
 // Test case 6: translated access with (((PMP_R | PMP_W | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(1))
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -281,37 +280,37 @@ SvPMP_cp_sv39_pmp_on_pa_Umode_test5_exec:
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x8, (va_data >> 12) << 12)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 52
+  srli x13, x13, 52
+  add x8, x8, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x15, x15, 16
 
 // Store
 SvPMP_cp_sv39_pmp_on_pa_Umode_test6_store:
-  sw a2, 20(a5)
+  sw x15, 20(x8)
   nop
 
 // Load
 SvPMP_cp_sv39_pmp_on_pa_Umode_test6_load:
-  lw a3, 20(a5)
+  lw x14, 20(x8)
   nop
 
 // Execute
 SvPMP_cp_sv39_pmp_on_pa_Umode_test6_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvPMP_cp_sv39_pmp_on_pa_Umode_test6_store, SvPMP_cp_sv39_pmp_on_pa_Umode_test6_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvPMP_cp_sv39_pmp_on_pa_Umode_test6_load, SvPMP_cp_sv39_pmp_on_pa_Umode_test6_load_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvPMP_cp_sv39_pmp_on_pa_Umode_test6_store, SvPMP_cp_sv39_pmp_on_pa_Umode_test6_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvPMP_cp_sv39_pmp_on_pa_Umode_test6_exec, SvPMP_cp_sv39_pmp_on_pa_Umode_test6_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, SvPMP_cp_sv39_pmp_on_pa_Umode_test6_load, SvPMP_cp_sv39_pmp_on_pa_Umode_test6_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SvPMP_cp_sv39_pmp_on_pa_Umode_test6_exec, SvPMP_cp_sv39_pmp_on_pa_Umode_test6_exec_str)
 
   LI(x4, (((PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(1)))
 SvPMP_cp_pmpcfg_pmpcfg0_x:
@@ -323,74 +322,74 @@ SvPMP_cp_pmpcfg_pmpcfg0_x:
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
-  LI(a5, (va_data >> 30) << 30)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 34
-  srli a0, a0, 34
-  add a5, a5, a0
+  LI(x8, (va_data >> 30) << 30)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 34
+  srli x13, x13, 34
+  add x8, x8, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x15, x15, 16
 
 // Store
 SvPMP_cp_sv39_pmp_on_pa_Umode_test7_store:
-  sw a2, 20(a5)
+  sw x15, 20(x8)
   nop
 
 // Load
 SvPMP_cp_sv39_pmp_on_pa_Umode_test7_load:
-  lw a3, 20(a5)
+  lw x14, 20(x8)
   nop
 
 // Execute
 SvPMP_cp_sv39_pmp_on_pa_Umode_test7_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvPMP_cp_sv39_pmp_on_pa_Umode_test7_store, SvPMP_cp_sv39_pmp_on_pa_Umode_test7_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvPMP_cp_sv39_pmp_on_pa_Umode_test7_load, SvPMP_cp_sv39_pmp_on_pa_Umode_test7_load_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvPMP_cp_sv39_pmp_on_pa_Umode_test7_store, SvPMP_cp_sv39_pmp_on_pa_Umode_test7_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvPMP_cp_sv39_pmp_on_pa_Umode_test7_exec, SvPMP_cp_sv39_pmp_on_pa_Umode_test7_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, SvPMP_cp_sv39_pmp_on_pa_Umode_test7_load, SvPMP_cp_sv39_pmp_on_pa_Umode_test7_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SvPMP_cp_sv39_pmp_on_pa_Umode_test7_exec, SvPMP_cp_sv39_pmp_on_pa_Umode_test7_exec_str)
 
 // Test case 8: translated access with (((PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(1))
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
 
-  LI(a5, (va_data >> 21) << 21)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 43
-  srli a0, a0, 43
-  add a5, a5, a0
+  LI(x8, (va_data >> 21) << 21)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 43
+  srli x13, x13, 43
+  add x8, x8, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x15, x15, 16
 
 // Store
 SvPMP_cp_sv39_pmp_on_pa_Umode_test8_store:
-  sw a2, 20(a5)
+  sw x15, 20(x8)
   nop
 
 // Load
 SvPMP_cp_sv39_pmp_on_pa_Umode_test8_load:
-  lw a3, 20(a5)
+  lw x14, 20(x8)
   nop
 
 // Execute
 SvPMP_cp_sv39_pmp_on_pa_Umode_test8_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvPMP_cp_sv39_pmp_on_pa_Umode_test8_store, SvPMP_cp_sv39_pmp_on_pa_Umode_test8_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvPMP_cp_sv39_pmp_on_pa_Umode_test8_load, SvPMP_cp_sv39_pmp_on_pa_Umode_test8_load_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvPMP_cp_sv39_pmp_on_pa_Umode_test8_store, SvPMP_cp_sv39_pmp_on_pa_Umode_test8_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvPMP_cp_sv39_pmp_on_pa_Umode_test8_exec, SvPMP_cp_sv39_pmp_on_pa_Umode_test8_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, SvPMP_cp_sv39_pmp_on_pa_Umode_test8_load, SvPMP_cp_sv39_pmp_on_pa_Umode_test8_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SvPMP_cp_sv39_pmp_on_pa_Umode_test8_exec, SvPMP_cp_sv39_pmp_on_pa_Umode_test8_exec_str)
 
 // Test case 9: translated access with (((PMP_X | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(1))
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -398,37 +397,37 @@ SvPMP_cp_sv39_pmp_on_pa_Umode_test8_exec:
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
 
-  LI(a5, (va_data >> 12) << 12)
-  LA(a0, rvtest_data_1)
-  slli a0, a0, 52
-  srli a0, a0, 52
-  add a5, a5, a0
+  LI(x8, (va_data >> 12) << 12)
+  LA(x13, rvtest_data_1)
+  slli x13, x13, 52
+  srli x13, x13, 52
+  add x8, x8, x13
   RVTEST_TSBI_GOTO_UMODE
-  addi a2, a2, 16
+  addi x15, x15, 16
 
 // Store
 SvPMP_cp_sv39_pmp_on_pa_Umode_test9_store:
-  sw a2, 20(a5)
+  sw x15, 20(x8)
   nop
 
 // Load
 SvPMP_cp_sv39_pmp_on_pa_Umode_test9_load:
-  lw a3, 20(a5)
+  lw x14, 20(x8)
   nop
 
 // Execute
 SvPMP_cp_sv39_pmp_on_pa_Umode_test9_exec:
-  jalr ra, a5, 0
+  jalr ra, x8, 0
   nop
 
   RVTEST_TSBI_GOTO_MMODE
 
-  # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvPMP_cp_sv39_pmp_on_pa_Umode_test9_store, SvPMP_cp_sv39_pmp_on_pa_Umode_test9_store_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvPMP_cp_sv39_pmp_on_pa_Umode_test9_load, SvPMP_cp_sv39_pmp_on_pa_Umode_test9_load_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, SvPMP_cp_sv39_pmp_on_pa_Umode_test9_store, SvPMP_cp_sv39_pmp_on_pa_Umode_test9_store_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvPMP_cp_sv39_pmp_on_pa_Umode_test9_exec, SvPMP_cp_sv39_pmp_on_pa_Umode_test9_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, SvPMP_cp_sv39_pmp_on_pa_Umode_test9_load, SvPMP_cp_sv39_pmp_on_pa_Umode_test9_load_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, SvPMP_cp_sv39_pmp_on_pa_Umode_test9_exec, SvPMP_cp_sv39_pmp_on_pa_Umode_test9_exec_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -445,7 +444,7 @@ RVTEST_DATA_BEGIN
   .p2align (UDB_PMP_GRANULARITY)
 rvtest_data_1:
   nop
-  addi a4, a2, 4
+  addi x9, x15, 4
   jr ra
   nop
   .word 0xbeefcaf1          // Random word

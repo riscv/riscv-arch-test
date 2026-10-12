@@ -49,6 +49,9 @@
         SREG x1, 8(x9)                 # save x1 early
         li x1, 3
         SREG x1, 0(x9)                 # failure_type = 3 (trap handler)
+        li x1, 4
+        la x16, trap_diag_mode
+        sw x1, 0(x16)                  # unknown trap mode until the string is decoded
         SREG x6, 272(x9)               # failing_value = actual value
         SREG DEFAULT_TEMP_REG, 280(x9) # expected_value = expected value
         mv DEFAULT_TEMP_REG, x9        # move scratch base into DEFAULT_TEMP_REG
@@ -1187,6 +1190,8 @@
         li x8, 9                                     # subtype: offset mismatch
         la x16, trap_diag_subtype
         sw x8, 0(x16)
+        la x16, trap_diag_mode
+        sw zero, 0(x16)                              # this check runs in M-mode
 
         j failedtest_saveresults_common
 
@@ -1919,7 +1924,16 @@
         call rvmodel_io_write_str
 
     failedtest_terminate:
-        call rvmodel_halt_fail
+        lw a0, failure_type
+        li a1, 3
+        bne a0, a1, failedtest_terminate_lower_mode
+        lw a0, trap_diag_mode
+        bnez a0, failedtest_terminate_lower_mode
+        LA(T1, rvtest_fail_epilogs_mmode)
+        jr T1
+    failedtest_terminate_lower_mode:
+        LA(T1, rvtest_fail_epilogs)
+        jr T1
 
 
     # Print saved xepc, xcause, xtval, xstatus for trap failure diagnostics.

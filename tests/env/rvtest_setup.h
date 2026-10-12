@@ -84,7 +84,6 @@
   .option push
   .option norvc
   .global rvtest_code_end       // define the label and make it available
-  .global cleanup_epilogs       // ****ALERT: tests must populate x1 with a point to the end of regular sig area TODO: Is this still true?
   /**** MPRV must be clear here !!! ****/
 
   // The following epilog and checks are needed if there is any trap handler.  Right now, it is not
@@ -92,25 +91,9 @@
   // to reimplement many parts of this macro.
   rvtest_code_end:
 
-  // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved.
-  // The RVTEST_GOTO_MMODE sits BELOW the cleanup_epilogs label (not at rvtest_code_end)
-  // because cleanup_epilogs is also reached from abort_test and from the default
-  // unexpected-interrupt handlers, which can run in S/U/VS/VU mode. The epilogs read
-  // mscratch and other M-mode CSRs, so every entry path must switch to M-mode first.
-  cleanup_epilogs:
+    // Switch to M-mode before the final checks.
     #ifdef STANDARD_SM_SUPPORTED
       RVTEST_TSBI_GOTO_MMODE
-      #ifdef S_SUPPORTED
-        // Exact reverse of the prolog order (M, S, V).
-        #ifdef H_SUPPORTED
-          RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code
-        #endif
-        RVTEST_TRAP_EPILOG S          // actual s-mode prolog/epilog/handler code
-      #endif
-      RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
-      LA(T1, rvtest_trap_prolog_error)
-      LREG T1, 0(T1)
-      bnez T1, rvtest_trap_setup_failed
     #endif
 
   #ifndef RVTEST_NOSIG
@@ -152,7 +135,7 @@
       call rvmodel_io_write_str
       LA(a0, endstr)
       call rvmodel_io_write_str
-      call rvmodel_halt_fail
+      j       rvtest_fail_epilogs
     check_regular_sig_offset_done:
   #endif
 
@@ -168,7 +151,7 @@
       call rvmodel_io_write_str
       LA(a0, endstr)
       call rvmodel_io_write_str
-      call rvmodel_halt_fail
+      j       rvtest_fail_epilogs
 
     // Check trap signature offset to make sure the correct number of traps occurred.
     // This is a trap-framework diagnostic, not a normal signature check. Pass the
@@ -195,12 +178,45 @@
 
     check_abort_test:
       LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
-      bne     T4, T5, exit_cleanup
+      bne     T4, T5, run_epilogs
       jal     T2, failedtest_trap_x7_x9
       RVTEST_WORD_PTR abort_test
       RVTEST_WORD_PTR abortstr
       .word   CSR_MEPC
   #endif
+
+  // Restore xTVEC, trampoline, regs for each mode in opposite order that they were saved.
+  run_epilogs:
+    LI(T5, 0)                         // normal termination
+    j   run_epilogs_body
+
+  // Failure reporting reaches this entry after printing its diagnostic. Run the epilogs
+  // before the failure halt, while preserving the failure status in T5.
+  rvtest_fail_epilogs:
+    #ifdef STANDARD_SM_SUPPORTED
+      RVTEST_TSBI_GOTO_MMODE
+    #endif
+
+  rvtest_fail_epilogs_mmode:
+    LI(T5, 1)
+
+  run_epilogs_body:
+    #ifdef STANDARD_SM_SUPPORTED
+      #ifdef S_SUPPORTED
+        // Exact reverse of the prolog order (M, S, V).
+        #ifdef H_SUPPORTED
+          RVTEST_TRAP_EPILOG V        // actual v-mode prolog/epilog/handler code
+        #endif
+        RVTEST_TRAP_EPILOG S          // actual s-mode prolog/epilog/handler code
+      #endif
+      RVTEST_TRAP_EPILOG M            // actual m-mode prolog/epilog/handler code
+      LA(T1, rvtest_trap_prolog_error)
+      LREG T1, 0(T1)
+      bnez T1, rvtest_trap_setup_failed
+    #endif
+    beqz T5, exit_cleanup
+    LA(T1, rvmodel_halt_fail)
+    jr T1
 
   // Terminate test with passing status
   exit_cleanup:
@@ -215,7 +231,7 @@
   rvtest_fail_summary:
     LA(a0, failstr)
     call rvmodel_io_write_str
-    call rvmodel_halt_fail
+    j       rvtest_fail_epilogs
 
   rvtest_trap_setup_failed:
     LA(a0, failstr)
@@ -223,7 +239,8 @@
     LA(a0, rvtest_trap_prolog_error)
     LREG a0, 0(a0)
     call rvmodel_io_write_str
-    call rvmodel_halt_fail
+    LA(T1, rvmodel_halt_fail)
+    jr T1
 
   // Terminate the test with a failure message indicating the trap signature overflowed
   trap_sig_overflow:

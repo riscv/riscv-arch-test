@@ -1159,9 +1159,9 @@
           LI(t0, MSTATEENH_HSTATEEN | MSTATEEN0H_HENVCFG | MSTATEEN0H_CSRIND | MSTATEEN0H_AIA | \
                  MSTATEEN0H_IMSIC | MSTATEEN0H_HCONTEXT | MSTATEEN0H_PRIV113 | MSTATEEN0H_PRIV114 | \
                  MSTATEEN0H_CTR)
-          LI(t1, MSTATEEN0_JVT | MSTATEEN0_FCSR)
-          csrw mstateen0, t1
           csrw mstateen0h, t0
+          LI(t0, MSTATEEN0_JVT | MSTATEEN0_FCSR)
+          csrw mstateen0, t0
         #endif
       #endif
 

@@ -783,6 +783,12 @@ def prep_vstart(
     params: InstructionParams,
     vstart_val: Literal["one", "vlmaxm1", "vlmaxd2", "random", "vstart_gt_vl"],
 ) -> list[str]:
+    """
+    Prepares vl and vstart for the given value. For vstart_val in {one, vlmaxm1, vlmaxd2, random}, vstart
+    will be less than the resulting vl. For vstart_val = vstart_gt_vl, it generates vstart and vl such that
+    0 < vl < vstart < vlmax.
+    """
+
     assert params.lmul is not None, "LMUL must be provided for vector tests"
     assert params.sew is not None, "SEW must be provided for vector tests"
 
@@ -876,6 +882,7 @@ def prep_vstart(
 
 
 def write_sigupd_vstart(test_data: TestData) -> list[str]:
+    """Generates a SIGUPD for the value in vstart"""
     assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
 
     test_data.test_chunk.sigupd_count += 1

@@ -24,6 +24,7 @@ REGISTERED_LABELS: set[str] = set()
 
 
 def get_data_label(register: str, eew: int, instr_type_config: InstructionTypeConfig, test_data: TestData) -> str:
+    """Generates random data labels to be reused throughout ExceptionsV tests."""
     assert instr_type_config.vector_data is not None, "vector_data must be provided for vector instructions"
     rng = instr_type_config.vector_data.random_element_generator
 
@@ -66,6 +67,8 @@ def get_data_label(register: str, eew: int, instr_type_config: InstructionTypeCo
 def get_register_data_labels(
     instr_info: VectorInstructionInfo, instr_type_config: InstructionTypeConfig, sew: int, test_data: TestData
 ) -> dict:
+    """Generates a dictionary with vector sources and relevant data inputs for ExceptionsV tests."""
+
     assert instr_type_config.vector_data is not None
     assert instr_type_config.required_params is not None
 
@@ -132,6 +135,11 @@ def cp_vstart(
     test_data: TestData,
     vstart_values: list[Literal["one", "vlmaxm1", "vlmaxd2", "random", "vstart_gt_vl"]],
 ) -> list[TestChunk]:
+    """
+    Generate tests for instructions with vstart at preset values. Runs SIGUPD when instructions do not always trap, and runs
+    SIGUPD on the final vstart value.
+    """
+
     instr_type_config = get_instruction_type_config(instr_type)
     assert instr_type_config.vector_data is not None, "Vector Data Must be Provided for Vector Instructions"
     assert instr_type_config.required_params is not None
@@ -159,8 +167,6 @@ def cp_vstart(
     test_chunks: list[TestChunk] = []
 
     for vstart_val in vstart_values:
-        # # Pick a random valid lmul (non-fractional)
-        # lmul = 2 ** random_range(0, int(math.log2(max_lmul)))
         lmul = max_lmul
 
         # Initialize test chunk
@@ -219,6 +225,10 @@ def cp_vstart(
 def cp_vill(
     instr_name: str, instr_type: str, coverpoint: str, sews_supported: list[int], test_data: TestData
 ) -> list[TestChunk]:
+    """
+    Checks that instructions trap with an illegal instruction exception when vill is active.
+    """
+
     instr_type_config = get_instruction_type_config(instr_type)
     assert instr_type_config.vector_data is not None, "Vector Data Must be Provided for Vector Instructions"
     assert instr_type_config.required_params is not None
@@ -271,6 +281,8 @@ def cp_vill(
     testcases_per_file=100,
 )
 def make_exceptions_vx(test_data: TestData) -> list[TestChunk]:
+    """Tests instruction exceptions for integer vector instructions."""
+
     test_chunks: list[TestChunk] = []
 
     instructions = read_testplan(Path("./testplans/priv/ExceptionsVx.csv"))

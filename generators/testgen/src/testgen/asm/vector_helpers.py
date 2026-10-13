@@ -827,7 +827,7 @@ def prep_vstart(
                     "2:",
                     f"{INDENT}.option pop",
                     "#else",
-                    f"{INDENT}addi, x{vlmax_reg}, x{vlmax_reg}, -1",
+                    f"{INDENT}addi x{vlmax_reg}, x{vlmax_reg}, -1",
                     f"{INDENT}and x{vstart_reg}, x{vstart_reg}, x{vlmax_reg}",
                     f"{INDENT}# Ensure that we have an interesting value for vstart",
                     f"{INDENT}LI (x{temp_reg}, 2)",
@@ -847,7 +847,7 @@ def prep_vstart(
             # Prepare a vstart and vl such that 0 < vl < vstart < vlmax
             vl_reg, vlmax_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
             # Ensure that these differ in the last bit and are at least 1
-            rand_vstart = random_range(1, VLEN_MAX - 1) & 1
+            rand_vstart = random_range(1, VLEN_MAX - 1) | 1
             rand_vl = random_range(2, VLEN_MAX - 1) & ~1
             lines.extend(
                 [
@@ -865,7 +865,6 @@ def prep_vstart(
                     f"add x{vl_reg}, x{vlmax_reg}, x0",
                     "1:",
                     reload_vtype(params, f"x{vl_reg}"),
-                    f"csrw vstart, x{vstart_reg}",
                 ]
             )
             test_data.int_regs.return_registers([vlmax_reg, vl_reg])

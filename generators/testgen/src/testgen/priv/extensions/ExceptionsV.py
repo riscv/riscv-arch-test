@@ -53,7 +53,7 @@ def get_data_label(register: str, eew: int, instr_type_config: InstructionTypeCo
 
     # Assume LMUL=8. These cases are reused, its probably true at some point
     element_count = math.ceil(VLEN_MAX * 8 / eew)
-    if rng == None:
+    if rng is None:
         test_data.register_vector_data(label, eew, random_elements=element_count)
     else:
         elements = rng(element_count, eew, register)
@@ -148,9 +148,13 @@ def cp_vstart(
     if instr_info.whole_registers is not None:
         # The EVL in these cases is calculated as if LMUL=nreg
         max_lmul = instr_info.whole_registers
-    if instr_type in {"VSM", "VLM"}:
-        # vstart is in units of bytes for these instructions (might make more sense to >> 3 the result ...)
-        max_lmul = 1
+
+    # vstart is in units of bytes for these instructions
+    is_mask_ls = instr_type in {"VSM", "VLM"}
+    if is_mask_ls:
+        raise NotImplementedError(
+            "Vector Mask LS needs coverage and testgen fix for difference between vl and vstart unit sizes"
+        )
 
     test_chunks: list[TestChunk] = []
 

@@ -53,7 +53,7 @@ coverpoints:
       menvcfg.SSE=0: the xwr=010 PTE encoding remains RESERVED, so access raises a page-fault rather than being treated as an SS page.
       menvcfg.SSE=1: ssp accessible from S/HS, and xwr=010 is recognised as an SS page: an ordinary load reads it and an ordinary store raises a store/AMO access-fault.
       menvcfg.SSE=1, senvcfg.SSE=0: xwr=010 is still an SS page, from U-mode too. Only menvcfg.SSE (and henvcfg.SSE when V=1) makes the encoding reserved ([norm:ssmp_menvcfg_sse]); senvcfg.SSE does not. An implementation that page-faults a U-mode load here is wrong.
-      From M-mode the ssp CSR is accessible for BOTH values of menvcfg.SSE. [norm:zicfiss_m_menvcfg_sse] is scoped to 'privilege mode less than M', so menvcfg.SSE does not gate M-mode itself. An implementation that raises illegal-instruction on ssp access from M when menvcfg.SSE=0 is wrong.
+      From M-mode the ssp CSR is accessible for BOTH values of menvcfg.SSE. [norm:Zicfiss_m_menvcfg_sse] is scoped to 'privilege mode less than M', so menvcfg.SSE does not gate M-mode itself. An implementation that raises illegal-instruction on ssp access from M when menvcfg.SSE=0 is wrong.
       Note this is CSR accessibility only -- use of the Zicfiss shadow stack in M-mode is not supported, and the SS instructions behave as MOPs there (cp_ss_instr_inactive_u/_s/_m).
     bins: mode {M, S/HS} x menvcfg.SSE {0,1} x csr_op {csrrw, csrrs, csrrc, csrrwi, csrrsi, csrrci} x target {ssp read, ssp write} x result {ok at M always, ok at S iff menvcfg.SSE=1, illegal_instruction}; mode {S, U} x (menvcfg.SSE, senvcfg.SSE) {(0,0), (1,0), (1,1)} x access {ordinary load, ordinary store} on xwr=010 x result {ok, access_fault, page_fault}
   - name: |-
@@ -108,7 +108,7 @@ coverpoints:
       The hostile-ssp variants are what actually prove it: an implementation that still performs the access and discards the result passes the benign case and fails these. A misaligned or unmapped ssp must NOT fault, and a mismatching value must NOT raise a software check, because no access and no comparison should happen.
       SSRDP reading 0 is the documented way software detects whether Zicfiss is active.
     bins: leg {M-mode unconditional, lower-mode gated} x instr {SSPUSH x1, SSPUSH x5, C.SSPUSH x1, SSPOPCHK x1, SSPOPCHK x5, C.SSPOPCHK x5, SSRDP} x gate {menvcfg.SSE, senvcfg.SSE} = {00, 10, 11} x ssp_state {valid, misaligned, unmapped, value_mismatch} x {no trap, no memory access, ssp unchanged, rd==0 for SSRDP}
-  - goal: "Folded into cp_menvcfg_sse_gating: the M-mode leg is now explicit -- ssp is accessible from M for BOTH menvcfg.SSE values, since [norm:zicfiss_m_menvcfg_sse] is scoped to privilege < M."
+  - goal: "Folded into cp_menvcfg_sse_gating: the M-mode leg is now explicit -- ssp is accessible from M for BOTH menvcfg.SSE values, since [norm:Zicfiss_m_menvcfg_sse] is scoped to privilege < M."
     description: Verify access to ssp from M-mode with menvcfg.SSE=0/1
   - goal: MOVED here from ZicfissU as cp_ss_instr_inactive_u/_s/_m, with an M-mode unconditional leg added and the hostile-ssp strong form applied to both legs.
     description: SSPUSH/SSPOPCHK/SSRDP act as MOP (SSRDP -> 0) and do not touch memory or raise exceptions even if ssp is misaligned or unmapped or the values mismatch

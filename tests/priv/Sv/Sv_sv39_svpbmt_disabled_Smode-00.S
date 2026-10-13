@@ -63,14 +63,8 @@ main:
   #ifdef SM1P12P0_OR_LATER_SUPPORTED
       LI(t0, MENVCFG_PBMTE)
   # T-SBI call to execute instruction: csrc menvcfg, t0
-  # Copy rs1 (x5) to a1 for T-SBI call
   mv a1, x5
-
-  # Copy rs2 (x0) to a2 for T-SBI call
-  mv a2, x0
-
-  LI(a0, 0x30a5b073) # csrc menvcfg, t0
-  ecall # T-SBI call to execute instruction at suitable privilege level
+  RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR(CSR_MENVCFG)
   #endif
 
   LI(a2, 0x800) // Test signature initialization

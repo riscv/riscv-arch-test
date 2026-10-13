@@ -182,4 +182,13 @@
   li _R2, SAIL_SIG_ADDRESS;    \
   sw _R1, 0(_R2)            ; /* Clear SSW interrupt */ \
 
+
+
+##### Sscofpmf #####
+# The reference build triggers Sail's own event counter instead of the DUT's.
+# The Sail model is configured to count fences.
+#undef RVMODEL_MHPMEVENT_CODE
+#define RVMODEL_MHPMEVENT_CODE(_R1, _R2) \
+  fence
+
 #endif // _SAIL_MACROS_H

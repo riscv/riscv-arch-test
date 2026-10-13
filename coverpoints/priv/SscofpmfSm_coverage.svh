@@ -34,6 +34,11 @@ covergroup SscofpmfSm_cg with function sample(ins_t ins);
              `endif
     }
 
+    // csrr scountovf (csrrs rd, scountovf, x0)
+    scountovf_read: coverpoint ins.current.insn {
+        wildcard bins read = {CSRR} iff (ins.current.insn[31:20] == CSR_SCOUNTOVF);
+    }
+
     csr_access_pattern: coverpoint ins.current.insn {
         wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val ==  0);
         wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val == '1);
@@ -43,11 +48,11 @@ covergroup SscofpmfSm_cg with function sample(ins_t ins);
     }
 
     `ifdef UDB_MXLEN_64
-        mhpmevent_inhibits_zero_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mhpmevent3", "mhpmevent3")[62:58] == 5'b00000) {
+        mhpmevent_inhibits_zero_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENT, `SSCOFPMF_MHPMEVENT)[62:58] == 5'b00000) {
                 bins yes = {1};
         }
     `else
-        mhpmevent_inhibits_zero_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mhpmevent3h", "mhpmevent3h")[30:26] == 5'b00000) {
+        mhpmevent_inhibits_zero_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, `SSCOFPMF_MHPMEVENTH, `SSCOFPMF_MHPMEVENTH)[30:26] == 5'b00000) {
                 bins yes = {1};
         }
     `endif
@@ -95,9 +100,6 @@ covergroup SscofpmfSm_cg with function sample(ins_t ins);
     mstatus_mie_set: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
             bins one = {1};
     }
-    mstatus_sie_set: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0] {
-            bins one = {1};
-    }
 
     mie_state: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")[15:0]) {
             bins all_zeros = {16'b0};
@@ -105,19 +107,31 @@ covergroup SscofpmfSm_cg with function sample(ins_t ins);
     }
     mip_other_pending: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "meip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "msip")[0]} {
             bins none = {3'b000};
+            `ifdef UDB_MEI_INTR_IMPL
             bins meip = {3'b100};
+            `endif
+            `ifdef UDB_MTI_INTR_IMPL
             bins mtip = {3'b010};
+            `endif
+            `ifdef UDB_MSI_INTR_IMPL
             bins msip = {3'b001};
+            `endif
     }
 
     cp_minh_inhibits_mmode:    cross priv_mode_m, mhpmevent_xinh_combos, mhpmevent_of_zero;
-    cp_of_set_on_overflow:     cross priv_mode_m, lcofi_ip_one, mie_clear, mhpmevent_inhibits_pattern_state, mhpmevent_of_one;
+    // The suite never leaves M-mode, so a pattern that inhibits M-mode counting cannot overflow.
+    cp_of_set_on_overflow:     cross priv_mode_m, lcofi_ip_one, mie_clear, mhpmevent_inhibits_pattern_state, mhpmevent_of_one {
+        ignore_bins self_inhibited = binsof(mhpmevent_inhibits_pattern_state.minh_only) ||
+                                     binsof(mhpmevent_inhibits_pattern_state.msu_set);
+    }
+    // An overflow with OF already 1 leaves OF set and does not request LCOFI. The counter can wrap in any mode.
+    cp_of_already_set:         cross mhpmevent_of_was_one, mhpmevent_of_one, mhpmcounter_wraps, lcofi_ip_zero;
     cp_overflow_hw_only:       cross priv_mode_m, mip_clear, mie_clear, mhpmcounter_extreme_state, mhpmevent_all_zero;
     cp_lcofip_hw_only:         cross priv_mode_m, mhpmevent_of, lcofi_ip_zero;
-    cp_scountovf_mcounteren:   cross priv_mode_m, of_write_pattern, mcounteren_stimulus_pattern_state;
-    cp_scountovf_shadow:       cross priv_mode_m, mcounteren_all_ones_state, of_stimulus_pattern;
+    cp_scountovf_mcounteren:   cross priv_mode_m, scountovf_read, of_write_pattern, mcounteren_stimulus_pattern_state;
+    cp_scountovf_shadow:       cross priv_mode_m, scountovf_read, mcounteren_all_ones_state, of_stimulus_pattern;
     cp_sscofpmf_access:        cross priv_mode_m, csr_access_pattern, hpm_csr_target_m;
-    cp_lcofi_m:                cross priv_mode_m, lcofi_ip, lcofi_ie, lcofi_mideleg, mstatus_mie_set, mstatus_sie_set;
+    cp_lcofi_m:                cross priv_mode_m, lcofi_ip, lcofi_ie, lcofi_mideleg, mstatus_mie_set;
     cp_lcofip_priority_m:      cross priv_mode_m, mhpmevent_inhibits_zero_state, mstatus_mie_set, mie_state, lcofi_ip_one, mip_other_pending;
 endgroup
 

@@ -121,20 +121,19 @@ def format_vssseg_like_type(
 
     equivalent_load = "vl" + instr_str[2:]
     if params.maskval:
-        test = [
-            f"{instr_str} v{params.vs3}, (x{params.rs1}), x{params.rs2}, v0.t",
-            f"{equivalent_load} v{params.vd}, (x{params.rs1}), x{params.rs2}, v0.t",
-        ]
+        test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), x{params.rs2}, v0.t"]
+        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), x{params.rs2}, v0.t"
     else:
-        test = [
-            f"{instr_str} v{params.vs3}, (x{params.rs1}), x{params.rs2}",
-            f"{equivalent_load} v{params.vd}, (x{params.rs1}), x{params.rs2}",
-        ]
+        test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), x{params.rs2}"]
+        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), x{params.rs2}"
 
     if params.vector_suite == "length":
-        check = [*write_sigupd_v_len(test_data, params, emul, segments=segments, sew_override=info.load_store_eew)]
+        check = [
+            read_back,
+            *write_sigupd_v_len(test_data, params, emul, segments=segments, sew_override=info.load_store_eew),
+        ]
     else:
-        check = [*write_sigupd_v(test_data, params, sew_override=info.load_store_eew)]
+        check = [read_back, *write_sigupd_v(test_data, params, sew_override=info.load_store_eew)]
 
     # This can only be released after sigupd
     if params.maskval:

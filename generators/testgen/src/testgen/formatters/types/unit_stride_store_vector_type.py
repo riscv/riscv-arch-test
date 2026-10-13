@@ -128,18 +128,15 @@ def format_vsseg_like_type(
     # Reload after storing to arbitrary memory
     equivalent_load = "vl" + instr_str[2:]
     if params.maskval:
-        test = [
-            f"{instr_str} v{params.vs3}, (x{params.rs1}), v0.t",
-            f"{equivalent_load} v{params.vd}, (x{params.rs1}), v0.t",
-        ]
+        test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), v0.t"]
+        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), v0.t"
     else:
-        test = [
-            f"{instr_str} v{params.vs3}, (x{params.rs1})",
-            f"{equivalent_load} v{params.vd}, (x{params.rs1})",
-        ]
+        test = [f"{instr_str} v{params.vs3}, (x{params.rs1})"]
+        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1})"
 
     if params.vector_suite == "length":
         check = [
+            read_back,
             *write_sigupd_v_len(
                 test_data,
                 params,
@@ -148,7 +145,7 @@ def format_vsseg_like_type(
                 sew_override=info.load_store_eew,
                 mask_producing=vs3_mask,
                 check_reg=reload_register,
-            )
+            ),
         ]
 
         if vs3_mask:
@@ -161,9 +158,10 @@ def format_vsseg_like_type(
             )
     else:
         check = [
+            read_back,
             *write_sigupd_v(
                 test_data, params, sew_override=info.load_store_eew, mask_producing=vs3_mask, check_reg=reload_register
-            )
+            ),
         ]
 
     # This can only be released after sigupd

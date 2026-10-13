@@ -10,7 +10,7 @@ import math
 from pathlib import Path
 from typing import Literal
 
-from testgen.asm.vector_helpers import prep_vstart
+from testgen.asm.vector_helpers import prep_vstart, write_sigupd_vstart
 from testgen.constants import VLEN_MAX
 from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
@@ -172,28 +172,27 @@ def cp_vstart(
             params = generate_random_vector_params(
                 test_data, instr_name, instr_type, lmul, suite="length", vl="vlmax", sew=sew, **register_data
             )
+            prior_sigupd_count = tc.sigupd_count
             setup, test, check = format_instruction(instr_name, instr_type, test_data, params)
-
-            pre_vstart = "\n".join(prep_vstart(test_data, params, vstart_val))
-            if "store" in instr_type_config.instruction_class:
-                # In this case, we should reset vstart before the reload instruction runs
-                test_lines = test.split()
-                assert len(test_lines) == 2, f"Unknown Vector Store Test Section (Expected 2 Test lines, Got: {test:r})"
-                test = "\n".join([test_lines[0], "csrw vstart, x0", test_lines[1]])
-                post_vstart = ""
-            else:
-                post_vstart = "csrw vstart, x0"
 
             if instr_type_config.vector_data.require_zero_vstart:
                 # These instructions always trap, so we should never sigupd
                 check = ""
-                tc.sigupd_count = 0
+                tc.sigupd_count = prior_sigupd_count
+
+            pre_vstart = "\n".join(prep_vstart(test_data, params, vstart_val))
+            post_vstart = "\n".join(
+                [
+                    *write_sigupd_vstart(test_data),
+                    "csrw vstart, x0",
+                ]
+            )
 
             arch_preamble = "\n".join([".option push", ".option arch, +zve64x"] if sew * max_multiplier > 32 else [])
             arch_post = ".option pop" if sew * max_multiplier > 32 else ""
             tc.code.extend(
                 [
-                    f"#if (UDB_SEW_MIN <= {int(sew * max_multiplier)} && {int(sew * max_multiplier)} <= UDB_ELEN)",
+                    f"#if (UDB_SEW_MIN <= {int(sew * max_multiplier)}) && ({int(sew * max_multiplier)} <= UDB_ELEN)",
                     arch_preamble,
                     setup,
                     pre_vstart,
@@ -240,10 +239,6 @@ def cp_vill(
 
     # This always traps so no SIGUPD
     tc.sigupd_count = 0
-
-    # Because there is no sigupd, we don't care about store readback
-    if "store" in get_instruction_type_config(instr_type).instruction_class:
-        test = test.split()[0]
 
     vtype_reg, scratch = test_data.int_regs.get_registers(2, exclude_regs=[0])
     set_vill = "\n".join(

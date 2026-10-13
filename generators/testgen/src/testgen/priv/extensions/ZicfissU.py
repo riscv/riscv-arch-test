@@ -728,12 +728,14 @@ def _generate_vector(test_data: TestData) -> list[str]:
                 ]
             )
 
-    # Unit-stride stores fault, leaving the SS page unchanged.
+    # Unit-stride stores fault, leaving the SS page unchanged. The stored data is all ones, which
+    # the SS page does not hold, so the readback shows any write.
     for sew in (8, 16, 32):
         lines.extend(
             [
                 f"LI(x{addr_reg}, ZICFISS_VA_SS + 0x800)",
                 f"vsetivli x{tmp_reg}, {_VECTOR_VL}, e{sew}, m1, tu, mu",
+                "vmv.v.i v1, -1",
                 test_data.add_testcase(f"vse{sew}_ss_page", "cp_ss_vector_store", _CG),
                 f"vse{sew}.v v1, (x{addr_reg})",
                 f"lw x{tmp_reg}, 0(x{addr_reg})   # unchanged",
@@ -754,7 +756,8 @@ def _generate_vector(test_data: TestData) -> list[str]:
     def record_store() -> list[str]:
         """Record the word at the base and the SS page word element 2 targets, which must be unchanged.
 
-        From the page below, elements 0 and 1 land on the read/write page before element 2 faults.
+        From the page below, elements 0 and 1 land on the read/write page before element 2 faults,
+        so the first readback shows the all-ones data there.
         """
         return [
             f"lw x{tmp_reg}, 0(x{addr_reg})",
@@ -784,6 +787,7 @@ def _generate_vector(test_data: TestData) -> list[str]:
                     f"vsetivli x{tmp_reg}, {_VECTOR_VL}, e8, m1, tu, mu",
                     "vid.v v2",
                     "vsll.vi v2, v2, 2   # byte offsets 0, 4, 8, ...",
+                    *([] if mnemonic.startswith("vl") else ["vmv.v.i v1, -1   # data neither page holds"]),
                     test_data.add_testcase(f"{mnemonic.replace('.', '_')}_{origin}", "cp_ss_vector_indexed", _CG),
                     f"{mnemonic} v1, (x{addr_reg}), v2",
                     *(record_load() if mnemonic.startswith("vl") else record_store()),

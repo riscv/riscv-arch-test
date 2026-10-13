@@ -127,7 +127,7 @@ coverpoints:
       Cross each with mstatus.MXR = 0 and 1, since MXR is exactly the bit that governs whether an R=0 page is readable and the SS page is R=0 by construction.
       Cross each with the page's U bit = 0 and 1.
     expectation: |-
-      [Threaded comment] Your version of Excel allows you to read this threaded comment; however, any edits to it will get removed if the file is opened in a newer version of Excel. Learn more: https://go.microsoft.com/fwlink/?linkid=870924 Comment: I thin xwr=110 should cause a store page fault, not access fault.  SS page: succeeds.
+      SS page: succeeds.
       Read-only page (xwr=001): store/AMO PAGE-fault, cause=15.
       Any other non-SS, non-read-only page: store/AMO ACCESS-fault, cause=7.
       Unmapped: store/AMO page-fault, cause=15. Non-idempotent memory: store/AMO access-fault, cause=7.
@@ -156,11 +156,9 @@ coverpoints:
       (b) ordinary stores: SB, SH, SW, SD
       (c) ordinary AMOs: AMOSWAP, AMOADD, ...
       (d) cache-block ops: CBO.ZERO, CBO.CLEAN, CBO.FLUSH, CBO.INVAL
-      (e) instruction fetch with PC in the SS page
-      (f) implicit access: place a page-table entry in the SS page and force a walk
       (g) ordinary loads: LB, LH, LW, LD
       Precondition for leg (d): menvcfg/senvcfg CBIE, CBCFE and CBZE must be enabled, otherwise the cache-block op traps on its own gating instead of on the SS page.
-      Leg (f) is best-effort: it is not established that a page-table walk through an SS page is reachable in this environment.
+      Instruction fetch from the SS page is cp_ss_page_fetch. An implicit page-table walk through an SS page is not tested.
       Additional accessor classes:
       (h) LR/SC to the SS page (requires Zalrsc).
       (i) AMOCAS to the SS page (requires Zacas).
@@ -169,12 +167,11 @@ coverpoints:
     expectation: |-
       (a) succeeds -- these are the only instructions permitted to write an SS page.
       (b),(c),(d) store/AMO access-fault (cause=7), NOT a page-fault.
-      (e),(f) access-fault appropriate to the access type (instruction access-fault for fetch).
       (g) succeeds -- the shadow stack is readable by any instruction that only loads.
       (h),(i) store/AMO access-fault -- LR/SC and AMOCAS are not in the set permitted to write an SS page.
       (j) vector stores fault; vector loads follow the ordinary-load rule. An access that starts on an adjacent page must still fault on the element that lands in the SS page.
       (g) the ordinary load succeeds for BOTH MXR values -- the shadow stack is readable by any instruction that only loads, so this must not depend on MXR.
-    bins: accessor {ss_store, ordinary_store, ordinary_amo, lr_sc, amocas, cbo, ifetch, implicit_walk, ordinary_load, vector_load, vector_store} x MXR {0,1} x result {ok, af}
+    bins: accessor {ss_store, ordinary_store, ordinary_amo, lr_sc, amocas, cbo, ordinary_load, vector_load, vector_store} x MXR {0,1} x result {ok, af}
   - name: cp_ss_page_fetch
     goal: Verify an instruction fetch from an SS page raises an instruction access fault
     description: "From U-mode with Zicfiss active, jump (jalr) to the shadow stack page (xwr=010, U=1)."
@@ -211,15 +208,15 @@ coverpoints:
     goal: Verify SSAMOSWAP.W/D raises an illegal-instruction exception when the SSE enable chain is off (V=0)
     description: |-
       SSAMOSWAP is encoded in the AMO major opcode, NOT in the Zimop/Zcmop MOP space, so it does not silently no-op when Zicfiss is deactivated -- it traps. Execute SSAMOSWAP.W and SSAMOSWAP.D against a valid aligned SS address for:
-      (a) menvcfg.SSE=0, from S-mode and U-mode (any privilege mode less than M);
+      (a) menvcfg.SSE=0, from U-mode;
       (b) menvcfg.SSE=1, senvcfg.SSE=0, from U-mode.
+      The S-mode case is cp_ssamoswap_sse_gating_s on ZicfissS.
       Positive control: both set -- the instruction completes (see cp_ssamoswap).
     expectation: |-
-      (a) illegal-instruction exception in every privilege mode less than M.
-      (b) illegal-instruction exception in U-mode.
+      (a), (b) illegal-instruction exception.
       Memory, rd and ssp unchanged.
-      Contrast with cp_ss_instr_inactive_u/_s/_m: the MOP-encoded SS instructions no-op under exactly these conditions, while SSAMOSWAP traps.
-    bins: instr {SSAMOSWAP.W, SSAMOSWAP.D} x gate {menvcfg.SSE=0, (menvcfg.SSE=1 & senvcfg.SSE=0)} x mode {S, U} x result {illegal_instruction}
+      Contrast with cp_ss_instr_inactive_u: the MOP-encoded SS instructions no-op under exactly these conditions, while SSAMOSWAP traps.
+    bins: instr {SSAMOSWAP.W, SSAMOSWAP.D} x gate {menvcfg.SSE=0, (menvcfg.SSE=1 & senvcfg.SSE=0)} x mode {U} x result {illegal_instruction}
   - name: cp_ss_page_crossing
     goal: Verify shadow stack accesses that straddle a page boundary fault on the invalid side
     description: |-
@@ -257,7 +254,7 @@ coverpoints:
       The reason is restartability: SSPOPCHK performs a load and then a comparison, and if the comparison faults and the handler restarts the instruction the load runs twice -- which is unsafe on non-idempotent memory.
       Positive control with PBMT=PMA: no fault.
     bins: instr {SSPUSH x1, C.SSPUSH x1, SSPOPCHK x1, C.SSPOPCHK x5, SSAMOSWAP.W, SSAMOSWAP.D} x pte.PBMT {PMA, NC, IO} x cause {none, 7}
-  - goal: Folded into cp_ss_instr_inactive_u/_s/_m (gate sweep) and cp_ssamoswap_sse_gating (the trapping half). Other privilege modes are the corresponding rows on the ZicfissS / ZicfissSm / ZicfissH sheets.
+  - goal: Folded into cp_ss_instr_inactive_u (gate sweep) and cp_ssamoswap_sse_gating (the trapping half). Other privilege modes are the corresponding rows on the ZicfissS / ZicfissSm / ZicfissH sheets.
     description: Test all Zifiss instructions with each combination of {menvcfg.SSE/senvcfg.SSE} = 0, 1 in every priv mode. Check all state is unaffected if xSSE=0. Some throw illegal or virtual instructions
   - goal: "PROMOTED to its own coverpoint: cp_ss_page_crossing."
     description: Test ssp pointing to the bottom of a page such that ssp-XLEN/8 is not on a valid shadow stack page, and also such that ssp is not on a valid shadow stack pages but ssp-XLEN/8 is valid.
@@ -271,7 +268,7 @@ coverpoints:
     description: LRSC and AMOCAS to SS page.
   - goal: Folded into cp_ss_instr_target_page as a pte.U = 0/1 axis.
     description: Test U bit of shadow stack page = 0/1
-  - goal: "Folded into cp_ss_instr_inactive_u/_s/_m as the STRONG FORM: the same instructions repeated with a misaligned, unmapped, or mismatching ssp."
+  - goal: "Folded into cp_ss_instr_inactive_u, and cp_ss_instr_inactive_m/_s on ZicfissSm, as the STRONG FORM: the same instructions repeated with a misaligned, unmapped, or mismatching ssp."
     description: When xSSE, SSPUSH/SSPOPCHK must do no memory access and raise nothing even if ssp is misaligned, unmapped, or values mismatch.
   - goal: "PROMOTED to its own coverpoint: cp_ss_page_ad_bits, including the Svadu/ADUE variant."
     description: Test all combinations of A and D bits on the SS page, that fault occurs if D=0 for SSPUSH/SSAMOSWAP but not SSPOPCHK, if A=0 for all accesses. If Svadu supported, check no faults.

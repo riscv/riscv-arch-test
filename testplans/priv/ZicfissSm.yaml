@@ -54,7 +54,7 @@ coverpoints:
       menvcfg.SSE=1: ssp accessible from S/HS, and xwr=010 is recognised as an SS page: an ordinary load reads it and an ordinary store raises a store/AMO access-fault.
       menvcfg.SSE=1, senvcfg.SSE=0: xwr=010 is still an SS page, from U-mode too. Only menvcfg.SSE (and henvcfg.SSE when V=1) makes the encoding reserved ([norm:ssmp_menvcfg_sse]); senvcfg.SSE does not. An implementation that page-faults a U-mode load here is wrong.
       From M-mode the ssp CSR is accessible for BOTH values of menvcfg.SSE. [norm:Zicfiss_m_menvcfg_sse] is scoped to 'privilege mode less than M', so menvcfg.SSE does not gate M-mode itself. An implementation that raises illegal-instruction on ssp access from M when menvcfg.SSE=0 is wrong.
-      Note this is CSR accessibility only -- use of the Zicfiss shadow stack in M-mode is not supported, and the SS instructions behave as MOPs there (cp_ss_instr_inactive_u/_s/_m).
+      Note this is CSR accessibility only -- use of the Zicfiss shadow stack in M-mode is not supported, and the SS instructions behave as MOPs there (cp_ss_instr_inactive_m).
     bins: mode {M, S/HS} x menvcfg.SSE {0,1} x csr_op {csrrw, csrrs, csrrc, csrrwi, csrrsi, csrrci} x target {ssp read, ssp write} x result {ok at M always, ok at S iff menvcfg.SSE=1, illegal_instruction}; mode {S, U} x (menvcfg.SSE, senvcfg.SSE) {(0,0), (1,0), (1,1)} x access {ordinary load, ordinary store} on xwr=010 x result {ok, access_fault, page_fault}
   - name: |-
       cp_envcfg_sse_rdonly0_senvcfg
@@ -98,7 +98,7 @@ coverpoints:
       cp_ss_instr_inactive_s
     goal: Verify SS instructions act as MOPs, touching no memory and raising nothing, whenever Zicfiss is inactive
     description: |-
-      MOVED here from ZicfissU: setting up every inactive state requires M-mode writes to menvcfg/senvcfg, and at M-mode the behaviour is unconditional.
+      The M- and S-mode counterparts of cp_ss_instr_inactive_u on ZicfissU: setting up every inactive state requires M-mode writes to menvcfg/senvcfg, and at M-mode the behaviour is unconditional.
       SCOPE: the MOP-encoded instructions -- SSPUSH x1/x5, C.SSPUSH x1, SSPOPCHK x1/x5, C.SSPOPCHK x5, SSRDP. SSAMOSWAP is NOT in this set: it is AMO-encoded and traps instead (cp_ssamoswap_sse_gating on ZicfissU, and the M-mode case in cp_ssamoswap_mmode_fault on this sheet).
       Leg A -- M-mode, unconditional: use of Zicfiss in M-mode is not supported, so these instructions act as MOPs at M for BOTH values of menvcfg.SSE.
       Leg B -- lower modes, gated: drive the inactive states from M and execute in S/U -- menvcfg.SSE=0, and menvcfg.SSE=1 with senvcfg.SSE=0.
@@ -110,7 +110,7 @@ coverpoints:
     bins: leg {M-mode unconditional, lower-mode gated} x instr {SSPUSH x1, SSPUSH x5, C.SSPUSH x1, SSPOPCHK x1, SSPOPCHK x5, C.SSPOPCHK x5, SSRDP} x gate {menvcfg.SSE, senvcfg.SSE} = {00, 10, 11} x ssp_state {valid, misaligned, unmapped, value_mismatch} x {no trap, no memory access, ssp unchanged, rd==0 for SSRDP}
   - goal: "Folded into cp_menvcfg_sse_gating: the M-mode leg is now explicit -- ssp is accessible from M for BOTH menvcfg.SSE values, since [norm:Zicfiss_m_menvcfg_sse] is scoped to privilege < M."
     description: Verify access to ssp from M-mode with menvcfg.SSE=0/1
-  - goal: MOVED here from ZicfissU as cp_ss_instr_inactive_u/_s/_m, with an M-mode unconditional leg added and the hostile-ssp strong form applied to both legs.
+  - goal: The M- and S-mode legs of the inactive-instruction row live here as cp_ss_instr_inactive_m and cp_ss_instr_inactive_s (ZicfissU keeps cp_ss_instr_inactive_u), with an M-mode unconditional leg added and the hostile-ssp strong form applied to both legs.
     description: SSPUSH/SSPOPCHK/SSRDP act as MOP (SSRDP -> 0) and do not touch memory or raise exceptions even if ssp is misaligned or unmapped or the values mismatch
   - goal: No separate suite needed -- PMP can only be programmed from M-mode, so this sheet is already the right home. The existing PMP row is widened into cp_ss_pmp_permissions, sweeping pmp0cfg R/W and covering the SSPOPCHK-needs-W asymmetry as well as the fault-priority case.
     description: Should we add a PMPZicfiss suite exercising PMP access to a shadow stack page, including that RW permission is needed for shadow stack instructions SSPOPCHK and SSPUSH.

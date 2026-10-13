@@ -374,68 +374,69 @@
         # We need to ensure that VS is set in mstatus here, as VS off is an exceptions test
         RVTEST_TSBI_CSR_SET(CSR_MSTATUS, 0x600)
         la x6, vecreg_scratch              # vecreg_scratch base address
+        li x7, VLEN_BYTES                  # too large for an addi immediate once VLEN >= 16384
         vs1r.v v0, (x6)
-        addi x6, x6, VLEN_BYTES            # increment by one vector's bytes
+        add x6, x6, x7                     # increment by one vector's bytes
         vs1r.v v1, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v2, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v3, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v4, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v5, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v6, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v7, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v8, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v9, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v10, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v11, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v12, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v13, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v14, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v15, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v16, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v17, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v18, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v19, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v20, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v21, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v22, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v23, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v24, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v25, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v26, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v27, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v28, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v29, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v30, (x6)
-        addi x6, x6, VLEN_BYTES
+        add x6, x6, x7
         vs1r.v v31, (x6)
     #endif // RVTEST_VECTOR
 

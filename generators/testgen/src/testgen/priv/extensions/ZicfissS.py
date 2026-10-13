@@ -64,12 +64,16 @@ def _smode_prologue(test_data: TestData, *, menvcfg: int = 1, senvcfg: int = 1, 
 
 
 # ---------------------------------------------------------------------------
-# cp_ssp_csr_gating_s -- senvcfg.SSE must NOT gate S/HS
+# cp_ssp_csr_gating_s / cp_ssamoswap_sse_gating_s -- senvcfg.SSE must NOT gate S/HS
 # ---------------------------------------------------------------------------
 
 
 def _generate_ssp_gating_s(test_data: TestData) -> list[str]:
-    """Each ssp access records rd, which an illegal-instruction exception leaves unchanged."""
+    """menvcfg.SSE gates ssp access and SSAMOSWAP in S-mode; senvcfg.SSE must not.
+
+    Each ssp access and SSAMOSWAP records rd, which an illegal-instruction exception leaves
+    unchanged. SSAMOSWAP targets the SS page, so it succeeds whenever menvcfg.SSE=1.
+    """
     coverpoint = "cp_ssp_csr_gating_s"
     lines: list[str] = []
     for menvcfg in (0, 1):
@@ -100,9 +104,23 @@ def _generate_ssp_gating_s(test_data: TestData) -> list[str]:
                         write_sigupd(rd_reg, test_data),
                     ]
                 )
+            addr_reg = test_data.int_regs.get_register()
+            lines.extend([f"LI(x{addr_reg}, ZICFISS_VA_SS)", f"LI(x{val_reg}, 0x11223344)"])
+            for width in SSAMOSWAP_WIDTHS:
+                lines.extend(
+                    ssamoswap_only(
+                        width,
+                        [
+                            f"LI(x{rd_reg}, 0x0DDBA11)   # kept if the swap is illegal",
+                            test_data.add_testcase(f"ssamoswap_{width}_{tag}", "cp_ssamoswap_sse_gating_s", _CG),
+                            f"ssamoswap.{width} x{rd_reg}, x{val_reg}, (x{addr_reg})",
+                            write_sigupd(rd_reg, test_data),
+                        ],
+                    )
+                )
             lines.extend(SATP_OFF)
-            test_data.int_regs.return_registers([rd_reg, val_reg])
-    return vm_section(coverpoint, "menvcfg.SSE gates ssp at S/HS; senvcfg.SSE must not", lines)
+            test_data.int_regs.return_registers([rd_reg, val_reg, addr_reg])
+    return vm_section(coverpoint, "menvcfg.SSE gates ssp and SSAMOSWAP at S/HS; senvcfg.SSE must not", lines)
 
 
 # ---------------------------------------------------------------------------
@@ -119,7 +137,9 @@ def _generate_page_enc_s(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 f"LI(x{addr_reg}, ZICFISS_VA_SS + 0x800)",
-                f"csrw ssp, x{addr_reg}",
+                # ssp is illegal while menvcfg.SSE=0 (cp_ssp_csr_gating_s), and the inert sspush
+                # does not use it then.
+                *([f"csrw ssp, x{addr_reg}"] if menvcfg else []),
                 "LI(x1, 0xC0FFEE11)",
                 test_data.add_testcase(f"ss_page_enc_push_men{menvcfg}", "cp_ss_page_enc", _CG),
                 "sspush x1",

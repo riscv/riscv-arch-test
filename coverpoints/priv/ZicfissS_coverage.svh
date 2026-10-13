@@ -16,7 +16,7 @@
 //
 // Two jobs here:
 //  1. S-specific gating — menvcfg.SSE alone gates S/HS; senvcfg.SSE must NOT. The
-//     senvcfg sweep in cp_ssp_csr_gating_s is the only place that proves the negative.
+//     senvcfg sweeps in cp_ssp_csr_gating_s and cp_ssamoswap_sse_gating_s prove the negative.
 //  2. The instruction-behaviour coverpoints re-crossed against priv_mode_s, so the
 //     S-mode re-run of the ZicfissU generators has somewhere to land. The building
 //     blocks are duplicated from ZicfissU_coverage.svh by design — this mirrors how
@@ -208,6 +208,8 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
     // ── Main coverpoints ──────────────────────────────────────────────────
     // S-specific gating: menvcfg.SSE gates, senvcfg.SSE must not.
     cp_ssp_csr_gating_s:           cross priv_mode_s, csrops, ssp_csr, s_sse_state;
+    // SSAMOSWAP to the SS page is illegal in S-mode only while menvcfg.SSE=0.
+    cp_ssamoswap_sse_gating_s:     cross priv_mode_s, ssamoswap_instr, s_sse_state;
 
     // SS page encoding is recognised only when menvcfg.SSE=1.
     cp_ss_page_enc:                cross priv_mode_s, ss_mem_instr, pte_ss_page, menvcfg_sse {

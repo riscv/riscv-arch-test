@@ -32,7 +32,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "{ZicfissSm_cg}/{cp_ss_instr_inactive_s}",
-        "{ZicfissS_cg}/{cp_ss_page_enc_load}",
+        "{ZicfissS_cg}/{cp_ss_page_enc_load,cp_ssamoswap_sse_gating_s}",
         "{ZicfissU_cg}/{cp_ss_instr_inactive_u,cp_ssamoswap_sse_gating}",
       ]
 

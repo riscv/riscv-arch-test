@@ -193,6 +193,12 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
             bins no_info = {0};
         `endif
     }
+    // The trap this instruction took is a software-check exception, so an unrelated memory fault
+    // on a pop cannot fill the mismatch bins.
+    scause_sw_check: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+                     iff (ins.current.csr_wb[CSR_SEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sepc", "sepc") == ins.current.pc_rdata)) {
+        bins sw_check = {SOFTWARE_CHECK};
+    }
 
     // ── Enable-chain (SSE) building blocks ────────────────────────────────
     menvcfg_sse: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") {
@@ -374,6 +380,24 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
         `endif
     }
 
+    // A jump to the shadow stack page: the fetch there must raise an instruction access fault
+    // (implicit accesses to an SS page are not permitted), not an instruction page fault.
+    jalr_instr: coverpoint ins.current.insn {
+        wildcard bins jalr = {JALR};
+    }
+    jalr_target_ss_page: coverpoint ((ins.current.rs1_val + ins.current.imm) & ~1) {
+        `ifdef UDB_MXLEN_64
+            bins ss_page = {[64'h140300000:64'h140300FFF]};
+        `else
+            bins ss_page = {[32'hC0300000:32'hC0300FFF]};
+        `endif
+    }
+    // The fetch fault is recorded with the jalr, the last instruction that retired before it.
+    scause_fetch_access: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+                         iff (ins.current.csr_wb[CSR_SEPC]) {
+        bins access_fault = {INSTRUCTION_ACCESS_FAULT};
+    }
+
     // ssp on the shadow stack page, or on the unmapped page an active access would fault on.
     ssp_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp") {
         `ifdef UDB_MXLEN_64
@@ -399,7 +423,7 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
         // Mismatching pops trap and are counted in cp_sspopchk_mismatch.
         ignore_bins mismatch = binsof(sspopchk_outcome.mismatched);
     }
-    cp_sspopchk_mismatch:          cross priv_mode_u, ss_pop_instr, sspopchk_outcome, pte_ss_page, stval_ss_fault {
+    cp_sspopchk_mismatch:          cross priv_mode_u, ss_pop_instr, sspopchk_outcome, pte_ss_page, stval_ss_fault, scause_sw_check {
         // Matching pops retire without a trap and are counted in cp_sspopchk_match.
         ignore_bins match = binsof(sspopchk_outcome.matched);
     }
@@ -456,6 +480,7 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     `ifdef ZACAS_SUPPORTED
         cp_ss_page_access_amocas:  cross priv_mode_u, amocas_ops, pte_ss_page;
     `endif
+    cp_ss_page_fetch:              cross priv_mode_u, jalr_instr, jalr_target_ss_page, scause_fetch_access;
     `ifdef ZVE32X_SUPPORTED
         // A shadow stack page is readable by anything that only loads, and writable only by
         // SSPUSH, C.SSPUSH and SSAMOSWAP, so vector loads succeed and vector stores fault,

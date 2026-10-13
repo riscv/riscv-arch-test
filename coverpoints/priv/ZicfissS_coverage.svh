@@ -231,13 +231,19 @@ covergroup ZicfissS_cg with function sample(ins_t ins);
             bins no_info = {0};
         `endif
     }
+    // The trap this instruction took is a software-check exception, so an unrelated memory fault
+    // on a pop cannot fill the mismatch bins.
+    scause_sw_check: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+                     iff (ins.current.csr_wb[CSR_SEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sepc", "sepc") == ins.current.pc_rdata)) {
+        bins sw_check = {SOFTWARE_CHECK};
+    }
 
     cp_sspush_s:                   cross priv_mode_s, ss_push_instr, pte_ss_page;
     cp_sspopchk_match_s:           cross priv_mode_s, ss_pop_instr, sspopchk_outcome, pte_ss_page {
         // Mismatching pops trap and are counted in cp_sspopchk_mismatch_s.
         ignore_bins mismatch = binsof(sspopchk_outcome.mismatched);
     }
-    cp_sspopchk_mismatch_s:        cross priv_mode_s, ss_pop_instr, sspopchk_outcome, pte_ss_page, stval_ss_fault {
+    cp_sspopchk_mismatch_s:        cross priv_mode_s, ss_pop_instr, sspopchk_outcome, pte_ss_page, stval_ss_fault, scause_sw_check {
         // Matching pops retire without a trap and are counted in cp_sspopchk_match_s.
         ignore_bins match = binsof(sspopchk_outcome.matched);
     }

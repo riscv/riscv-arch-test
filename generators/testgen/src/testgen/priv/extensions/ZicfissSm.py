@@ -57,12 +57,33 @@ _CSR_OPS = (
 # ---------------------------------------------------------------------------
 
 
+def _mprv_on(mask_reg: int, mpp: str) -> list[str]:
+    """Set mstatus.MPRV with MPP=``mpp`` ("MPP_SMODE" or "MPP_MMODE")."""
+    return [
+        f"LI(x{mask_reg}, MSTATUS_MPP)",
+        f"csrc mstatus, x{mask_reg}",
+        f"LI(x{mask_reg}, MSTATUS_MPRV | {mpp})",
+        f"csrs mstatus, x{mask_reg}",
+    ]
+
+
+def _mprv_off(mask_reg: int) -> list[str]:
+    """Clear mstatus.MPRV. A trap from M-mode leaves MPP=M, so mret keeps MPRV=1 and lowers MPP;
+    this must come straight after the access, before any other load or store."""
+    return [f"LI(x{mask_reg}, MSTATUS_MPRV)", f"csrc mstatus, x{mask_reg}"]
+
+
 def _generate_ssamoswap_mmode_fault(test_data: TestData) -> list[str]:
-    """SSAMOSWAP at M faults unconditionally -- sweep menvcfg.SSE and satp.MODE.
+    """SSAMOSWAP faults whenever the effective privilege mode is M -- sweep menvcfg.SSE, satp.MODE
+    and MPRV with MPP=M.
 
     The target is the physical address of the shadow stack page, which the translating leg
     maps as a valid, writable SS page. The location is seeded first, and both it and rd are
     recorded after the fault to show that neither changed.
+
+    Then MPRV=1 with MPP=S, where the effective privilege mode is S (menvcfg.SSE=1): with
+    satp.MODE=Bare the swap raises a store/AMO access fault (norm:satp_mode_bare), and with
+    translation it swaps the S-mode SS page.
     """
     coverpoint = "cp_ssamoswap_mmode_fault"
     lines: list[str] = [
@@ -83,23 +104,74 @@ def _generate_ssamoswap_mmode_fault(test_data: TestData) -> list[str]:
             else:
                 lines.extend(SATP_OFF)
             lines.extend(set_envcfg_sse("menvcfg", sse, test_data, mode="M"))
-            addr_reg, rd_reg, rs2_reg = test_data.int_regs.get_registers(3)
-            for width in SSAMOSWAP_WIDTHS:
-                case = [
-                    f"LA(x{addr_reg}, rvtest_zicfiss_ss_page)",
-                    f"LI(x{rs2_reg}, 0x5EED5EED)",
-                    f"SREG x{rs2_reg}, 0(x{addr_reg})   # seed the location",
-                    f"LI(x{rd_reg}, 0x0DDBA11)   # rd must keep this value",
-                    f"LI(x{rs2_reg}, 0x11223344)",
-                    test_data.add_testcase(f"ssamoswap_{width}_mmode_sse{sse}_{satp_mode}", coverpoint, _CG),
-                    f"ssamoswap.{width} x{rd_reg}, x{rs2_reg}, (x{addr_reg})",
-                    write_sigupd(rd_reg, test_data),
-                    f"LREG x{rd_reg}, 0(x{addr_reg})   # memory must still hold the seed",
-                    write_sigupd(rd_reg, test_data),
+            addr_reg, rd_reg, rs2_reg, mask_reg = test_data.int_regs.get_registers(4)
+            for mprv in (0, 1):
+                for width in SSAMOSWAP_WIDTHS:
+                    tag = f"ssamoswap_{width}_mmode_sse{sse}_{satp_mode}{'_mprv_mpp_m' if mprv else ''}"
+                    case = [
+                        f"LA(x{addr_reg}, rvtest_zicfiss_ss_page)",
+                        f"LI(x{rs2_reg}, 0x5EED5EED)",
+                        f"SREG x{rs2_reg}, 0(x{addr_reg})   # seed the location",
+                        f"LI(x{rd_reg}, 0x0DDBA11)   # rd must keep this value",
+                        f"LI(x{rs2_reg}, 0x11223344)",
+                        *(_mprv_on(mask_reg, "MPP_MMODE") if mprv else []),
+                        test_data.add_testcase(tag, coverpoint, _CG),
+                        f"ssamoswap.{width} x{rd_reg}, x{rs2_reg}, (x{addr_reg})",
+                        *(_mprv_off(mask_reg) if mprv else []),
+                        write_sigupd(rd_reg, test_data),
+                        f"LREG x{rd_reg}, 0(x{addr_reg})   # memory must still hold the seed",
+                        write_sigupd(rd_reg, test_data),
+                    ]
+                    body = ssamoswap_only(width, case)
+                    lines.extend(
+                        ["#ifdef ZICFISS_VM_SUPPORTED", *body, "#endif"] if satp_mode == "translating" else body
+                    )
+            test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg, mask_reg])
+    lines.extend(SATP_OFF)
+
+    # MPRV=1 with MPP=S: the effective privilege mode is S.
+    coverpoint = "cp_ssamoswap_mprv_s"
+    lines.extend(
+        [
+            comment_banner(coverpoint, "SSAMOSWAP at M with MPRV=1, MPP=S follows the S-mode rules"),
+            *set_envcfg_sse("menvcfg", 1, test_data, mode="M"),
+        ]
+    )
+    for satp_mode in ("bare", "translating"):
+        lines.append(f"# --- MPRV=1, MPP=S, satp.MODE {satp_mode} ---")
+        if satp_mode == "translating":
+            lines.extend(
+                [
+                    "#ifdef ZICFISS_VM_SUPPORTED",
+                    *map_zicfiss_pages(test_data, user=False),
+                    *enable_translation(test_data, mode="M"),
+                    "#endif",
                 ]
-                body = ssamoswap_only(width, case)
-                lines.extend(["#ifdef ZICFISS_VM_SUPPORTED", *body, "#endif"] if satp_mode == "translating" else body)
-            test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg])
+            )
+        addr_reg, rd_reg, rs2_reg, mask_reg = test_data.int_regs.get_registers(4)
+        # Bare: the physical address, which the swap must not change. Translating: the S-mode SS
+        # page, which the swap must change.
+        target = "rvtest_zicfiss_ss_page" if satp_mode == "bare" else "ZICFISS_VA_SS"
+        for width in SSAMOSWAP_WIDTHS:
+            case = [
+                f"LA(x{addr_reg}, rvtest_zicfiss_ss_page)",
+                f"LI(x{rs2_reg}, 0x5EED5EED)",
+                f"SREG x{rs2_reg}, 0(x{addr_reg})   # seed the location",
+                *([f"LI(x{addr_reg}, {target})"] if satp_mode == "translating" else []),
+                f"LI(x{rd_reg}, 0x0DDBA11)   # kept if the swap faults",
+                f"LI(x{rs2_reg}, 0x11223344)",
+                *_mprv_on(mask_reg, "MPP_SMODE"),
+                test_data.add_testcase(f"ssamoswap_{width}_mprv_mpp_s_{satp_mode}", coverpoint, _CG),
+                f"ssamoswap.{width} x{rd_reg}, x{rs2_reg}, (x{addr_reg})",
+                *_mprv_off(mask_reg),
+                write_sigupd(rd_reg, test_data),
+                f"LA(x{addr_reg}, rvtest_zicfiss_ss_page)",
+                f"LREG x{rd_reg}, 0(x{addr_reg})   # the seed if the swap faulted",
+                write_sigupd(rd_reg, test_data),
+            ]
+            body = ssamoswap_only(width, case)
+            lines.extend(["#ifdef ZICFISS_VM_SUPPORTED", *body, "#endif"] if satp_mode == "translating" else body)
+        test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg, mask_reg])
     lines.extend(SATP_OFF)
     return lines
 
@@ -142,15 +214,11 @@ def _generate_mprv_non_idempotent(test_data: TestData) -> list[str]:
         for width in SSAMOSWAP_WIDTHS:
             case = [
                 f"LI(x{rd_reg}, 0x0DDBA11)   # kept if the swap faults",
-                f"LI(x{mask_reg}, MSTATUS_MPP)",
-                f"csrc mstatus, x{mask_reg}",
-                f"LI(x{mask_reg}, MSTATUS_MPRV | MPP_SMODE)",
-                f"csrs mstatus, x{mask_reg}",
+                *_mprv_on(mask_reg, "MPP_SMODE"),
                 "sfence.vma   # each swap walks, so the trace logs the PTE it used",
                 test_data.add_testcase(f"ssamoswap_{width}_mprv_pbmt_{tag}", coverpoint, _CG),
                 f"ssamoswap.{width} x{rd_reg}, x{rs2_reg}, (x{addr_reg})",
-                f"LI(x{mask_reg}, MSTATUS_MPRV)",
-                f"csrc mstatus, x{mask_reg}",
+                *_mprv_off(mask_reg),
                 write_sigupd(rd_reg, test_data),
             ]
             lines.extend(ssamoswap_only(width, case))

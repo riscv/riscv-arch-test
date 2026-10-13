@@ -179,8 +179,11 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
         }
     `endif
     // mstatus.MPRV with MPP=S makes M-mode loads and stores S-mode accesses.
-    mprv_clear: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
-        bins clear = {1'b0};
+    // The effective privilege mode stays M with MPRV=0, or with MPRV=1 and MPP=M.
+    mprv_eff_m: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0],
+                            get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
+        wildcard bins mprv_clear = {3'b0??};
+        bins mprv_mpp_m          = {3'b111};
     }
     mprv_mpp_s: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0],
                             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
@@ -223,9 +226,12 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
         bins active = {1'b1};
     }
     // ── Main coverpoints ──────────────────────────────────────────────────
-    // SSAMOSWAP at M faults unconditionally — sweep every axis that might wrongly
-    // be treated as a precondition. MPRV=0 keeps the effective privilege mode M.
-    cp_ssamoswap_mmode_fault:      cross priv_mode_m, ssamoswap_instr, menvcfg_sse, satp_mode, mprv_clear;
+    // SSAMOSWAP faults whenever the effective privilege mode is M — sweep every axis that might
+    // wrongly be treated as a precondition, and MPRV=1 with MPP=M.
+    cp_ssamoswap_mmode_fault:      cross priv_mode_m, ssamoswap_instr, menvcfg_sse, satp_mode, mprv_eff_m;
+    // With MPRV=1 and MPP=S the effective privilege mode is S (menvcfg.SSE=1): satp.MODE=Bare gives a
+    // store/AMO access fault, and with translation the swap completes on the S-mode SS page.
+    cp_ssamoswap_mprv_s:           cross priv_mode_m, ssamoswap_instr, mprv_mpp_s, satp_mode;
 
     // With MPRV=1 and MPP=S the effective privilege mode is S, so SSAMOSWAP follows the S-mode
     // shadow stack rules: it completes on a PBMT=PMA page and faults on a non-idempotent PBMT=IO one.

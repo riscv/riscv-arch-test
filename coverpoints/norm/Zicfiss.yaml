@@ -125,12 +125,12 @@ normative_rule_definitions:
   # mode is less than M, shadow stack instructions raise a store/AMO access-fault
   # exception.
   - name: satp_mode_bare
-    coverpoint: ["{ZicfissSm_cg}/{cp_ss_satp_bare}"]
+    coverpoint: ["{ZicfissSm_cg}/{cp_ss_satp_bare,cp_ssamoswap_mprv_s}"]
 
   # When the effective privilege mode is M, memory access by an SSAMOSWAP.W/D
   # instruction results in a store/AMO access-fault exception.
   - name: ssmp_ssamoswap
-    coverpoint: ["{ZicfissSm_cg}/{cp_ssamoswap_mmode_fault}"]
+    coverpoint: ["{ZicfissSm_cg}/{cp_ssamoswap_mmode_fault,cp_ssamoswap_mprv_s}"]
 
   # Memory mapped as an SS page cannot be written to by instructions other than
   # insn:ssamoswap.w[], insn:ssamoswap.d[], insn:sspush[], and insn:c.sspush[]. Attempts
@@ -150,8 +150,8 @@ normative_rule_definitions:
   # Implicit accesses, including instruction fetches to an SS page, are not permitted.
   # Such accesses will raise an access-fault exception appropriate to the access type.
   - name: ssmp_ss_implicit_access_fault
-    # Not tested: no test makes an implicit access, such as an instruction fetch, to an SS page.
-    coverpoint: [""]
+    # Representative: an instruction fetch from an SS page
+    coverpoint: ["{ZicfissU_cg}/{cp_ss_page_fetch}"]
   # However, the shadow stack is readable by all instructions that only load from memory.
   - name: ssmp_ss_load
     # Representative coverpoints; also cp_ss_page_perm_priority_load and

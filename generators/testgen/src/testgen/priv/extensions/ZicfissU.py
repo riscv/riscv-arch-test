@@ -575,10 +575,11 @@ def _generate_non_idempotent(test_data: TestData) -> list[str]:
 
 
 def _generate_page_access(test_data: TestData) -> list[str]:
-    """Ordinary, atomic and cache-block accesses to an SS page.
+    """Ordinary, atomic and cache-block accesses to an SS page, and a fetch from it.
 
     Loads and LR succeed; stores, AMOs, SC and CBOs raise a store/AMO access fault. Each
-    testcase records rd, or for the stores and CBOs, the location read back afterwards.
+    testcase records rd, or for the stores and CBOs, the location read back afterwards. A jump
+    to the SS page raises an instruction access fault, recorded by the trap handler.
     """
     lines = _umode_prologue(test_data)
     addr_reg, data_reg, mxr_reg = test_data.int_regs.get_registers(3)
@@ -614,7 +615,8 @@ def _generate_page_access(test_data: TestData) -> list[str]:
         lines.extend(rv64_only(amo) if mnemonic.endswith(".d") else amo)
 
     # The CBOs are gated by the CBIE, CBCFE and CBZE fields of menvcfg and senvcfg; enable them so
-    # that a CBO traps on the SS page rather than on its own gating.
+    # that a CBO traps on the SS page rather than on its own gating. The boot code enables them
+    # too, so they are left set afterwards.
     def cbo_enables(op: str) -> list[str]:
         return [
             f"LI(x{data_reg}, MENVCFG_CBIE | MENVCFG_CBCFE | MENVCFG_CBZE)",
@@ -640,7 +642,6 @@ def _generate_page_access(test_data: TestData) -> list[str]:
             *access("cbo.zero", f"cbo.zero (x{addr_reg})", "cp_ss_page_access_cboz", read_back=True),
             ".option pop",
             "#endif",
-            *cbo_enables("csrc"),
         ]
     )
 
@@ -674,11 +675,16 @@ def _generate_page_access(test_data: TestData) -> list[str]:
             ),
             ".option pop",
             "#endif",
+            # Instruction fetches are implicit accesses, which an SS page does not permit: the fetch
+            # raises an instruction access fault, and the handler returns to ra.
+            f"LI(x{addr_reg}, ZICFISS_VA_SS)",
+            test_data.add_testcase("jalr_fetch_ss_page", "cp_ss_page_fetch", _CG),
+            f"jalr ra, 0(x{addr_reg})",
             *_SATP_OFF,
         ]
     )
     test_data.int_regs.return_registers([addr_reg, data_reg, mxr_reg])
-    return vm_section("cp_ss_page_access", "Non-SS accessors against an SS page", lines)
+    return vm_section("cp_ss_page_access", "Non-SS accessors against an SS page, and a fetch from it", lines)
 
 
 # ---------------------------------------------------------------------------
@@ -722,7 +728,7 @@ def _generate_vector(test_data: TestData) -> list[str]:
                 ]
             )
 
-    # Unit-stride stores fault.
+    # Unit-stride stores fault, leaving the SS page unchanged.
     for sew in (8, 16, 32):
         lines.extend(
             [
@@ -730,8 +736,32 @@ def _generate_vector(test_data: TestData) -> list[str]:
                 f"vsetivli x{tmp_reg}, {_VECTOR_VL}, e{sew}, m1, tu, mu",
                 test_data.add_testcase(f"vse{sew}_ss_page", "cp_ss_vector_store", _CG),
                 f"vse{sew}.v v1, (x{addr_reg})",
+                f"lw x{tmp_reg}, 0(x{addr_reg})   # unchanged",
+                write_sigupd(tmp_reg, test_data),
             ]
         )
+
+    def record_load() -> list[str]:
+        """Record elements 0 and 2; element 2 is on the SS page whichever page the access began on."""
+        return [
+            f"vmv.x.s x{tmp_reg}, v1",
+            write_sigupd(tmp_reg, test_data),
+            "vslidedown.vi v3, v1, 2",
+            f"vmv.x.s x{tmp_reg}, v3",
+            write_sigupd(tmp_reg, test_data),
+        ]
+
+    def record_store() -> list[str]:
+        """Record the word at the base and the SS page word element 2 targets, which must be unchanged.
+
+        From the page below, elements 0 and 1 land on the read/write page before element 2 faults.
+        """
+        return [
+            f"lw x{tmp_reg}, 0(x{addr_reg})",
+            write_sigupd(tmp_reg, test_data),
+            f"lw x{tmp_reg}, 8(x{addr_reg})",
+            write_sigupd(tmp_reg, test_data),
+        ]
 
     # Strided and indexed accesses with rs1 on the SS page, and on the page below it with
     # the elements running up into it: 4-byte steps from 8 bytes below reach it by the third.
@@ -744,6 +774,7 @@ def _generate_vector(test_data: TestData) -> list[str]:
                     f"vsetivli x{tmp_reg}, {_VECTOR_VL}, e{sew}, m1, tu, mu",
                     test_data.add_testcase(f"vlse{sew}_{origin}", "cp_ss_vector_strided", _CG),
                     f"vlse{sew}.v v1, (x{addr_reg}), x{stride_reg}",
+                    *record_load(),
                 ]
             )
         for mnemonic in ("vluxei8.v", "vsuxei8.v"):
@@ -755,6 +786,7 @@ def _generate_vector(test_data: TestData) -> list[str]:
                     "vsll.vi v2, v2, 2   # byte offsets 0, 4, 8, ...",
                     test_data.add_testcase(f"{mnemonic.replace('.', '_')}_{origin}", "cp_ss_vector_indexed", _CG),
                     f"{mnemonic} v1, (x{addr_reg}), v2",
+                    *(record_load() if mnemonic.startswith("vl") else record_store()),
                 ]
             )
 

@@ -513,12 +513,12 @@
             vle##_VD_EEW##.v _VTMP, 0(_SIG_PTR)     ;                                                                   \
             vmsne.vv    _MTMP, _VR, _VTMP        ;   /* _MTMP[i] = 1 if result != reference */                          \
         .endif; \
-        /* Build active element mask (i < vl && v0[i] == 1). This approach will not work if  */ \
-        /* vl > SEW_MAX because the rs1 input to vmsltu.vx will get truncated, so its possible we have */ \
-        /* to calculate the hard way. vl cannot exceed SEW_MAX for SEW > 16 */                  \
+        /* Build active element mask (i < vl && v0[i] == 1). vid.v and the rs1 operand of vmsltu.vx */ \
+        /* are SEW bits wide, so element indices wrap once VLMAX >= 2^SEW. In that case calculate the */ \
+        /* mask the hard way. VLMAX cannot reach 2^SEW for SEW > 16. _LINK_REG holds VLMAX here. */ \
         .if (_VD_EEW <= 16); \
-            LI          (_LINK_REG, (1 << _VD_EEW))         ; \
-            bge         _TEMP_REG, _LINK_REG, 4f ; \
+            LI          (_TEMP_REG3, (1 << _VD_EEW))        ; \
+            bge         _LINK_REG, _TEMP_REG3, 4f ; \
         .endif; \
         .if (_MASKPROD_FLAG == 0) ; /* This does not work in the mask producing case because we don't get the right lmul */ \
             vid.v       _VTMP                    ;   /* VTMP[i] = i (element index) */                                  \
@@ -726,8 +726,8 @@
         .endif; \
         /* Build active element mask */                                                      \
         .if (_VD_EEW <= 16); \
-            LI          (_LINK_REG, (1 << _VD_EEW))         ; \
-            bge         _TEMP_REG, _LINK_REG, 4f ; \
+            LI          (_TEMP_REG3, (1 << _VD_EEW))        ; \
+            bge         _LINK_REG, _TEMP_REG3, 4f ; \
         .endif; \
         .if (_MASKPROD_FLAG == 0) ; /* This does not work in the mask producing case because we don't get the right lmul */ \
             nop                                  ;                                                                      \

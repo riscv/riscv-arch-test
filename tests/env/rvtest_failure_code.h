@@ -2,6 +2,30 @@
 # riscv-arch-test assembly test failure handling code
 # Jordan Carlin jcarlin@hmc.edu October 2025
 # SPDX-License-Identifier: Apache-2.0
+// Load the UDB_MXLEN-sized pointer at _OFF(DEFAULT_LINK_REG) into x6. The pointers follow
+// the jal of a failed check, which can follow compressed code, so they are only halfword
+// aligned. Load them with lhu so cores without misaligned-load support do not trap.
+// Clobbers x7 and x8.
+#ifdef UDB_MXLEN_64
+  #define FAILURE_LOAD_LINK_PTR(_OFF)            \
+        lhu x6, _OFF(DEFAULT_LINK_REG)          ;\
+        lhu x7, _OFF+2(DEFAULT_LINK_REG)        ;\
+        slli x7, x7, 16                         ;\
+        or x6, x6, x7                           ;\
+        lhu x7, _OFF+4(DEFAULT_LINK_REG)        ;\
+        lhu x8, _OFF+6(DEFAULT_LINK_REG)        ;\
+        slli x8, x8, 16                         ;\
+        or x7, x7, x8                           ;\
+        slli x7, x7, 32                         ;\
+        or x6, x6, x7
+#else
+  #define FAILURE_LOAD_LINK_PTR(_OFF)            \
+        lhu x6, _OFF(DEFAULT_LINK_REG)          ;\
+        lhu x7, _OFF+2(DEFAULT_LINK_REG)        ;\
+        slli x7, x7, 16                         ;\
+        or x6, x6, x7
+#endif
+
 // Macro to define failure detection code (functions)
 // This is instantiated after test code near the end of RVTEST_CODE_END in test_setup.h
 .macro RVTEST_FAILURE_CODE
@@ -615,14 +639,7 @@
         # --------------------------------------------------
         # Save failing instruction, address and vd
         # --------------------------------------------------
-    #ifdef UDB_MXLEN_64
-        lwu x6, 0(DEFAULT_LINK_REG)      # load lower 32 bits of instruction address
-        lw  x7, 4(DEFAULT_LINK_REG)      # load upper 32 bits
-        slli x7, x7, 32
-        or x6, x6, x7                    # combine into 64-bit value
-    #else
-        lw x6, 0(DEFAULT_LINK_REG)       # RV32: 4-byte aligned, safe
-    #endif
+        FAILURE_LOAD_LINK_PTR(0)         # instruction address
 
         # Fetch the failing instruction using INSTR_PTR address
         lhu x7, 0(x6)       # get lower half of the failing instruction
@@ -950,28 +967,14 @@
         //--------------------------------------------------------------
         // Load the failure string pointer from the embedded data
         //--------------------------------------------------------------
-    #ifdef UDB_MXLEN_64
-        lwu x6, REGWIDTH(DEFAULT_LINK_REG)
-        lw  x7, REGWIDTH+4(DEFAULT_LINK_REG)
-        slli x7, x7, 32
-        or x6, x6, x7
-    #else
-        lw x6, REGWIDTH(DEFAULT_LINK_REG)
-    #endif
+        FAILURE_LOAD_LINK_PTR(REGWIDTH)
         la x16, trap_diag_fail_str_ptr
         SREG x6, 0(x16)                            # save for later printing
 
         //--------------------------------------------------------------
         // Load the address of the failing check (instruction pointer)
         //--------------------------------------------------------------
-    #ifdef UDB_MXLEN_64
-        lwu x6, 0(DEFAULT_LINK_REG)
-        lw  x7, 4(DEFAULT_LINK_REG)
-        slli x7, x7, 32
-        or x6, x6, x7
-    #else
-        lw x6, 0(DEFAULT_LINK_REG)
-    #endif
+        FAILURE_LOAD_LINK_PTR(0)
         SREG x6, 264(DEFAULT_TEMP_REG)              # store as failing_addr
 
         //--------------------------------------------------------------
@@ -1212,15 +1215,7 @@
         # The jal returns to DEFAULT_LINK_REG, which points to the data after jal  (i.e., the first pointer itself)
 
         # Save failing address (loaded from embedded instruction pointer after jal)
-        # Only guaranteed to be 4-byte aligned, so need to load in 4-byte chunks on rv64
-    #ifdef UDB_MXLEN_64
-        lwu x6, 0(DEFAULT_LINK_REG)      # load lower 32 bits of instruction address
-        lw  x7, 4(DEFAULT_LINK_REG)      # load upper 32 bits
-        slli x7, x7, 32
-        or x6, x6, x7                    # combine into 64-bit value
-    #else
-        lw x6, 0(DEFAULT_LINK_REG)       # RV32: 4-byte aligned, safe
-    #endif
+        FAILURE_LOAD_LINK_PTR(0)
         SREG x6, 264(DEFAULT_TEMP_REG)
 
         # Fetch the failing instruction using INSTR_PTR address
@@ -1236,15 +1231,7 @@
         sw x7, 256(DEFAULT_TEMP_REG)      # record failing instruction (16 or 32 bits)
 
         # Get pointer to failure string (loaded from second embedded pointer after jal)
-        # Only guaranteed to be 4-byte aligned, so need to load in 4-byte chunks on rv64
-    #ifdef UDB_MXLEN_64
-        lwu x6, REGWIDTH(DEFAULT_LINK_REG)       # load lower 32 bits of string pointer
-        lw  x7, REGWIDTH+4(DEFAULT_LINK_REG)      # load upper 32 bits
-        slli x7, x7, 32
-        or x6, x6, x7                     # combine into 64-bit value
-    #else
-        lw x6, REGWIDTH(DEFAULT_LINK_REG) # RV32: 4-byte aligned, safe
-    #endif
+        FAILURE_LOAD_LINK_PTR(REGWIDTH)
         SREG x6, 288(DEFAULT_TEMP_REG)    # save the string pointer
 
     failedtest_report:

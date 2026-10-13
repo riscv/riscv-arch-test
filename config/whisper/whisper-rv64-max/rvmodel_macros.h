@@ -193,4 +193,13 @@
   sw      _R2, 0(_R1); /* clear source 2 interrupt */
 
 
+##### Sscofpmf #####
+
+#define RVMODEL_HPM_COUNTER 3   // HPM counter used by the Sscofpmf tests (3 to 31)
+// Selector 12 is the Load event in whisper.json. The Sail reference counts EV_FENCE for the same
+// selector (sail.json) and triggers it with a fence (sail_macros.h).
+#define RVMODEL_MHPMEVENT_VAL  12
+#define RVMODEL_MHPMEVENT_CODE(_R1, _R2)  \
+    lw _R2, 0(_R1)
+
 #endif // _RVMODEL_MACROS_H

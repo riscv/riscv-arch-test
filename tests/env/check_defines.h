@@ -160,6 +160,30 @@
 
 #endif // STANDARD_SM_SUPPORTED || S_SUPPORTED
 
+##### Sscofpmf #####
+#ifdef SSCOFPMF_SUPPORTED
+  #if !defined(RVMODEL_HPM_COUNTER) || !defined(RVMODEL_MHPMEVENT_VAL) || !defined(RVMODEL_MHPMEVENT_CODE)
+    #error "Sscofpmf is implemented but RVMODEL_HPM_COUNTER, RVMODEL_MHPMEVENT_VAL or RVMODEL_MHPMEVENT_CODE is not defined. Define them in rvmodel_macros.h."
+  #endif
+  #if (RVMODEL_HPM_COUNTER < 3) || (RVMODEL_HPM_COUNTER > 31)
+    #error "RVMODEL_HPM_COUNTER must be an HPM counter index from 3 to 31."
+  #endif
+
+  // UDB defines UDB_HPM_COUNTER<n>_WIDTH only for implemented counters, and #if reads an undefined
+  // name as 0. RVMODEL_HPM_COUNTER is pasted into that name, so it must be a plain number.
+  #define RVTEST_HPM_WIDTH_(n) UDB_HPM_COUNTER##n##_WIDTH
+  #define RVTEST_HPM_WIDTH(n)  RVTEST_HPM_WIDTH_(n)
+  #if RVTEST_HPM_WIDTH(RVMODEL_HPM_COUNTER) == 0
+    #error "RVMODEL_HPM_COUNTER names an HPM counter that is not implemented (HPM_COUNTER_EN) or has width 0."
+  #endif
+
+  // CSRs of the HPM counter selected by RVMODEL_HPM_COUNTER. The high halves exist only on RV32.
+  #define RVTEST_CSR_MHPMEVENT    (CSR_MHPMEVENT3 + RVMODEL_HPM_COUNTER - 3)
+  #define RVTEST_CSR_MHPMCOUNTER  (CSR_MHPMCOUNTER3 + RVMODEL_HPM_COUNTER - 3)
+  #define RVTEST_CSR_MHPMEVENTH   (CSR_MHPMEVENT3H + RVMODEL_HPM_COUNTER - 3)
+  #define RVTEST_CSR_MHPMCOUNTERH (CSR_MHPMCOUNTER3H + RVMODEL_HPM_COUNTER - 3)
+#endif // SSCOFPMF_SUPPORTED
+
 ##### Configuration Limitations #####
 #if UDB_NUM_PMP_ENTRIES > 0
   #ifndef UDB_PMP_NAPOT_SUPPORTED

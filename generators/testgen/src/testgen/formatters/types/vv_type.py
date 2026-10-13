@@ -106,9 +106,7 @@ def format_vv_like_type(
     )
     assert params.temp_reg is not None, f"temp_reg must be provided for {type_name}-type instructions"
     assert params.sew is not None, f"sew must be provided for {type_name}-type instructions"
-    assert params.lmul is not None or lmul_override is not None, (
-        f"lmul must be provided for {type_name}-type instructions"
-    )
+    assert params.lmul is not None, f"lmul must be provided for {type_name}-type instructions"
     assert not isinstance(params.vl, int) or params.vl % egs == 0, (
         f"params.vl must be a multiple of {egs} for EGS={egs} instruction, got: {params.vl}"
     )
@@ -131,9 +129,9 @@ def format_vv_like_type(
     if params.maskval:
         setup.extend(prep_mask_v(params.maskval, test_data, params))
 
+    # The register group size: for VMVR it is the register count encoded in the instruction,
+    # otherwise it is the LMUL in vtype
     lmul = lmul_override if lmul_override is not None else params.lmul
-    # This must be true because above we asserted, params.lmul is not None or lmul_override is not None
-    assert lmul is not None
 
     vd_vl = params.vl if params.vector_suite == "base" else "vlmax"
     vd_lmul = lmul if "vd" not in widened_regs else lmul * 2
@@ -172,6 +170,7 @@ def format_vv_like_type(
         test_data.vec_regs.return_register(0)
 
     min_vlen = compute_egs_vlen(params.sew, lmul, egs)
-    handle_parameter_exclusions(lmul, setup, check, min_vlen=min_vlen)
+    # Guard on the LMUL in vtype, which differs from the lmul variable for VMVR
+    handle_parameter_exclusions(params.lmul, setup, check, min_vlen=min_vlen)
 
     return (setup, test, check)

@@ -130,7 +130,8 @@ normative_rule_definitions:
   # When the effective privilege mode is M, memory access by an SSAMOSWAP.W/D
   # instruction results in a store/AMO access-fault exception.
   - name: ssmp_ssamoswap
-    coverpoint: ["{ZicfissSm_cg}/{cp_ssamoswap_mmode_fault,cp_ssamoswap_mprv_s}"]
+    coverpoint:
+      ["{ZicfissSm_cg}/{cp_ssamoswap_mmode_fault,cp_ssamoswap_mprv_s}"]
 
   # Memory mapped as an SS page cannot be written to by instructions other than
   # insn:ssamoswap.w[], insn:ssamoswap.d[], insn:sspush[], and insn:c.sspush[]. Attempts

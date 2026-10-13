@@ -272,7 +272,8 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
 
     // With menvcfg.SSE=0 the xwr=010 encoding is reserved below M-mode, so ordinary accesses
     // page-fault; with menvcfg.SSE=1 it is an SS page, readable by loads and not writable by stores.
-    cp_menvcfg_sse_ss_page:        cross priv_mode_s_u, ls_op, pte_ss_page, menvcfg_sse;
+    // senvcfg.SSE does not change the encoding, so U-mode with senvcfg.SSE=0 still sees an SS page.
+    cp_menvcfg_sse_ss_page:        cross priv_mode_s_u, ls_op, pte_ss_page, sse_state;
 
     // Set and clear senvcfg.SSE and henvcfg.SSE under both values of menvcfg.SSE; the signature
     // checks that they read back 0 whenever menvcfg.SSE is 0.

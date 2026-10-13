@@ -182,7 +182,7 @@ def _generate_menvcfg_gating(test_data: TestData) -> list[str]:
     illegal-instruction exception leaves unchanged. With menvcfg.SSE=0 the xwr=010 encoding
     is reserved, so an ordinary load or store to such a page raises a page fault from S- and
     U-mode alike; with menvcfg.SSE=1 the page is an SS page, which loads may read and stores
-    may not write.
+    may not write, whatever senvcfg.SSE is.
     """
     lines: list[str] = [comment_banner("cp_menvcfg_sse_gating", "menvcfg.SSE gates ssp CSR access below M-mode")]
     rd_reg, val_reg = test_data.int_regs.get_registers(2)
@@ -204,8 +204,10 @@ def _generate_menvcfg_gating(test_data: TestData) -> list[str]:
             lines.extend(["RVTEST_TSBI_GOTO_MMODE"] if mode == "S" else [])
     test_data.int_regs.return_registers([rd_reg, val_reg])
 
-    # The SS page encoding, from S-mode (supervisor pages) and U-mode (user pages). senvcfg.SSE
-    # follows menvcfg.SSE so Zicfiss is fully on or fully off for U-mode too.
+    # The SS page encoding, from S-mode (supervisor pages) and U-mode (user pages). Only
+    # menvcfg.SSE makes xwr=010 reserved; senvcfg.SSE does not (norm:ssmp_menvcfg_sse), so with
+    # menvcfg.SSE=1 and senvcfg.SSE=0 the page is still an SS page for U-mode ordinary accesses,
+    # even though Zicfiss is inactive there.
     coverpoint = "cp_menvcfg_sse_ss_page"
     lines.extend(
         [
@@ -213,12 +215,13 @@ def _generate_menvcfg_gating(test_data: TestData) -> list[str]:
             "#ifdef ZICFISS_VM_SUPPORTED",
         ]
     )
-    for sse in (0, 1):
+    for sse, senvcfg_sse in ((0, 0), (1, 1), (1, 0)):
         for mode in ("S", "U"):
-            envcfg = [("senvcfg", 0), ("menvcfg", 0)] if not sse else [("menvcfg", 1), ("senvcfg", 1)]
+            envcfg = [("senvcfg", 0), ("menvcfg", 0)] if not sse else [("menvcfg", 1), ("senvcfg", senvcfg_sse)]
+            tag = f"sse{sse}" if sse == senvcfg_sse else "sse1_sen0"
             lines.extend(
                 [
-                    f"# --- menvcfg.SSE={sse}, {mode}-mode ---",
+                    f"# --- menvcfg.SSE={sse}, senvcfg.SSE={senvcfg_sse}, {mode}-mode ---",
                     *map_zicfiss_pages(test_data, user=mode == "U"),
                     *enable_translation(test_data, mode="M"),
                     *[ln for csr, value in envcfg for ln in set_envcfg_sse(csr, value, test_data, mode="M")],
@@ -230,11 +233,11 @@ def _generate_menvcfg_gating(test_data: TestData) -> list[str]:
                 [
                     f"LI(x{addr_reg}, ZICFISS_VA_SS + 0x800)",
                     f"LI(x{rd_reg}, 0x0DDBA11)   # kept if the load faults",
-                    test_data.add_testcase(f"load_{mode.lower()}mode_sse{sse}", coverpoint, _CG),
+                    test_data.add_testcase(f"load_{mode.lower()}mode_{tag}", coverpoint, _CG),
                     f"LREG x{rd_reg}, 0(x{addr_reg})",
                     write_sigupd(rd_reg, test_data),
                     f"LI(x{val_reg}, 0x55)",
-                    test_data.add_testcase(f"store_{mode.lower()}mode_sse{sse}", coverpoint, _CG),
+                    test_data.add_testcase(f"store_{mode.lower()}mode_{tag}", coverpoint, _CG),
                     f"SREG x{val_reg}, 0(x{addr_reg})",
                     "RVTEST_TSBI_GOTO_MMODE",
                     *SATP_OFF,

@@ -7,7 +7,7 @@ coverpoints:
     goal: Verify SSAMOSWAP.W/.D always raises a store/AMO access-fault when the effective privilege mode is M
     description: |-
       Execute SSAMOSWAP.W and SSAMOSWAP.D from M-mode against a valid, aligned, writable SS page. Repeat with menvcfg.SSE=1 and menvcfg.SSE=0, and with satp.MODE both Bare and non-Bare, to confirm the fault is unconditional.
-      Also exercise the effective-privilege path: M-mode with mstatus.MPRV=1 and MPP=U.
+      mstatus.MPRV stays 0; the effective-privilege path (MPRV=1, MPP=S) is cp_ssamoswap_mprv_non_idempotent_zicfiss.
     expectation: |-
       Store/AMO access-fault raised whenever the EFFECTIVE privilege mode is M, independent of menvcfg.SSE and satp.MODE.
       Note MPRV: with mstatus.MPRV=1 and MPP < M the effective privilege mode is no longer M, so this rule does not apply and the access may succeed. MPRV is therefore left 0 here; the MPRV=1 case is cp_ssamoswap_mprv_non_idempotent_zicfiss.
@@ -36,17 +36,18 @@ coverpoints:
     description: |-
       From M-mode set menvcfg.SSE=0, then:
       (a) drop to S/HS-mode and attempt ssp CSR read and write;
-      (b) with a PTE encoded xwr=010, attempt access from S-mode and U-mode.
-      Repeat both with menvcfg.SSE=1 as the positive control.
+      (b) with a PTE encoded xwr=010, attempt an ordinary load and store from S-mode and U-mode.
+      Repeat both with menvcfg.SSE=1 as the positive control, and repeat (b) with menvcfg.SSE=1 and senvcfg.SSE=0.
       Also confirm menvcfg.SSE is writable and reads back as written.
       M-mode leg (explicit): read and write ssp from M-mode with menvcfg.SSE=0 and with menvcfg.SSE=1, using csrrw/csrrs/csrrc and the immediate forms.
     expectation: |-
       menvcfg.SSE=0: ssp CSR access from any mode < M raises an illegal-instruction exception, regardless of senvcfg/henvcfg.
       menvcfg.SSE=0: the xwr=010 PTE encoding remains RESERVED, so access raises a page-fault rather than being treated as an SS page.
-      menvcfg.SSE=1: ssp accessible from S/HS, and xwr=010 is recognised as an SS page.
+      menvcfg.SSE=1: ssp accessible from S/HS, and xwr=010 is recognised as an SS page: an ordinary load reads it and an ordinary store raises a store/AMO access-fault.
+      menvcfg.SSE=1, senvcfg.SSE=0: xwr=010 is still an SS page, from U-mode too. Only menvcfg.SSE (and henvcfg.SSE when V=1) makes the encoding reserved ([norm:ssmp_menvcfg_sse]); senvcfg.SSE does not. An implementation that page-faults a U-mode load here is wrong.
       From M-mode the ssp CSR is accessible for BOTH values of menvcfg.SSE. [norm:zicfiss_m_menvcfg_sse] is scoped to 'privilege mode less than M', so menvcfg.SSE does not gate M-mode itself. An implementation that raises illegal-instruction on ssp access from M when menvcfg.SSE=0 is wrong.
       Note this is CSR accessibility only -- use of the Zicfiss shadow stack in M-mode is not supported, and the SS instructions behave as MOPs there (cp_ss_instr_inactive_zicfiss).
-    bins: mode {M, S/HS} x menvcfg.SSE {0,1} x csr_op {csrrw, csrrs, csrrc, csrrwi, csrrsi, csrrci} x target {ssp read, ssp write, pte_xwr_010_access} x result {ok at M always, ok at S iff menvcfg.SSE=1, illegal_instruction, page_fault}
+    bins: mode {M, S/HS} x menvcfg.SSE {0,1} x csr_op {csrrw, csrrs, csrrc, csrrwi, csrrsi, csrrci} x target {ssp read, ssp write} x result {ok at M always, ok at S iff menvcfg.SSE=1, illegal_instruction}; mode {S, U} x (menvcfg.SSE, senvcfg.SSE) {(0,0), (1,0), (1,1)} x access {ordinary load, ordinary store} on xwr=010 x result {ok, access_fault, page_fault}
     id: zicfiss_m_menvcfg_sse zicfiss_ssp_csr ssmp_menvcfg_sse
     rules:
       - "[norm:zicfiss_m_menvcfg_sse] [norm:zicfiss_ssp_csr] [norm:ssmp_menvcfg_sse]"

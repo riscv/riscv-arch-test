@@ -2,15 +2,15 @@
 # Jordan Carlin jcarlin@hmc.edu April 2026
 # CI configuration for Whisper simulator
 
-# SsstrictSm: Sail 0.15 lacks Smaia and Smrnmi, whose CSRs Whisper implements
+# SsstrictSm_CSR: Sail 0.15 lacks Smaia and Smrnmi, whose CSRs Whisper implements
 # Smstateen: the -mu configs pass. On the max configs Whisper implements Sscsrind and Ssaia, so
 #   mstateen0.CSRIND, AIA and IMSIC are writable, but Sail does not model those extensions
 #   (https://github.com/riscv/sail-riscv/issues/1134, https://github.com/riscv/sail-riscv/pull/1874).
-# SsstrictS: Sail traps on siselect/stopi accesses that Whisper permits with mstateen0 enabled.
-# Sdtrig* not yet implemented in Sail (https://github.com/riscv/sail-riscv/issues/222)
-# Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)
+# SsstrictS_CSR: Sail traps on siselect/stopi accesses that Whisper permits with mstateen0 enabled.
+# Sdtrig*_Mcontrol6: Sail 0.15 lacks mcontrol6 triggers, so it expects an illegal-instruction trap where the hart takes the breakpoint (https://github.com/riscv/sail-riscv/issues/222)
+# Ssnpm_*, SmnpmS_* (bare and sv* sweep groups), SsnpmSm, Smmpm, SmnpmSSm, SmnpmU, SmnpmUSm: Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)
 ci_enabled: true
-exclude_extensions: "SsstrictSm,SsstrictS,Smstateen,SdtrigSm,SdtrigS,SdtrigU,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm"
+exclude_extensions: "SsstrictSm_CSR,SsstrictS_CSR,Smstateen,SdtrigSm_Mcontrol6,SdtrigS_Mcontrol6,SdtrigU_Mcontrol6,Ssnpm_bare_pmm00,Ssnpm_bare_pmm10,Ssnpm_bare_pmm11_edgecases,Ssnpm_sv39_pmm00_sweep,Ssnpm_sv39_pmm10_sweep,Ssnpm_sv39_pmm11_sweep,Ssnpm_sv48_pmm00_sweep,Ssnpm_sv48_pmm10_sweep,Ssnpm_sv48_pmm11_sweep,Ssnpm_sv57_pmm00_sweep,Ssnpm_sv57_pmm10_sweep,Ssnpm_sv57_pmm11_sweep,SsnpmSm,Smmpm,SmnpmS_bare_pmm00,SmnpmS_bare_pmm10,SmnpmS_bare_pmm11_edgecases,SmnpmS_sv39_pmm00_sweep,SmnpmS_sv39_pmm10_sweep,SmnpmS_sv48_pmm00_sweep,SmnpmS_sv48_pmm10_sweep,SmnpmS_sv57_pmm00_sweep,SmnpmS_sv57_pmm10_sweep,SmnpmSSm,SmnpmU,SmnpmUSm"
 exclude_configs:
   - whisper-rv32-max-spike-ref
   - whisper-rv64-max-spike-ref

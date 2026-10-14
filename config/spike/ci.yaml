@@ -7,20 +7,14 @@ ci_enabled: true
 # Run experimental extensions in their dedicated workflow job.
 exclude_configs:
   - spike-rv64-experimental
-# Smstateen:
-#   - spike-rv64-max: mstateen0.P1P13 is writable on RV64; it controls hedelegh, which exists only on
-#     RV32 with H (https://github.com/riscv-software-src/riscv-isa-sim/issues/2464)
-#   - spike-rv{32,64}-max: spike implements scontext but keeps mstateen0.CONTEXT read-only zero, which
-#     Sail cannot model (https://github.com/riscv/sail-riscv/issues/2013); S-mode can also access
-#     scontext while CONTEXT is 0 (https://github.com/riscv-software-src/riscv-isa-sim/issues/2465)
-#   - spike-rv{32,64}-mu: mstateen0.ENVCFG is writable without S
-#     (https://github.com/riscv-software-src/riscv-isa-sim/issues/2464)
-# Sdtrig* not yet supported in Sail reference (https://github.com/riscv/sail-riscv/issues/222)
+# Smstateen: spike-rv{32,64}-max implement scontext, so mstateen0.CONTEXT is writable, but Sail cannot
+#   model scontext (https://github.com/riscv/sail-riscv/issues/2013). The -mu configs pass.
+# Sdtrig*_Mcontrol6: Sail 0.15 lacks mcontrol6 triggers, so it expects an illegal-instruction trap where the hart takes the breakpoint (https://github.com/riscv/sail-riscv/issues/222)
 # Sscofpmf*: spike hardwires mhpmcounter3..31 to 0 but keeps mhpmevent3..31 writable
 #   (https://github.com/riscv-software-src/riscv-isa-sim/issues/2370). Sail's
 #   writable_hpm_counters makes both or neither writable, so no reference config matches.
-# Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)
-exclude_extensions: "Smstateen,SdtrigSm,SdtrigS,SdtrigU,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,SscofpmfSm,SscofpmfS,SscofpmfU"
+# Ssnpm_bare_*, SmnpmS_bare_*, SsnpmSm, Smmpm_mprv/pmm00/pmm10, SmnpmSSm, SmnpmU_pmm00/pmm10, SmnpmUSm: Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)
+exclude_extensions: "Smstateen,SdtrigSm_Mcontrol6,SdtrigS_Mcontrol6,SdtrigU_Mcontrol6,Ssnpm_bare_pmm00,Ssnpm_bare_pmm10,Ssnpm_bare_pmm11_edgecases,SsnpmSm,Smmpm_mprv,Smmpm_pmm00,Smmpm_pmm10,SmnpmS_bare_pmm00,SmnpmS_bare_pmm10,SmnpmS_bare_pmm11_edgecases,SmnpmSSm,SmnpmU_pmm00,SmnpmU_pmm10,SmnpmUSm,SscofpmfSm,SscofpmfS,SscofpmfU"
 install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"
 shards: 1

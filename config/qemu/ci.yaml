@@ -4,42 +4,45 @@
 # Shared across all QEMU configs
 
 ci_enabled: true
-# Status as of QEMU v11.1.1:
-# Sm: Multiple issues:
+# Status as of QEMU v11.1.2, by test group (other groups of these suites pass):
+# Sm_mcsr_access, Sm_mcsr_cntr, Sm_mcsr_walk, Sm_shadow, Sm_xret: Multiple issues:
 #     need H support in Sail
 #     menvcfg.CBIE can be written with reserved 0b10 QEMU #4216
 #     minstret one too high after wraparound (still fails with QEMU #4087 closed)
 #     mcycleh write dropped (#4219)
 #     mstatus.MPELP not writable (#4220)
-# S:  sie mismatches on bit 13 (LCOFIE) https://gitlab.com/qemu-project/qemu/-/work_items/3969;
+# S-, S_scsr-: sie mismatches on bit 13 (LCOFIE) https://gitlab.com/qemu-project/qemu/-/work_items/3969;
 #     QEMU accepts UXL=1, which Sail cannot model yet (https://github.com/riscv/sail-riscv/issues/1150)
 # Zacas: amocas with rd=x0 corrupts subsequent branch on x0 (https://gitlab.com/qemu-project/qemu/-/work_items/3526)
-# InterruptsSm/InterruptsS: https://gitlab.com/qemu-project/qemu/-/work_items/3969 seems to apply to mip.LCOFIP not writable either
-# ExceptionsZalrsc/ExceptionsSvZalrsc/ExceptionsSvZalrscSm: sc.w to no-permission region returns failure instead of raising
+# InterruptsSm/InterruptsS _enable, _priority, _trigger: https://gitlab.com/qemu-project/qemu/-/work_items/3969 seems to apply to mip.LCOFIP not writable either
+# ExceptionsZalrsc/ExceptionsSvZalrsc/ExceptionsSvZalrscSm_sv{32,39}_exceptions: sc.w to no-permission region returns failure instead of raising
 #        store/AMO access fault (https://gitlab.com/qemu-project/qemu/-/work_items/4100, still failing in v11.1.1)
-# ExceptionsZicboU/S/Sm, SvZicbo: Zicbom CBOs skip PMA/PMP permission checks (https://gitlab.com/qemu-project/qemu/-/work_items/3501)
+# ExceptionsZicboU/S/Sm, SvZicbo (zicbom groups, sv32 zicbop/zicboz Umode): Zicbom CBOs skip PMA/PMP permission checks (https://gitlab.com/qemu-project/qemu/-/work_items/3501)
 # ExceptionsZaamo/Zama16b: QEMU zama16b handling is incomplete: misaligned Zabha/Zacas AMOs fault,
 #        but cross-granule word/doubleword AMOs execute instead of trapping
 #        (https://gitlab.com/qemu-project/qemu/-/work_items/4101).
-# SsstrictSm/SsstrictS/SsstrictU: Sail does not implement H, qemu#4200, qemu#4201
+# SsstrictSm/SsstrictS _CSR and _IllegalInstr, SsstrictU_IllegalInstr: Sail does not implement H, qemu#4200, qemu#4201
 # TODO: Remove SsstrictV when sail SsstrictV is implemented
 # Smstateen: mstateen0 bits are writable for state the hart lacks: P1P13 on RV64 and on RV32 without H
 #     (https://gitlab.com/qemu-project/qemu/-/work_items/4495), and ENVCFG, CSRIND, AIA and IMSIC without S
 #     (https://gitlab.com/qemu-project/qemu/-/work_items/4655). On the max configs CSRIND, AIA and IMSIC are
 #     legally writable, but Sail does not model Sscsrind or Ssaia.
 # ZawrsU and ZawrsS fail on qemu due to stval mismatching, filed QEMU issue https://gitlab.com/qemu-project/qemu/-/work_items/4080
-# Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
+# Sdtrig*_Mcontrol6: Sail 0.15 lacks mcontrol6 triggers, so it expects an illegal-instruction trap where the hart takes the breakpoint (https://github.com/riscv/sail-riscv/issues/222)
 # Sscofpmf*: qemu's mie write mask drops LCOFIE, so LCOFI is never taken: https://gitlab.com/qemu-project/qemu/-/work_items/3969
 # H: mstatus.MPV and mstatus.GVA are read-only zero, so mret never enters VS/VU: a guest's
 #    ecall is reported as cause 9/8 instead of 10, and a hypervisor CSR access from VS raises
 #    an illegal instruction instead of a virtual instruction exception
 #    (https://gitlab.com/qemu-project/qemu/-/issues/4620). QEMU has further hypervisor bugs
 #    filed the same day, 4611 through 4617, so this exclusion will be needed for a while.
-# Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : QEMU CBOs do not fault on inaccessible addresses in bare mode, shifting trap signatures;
+# Ssnpm_*, SmnpmS_* (bare and sv* pmm10/pmm11 sweep groups), SsnpmSm, Smmpm_mprv/pmm00/pmm10, SmnpmSSm, SmnpmU, SmnpmUSm : QEMU CBOs do not fault on inaccessible addresses in bare mode, shifting trap signatures;
 # same issue as ExceptionsZicboU/S and SvZicbo (https://gitlab.com/qemu-project/qemu/-/work_items/3501).
+# Ssnpm_sv*_pmm00_sweep, SmnpmS_sv*_pmm00_sweep: on a store/AMO page fault from ssamoswap.w, QEMU writes the
+# transformed instruction to htinst but Sail writes 0 (its transformations cover AMOs, not SSAMOSWAP), and the
+# trap check accepts only a matching value or 0.
 # ZicntrSm/U fail on qemu because ecall, ebreak and illegal instruction increments minstret/instret. Filed QEMU issue: https://gitlab.com/qemu-project/qemu/-/work_items/4227
 # ZicntrSm/U fail on qemu because minstret/instret overcounts by 1 for wfi with a pending or taken interrupt. Filed QEMU issue: https://gitlab.com/qemu-project/qemu/-/work_items/4230
-exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,ZicntrSm,ZicntrU,SscofpmfSm,SscofpmfS,SscofpmfU"
+exclude_extensions: "Sm_mcsr_access,Sm_mcsr_cntr,Sm_mcsr_walk,Sm_shadow,Sm_xret,S-,S_scsr-,SsstrictSm_CSR,SsstrictSm_IllegalInstr,SsstrictS_CSR,SsstrictS_IllegalInstr,SsstrictU_IllegalInstr,Zacas,InterruptsSm_enable,InterruptsSm_priority,InterruptsSm_trigger,InterruptsS_enable,InterruptsS_priority,InterruptsS_trigger,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo_sv32_zicbom,SvZicbo_sv32_zicbop_Umode,SvZicbo_sv32_zicboz_exceptions_Umode,SvZicbo_sv39_zicbom,SvZicbo_sv48_zicbom,SvZicbo_sv57_zicbom,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm_sv32_exceptions,ExceptionsSvZalrscSm_sv39_exceptions,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm_Mcontrol6,SdtrigS_Mcontrol6,SdtrigU_Mcontrol6,H,Ssnpm_bare_pmm00,Ssnpm_bare_pmm10,Ssnpm_bare_pmm11_edgecases,Ssnpm_sv39_pmm00_sweep,Ssnpm_sv39_pmm10_sweep,Ssnpm_sv39_pmm11_sweep,Ssnpm_sv48_pmm00_sweep,Ssnpm_sv48_pmm10_sweep,Ssnpm_sv48_pmm11_sweep,Ssnpm_sv57_pmm00_sweep,Ssnpm_sv57_pmm10_sweep,Ssnpm_sv57_pmm11_sweep,SsnpmSm,Smmpm_mprv,Smmpm_pmm00,Smmpm_pmm10,SmnpmS_bare_pmm00,SmnpmS_bare_pmm10,SmnpmS_bare_pmm11_edgecases,SmnpmS_sv39_pmm00_sweep,SmnpmS_sv39_pmm10_sweep,SmnpmS_sv39_pmm11_sweep,SmnpmS_sv48_pmm00_sweep,SmnpmS_sv48_pmm10_sweep,SmnpmS_sv48_pmm11_sweep,SmnpmS_sv57_pmm00_sweep,SmnpmS_sv57_pmm10_sweep,SmnpmS_sv57_pmm11_sweep,SmnpmSSm,SmnpmU,SmnpmUSm,ZicntrSm,ZicntrU,SscofpmfSm,SscofpmfS,SscofpmfU"
 # qemu-rv32-mu, qemu-rv64-mu: U-mode cbo.zero/clean/flush/inval raise illegal-instruction without S-mode
 #   because check_zicbo_envcfg() also requires senvcfg, which does not exist
 #   (https://gitlab.com/qemu-project/qemu/-/work_items/4596)

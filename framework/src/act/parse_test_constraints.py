@@ -163,13 +163,27 @@ def extract_yaml_config(file: Path) -> TestMetadata:
         raise TestYamlHeaderError(file, _describe_validation_error(e)) from None
 
 
+def _is_excluded(test_file: Path, exclude_list: list[str]) -> bool:
+    """True if the test's suite directory or its group is excluded.
+
+    An entry names a suite directory (Sm) or a group of tests whose file names start with
+    the entry followed by _ or - (Sm_mcsr_walk matches Sm_mcsr_walk-00.S; I-add matches I-add-00.S).
+    An entry ending in - matches only that group, not longer groups that extend its name
+    (S_scsr- matches S_scsr-00.S but not S_scsr_addr-00.S; S- matches S-00.S but not S_F-00.S).
+    """
+    name = test_file.name
+    return test_file.parent.name in exclude_list or any(
+        name.startswith(ext if ext.endswith("-") else (f"{ext}_", f"{ext}-")) for ext in exclude_list
+    )
+
+
 def generate_test_dict(tests_dir: Path, extensions: str, exclude: str = "") -> dict[str, TestMetadata]:
     """Generate a dictionary of tests with their corresponding metadata from the specified directory.
 
     Args:
         tests_dir: Directory containing test files.
         extensions: Comma-separated list of extensions to include, or "all" for all extensions.
-        exclude: Comma-separated list of extensions to exclude (applied after extensions filter).
+        exclude: Comma-separated list of extensions or test groups to exclude (applied after extensions filter).
 
     Returns:
         Dictionary mapping test file paths to their metadata.
@@ -191,14 +205,15 @@ def generate_test_dict(tests_dir: Path, extensions: str, exclude: str = "") -> d
                 continue
             for suffix in _TEST_FILE_SUFFIXES:
                 for test_file in tests_dir.rglob(f"*/{ext}/*{suffix}"):
+                    if _is_excluded(test_file, exclude_list):
+                        continue
                     config = extract_yaml_config(test_file)
                     test_file_unique_name = str(test_file.relative_to(tests_dir))
                     test_list[test_file_unique_name] = config
     else:
         for suffix in _TEST_FILE_SUFFIXES:
             for test_file in tests_dir.rglob(f"*{suffix}"):
-                ext_dir = test_file.parent.name
-                if ext_dir == "env" or ext_dir in exclude_list:
+                if test_file.parent.name == "env" or _is_excluded(test_file, exclude_list):
                     continue
                 config = extract_yaml_config(test_file)
                 test_file_unique_name = str(test_file.relative_to(tests_dir))

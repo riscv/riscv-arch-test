@@ -3,8 +3,8 @@
 # CI configuration for the cve2 family: CV32E20
 
 ci_enabled: true
-# Sm excluded: Insufficient WARL configuration options.
-exclude_extensions: "Sm"
+# Sm_mcsr_access, Sm_mcsr_cntr: Insufficient WARL configuration options.
+exclude_extensions: "Sm_mcsr_access,Sm_mcsr_cntr"
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cve2.sh"
 setup_script: ".github/scripts/setup-cve2.sh"

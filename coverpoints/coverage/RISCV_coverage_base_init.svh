@@ -374,14 +374,6 @@
         `cover_info("//      U - Enabled");
         `include "U_coverage_init.svh"
     `endif
-    `ifdef COVER_UF
-        `cover_info("//      UF - Enabled");
-        `include "UF_coverage_init.svh"
-    `endif
-    `ifdef COVER_UV
-        `cover_info("//      UV - Enabled");
-        `include "UV_coverage_init.svh"
-    `endif
     `ifdef COVER_VF16
         `cover_info("//      Vf16 - Enabled");
         `include "Vf16_coverage_init.svh"

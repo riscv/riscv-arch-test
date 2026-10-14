@@ -485,7 +485,9 @@ normative_rule_definitions:
         "Sm_mcsr_cg/cp_scsr_from_m",
         "S_scsr_cg/cp_ucsr_from_s",
         "Sm_F_cg/cp_fcsr_access",
+        "S_F_cg/cp_fcsr_access",
         "Sm_V_cg/cp_vcsrrswc",
+        "S_V_cg/cp_vcsrrswc",
       ]
 
   # The top two bits (csr[11:10]) indicate whether the register is read/write

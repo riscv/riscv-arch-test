@@ -347,9 +347,141 @@ covergroup S_scsr_cg with function sample(ins_t ins);
     `endif
 endgroup
 
+// S_F, S_V and S_VF tests (S_F-NN.S, S_V_*-NN.S, S_VF-NN.S) are part of the S suite and run only
+// when F, Zve32x or Zve32f is also supported. They parallel Sm_F, Sm_V and Sm_VF in Sm_coverage.svh,
+// using sstatus in S-mode, and share their coverpoints through the general/RISCV_coverage_priv_*
+// includes.
+`ifdef F_SUPPORTED
+covergroup S_F_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_priv_f_coverpoints.svh"
+
+    sstatus_FS: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs")[1:0] {
+    }
+    sstatus_FS_off_dirty: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs")[1:0] {
+        bins off     = {2'b00};
+        bins dirty   = {2'b11};
+    }
+
+    // main coverpoints
+    cp_fcsr_access:           cross priv_mode_s, fcsrname, csraccesses, sstatus_FS; // superset of ZicsrF cp_fcsr_access crossing with sstatus.FS
+    cp_sstatus_FS_transition: cross priv_mode_s, deterministic_instrs, sstatus_FS;
+    cp_sstatus_FS_transition_nondeterministic: cross priv_mode_s, nondeterministic_instrs, sstatus_FS_off_dirty;
+endgroup
+`endif
+
+`ifdef ZVE32X_SUPPORTED
+covergroup S_V_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_priv_v_coverpoints.svh"
+
+    // crosses of the shared vector coverpoints
+    cp_vcsrrswc                 : cross priv_mode_s, vcsrs, csrops;
+    cp_vcsrs_walking1s          : cross priv_mode_s, writable_vcsrs, csrw, walking_ones_rs1;
+    cp_sew_lmul_vsetvl          : cross priv_mode_s, vsetvl_instruction, rs2_vtype_legal, rs2_lmul, rs2_sew;
+    cp_sew_lmul_vset_i_vli      : cross priv_mode_s, vset_i_vli_instructions, vset_sew, vset_lmul;
+    cp_vill_vsetvl              : cross priv_mode_s, vsetvl_instruction, vtype_prev_vill_set, rs2_vtype_legal, rs2_sew_all_supported, rs2_lmul_8;
+    cp_vill_vset_i_vli          : cross priv_mode_s, vset_i_vli_instructions, vtype_prev_vill_set, current_vset_sew_all_supported, current_vset_lmul_8;
+    cp_vill_vsetvl_rs2_vill     : cross priv_mode_s, vsetvl_instruction, vtype_prev_vill_set, rs2_vtype_legal_no_msb, rs2_sew_all_supported, rs2_lmul_8, rs2_vill_set;
+    cp_vsetvl_rs2_vill          : cross priv_mode_s, vsetvl_instruction, rs2_vill_set, rs2_sew_supported, rs2_lmul_1, rs2_vtype_legal_no_msb, vtype_prev_vill_clear;
+    cp_vtype_vill_set_vl_0      : cross priv_mode_s, vsetvl_instruction, rs1_non_zero, rs2_vill_set, vl_nonzero;
+    cp_vsetvl_i_rd_nx0_rs1_x0   : cross priv_mode_s, vsetvl_i_instructions, vl_not_max, rd_n0, rs1_x0, vtype_all_sew_supported, vtype_all_lmul_supported {
+        // SEW > LMUL*ELEN sets vill=1 and forces vtype.vsew/vlmul to 0,
+        // so these BEFORE-state (sew, lmul) pairs are architecturally unreachable.
+        ignore_bins illegal_sew_lmul =
+            (binsof(vtype_all_sew_supported.sixtyfour) && binsof(vtype_all_lmul_supported.half))   ||
+            (binsof(vtype_all_sew_supported.sixtyfour) && binsof(vtype_all_lmul_supported.fourth)) ||
+            (binsof(vtype_all_sew_supported.sixtyfour) && binsof(vtype_all_lmul_supported.eighth)) ||
+            (binsof(vtype_all_sew_supported.thirtytwo) && binsof(vtype_all_lmul_supported.fourth)) ||
+            (binsof(vtype_all_sew_supported.thirtytwo) && binsof(vtype_all_lmul_supported.eighth)) ||
+            (binsof(vtype_all_sew_supported.sixteen)   && binsof(vtype_all_lmul_supported.eighth));
+    }
+    cp_vsetvl_i_rd_x0_rs1_x0    : cross priv_mode_s, vsetvl_i_instructions, vl_nonzero, rd_x0, rs1_x0, vset_i_vli_vlmax_unchanged;
+    cp_vsetvl_i_avl_eq_zero     : cross priv_mode_s, vsetvl_i_instructions, rs1_eq_zero;
+    cp_vsetvl_i_avl_eq_vlmax    : cross priv_mode_s, vsetvl_i_instructions, rs1_eq_vlmax;
+    cp_vsetvl_i_avl_lt_2x_vlmax : cross priv_mode_s, vsetvl_i_instructions, rs1_lt_2x_vlmax_gt_vlmax;
+    cp_vsetvl_i_avl_eq_2x_vlmax : cross priv_mode_s, vsetvl_i_instructions, rs1_eq_2x_vlmax;
+    cp_vsetvl_i_avl_gt_2x_vlmax : cross priv_mode_s, vsetvl_i_instructions, rs1_gt_2x_vlmax;
+    cp_vsetivli_avl_edges       : cross priv_mode_s, vsetivli_instruction, vtype_all_sew_supported, imm5_edges, vtype_lmul_1;
+    cp_vstart_out_of_bounds     : cross priv_mode_s, vstart_csr, csr_write, rs1_2_to_16;
+    cp_vl_walking1s_sew_lmul    : cross priv_mode_s, vsetivli_prev_instruction, vsetivli_prev_sew_lmul, csrrw, csr_vl, walking_ones_rs1;
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_sstatus_vs_*
+    // tests sstatus ability to set clean and initial to dirty only when supposed to
+    //////////////////////////////////////////////////////////////////////////////////
+
+    sstatus_vs_initial_clean : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "vs") {
+        bins first = {1};
+        bins clean  = {2};
+    }
+
+    sstatus_vs_inactive    : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "vs") {
+        bins inactive = {0};
+    }
+
+    cp_sstatus_vs_set_dirty_arithmetic  : cross priv_mode_s, std_vec,        vector_vector_arithmetic_instruction,   sstatus_vs_initial_clean;
+    cp_sstatus_vs_set_dirty_csr         : cross priv_mode_s, std_vec,        vsetvli_instruction,                    sstatus_vs_initial_clean;
+    cp_sstatus_vs_set_dirty_vcsr        : cross priv_mode_s, vcsrs_writable, csrops,                                 sstatus_vs_initial_clean;
+
+    // misa is not visible in S-mode, so unlike Sm_V these do not cross misa_v_active
+    cp_sstatus_vs_off_arithmetic        : cross priv_mode_s, sstatus_vs_inactive,     vector_vector_arithmetic_instruction iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                                                                                                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                                                                                                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 );
+    cp_sstatus_vs_off_csr               : cross priv_mode_s, sstatus_vs_inactive,     vsetvli_instruction iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                                                                                                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                                                                                                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 );
+
+endgroup
+`endif
+
+`ifdef ZVE32F_SUPPORTED
+covergroup S_VF_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_priv_vf_coverpoints.svh"
+
+    //cross vtype_prev_vill_clear, vstart_zero, vl_nonzero;
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    sstatus_fs_initial_clean : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs") {
+        bins first_state = {1};
+        bins clean  = {2};
+    }
+
+    sstatus_fs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs") {
+        bins off = {0};
+    }
+
+    cp_vectorfp_sstatus_fs_state_affecting_register : cross priv_mode_s, std_vec, vfmv_f_s, sstatus_fs_initial_clean;
+    cp_vectorfp_sstatus_fs_state_affecting_csr      : cross priv_mode_s, std_vec, vector_vector_arithmetic_fp_instruction, sstatus_fs_initial_clean, fflags_modified_after_clear;
+    cp_vectorfp_sstatus_fs_state_nonaffecting       : cross priv_mode_s, std_vec, vector_vector_arithmetic_fp_instruction, sstatus_fs_initial_clean, vs1_zero, vs2_zero;
+    cp_vectorfp_sstatus_fs_off                      : cross priv_mode_s, std_trap_vec, vector_vector_arithmetic_fp_instruction, sstatus_fs_off, vs1_zero, vs2_zero;
+
+endgroup
+`endif
+
 function void s_sample(int hart, int issue, ins_t ins);
     S_scause_cg.sample(ins);
     S_sstatus_cg.sample(ins);
     S_sprivinst_cg.sample(ins);
     S_scsr_cg.sample(ins);
+    `ifdef F_SUPPORTED
+        S_F_cg.sample(ins);
+    `endif
+    `ifdef ZVE32X_SUPPORTED
+        S_V_cg.sample(ins);
+    `endif
+    `ifdef ZVE32F_SUPPORTED
+        S_VF_cg.sample(ins);
+    `endif
 endfunction

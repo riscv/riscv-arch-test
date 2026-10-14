@@ -510,14 +510,23 @@ normative_rule_definitions:
   # The FS field encodes the status of the floating-point unit state, including the
   # floating-point registers f0–f31 and the CSRs fcsr, frm, and fflags.
   - name: mstatus_fs_op
-    coverpoint: ["Sm_F_cg/cp_mstatus_FS_transition"]
+    coverpoint:
+      [
+        "Sm_F_cg/cp_mstatus_FS_transition",
+        "U_F_cg/cp_mstatus_FS_transition",
+        "S_F_cg/cp_sstatus_FS_transition",
+      ]
 
   # The csr::[vs] field encodes the status of the vector extension state, including the
   # vector registers v0&amp;#8205;&amp;#8211;&amp;#8205;v31 and the CSRs csr:vcsr[],
   # csr:vxrm[], csr:vxsat[], csr:vstart[], csr:vl[], csr:vtype[], and csr:vlenb[].
   - name: mstatus_vs_op
     coverpoint:
-      ["Sm_V_cg/{cp_mstatus_vs_set_dirty_vcsr, cp_mstatus_vs_set_dirty_csr}"]
+      [
+        "Sm_V_cg/{cp_mstatus_vs_set_dirty_vcsr, cp_mstatus_vs_set_dirty_csr}",
+        "U_V_cg/{cp_mstatus_vs_set_dirty_vcsr, cp_mstatus_vs_set_dirty_csr}",
+        "S_V_cg/{cp_sstatus_vs_set_dirty_vcsr, cp_sstatus_vs_set_dirty_csr}",
+      ]
   # A vector context status field, csr::[vs], is added to csr:mstatus[][10:9] and shadowed
   # in csr:sstatus[][10:9]. It is defined analogously to the floating-point context status
   # field, csr::[fs].
@@ -525,6 +534,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sm_V_cg/{cp_mstatus_vs_set_dirty_arithmetic, cp_mstatus_vs_off_arithmetic}",
+        "U_V_cg/{cp_mstatus_vs_set_dirty_arithmetic, cp_mstatus_vs_off_arithmetic}",
+        "S_V_cg/{cp_sstatus_vs_set_dirty_arithmetic, cp_sstatus_vs_off_arithmetic}",
       ]
 
   # The csr::[xs] field encodes the status of additional user-mode extensions and
@@ -538,13 +549,23 @@ normative_rule_definitions:
   # Status|FS and VS Meaning|XS Meaning === 0|Off|All off¶1|Initial|None dirty or clean,
   # some on¶2|Clean|None dirty, some clean¶3|Dirty|Some dirty ===
   - name: mstatus_fs_vs_xs_enc
-    coverpoint: ["Sm_F_cg/cp_mstatus_FS_transition"]
+    coverpoint:
+      [
+        "Sm_F_cg/cp_mstatus_FS_transition",
+        "U_F_cg/cp_mstatus_FS_transition",
+        "S_F_cg/cp_sstatus_FS_transition",
+      ]
 
   # If the ext:f[] extension is implemented, the csr::[fs] field shall not be read-only
   # zero.
   - name: mstatus_fs_acc1
     # FS is written with each value and read back
-    coverpoint: ["Sm_F_cg/cp_mstatus_FS_transition"]
+    coverpoint:
+      [
+        "Sm_F_cg/cp_mstatus_FS_transition",
+        "U_F_cg/cp_mstatus_FS_transition",
+        "S_F_cg/cp_sstatus_FS_transition",
+      ]
 
   # If neither the ext:f[] extension nor S-mode is implemented, then csr::[fs] is
   # read-only zero.
@@ -588,7 +609,12 @@ normative_rule_definitions:
   - name: mstatus_sd_summary_op
     # Every mstatus read records SD; V configurations boot with VS=Dirty, so SD=1 throughout there
     coverpoint:
-      ["Sm_mstatus_cg/cp_mstatus_sd_write", "Sm_F_cg/cp_mstatus_FS_transition"]
+      [
+        "Sm_mstatus_cg/cp_mstatus_sd_write",
+        "Sm_F_cg/cp_mstatus_FS_transition",
+        "U_F_cg/cp_mstatus_FS_transition",
+        "S_F_cg/cp_sstatus_FS_transition",
+      ]
   # If csr:mstatus[vs] is Dirty, csr:mstatus[sd] is 1; otherwise, csr:mstatus[sd] is set
   # in accordance with existing specifications.
   - name: mstatus_sd_vs_dirty_op
@@ -604,7 +630,12 @@ normative_rule_definitions:
   - name: mstatus_sd_formula
     # Every mstatus read records SD; V configurations boot with VS=Dirty, so SD=1 throughout there
     coverpoint:
-      ["Sm_mstatus_cg/cp_mstatus_sd_write", "Sm_F_cg/cp_mstatus_FS_transition"]
+      [
+        "Sm_mstatus_cg/cp_mstatus_sd_write",
+        "Sm_F_cg/cp_mstatus_FS_transition",
+        "U_F_cg/cp_mstatus_FS_transition",
+        "S_F_cg/cp_sstatus_FS_transition",
+      ]
 
   # When an extension's status is set to Off, any instruction that attempts to read
   # or write the corresponding state will cause an illegal-instruction exception.
@@ -612,7 +643,11 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sm_F_cg/{cp_fcsr_access, cp_mstatus_FS_transition}",
+        "U_F_cg/{cp_fcsr_access, cp_mstatus_FS_transition}",
+        "S_F_cg/{cp_fcsr_access, cp_sstatus_FS_transition}",
         "Sm_V_cg/{cp_mstatus_vs_off_arithmetic, cp_mstatus_vs_off_csr}",
+        "U_V_cg/{cp_mstatus_vs_off_arithmetic, cp_mstatus_vs_off_csr}",
+        "S_V_cg/{cp_sstatus_vs_off_arithmetic, cp_sstatus_vs_off_csr}",
       ]
 
   # When the status is Initial, the corresponding state should have an initial constant
@@ -634,7 +669,12 @@ normative_rule_definitions:
   # When the status is Dirty, the corresponding state has potentially been modified
   # since the last context save.
   - name: mstatus_fs_vs_xs_dirty_op
-    coverpoint: ["Sm_F_cg/{cp_mstatus_FS_transition, cp_fcsr_access}"]
+    coverpoint:
+      [
+        "Sm_F_cg/{cp_mstatus_FS_transition, cp_fcsr_access}",
+        "U_F_cg/{cp_mstatus_FS_transition, cp_fcsr_access}",
+        "S_F_cg/{cp_sstatus_FS_transition, cp_fcsr_access}",
+      ]
 
   # the setting of VS has no effect on the contents of the vector register state.
   - name: mstatus_vs_wr
@@ -647,6 +687,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sm_F_cg/cp_mstatus_FS_transition",
+        "U_F_cg/cp_mstatus_FS_transition",
+        "S_F_cg/cp_sstatus_FS_transition",
         "Sm_mcsr_cg/cp_mcsrwalk_masked/mstatus",
       ]
 
@@ -657,6 +699,21 @@ normative_rule_definitions:
     coverpoint:
       [
         "Not tested: implementation-defined whether FS becomes Dirty when the contents do not change, and no UDB parameter controls this behavior in the ref model",
+      ]
+
+  # Implementations may choose to track the dirtiness of the floating-point register
+  # state imprecisely by reporting the state to be dirty even when it has not been
+  # modified. On some implementations, some instructions that do not mutate the
+  # floating-point state may cause the state to transition from Initial or Clean to
+  # Dirty.
+  - name: mstatus_fs_imprecise
+    # Instructions that need not modify FP state run only at FS=Off and FS=Dirty, where imprecise
+    # dirtiness tracking cannot change the result
+    coverpoint:
+      [
+        "Sm_F_cg/cp_mstatus_FS_transition_nondeterministic",
+        "U_F_cg/cp_mstatus_FS_transition_nondeterministic",
+        "S_F_cg/cp_sstatus_FS_transition_nondeterministic",
       ]
 
   # Implementations may choose to track the dirtiness of the floating-point register

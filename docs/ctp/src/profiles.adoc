@@ -84,7 +84,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Sm|Machine CSRs|<<t-Sm-coverpoints>>||x|x|x|x
 |S|Supervisor CSRs|<<t-S-coverpoints>>|||x|x|x
 |U|User CSRs|<<t-U-coverpoints>>|||x|x|x
-|UF|User Float CSRs|<<t-UF-coverpoints>>|||x|x|x
 |Zkr|Entropy CSR|<<t-Zkr-coverpoints>>|||o|o|o
 |ExceptionsSm|Machine Exceptions|<<t-ExceptionsSm-coverpoints>>||x|x|x|x
 |ExceptionsS|Supervisor Exceptions|<<t-ExceptionsS-coverpoints>>|||x|x|x
@@ -176,7 +175,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |ExceptionsVx|Vector Integer Exceptions|<<t-ExceptionsVx-coverpoints>>|||o|o|x
 |ExceptionsVf|Vector Float Exceptions|<<t-ExceptionsVf-coverpoints>>|||o|o|x
 |ExceptionsVls|Vector Load/Store Exceptions|<<t-ExceptionsVls-coverpoints>>|||o|o|x
-|UV|User Vector CSRs|<<t-UV-coverpoints>>|||o|o|x
 |MisalignV|Vector Misalignment|<<t-MisalignV-coverpoints>>|||o|o|o
 |SsstrictV|Vector Strict|<<t-SsstrictV-coverpoints>>|||o|o|o
 8+^|Hypervisor

@@ -86,8 +86,6 @@ RVA23_TEST_SUITES = frozenset(
         "S",
         "H",
         "HV",
-        "UV",
-        "UF",
         # Exceptions Tests
         "ExceptionsF",
         "ExceptionsH",

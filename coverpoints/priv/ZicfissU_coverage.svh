@@ -24,33 +24,9 @@
 covergroup ZicfissU_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/Zicfiss_coverpoints.svh"
 
     // ── Instruction building blocks ───────────────────────────────────────
-    // SSPUSH/SSPOPCHK are architecturally defined only for x1 and x5.
-    // The compressed forms exist only when Zcmop is implemented.
-    ss_push_instr: coverpoint ins.current.insn {
-        wildcard bins sspush_x1   = {SSPUSH_X1};
-        wildcard bins sspush_x5   = {SSPUSH_X5};
-        `ifdef ZCMOP_SUPPORTED
-            wildcard bins c_sspush_x1 = {C_SSPUSH_X1};
-        `endif
-    }
-    ss_pop_instr: coverpoint ins.current.insn {
-        wildcard bins sspopchk_x1   = {SSPOPCHK_X1};
-        wildcard bins sspopchk_x5   = {SSPOPCHK_X5};
-        `ifdef ZCMOP_SUPPORTED
-            wildcard bins c_sspopchk_x5 = {C_SSPOPCHK_X5};
-        `endif
-    }
-    ssrdp_instr: coverpoint ins.current.insn {
-        wildcard bins ssrdp = {SSRDP};
-    }
-    ssamoswap_instr: coverpoint ins.current.insn {
-        wildcard bins ssamoswap_w = {SSAMOSWAP_W};
-        `ifdef UDB_MXLEN_64
-            wildcard bins ssamoswap_d = {SSAMOSWAP_D};
-        `endif
-    }
     // The instructions that address memory through ssp.
     ss_stack_instr: coverpoint ins.current.insn {
         wildcard bins sspush_x1     = {SSPUSH_X1};
@@ -62,47 +38,7 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
             wildcard bins c_sspopchk_x5 = {C_SSPOPCHK_X5};
         `endif
     }
-    // MOP-encoded instructions, which revert to Zimop/Zcmop while Zicfiss is inactive.
-    // SSAMOSWAP is AMO-encoded and traps instead.
-    ss_mop_instr: coverpoint ins.current.insn {
-        wildcard bins sspush_x1     = {SSPUSH_X1};
-        wildcard bins sspush_x5     = {SSPUSH_X5};
-        wildcard bins sspopchk_x1   = {SSPOPCHK_X1};
-        wildcard bins sspopchk_x5   = {SSPOPCHK_X5};
-        wildcard bins ssrdp         = {SSRDP};
-        `ifdef ZCMOP_SUPPORTED
-            wildcard bins c_sspush_x1   = {C_SSPUSH_X1};
-            wildcard bins c_sspopchk_x5 = {C_SSPOPCHK_X5};
-        `endif
-    }
-    // Every SS instruction that accesses memory — used for page/fault crosses.
-    ss_mem_instr: coverpoint ins.current.insn {
-        wildcard bins sspush_x1     = {SSPUSH_X1};
-        wildcard bins sspush_x5     = {SSPUSH_X5};
-        wildcard bins sspopchk_x1   = {SSPOPCHK_X1};
-        wildcard bins sspopchk_x5   = {SSPOPCHK_X5};
-        wildcard bins ssamoswap_w   = {SSAMOSWAP_W};
-        `ifdef UDB_MXLEN_64
-            wildcard bins ssamoswap_d = {SSAMOSWAP_D};
-        `endif
-        `ifdef ZCMOP_SUPPORTED
-            wildcard bins c_sspush_x1   = {C_SSPUSH_X1};
-            wildcard bins c_sspopchk_x5 = {C_SSPOPCHK_X5};
-        `endif
-    }
-
     // ── ssp CSR access building blocks ────────────────────────────────────
-    csrops: coverpoint ins.current.insn {
-        wildcard bins csrrw  = {CSRRW};
-        wildcard bins csrrs  = {CSRRS};
-        wildcard bins csrrc  = {CSRRC};
-        wildcard bins csrrwi = {CSRRWI};
-        wildcard bins csrrsi = {CSRRSI};
-        wildcard bins csrrci = {CSRRCI};
-    }
-    ssp_csr: coverpoint ins.current.insn[31:20] {
-        bins ssp = {CSR_SSP};
-    }
     ssp_write_pattern: coverpoint ins.current.rs1_val {
         bins all_zeros = {'0};
         bins all_ones  = {'1};
@@ -128,19 +64,6 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
         `else
             bins pattern = {[32'h1 : 32'h7FFFFFFF]};
         `endif
-    }
-
-    // ── Alignment building blocks ─────────────────────────────────────────
-    // ssp[1:0] are read-only zero, and so is ssp[2] unless UXLEN or SXLEN can be 32. The
-    // test writes all eight low-bit values; only these can be held.
-    ssp_LSBs: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp")[2:0] {
-        bins aligned_8 = {3'b000};
-        `ifdef ZICFISS_SSP_BIT2_WRITABLE
-            bins aligned_4 = {3'b100};
-        `endif
-    }
-    ssamoswap_adr_LSBs: coverpoint ins.current.rs1_val[2:0] {
-        // auto fills 000 through 111
     }
 
     // ── SSAMOSWAP data-shape building blocks ──────────────────────────────
@@ -175,36 +98,7 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
         bins rd_x0        = {3'b100};
     }
 
-    // ── Shadow stack pop match/mismatch ───────────────────────────────────
-    // A mismatching SSPOPCHK raises a software-check exception; a matching one
-    // retires. trap is the discriminator between the two stimulus classes.
-    sspopchk_outcome: coverpoint ins.current.trap {
-        bins matched    = {1'b0};
-        bins mismatched = {1'b1};
-    }
-    // On a software-check exception stval reports shadow stack fault (code 3), or 0 if the
-    // implementation provides no information.
-    // Guarded on the trap being taken by this instruction, since the CSR array is persistent.
-    stval_ss_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval")
-                    iff (ins.current.csr_wb[CSR_SEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sepc", "sepc") == ins.current.pc_rdata)) {
-        `ifdef UDB_REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
-            bins ss_fault = {3};
-        `else
-            bins no_info = {0};
-        `endif
-    }
-    // The trap this instruction took is a software-check exception, so an unrelated memory fault
-    // on a pop cannot fill the mismatch bins.
-    scause_sw_check: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
-                     iff (ins.current.csr_wb[CSR_SEPC] && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sepc", "sepc") == ins.current.pc_rdata)) {
-        bins sw_check = {SOFTWARE_CHECK};
-    }
-
     // ── Enable-chain (SSE) building blocks ────────────────────────────────
-    menvcfg_sse: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") {
-        bins sse_off = {1'b0};
-        bins sse_on  = {1'b1};
-    }
     senvcfg_sse: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") {
         bins sse_off = {1'b0};
         bins sse_on  = {1'b1};
@@ -228,24 +122,7 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     }
 
     // ── Target page / PMA building blocks ─────────────────────────────────
-    // pte.xwr occupies bits [3:1] of the PTE the walk ended on; V is bit 0. All eight
-    // encodings: 000 at the last level is a pointer where a leaf is required and 110 is
-    // reserved, so both fail the walk itself rather than the shadow stack check.
-    pte_xwr: coverpoint ins.current.pte_d[3:1] iff (ins.current.pte_d[0]) {
-        bins non_leaf        = {3'b000};
-        bins read_only       = {3'b001};
-        bins ss_page         = {3'b010};
-        bins read_write      = {3'b011};
-        bins exec_only       = {3'b100};
-        bins exec_read       = {3'b101};
-        bins rsvd_wx         = {3'b110};
-        bins read_write_exec = {3'b111};
-    }
-    // pte.U is bit 4; pte.A is bit 6 and pte.D is bit 7.
-    pte_u: coverpoint ins.current.pte_d[4] {
-        bins supervisor = {1'b0};
-        bins user       = {1'b1};
-    }
+    // pte.A is bit 6 and pte.D is bit 7.
     pte_ad: coverpoint ins.current.pte_d[7:6] {
         bins a0_d0 = {2'b00};
         bins a1_d0 = {2'b01};
@@ -264,11 +141,6 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
             bins enabled = {1'b1};
         }
     `endif
-    // MXR governs whether an R=0 page is readable; the SS page is R=0 by construction.
-    sstatus_mxr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "mxr") {
-        bins mxr_clear = {1'b0};
-        bins mxr_set   = {1'b1};
-    }
     // Where ssp sits inside its page. A push decrements before storing, so a pointer
     // at the page base writes into the preceding page.
     ssp_page_offset: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp")[11:0] {
@@ -277,19 +149,8 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
         bins mid_page     = {[12'h011:12'hFEF]};
         bins near_top     = {[12'hFF0:12'hFFF]};
     }
-    pte_ss_page: coverpoint ins.current.pte_d[3:1] {
-        bins ss_page = {3'b010};
-    }
 
     // ── Non-SS accessors of an SS page ────────────────────────────────────
-    ordinary_storeops: coverpoint ins.current.insn {
-        wildcard bins sb = {SB};
-        wildcard bins sh = {SH};
-        wildcard bins sw = {SW};
-        `ifdef UDB_MXLEN_64
-            wildcard bins sd = {SD};
-        `endif
-    }
     ordinary_loadops: coverpoint ins.current.insn {
         wildcard bins lb  = {LB};
         wildcard bins lh  = {LH};
@@ -369,17 +230,6 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
         }
     `endif
 
-    // ── Fault-priority building block ─────────────────────────────────────
-    // ssp pointed at an unmapped VA so the pop's load faults. The memory fault must
-    // outrank the software-check exception that the value mismatch would otherwise raise.
-    ssp_fault_address: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp") {
-        `ifdef UDB_MXLEN_64
-            bins unmapped = {64'h140400000};
-        `else
-            bins unmapped = {32'hC0400000};
-        `endif
-    }
-
     // A jump to the shadow stack page: the fetch there must raise an instruction access fault
     // (implicit accesses to an SS page are not permitted), not an instruction page fault.
     jalr_instr: coverpoint ins.current.insn {
@@ -396,17 +246,6 @@ covergroup ZicfissU_cg with function sample(ins_t ins);
     scause_fetch_access: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
                          iff (ins.current.csr_wb[CSR_SEPC]) {
         bins access_fault = {INSTRUCTION_ACCESS_FAULT};
-    }
-
-    // ssp on the shadow stack page, or on the unmapped page an active access would fault on.
-    ssp_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp") {
-        `ifdef UDB_MXLEN_64
-            bins ss_page  = {[64'h140300000:64'h140300FFF]};
-            bins unmapped = {64'h140400000};
-        `else
-            bins ss_page  = {[32'hC0300000:32'hC0300FFF]};
-            bins unmapped = {32'hC0400000};
-        `endif
     }
 
     // ── Main coverpoints ──────────────────────────────────────────────────

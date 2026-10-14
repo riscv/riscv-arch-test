@@ -4,8 +4,6 @@
 //
 // Zicfiss (shadow stack) — VS/VU-mode (H-extension) coverage
 //
-// Testplan: the ZicfissH sheet linked from docs/ctp/src/privmisc23.adoc.
-//
 // Written: Umer Shahid umer@riscv.org 2026
 //
 // Copyright (C) 2026 RISC-V International
@@ -13,77 +11,14 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// The virtualised half of the enable chain. Two things make V=1 different and are the
-// reason this is a separate covergroup rather than more bins on ZicfissU:
-//   * the same gating condition yields an ILLEGAL-instruction exception at V=0 but a
-//     VIRTUAL-instruction exception at V=1;
-//   * G-stage translation adds the store/AMO guest-page-fault (cause 23) flavour of the
-//     SS fault-code remapping.
-//
-////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_ZICFISSH
 covergroup ZicfissH_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-
-    // ── Instruction building blocks ───────────────────────────────────────
-    ss_mem_instr: coverpoint ins.current.insn {
-        wildcard bins sspush_x1     = {SSPUSH_X1};
-        wildcard bins sspush_x5     = {SSPUSH_X5};
-        wildcard bins sspopchk_x1   = {SSPOPCHK_X1};
-        wildcard bins sspopchk_x5   = {SSPOPCHK_X5};
-        wildcard bins ssamoswap_w   = {SSAMOSWAP_W};
-        `ifdef UDB_MXLEN_64
-            wildcard bins ssamoswap_d = {SSAMOSWAP_D};
-        `endif
-        `ifdef ZCMOP_SUPPORTED
-            wildcard bins c_sspush_x1   = {C_SSPUSH_X1};
-            wildcard bins c_sspopchk_x5 = {C_SSPOPCHK_X5};
-        `endif
-    }
-    ss_mop_instr: coverpoint ins.current.insn {
-        wildcard bins sspush_x1     = {SSPUSH_X1};
-        wildcard bins sspush_x5     = {SSPUSH_X5};
-        wildcard bins sspopchk_x1   = {SSPOPCHK_X1};
-        wildcard bins sspopchk_x5   = {SSPOPCHK_X5};
-        wildcard bins ssrdp         = {SSRDP};
-        `ifdef ZCMOP_SUPPORTED
-            wildcard bins c_sspush_x1   = {C_SSPUSH_X1};
-            wildcard bins c_sspopchk_x5 = {C_SSPOPCHK_X5};
-        `endif
-    }
-    ss_pop_instr: coverpoint ins.current.insn {
-        wildcard bins sspopchk_x1   = {SSPOPCHK_X1};
-        wildcard bins sspopchk_x5   = {SSPOPCHK_X5};
-        `ifdef ZCMOP_SUPPORTED
-            wildcard bins c_sspopchk_x5 = {C_SSPOPCHK_X5};
-        `endif
-    }
-    ssamoswap_instr: coverpoint ins.current.insn {
-        wildcard bins ssamoswap_w = {SSAMOSWAP_W};
-        `ifdef UDB_MXLEN_64
-            wildcard bins ssamoswap_d = {SSAMOSWAP_D};
-        `endif
-    }
-    csrops: coverpoint ins.current.insn {
-        wildcard bins csrrw  = {CSRRW};
-        wildcard bins csrrs  = {CSRRS};
-        wildcard bins csrrc  = {CSRRC};
-        wildcard bins csrrwi = {CSRRWI};
-        wildcard bins csrrsi = {CSRRSI};
-        wildcard bins csrrci = {CSRRCI};
-    }
-    ssp_csr: coverpoint ins.current.insn[31:20] {
-        bins ssp = {CSR_SSP};
-    }
+    `include "general/Zicfiss_coverpoints.svh"
 
     // ── Enable-chain building blocks ──────────────────────────────────────
-    menvcfg_sse: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") {
-        bins sse_off = {1'b0};
-        bins sse_on  = {1'b1};
-    }
     senvcfg_sse: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") {
         bins sse_off = {1'b0};
         bins sse_on  = {1'b1};
@@ -219,9 +154,6 @@ covergroup ZicfissH_cg with function sample(ins_t ins);
     }
 
     // ── Page / G-stage building blocks ────────────────────────────────────
-    pte_ss_page: coverpoint ins.current.pte_d[3:1] {
-        bins ss_page = {3'b010};
-    }
     // vsatp.MODE=Bare makes SS instructions fault even with V=1.
     `ifdef UDB_MXLEN_64
         vsatp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vsatp", "mode")[3:0] {

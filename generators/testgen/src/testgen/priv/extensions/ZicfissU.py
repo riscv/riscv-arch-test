@@ -912,7 +912,6 @@ def _generate_instr_inactive_u(test_data: TestData) -> list[str]:
     required_extensions=["S", "Zicfiss"],
     # Zicfiss implies Zimop and Zaamo; name them for the assembler.
     march_extensions=["Zicfiss", "Zimop", "Zaamo"],
-    extra_defines=["#define BOOT_TO_UMODE"],
 )
 def make_zicfissu(test_data: TestData) -> list[TestChunk]:
     """Generate the ZicfissU test suite.

@@ -4,20 +4,11 @@
 //
 // Zicfiss (shadow stack) — M-mode control-plane coverage
 //
-// Testplan: the ZicfissSm sheet linked from docs/ctp/src/privmisc23.adoc.
-//
 // Written: Umer Shahid umer@riscv.org 2026
 //
 // Copyright (C) 2026 RISC-V International
 //
 // SPDX-License-Identifier: Apache-2.0
-//
-////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Use of Zicfiss in M-mode is not supported by the architecture. This covergroup
-// therefore covers the M-mode CONTROL plane — menvcfg.SSE gating and the read-only-zero
-// propagation into senvcfg/henvcfg — plus the one M-mode instruction behaviour the
-// spec does define: SSAMOSWAP always faults at M.
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -59,59 +50,8 @@
 covergroup ZicfissSm_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/Zicfiss_coverpoints.svh"
 
-    // ── Instruction building blocks ───────────────────────────────────────
-    ssamoswap_instr: coverpoint ins.current.insn {
-        wildcard bins ssamoswap_w = {SSAMOSWAP_W};
-        `ifdef UDB_MXLEN_64
-            wildcard bins ssamoswap_d = {SSAMOSWAP_D};
-        `endif
-    }
-    ss_pop_instr: coverpoint ins.current.insn {
-        wildcard bins sspopchk_x1   = {SSPOPCHK_X1};
-        wildcard bins sspopchk_x5   = {SSPOPCHK_X5};
-        `ifdef ZCMOP_SUPPORTED
-            wildcard bins c_sspopchk_x5 = {C_SSPOPCHK_X5};
-        `endif
-    }
-    // MOP-encoded instructions: these revert to Zimop/Zcmop whenever Zicfiss is
-    // inactive, which at M-mode is unconditional. SSAMOSWAP is AMO-encoded and traps
-    // instead, so it is deliberately not in this list.
-    ss_mop_instr: coverpoint ins.current.insn {
-        wildcard bins sspush_x1     = {SSPUSH_X1};
-        wildcard bins sspush_x5     = {SSPUSH_X5};
-        wildcard bins sspopchk_x1   = {SSPOPCHK_X1};
-        wildcard bins sspopchk_x5   = {SSPOPCHK_X5};
-        wildcard bins ssrdp         = {SSRDP};
-        `ifdef ZCMOP_SUPPORTED
-            wildcard bins c_sspush_x1   = {C_SSPUSH_X1};
-            wildcard bins c_sspopchk_x5 = {C_SSPOPCHK_X5};
-        `endif
-    }
-    ss_mem_instr: coverpoint ins.current.insn {
-        wildcard bins sspush_x1     = {SSPUSH_X1};
-        wildcard bins sspush_x5     = {SSPUSH_X5};
-        wildcard bins sspopchk_x1   = {SSPOPCHK_X1};
-        wildcard bins sspopchk_x5   = {SSPOPCHK_X5};
-        wildcard bins ssamoswap_w   = {SSAMOSWAP_W};
-        `ifdef UDB_MXLEN_64
-            wildcard bins ssamoswap_d = {SSAMOSWAP_D};
-        `endif
-        `ifdef ZCMOP_SUPPORTED
-            wildcard bins c_sspush_x1   = {C_SSPUSH_X1};
-            wildcard bins c_sspopchk_x5 = {C_SSPOPCHK_X5};
-        `endif
-    }
-    // ssp on the shadow stack page, or on the unmapped page an active access would fault on.
-    ssp_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "ssp", "ssp") {
-        `ifdef UDB_MXLEN_64
-            bins ss_page  = {[64'h140300000:64'h140300FFF]};
-            bins unmapped = {64'h140400000};
-        `else
-            bins ss_page  = {[32'hC0300000:32'hC0300FFF]};
-            bins unmapped = {32'hC0400000};
-        `endif
-    }
     // menvcfg.SSE x senvcfg.SSE. menvcfg.SSE=0 forces senvcfg.SSE read-only zero. Clearing menvcfg.SSE does not re-log
     // senvcfg, so until the next senvcfg write the trace can still show senvcfg.SSE=1; ANDing with
     // menvcfg.SSE gives the effective value. An explicit senvcfg write is logged legalized.
@@ -131,17 +71,6 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
             bins read_write = {2'b11};
         }
     `endif
-    csrops: coverpoint ins.current.insn {
-        wildcard bins csrrw  = {CSRRW};
-        wildcard bins csrrs  = {CSRRS};
-        wildcard bins csrrc  = {CSRRC};
-        wildcard bins csrrwi = {CSRRWI};
-        wildcard bins csrrsi = {CSRRSI};
-        wildcard bins csrrci = {CSRRCI};
-    }
-    ssp_csr: coverpoint ins.current.insn[31:20] {
-        bins ssp = {CSR_SSP};
-    }
     senvcfg_csr: coverpoint ins.current.insn[31:20] {
         bins senvcfg = {CSR_SENVCFG};
     }
@@ -150,12 +79,6 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
             bins henvcfg = {CSR_HENVCFG};
         }
     `endif
-    // The SSE bit alone set (csrrs) or cleared (csrrc): funct3 is insn[14:12] and SSE is
-    // bit 3 of rs1. Setting or clearing only SSE leaves every other field of the CSR alone.
-    sse_bit_write: coverpoint {ins.current.insn[14:12], ins.current.rs1_val[3]} {
-        bins set_sse   = {4'b0101};
-        bins clear_sse = {4'b0111};
-    }
     // Ordinary word/doubleword load and store, for the SS page encoding check.
     `ifdef UDB_MXLEN_64
         ls_op: coverpoint ins.current.insn {
@@ -168,9 +91,6 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
             wildcard bins store = {SW};
         }
     `endif
-    pte_ss_page: coverpoint ins.current.pte_d[3:1] {
-        bins ss_page = {3'b010};
-    }
     `ifdef SVPBMT_SUPPORTED
         // pte.PBMT is bits [62:61]: 00 PMA, 10 IO. IO is non-idempotent.
         pte_pbmt_pma_io: coverpoint ins.current.pte_d[62:61] {
@@ -191,10 +111,6 @@ covergroup ZicfissSm_cg with function sample(ins_t ins);
     }
 
     // ── Enable-chain building blocks ──────────────────────────────────────
-    menvcfg_sse: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") {
-        bins sse_off = {1'b0};
-        bins sse_on  = {1'b1};
-    }
     // Zicfiss is inactive in S-mode only while menvcfg.SSE=0.
     s_sse_inactive: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") {
         bins sse_off = {1'b0};

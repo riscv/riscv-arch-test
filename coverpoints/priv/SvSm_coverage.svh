@@ -197,7 +197,45 @@ covergroup SvSm_mstatus_mprv_cg with function sample(ins_t ins);
 
 endgroup
 
+covergroup SvSm_VA_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+
+    `ifdef UDB_MXLEN_64
+        VA_i: coverpoint ins.current.virt_adr_i {
+            bins all_zeros = {64'd0};
+        }
+        VA_d: coverpoint ins.current.virt_adr_d {
+            bins all_zeros = {64'd0};
+        }
+        mode_supported: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
+            `ifdef SV57_SUPPORTED
+                bins sv57 = {4'b1010};
+            `endif
+            `ifdef SV48_SUPPORTED
+                bins sv48 = {4'b1001};
+            `endif
+            `ifdef SV39_SUPPORTED
+                bins sv39 = {4'b1000};
+            `endif
+        }
+    `else
+        VA_i: coverpoint ins.current.virt_adr_i {
+            bins all_zeros = {32'd0};
+        }
+        VA_d: coverpoint ins.current.virt_adr_d {
+            bins all_zeros = {32'd0};
+        }
+        mode_supported: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] {
+            bins sv32 = {1'b1};
+        }
+    `endif
+
+    cp_VA_i_mode: cross mode_supported, VA_i;
+    cp_VA_d_mode: cross mode_supported, VA_d;
+endgroup
+
 function void svsm_sample(int hart, int issue, ins_t ins);
     SvSm_satp_cg.sample(ins);
     SvSm_mstatus_mprv_cg.sample(ins);
+    SvSm_VA_cg.sample(ins);
 endfunction

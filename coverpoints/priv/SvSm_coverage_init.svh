@@ -11,3 +11,4 @@
 
     SvSm_satp_cg = new(); SvSm_satp_cg.set_inst_name("obj_SvSm_satp");
     SvSm_mstatus_mprv_cg = new(); SvSm_mstatus_mprv_cg.set_inst_name("obj_SvSm_mstatus_mprv");
+    SvSm_VA_cg = new(); SvSm_VA_cg.set_inst_name("obj_SvSm_VA");

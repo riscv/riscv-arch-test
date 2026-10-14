@@ -59,7 +59,7 @@ main:
   SATP_SETUP_SV32 // Enable address translation.
   sfence.vma
 
-  LI( a2, 0x800)              // Test signature initialization
+  LI(a2, 0x800) // Test signature initialization
 
 
 // 4KB page at level 0

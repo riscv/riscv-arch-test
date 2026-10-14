@@ -81,44 +81,6 @@ def begin_sv_test(
     return chunk
 
 
-def keep_image_mapped(sv: SvMode) -> list[str]:
-    """Map the test image as a gigapage below the root.
-
-    On Sv48/Sv57 the boot identity map is root PTE 0, so a test VA in the same
-    root slot (VA 0) would unmap the running code without this path.
-    """
-    if sv.levels <= 3:
-        return []
-    index_mask = "0x3FF" if sv.xlen == 32 else "0x1FF"
-    lines = ["// Keep the identity-mapped test image reachable through the level 2 table."]
-    for level in range(sv.levels - 2, 1, -1):
-        shift = sv.page_offset_bits(level)
-        lines.extend(
-            [
-                "LA(t0, rvtest_code_begin)",
-                f"srli t1, t0, {shift}",
-                f"andi t1, t1, {index_mask}",
-                f"slli t1, t1, {2 if sv.xlen == 32 else 3}",
-                f"LA(a0, rvtest_slvl{level}_pg_tbl)",
-                "add a0, a0, t1",
-            ]
-        )
-        if level > 2:
-            lines.extend(
-                [f"LA(t0, rvtest_slvl{level - 1}_pg_tbl)", "srli t0, t0, 12", "slli t0, t0, 10", "ori t0, t0, PTE_V"]
-            )
-        else:
-            lines.extend(
-                [
-                    f"srli t0, t0, {shift}",
-                    f"slli t0, t0, {shift - 2}",
-                    "ori t0, t0, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V",
-                ]
-            )
-        lines.append("SREG t0, 0(a0)")
-    return lines
-
-
 def sv_data(
     sv: SvMode,
     levels: Iterable[int] | None = None,

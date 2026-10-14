@@ -1638,6 +1638,7 @@ def insertTemplate(test, signatureWords, name, sew=0, vdsew=0, test_data="", pri
       "Vx64":  ["Zve64x"],
       "Vls64": ["Zve64x"],
 
+      "Vf8":   ["Zvfh"],
       "Vf16":  ["Zvfh"],
       "Vf32":  ["Zve32f"],
       "Vf64":  ["Zve64d"],
@@ -3764,7 +3765,7 @@ def readTestplans(priv=False):
                         testplans["Vls" + effew] = tp
                     del testplans["Vls"]
                 if (arch == "Vf"):
-                    for effew in ["16", "32", "64"]:
+                    for effew in ["8", "16", "32", "64"]:
                         testplans["Vf" + effew] = tp
                     del testplans["Vf"]
                 if (arch == "ExceptionsVf"):

@@ -82,12 +82,15 @@ def make_cp_custom_ffLS(instr_name: str, instr_type: str, coverpoint: str, test_
     assert eew is not None, f"Could not extract eew from fault-only-first instruction {instr_name}"
     emul = eew * lmul / test_data.config.sew
 
-    # We might need an ifdef if vl=1 is vlmax (on lmul = 1, which could be required (e.g. 8 segments))
-    # But, we only need it if we require a VLEN > max(32, sew) as max(32, sew) is the minimum VLEN
-    ifdef = f"ZVL{eew * 2}B_SUPPORTED" if emul * info.segments > 8 and eew * 2 > max(32, test_data.config.sew) else ""
-    if emul * info.segments > 8:
-        lmul = 1
+    # Halve LMUL (down to a fractional LMUL if needed) until EMUL * NFIELDS <= 8
+    while emul * info.segments > 8:
+        lmul /= 2
         emul = eew * lmul / test_data.config.sew
+
+    # The test needs VLMAX >= 2, i.e. VLEN >= 2 * SEW / LMUL. It needs an ifdef only if that exceeds
+    # max(32, sew), the minimum VLEN
+    min_vlen = int(2 * test_data.config.sew / lmul)
+    ifdef = f"ZVL{min_vlen}B_SUPPORTED" if min_vlen > max(32, test_data.config.sew) else ""
 
     mask_label = "ffLS_mask"
     mask_elements = [0 for _ in range(math.ceil(VLEN_MAX / test_data.config.sew))]

@@ -117,6 +117,9 @@ def _sew_variants_for(arch: str) -> list[str] | None:
     """
     if any(prefix in arch for prefix in ("Vx", "Vls", "Zvbb", "Zvkb")):
         return ["8", "16", "32", "64"]
+    if arch == "Vf":
+        # SEW=8 has only Zvfh's conversions between 8-bit integers and binary16
+        return ["8", "16", "32", "64"]
     if "Vf" in arch:
         return ["16", "32", "64"]  # SEW 8 is not supported for vector floating point
     if "Zvknhb" in arch:

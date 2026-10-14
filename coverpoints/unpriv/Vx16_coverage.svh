@@ -27950,12 +27950,14 @@ covergroup Vx16_vrgatherei16_vv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+
+
     //////////////////////////////////////////////////////////////////////////////////
-    // cr_vl_lmul_sew16
+    // cr_vl_lmul_e16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew16_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 16
+    cp_csr_vtype_lmul_all_le_8_e16 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul"){
+        // Value of VTYPE.vlmul (vector register grouping)
         `ifdef LMULf4_SUPPORTED
             bins fourth = {6};
         `endif
@@ -27975,13 +27977,13 @@ covergroup Vx16_vrgatherei16_vv_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew16 : cross cp_csr_vtype_lmul_all_sew16_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
-        // Cross coverage all legal LMULs for SEW = 16 and vl edges (1, random, vlmax)
+    cr_vl_lmul_e16_sew16 : cross cp_csr_vtype_lmul_all_le_8_e16, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 1)  {
+        // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 8 and vl edges (1, random, vlmax)
     }
 
     //////////////////////////////////////////////////////////////////////////////////
 
-    //// end cr_vl_lmul_sew16////////////////////////////////////////////////
+    //// end cr_vl_lmul_e16_sew16////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vs2_vs1_edges
@@ -27994,7 +27996,7 @@ covergroup Vx16_vrgatherei16_vv_cg with function sample(ins_t ins);
     //// end cr_vs2_vs1_edges////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cr_vtype_agnostic
+    // cr_vtype_agnostic_e16
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
@@ -28013,11 +28015,11 @@ covergroup Vx16_vrgatherei16_vv_cg with function sample(ins_t ins);
         bins enabled = {1'b0};
     }
 
-    cr_vtype_agnostic : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
+    cr_vtype_agnostic_e16 : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
         // Cross coverage of vector tail and mask agnostic behaviors
     }
 
-    //// end cr_vtype_agnostic////////////////////////////////////////////////
+        //// end cr_vtype_agnostic_e16////////////////////////////////////////////////
 
 endgroup
 // ---------------------

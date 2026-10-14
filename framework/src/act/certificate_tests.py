@@ -48,6 +48,7 @@ RVA23_TEST_SUITES = frozenset(
         "Vf16",
         "Vf32",
         "Vf64",
+        "Vf8",
         "Vls16",
         "Vls32",
         "Vls64",

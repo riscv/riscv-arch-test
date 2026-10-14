@@ -1263,6 +1263,7 @@ def makeTest(coverpoints, test, sew=None):
     elif coverpoint == "cp_vs2_edges_emulf8"        : make_vs2_edges(test, sew, vedgesemulf8)
     elif coverpoint == "cp_vs2_edges_eew1"          : make_vs2_edges(test, sew, vedgeseew1, vl=8)  # assume vl = 8 for mask logical instr
     elif coverpoint == "cp_vs2_edges_ls"            : make_vs2_edges(test, sew, v_edges_ls, lmul=getBaseLmul(test, sew))
+    elif coverpoint == "cp_vs2_edges_f" and sew == 8: make_vs2_edges(test, sew, vedgesemul1)  # int8 source (Zvfh)
     elif coverpoint == "cp_vs2_edges_f"             : make_vs2_edges(test, sew, vfedgesemul1)
     elif coverpoint == "cp_vs2_edges_f_bf16"        : make_vs2_edges(test, sew, vfedgesemul1)
     elif coverpoint == "cp_vs2_edges_f_emul2"       : make_vs2_edges(test, sew, vfedgesemul2)

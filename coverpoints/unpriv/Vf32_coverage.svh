@@ -71,6 +71,8 @@ covergroup Vf32_vfadd_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -93,6 +95,7 @@ covergroup Vf32_vfadd_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -416,6 +419,8 @@ covergroup Vf32_vfadd_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -438,6 +443,7 @@ covergroup Vf32_vfadd_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -739,6 +745,8 @@ covergroup Vf32_vfclass_v_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -761,6 +769,7 @@ covergroup Vf32_vfclass_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -934,6 +943,8 @@ covergroup Vf32_vfcvt_f_x_v_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -956,6 +967,7 @@ covergroup Vf32_vfcvt_f_x_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -1164,6 +1176,8 @@ covergroup Vf32_vfcvt_f_xu_v_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -1186,6 +1200,7 @@ covergroup Vf32_vfcvt_f_xu_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -1387,6 +1402,8 @@ covergroup Vf32_vfcvt_rtz_x_f_v_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -1409,6 +1426,7 @@ covergroup Vf32_vfcvt_rtz_x_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -1643,6 +1661,8 @@ covergroup Vf32_vfcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -1665,6 +1685,7 @@ covergroup Vf32_vfcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -1908,6 +1929,8 @@ covergroup Vf32_vfcvt_x_f_v_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -1930,6 +1953,7 @@ covergroup Vf32_vfcvt_x_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -2173,6 +2197,8 @@ covergroup Vf32_vfcvt_xu_f_v_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -2195,6 +2221,7 @@ covergroup Vf32_vfcvt_xu_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -2450,6 +2477,8 @@ covergroup Vf32_vfdiv_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -2472,6 +2501,7 @@ covergroup Vf32_vfdiv_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -2805,6 +2835,8 @@ covergroup Vf32_vfdiv_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -2827,6 +2859,7 @@ covergroup Vf32_vfdiv_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -3128,6 +3161,8 @@ covergroup Vf32_vfmacc_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -3150,6 +3185,7 @@ covergroup Vf32_vfmacc_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -3471,6 +3507,8 @@ covergroup Vf32_vfmacc_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -3493,6 +3531,7 @@ covergroup Vf32_vfmacc_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -3790,6 +3829,8 @@ covergroup Vf32_vfmadd_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -3812,6 +3853,7 @@ covergroup Vf32_vfmadd_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -4133,6 +4175,8 @@ covergroup Vf32_vfmadd_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -4155,6 +4199,7 @@ covergroup Vf32_vfmadd_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -4437,6 +4482,8 @@ covergroup Vf32_vfmax_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -4459,6 +4506,7 @@ covergroup Vf32_vfmax_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -4762,6 +4810,8 @@ covergroup Vf32_vfmax_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -4784,6 +4834,7 @@ covergroup Vf32_vfmax_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -5055,6 +5106,8 @@ covergroup Vf32_vfmerge_vfm_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -5077,6 +5130,7 @@ covergroup Vf32_vfmerge_vfm_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -5287,6 +5341,8 @@ covergroup Vf32_vfmin_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -5309,6 +5365,7 @@ covergroup Vf32_vfmin_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -5612,6 +5669,8 @@ covergroup Vf32_vfmin_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -5634,6 +5693,7 @@ covergroup Vf32_vfmin_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -5928,6 +5988,8 @@ covergroup Vf32_vfmsac_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -5950,6 +6012,7 @@ covergroup Vf32_vfmsac_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -6271,6 +6334,8 @@ covergroup Vf32_vfmsac_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -6293,6 +6358,7 @@ covergroup Vf32_vfmsac_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -6590,6 +6656,8 @@ covergroup Vf32_vfmsub_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -6612,6 +6680,7 @@ covergroup Vf32_vfmsub_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -6933,6 +7002,8 @@ covergroup Vf32_vfmsub_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -6955,6 +7026,7 @@ covergroup Vf32_vfmsub_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -7252,6 +7324,8 @@ covergroup Vf32_vfmul_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -7274,6 +7348,7 @@ covergroup Vf32_vfmul_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -7603,6 +7678,8 @@ covergroup Vf32_vfmul_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -7625,6 +7702,7 @@ covergroup Vf32_vfmul_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -7941,6 +8019,8 @@ covergroup Vf32_vfmv_f_s_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -7963,6 +8043,7 @@ covergroup Vf32_vfmv_f_s_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -8517,6 +8598,10 @@ covergroup Vf32_vfncvt_f_f_w_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -8832,6 +8917,10 @@ covergroup Vf32_vfncvt_f_x_w_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -9114,6 +9203,10 @@ covergroup Vf32_vfncvt_f_xu_w_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -9455,6 +9548,10 @@ covergroup Vf32_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -9763,6 +9860,10 @@ covergroup Vf32_vfncvt_rtz_x_f_w_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -10071,6 +10172,10 @@ covergroup Vf32_vfncvt_rtz_xu_f_w_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -10388,6 +10493,10 @@ covergroup Vf32_vfncvt_x_f_w_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -10705,6 +10814,10 @@ covergroup Vf32_vfncvt_xu_f_w_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -10980,6 +11093,8 @@ covergroup Vf32_vfnmacc_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -11002,6 +11117,7 @@ covergroup Vf32_vfnmacc_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -11323,6 +11439,8 @@ covergroup Vf32_vfnmacc_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -11345,6 +11463,7 @@ covergroup Vf32_vfnmacc_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -11642,6 +11761,8 @@ covergroup Vf32_vfnmadd_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -11664,6 +11785,7 @@ covergroup Vf32_vfnmadd_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -11985,6 +12107,8 @@ covergroup Vf32_vfnmadd_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -12007,6 +12131,7 @@ covergroup Vf32_vfnmadd_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -12304,6 +12429,8 @@ covergroup Vf32_vfnmsac_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -12326,6 +12453,7 @@ covergroup Vf32_vfnmsac_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -12647,6 +12775,8 @@ covergroup Vf32_vfnmsac_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -12669,6 +12799,7 @@ covergroup Vf32_vfnmsac_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -12966,6 +13097,8 @@ covergroup Vf32_vfnmsub_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -12988,6 +13121,7 @@ covergroup Vf32_vfnmsub_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -13309,6 +13443,8 @@ covergroup Vf32_vfnmsub_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -13331,6 +13467,7 @@ covergroup Vf32_vfnmsub_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -13636,6 +13773,8 @@ covergroup Vf32_vfrdiv_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -13658,6 +13797,7 @@ covergroup Vf32_vfrdiv_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -14083,6 +14223,8 @@ covergroup Vf32_vfrec7_v_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -14105,6 +14247,7 @@ covergroup Vf32_vfrec7_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -14367,6 +14510,8 @@ covergroup Vf32_vfredmax_vs_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -14389,6 +14534,7 @@ covergroup Vf32_vfredmax_vs_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -14698,6 +14844,8 @@ covergroup Vf32_vfredmin_vs_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -14720,6 +14868,7 @@ covergroup Vf32_vfredmin_vs_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -15042,6 +15191,8 @@ covergroup Vf32_vfredosum_vs_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -15064,6 +15215,7 @@ covergroup Vf32_vfredosum_vs_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -15518,6 +15670,8 @@ covergroup Vf32_vfredusum_vs_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -15540,6 +15694,7 @@ covergroup Vf32_vfredusum_vs_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -15952,6 +16107,8 @@ covergroup Vf32_vfrsqrt7_v_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -15974,6 +16131,7 @@ covergroup Vf32_vfrsqrt7_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -16281,6 +16439,8 @@ covergroup Vf32_vfrsub_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -16303,6 +16463,7 @@ covergroup Vf32_vfrsub_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -16570,6 +16731,8 @@ covergroup Vf32_vfsgnj_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -16592,6 +16755,7 @@ covergroup Vf32_vfsgnj_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -16821,6 +16985,8 @@ covergroup Vf32_vfsgnj_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -16843,6 +17009,7 @@ covergroup Vf32_vfsgnj_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -17048,6 +17215,8 @@ covergroup Vf32_vfsgnjn_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -17070,6 +17239,7 @@ covergroup Vf32_vfsgnjn_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -17299,6 +17469,8 @@ covergroup Vf32_vfsgnjn_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -17321,6 +17493,7 @@ covergroup Vf32_vfsgnjn_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -17526,6 +17699,8 @@ covergroup Vf32_vfsgnjx_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -17548,6 +17723,7 @@ covergroup Vf32_vfsgnjx_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -17777,6 +17953,8 @@ covergroup Vf32_vfsgnjx_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -17799,6 +17977,7 @@ covergroup Vf32_vfsgnjx_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -18004,6 +18183,8 @@ covergroup Vf32_vfslide1down_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -18026,6 +18207,7 @@ covergroup Vf32_vfslide1down_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -18215,6 +18397,8 @@ covergroup Vf32_vfslide1up_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -18237,6 +18421,7 @@ covergroup Vf32_vfslide1up_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -18456,6 +18641,8 @@ covergroup Vf32_vfsqrt_v_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -18478,6 +18665,7 @@ covergroup Vf32_vfsqrt_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -18723,6 +18911,8 @@ covergroup Vf32_vfsub_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -18745,6 +18935,7 @@ covergroup Vf32_vfsub_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -19064,6 +19255,8 @@ covergroup Vf32_vfsub_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -19086,6 +19279,7 @@ covergroup Vf32_vfsub_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -19369,6 +19563,8 @@ covergroup Vf32_vfwadd_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -19391,6 +19587,7 @@ covergroup Vf32_vfwadd_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -19760,6 +19957,8 @@ covergroup Vf32_vfwadd_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -19782,6 +19981,7 @@ covergroup Vf32_vfwadd_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -20227,6 +20427,10 @@ covergroup Vf32_vfwadd_wf_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -20576,6 +20780,10 @@ covergroup Vf32_vfwadd_wv_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -20945,7 +21153,7 @@ covergroup Vf32_vfwadd_wv_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Vf32_vfwcvt_f_x_v_cg with function sample(ins_t ins);
+covergroup Vf32_vfwcvt_f_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
     get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -20956,15 +21164,26 @@ covergroup Vf32_vfwcvt_f_x_v_cg with function sample(ins_t ins);
     bins true = {1'b1};
     }
 
-    cp_asm_count : coverpoint ins.ins_str == "vfwcvt.f.x.v"  iff (ins.trap == 0 )  {
+    cp_asm_count : coverpoint ins.ins_str == "vfwcvt.f.f.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    cp_csr_fflags_v : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
+        // Value of FCSR.fflags
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -20987,6 +21206,257 @@ covergroup Vf32_vfwcvt_f_x_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
+`endif
+
+    //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfp_flags_nv
+    // For instructions that can only raise NV (comparison, min, max).
+    // These instructions compare or select operands exactly — no rounding occurs,
+    // so NX/DZ/OF/UF are never raised. NV fires when either operand is a sNaN.
+    //////////////////////////////////////////////////////////////////////////////////
+
+`ifndef COVER_VFCUSTOM64
+    cp_csr_fflags_vdoun_nv : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+    }
+
+    cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
+`else
+    `ifdef D_SUPPORTED
+    cp_csr_fflags_vdoun_nv : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+    }
+
+    cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
+    `endif
+`endif
+
+    //// end cp_custom_vfp_flags_nv////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfp_flags_set
+    // Universal flag-set check: every flag-setting FP instruction can raise NV
+    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
+    //////////////////////////////////////////////////////////////////////////////////
+
+`ifndef COVER_VFCUSTOM64
+    cp_csr_fflags_vdoun_set : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+    }
+
+    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
+`else
+    `ifdef D_SUPPORTED
+    cp_csr_fflags_vdoun_set : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+    }
+
+    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
+    `endif
+`endif
+
+    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
+
+    cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
+        // Edges values of v0 (vector mask register)
+        bins zero           = {mask_zero            };
+        bins ones           = {mask_ones            };
+        bins vlmaxm1ones    = {mask_vlmaxm1ones     };
+        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        bins random         = {mask_random          };
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vd_emul2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vd_emul2 : coverpoint ins.get_vr_reg(ins.current.vd) iff (ins.trap == 0) {
+        // VD register assignment (widening instruction, excluding odd registers)
+        ignore_bins v1 = {v1};
+        ignore_bins v3 = {v3};
+        ignore_bins v5 = {v5};
+        ignore_bins v7 = {v7};
+        ignore_bins v9 = {v9};
+        ignore_bins v11 = {v11};
+        ignore_bins v13 = {v13};
+        ignore_bins v15 = {v15};
+        ignore_bins v17 = {v17};
+        ignore_bins v19 = {v19};
+        ignore_bins v21 = {v21};
+        ignore_bins v23 = {v23};
+        ignore_bins v25 = {v25};
+        ignore_bins v27 = {v27};
+        ignore_bins v29 = {v29};
+        ignore_bins v31 = {v31};
+    }
+
+    //// end cp_vd_emul2////////////////////////////////////////////////
+
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    bins zero = {0};
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs2 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
+        // VS2 register assignment
+    }
+
+    //// end cp_vs2////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs2_edges_f_sew32
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs2_edges_f_sew32 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[31:0]  iff (ins.trap == 0 )  {
+        // Standard precision coverpoints
+        bins pos0                   = {32'h00000000};
+        bins neg0                   = {32'h80000000};
+        bins pos1                   = {32'h3F800000};
+        bins neg1                   = {32'hBF800000};
+        bins posminnorm             = {32'h00800000};
+        bins negmaxnorm             = {32'hFF7FFFFF};
+        bins posinfinity            = {32'h7F800000};
+        bins neginfinity            = {32'hFF800000};
+        bins pos0p5                 = {32'h3F000000};
+        bins pos1p5                 = {32'h3FC00000};
+        bins neg2                   = {32'hC0000000};
+        bins pi                     = {32'h40490FDB};
+        bins twoToEmax              = {32'h7F000000};   // 2^127
+        bins onePulp                = {32'h3F800001};   // 1 + ULP
+        bins largestsubnorm         = {32'h007FFFFF};
+        bins negSubnormLeadingOne   = {32'h80400000};   // subnormal with MSB of fraction = 1
+        bins min_subnorm            = {32'h00000001};
+        bins canonicalQNaN          = {32'h7FC00000};   // quiet NaN, canonical payload
+        bins negNoncanonicalQNaN    = {[32'hFFC00001:32'hFFFFFFFF]}; // other quiet NaNs
+        bins sNaN_payload1          = {32'h7F800001};   // signaling NaN with payload 1
+    }
+
+    //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vl_lmul_sew32_lmul4max
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
+        `ifdef LMULf2_SUPPORTED
+            bins half   = {7};
+        `endif
+        bins one    = {0};
+        bins two    = {1};
+        bins four   = {2};
+    }
+
+    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
+        // Edges values of VL (vector length)
+        bins one        = {vl_one       };
+        bins vlmax      = {vl_vlmax     };
+        bins legal      = {vl_legal     };
+    }
+
+    cr_vl_lmul_lmul4max_sew32 : cross cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+        // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 32 and vl edges (1, random, vlmax)
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+
+    //// end cr_vl_lmul_lmul4max_sew32////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vtype_agnostic_lmul4max
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vta (vector tail agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vma (vector mask agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    mask_enabled_agnostic: coverpoint ins.current.insn[25] {
+        bins enabled = {1'b0};
+    }
+
+    cr_vtype_agnostic_lmul4max : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
+        // Cross coverage of vector tail and mask agnostic behaviors
+    }
+
+    //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup Vf32_vfwcvt_f_x_v_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
+    cp_asm_count : coverpoint ins.ins_str == "vfwcvt.f.x.v"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfp_NaN_input
+    //////////////////////////////////////////////////////////////////////////////////
+
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
+`ifndef COVER_VFCUSTOM64
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM16
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
+        `ifdef COVER_VFCUSTOM32
+            bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
+            bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
+        `endif
+    }
+
+    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
+`else
+    `ifdef D_SUPPORTED
+    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
+            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
+            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
+    }
+
+    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
+    `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -21147,6 +21617,8 @@ covergroup Vf32_vfwcvt_f_xu_v_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -21169,6 +21641,7 @@ covergroup Vf32_vfwcvt_f_xu_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -21340,6 +21813,8 @@ covergroup Vf32_vfwcvt_rtz_x_f_v_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -21362,6 +21837,7 @@ covergroup Vf32_vfwcvt_rtz_x_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -21601,6 +22077,8 @@ covergroup Vf32_vfwcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -21623,6 +22101,7 @@ covergroup Vf32_vfwcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -21871,6 +22350,8 @@ covergroup Vf32_vfwcvt_x_f_v_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -21893,6 +22374,7 @@ covergroup Vf32_vfwcvt_x_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -22141,6 +22623,8 @@ covergroup Vf32_vfwcvt_xu_f_v_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -22163,6 +22647,7 @@ covergroup Vf32_vfwcvt_xu_f_v_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -22411,6 +22896,8 @@ covergroup Vf32_vfwmacc_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -22433,6 +22920,7 @@ covergroup Vf32_vfwmacc_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -22735,6 +23223,8 @@ covergroup Vf32_vfwmacc_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -22757,6 +23247,7 @@ covergroup Vf32_vfwmacc_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -23055,6 +23546,8 @@ covergroup Vf32_vfwmsac_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -23077,6 +23570,7 @@ covergroup Vf32_vfwmsac_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -23379,6 +23873,8 @@ covergroup Vf32_vfwmsac_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -23401,6 +23897,7 @@ covergroup Vf32_vfwmsac_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -23697,6 +24194,8 @@ covergroup Vf32_vfwmul_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -23719,6 +24218,7 @@ covergroup Vf32_vfwmul_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -24086,6 +24586,8 @@ covergroup Vf32_vfwmul_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -24108,6 +24610,7 @@ covergroup Vf32_vfwmul_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -24525,6 +25028,8 @@ covergroup Vf32_vfwnmacc_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -24547,6 +25052,7 @@ covergroup Vf32_vfwnmacc_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -24849,6 +25355,8 @@ covergroup Vf32_vfwnmacc_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -24871,6 +25379,7 @@ covergroup Vf32_vfwnmacc_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -25169,6 +25678,8 @@ covergroup Vf32_vfwnmsac_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -25191,6 +25702,7 @@ covergroup Vf32_vfwnmsac_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -25493,6 +26005,8 @@ covergroup Vf32_vfwnmsac_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -25515,6 +26029,7 @@ covergroup Vf32_vfwnmsac_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -25839,6 +26354,8 @@ covergroup Vf32_vfwredosum_vs_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -25861,6 +26378,7 @@ covergroup Vf32_vfwredosum_vs_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -26372,6 +26890,8 @@ covergroup Vf32_vfwredusum_vs_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -26394,6 +26914,7 @@ covergroup Vf32_vfwredusum_vs_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -26806,6 +27327,8 @@ covergroup Vf32_vfwsub_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -26828,6 +27351,7 @@ covergroup Vf32_vfwsub_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -27197,6 +27721,8 @@ covergroup Vf32_vfwsub_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -27219,6 +27745,7 @@ covergroup Vf32_vfwsub_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -27664,6 +28191,10 @@ covergroup Vf32_vfwsub_wf_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -28013,6 +28544,10 @@ covergroup Vf32_vfwsub_wv_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -28411,6 +28946,8 @@ covergroup Vf32_vmfeq_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -28433,6 +28970,7 @@ covergroup Vf32_vmfeq_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -28706,6 +29244,8 @@ covergroup Vf32_vmfeq_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -28728,6 +29268,7 @@ covergroup Vf32_vmfeq_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -28997,6 +29538,8 @@ covergroup Vf32_vmfge_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -29019,6 +29562,7 @@ covergroup Vf32_vmfge_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -29282,6 +29826,8 @@ covergroup Vf32_vmfgt_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -29304,6 +29850,7 @@ covergroup Vf32_vmfgt_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -29567,6 +30114,8 @@ covergroup Vf32_vmfle_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -29589,6 +30138,7 @@ covergroup Vf32_vmfle_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -29862,6 +30412,8 @@ covergroup Vf32_vmfle_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -29884,6 +30436,7 @@ covergroup Vf32_vmfle_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -30153,6 +30706,8 @@ covergroup Vf32_vmflt_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -30175,6 +30730,7 @@ covergroup Vf32_vmflt_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -30448,6 +31004,8 @@ covergroup Vf32_vmflt_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -30470,6 +31028,7 @@ covergroup Vf32_vmflt_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -30739,6 +31298,8 @@ covergroup Vf32_vmfne_vf_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -30761,6 +31322,7 @@ covergroup Vf32_vmfne_vf_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -31034,6 +31596,8 @@ covergroup Vf32_vmfne_vv_cg with function sample(ins_t ins);
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -31056,6 +31620,7 @@ covergroup Vf32_vmfne_vv_cg with function sample(ins_t ins);
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
@@ -31506,6 +32071,9 @@ function void vf32_sample(int hart, int issue, ins_t ins);
             end
             "vfwadd.wv"     : begin
                 Vf32_vfwadd_wv_cg.sample(ins);
+            end
+            "vfwcvt.f.f.v"     : begin
+                Vf32_vfwcvt_f_f_v_cg.sample(ins);
             end
             "vfwcvt.f.x.v"     : begin
                 Vf32_vfwcvt_f_x_v_cg.sample(ins);

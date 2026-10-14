@@ -308,6 +308,9 @@
 `ifdef VF64_COVERAGE
   `include "Vf64_coverage.svh"
 `endif
+`ifdef VF8_COVERAGE
+  `include "Vf8_coverage.svh"
+`endif
 `ifdef VLS16_COVERAGE
   `include "Vls16_coverage.svh"
 `endif

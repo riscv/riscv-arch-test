@@ -32,9 +32,9 @@ def expand_vector_extension(extension: str) -> list[str]:
         # Only unprivileged vector is supported for now
         return []
 
-    if extension in ["Vx", "Vls", "Zvbb", "Zvkb"]:
+    if extension in ["Vx", "Vls", "Vf", "Zvbb", "Zvkb"]:
         return [extension + effew for effew in ["8", "16", "32", "64"]]
-    elif extension in ["ExceptionsVf", "Vf"]:
+    elif extension == "ExceptionsVf":
         return [extension + effew for effew in ["16", "32", "64"]]
     elif extension == "Zvknhb":
         return [extension + effew for effew in ["32", "64"]]

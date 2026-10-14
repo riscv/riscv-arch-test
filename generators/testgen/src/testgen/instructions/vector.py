@@ -28,6 +28,7 @@ class VectorInstructionInfo:
         segments: The number of segments that this instruction uses (e.g. 5 for vlseg5e8.v)
         load_store_eew: The eew of the data for this instruction (e.g. 8 for vle8.v)
         index_eew: The eew of the index register (e.g. 16 for vrgatherei16.vv)
+        index_reg: The index register: vs1 for vrgatherei16.vv, vs2 for indexed loads and stores
         vext_multiplier: The fractional value that a vext instruction uses to calculate its eew
             (e.g. 0.125 for vzext.vf8)
         widened_regs: Set of registers that are widened
@@ -36,6 +37,7 @@ class VectorInstructionInfo:
     segments: int
     load_store_eew: int | None
     index_eew: int | None
+    index_reg: str
     vext_multiplier: float | None
     whole_registers: int | None
 
@@ -43,7 +45,7 @@ class VectorInstructionInfo:
         """Return a register's size multiplier relative to SEW."""
         if self.vext_multiplier and register == "vs2":
             return self.vext_multiplier
-        if self.index_eew and register == "vs2":
+        if self.index_eew and register == self.index_reg:
             return self.index_eew / sew
         if self.load_store_eew and register in ["vs3", "vd"]:
             return self.load_store_eew / sew
@@ -86,6 +88,7 @@ def parse_vector_instruction_info(instruction: str, instruction_type: str) -> Ve
         segments=segments,
         load_store_eew=load_store_eew,
         index_eew=index_eew,
+        index_reg="vs1" if instruction.startswith("vrgatherei") else "vs2",
         vext_multiplier=vext_multiplier,
         whole_registers=whole_registers,
     )

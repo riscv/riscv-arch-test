@@ -406,6 +406,10 @@
         `cover_info("//      Vf64 - Enabled");
         `include "Vf64_coverage_init.svh"
     `endif
+    `ifdef COVER_VF8
+        `cover_info("//      Vf8 - Enabled");
+        `include "Vf8_coverage_init.svh"
+    `endif
     `ifdef COVER_VLS16
         `cover_info("//      Vls16 - Enabled");
         `include "Vls16_coverage_init.svh"

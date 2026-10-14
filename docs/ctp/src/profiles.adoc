@@ -152,6 +152,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Vls16|Vector Load/Store 16-bit|<<t-Vls-coverpoints>>|||o|o|x
 |Vls32|Vector Load/Store 32-bit|<<t-Vls-coverpoints>>|||o|o|x
 |Vls64|Vector Load/Store 64-bit|<<t-Vls-coverpoints>>|||o|o|x
+|Vf8 (Zvfh)|Vector Float conversions with 8-bit integers|<<t-Vf-coverpoints>>||||o|o
 |Vf16 (Zvfh)|Vector Float 16-bit|<<t-Vf-coverpoints>>||||o|o
 |Vf32|Vector Float 32-bit|<<t-Vf-coverpoints>>|||o|o|x
 |Vf64|Vector Float 64-bit|<<t-Vf-coverpoints>>|||o|o|x

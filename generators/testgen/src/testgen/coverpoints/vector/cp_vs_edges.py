@@ -43,7 +43,10 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
 
     if coverpoint.startswith(f"cp_{register}_edges_"):
         suffix = coverpoint[len(f"cp_{register}_edges_") :]
-        if suffix.startswith("f"):
+        if suffix == "f" and sew == 8:
+            # At SEW=8 the only Vf instructions are Zvfh conversions from 8-bit integers, so use integer edges
+            suffix = ""
+        elif suffix.startswith("f"):
             edges = VECTOR_EDGES.vf_edges
         elif suffix.startswith("ls"):
             edges = VECTOR_EDGES.vls_edges

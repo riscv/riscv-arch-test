@@ -307,6 +307,9 @@
     `ifdef COVER_VF64
         vf64_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_VF8
+        vf8_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_VLS16
         vls16_sample(hart, issue, ins);
     `endif

@@ -2,6 +2,8 @@
     // cp_custom_vfp_NaN_input
     //////////////////////////////////////////////////////////////////////////////////
 
+// At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16), so there is no NaN input
+`ifndef COVER_VFCUSTOM8
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
         `ifdef COVER_VFCUSTOM16
@@ -24,6 +26,7 @@
 
     cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
     `endif
+`endif
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////

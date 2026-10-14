@@ -47,6 +47,8 @@ def cp_custom_vfp_NaN_input(instr_name: str, instr_type: str, coverpoint: str, t
         assert instr_type_config.vector_data is not None, "Vector data must be provided for vector instructions"
         eew = test_data.config.sew * 2 if "vs2" in instr_type_config.vector_data.widened_regs else test_data.config.sew
 
+        if eew not in NAN_VALUES:
+            return []  # At SEW=8 vs2 holds 8-bit integers (Zvfh conversions to binary16)
         val = NAN_VALUES[eew][nan_type]
         test_data.register_vector_data(label, eew, elements=[val])
 

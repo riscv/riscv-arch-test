@@ -5,6 +5,8 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
+from dataclasses import replace
+
 from testgen.asm.vector_helpers import (
     VectorLoad,
     compute_egs_vlen,
@@ -199,6 +201,15 @@ def format_vvv_like_type(
     enable_vs2_preload: bool = False,
     egs: int = 1,
 ) -> tuple[list[str], list[str], list[str]]:
+    # At SEW=8 the vrgatherei16 indices in vs1 have EEW=16 and EMUL=2*LMUL, so load the whole index group from a
+    # 16-bit-aligned copy of the vs1 data (each element zero-extended to 16 bits)
+    index16_widen = instr_str == "vrgatherei16.vv" and params.sew == 8
+    if index16_widen and params.vs1_val_pointer is not None:
+        vs1_elements, _ = test_data.vector_labels[params.vs1_val_pointer]
+        vs1_label16 = f"{params.vs1_val_pointer}_e16"
+        test_data.register_vector_data(vs1_label16, 16, elements=list(vs1_elements))
+        params = replace(params, vs1_val_pointer=vs1_label16)
+
     assert params.vs1 is not None and params.vs1_val_pointer is not None, (
         f"vs1 and vs1_val_pointer must be provided for {type_name}-type instructions"
     )
@@ -247,7 +258,7 @@ def format_vvv_like_type(
 
     if not (params.vs1 == params.vs2 and params.vector_suite == "length" and enable_vs2_preload):
         # Don't overwrite vs2 in this case
-        to_load.append(VectorLoad(reg="vs1", widen="vs1" in widen, egs=egs))
+        to_load.append(VectorLoad(reg="vs1", widen="vs1" in widen or index16_widen, egs=egs))
 
     load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
     setup.extend(load_code)

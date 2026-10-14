@@ -48,7 +48,7 @@ fcov
         MisalignV_coverage.svh
         SsstrictV_coverage.svh
         Sm_coverage.svh (Sm_V_cg, Sm_VF_cg)
-        UV_coverage.svh
+        U_coverage.svh (U_V_cg, U_VF_cg)
 tests
     rv32
         Vx8
@@ -114,7 +114,7 @@ tests
         MisalignV
         SsstrictV
         Sm (Sm_V_*.S, Sm_VF-*.S)
-        UV
+        U (U_V_*.S, U_VF-*.S)
 ----
 
 When an instruction's EEW is not a supported SEW, the coverage files and tests exclude the instruction from testing.  For example, `vwadd.vv` is not supported when SEW=32 and ELEN = 32 because it cannot widen to 64 bits.

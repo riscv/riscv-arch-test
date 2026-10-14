@@ -43,18 +43,11 @@ macro could spin until they fire, but needs to know if they should fire (e.g. no
 ==== U User-Mode CSRs and Instructions
 
 These test additional CSRs that exist in user mode, and privileged instructions in user mode.
+The U suite also contains the U_F, U_V, and U_VF tests, which repeat the Sm_F, Sm_V, and Sm_VF tests from user mode when F, Zve32x, or Zve32f is also supported, setting and reading `sstatus.FS` and `sstatus.VS` through T-SBI calls (`mstatus` when S-mode is not supported).
 
 include::{testplansdir}/priv/U.adoc[]
 
 include::norm/U_norm_rules.adoc[]
-
-==== UF User-Mode Floating-Point CSRs
-
-These test additional CSR scenarios that exist when floating-point and user mode are supported.
-
-include::{testplansdir}/priv/UF.adoc[]
-
-include::norm/UF_norm_rules.adoc[]
 
 ==== Zkr Entropy CSR
 

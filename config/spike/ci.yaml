@@ -25,4 +25,8 @@ install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"
 shards: 1
 config_shards:
+  spike-rv32-mu: 2
+  spike-rv32-max: 2
+  spike-rv64-m: 2
+  spike-rv64-mu: 2
   spike-rv64-max: 2

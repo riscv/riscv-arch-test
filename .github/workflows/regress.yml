@@ -30,7 +30,7 @@ jobs:
         uses: $/.github/actions/setup-tools
 
       - name: Run prek
-        uses: j178/prek-action@1382ad72dea72f9d53832f2bcb65b3e87a947204 # v3.0.1
+        run: mise exec -- prek run --all-files --show-diff-on-failure
 
   # Data-driven regression.
   # Configs are auto-discovered from the config directory.
@@ -56,8 +56,9 @@ jobs:
       # Gemfile.lock stays in the primary prefix (not just restore-keys)
       # because the build cache hashes commands, not tool binaries — a udb
       # gem update must drop these caches entirely.
-      - name: Cache UDB outputs
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+      - name: Restore UDB outputs
+        id: udb-outputs
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: work/ci-config
           key: ci-config-udb-${{ hashFiles('framework/src/act/data/Gemfile.lock') }}-${{ hashFiles('config/**/*.yaml') }}
@@ -74,6 +75,13 @@ jobs:
       - name: Discover CI configs
         id: discover
         run: .github/scripts/ci_config.py
+
+      - name: Save UDB outputs
+        if: github.ref == 'refs/heads/act4' && steps.udb-outputs.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+        with:
+          path: work/ci-config
+          key: ci-config-udb-${{ hashFiles('framework/src/act/data/Gemfile.lock') }}-${{ hashFiles('config/**/*.yaml') }}
 
   regress:
     name: ${{ matrix.simulator }} (${{ matrix.config }})${{ matrix.shard_suffix }}
@@ -132,7 +140,7 @@ jobs:
         run: bash "${MATRIX_INSTALL_SCRIPT}" "${GITHUB_WORKSPACE}/${MATRIX_SIMULATOR}"
 
       - name: Save cached simulator
-        if: matrix.extensions != '' && matrix.cache_key != '' && steps.cache-restore.outputs.cache-hit != 'true'
+        if: github.ref == 'refs/heads/act4' && matrix.extensions != '' && matrix.cache_key != '' && steps.cache-restore.outputs.cache-hit != 'true'
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ${{ github.workspace }}/${{ matrix.simulator }}
@@ -216,7 +224,7 @@ jobs:
         run: bash .github/scripts/install-spike.sh "${GITHUB_WORKSPACE}/spike"
 
       - name: Save cached simulator
-        if: steps.cache-restore.outputs.cache-hit != 'true'
+        if: github.ref == 'refs/heads/act4' && steps.cache-restore.outputs.cache-hit != 'true'
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ${{ github.workspace }}/spike
@@ -229,7 +237,7 @@ jobs:
         run: |
           FAST=True \
           ENABLE_EXPERIMENTAL_EXTENSIONS=True \
-          EXTENSIONS=I \
+          EXTENSIONS=Zibi,ExceptionsS,ExceptionsU,ExceptionsSm \
           CONFIG_FILES=config/spike/spike-rv64-experimental/test_config.yaml \
           make elfs
 

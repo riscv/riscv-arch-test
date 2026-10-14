@@ -12,6 +12,7 @@ implemented_extensions:
   - { name: U, version: "= 1.0.0" }
   - { name: Sv39, version: "= 1.0.0" }
   - { name: Svbare, version: "= 1.0.0" }
+  - { name: Zibi, version: "= 0.7" }
   - { name: Zicsr, version: "= 2.0" }
 params:
   NON_STANDARD_EXTENSION_IMPLEMENTED: false

@@ -43,3 +43,4 @@ exclude_extensions: "F,ZicsrF,Zfa,Zfhmin,SmF,Zicntr,ZicntrSm,ZicntrS,ZicntrU,Zif
 apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler libboost-dev libboost-regex-dev libboost-system-dev"
 install_script: ".github/scripts/install-sargantana.sh"
 setup_script: ".github/scripts/setup-sargantana.sh"
+shards: 2

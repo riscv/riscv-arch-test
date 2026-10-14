@@ -222,9 +222,13 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
         mapped.append("Zve64x")
 
     if "Zve32f" in mapped and instr_name.startswith(("vfw", "vfncvt")) and sew == 32:
-        # Same logic for floating point
+        # Same logic for floating point. The wide operands have EEW=64. Zve64f supports them only as integers
+        # (vfwcvt.x[u].f.v, vfwcvt.rtz.x[u].f.v, vfncvt.f.x[u].w); 64-bit floating-point operands need Zve64d.
         mapped.remove("Zve32f")
-        mapped.append("Zve64f")
+        if instr_name.startswith(("vfwcvt.x", "vfwcvt.rtz.x", "vfncvt.f.x")):
+            mapped.append("Zve64f")
+        else:
+            mapped.extend(["Zve64d", "D"])
 
     if "Zve32x" in mapped and "64" in instr_name:
         # This is an unsupported EEW (happens for vle64.v)

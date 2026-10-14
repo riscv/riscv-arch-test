@@ -485,7 +485,15 @@
     // the selector values should be unique.  These selector values
     // are always specified as 64-bit, but their values must fit the
     // width restrictions mentioned above.
-    "event_selectors": []
+    "event_selectors": [
+      {
+        "event": "EV_FENCE",
+        "selector": {
+          "len": 64,
+          "value": "0x5"
+        }
+      }
+    ]
   },
   "extensions": {
     "M": {

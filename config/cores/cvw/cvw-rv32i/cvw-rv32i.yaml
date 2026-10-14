@@ -1,0 +1,121 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: cvw-rv32i
+description: The rv32i configuration of Core-V Wally; base integer ISA only
+implemented_extensions:
+  - { name: I, version: "= 2.1" }
+  - { name: Sm, version: "= 1.12.0" }
+
+# Without Zicsr, Wally has no privileged unit: no CSR exists and no exception or interrupt is
+# taken.  UDB requires the Sm parameters regardless, so they describe every CSR as absent.
+params:
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
+  # Sm params
+  WFI_U_MODE: true
+  WFI_FINITE: true
+  MXLEN: 32
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: false
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_EBREAK: true
+  MARCHID_IMPLEMENTED: false
+  MIMPID_IMPLEMENTED: false
+  VENDOR_ID_BANK: 0x0
+  VENDOR_ID_OFFSET: 0x0
+  MISALIGNED_LDST: false
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: high
+  TRAP_ON_ILLEGAL_WLRL: false
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false
+  MTVAL_WIDTH: 32
+  CONFIG_PTR_ADDRESS: 0
+  PMA_GRANULARITY: 3 # Not explicit in config
+  PHYS_ADDR_WIDTH: 32
+  M_MODE_ENDIANNESS: little
+  MISA_CSR_IMPLEMENTED: false
+  MTVEC_ACCESS: ro
+  MTVEC_MODES: [0]
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
+  HPM_COUNTER_EN:
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  MCOUNTINHIBIT_IMPLEMENTED: false
+  MCOUNTENABLE_EN:
+    [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  NUM_PMP_ENTRIES: 0

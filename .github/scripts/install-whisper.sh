@@ -8,7 +8,7 @@
 set -euo pipefail
 
 INSTALL_DIR="${1:?Usage: install-whisper.sh <install-dir>}"
-WHISPER_COMMIT="35f7a7afeb86bbd02ad15488f946f7be324361b3"
+WHISPER_COMMIT="99faa724e29e8722cc39f21bdea12ffc2f349175"
 
 git clone https://github.com/tenstorrent/whisper.git
 cd whisper

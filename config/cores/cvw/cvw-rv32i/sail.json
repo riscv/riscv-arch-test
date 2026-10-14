@@ -1,12 +1,7 @@
-// Sail reference-model configuration for CVA6 + Ara.
-// Ara  @ 34bd3bc152421b4601a7bf3d6e8e91ffb545c99e
-// CVA6 @ 99eac9a649001bdf5b8f9da52e0ca73d5c48db1c
-// Values marked "measured" were read back from the Verilator model of this exact
-// build (nr_lanes=4, vlen=512) with a directed assembly probe.
 {
   "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.15/sail_riscv_config_schema.json",
   "base": {
-    "xlen": 64,
+    "xlen": 32,
     // Whether the base ISA is E, in which case accessing
     // x16-31 is reserved and in this implementation will
     // raise an illegal instruction exception.
@@ -14,11 +9,8 @@
     // Whether a `mhpmcounter` increments if the event it is counting
     // was generated during a write to its corresponding `mhpmevent`
     // CSR (which could change the monitored event).
-    // CVA6 increments no HPM counter in a cycle that writes an HPM CSR.
-    // https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/perf_counters.sv#L148-L155
     "hpmcounter_increments_in_self_hpmevent_write": false,
     // The precision of the HPM counter, upto 64 bits.
-    // https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/perf_counters.sv#L65-L66
     "hpmcounter_width_bits": 64,
     // The width of the `mhpmevent` CSRs, upto 64 bits, if Sscofpmf is
     // not supported.  On RV32 without Sscofpmf, this can be upto 32,
@@ -26,31 +18,24 @@
     // If Sscofpmf is supported, the `mhpmevent` CSRs are always 64
     // bits; this value then defines the number, upto 56, of the lowest
     // bits of the CSRs that are used as the event selector.
-    // CVA6 keeps 5 bits of each mhpmevent.
-    // https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/perf_counters.sv#L73-L74
-    "hpmevent_width_bits": 5,
+    "hpmevent_width_bits": 32,
     "mcountinhibit": {
       // Whether the `mcountinhibit` CSR is implemented.
       "supported": true,
       // This bits in this value control whether the corresponding
       // bits of the CSR are writable.  Note that bit 1 cannot be written
       // to as it is read-only zero.
-      // CY, IR and HPM3..8 (MHPMCounterNum = 6).
-      // https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1674-L1677
-      // https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/include/ariane_pkg.sv#L592
-      "writable_bits": { "len": 32, "value": "0x0000_01FD" }
+      "writable_bits": { "len": 32, "value": "0xFFFF_FFFD" }
     },
-    "writable_fiom": true,
+    "writable_fiom": false,
     // The top 29 bits in this value control whether the corresponding
     // HPM counters (hpmcounter31 .. hpmcounter3) are supported
     // (i.e. are not read-only zero). A set bit specifies that the
     // corresponding counter is supported. The lowest 3 bits
     // (writable_hpm_counters[2 .. 0]) are ignored.
-    // Only mhpmcounter3..mhpmcounter8 exist (MHPMCounterNum = 6); 9..31 are decoded
-    // and read back as zero.  Measured: hpmcounter9 reads 0 and does not trap.
     "writable_hpm_counters": {
       "len": 32,
-      "value": "0x0000_01F8"
+      "value": "0xFFFF_FFFF"
     },
     // The bits in this value control whether the corresponding bits
     // of the `scounteren` CSR that control access to HPM counters,
@@ -92,11 +77,9 @@
         "supported": true,
         "base_alignment": 2
       },
-      // CVA6 forces mtvec[7:1] to zero in vectored mode, i.e. a 256-byte base
-      // alignment (2^8).  Measured: writing 0x8000_01F5 reads back 0x8000_0101.
       "vectored": {
         "supported": true,
-        "base_alignment": 8
+        "base_alignment": 6
       }
     },
     // Similar to `mtvec` above. If `S` mode is not supported, these
@@ -108,10 +91,9 @@
       "direct": {
         "supported": true
       },
-      // Vectored interrupts replace base bits 7:2 with the cause, as for mtvec.
       "vectored": {
         "supported": true,
-        "base_alignment": 8
+        "base_alignment": 2
       }
     },
     "vstvec": {
@@ -133,7 +115,7 @@
       // not exist.
       "delegatable_bits": {
         "len": 64,
-        "value": "0x0000_0000_0000_B1FF"
+        "value": "0x0000_0000_0000_b3FF"
       }
     },
     "mideleg": {
@@ -145,10 +127,9 @@
       // supported. Bits set for interrupts designated for platform
       // use are ignored. This value is ignored when the `mideleg` CSR
       // does not exist.
-      // Measured: writing all ones to mideleg reads back 0x222 (SSIP/STIP/SEIP).
       "delegatable_bits": {
         "len": "xlen",
-        "value": "0x0000_0000_0000_0222"
+        "value": "0x0000_2222"
       }
     },
     // These settings control whether the specified exceptions
@@ -212,8 +193,8 @@
       // - "ExtContext_FourState" allows all values {Off, Initial, Clean, Dirty}.
       // - "ExtContext_TwoState" allows {Off, Dirty}, and writes of Initial and Clean get written as Dirty.
       // - "ExtContext_Off" allows only {Off}.  This makes the field read-only zero.
-      "fs_legal_states": "ExtContext_FourState",
-      "vs_legal_states": "ExtContext_FourState"
+      "fs_legal_states": "ExtContext_Off",
+      "vs_legal_states": "ExtContext_Off"
     },
     // Set the version of the privileged ISA. `"Privileged_ISA_1_13"`
     // is the latest that the Sail model supports.  The other
@@ -233,10 +214,9 @@
     // This is required to be 13 or higher to avoid representing empty
     // bitvectors in the model and since it is unlikely real implementations
     // will have lower values.
-    "physaddr_bits": 56,
-    "asidlen": 16,
-    "vmidlen": 14,
-    // The Ara SoC overrides CVA6's 8 PMP entries down to 0.
+    "physaddr_bits": 32,
+    "asidlen": 9,
+    "vmidlen": 7,
     "pmp": {
       "grain": 0,
       // This specifies the number of PMP entries present.
@@ -246,9 +226,9 @@
       // Entries higher than this are read-only-zero.
       // The value must be less than or equal to `count`.
       "usable_count": 0,
-      "tor_supported": false,
-      "na4_supported": false,
-      "napot_supported": false
+      "tor_supported": true,
+      "na4_supported": true,
+      "napot_supported": true
     },
     // These settings control global support for misaligned access so they are
     // checked before address translation. `misaligned_fault` in
@@ -263,33 +243,22 @@
         // without a fault (use `{"None" : null}`), or raise an access fault
         // (use `{"Some": "AccessFault"}`) or a misaligned exception
         // (use `{"Some": "AlignmentException"}`).
-        // This option controls scalar loads/stores.  Measured: a misaligned scalar
-        // access raises no exception, but it does not work either - a load crossing an
-        // 8-byte boundary returns the first doubleword shifted and zero-filled, and a
-        // store corrupts the first doubleword and never writes the second (discrepancy
-        // D13).  The UDB configuration therefore declares MISALIGNED_LDST false, and
-        // this matches it, so the Misalign suites are deselected rather than run
-        // against hardware that cannot satisfy them.
+        // This option controls scalar loads/stores.
         "load_store": {
           "Some": "AlignmentException"
         },
-        // A misaligned vector load/store can be configured independently of the
-        // scalar case above, but uses the same option values.  Ara raises an ILLEGAL
-        // INSTRUCTION (mcause 2, mtval 0) for an EEW-misaligned vector access, which
-        // Sail cannot express here; an alignment exception is the closest available
-        // behaviour.  The suites that exercise it are excluded in ci.yaml.
+        // A misaligned vector load/store can be configured
+        // independently of the scalar case above, but uses the same
+        // option values.
         "vector": {
           "Some": "AlignmentException"
         },
         // Similarly, a misaligned AMO and LR/SC can be configured with the same
         // option values.
-        // CVA6 raises a misaligned exception for an unaligned atomic.
         "amo": {
-          "Some": "AlignmentException"
+          "Some": "AccessFault"
         },
-        "lrsc": {
-          "Some": "AlignmentException"
-        }
+        "lrsc": { "Some": "AccessFault" }
       },
       // If multiple memory operations are needed, this controls whether they
       // are done in increasing or decreasing address order. This is architecturally
@@ -316,22 +285,55 @@
     },
     // Address to write DTB to (if provided). This must be in a suitable memory
     // region (see `memory.regions`).
-    // No device tree is passed to the model; this only has to name a legal address
-    // inside a declared region.
     "dtb_address": {
       "len": 64,
-      "value": "0x80F00000"
+      "value": "0x1000"
     },
     // The locations and sizes of memory regions and their PMAs.  These regions
     // are required to be aligned to 4K (page) boundaries.  To specify
     // the `misaligned` PMA attribute for a region, see the comments for
     // `memory.misaligned.exceptions` above.
     "regions": [
-      // REFERENCE MODEL ONLY: the window holding Sail's CLINT (0x0200_0000) and simple
-      // interrupt generator (0x0C00_0000).  The Ara SoC decodes nothing here - an access
-      // to this range on the DUT does not even fault, it stalls the core - but ACT
-      // requires Sail to model both devices, and this range was chosen because it
-      // cannot collide with the DUT's DRAM, UART or control-register windows.
+      // ROM
+      {
+        "base": {
+          "len": 64,
+          "value": "0x1000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x1000"
+        },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": true,
+          "coherent": false,
+          "executable": false,
+          "readable": true,
+          "writable": false,
+          "read_idempotent": true,
+          "write_idempotent": true,
+          "misaligned_exceptions": {
+            "load_store": {
+              "None": null
+            },
+            "vector": {
+              "None": null
+            },
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": false
+      },
+      // MMIO
       {
         "base": {
           "len": 64,
@@ -351,13 +353,11 @@
           "read_idempotent": false,
           "write_idempotent": false,
           "misaligned_exceptions": {
-            "load_store": {
-              "Some": "AlignmentException"
-            },
+            "load_store": { "Some": "AlignmentException" },
             "vector": {
               "Some": "AlignmentException"
             },
-            "amo": "AlignmentException",
+            "amo": "AccessFault",
             "lrsc": "AccessFault"
           },
           "atomic_support": "AMONone",
@@ -370,9 +370,7 @@
         },
         "include_in_device_tree": false
       },
-      // DRAM / L2.  The address decoder claims 1 GiB at 0x8000_0000 but the physical
-      // L2 SRAM is 16 MiB and addresses above it alias, so only 16 MiB is declared.
-      // This must stay in step with RAM_ORIGIN/RAM_LENGTH in link.ld.
+      // RAM
       {
         "base": {
           "len": 64,
@@ -380,7 +378,7 @@
         },
         "size": {
           "len": 64,
-          "value": "0x1000000"
+          "value": "0x80000000"
         },
         "attributes": {
           "mem_type": "MainMemory",
@@ -396,117 +394,30 @@
               "None": null
             },
             "vector": {
-              "Some": "AlignmentException"
+              "None": null
             },
-            "amo": "AlignmentException",
-            "lrsc": "AlignmentException"
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
           },
-          // Atomics are modeled as CVA6 performs them.  The Ara L2 cannot execute them
-          // (it sits behind an axi_atop_filter and has no exclusive monitor), so the
-          // Zaamo and Zalrsc suites are excluded in ci.yaml.
           "atomic_support": "AMOArithmetic",
           "misaligned_atomicity_granule_size_exp": 0,
           "vector_misaligned_atomicity_granule_size_exp": 0,
           "reservability": "RsrvEventual",
-          "supports_cbo_zero": false,
+          "supports_cbo_zero": true,
           "supports_pte_read": true,
           "supports_pte_write": true
         },
         "include_in_device_tree": true
-      },
-      // Mock UART.  A byte store to offset 0 is echoed to the simulator's stdout,
-      // which is how ACT's RVMODEL_IO_WRITE_STR reports results.
-      {
-        "base": {
-          "len": 64,
-          "value": "0xC0000000"
-        },
-        "size": {
-          "len": 64,
-          "value": "0x1000"
-        },
-        "attributes": {
-          "mem_type": "IOMemory",
-          "cacheable": false,
-          "coherent": true,
-          "executable": false,
-          "readable": true,
-          "writable": true,
-          "read_idempotent": false,
-          "write_idempotent": false,
-          "misaligned_exceptions": {
-            "load_store": {
-              "None": null
-            },
-            "vector": {
-              "Some": "AlignmentException"
-            },
-            "amo": "AlignmentException",
-            "lrsc": "AlignmentException"
-          },
-          "atomic_support": "AMONone",
-          "misaligned_atomicity_granule_size_exp": 0,
-          "vector_misaligned_atomicity_granule_size_exp": 0,
-          "reservability": "RsrvNone",
-          "supports_cbo_zero": false,
-          "supports_pte_read": false,
-          "supports_pte_write": false
-        },
-        "include_in_device_tree": false
-      },
-      // Control registers.  A 64-bit store to offset 0 terminates the simulation:
-      // the testbench exits with (value >> 1), so storing 0 is a pass.
-      // https://github.com/pulp-platform/ara/blob/34bd3bc152421b4601a7bf3d6e8e91ffb545c99e/hardware/tb/ara_tb_verilator.sv#L54
-      {
-        "base": {
-          "len": 64,
-          "value": "0xD0000000"
-        },
-        "size": {
-          "len": 64,
-          "value": "0x1000"
-        },
-        "attributes": {
-          "mem_type": "IOMemory",
-          "cacheable": false,
-          "coherent": true,
-          "executable": false,
-          "readable": true,
-          "writable": true,
-          "read_idempotent": false,
-          "write_idempotent": false,
-          "misaligned_exceptions": {
-            "load_store": {
-              "None": null
-            },
-            "vector": {
-              "Some": "AlignmentException"
-            },
-            "amo": "AlignmentException",
-            "lrsc": "AlignmentException"
-          },
-          "atomic_support": "AMONone",
-          "misaligned_atomicity_granule_size_exp": 0,
-          "vector_misaligned_atomicity_granule_size_exp": 0,
-          "reservability": "RsrvNone",
-          "supports_cbo_zero": false,
-          "supports_pte_read": false,
-          "supports_pte_write": false
-        },
-        "include_in_device_tree": false
       }
     ]
   },
   "platform": {
-    // mvendorid = OPENHWGROUP_MVENDORID = 0x0602 = 1538, marchid = ARIANE_MARCHID = 3,
-    // mimpid reads zero.
     "vendorid": 1538,
-    "archid": 3,
-    "impid": 0,
+    "archid": 36,
+    "impid": 256,
     "hartid": 0,
     // Cache block size, specified as a power of 2.
-    // CVA6ConfigDcacheLineWidth = 256 bits = 32 bytes.
-    "cache_block_size_exp": 5,
+    "cache_block_size_exp": 6,
     "reservation": {
       // This specifies both the size and alignment of the reservation set, specified as a power of 2.
       // It must be at least 2 on RV32 and 3 on RV64 to support Zalrsc.  It must not be more than
@@ -523,24 +434,15 @@
       // the reservation set.
       "invalidate_on_same_hart_store": false
     },
-    // mie.MSIE/MTIE/MEIE are writable; ara_system.sv ties their pins to zero.
-    //   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1591-L1597
-    // The timer is declared unsupported: Sail drives mip.MTIP from its CLINT, whose
-    // mtimecmp resets to 0, so MTIP would read 1 where the DUT reads 0.
     "interrupts": {
       "machine": {
         "software": { "supported": true },
         "external": { "supported": true },
-        "timer": { "supported": false }
+        "timer": { "supported": true }
       }
     },
-    // REFERENCE MODEL ONLY.  The Ara SoC has no CLINT: ara_system.sv ties every
-    // interrupt pin to zero.  ACT's signature generation nevertheless requires Sail to
-    // provide a CLINT and a simple interrupt generator, so both are declared here at
-    // addresses the DUT does not decode (0x0200_0000 and 0x0C00_0000, inside the
-    // reference-model MMIO region below).  No test that reaches the DUT touches them:
-    // the interrupt suites are excluded in ci.yaml and RVMODEL_MTIME_ADDRESS is undefined.
     "clint": {
+      // Whether the platform contains a CLINT.
       "supported": true,
       // If supported, this must be in a suitable IO memory region (see `memory.regions`).
       // Otherwise, these values can be left as 0.
@@ -550,8 +452,7 @@
     // Very simple MMIO device to generate interrupts for testing
     // purposes. See docs/SimpleInterruptGenerator.md for details.
     "simple_interrupt_generator": {
-      // Whether the platform contains this device.  Reference model only; see the
-      // CLINT note above.
+      // Whether the platform contains this device.
       "supported": true,
       // If supported, this must be in a suitable IO memory region (see `memory.regions`)
       // and 4-byte aligned. The size is always 0x20.  If not supported, this can be left
@@ -565,9 +466,7 @@
     // `wfi_is_nop` is set to `true` above, it will still not be
     // available to User mode unless `wfi_available_to_user_mode` is
     // also `true`.
-    // WFI in U-mode always raises an illegal-instruction exception.
-    //   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/decoder.sv#L281-L286
-    "wfi_available_to_user_mode": false,
+    "wfi_available_to_user_mode": true,
     // The maximum increment in the time CSR before a wait instruction
     // (e.g. WFI, WRS.NTO, WRS.STO) that is not a NOP expires its
     // wait. It is not possible to wait indefinitely.
@@ -607,15 +506,15 @@
   "extensions": {
     "M": {
       "mutable_misa": false,
-      "supported": true
+      "supported": false
     },
     "A": {
       "mutable_misa": false,
-      "supported": true
+      "supported": false
     },
     "F": {
       "mutable_misa": false,
-      "supported": true,
+      "supported": false,
       // When to set mstatus[FS] and mstatus[SD] to 1, as a result of fflags
       // being set. There are three options:
       //
@@ -629,7 +528,7 @@
     },
     "D": {
       "mutable_misa": false,
-      "supported": true
+      "supported": false
     },
     "C": {
       "mutable_misa": false
@@ -647,12 +546,11 @@
       // For e.g. Zve32x and Zve32f require `elen_exp` >= 5,
       // Zve64x, Zve64f, and Zve64d require `elen_exp` >= 6,
       // and V requires `elen_exp` >= 6 and `vlen_exp` >= 7.
-      // Ara implements the full ratified V extension.  Measured: vlenb reads 0x40.
-      "support_level": "Full",
+      "support_level": "Disabled",
       // `vlen_exp` and `elen_exp` should be between 3 and 16,
       // inclusive.  If `support_level` is `"Disabled"`, then these
       // should be left as 3 (or any other legal value).
-      "vlen_exp": 9,
+      "vlen_exp": 8,
       "elen_exp": 6,
       "reserved_behavior": {
         // This determines how to handle attempts by vsetvli, vsetivli,
@@ -671,7 +569,7 @@
       // The maximum index EEW for indexed vector addressing mode, as
       // a power of 2.  This must be at least 3 but must not exceed
       // the supported ELEN.
-      "max_index_eew_exp": 6,
+      "max_index_eew_exp": 5,
       "vstart": {
         // The vector specification permits implementations to raise an
         // illegal instruction exception when `vstart` is non-zero for
@@ -691,28 +589,26 @@
     },
     "B": {
       "mutable_misa": false,
-      "supported": true
+      "supported": false
     },
     "S": {
       "mutable_misa": false,
-      "supported": true,
-      // SSIP, STIP and SEIP are writable in mip, mie and mideleg.
-      //   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L1661-L1664
+      "supported": false,
       "interrupts": {
-        "software": { "supported": true },
-        "external": { "supported": true },
-        "timer": { "supported": true }
+        "software": { "supported": false },
+        "external": { "supported": false },
+        "timer": { "supported": false }
       }
     },
     "U": {
       "mutable_misa": false,
-      "supported": true
+      "supported": false
     },
 
     "H": {
       "mutable_misa": false,
       "supported": false,
-      "geilen": 63,
+      "geilen": 31,
       "guest_page_fault_writes_htval": true,
       // Whether a trap into M or HS mode caused by the specified exception
       // writes the transformed trapping instruction to `mtinst`/`htinst`.
@@ -731,11 +627,16 @@
       },
       "hgatp_modes": {
         "Sv32x4": false,
-        "Sv39x4": true,
-        "Sv48x4": true,
-        "Sv57x4": true
+        "Sv39x4": false,
+        "Sv48x4": false,
+        "Sv57x4": false
       },
-      "vsatp_modes": { "Sv32": false, "Sv39": true, "Sv48": true, "Sv57": true }
+      "vsatp_modes": {
+        "Sv32": true,
+        "Sv39": false,
+        "Sv48": false,
+        "Sv57": false
+      }
     },
 
     "Sha": { "supported": false },
@@ -745,7 +646,7 @@
     "Shvsatpa": { "supported": false },
     "Shvstvala": { "supported": false },
     "Shvstvecd": { "supported": false },
-    "Sstvecd": { "supported": true },
+    "Sstvecd": { "supported": false },
     "Svukte": { "supported": false },
     "Zilx": { "supported": false },
     "Zibi": {
@@ -767,7 +668,7 @@
       "supported": false
     },
     "Ziccamoa": {
-      "supported": false
+      "supported": true
     },
     "Ziccamoc": {
       "supported": false
@@ -779,7 +680,7 @@
       "supported": false
     },
     "Ziccrse": {
-      "supported": false
+      "supported": true
     },
     "Zicfilp": {
       "supported": false
@@ -790,18 +691,14 @@
     "Zicond": {
       "supported": false
     },
-    // Sail-only: Sail makes cycle and instret accessible only with Zicntr.  CVA6
-    // implements them, but not time, so UDB does not declare Zicntr.  No test
-    // selected for this configuration reads time.
-    //   https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L674-L692
     "Zicntr": {
-      "supported": true
+      "supported": false
     },
     "Zicsr": {
-      "supported": true
+      "supported": false
     },
     "Zifencei": {
-      "supported": true
+      "supported": false
     },
     "Zihintntl": {
       "supported": false
@@ -810,16 +707,16 @@
       "supported": false
     },
     "Zihpm": {
-      "supported": true
+      "supported": false
     },
     "Zimop": {
       "supported": false
     },
     "Zmmul": {
-      "supported": true
+      "supported": false
     },
     "Zaamo": {
-      "supported": true
+      "supported": false
     },
     "Zabha": {
       "supported": false
@@ -828,7 +725,7 @@
       "supported": false
     },
     "Zalrsc": {
-      "supported": true
+      "supported": false
     },
     // This extension just asserts that each memory region has a MAG
     // PMA of at least 16 bytes.  If you enable this you also need to ensure
@@ -870,13 +767,13 @@
       "supported": false
     },
     "Zca": {
-      "supported": true
+      "supported": false
     },
     "Zcf": {
       "supported": false
     },
     "Zcd": {
-      "supported": true
+      "supported": false
     },
     "Zcb": {
       "supported": false
@@ -885,22 +782,22 @@
       "supported": false
     },
     "Zba": {
-      "supported": true
+      "supported": false
     },
     "Zbb": {
-      "supported": true
+      "supported": false
     },
     "Zbs": {
-      "supported": true
+      "supported": false
     },
     "Zbc": {
-      "supported": true
+      "supported": false
     },
     "Zbkb": {
-      "supported": true
+      "supported": false
     },
     "Zbkc": {
-      "supported": true
+      "supported": false
     },
     "Zbkx": {
       "supported": false
@@ -984,13 +881,13 @@
       "supported": false
     },
     "Ssccptr": {
-      "supported": true
+      "supported": false
     },
     "Sscofpmf": {
       "supported": false
     },
     "Sscounterenw": {
-      "supported": true
+      "supported": false
     },
     "Sstc": {
       "supported": false
@@ -998,10 +895,10 @@
     // Enabling Sstvala requires that the exceptions specified in the extension
     // have their appropriate settings under `base.xtval_nonzero`.
     "Sstvala": {
-      "supported": true
+      "supported": false
     },
     "Svade": {
-      "supported": true
+      "supported": false
     },
     "Svadu": {
       "supported": false
@@ -1034,14 +931,14 @@
       "supported": false
     },
     "Svbare": {
-      "supported": true,
+      "supported": false,
       "sfence_vma_illegal_if_svbare_only": true
     },
     "Sv32": {
       "supported": false
     },
     "Sv39": {
-      "supported": true
+      "supported": false
     },
     "Sv48": {
       "supported": false
@@ -1073,8 +970,6 @@
     "Svvptc": {
       "supported": false
     },
-    // tselect and tdata1 raise illegal instruction.
-    // https://github.com/pulp-platform/cva6/blob/99eac9a649001bdf5b8f9da52e0ca73d5c48db1c/core/csr_regfile.sv#L426-L427
     "Sdtrig": {
       "supported": false,
       // `breakpoint_reentrancy` must be one of the below strings:
@@ -1118,6 +1013,9 @@
       "num_triggers": 0,
       "scontext": { "supported": false }
     },
+    // The double trap extensions are not enabled by default because
+    // mstatus[MDT] is reset to 1. Unless the boot code clears it, the
+    // first trap taken will result in an unexpected double trap.
     "Smdbltrp": { "supported": false },
     "Ssdbltrp": { "supported": false },
     "Ssstrict": { "supported": false }

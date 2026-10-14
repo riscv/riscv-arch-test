@@ -59,15 +59,16 @@ run the appropriate https://github.com/riscv/riscv-arch-test[RISC-V ACTs] to hel
 
 The remainder of the document describes requirements for the device under test (DUT), developers, and the execution environment.
 
-== DUT and Developer Requirements
+== Certification Requirements
 
-The DUT (with the support of software when necessary) must provide the following capabilities to run the certification tests:
+The RISC-V Certification Tests certifies processors, not platforms.  Nevertheless, testing requires certain basic platform capabilities to run tests and report results. Therefore, the hart being certified must be supported by a platform that provides the following capabilities:
 
 * Load an ELF file into memory at a physical address below 0x40_0000_0000 (so that Sv39 can identity-map it) and begin execution
 * Trigger and clear SEI and SSI through software, if these interrupts are supported
 * Print characters to a console to report test results
 * Terminate a test with a success or failure code under software control, either via a testbench for RTL or a hardware signal for silicon
 * Run tests on several harts at once, if the DUT has more than one, to stress memory ordering and atomicity
+* Implement memory-mapped `mtime` register if it is not part of the hart
 
 The developer must supply a configuration directory containing the following files.  See the Certification Test Plan (CTP) for more details.
 

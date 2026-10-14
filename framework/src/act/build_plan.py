@@ -177,6 +177,8 @@ def gen_compile_tasks(
         f"-I{env_dir}",
         f"-I{base_dir.absolute()}",
     ]
+    if enable_experimental_extensions:
+        compile_prefix.append("-DENABLE_EXPERIMENTAL_EXTENSIONS")
 
     # Metadata
     march_flags = toolchain.march_flags(

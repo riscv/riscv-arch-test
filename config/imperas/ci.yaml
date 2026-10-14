@@ -26,6 +26,8 @@
 #   expected signatures contain no breakpoints and the Mcontrol6 tests fail at the first trigger that fires
 #   (https://github.com/riscv/sail-riscv/issues/222). SdtrigSm passes, but only because no M-mode trigger fires
 #   (Imperas implements tcontrol and the test never sets tcontrol.mte), so it is no longer excluded.
+# - Sscofpmf*: there are no plans for Imperas to support HPM events, so this one is not
+#   expected to be resolved in the foreseeable future.
 # - Svnapot: Imperas accepts N=1 on superpage leaf PTEs instead of page faulting
 #   (validSvnapotEntry checks only for a leaf, not level 0, and fillTLBEntry skips the alignment check):
 #   https://solvnetplus.synopsys.com/s/case/500WQ00002AsSN9YAN/svnapot-n1-accepted-on-superpage-leaf-ptes-instead-of-raising-a-page-fault
@@ -43,6 +45,6 @@
 #
 ci_enabled: false
 # Stock ImperasDV Y-2026.09:
-# exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,Smstateen,ExceptionsVx,SdtrigS,SdtrigU,Svnapot,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm"
+# exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,Smstateen,ExceptionsVx,SdtrigS,SdtrigU,Svnapot,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,SscofpmfSm,SscofpmfS,SscofpmfU"
 # Imperas-HMC101126-eng-build:
-exclude_extensions: "SdtrigS,SdtrigU,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm"
+exclude_extensions: "SdtrigS,SdtrigU,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,SscofpmfSm,SscofpmfS,SscofpmfU"

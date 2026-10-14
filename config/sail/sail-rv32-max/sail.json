@@ -505,7 +505,15 @@
     // the selector values should be unique.  These selector values
     // are always specified as 64-bit, but their values must fit the
     // width restrictions mentioned above.
-    "event_selectors": []
+    "event_selectors": [
+      {
+        "event": "EV_FENCE",
+        "selector": {
+          "len": 64,
+          "value": "0x1"
+        }
+      }
+    ]
   },
   "extensions": {
     "M": {
@@ -652,7 +660,7 @@
     "Svukte": { "supported": false },
     "Zilx": { "supported": false },
     "Zibi": {
-      "supported": true
+      "supported": false
     },
     // This extension just asserts that the cache block size is 64 bytes.
     // If you enable this you also need to ensure `platform.cache_block_size_exp`

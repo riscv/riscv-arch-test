@@ -29,6 +29,7 @@ ci_enabled: true
 #     legally writable, but Sail does not model Sscsrind or Ssaia.
 # ZawrsU and ZawrsS fail on qemu due to stval mismatching, filed QEMU issue https://gitlab.com/qemu-project/qemu/-/work_items/4080
 # Sdtrig*: Sail does not implement Sdtrig yet (https://github.com/riscv/sail-riscv/issues/222)
+# Sscofpmf*: qemu's mie write mask drops LCOFIE, so LCOFI is never taken: https://gitlab.com/qemu-project/qemu/-/work_items/3969
 # H: mstatus.MPV and mstatus.GVA are read-only zero, so mret never enters VS/VU: a guest's
 #    ecall is reported as cause 9/8 instead of 10, and a hypervisor CSR access from VS raises
 #    an illegal instruction instead of a virtual instruction exception
@@ -38,7 +39,7 @@ ci_enabled: true
 # same issue as ExceptionsZicboU/S and SvZicbo (https://gitlab.com/qemu-project/qemu/-/work_items/3501).
 # ZicntrSm/U fail on qemu because ecall, ebreak and illegal instruction increments minstret/instret. Filed QEMU issue: https://gitlab.com/qemu-project/qemu/-/work_items/4227
 # ZicntrSm/U fail on qemu because minstret/instret overcounts by 1 for wfi with a pending or taken interrupt. Filed QEMU issue: https://gitlab.com/qemu-project/qemu/-/work_items/4230
-exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,ZicntrSm,ZicntrU"
+exclude_extensions: "Sm,S,SsstrictSm,SsstrictS,SsstrictU,Zacas,InterruptsSm,InterruptsS,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm,Zama16b,SsstrictV,Smstateen,ZawrsS,ZawrsU,SdtrigSm,SdtrigS,SdtrigU,H,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,ZicntrSm,ZicntrU,SscofpmfSm,SscofpmfS,SscofpmfU"
 # qemu-rv32-mu, qemu-rv64-mu: U-mode cbo.zero/clean/flush/inval raise illegal-instruction without S-mode
 #   because check_zicbo_envcfg() also requires senvcfg, which does not exist
 #   (https://gitlab.com/qemu-project/qemu/-/work_items/4596)
@@ -54,3 +55,4 @@ shards: 1
 config_shards:
   qemu-rv64-max: 2
   qemu-rv32-max: 2
+  qemu-rv32-m: 2

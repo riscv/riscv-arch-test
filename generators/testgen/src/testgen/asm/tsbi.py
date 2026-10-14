@@ -33,6 +33,8 @@ def tsbi_call(instr: str) -> str:
     rs1 = get_rs1(normalized_instr)
     rs2 = get_rs2(normalized_instr)
     rd = get_rd(normalized_instr)
+    if _CSR_INSTR_RE.fullmatch(normalized_instr):
+        return _tsbi_csr_call(instr, normalized_instr, rs1, rd)
     opcode = add_opcode(normalized_instr, rs1, rs2, rd)
 
     preamble = []
@@ -55,6 +57,45 @@ def tsbi_call(instr: str) -> str:
     )
 
 
+def _csr_operand(csr: str) -> str:
+    """A known CSR name becomes its CSR_* macro from encoding.h. A macro or number is used as is."""
+    return f"CSR_{csr.upper()}" if csr.lower() in _CSR_ALIASES else csr
+
+
+def _tsbi_csr_call(instr: str, normalized_instr: str, rs1: int, rd: int) -> str:
+    """T-SBI CSR call through the RVTEST_TSBI_CSR macros, which take the value in a1 and return a read in a0."""
+    mnemonic, first, second = _CSR_INSTR_RE.fullmatch(normalized_instr).groups()  # type: ignore[union-attr]
+    lines = [f"{INDENT}# T-SBI call to execute instruction: {instr}"]
+    if mnemonic.lower() == "csrr":
+        lines.append(f"{INDENT}RVTEST_TSBI_CSR_READ({_csr_operand(second)})")
+        if rd not in [0, 10]:
+            lines.append(f"{INDENT}mv x{rd}, a0")
+    else:
+        if rs1 != 11:
+            lines.append(f"{INDENT}mv a1, x{rs1}")
+        macro = {
+            "csrw": "RVTEST_TSBI_CSR_WRITE_A1",
+            "csrs": "RVTEST_TSBI_CSR_ACCESS TSBI_CSR_SET",
+            "csrc": "RVTEST_TSBI_CSR_ACCESS TSBI_CSR_CLEAR",
+        }[mnemonic.lower()]
+        lines.append(f"{INDENT}{macro}({_csr_operand(first)})")
+    return "\n".join(lines)
+
+
+def _csr_level(csr: str) -> int:
+    """csr[9:8] of a CSR operand: a name, a number, or a CSR_* / RVTEST_CSR_* macro."""
+    try:
+        return (_parse_csr(csr) >> 8) & 3
+    except ValueError:
+        pass
+    name = csr.lower().removeprefix("rvtest_csr_").removeprefix("csr_")
+    if name in _CSR_ALIASES:
+        return (_CSR_ALIASES[name] >> 8) & 3
+    if name.startswith("mhpm"):  # the hpm counter and event CSRs are all M-mode
+        return 3
+    raise ValueError(f"Unsupported CSR name: {csr}")
+
+
 # Highest CSR privilege level, csr[9:8], that code in each mode may access directly. Level 2 holds the
 # hypervisor and VS CSRs, which exist only with H, and S-mode is HS-mode then.
 _MAX_CSR_LEVEL = {"M": 3, "S": 2, "VS": 1, "U": 0, "VU": 0}
@@ -75,7 +116,7 @@ def tsbi_call_or_direct(instr: str, mode: str) -> str:
     if csr_match is None:
         raise ValueError(f"tsbi_call_or_direct takes a csrr/csrw/csrs/csrc instruction: {instr}")
     csr = csr_match.group(3) if csr_match.group(1).lower() == "csrr" else csr_match.group(2)
-    return instr if _MAX_CSR_LEVEL[mode] >= (_parse_csr(csr) >> 8) & 3 else tsbi_call(instr)
+    return instr if _MAX_CSR_LEVEL[mode] >= _csr_level(csr) else tsbi_call(instr)
 
 
 _REGISTER_ALIASES = {
@@ -144,6 +185,7 @@ _CSR_ALIASES = {
     "mcause": 0x342,
     "mip": 0x344,
     "scontext": 0x5A8,
+    "scountovf": 0xDA0,
     "hcontext": 0x6A8,
     "mseccfg": 0x747,
     "tselect": 0x7A0,

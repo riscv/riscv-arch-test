@@ -16,6 +16,4 @@ exclude_configs:
   - whisper-rv64-max-spike-ref
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"
-shards: 1
-config_shards:
-  whisper-rv64-max: 2
+shards: 2

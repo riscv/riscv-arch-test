@@ -116,13 +116,31 @@ def create_page_walk(
     overrides = overrides or {}
     table_addresses = table_addresses or {}
 
-    lines = []
-    for table_level in range(mode.levels - 2, leaf_level - 1, -1):
-        pte_level = table_level + 1
-        permissions = _pte_expression(overrides.get(pte_level, PteFlags.nonleaf()))
-        table_address = table_addresses.get(pte_level, f"rvtest_slvl{table_level}_pg_tbl")
-        lines.append(f"PTE_SETUP_{mode.suffix}({table_address}, ({permissions}), {virtual_address}, LEVEL{pte_level})")
-    return lines
+    return [
+        create_nonleaf_pte(
+            mode,
+            level=pte_level,
+            flags=overrides.get(pte_level, PteFlags.nonleaf()),
+            virtual_address=virtual_address,
+            table_address=table_addresses.get(pte_level, f"rvtest_slvl{pte_level - 1}_pg_tbl"),
+        )
+        for pte_level in range(mode.levels - 1, leaf_level, -1)
+    ]
+
+
+def create_nonleaf_pte(
+    mode: SvMode,
+    *,
+    level: int,
+    flags: PteExpression,
+    virtual_address: str = "va_data",
+    table_address: str | None = None,
+) -> str:
+    """Emit the non-leaf PTE at ``level`` that points to ``table_address`` (default: the next-level table)."""
+    if level < 1 or level >= mode.levels:
+        raise ValueError(f"Non-leaf level {level} is outside 1..{mode.levels - 1}")
+    table_address = table_address or f"rvtest_slvl{level - 1}_pg_tbl"
+    return f"PTE_SETUP_{mode.suffix}({table_address}, ({_pte_expression(flags)}), {virtual_address}, LEVEL{level})"
 
 
 def create_leaf_pte(

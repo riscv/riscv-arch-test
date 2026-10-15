@@ -132,6 +132,7 @@ The RVMODEL DUT-Specific Macros are given in <<t-rvmodel>>. The "Can Be Empty?" 
 |RVMODEL_MAX_CYCLES_PER_TIMER_TICK|The highest possible ratio of the clock frequency to the timer frequency in any mode of operation. Defaults to 1 if not defined | If Machine timer interrupts, `wfi`, and `wrs` are not tested. | n/a
 |RVMODEL_DATA_SECTION|DUT-specific data that will be placed in a .data section. Used for memory-mapped regions like `tohost`/`fromhost`.  |Yes, if not needed by DUT. | n/a
 |RVMODEL_INVISIBLE_TRAP_HANDLER(_PC_REG, _INSTRUCTION_REG, _ACTION_REG, _DEST_REG, _VALUE_REG)|Optionally emulates an illegal instruction in the M-mode invisible trap handler. `_PC_REG` and `_INSTRUCTION_REG` are read-only and contain the trapping PC and instruction, respectively. `_ACTION_REG`, `_DEST_REG`, and `_VALUE_REG` may be changed. See <<invisible-traps>> for full details.|Omit if the DUT has no invisible trap emulation. | Machine
+|RVMODEL_SDTRIG_USE_TCONTROL|Defined with no value when the hart implements `tcontrol` and M-mode triggers with action=0 fire only while `tcontrol.mte` is 1, the second Sdtrig reentrancy option. The Sdtrig tests then set `tcontrol.mte` while they expect M-mode triggers to fire. Sail implements `tcontrol` only when `sail.json` sets `breakpoint_reentrancy` to `Use_tcontrol`.|Omit if the DUT does not implement Sdtrig or gates M-mode triggers on `mstatus.MIE`. | n/a
 |===
 
 [NOTE]

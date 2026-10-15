@@ -126,5 +126,36 @@
     "update_whole_mask": true
   },
 
-  "wfi_timeout": 0
+  "wfi_timeout": 0,
+  "trigger_use_tcontrol": true, // no S-mode, so tcontrol.mte gates M-mode triggers
+  "trigger_types": [
+    "none",
+    "disabled",
+    "mcontrol6",
+    "icount",
+    "itrigger",
+    "etrigger"
+  ],
+  "triggers": [
+    {
+      "reset": [0, 0, 0, "0x8078"],
+      "mask": ["0xfdffffff", "0xffffffff", "0x0", 0],
+      "poke_mask": ["0xfdffffff", "0xffffffff", "0x0", 0]
+    },
+    {
+      "reset": [0, 0, 0, "0x8078"],
+      "mask": ["0xfdffffff", "0xffffffff", "0x0", 0],
+      "poke_mask": ["0xfdffffff", "0xffffffff", "0x0", 0]
+    },
+    {
+      "reset": [0, 0, 0, "0x8078"],
+      "mask": ["0xfdffffff", "0xffffffff", "0x0", 0],
+      "poke_mask": ["0xfdffffff", "0xffffffff", "0x0", 0]
+    },
+    {
+      "reset": [0, 0, 0, "0x8078"],
+      "mask": ["0xfdffffff", "0xffffffff", "0x0", 0],
+      "poke_mask": ["0xfdffffff", "0xffffffff", "0x0", 0]
+    }
+  ]
 }

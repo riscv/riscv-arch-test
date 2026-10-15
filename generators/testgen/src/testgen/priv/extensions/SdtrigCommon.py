@@ -147,10 +147,19 @@ def _load_tdata1(reg: int, trig_type: int, mode: str, lowfields: int = 0) -> lis
 
 
 def _global_ie(mode: str, enable: bool) -> list[str]:
-    """TODO REMOVE ONCE SAIL IMPLEMENTED: globally enable/disable interrupts to arm triggers."""
+    """Arm or disarm action=0 triggers in ``mode``.
+
+    Harts gate these triggers on mstatus.MIE/SIE or, in M-mode, on tcontrol.mte (the two Sdtrig
+    reentrancy options). Set the bit each option uses; the DUT defines RVMODEL_SDTRIG_USE_TCONTROL for the second.
+    """
     op, why = ("csrsi", "arm") if enable else ("csrci", "disarm")
     if mode == "Sm":
-        return [f"{op} mstatus, 0x8 # MIE={int(enable)} to {why} M-mode triggers"]
+        return [
+            f"{op} mstatus, 0x8 # MIE={int(enable)} to {why} M-mode triggers",
+            "#ifdef RVMODEL_SDTRIG_USE_TCONTROL",
+            f"{op} tcontrol, 0x8 # MTE={int(enable)} to {why} M-mode triggers",
+            "#endif",
+        ]
     if mode == "S":
         return [f"{op} sstatus, 0x2 # SIE={int(enable)} to {why} S-mode triggers"]
     return []

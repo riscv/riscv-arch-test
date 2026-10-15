@@ -7,4 +7,4 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
-Zicfilp_u_cg = new();    Zicfilp_u_cg.set_inst_name("obj_Zicfilp_u");
+ZicfilpU_cg = new();    ZicfilpU_cg.set_inst_name("obj_ZicfilpU");

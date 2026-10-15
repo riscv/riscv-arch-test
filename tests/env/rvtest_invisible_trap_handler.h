@@ -327,8 +327,8 @@
       csrs    mstatus, T4
       // Restore the saved M-mode registers, then execute mret into S-mode or VS-mode.
       SREG    zero, rvmodel_sv_off(sp)           // clear the fast-handler handoff marker
-      LA(     T4, resto_Mrtn)
-      jr      T4
+      LA(     T2, resto_Mrtn)                    // resto_Mrtn restores T2
+      jr      T2                                 // x7 does not set ELP (Zicfilp)
     #endif
 
   invisible_Mnot_handled_in_M:
@@ -355,8 +355,8 @@
   invisible_Mnormal_trap:
     // Continue through the regular trap handler.
     SREG    zero, rvmodel_sv_off(sp)           // clear the fast-handler handoff marker
-    LA(     T4, invisible_Mcontinue)
-    jr      T4
+    LA(     T2, invisible_Mcontinue)           // the regular handler does not read T2 on entry
+    jr      T2                                 // x7 does not set ELP (Zicfilp)
 
   // Write T5 to the GPR number in T4. Writes to registers saved by the trap
   // entry update their save slots so the restore keeps the result.
@@ -370,7 +370,7 @@
     LA(     T3, invisible_Mgpr_table)
     add     T4, T4, T3
     LREG    T4, 0(T4)
-    jr      T4
+    jr      T4                                  // T2 holds the instruction, so each target has a landing pad
 
     .balign REGWIDTH
   invisible_Mgpr_table:
@@ -413,40 +413,46 @@
     .endr
   #endif
 
-  invisible_Mwrite_x0:  j invisible_Mtrap_return
-  invisible_Mwrite_x1:  mv x1, T5;  j invisible_Mtrap_return
-  invisible_Mwrite_x2:  SREG T5, trap_sv_off+7*REGWIDTH(sp); j invisible_Mtrap_return
-  invisible_Mwrite_x3:  mv x3, T5;  j invisible_Mtrap_return
-  invisible_Mwrite_x4:  mv x4, T5;  j invisible_Mtrap_return
-  invisible_Mwrite_x5:  mv x5, T5;  j invisible_Mtrap_return
-  invisible_Mwrite_x6:  SREG T5, trap_sv_off+1*REGWIDTH(sp); j invisible_Mtrap_return
-  invisible_Mwrite_x7:  SREG T5, trap_sv_off+2*REGWIDTH(sp); j invisible_Mtrap_return
-  invisible_Mwrite_x8:  SREG T5, trap_sv_off+3*REGWIDTH(sp); j invisible_Mtrap_return
-  invisible_Mwrite_x9:  SREG T5, trap_sv_off+4*REGWIDTH(sp); j invisible_Mtrap_return
-  invisible_Mwrite_x10: mv x10, T5; j invisible_Mtrap_return
-  invisible_Mwrite_x11: mv x11, T5; j invisible_Mtrap_return
-  invisible_Mwrite_x12: mv x12, T5; j invisible_Mtrap_return
-  invisible_Mwrite_x13: mv x13, T5; j invisible_Mtrap_return
-  invisible_Mwrite_x14: SREG T5, trap_sv_off+5*REGWIDTH(sp); j invisible_Mtrap_return
-  invisible_Mwrite_x15: SREG T5, trap_sv_off+6*REGWIDTH(sp); j invisible_Mtrap_return
+  // jr T4 above goes through x9, so with mseccfg.MLPE=1 it sets ELP=LP_EXPECTED. Each
+  // target starts with lpad 0 (auipc x0, 0). norvc keeps every target 4-byte aligned.
+  .option push
+  .option norvc
+  .p2align 2
+  invisible_Mwrite_x0:  auipc x0, 0; j invisible_Mtrap_return
+  invisible_Mwrite_x1:  auipc x0, 0; mv x1, T5;  j invisible_Mtrap_return
+  invisible_Mwrite_x2:  auipc x0, 0; SREG T5, trap_sv_off+7*REGWIDTH(sp); j invisible_Mtrap_return
+  invisible_Mwrite_x3:  auipc x0, 0; mv x3, T5;  j invisible_Mtrap_return
+  invisible_Mwrite_x4:  auipc x0, 0; mv x4, T5;  j invisible_Mtrap_return
+  invisible_Mwrite_x5:  auipc x0, 0; mv x5, T5;  j invisible_Mtrap_return
+  invisible_Mwrite_x6:  auipc x0, 0; SREG T5, trap_sv_off+1*REGWIDTH(sp); j invisible_Mtrap_return
+  invisible_Mwrite_x7:  auipc x0, 0; SREG T5, trap_sv_off+2*REGWIDTH(sp); j invisible_Mtrap_return
+  invisible_Mwrite_x8:  auipc x0, 0; SREG T5, trap_sv_off+3*REGWIDTH(sp); j invisible_Mtrap_return
+  invisible_Mwrite_x9:  auipc x0, 0; SREG T5, trap_sv_off+4*REGWIDTH(sp); j invisible_Mtrap_return
+  invisible_Mwrite_x10: auipc x0, 0; mv x10, T5; j invisible_Mtrap_return
+  invisible_Mwrite_x11: auipc x0, 0; mv x11, T5; j invisible_Mtrap_return
+  invisible_Mwrite_x12: auipc x0, 0; mv x12, T5; j invisible_Mtrap_return
+  invisible_Mwrite_x13: auipc x0, 0; mv x13, T5; j invisible_Mtrap_return
+  invisible_Mwrite_x14: auipc x0, 0; SREG T5, trap_sv_off+5*REGWIDTH(sp); j invisible_Mtrap_return
+  invisible_Mwrite_x15: auipc x0, 0; SREG T5, trap_sv_off+6*REGWIDTH(sp); j invisible_Mtrap_return
   #ifndef E_SUPPORTED
-    invisible_Mwrite_x16: mv x16, T5; j invisible_Mtrap_return
-    invisible_Mwrite_x17: mv x17, T5; j invisible_Mtrap_return
-    invisible_Mwrite_x18: mv x18, T5; j invisible_Mtrap_return
-    invisible_Mwrite_x19: mv x19, T5; j invisible_Mtrap_return
-    invisible_Mwrite_x20: mv x20, T5; j invisible_Mtrap_return
-    invisible_Mwrite_x21: mv x21, T5; j invisible_Mtrap_return
-    invisible_Mwrite_x22: mv x22, T5; j invisible_Mtrap_return
-    invisible_Mwrite_x23: mv x23, T5; j invisible_Mtrap_return
-    invisible_Mwrite_x24: mv x24, T5; j invisible_Mtrap_return
-    invisible_Mwrite_x25: mv x25, T5; j invisible_Mtrap_return
-    invisible_Mwrite_x26: mv x26, T5; j invisible_Mtrap_return
-    invisible_Mwrite_x27: mv x27, T5; j invisible_Mtrap_return
-    invisible_Mwrite_x28: mv x28, T5; j invisible_Mtrap_return
-    invisible_Mwrite_x29: mv x29, T5; j invisible_Mtrap_return
-    invisible_Mwrite_x30: mv x30, T5; j invisible_Mtrap_return
-    invisible_Mwrite_x31: mv x31, T5; j invisible_Mtrap_return
+    invisible_Mwrite_x16: auipc x0, 0; mv x16, T5; j invisible_Mtrap_return
+    invisible_Mwrite_x17: auipc x0, 0; mv x17, T5; j invisible_Mtrap_return
+    invisible_Mwrite_x18: auipc x0, 0; mv x18, T5; j invisible_Mtrap_return
+    invisible_Mwrite_x19: auipc x0, 0; mv x19, T5; j invisible_Mtrap_return
+    invisible_Mwrite_x20: auipc x0, 0; mv x20, T5; j invisible_Mtrap_return
+    invisible_Mwrite_x21: auipc x0, 0; mv x21, T5; j invisible_Mtrap_return
+    invisible_Mwrite_x22: auipc x0, 0; mv x22, T5; j invisible_Mtrap_return
+    invisible_Mwrite_x23: auipc x0, 0; mv x23, T5; j invisible_Mtrap_return
+    invisible_Mwrite_x24: auipc x0, 0; mv x24, T5; j invisible_Mtrap_return
+    invisible_Mwrite_x25: auipc x0, 0; mv x25, T5; j invisible_Mtrap_return
+    invisible_Mwrite_x26: auipc x0, 0; mv x26, T5; j invisible_Mtrap_return
+    invisible_Mwrite_x27: auipc x0, 0; mv x27, T5; j invisible_Mtrap_return
+    invisible_Mwrite_x28: auipc x0, 0; mv x28, T5; j invisible_Mtrap_return
+    invisible_Mwrite_x29: auipc x0, 0; mv x29, T5; j invisible_Mtrap_return
+    invisible_Mwrite_x30: auipc x0, 0; mv x30, T5; j invisible_Mtrap_return
+    invisible_Mwrite_x31: auipc x0, 0; mv x31, T5; j invisible_Mtrap_return
   #endif
+  .option pop
 
   invisible_Mtrap_return:
     // Skip the trapped instruction and return to the interrupted code.
@@ -459,6 +465,6 @@
     csrr    T1, mepc
     add     T1, T1, T4
     csrw    mepc, T1
-    LA(     T4, resto_Mrtn)
-    jr      T4
+    LA(     T2, resto_Mrtn)                     // resto_Mrtn restores T2
+    jr      T2                                  // x7 does not set ELP (Zicfilp)
 .endm

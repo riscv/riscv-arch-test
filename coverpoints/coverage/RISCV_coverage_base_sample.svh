@@ -415,9 +415,6 @@
     `ifdef COVER_ZICFILPS
         zicfilps_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZICFILPSU
-        zicfilpsu_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_ZICFILPSM
         zicfilpsm_sample(hart, issue, ins);
     `endif

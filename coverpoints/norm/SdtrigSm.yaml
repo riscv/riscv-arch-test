@@ -175,6 +175,7 @@ normative_rule_definitions:
       [
         "SdtrigSm_combined_accesses_cg/cp_vector_load_store",
         "SdtrigSm_combined_accesses_cg/cp_vector_accesses",
+        "SdtrigSm_combined_accesses_cg/cp_vector_mask",
         "SdtrigSm_combined_accesses_cg/cp_cm_pop_push",
       ]
 

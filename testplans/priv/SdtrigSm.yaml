@@ -205,39 +205,39 @@ coverpoints:
     goal: cbo.clean, cbo.flush, and cbo.inval match as if they are stores
     description: |-
       if ZICBOM_SUPPORTED
-      tdata2 = {scratch/0}
+      tdata2 = {scratch/scratch-1/scratch+block/0}
       tdata1.select ={0/1}
       tdata1.size = {0/1/2/3/4/5/6}
       tdata1.XSL = {100/010/001}
       Perform CBO.{CLEAN/FLUSH/INVAL} to {scratch}
     expectation: Breakpoint exception when tdata2 = scratch and store = 1 and size = 0 and select = 0
-    bins: 2 addrs * 2 selects * 7 sizes * 3 XSL * 3 ops
+    bins: 4 addrs * 2 selects * 7 sizes * 3 XSL * 3 ops
     rules:
       - Sdtrig_cache_clears
   - name: cp_cache_zicboz
     goal: cbo.zero matches as if it is a store
     description: |-
       if ZICBOZ_SUPPORTED
-      tdata2 = {scratch/0}
+      tdata2 = {scratch/scratch-1/scratch+block/0}
       tdata1.select ={0/1}
       tdata1.size = {0/1/2/3/4/5/6}
       tdata1.XSL = {100/010/001}
       Perform CBO.ZERO to scratch
     expectation: Breakpoint exception when tdata2 = scratch and store = 1 and size = 0 and select = 0
-    bins: 2 addrs * 2 selects * 7 sizes * 3 XSL
+    bins: 4 addrs * 2 selects * 7 sizes * 3 XSL
     rules:
       - Sdtrig_cbo_zero
   - name: cp_cache_zicbop
     goal: The prefetch instructions don’t match at all.
     description: |-
       if ZICBOP_SUPPORTED
-      tdata2 = {scratch/0/PREFETCH.{i/r/w}}
+      tdata2 = {scratch/0}
       tdata1.select ={0/1} (adr)
       tdata1.size = 0
-      tdata1.XSL =111
+      tdata1.XSL = 011
       Perform PREFETCH.{i/r/w} to scratch
     expectation: No exceptions
-    bins: 5 values * 2 selects * 3 ops
+    bins: 2 values * 2 selects * 3 ops
     rules:
       - Sdtrig_prefetch
   - heading: Address Matches

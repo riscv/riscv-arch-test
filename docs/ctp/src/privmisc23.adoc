@@ -154,7 +154,7 @@ include::{testplansdir}/priv/SdtrigSm.adoc[]
 include::norm/SdtrigSm_norm_rules.adoc[]
 
 As of 7/24/26, Sdtrig is partially implemented.  Only the mcontrol6 covergroup is fully developed. Coverpoints are incomplete and are in a draft PR.
-Sail does not yet support Sdtrig, so the tests are exercised by running whisper against spike.  QEMU and Imperas do not yet match spike and some issues
+Sail models icount, itrigger and etrigger but not mcontrol6, so the mcontrol6 tests are exercised by running whisper against spike.  QEMU and Imperas do not yet match spike and some issues
 have been filed and are tracked https://docs.google.com/spreadsheets/d/1EuG4LV1TQDx4wTzYDWEAvq0fwaWjNuxenwDARZmrN-E/edit?gid=0#gid=0[here].
 Run with `make whisper-rv64-max-spike-ref EXTENSIONS=SdtrigSm`.
 

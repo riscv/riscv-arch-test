@@ -13,10 +13,9 @@ COVERAGE_CONFIG_FILES ?= config/sail/sail-rv64-max/test_config.yaml config/sail/
 # EXCLUDE_EXTENSIONS overrides EXTENSIONS to exclude particular extensions from test generation. Applies as a negative filter after EXTENSIONS.
 # CERTIFICATE limits the selected tests to those relevant to the specified certificate.
 # ENABLE_EXPERIMENTAL_EXTENSIONS enables tests for extensions that are not ratified.
-# Default exclusion reasons:
-#  - Sm: Insufficient WARL configuration options.
+# Each simulator's config/<sim>/ci.yaml lists the extensions its CI skips, with the reasons.
 EXTENSIONS  ?=
-EXCLUDE_EXTENSIONS ?= SdtrigSm,SdtrigS,SdtrigU
+EXCLUDE_EXTENSIONS ?=
 CERTIFICATE ?=
 ENABLE_EXPERIMENTAL_EXTENSIONS ?=
 

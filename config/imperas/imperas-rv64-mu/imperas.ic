@@ -131,3 +131,7 @@
 --callcommand iss/cpu0/setPMA -lo 0x000C000000 -hi 0x0000000FFFFFFF -attributes " rw-aA- --4- " # PLIC
 --callcommand iss/cpu0/setPMA -lo 0x0010010000 -hi 0x00000010010007 -attributes " rw-aA- 1248 " # UART0
 --callcommand iss/cpu0/setPMA -lo 0x0080000000 -hi 0x0000008FFFFFFF -attributes " rwx--- 1248 " # UNCORE_RAM
+# Sdtrig: AMOs are loads and stores for triggers (norm:Sdtrig_AMO_read_addr, Sdtrig_AMO_store_addr)
+--override cpu*/amo_trigger=T
+# Sdtrig: no tcontrol, so breakpoint reentrancy follows mstatus.MIE/SIE, which Sail models
+--override cpu*/tcontrol_undefined=T

@@ -22,10 +22,12 @@
 #   (fixed in Imperas-HMC101126-eng-build). The other configs pass.
 # - ExceptionsVx: https://solvnetplus.synopsys.com/s/case/500WQ000023l1CPYAY/vmvnrrv-does-not-raise-an-illegalinstruction-exception-when-vtypevill-1
 #   (fixed in Imperas-HMC101126-eng-build)
-# - SdtrigS, SdtrigU: Sail has no mcontrol/mcontrol6 (a type-6 tdata1 write reads back as type 15), so its
-#   expected signatures contain no breakpoints and the Mcontrol6 tests fail at the first trigger that fires
-#   (https://github.com/riscv/sail-riscv/issues/222). SdtrigSm passes, but only because no M-mode trigger fires
-#   (Imperas implements tcontrol and the test never sets tcontrol.mte), so it is no longer excluded.
+# - SdtrigSm, SdtrigS, SdtrigU: Sail has no mcontrol/mcontrol6 (a type-6 tdata1 write reads back as type 15), so its
+#   expected signatures contain no breakpoints and the Mcontrol6 and AExt tests fail at the first trigger that fires
+#   (https://github.com/riscv/sail-riscv/issues/222). With tcontrol_undefined=T, M-mode triggers fire, so SdtrigSm fails too.
+#   Imperas also writes the PC to xtval on an icount breakpoint instead of zero
+#   (https://solvnetplus.synopsys.com/s/case/500WQ00002BsufNYAR/an-icount-trigger-that-fires-with-action0-writes-the-pc-to-mtval-instead-of-zero)
+#   (fixed in Imperas-HMC101126-eng-build).
 # - Sscofpmf*: there are no plans for Imperas to support HPM events, so this one is not
 #   expected to be resolved in the foreseeable future.
 # - Svnapot: Imperas accepts N=1 on superpage leaf PTEs instead of page faulting
@@ -45,6 +47,6 @@
 #
 ci_enabled: false
 # Stock ImperasDV Y-2026.09:
-# exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,Smstateen,ExceptionsVx,SdtrigS,SdtrigU,Svnapot,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,SscofpmfSm,SscofpmfS,SscofpmfU"
+# exclude_extensions: "SsstrictSm,SsstrictS,SsstrictU,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,Svnapot,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,SscofpmfSm,SscofpmfS,SscofpmfU"
 # Imperas-HMC101126-eng-build:
-exclude_extensions: "SdtrigS,SdtrigU,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,SscofpmfSm,SscofpmfS,SscofpmfU"
+exclude_extensions: "SdtrigSm,SdtrigS,SdtrigU,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm,SscofpmfSm,SscofpmfS,SscofpmfU"

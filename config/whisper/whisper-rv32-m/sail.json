@@ -950,7 +950,7 @@
       // . `No_reentrancy_support`: no specific support for reentrancy
       // Note: `Use_tcontrol` hardwires medeleg[3] to 0, which breaks the
       // `sbreak` test in `riscv-tests`.
-      "breakpoint_reentrancy": "No_reentrancy_support",
+      "breakpoint_reentrancy": "Use_tcontrol",
       // CSRs
       "mcontext": {
         "supported": false
@@ -978,7 +978,7 @@
         // value is ignored when `etrigger` is not supported.
         "supported_exceptions": {
           "len": "xlen",
-          "value": "0"
+          "value": "0xDBBFF"
         }
       },
       "itrigger": {
@@ -989,7 +989,7 @@
         // value is ignored when `itrigger` is not supported.
         "supported_interrupts": {
           "len": "xlen",
-          "value": "0"
+          "value": "0x3EEE"
         }
       }
     },

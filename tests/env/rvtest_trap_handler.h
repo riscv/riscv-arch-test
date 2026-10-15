@@ -2534,6 +2534,33 @@ skpsv_\__MODE__\()epc:
         j skp_adj_\__MODE__\()epc
 
 adj_\__MODE__\()epc_rtn:
+#ifdef SDTRIG_IMPRECISE_XEPC
+  .ifc \__MODE__ , M
+        csrr    T2, CSR_XCAUSE
+        LI(     T6, CAUSE_BREAKPOINT)
+        bne     T2, T6, 2f
+        csrr    T2, tdata1                           // tselect selects the trigger under test
+        srli    T2, T2, UDB_MXLEN-4                  // tdata1.type
+        LI(     T6, 4)                               // itrigger
+        beq     T2, T6, skp_adj_\__MODE__\()epc
+2:
+  .endif
+#endif
+#if defined(SDTRIG_ETRIGGER_XEPC_IN_VECTOR) && defined(S_SUPPORTED)
+  .ifc \__MODE__ , M
+        // etrigger on an exception delegated to S fires after the trap is taken and before the first
+        // S handler instruction, so xEPC is inside the S trap vector. A real ebreak lives in test code.
+        csrr    T2, CSR_XCAUSE
+        LI(     T6, CAUSE_BREAKPOINT)
+        bne     T2, T6, 3f
+        csrr    T2, CSR_STVEC
+        andi    T2, T2, -4                           // stvec BASE (clear MODE)
+        sub     T2, T3, T2                           // xEPC - BASE (T3 = xEPC)
+        LI(     T6, 4*UDB_MXLEN)                     // size of the spreader jump table
+        bltu    T2, T6, skp_adj_\__MODE__\()epc      // inside the vector -> trigger breakpoint, no advance
+3:
+  .endif
+#endif
 #ifdef ZCA_SUPPORTED
         // Advance xEPC past the trapping instruction by its true width.
         // Read the low halfword of the instruction at xEPC (T3), in the

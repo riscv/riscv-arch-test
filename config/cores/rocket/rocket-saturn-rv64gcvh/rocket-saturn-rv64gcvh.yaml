@@ -1,0 +1,539 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/riscv/riscv-unified-db/main/spec/schemas/config_schema.json
+---
+# UDB architecture configuration for the Rocket core with the Saturn vector unit and the
+# hypervisor extension, built through Chipyard (ACTRocketSaturnHConfig, see
+# .github/scripts/install-rocket.sh):
+#   WithNPerfCounters(29) ++ WithHypervisor ++ WithSV48 ++ WithBroadcastManager ++ WithNoDebug ++
+#   MINV128D64RocketConfig
+#
+# Citations are pinned to:
+#   Chipyard    ucb-bar/chipyard             @ 0acc1e1de2d3284bcd4d876956932a013ffe1949 (1.14.0)
+#   rocket-chip chipsalliance/rocket-chip    @ 55bcad0f59436de98ea510334121de8546b9e9d7
+#   Saturn      ucb-bar/saturn-vectors       @ dfe75de2a8868d51d42c20612821431a9fcf645e
+# RC below abbreviates https://github.com/chipsalliance/rocket-chip/blob/55bcad0f59436de98ea510334121de8546b9e9d7
+# SAT abbreviates https://github.com/ucb-bar/saturn-vectors/blob/dfe75de2a8868d51d42c20612821431a9fcf645e
+#
+# The generated device tree reports
+#   riscv,isa = "rv64imafdcbvhzicsr_zifencei_zihpm_zvl128b_zve64d_zvfh_zfh_zba_zbb_zbs_zvbb_xrocket"
+#   mmu-type = "riscv,sv48,sv48x4"; riscv,pmpregions = <8>; riscv,pmpgranularity = <4096>
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: rocket-saturn-rv64gcvh
+description: Rocket with the Saturn vector unit (VLEN 128, DLEN 64) and the hypervisor extension, in the Chipyard Verilator harness
+
+implemented_extensions:
+  - { name: I, version: "= 2.1" }
+  - { name: M, version: "= 2.0" }
+  - { name: Zmmul, version: "= 1.0.0" }
+  - { name: A, version: "= 2.1.0" }
+  - { name: Zaamo, version: "= 1.0.0" }
+  - { name: Zalrsc, version: "= 1.0.0" }
+  # The LR reservation is the 64-byte data-cache block: the SC compares the block address only.
+  #   RC/src/main/scala/rocket/DCache.scala (lrscAddrMatch)
+  # Za64rs implies Za128rs.
+  - { name: Za64rs, version: "= 1.0.0" }
+  - { name: Za128rs, version: "= 1.0.0" }
+  - { name: F, version: "= 2.2.0" }
+  - { name: D, version: "= 2.2.0" }
+  # minFLen = 16 (set by WithNHugeCores and again by Saturn's WithRocketVectorUnit) adds Zfh.
+  #   RC/src/main/scala/tile/BaseTile.scala#L128
+  - { name: Zfh, version: "= 1.0.0" }
+  - { name: Zfhmin, version: "= 1.0.0" }
+  - { name: C, version: "= 2.0" }
+  - { name: Zca, version: "= 1.0.0" }
+  - { name: Zcd, version: "= 1.0.0" }
+  # useZba/useZbb/useZbs = true in WithNHugeCores. B itself is not declared: misa.B reads 0,
+  # because "B" is not in the CSR file's misa string.
+  #   RC/src/main/scala/rocket/Configs.scala#L30
+  #   RC/src/main/scala/rocket/CSR.scala#L635
+  - { name: Zba, version: "= 1.0.0" }
+  - { name: Zbb, version: "= 1.0.0" }
+  - { name: Zbs, version: "= 1.0.0" }
+  - { name: Zicsr, version: "= 2.0" }
+  - { name: Zifencei, version: "= 2.0.0" }
+  # Zicntr is not declared: cycle and instret exist but time does not ("rdtime[h] is not
+  # implemented, and could be provided by software emulation", RC/src/main/scala/tile/BaseTile.scala#L136),
+  # and ACT cannot emulate time on a hart with the hypervisor extension (tests/env/check_defines.h).
+  - { name: Zihpm, version: "= 2.0.0" }
+  # V 1.0 from Saturn: VLEN 128, ELEN 64, with vfLen 64 and vfh = true.
+  #   SAT/src/main/scala/rocket/Configs.scala#L29-L40
+  - { name: V, version: "= 1.0.0" }
+  - { name: Zve32x, version: "= 1.0.0" }
+  - { name: Zve32f, version: "= 1.0.0" }
+  - { name: Zve64x, version: "= 1.0.0" }
+  - { name: Zve64f, version: "= 1.0.0" }
+  - { name: Zve64d, version: "= 1.0.0" }
+  - { name: Zvl32b, version: "= 1.0.0" }
+  - { name: Zvl64b, version: "= 1.0.0" }
+  - { name: Zvl128b, version: "= 1.0.0" }
+  - { name: Zvfh, version: "= 1.0.0" }
+  - { name: Zvfhmin, version: "= 1.0.0" }
+  # vExts = Seq("zvbb").
+  - { name: Zvbb, version: "= 1.0.0" }
+  - { name: Zvkb, version: "= 1.0.0" }
+  - { name: U, version: "= 1.0.0" }
+  - { name: S, version: "= 1.12.0" }
+  # Sm 1.12: menvcfg and mconfigptr are implemented (RV64, so no mstatush).
+  #   RC/src/main/scala/rocket/CSR.scala#L743
+  #   RC/src/main/scala/rocket/CSR.scala#L849
+  - { name: Sm, version: "= 1.12.0" }
+  - { name: H, version: "= 1.0.0" }
+  # pgLevels = 4 (WithSV48): satp accepts Bare, Sv39 and Sv48, hgatp Bare, Sv39x4 and Sv48x4.
+  #   RC/src/main/scala/rocket/CSR.scala#L1228
+  - { name: Sv39, version: "= 1.0.0" }
+  - { name: Sv48, version: "= 1.0.0" }
+  - { name: Svbare, version: "= 1.0.0" }
+  # A leaf PTE needs A = 1, and a writable one D = 1; the walker never sets them.
+  #   RC/src/main/scala/rocket/PTW.scala#L141
+  - { name: Svade, version: "= 1.0.0" }
+  - { name: Sstvecd, version: "= 1.0.0" }
+  - { name: Ssu64xl, version: "= 1.0.0" }
+  - { name: Sscounterenw, version: "= 1.0.0" }
+  - { name: Shcounterenw, version: "= 1.0.0" }
+  - { name: Shvstvecd, version: "= 1.0.0" }
+  - { name: Shvsatpa, version: "= 1.0.0" }
+  - { name: Shgatpa, version: "= 1.0.0" }
+  - { name: Shtvala, version: "= 1.0.0" }
+
+params:
+  # misa.X reads 1 for the custom CEASE instruction ("xrocket").
+  NON_STANDARD_EXTENSION_IMPLEMENTED: true
+
+  # misa is writable in M, A, F, D, V and C (the "MAFDVC" mask); clearing F also clears D.
+  #   RC/src/main/scala/rocket/CSR.scala#L1265
+  MUTABLE_MISA_M: true
+  MUTABLE_MISA_A: true
+  MUTABLE_MISA_F: true
+  MUTABLE_MISA_D: true
+  MUTABLE_MISA_C: true
+  MUTABLE_MISA_V: true
+  MUTABLE_MISA_U: false
+  MUTABLE_MISA_S: false
+  MUTABLE_MISA_H: false
+
+  # ---------------------------------------------------------------- A
+  MISALIGNED_AMO: false
+  LRSC_RESERVATION_STRATEGY: "reserve naturally-aligned 64-byte region"
+  LRSC_FAIL_ON_VA_SYNONYM: false
+  LRSC_MISALIGNED_BEHAVIOR: "always raise misaligned exception"
+  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+
+  # ---------------------------------------------------------------- F/D
+  # haveFSDirty = false, so mstatus.FS is two-state: any nonzero write becomes Dirty.
+  #   RC/src/main/scala/rocket/RocketCore.scala#L64
+  #   RC/src/main/scala/rocket/CSR.scala#L1670
+  HW_MSTATUS_FS_DIRTY_UPDATE: precise
+  MSTATUS_FS_LEGAL_VALUES: [0, 3]
+
+  # ---------------------------------------------------------------- U
+  U_MODE_ENDIANNESS: little
+  UXLEN: [64]
+  TRAP_ON_ECALL_FROM_U: true
+  # WFI in U-mode with mstatus.TW = 0 is allowed.
+  #   RC/src/main/scala/rocket/CSR.scala#L907
+  WFI_U_MODE: true
+
+  # ---------------------------------------------------------------- S
+  # ASIdBits defaults to 0: satp.ASID is read-only zero.
+  #   RC/src/main/scala/rocket/TLB.scala#L26
+  ASID_WIDTH: 0
+  S_MODE_ENDIANNESS: little
+  SXLEN: [64]
+  SEI_INTR_IMPL: true
+  SSI_INTR_IMPL: true
+  STI_INTR_IMPL: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED: false
+  REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION: true
+  STVAL_WIDTH: 64
+  # In the RTL every counter-enable bit is writable, including CY/TM/IR: the mask is
+  # (1 << (nPerfCounters + 3)) - 1 (RC/src/main/scala/rocket/CSR.scala#L530). UDB requires bits
+  # 0..2 to be read-only zero without Zicntr, so those three are declared false here and in
+  # MCOUNTENABLE_EN and HCOUNTENABLE_EN.
+  SCOUNTENABLE_EN:
+    [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]
+  # xtvec bit 1 always reads 0; in vectored mode bits 7:1 read 0 (256-byte base alignment).
+  #   RC/src/main/scala/rocket/CSR.scala#L1668
+  STVEC_MODES: [0, 1]
+  STVEC_BASE_ALIGNMENT_VECTORED: 256
+  SATP_MODE_BARE: true
+  TRAP_ON_ECALL_FROM_S: true
+  MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
+
+  # ---------------------------------------------------------------- Sm
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: true
+  MTI_INTR_IMPL: true
+  WFI_FINITE: false
+  MXLEN: 64
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_EBREAK: true
+  # marchid = 1, mvendorid = 0, mimpid = 0x20181004 (RocketCustomCSRs).
+  #   RC/src/main/scala/rocket/RocketCore.scala#L119
+  MARCHID_IMPLEMENTED: true
+  ARCH_ID_VALUE: 1
+  MIMPID_IMPLEMENTED: true
+  IMP_ID_VALUE: 0x20181004
+  VENDOR_ID_BANK: 0
+  VENDOR_ID_OFFSET: 0
+  CONFIG_PTR_ADDRESS: 0
+  # Misaligned loads and stores trap; there is no misaligned-access hardware.
+  MISALIGNED_LDST: false
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  # Saturn executes reserved vector encodings instead of trapping: a misaligned register group
+  # (vmv.v.i v1 at LMUL=2) and a widening op whose destination overlaps the low half of a
+  # narrower source both retire normally (measured).
+  TRAP_ON_RESERVED_INSTRUCTION: false
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  TRAP_ON_ILLEGAL_WLRL: false
+  # tval is written for breakpoints, fetch access and page faults, data-address faults and
+  # illegal instructions, but not for an instruction-address-misaligned exception.
+  #   RC/src/main/scala/rocket/RocketCore.scala#L875
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
+  MTVAL_WIDTH: 64
+  PMA_GRANULARITY: 12
+  # paddrBits is 32: the highest address in the memory map is the end of DRAM (0x9000_0000).
+  PHYS_ADDR_WIDTH: 32
+  M_MODE_ENDIANNESS: little
+  MISA_CSR_IMPLEMENTED: true
+  MTVEC_ACCESS: rw
+  MTVEC_MODES: [0, 1]
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  MTVEC_BASE_ALIGNMENT_VECTORED: 256
+  # mtvec stores the written value and masks it on read, so a write of mode 2 or 3 reads back
+  # as mode 0 or 1.
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: custom
+  # 8 PMP entries (pmpaddr0..15 and pmpcfg0/2 decode, entries 8..15 read zero), 4 KiB
+  # granularity with the hypervisor extension, NA4 not selectable.
+  #   RC/src/main/scala/rocket/RocketCore.scala#L65
+  #   RC/src/main/scala/rocket/CSR.scala#L1499
+  NUM_PMP_ENTRIES: 16
+  NUM_USABLE_PMP_ENTRIES: 8
+  PMP_GRANULARITY: 12
+  PMP_NA4_SUPPORTED: false
+  PMP_NAPOT_SUPPORTED: true
+  PMP_TOR_SUPPORTED: true
+  # WithNPerfCounters(29): hpmcounter3..31 exist and are 40 bits wide.
+  #   RC/src/main/scala/rocket/CSR.scala#L212
+  HPM_COUNTER_EN:
+    [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]
+  HPM_COUNTER3_WIDTH: 40
+  HPM_COUNTER4_WIDTH: 40
+  HPM_COUNTER5_WIDTH: 40
+  HPM_COUNTER6_WIDTH: 40
+  HPM_COUNTER7_WIDTH: 40
+  HPM_COUNTER8_WIDTH: 40
+  HPM_COUNTER9_WIDTH: 40
+  HPM_COUNTER10_WIDTH: 40
+  HPM_COUNTER11_WIDTH: 40
+  HPM_COUNTER12_WIDTH: 40
+  HPM_COUNTER13_WIDTH: 40
+  HPM_COUNTER14_WIDTH: 40
+  HPM_COUNTER15_WIDTH: 40
+  HPM_COUNTER16_WIDTH: 40
+  HPM_COUNTER17_WIDTH: 40
+  HPM_COUNTER18_WIDTH: 40
+  HPM_COUNTER19_WIDTH: 40
+  HPM_COUNTER20_WIDTH: 40
+  HPM_COUNTER21_WIDTH: 40
+  HPM_COUNTER22_WIDTH: 40
+  HPM_COUNTER23_WIDTH: 40
+  HPM_COUNTER24_WIDTH: 40
+  HPM_COUNTER25_WIDTH: 40
+  HPM_COUNTER26_WIDTH: 40
+  HPM_COUNTER27_WIDTH: 40
+  HPM_COUNTER28_WIDTH: 40
+  HPM_COUNTER29_WIDTH: 40
+  HPM_COUNTER30_WIDTH: 40
+  HPM_COUNTER31_WIDTH: 40
+  HPM_EVENTS: [0]
+  MCOUNTINHIBIT_IMPLEMENTED: true
+  # mcountinhibit bit 1 is tied to zero.
+  #   RC/src/main/scala/rocket/CSR.scala#L1308
+  COUNTINHIBIT_EN:
+    [
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]
+  MCOUNTENABLE_EN:
+    [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]
+
+  # ---------------------------------------------------------------- V
+  VLEN: 128
+  ELEN: 64
+  SEW_MIN: 8
+  FOLLOW_VTYPE_RESET_RECOMMENDATION: true
+  HW_MSTATUS_VS_DIRTY_UPDATE: precise
+  RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX: VLMAX
+  SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED: "no_unrequired_supported"
+  VILL_SET_ON_RESERVED_VTYPE: true
+  RESERVED_VSET_X0X0_VILL_SET: "always"
+  RESERVED_VSET_X0X0_VLMAX_CHANGE: "always"
+  VECTOR_LS_INDEX_MAX_EEW: "XLEN"
+  VECTOR_FF_UPDATE_PAST_TRIM: "update_none"
+  VECTOR_FF_SEG_EXCEPTION_PARTIAL_LOAD: "no_subsegment_loaded"
+  VECTOR_LS_MISALIGNED_LEGAL: false
+  VECTOR_LOAD_PAST_TRAP: false
+  VECTOR_LOAD_SEG_FF_OVERWRITE_ELEMENTS_AFTER_FAULT: "no_overwrite"
+  VECTOR_LS_SEG_PARTIAL_ACCESS: false
+  LEGAL_VSTART: "1_stride"
+  VECTOR_LS_WHOLEREG_MISALIGNED_LEGAL: false
+  VSSTATUS_VS_EXISTS: true
+  VECTOR_FF_NO_EXCEPTION_TRIM: false
+  VFREDUSUM_NAN: "no_change"
+  VFREDUSUM_NODE_ROUNDING_BEHAVIOR: "SEW_precision"
+  VFREDUSUM_INACTIVE_NODE_ELEMENT_BEHAVIOR: "additive_identity"
+  VFREDUSUM_FINAL_NODE_ELEMENT_BEHAVIOR: "additive_identity"
+  IMPRECISE_VECTOR_TRAP_SETTABLE: false
+
+  # ---------------------------------------------------------------- H
+  # hvip.VSSIP/VSTIP/VSEIP are writable, and mideleg bits 2, 6 and 10 read 1.
+  #   RC/src/main/scala/rocket/CSR.scala#L1407
+  VSEI_INTR_IMPL: true
+  VSSI_INTR_IMPL: true
+  VSTI_INTR_IMPL: true
+  VSXLEN: [64]
+  VUXLEN: [64]
+  # VMIdBits defaults to 0: hgatp.VMID is read-only zero.
+  VMID_WIDTH: 0
+  VS_MODE_ENDIANNESS: little
+  VU_MODE_ENDIANNESS: little
+  GSTAGE_MODE_BARE: true
+  VSSTAGE_MODE_BARE: true
+  VSTVEC_MODES: [0, 1]
+  # When V = 0 a vsatp write with an unsupported mode keeps the old mode but updates PPN.
+  #   RC/src/main/scala/rocket/CSR.scala#L1439
+  IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: false
+  # hgeie and hgeip read zero.
+  #   RC/src/main/scala/rocket/CSR.scala#L823
+  NUM_EXTERNAL_GUEST_INTERRUPTS: 0
+  REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION: true
+  # A virtual-instruction exception writes zero to stval/mtval: only illegal_instruction
+  # selects the instruction bits (RC/src/main/scala/rocket/RocketCore.scala#L878).
+  REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION: false
+  REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_INSTRUCTION_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_LOAD_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_STORE_AMO_GUEST_PAGE_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED: false
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT: true
+  SV39_VSMODE_TRANSLATION: true
+  SV39X4_TRANSLATION: true
+  SV48_VSMODE_TRANSLATION: true
+  SV48X4_TRANSLATION: true
+  SV57_VSMODE_TRANSLATION: false
+  SV57X4_TRANSLATION: false
+  # mtinst/htinst hold only the pseudoinstruction for an implicit VS-stage access that takes a
+  # guest-page fault; everything else writes zero.
+  #   RC/src/main/scala/rocket/RocketCore.scala#L891
+  TINST_VALUE_ON_BREAKPOINT: "always zero"
+  TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED: "always zero"
+  TINST_VALUE_ON_LOAD_ACCESS_FAULT: "always zero"
+  TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED: "always zero"
+  TINST_VALUE_ON_LOAD_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_MCALL: "always zero"
+  TINST_VALUE_ON_SCALL: "always zero"
+  TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT: "always zero"
+  TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED: "always zero"
+  TINST_VALUE_ON_STORE_AMO_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_UCALL: "always zero"
+  TINST_VALUE_ON_VIRTUAL_INSTRUCTION: "always zero"
+  TINST_VALUE_ON_VSCALL: "always zero"
+  TRAP_ON_ECALL_FROM_VS: true
+  HCOUNTENABLE_EN:
+    [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+    ]

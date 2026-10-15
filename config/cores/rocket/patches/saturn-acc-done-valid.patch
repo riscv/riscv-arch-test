@@ -1,0 +1,17 @@
+Saturn permute/reduction sequencer: clear valid on acc_done only while the sequencer holds an
+instruction. acc has no reset and acc_done is raised by any execute sequencer that finishes an
+instruction with the same VAT tag, so a stale acc/acc_done pair cleared valid in the cycle of a new
+dispatch, and the execute sequencer then waited forever for slide data (ACT Vx/Vls hangs).
+Local patch; related issue https://github.com/ucb-bar/saturn-vectors/issues/74.
+
+diff --git a/src/main/scala/backend/SpecialSequencer.scala b/src/main/scala/backend/SpecialSequencer.scala
+--- a/src/main/scala/backend/SpecialSequencer.scala
++++ b/src/main/scala/backend/SpecialSequencer.scala
+@@ -183,6 +183,6 @@ class SpecialSequencer(exu_insns: Seq[VectorInstruction])(implicit p: Parameters
+     acc_busy := true.B
+   }
+
+-  when (io.acc_done && acc) {
++  when (io.acc_done && acc && valid) {
+     valid := false.B
+   }

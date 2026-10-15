@@ -100,6 +100,52 @@
   cleanup_epilogs:
     #ifdef STANDARD_SM_SUPPORTED
       RVTEST_TSBI_GOTO_MMODE
+
+      // Check for trap-handler failures before the epilogs below remove the test's trap
+      // handlers: reporting one saves the vector registers through a T-SBI ecall, which has
+      // no handler afterwards. A trap signature overflow (an unexpected trap in self-check
+      // mode) and abort_test leave the test from inside a trap handler, which has swapped
+      // the regular signature pointer, so they are reported before any signature check.
+      check_trap_sig_overflow:
+        LA(     T4, trap_sig_overflow)  // T5 holds trap_sig_overflow if the trap signature overflowed
+        bne     T4, T5, check_abort_test
+        jal     T2, failedtest_trap_x7_x9
+        RVTEST_WORD_PTR trap_sig_overflow
+        RVTEST_WORD_PTR trap_sig_overflowstr
+        .word   CSR_MEPC
+
+      check_abort_test:
+        LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
+        bne     T4, T5, check_trap_sig_offset
+        jal     T2, failedtest_trap_x7_x9
+        RVTEST_WORD_PTR abort_test
+        RVTEST_WORD_PTR abortstr
+        .word   CSR_MEPC
+
+      // Check trap signature offset to make sure the correct number of traps occurred.
+      // This is a trap-framework diagnostic, not a normal signature check. Pass the
+      // already-available actual and expected offsets to the trap failure entry before
+      // any diagnostic code can fault and overwrite trap CSRs.
+      check_trap_sig_offset:
+      #ifndef RVTEST_NOSIG
+        LA(     T1, Mtrap_sig)
+        LREG    T1, 0(T1)               // Trap signature pointer
+        LA(     T2, trap_sigptr)        // Base address of trap signature region
+        sub     T1, T1, T2              // Calculate DUT trap signature byte count
+        LA(     T3, final_trap_sig_offset)
+      #ifdef RVTEST_SELFCHECK
+        LREG    DEFAULT_TEMP_REG, 0(T3) // Reference trap signature byte count
+        beq     DEFAULT_TEMP_REG, T1, check_trap_sig_offset_done
+      #else
+        SREG    T1, 0(T3)               // Save reference trap signature byte count
+        beq     x0, x0, check_trap_sig_offset_done
+      #endif
+        jal     T2, failedtest_trap_x7_x9
+        RVTEST_WORD_PTR check_trap_sig_offset
+        RVTEST_WORD_PTR trap_sig_offset_mismatch
+      #endif
+      check_trap_sig_offset_done:
+
       #ifdef S_SUPPORTED
         // Exact reverse of the prolog order (M, S, V).
         #ifdef H_SUPPORTED
@@ -154,52 +200,6 @@
       call rvmodel_io_write_str
       call rvmodel_halt_fail
     check_regular_sig_offset_done:
-  #endif
-
-  #ifdef STANDARD_SM_SUPPORTED
-    check_trap_sig_overflow:
-      LA(     T4, trap_sig_overflow)
-      bne     T4, T5, check_trap_sig_offset
-      LA(a0, failstr)
-      call rvmodel_io_write_str
-      LA(a0, begin_debugstr)
-      call rvmodel_io_write_str
-      LA(a0, trap_sig_overflowstr)
-      call rvmodel_io_write_str
-      LA(a0, endstr)
-      call rvmodel_io_write_str
-      call rvmodel_halt_fail
-
-    // Check trap signature offset to make sure the correct number of traps occurred.
-    // This is a trap-framework diagnostic, not a normal signature check. Pass the
-    // already-available actual and expected offsets to the trap failure entry before
-    // any diagnostic code can fault and overwrite trap CSRs.
-    check_trap_sig_offset:
-    #ifndef RVTEST_NOSIG
-      LA(     T1, Mtrap_sig)
-      LREG    T1, 0(T1)               // Trap signature pointer
-      LA(     T2, trap_sigptr)        // Base address of trap signature region
-      sub     T1, T1, T2              // Calculate DUT trap signature byte count
-      LA(     T3, final_trap_sig_offset)
-    #ifdef RVTEST_SELFCHECK
-      LREG    DEFAULT_TEMP_REG, 0(T3) // Reference trap signature byte count
-      beq     DEFAULT_TEMP_REG, T1, check_abort_test
-    #else
-      SREG    T1, 0(T3)               // Save reference trap signature byte count
-      beq     x0, x0, check_abort_test
-    #endif
-      jal     T2, failedtest_trap_x7_x9
-      RVTEST_WORD_PTR check_trap_sig_offset
-      RVTEST_WORD_PTR trap_sig_offset_mismatch
-    #endif
-
-    check_abort_test:
-      LI(     T4, 0xBAD0DEAD)           // T5 holds 0xBAD0DEAD if abort_test was executed
-      bne     T4, T5, exit_cleanup
-      jal     T2, failedtest_trap_x7_x9
-      RVTEST_WORD_PTR abort_test
-      RVTEST_WORD_PTR abortstr
-      .word   CSR_MEPC
   #endif
 
   // Terminate test with passing status

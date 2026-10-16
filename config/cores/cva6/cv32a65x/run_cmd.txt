@@ -1,1 +1,1 @@
-run-cv32a65x.sh {debug:--trace __TRACEFILE__} --elf
+run-cva6.sh --target cv32a65x {debug:--trace __TRACEFILE__} --elf

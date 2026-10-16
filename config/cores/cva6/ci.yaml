@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: Apache-2.0
+# CI configuration for the OpenHW CVA6 Verilator testharness
+
+ci_enabled: true
+
+# Sm, ExceptionsZc: the Sail reference run overflows the trap signature
+#   ("Increase TRAP_SIGUPD_COUNT") in Sm_csr_insufficient_priv-00 and ExceptionsZc-00.
+# InterruptsSm: the Verilator testharness is built without the UART (InclUART=0), so
+#   there is no external interrupt source behind the PLIC:
+#   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/corev_apu/tb/ariane_testharness.sv#L586-L590
+#   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/corev_apu/tb/ariane_peripherals.sv#L287
+exclude_extensions: "Sm,ExceptionsZc,InterruptsSm"
+
+# device-tree-compiler and the Boost libraries are required by CVA6's Spike build
+# (verif/regress/install-spike.sh). Without them fesvr is not installed and the
+# testharness fails to compile with "fesvr/dtm.h: No such file or directory".
+apt_packages: "autoconf flex bison help2man libfl-dev ccache zlib1g-dev device-tree-compiler libboost-regex-dev libboost-system-dev"
+install_script: ".github/scripts/install-cva6.sh"
+setup_script: ".github/scripts/setup-cva6.sh"

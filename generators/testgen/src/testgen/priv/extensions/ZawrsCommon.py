@@ -61,7 +61,14 @@ def wrs_resume_helper(
     r_cause, r_temp, r_temp2 = test_data.int_regs.get_registers(3)
 
     lower = priv != "M"
-    lines = [comment_banner(coverpoint, f"Generate {priv} mode WRS instruction resume when interrupt pending tests")]
+    # The resume is triggered by a timer interrupt, which needs Sstc below M-mode or a machine timer interrupt.
+    # Either one is armed relative to mtime, which needs RVMODEL_MTIME_ADDRESS.
+    timer = "(defined(SSTC_SUPPORTED) || defined(UDB_MTI_INTR_IMPL))" if lower else "defined(UDB_MTI_INTR_IMPL)"
+    guard = f"#if defined(RVMODEL_MTIME_ADDRESS) && {timer}"
+    lines = [
+        comment_banner(coverpoint, f"Generate {priv} mode WRS instruction resume when interrupt pending tests"),
+        guard,
+    ]
     if lower:
         sie_list = [0, 1]
         tw_list = [0]
@@ -116,9 +123,17 @@ def wrs_resume_helper(
                                 "#endif",
                             ]
                         )
+                        lines.extend(
+                            [
+                                "# Read the trap count after the T-SBI calls above, which trap as well",
+                                *_read_trap_count_helper(r_cause),
+                            ]
+                        )
                     else:
                         lines.extend(
                             [
+                                "# Read the trap count before arming the timer, so an early interrupt is counted",
+                                *_read_trap_count_helper(r_cause),
                                 "# Set mie.MTIE",
                                 f"LI(x{r_temp}, 0x80)",
                                 f"csrs mie, x{r_temp}",
@@ -129,8 +144,6 @@ def wrs_resume_helper(
 
                     lines.extend(
                         [
-                            f"# the test could hang if timer fires before x{r_cause} is initialized",
-                            *_read_trap_count_helper(r_cause),
                             "# lr.w to set up reservation",
                             f"LA(x{r_temp}, scratch)",
                             f"lr.w x{r_temp2}, (x{r_temp})",
@@ -196,6 +209,7 @@ def wrs_resume_helper(
                 "#endif",
             ]
         )
+    lines.append("#endif")
 
     test_data.int_regs.return_registers([r_cause, r_temp, r_temp2])
     return lines

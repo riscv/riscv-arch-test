@@ -123,16 +123,19 @@ covergroup ZawrsU_cg with function sample(ins_t ins);
             mstatus_sie_zero,
         `endif
         wrs_ops;
-    cp_wrs_resume:          cross mstatus_tw_zero,
-        `ifdef SSTC_SUPPORTED
-            sie_stie_one, menvcfg_STCE_one,
-        `else
-            mie_mtie_one,
-        `endif
-        `ifdef S_SUPPORTED
-            mstatus_sie,
-        `endif
-    mstatus_mie, priv_mode_u, wrs_ops, lr_w;
+    `ifdef SSTC_SUPPORTED
+        cp_wrs_resume:      cross mstatus_tw_zero, sie_stie_one, menvcfg_STCE_one,
+            `ifdef S_SUPPORTED
+                mstatus_sie,
+            `endif
+            mstatus_mie, priv_mode_u, wrs_ops, lr_w;
+    `elsif UDB_MTI_INTR_IMPL
+        cp_wrs_resume:      cross mstatus_tw_zero, mie_mtie_one,
+            `ifdef S_SUPPORTED
+                mstatus_sie,
+            `endif
+            mstatus_mie, priv_mode_u, wrs_ops, lr_w;
+    `endif
 
     cp_wrs_nto_timeout:     cross mstatus_tw_one, mstatus_mie_zero, priv_mode_u, mie_zeros, wrs_nto,
         `ifdef S_SUPPORTED

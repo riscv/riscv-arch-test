@@ -50,6 +50,7 @@ coverpoints:
       SIGUPD t1
       csrw stvec, t0 # restore trap handler
       done:
+      Not generated without a machine timer interrupt (needs RVMODEL_MTIME_ADDRESS and MTI_INTR_IMPL).
   - name: cp_wrs_no_mie
     goal: WRS does not stop when mie = 0 for pending interrupt
     description: |-

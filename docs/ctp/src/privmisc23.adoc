@@ -171,6 +171,126 @@ are not tested because they are not part of RVA23.
 
 `mcontrol` has been replaced by `mcontrol6`.  It is deprecated and not tested.  `mscontext` is only for backward compatibility with Sdtrig 0.13 and is not tested.
 
+===== Trigger Re-entrancy and What Can Be Tested
+
+A trigger with `action`=0 raises a breakpoint exception.
+If that exception is taken while the hart is already in a trap handler, it overwrites `xepc` and `xcause`, and the hart cannot return from the original trap.
+Sdtrig gives harts two ways to prevent this:
+
+. *Interrupt enables.* No trigger with `action`=0 matches or fires in M-mode while `mstatus`.MIE=0.
+If `medeleg`[3]=1, none matches or fires in S-mode while `sstatus`.SIE=0, and the same rule applies in VS-mode with `hedeleg`[3] and `vsstatus`.SIE.
+. *tcontrol.* No trigger with `action`=0 matches or fires in M-mode while `tcontrol`.MTE=0.
+A trap into M-mode copies MTE to MPTE and clears MTE, and `mret` copies MPTE back to MTE.
+`medeleg`[3] is read-only zero.
+
+Taking a trap clears MIE, SIE or MTE, depending on the method and the mode the trap enters.
+This decides what the tests can observe, and it affects the two kinds of trigger differently:
+
+* *mcontrol6 and icount* fire synchronously in the mode that is executing.
+The test controls the enable bits there, so it can make the trigger fire or not.
+* *etrigger and itrigger* fire just before the first instruction of the trap handler.
+By then the trap has already cleared the enable bit of the mode it entered.
+
+The table below shows when an `action`=0 trigger can fire.
+For mcontrol6 and icount, the column is the mode the trigger matches in.
+For etrigger and itrigger, it is the mode the trap is taken from, which the trigger's `m`/`s`/`u` bits select.
+VS-mode and VU-mode behave like S-mode and U-mode, with `hedeleg`[3] and `vsstatus`.SIE in place of `medeleg`[3] and `sstatus`.SIE.
+
+[cols="2,3,3,3" options=header]
+|===
+|Trigger
+|M-mode +
+(either method)
+|S/U-mode, `medeleg`[3]=0 +
+(either method; breakpoint taken to M)
+|S/U-mode, `medeleg`[3]=1 +
+(interrupt enables only; breakpoint taken to S)
+
+|mcontrol6, icount
+|Fires when MIE=1 (interrupt enables) or MTE=1 (tcontrol); suppressed otherwise
+|Always fires
+|S: fires when SIE=1, suppressed when SIE=0. U: always fires.
+
+|etrigger, itrigger
+|Never fires, because the trap is handled in M and has cleared MIE or MTE
+|Fires if the exception or interrupt is delegated to S; never fires if it is handled in M
+|Never fires, because the trap into S has cleared SIE
+|===
+
+Every cell is a constraint of the specification, not of the test suite.
+The specification states the "never fires" cells directly:
+"Both options prevent etrigger and itrigger from having any effect on exceptions and interrupts that are handled in M-mode."
+The consequences for the tests are:
+
+* *mcontrol6 and icount* can be tested firing and suppressed in every mode under both methods.
+The tests set MIE=1 or MTE=1 to arm the trigger in M-mode, with `mie`=0 so that no interrupt is taken.
+They set SIE=1 to arm it in S-mode when `medeleg`[3]=1.
+They exercise `medeleg`[3]=1 to check breakpoints taken to S.
+* *etrigger and itrigger* can be shown to fire only for an exception or interrupt that is raised in S or U and delegated to S, while `medeleg`[3]=0.
+** In every other case, the tests can only check that the trigger stays silent.
+This includes `tdata1`.m=1, a cause that is not delegated, an M-level interrupt, and an etrigger on the breakpoint exception itself.
+** A hart without S-mode handles every trap in M.
+On such a hart, etrigger and itrigger with `action`=0 never fire, under either method.
+* Some expected outcomes depend on the method the hart implements.
+An example is an exception delegated to S while `medeleg`[3] has its boot value of 1: under interrupt enables the trigger is suppressed, but under tcontrol `medeleg`[3] reads 0 and the trigger fires into M.
+The tests therefore name bins by stimulus rather than by expected outcome.
+The reference model is configured with the DUT's method.
+* The specification says harts _should_ implement one of the two methods, so a hart may implement neither.
+On such a hart, a trigger that fires in an M-mode trap handler overwrites `mepc` and `mcause`, and the test cannot recover.
+The tests assume one of the two methods.
+
+The three suites start in different modes.
+SdtrigSm boots to M-mode and can change `medeleg`.
+SdtrigS and SdtrigU boot to S-mode and U-mode, and keep the boot value of `medeleg`[3]: 1 on a hart that uses interrupt enables, and read-only 0 on a hart that uses tcontrol.
+SdtrigSm arms its M-mode triggers with MIE=1.
+SdtrigS arms its triggers with SIE=1.
+SdtrigSm reaches S-mode and U-mode only for the etrigger and itrigger tests, which clear `medeleg`[3] first.
+The tables below show what each suite then exercises.
+
+.Exercised on a hart that uses interrupt enables
+[cols="2,3,3,3" options=header]
+|===
+|Trigger |SdtrigSm |SdtrigS |SdtrigU
+
+|mcontrol6, icount
+|Fires in M-mode; breakpoint taken from M to M
+|Fires in S-mode; breakpoint taken from S to S (`medeleg`[3]=1)
+|Fires in U-mode; breakpoint taken to S (to M if there is no S-mode)
+
+|etrigger, itrigger
+|Raised in M-mode: suppressed.
+Raised in S-mode or U-mode with `medeleg`[3]=0: fires into M if delegated to S, suppressed if handled in M.
+|Suppressed: handled in S with SIE=0 and `medeleg`[3]=1, or handled in M
+|Suppressed, as for SdtrigS
+|===
+
+.Exercised on a hart that uses tcontrol
+[cols="2,3,3,3" options=header]
+|===
+|Trigger |SdtrigSm |SdtrigS |SdtrigU
+
+|mcontrol6, icount
+|Suppressed: the tests do not set MTE, which resets to 0
+|Fires in S-mode; breakpoint taken from S to M
+|Fires in U-mode; breakpoint taken from U to M
+
+|etrigger, itrigger
+|As on a hart that uses interrupt enables
+|Fires into M if delegated to S; suppressed if handled in M
+|As for SdtrigS; suppressed on a hart without S-mode
+|===
+
+So the outcome differs between the two kinds of hart in five of the six cells.
+Each kind of hart leaves some cases unexercised, but none of these gaps comes from the specification:
+
+* No suite runs mcontrol6 or icount in S-mode or U-mode with `medeleg`[3]=0.
+On a hart that uses interrupt enables, a breakpoint from these triggers is therefore never taken from S or U to M.
+SdtrigSm could switch to S-mode and U-mode with `medeleg`[3]=0, as its etrigger and itrigger tests do.
+The commented-out `cp_breakpoint_delegate` test would also exercise this.
+* On a hart that uses tcontrol, the M-mode mcontrol6 and icount tests never fire, because nothing sets `tcontrol`.MTE.
+The `tcontrol` tests are disabled until UDB describes whether `tcontrol` is implemented.
+* The icount tests that make a trigger fire are disabled.
+
 ===== SdtrigS
 
 include::{testplansdir}/priv/SdtrigS.adoc[]

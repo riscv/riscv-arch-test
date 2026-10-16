@@ -15,7 +15,7 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.sv.access import add_rwx_test, mode_switch, virtual_address
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
-from testgen.priv.extensions.sv.page_tables import PteFlags, SvMode, create_page_mapping
+from testgen.priv.extensions.sv.page_tables import PteFlags, SvMode, create_leaf_pte, create_page_mapping
 from testgen.priv.extensions.sv.Sv import MPRV_CLEANUP, mstatus_setup
 
 # medeleg[9] would delegate the S-mode ecall that T-SBI uses to enter M-mode.
@@ -30,6 +30,18 @@ _BASE_CASES = (
     (False, "rvtest_data_1", True),
     (False, "RVMODEL_ACCESS_FAULT_ADDRESS", False),
     (False, "RVMODEL_ACCESS_FAULT_ADDRESS", True),
+)
+# Two physical pages holding a 4-byte instruction that starts in the last halfword of the first page
+_CROSSING_DATA = (
+    "// Two pages that a misaligned access spans",
+    ".p2align 12",
+    "rvtest_cross_page:",
+    ".skip 4096 - 2",
+    ".option push",
+    ".option norvc",
+    "jr ra",
+    ".option pop",
+    ".skip 4096 - 2",
 )
 
 
@@ -170,6 +182,85 @@ def _add_access(
     ]
 
 
+# The word that spans the two pages: jr ra (jalr x0, 0(ra)), which the fetch cases execute
+_CROSSING_WORD = 0x00008067
+# Each page passes (RWX = 111) or fails (zero PTE): (name, first page passes, second page passes)
+_CROSSING_COMBINATIONS = (
+    ("neither", True, True),
+    ("first", False, True),
+    ("second", True, False),
+    ("both", False, False),
+)
+
+
+def _page_crossing_cases(test_data: TestData, sv: SvMode) -> list[str]:
+    """Fetch, load and store across the boundary of two kilopages, for each combination of the pages passing or failing.
+
+    A page passes with RWX = 111 and fails with a zero PTE. A jalr to a 4-byte instruction, a lw and a sw each start
+    at the last halfword of the first page. The stores write back the word already there, so a store that faults
+    after writing the part in one page leaves memory unchanged. When neither page faults, the store first writes a
+    different word and a load reads it back.
+    """
+    covergroup = "ExceptionsSv_cg"
+    # PTE_SETUP clobbers t0 and t1 (a0 and a1 are not in the privileged register pool)
+    addr, word, load = test_data.int_regs.get_registers(3, exclude_regs=[5, 6])
+    lines = [f"LI(x{word}, {_CROSSING_WORD:#x}) # jr ra, the word that spans the two pages"]
+    for name, first_passes, second_passes in _CROSSING_COMBINATIONS:
+        labels = {
+            op: test_data.add_testcase(f"cross_{name}_fails_{op}", coverpoint, covergroup).removesuffix(":")
+            for op, coverpoint in (
+                ("exec", "cp_misaligned_instr_page_fault_s"),
+                ("load", "cp_misaligned_load_page_fault_s"),
+                ("store", "cp_misaligned_store_page_fault_s"),
+            )
+        }
+        lines.extend(
+            [
+                "",
+                f"// Page crossing: {name} of the two pages {'fail' if name == 'both' else 'fails'}",
+                *create_page_mapping(
+                    sv,
+                    virtual_address="va_cross_1",
+                    physical_address="rvtest_cross_page",
+                    leaf_level=0,
+                    leaf_flags=PteFlags() if first_passes else "0",
+                ),
+                create_leaf_pte(
+                    sv,
+                    level=0,
+                    flags=PteFlags() if second_passes else "0",
+                    virtual_address="va_cross_2",
+                    physical_address="rvtest_cross_page + 4096",
+                ),
+                "sfence.vma",
+                f"LI(x{addr}, va_cross_2 - 2)",
+                f"{labels['exec']}:",
+                f"jalr ra, x{addr}, 0",
+                "nop",
+                f"{labels['load']}:",
+                f"lw x{load}, 0(x{addr})",
+                "nop",
+                write_sigupd(load, test_data, label=labels["load"]),
+            ]
+        )
+        if first_passes and second_passes:
+            lines.extend(
+                [
+                    f"not x{load}, x{word} # a different word, read back after the store",
+                    f"{labels['store']}:",
+                    f"sw x{load}, 0(x{addr})",
+                    "nop",
+                    f"lw x{load}, 0(x{addr})",
+                    write_sigupd(load, test_data, label=labels["store"]),
+                    f"sw x{word}, 0(x{addr}) # restore jr ra",
+                ]
+            )
+        else:
+            lines.extend([f"{labels['store']}:", f"sw x{word}, 0(x{addr})", "nop"])
+    test_data.int_regs.return_registers([addr, word, load])
+    return lines
+
+
 def _make_mode_test(
     test_data: TestData, sv: SvMode, target: _Target, *, base_cases: bool, medeleg_cases: bool
 ) -> TestChunk:
@@ -197,6 +288,11 @@ def _make_mode_test(
         )
         setup_asm = (*setup_asm, "sfence.vma")
 
+    crossing = base_cases and target.operation == "rwx" and target.mode == "Smode"
+    va_defs = (("va_data", sv.data_va), ("va_data_invalid", _INVALID_VA[sv.name]))
+    if crossing:
+        va_defs = (*va_defs, ("va_cross_1", sv.data_va), ("va_cross_2", "va_cross_1 + 0x1000"))
+
     suffix = target.mode[0].lower()
     if not base_cases:
         banner = f"cp_medeleg_{suffix}"
@@ -210,7 +306,7 @@ def _make_mode_test(
         target.effective_mode,
         f"{sv.name}_{topic}{operation_name}_{mode_name}",
         coverpoint=banner,
-        va_defs=(("va_data", sv.data_va), ("va_data_invalid", _INVALID_VA[sv.name])),
+        va_defs=va_defs,
         setup_asm=setup_asm,
     )
 
@@ -229,6 +325,8 @@ def _make_mode_test(
             )
             chunk.code.extend(["#ifdef RVMODEL_ACCESS_FAULT_ADDRESS", *access, "#endif", ""] if guarded else access)
             number += 1
+    if crossing:
+        chunk.code.extend(_page_crossing_cases(test_data, sv))
 
     if medeleg_cases:
         for medeleg in _MEDELEG_VALUES:
@@ -245,6 +343,8 @@ def _make_mode_test(
         test_data.int_regs.return_registers([saved_medeleg, medeleg_value])
 
     chunk.raw_data.extend(sv_data(sv))
+    if crossing:
+        chunk.raw_data.extend(_CROSSING_DATA)
     chunk.trap_sigupd_count = trap_sigupd_count(200)
     return test_data.end_test_chunk()
 

@@ -367,7 +367,7 @@ normative_rule_definitions:
   - name: stval_op_load_store_fault
     coverpoint:
       [
-        "TODO: write coverpoints for misaligned loads that wrap PMA/PMP/page boundaries to cause faults on upper part of access",
+        "ExceptionsSv_cg/{cp_misaligned_load_page_fault_s, cp_misaligned_store_page_fault_s}",
       ]
 
   # If stval is written with a nonzero value when an instruction access-fault,
@@ -375,9 +375,8 @@ normative_rule_definitions:
   # instructions, then stval will contain the virtual address of the portion of the
   # instruction that caused the fault, while sepc will point to the beginning of the
   # instruction.
-  # Needs a 32-bit instruction on a Zca hart whose upper half lies in a page that faults.
   - name: stval_faulting_address_variable_instr
-    coverpoint: [""]
+    coverpoint: ["ExceptionsSv_cg/cp_misaligned_instr_page_fault_s"]
 
   # The stval register can optionally also be used to return the faulting
   # instruction bits on an illegal-instruction exception (sepc points to the

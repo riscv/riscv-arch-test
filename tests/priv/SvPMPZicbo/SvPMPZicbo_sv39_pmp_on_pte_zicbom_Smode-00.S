@@ -187,9 +187,11 @@ rvtest_data_1:
   jr ra
 
 // Page tables
+  .p2align 12
   .p2align (UDB_PMP_GRANULARITY)
 rvtest_slvl0_pg_tbl:
   .skip(4096)
+  .p2align 12
   .p2align (UDB_PMP_GRANULARITY)
 rvtest_slvl1_pg_tbl:
   .skip(4096)

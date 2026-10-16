@@ -15,7 +15,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 34
+#define SIGUPD_COUNT 39
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
@@ -41,6 +41,8 @@ main:
 // Virtual address of rvtest_data_1
   .set va_data, 0x90407000
   .set va_data_invalid, 0x90807000
+  .set va_cross_1, 0x90407000
+  .set va_cross_2, va_cross_1 + 0x1000
 
 // Virtual address of the code region
   .set va_rvtest_code_begin, 0x30000000
@@ -333,6 +335,84 @@ ExceptionsSv_cg_cp_misaligned_priority_fetch_s_test8_exec:
 
 #endif
 
+  LI(x14, 0x8067) # jr ra, the word that spans the two pages
+
+// Page crossing: neither of the two pages fails
+  PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_cross_1, LEVEL1)
+  PTE_SETUP_SV32(rvtest_cross_page, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_cross_1, LEVEL0)
+  PTE_SETUP_SV32(rvtest_cross_page + 4096, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_cross_2, LEVEL0)
+  sfence.vma
+  LI(x8, va_cross_2 - 2)
+ExceptionsSv_cg_cp_misaligned_instr_page_fault_s_cross_neither_fails_exec:
+  jalr ra, x8, 0
+  nop
+ExceptionsSv_cg_cp_misaligned_load_page_fault_s_cross_neither_fails_load:
+  lw x13, 0(x8)
+  nop
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSv_cg_cp_misaligned_load_page_fault_s_cross_neither_fails_load, ExceptionsSv_cg_cp_misaligned_load_page_fault_s_cross_neither_fails_load_str)
+  not x13, x14 # a different word, read back after the store
+ExceptionsSv_cg_cp_misaligned_store_page_fault_s_cross_neither_fails_store:
+  sw x13, 0(x8)
+  nop
+  lw x13, 0(x8)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSv_cg_cp_misaligned_store_page_fault_s_cross_neither_fails_store, ExceptionsSv_cg_cp_misaligned_store_page_fault_s_cross_neither_fails_store_str)
+  sw x14, 0(x8) # restore jr ra
+
+// Page crossing: first of the two pages fails
+  PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_cross_1, LEVEL1)
+  PTE_SETUP_SV32(rvtest_cross_page, (0), va_cross_1, LEVEL0)
+  PTE_SETUP_SV32(rvtest_cross_page + 4096, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_cross_2, LEVEL0)
+  sfence.vma
+  LI(x8, va_cross_2 - 2)
+ExceptionsSv_cg_cp_misaligned_instr_page_fault_s_cross_first_fails_exec:
+  jalr ra, x8, 0
+  nop
+ExceptionsSv_cg_cp_misaligned_load_page_fault_s_cross_first_fails_load:
+  lw x13, 0(x8)
+  nop
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSv_cg_cp_misaligned_load_page_fault_s_cross_first_fails_load, ExceptionsSv_cg_cp_misaligned_load_page_fault_s_cross_first_fails_load_str)
+ExceptionsSv_cg_cp_misaligned_store_page_fault_s_cross_first_fails_store:
+  sw x14, 0(x8)
+  nop
+
+// Page crossing: second of the two pages fails
+  PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_cross_1, LEVEL1)
+  PTE_SETUP_SV32(rvtest_cross_page, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_cross_1, LEVEL0)
+  PTE_SETUP_SV32(rvtest_cross_page + 4096, (0), va_cross_2, LEVEL0)
+  sfence.vma
+  LI(x8, va_cross_2 - 2)
+ExceptionsSv_cg_cp_misaligned_instr_page_fault_s_cross_second_fails_exec:
+  jalr ra, x8, 0
+  nop
+ExceptionsSv_cg_cp_misaligned_load_page_fault_s_cross_second_fails_load:
+  lw x13, 0(x8)
+  nop
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSv_cg_cp_misaligned_load_page_fault_s_cross_second_fails_load, ExceptionsSv_cg_cp_misaligned_load_page_fault_s_cross_second_fails_load_str)
+ExceptionsSv_cg_cp_misaligned_store_page_fault_s_cross_second_fails_store:
+  sw x14, 0(x8)
+  nop
+
+// Page crossing: both of the two pages fail
+  PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_cross_1, LEVEL1)
+  PTE_SETUP_SV32(rvtest_cross_page, (0), va_cross_1, LEVEL0)
+  PTE_SETUP_SV32(rvtest_cross_page + 4096, (0), va_cross_2, LEVEL0)
+  sfence.vma
+  LI(x8, va_cross_2 - 2)
+ExceptionsSv_cg_cp_misaligned_instr_page_fault_s_cross_both_fails_exec:
+  jalr ra, x8, 0
+  nop
+ExceptionsSv_cg_cp_misaligned_load_page_fault_s_cross_both_fails_load:
+  lw x13, 0(x8)
+  nop
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, ExceptionsSv_cg_cp_misaligned_load_page_fault_s_cross_both_fails_load, ExceptionsSv_cg_cp_misaligned_load_page_fault_s_cross_both_fails_load_str)
+ExceptionsSv_cg_cp_misaligned_store_page_fault_s_cross_both_fails_store:
+  sw x14, 0(x8)
+  nop
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -359,6 +439,15 @@ rvtest_data_1:
   .p2align 12
 rvtest_slvl0_pg_tbl:
   .skip(4096)
+// Two pages that a misaligned access spans
+  .p2align 12
+rvtest_cross_page:
+  .skip 4096 - 2
+  .option push
+  .option norvc
+  jr ra
+  .option pop
+  .skip 4096 - 2
 
 // Testcase strings
 ExceptionsSv_cg_cp_store_page_fault_s_test1_store_str: .string "\"test: 1; cg: ExceptionsSv_cg; cp: cp_store_page_fault_s; bin: test1_store\""
@@ -385,6 +474,18 @@ ExceptionsSv_cg_cp_instr_page_fault_s_test7_exec_str: .string "\"test: 21; cg: E
 ExceptionsSv_cg_cp_misaligned_priority_s_test8_store_str: .string "\"test: 22; cg: ExceptionsSv_cg; cp: cp_misaligned_priority_s; bin: test8_store\""
 ExceptionsSv_cg_cp_misaligned_priority_s_test8_load_str: .string "\"test: 23; cg: ExceptionsSv_cg; cp: cp_misaligned_priority_s; bin: test8_load\""
 ExceptionsSv_cg_cp_misaligned_priority_fetch_s_test8_exec_str: .string "\"test: 24; cg: ExceptionsSv_cg; cp: cp_misaligned_priority_fetch_s; bin: test8_exec\""
+ExceptionsSv_cg_cp_misaligned_instr_page_fault_s_cross_neither_fails_exec_str: .string "\"test: 25; cg: ExceptionsSv_cg; cp: cp_misaligned_instr_page_fault_s; bin: cross_neither_fails_exec\""
+ExceptionsSv_cg_cp_misaligned_load_page_fault_s_cross_neither_fails_load_str: .string "\"test: 26; cg: ExceptionsSv_cg; cp: cp_misaligned_load_page_fault_s; bin: cross_neither_fails_load\""
+ExceptionsSv_cg_cp_misaligned_store_page_fault_s_cross_neither_fails_store_str: .string "\"test: 27; cg: ExceptionsSv_cg; cp: cp_misaligned_store_page_fault_s; bin: cross_neither_fails_store\""
+ExceptionsSv_cg_cp_misaligned_instr_page_fault_s_cross_first_fails_exec_str: .string "\"test: 28; cg: ExceptionsSv_cg; cp: cp_misaligned_instr_page_fault_s; bin: cross_first_fails_exec\""
+ExceptionsSv_cg_cp_misaligned_load_page_fault_s_cross_first_fails_load_str: .string "\"test: 29; cg: ExceptionsSv_cg; cp: cp_misaligned_load_page_fault_s; bin: cross_first_fails_load\""
+ExceptionsSv_cg_cp_misaligned_store_page_fault_s_cross_first_fails_store_str: .string "\"test: 30; cg: ExceptionsSv_cg; cp: cp_misaligned_store_page_fault_s; bin: cross_first_fails_store\""
+ExceptionsSv_cg_cp_misaligned_instr_page_fault_s_cross_second_fails_exec_str: .string "\"test: 31; cg: ExceptionsSv_cg; cp: cp_misaligned_instr_page_fault_s; bin: cross_second_fails_exec\""
+ExceptionsSv_cg_cp_misaligned_load_page_fault_s_cross_second_fails_load_str: .string "\"test: 32; cg: ExceptionsSv_cg; cp: cp_misaligned_load_page_fault_s; bin: cross_second_fails_load\""
+ExceptionsSv_cg_cp_misaligned_store_page_fault_s_cross_second_fails_store_str: .string "\"test: 33; cg: ExceptionsSv_cg; cp: cp_misaligned_store_page_fault_s; bin: cross_second_fails_store\""
+ExceptionsSv_cg_cp_misaligned_instr_page_fault_s_cross_both_fails_exec_str: .string "\"test: 34; cg: ExceptionsSv_cg; cp: cp_misaligned_instr_page_fault_s; bin: cross_both_fails_exec\""
+ExceptionsSv_cg_cp_misaligned_load_page_fault_s_cross_both_fails_load_str: .string "\"test: 35; cg: ExceptionsSv_cg; cp: cp_misaligned_load_page_fault_s; bin: cross_both_fails_load\""
+ExceptionsSv_cg_cp_misaligned_store_page_fault_s_cross_both_fails_store_str: .string "\"test: 36; cg: ExceptionsSv_cg; cp: cp_misaligned_store_page_fault_s; bin: cross_both_fails_store\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

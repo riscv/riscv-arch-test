@@ -17,29 +17,42 @@ coverpoints:
     goal: Priority of exceptions
     description: Attempt lw and sw and fetch from memory location causing {access fault and page fault}, {page fault and misaligned}, {access fault, page fault, misaligned}
   - name: cp_misaligned_load_page_fault_s
-    goal: Page fault on each part of a misaligned access
+    goal: Misaligned load that spans a page boundary, with each page passing or failing
     description: |-
-      Check behavior of a misaligned load spanning a page boundary, in which one of the two pages faults.
-      Set up two consecutive virtual kilopages, with both combinations of one page RWX=111 and the other RWX=000.
-      Issue misaligned lw crossing page boundary.
-      If misaligned accesses are supported, expect a misaligned load fault.
-      If misaligned access is supported, expect a load page fault.
-      stval could be 0, or should be the address of the load if the fault occurs in the first page,
-      or the address of the start of the second virtual page if the fault occurs in the second page.
-    bins: 2 bins
+      Map two consecutive virtual kilopages, each either RWX=111 (passes) or a zero PTE (fails), in all four
+      combinations: neither, first, second or both pages fail. Issue lw at the last halfword of the first page.
+    expectation: |-
+      Neither fails: the load completes and returns the word that spans the two pages.
+      First or both fail: load page fault on the part in the first page, so a nonzero stval is the lw address.
+      Second fails: load page fault on the part in the second page, so a nonzero stval is the start of that page.
+      Both fail: the hart reports the part it accesses first, which is the second page if it accesses the parts
+      in decreasing order (Sail's misaligned.order_decreasing).
+      A hart that does not support misaligned loads raises load-address-misaligned when neither page fails, and
+      in every case if it gives that exception high priority, in which case the access is not translated.
+      stval may be 0.
+    bins: 3 bins (completes, faults in the first page, faults in the second page)
   - name: cp_misaligned_store_page_fault_s
-    goal: Page fault on each part of a misaligned access
-    description: Same as cp_misaligned_load_page_fault_u but with sw and store faults.
-    bins: 2 bins
-  - name: cp_misaligned_instr_page_fault_s
-    goal: Page fault on each part of a misaligned instruction
+    goal: Misaligned store that spans a page boundary, with each page passing or failing
     description: |-
-      Same setup as cp_misaligned_load_page_fault_s
-      Issue jalr to 4-byte instruction on odd multiple of 2 address spanning the two virtual pages.
-      If Zca is not supported, expect a misaligned instruction fault.
-      If Zca is supported, expect a instruction fetch page fault.
-      See cp_misaligned_load_page_fault_s about possible MTVAL outcomes.
-    bins: 2 bins
+      Same four combinations as cp_misaligned_load_page_fault_s, with sw at the last halfword of the first page.
+      Each faulting store writes the word already in memory, because a hart may write the part in the page that
+      passes before it faults on the other. When neither page fails, the store writes a different word, which a
+      load reads back, and then restores the original word.
+    expectation: As for cp_misaligned_load_page_fault_s, with store/AMO page faults and store/AMO-address-misaligned.
+    bins: 3 bins (completes, faults in the first page, faults in the second page)
+  - name: cp_misaligned_instr_page_fault_s
+    goal: 4-byte instruction that spans a page boundary, with each page passing or failing
+    description: |-
+      Same four combinations as cp_misaligned_load_page_fault_s. jalr to a 4-byte instruction (jr ra) at the last
+      halfword of the first page.
+    expectation: |-
+      Neither fails: the instruction executes.
+      First or both fail: instruction page fault on the first part, so a nonzero stval is the instruction address.
+      The hart takes the instruction length from the first halfword, so it reports the first part even when both fail.
+      Second fails: instruction page fault on the second part, so a nonzero stval is the start of the second page.
+      sepc always holds the instruction address. stval may be 0.
+      Without Zca, the jalr raises instruction-address-misaligned instead.
+    bins: 3 bins (executes, faults in the first page, faults in the second page)
   - heading: The following coverpoints should be exercised in user mode
   - name: cp_instr_page_fault_u
     goal: Instruction Page Fault

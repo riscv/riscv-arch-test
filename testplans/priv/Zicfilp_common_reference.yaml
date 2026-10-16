@@ -24,10 +24,22 @@ coverpoints:
       31 rs1 registers ×
         2  LPEs×
         3 indirect_CT types x2 destinations
-    id: zicflip_lpad_expected
+    id: Zicfilp_lpad_expected
     rules:
-      - "[[norm:zicflip_lpad_expected]]"
-      - "[norm:zicflip_indirect_branch_lpad]"
+      - Zicfilp_lpad_expected
+      - Zicfilp_indirect_branch_lpad
+  - name: cp_zicfilp_direct_ct_no_elp
+    goal: Verify that direct jumps and taken branches do not set ELP.
+    description: |-
+      Test Environment:
+       xLPE=1,
+      execute JAL (rd=x0 and rd=x1), C.J, C.JAL (RV32 with Zca) and a taken BEQ to a non-LPAD target, each skipping the instruction after it.
+    expectation: No software-check exception. Only JALR, C.JR and C.JALR are Indirect_CTs, so ELP stays NO_LP_EXPECTED at the target.
+    bins: "JAL, taken branch, plus C.J with Zca and C.JAL on RV32 with Zca"
+    id: Zicfilp_lpad_expected
+    rules:
+      - Zicfilp_lpad_expected
+      - cfi_call_term
   - name: cp_zicfilp_lpad_zero_label_bypass
     goal: Verify that LPAD with LPL=0 bypasses label comparison during landing pad validation.
     description: |-
@@ -37,9 +49,9 @@ coverpoints:
       Target an LPAD instruction whose encoded LPL=0. Execute with arbitrary values in x7.
     expectation: Indirect branch shall succeed without software-check exception. LPAD label comparison shall be bypassed when LPL=0.
     bins: N Indirect_CT types × N privilege modes × target_LPL_zero
-    id: zicflip_lpad_imm_enc
+    id: Zicfilp_lpad_imm_enc
     rules:
-      - norm:zicflip_lpad_imm_enc
+      - Zicfilp_lpad_imm_enc
   - name: cp_zicfilp_lpad_valid_execution
     goal: Verify that a valid LPAD instruction satisfies landing pad validation when ELP=LP_EXPECTED.
     description: |-
@@ -49,9 +61,9 @@ coverpoints:
       Then execute a properly aligned LPAD instruction at the target address under two conditions: (1) LPL=0, (2) LPL matches x7[31:12].
     expectation: No software-check exception shall be raised. After LPAD retirement, ELP shall be set to NO_LP_EXPECTED.
     bins: 2 (LPL={0,match}) × N Indirect_CT types × N privilege modes
-    id: zicflip_elp_lpad_expected
+    id: Zicfilp_elp_lpad_expected
     rules:
-      - "[norm:zicflip_elp_lpad_expected]"
+      - Zicfilp_elp_lpad_expected
   - name: cp_zicfilp_lpad_missing_instruction_exception
     goal: Verify that execution of a non-LPAD instruction when ELP=LP_EXPECTED raises a software-check exception.
     description: |-
@@ -61,9 +73,9 @@ coverpoints:
       At the target address, execute an instruction that is not LPAD.
     expectation: A software-check exception (cause=18) shall be raised. xtval shall indicate landing pad fault (code=2). ELP shall remain LP_EXPECTED.
     bins: N Indirect_CT types × N privilege modes
-    id: zicflip_elp_lpad_expected
+    id: Zicfilp_elp_lpad_expected
     rules:
-      - "[norm:zicflip_elp_lpad_expected]"
+      - Zicfilp_elp_lpad_expected
   - name: cp_zicfilp_lpad_label_mismatch
     goal: Verify software-check exception for LPAD label mismatch
     description: |-
@@ -72,7 +84,7 @@ coverpoints:
       Load x7 with a label using LUI, then execute LPAD with nonzero LPL that does not match x7[31:12].
     expectation: Software-check exception (cause=18) shall be raised. xtval shall indicate "landing pad fault (code=2)".
     bins: Instruction type × rs1 category × ELP × N privilege modes
-    id: zicflip_elp_lpad_expected
+    id: Zicfilp_elp_lpad_expected
   - name: cp_zicfilp_lpad_label_match_mismatch
     goal: Verify LPAD label matching and mismatching behavior
     description: |-
@@ -84,9 +96,9 @@ coverpoints:
       (4) an LPAD with nonzero LPL while x7[31:12]=0.
     expectation: If expected landing pad label in x7 matches LPAD immediate label, no exception. Otherwise, software-check exception occurs.
     bins: 4 scenarios x 3 Indirect_CT types (C.JR and C.JALR only with Zca) = 12
-    id: zicflip_lpad_label
+    id: Zicfilp_lpad_label
     rules:
-      - "[norm:zicflip_lpad_label]"
+      - Zicfilp_lpad_label
   - name: cp_zicfilp_lpad_label_exception_delivery
     goal: Verify software-check exception delivery and correct privilege-mode handling on LPAD label mismatch
     description: |-
@@ -95,15 +107,15 @@ coverpoints:
     expectation: "Software-check exception (cause=18) delivered to the mode that takes the suite's traps: M-mode for ZicfilpSm, S-mode for ZicfilpS, and S-mode for ZicfilpU (M-mode when S-mode is not implemented). xtval = landing pad fault (code=2). xPELP = LP_EXPECTED."
     bins: 3 Indirect_CT types (C.JR and C.JALR only with Zca)
     id: |-
-      zicflip_lpad_enabled_exception
-      zicflip_lpad_label_exception
+      Zicfilp_lpad_enabled_exception
+      Zicfilp_lpad_label_exception
       lpad_sw_exception
       cfi_sstatus_spelp_op
     rules:
-      - "[norm:zicflip_lpad_enabled_exception]"
-      - "[norm:zicflip_lpad_label_exception]"
-      - "[[norm:lpad_sw_exception]]"
-      - "[norm:cfi_sstatus_spelp_op]"
+      - Zicfilp_lpad_enabled_exception
+      - Zicfilp_lpad_label_exception
+      - lpad_sw_exception
+      - cfi_sstatus_spelp_op
   - name: cp_disabled_zicfilp
     goal: Verify behavior when Zicfilp is disabled
     description: |-
@@ -112,9 +124,9 @@ coverpoints:
       execute LPAD instructions or indirect branches targeting LPAD.
     expectation: No exception is raised; LPAD acts as a nop.
     bins: 1 × N privilege modes
-    id: zicflip_lpad_enabled_instr_allowed
+    id: Zicfilp_lpad_enabled_instr_allowed
     rules:
-      - "[norm:zicflip_lpad_enabled_instr_allowed]"
+      - Zicfilp_lpad_enabled_instr_allowed
   - name: cp_lpad_no_sw_exception_elp_clear_zicfilp
     goal: Verify that ELP updates to NO_LP_EXPECTED after executing a valid LPAD
     description: |-
@@ -124,9 +136,9 @@ coverpoints:
       to a 4-byte aligned LPAD whose nonzero LPL matches x7[31:12].
     expectation: No software-check exception is raised. ELP is updated to NO_LP_EXPECTED after LPAD execution
     bins: 3 Indirect_CT types (C.JR and C.JALR only with Zca)
-    id: zicflip_lpad_sw_exception
+    id: Zicfilp_lpad_sw_exception
     rules:
-      - "[norm:zicflip_lpad_no_sw_exception]"
+      - Zicfilp_lpad_no_sw_exception
   - name: cp_exception_priority_zicfilp
     goal: Verify the priority of exceptions
     description: |-
@@ -140,8 +152,8 @@ coverpoints:
       Zicfilp_forward_trap_async_exception
       Zicfilp_exception_priority
     rules:
-      - "[norm:Zicfilp_forward_trap_async_exception]"
-      - "[norm:Zicfilp_exception_priority]"
+      - Zicfilp_forward_trap_async_exception
+      - Zicfilp_exception_priority
   - name: cp_lpad_alignment_exception_zicfilp
     goal: Verify that an LPAD that is not 4-byte aligned raises a software-check exception when ELP=LP_EXPECTED
     description: |-
@@ -152,9 +164,10 @@ coverpoints:
       Without Zca such a target raises an instruction-address-misaligned exception first, which is why this case needs Zca.
     expectation: Software-check exception (cause=18) with xtval = landing pad fault (code=2), even though LPL=0.
     bins: 3 Indirect_CT types (Zca only)
-    id: Zicflip_elp_lpad_expected Zicflip_lpad_exception
+    id: Zicfilp_elp_lpad_expected Zicfilp_lpad_alignment_exception
     rules:
-      - "[norm:Zicflip_elp_lpad_expected] [norm:Zicflip_lpad_exception]"
+      - Zicfilp_elp_lpad_expected
+      - Zicfilp_lpad_alignment_exception
   - name: cp_lpad_nop_no_lp_expected_zicfilp
     goal: Verify that LPAD is a no-op when ELP=NO_LP_EXPECTED, even with xLPE=1
     description: |-
@@ -165,9 +178,10 @@ coverpoints:
       (2) if Zca is implemented, an LPAD with LPL=0 at pc[1:0]=2.
     expectation: No exception. Both LPADs execute as no-ops and ELP stays NO_LP_EXPECTED.
     bins: 2 (LPL mismatch; pc[1:0]=2 only with Zca)
-    id: Zicflip_lpad_exception
+    id: Zicfilp_lpad_label_exception Zicfilp_lpad_alignment_exception
     rules:
-      - "[norm:Zicflip_lpad_exception]"
+      - Zicfilp_lpad_label_exception
+      - Zicfilp_lpad_alignment_exception
   - heading: The gray test are duplicates of other test and are excluded.
   - heading: The yellow coverpoints are excluded because they apply to debug
   - name: cp_lpad_misaligned_address_exception_zicfilp
@@ -177,10 +191,10 @@ coverpoints:
       Execute indirect branch to set ELP=LP_EXPECTED, then execute LPAD at misaligned address (not 4-byte aligned)
     expectation: Software-check exception raised (cause=18), xtval="landing pad fault (code=2)", ELP unchanged
     bins: Instruction type  × rs1 category (non-link register) × ELP)xpriv mode
-    id: zicflip_elp_lpad_expected
+    id: Zicfilp_elp_lpad_expected
     rules:
-      - "[norm:zicflip_elp_lpad_expected]"
-      - Duplicate of cp_lpad_alignment_exception_zicfilp.
+      - Zicfilp_elp_lpad_expected
+    notes: Duplicate of cp_lpad_alignment_exception_zicfilp.
   - name: cp_elp_state_preservation_debug_zicfilp
     goal: |-
       Verify Debug Mode saves and
@@ -195,11 +209,11 @@ coverpoints:
     bins: |-
       Origin mode U ×
       Debug entry × ELP state
-    id: dcsr-pelp_op
+    id: dcsr_pelp_op
     rules:
-      - "[norm:dcsr-pelp_op]"
-      - Should be added in Debug testplan when we will start writing Debug testplans
-  - name: cp_pelp_debug_mode_zicflip
+      - dcsr_pelp_op
+    notes: Should be added in Debug testplan when we will start writing Debug testplans
+  - name: cp_pelp_debug_mode_zicfilp
     goal: Verify ELP on Debug Mode entry
     description: |-
       Test Case
@@ -208,9 +222,9 @@ coverpoints:
     bins: Debug entry × Initial ELP state
     id: norm:Zicfilp_pelp_debug_mode
     rules:
-      - "[norm:Zicfilp_pelp_debug_mode]"
-      - Should be added in Debug testplan when we will start writing Debug testplans
-  - name: cp_pelp_debug_mode_r_zicflip
+      - Zicfilp_pelp_debug_mode
+    notes: Should be added in Debug testplan when we will start writing Debug testplans
+  - name: cp_pelp_debug_mode_r_zicfilp
     goal: Verify ELP on resuming from Debug Mode
     description: |-
       Test Case
@@ -223,5 +237,5 @@ coverpoints:
     bins: Resume privilege × LPE disabled/enabled
     id: norm:Zicfilp_pelp_debug_mode
     rules:
-      - "[norm:Zicfilp_pelp_debug_mode]"
-      - Should be added in Debug testplan when we will start writing Debug testplans
+      - Zicfilp_pelp_debug_mode
+    notes: Should be added in Debug testplan when we will start writing Debug testplans

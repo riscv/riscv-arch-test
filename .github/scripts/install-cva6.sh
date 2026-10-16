@@ -60,7 +60,5 @@ for target in $TARGETS; do
   test -x "$INSTALL_DIR/cva6/work-ver-$target/Variane_testharness"
 done
 
-# 4. Install the per-test runners
-for target in $TARGETS; do
-  install -m 0755 "$SCRIPT_DIR/run-$target.sh" "$INSTALL_DIR/bin/run-$target.sh"
-done
+# 4. Install the shared per-test runner (the core is chosen with --target)
+install -m 0755 "$SCRIPT_DIR/run-cva6.sh" "$INSTALL_DIR/bin/run-cva6.sh"

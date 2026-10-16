@@ -69,6 +69,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zknh|SHA2 Hashing|<<t-Zknh-coverpoints>>|||o||
 |Zksed|SM4 Cipher|<<t-Zksed-coverpoints>>|||o||
 |Zksh|SM3 Hashing|<<t-Zksh-coverpoints>>|||o||
+|Zkt|Data-Independent Latency|<<t-Zkt-coverpoints>>|||x|x|x
 |Zicsr|CSR Instructions|<<t-Zicsr-coverpoints>>||x|x|x|x
 |Zicond|Conditional Move|<<t-Zicond-coverpoints>>||||x|x
 |Zifencei|Instruction Fence|<<t-Zifencei-coverpoints>>|o|x|x|x|x
@@ -294,7 +295,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Ziccrse|Main memory PMA supports RsrvEventual|||x|x|x
 |Ziccamoa|Main memory PMA supports atomics |||x|x|x
 |Ziccamoc|Main memory PMA supports AMOCASQ ||||x|x
-|Zkt|Constant-time scalar crypto|||x|x|x
 |Zvkt|Constant-time vector crypto|||x|x|x
 |Svvptc|Valid PTEs appear within bounded time without fence||||x|x
 |===

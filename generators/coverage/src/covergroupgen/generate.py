@@ -328,7 +328,7 @@ def read_testplans(testplan_dir: Path) -> tuple[dict[str, Testplan], dict[str, d
     for csv_path in testplan_dir.glob("*.csv"):
         arch = csv_path.stem
         groups = _parse_testplan_groups(csv_path)
-        tp = groups.pop(())
+        tp = groups.pop((), {})
         testplans[arch] = tp
         if groups:
             extra_testplans[arch] = groups

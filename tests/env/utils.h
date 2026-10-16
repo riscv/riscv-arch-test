@@ -243,6 +243,16 @@
   #endif
 #endif
 
+// Select the cycle counter for timing tests (Zkt). Without Zicntr, read mcycle in M-mode.
+#ifdef RVTEST_USES_CYCLE_CSR
+  #ifdef ZICNTR_SUPPORTED
+    #define RVTEST_CYCLE_CSR cycle
+  #else
+    #define RVTEST_CYCLE_CSR mcycle
+    #define BOOT_TO_MMODE
+  #endif
+#endif
+
 // RVTEST_TESTDATA_LOAD_INT(data_ptr, dest_reg) loads an integer value from the
 // test data section into dest_reg and increments the data_ptr pointer by SIG_STRIDE.
 // This macro is used to load integer test values from the .data section.

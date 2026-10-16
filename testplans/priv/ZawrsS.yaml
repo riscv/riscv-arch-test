@@ -34,8 +34,8 @@ coverpoints:
     description: |-
       cross lr instruction to set up reservation.
       mstatus.TW = 0
-      cross with mie.MTIE=1
-      (if SSTC supporrted use STIP, cross menvcfg.STCE = 1)
+      with Sstc: sie.STIE = 1, menvcfg.STCE = 1, woken by the supervisor timer
+      without Sstc: mie.MTIE = 1, woken by the machine timer through T-SBI (not RVA23, which mandates Sstc)
       mstatus.MIE = {0/1}
       mstatus.SIE = {0/1}
       Set up timer to interrupt soon
@@ -109,7 +109,7 @@ coverpoints:
       mstatus.SIE = 1
       mie = all 0s
       mstatus.TW = 1
-      mip.mtip = {SSIP + SEIP + STIP + MSIP + MEIP + MTIP}
+      mip = {SSIP + SEIP + STIP + MSIP + MEIP}
       execute WRS.NTO and WRS.STO in S mode
     expectation: WRS does not stop when interrupt pending, WRS.NTO causes illegal instruction
     bins: 2 bins

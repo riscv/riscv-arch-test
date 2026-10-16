@@ -247,7 +247,12 @@ Each DUT needs a linker script tailored to its memory map. The linker script in 
 
 The `.text.rvmodel` section contains DUT-specific (`RVMODEL`) code and **must** be placed after the `.data` section.  This ensures that variable-size model-specific macro expansions (which may differ between the DUT build and the reference-model build) do not affect the addresses of test data symbols such as `scratch` and `begin_signature`, preventing signature mismatches.
 
-The virtual memory tests rely on an identity mapping between physical and virtual addresses in the code and data.  Therefore, the starting address in the linker file should be a valid physical and virtual address.  For systems supporting Sv39, this means that the starting address should be below 2^38 (typically a maximum of 0x20_0000_0000).  For some systems, this may involve configuring a non-default physical address and size for main memory.
+On harts that support virtual memory, the test image must be placed where the virtual memory tests leave it mapped. 0x8000_0000, used by the sample configurations, works for both RV32 and RV64. The boot code identity-maps the superpage that contains the test data (a 4 MiB megapage on RV32, a 1 GiB gigapage on RV64), so the whole image must fit inside one aligned superpage. The tests also map fixed virtual addresses, such as 0, all ones, and aliases of the code and data. If one of these falls in the same superpage as the image, the test overwrites the image's identity mapping and hangs. On RV64, the image must also lie in the Sv39 address space, below 2^38 (256 GiB), even on harts that support Sv48 or Sv57, because the Sv39 tests run on those harts too. The safe ranges are:
+
+* RV32: 0x0140_0000–0x03FF_FFFF, 0x0440_0000–0x2FFF_FFFF, 0x3040_0000–0x8FFF_FFFF and 0x90C0_0000–0xFFBF_FFFF.
+* RV64: 0x4000_0000–0xBFFF_FFFF (1–3 GiB) and 0x2_0000_0000–0x3F_FFFF_FFFF (8–256 GiB).
+
+For some systems, this may involve configuring a non-default physical address and size for main memory.
 
 === File Organization
 

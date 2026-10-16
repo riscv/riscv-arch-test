@@ -63,7 +63,7 @@ _SPIKE_ISA: dict[int, str] = {
         "_zvfbfmin_zvfbfwma_zvfh"
         "_zvbb_zvbc_zvkg_zvkned_zvknha_zvknhb_zvksed_zvksh_zvkt"
         "_sscofpmf_smcntrpmf_sstc"
-        "_svinval_svade_svadu_svnapot_svpbmt"
+        "_svinval_svade_svadu_svnapot_svpbmt_svukte"
         "_smstateen_ssqosid_ssnpm_smmpm_smnpm_ssdbltrp_zama16b"
     ),
 }

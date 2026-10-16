@@ -12,7 +12,7 @@ from testgen.asm.helpers import write_sigupd
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.sv.access import virtual_address
+from testgen.priv.extensions.sv.access import ad_crosses, cross_names, virtual_address
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
     SV32,
@@ -52,9 +52,16 @@ _VAS = {
 _CODE_VA = {"sv32": "0x90000000", "sv39": "0x180000000", "sv48": "0x030080000000", "sv57": "0x05000080000000"}
 
 
-def _add_adu_access(test_data: TestData, sv: SvMode, mode: str, level: int, number: int) -> list[str]:
+def _add_adu_access(
+    test_data: TestData, sv: SvMode, mode: str, level: int, number: int, *, accessed: bool
+) -> list[str]:
+    # Each PTE readback checks the A/D update of the access before it.
+    crosses = ad_crosses("Svadu_cg", mode, accessed=accessed)
+    by_operation = crosses.by_operation()
     labels = {
-        name: test_data.add_testcase(f"test{number}_{name}", "cp_ad_update", "Svadu_cg").removesuffix(":")
+        name: test_data.add_testcase(
+            f"test{number}_{name}", by_operation[name.removeprefix("read_").removesuffix("_pte")], crosses.covergroup
+        ).removesuffix(":")
         for name in ("store", "load", "exec", "read_store_pte", "read_load_pte", "read_exec_pte")
     }
     table = "rvtest_Sroot_pg_tbl" if level == sv.levels - 1 else f"rvtest_slvl{level}_pg_tbl"
@@ -110,7 +117,9 @@ def _make_svadu_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
         sv,
         mode,
         f"{sv.name}_Svadu_{mode}",
-        coverpoint="cp_ad_update",
+        coverpoint=cross_names(
+            ad_crosses("Svadu_cg", mode, accessed=False), ad_crosses("Svadu_cg", mode, accessed=True)
+        ),
         va_defs=va_defs,
         va_code_override=_CODE_VA[sv.name],
         setup_asm=(f"LI(t0, {mask})", tsbi_call(f"csrs {csr}, t0")),
@@ -142,7 +151,7 @@ def _make_svadu_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     create_leaf_pte(sv, virtual_address=va_x, level=level, flags=permissions),
                     "sfence.vma",
                     "",
-                    *_add_adu_access(test_data, sv, mode, level, number),
+                    *_add_adu_access(test_data, sv, mode, level, number, accessed=accessed),
                     "",
                 ]
             )

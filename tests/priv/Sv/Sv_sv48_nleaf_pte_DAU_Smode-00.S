@@ -30,7 +30,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_sv48_nleaf_pte_DAU_Smode
+// cp_PTE_DAU_nleaf_write_s, cp_PTE_DAU_nleaf_read_s, cp_PTE_DAU_nleaf_exec_s
 /////////////////////////////////
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -80,26 +80,26 @@ main:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test1_store:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test1_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test1_load:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test1_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test1_exec:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test1_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_nleaf_pte_DAU_Smode_test1_store, Sv_cp_sv48_nleaf_pte_DAU_Smode_test1_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test1_store, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test1_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_nleaf_pte_DAU_Smode_test1_load, Sv_cp_sv48_nleaf_pte_DAU_Smode_test1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test1_load, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test1_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_nleaf_pte_DAU_Smode_test1_exec, Sv_cp_sv48_nleaf_pte_DAU_Smode_test1_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test1_exec, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test1_exec_str)
 
 
 // 4KB page at level 0
@@ -119,26 +119,26 @@ Sv_cp_sv48_nleaf_pte_DAU_Smode_test1_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test2_store:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test2_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test2_load:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test2_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test2_exec:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test2_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_nleaf_pte_DAU_Smode_test2_store, Sv_cp_sv48_nleaf_pte_DAU_Smode_test2_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test2_store, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test2_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_nleaf_pte_DAU_Smode_test2_load, Sv_cp_sv48_nleaf_pte_DAU_Smode_test2_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test2_load, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test2_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_nleaf_pte_DAU_Smode_test2_exec, Sv_cp_sv48_nleaf_pte_DAU_Smode_test2_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test2_exec, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test2_exec_str)
 
 
 // 4KB page at level 0
@@ -158,26 +158,26 @@ Sv_cp_sv48_nleaf_pte_DAU_Smode_test2_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test3_store:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test3_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test3_load:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test3_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test3_exec:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test3_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_nleaf_pte_DAU_Smode_test3_store, Sv_cp_sv48_nleaf_pte_DAU_Smode_test3_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test3_store, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test3_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_nleaf_pte_DAU_Smode_test3_load, Sv_cp_sv48_nleaf_pte_DAU_Smode_test3_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test3_load, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test3_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_nleaf_pte_DAU_Smode_test3_exec, Sv_cp_sv48_nleaf_pte_DAU_Smode_test3_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test3_exec, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test3_exec_str)
 
 
 // 4KB page at level 0
@@ -197,26 +197,26 @@ Sv_cp_sv48_nleaf_pte_DAU_Smode_test3_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test4_store:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test4_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test4_load:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test4_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test4_exec:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test4_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_nleaf_pte_DAU_Smode_test4_store, Sv_cp_sv48_nleaf_pte_DAU_Smode_test4_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test4_store, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test4_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_nleaf_pte_DAU_Smode_test4_load, Sv_cp_sv48_nleaf_pte_DAU_Smode_test4_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test4_load, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test4_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_nleaf_pte_DAU_Smode_test4_exec, Sv_cp_sv48_nleaf_pte_DAU_Smode_test4_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test4_exec, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test4_exec_str)
 
 
 // 4KB page at level 0
@@ -236,26 +236,26 @@ Sv_cp_sv48_nleaf_pte_DAU_Smode_test4_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test5_store:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test5_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test5_load:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test5_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test5_exec:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test5_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_nleaf_pte_DAU_Smode_test5_store, Sv_cp_sv48_nleaf_pte_DAU_Smode_test5_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test5_store, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test5_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_nleaf_pte_DAU_Smode_test5_load, Sv_cp_sv48_nleaf_pte_DAU_Smode_test5_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test5_load, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test5_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_nleaf_pte_DAU_Smode_test5_exec, Sv_cp_sv48_nleaf_pte_DAU_Smode_test5_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test5_exec, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test5_exec_str)
 
 
 // 4KB page at level 0
@@ -275,26 +275,26 @@ Sv_cp_sv48_nleaf_pte_DAU_Smode_test5_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test6_store:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test6_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test6_load:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test6_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test6_exec:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test6_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_nleaf_pte_DAU_Smode_test6_store, Sv_cp_sv48_nleaf_pte_DAU_Smode_test6_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test6_store, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test6_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_nleaf_pte_DAU_Smode_test6_load, Sv_cp_sv48_nleaf_pte_DAU_Smode_test6_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test6_load, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test6_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_nleaf_pte_DAU_Smode_test6_exec, Sv_cp_sv48_nleaf_pte_DAU_Smode_test6_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test6_exec, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test6_exec_str)
 
 
 // 4KB page at level 0
@@ -314,26 +314,26 @@ Sv_cp_sv48_nleaf_pte_DAU_Smode_test6_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test7_store:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test7_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test7_load:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test7_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test7_exec:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test7_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_nleaf_pte_DAU_Smode_test7_store, Sv_cp_sv48_nleaf_pte_DAU_Smode_test7_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test7_store, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test7_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_nleaf_pte_DAU_Smode_test7_load, Sv_cp_sv48_nleaf_pte_DAU_Smode_test7_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test7_load, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test7_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_nleaf_pte_DAU_Smode_test7_exec, Sv_cp_sv48_nleaf_pte_DAU_Smode_test7_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test7_exec, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test7_exec_str)
 
 
 // 4KB page at level 0
@@ -353,26 +353,26 @@ Sv_cp_sv48_nleaf_pte_DAU_Smode_test7_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test8_store:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test8_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test8_load:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test8_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test8_exec:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test8_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_nleaf_pte_DAU_Smode_test8_store, Sv_cp_sv48_nleaf_pte_DAU_Smode_test8_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test8_store, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test8_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_nleaf_pte_DAU_Smode_test8_load, Sv_cp_sv48_nleaf_pte_DAU_Smode_test8_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test8_load, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test8_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_nleaf_pte_DAU_Smode_test8_exec, Sv_cp_sv48_nleaf_pte_DAU_Smode_test8_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test8_exec, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test8_exec_str)
 
 
 // 4KB page at level 0
@@ -392,26 +392,26 @@ Sv_cp_sv48_nleaf_pte_DAU_Smode_test8_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test9_store:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test9_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test9_load:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test9_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test9_exec:
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test9_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv48_nleaf_pte_DAU_Smode_test9_store, Sv_cp_sv48_nleaf_pte_DAU_Smode_test9_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test9_store, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test9_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv48_nleaf_pte_DAU_Smode_test9_load, Sv_cp_sv48_nleaf_pte_DAU_Smode_test9_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test9_load, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test9_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv48_nleaf_pte_DAU_Smode_test9_exec, Sv_cp_sv48_nleaf_pte_DAU_Smode_test9_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test9_exec, Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test9_exec_str)
 
 #endif
 
@@ -448,33 +448,33 @@ rvtest_slvl2_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test1_store_str: .string "\"test: 163; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test1_store\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test1_load_str: .string "\"test: 164; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test1_load\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test1_exec_str: .string "\"test: 165; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test1_exec\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test2_store_str: .string "\"test: 166; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test2_store\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test2_load_str: .string "\"test: 167; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test2_load\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test2_exec_str: .string "\"test: 168; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test2_exec\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test3_store_str: .string "\"test: 169; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test3_store\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test3_load_str: .string "\"test: 170; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test3_load\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test3_exec_str: .string "\"test: 171; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test3_exec\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test4_store_str: .string "\"test: 172; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test4_store\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test4_load_str: .string "\"test: 173; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test4_load\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test4_exec_str: .string "\"test: 174; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test4_exec\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test5_store_str: .string "\"test: 175; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test5_store\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test5_load_str: .string "\"test: 176; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test5_load\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test5_exec_str: .string "\"test: 177; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test5_exec\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test6_store_str: .string "\"test: 178; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test6_store\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test6_load_str: .string "\"test: 179; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test6_load\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test6_exec_str: .string "\"test: 180; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test6_exec\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test7_store_str: .string "\"test: 181; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test7_store\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test7_load_str: .string "\"test: 182; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test7_load\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test7_exec_str: .string "\"test: 183; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test7_exec\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test8_store_str: .string "\"test: 184; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test8_store\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test8_load_str: .string "\"test: 185; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test8_load\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test8_exec_str: .string "\"test: 186; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test8_exec\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test9_store_str: .string "\"test: 187; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test9_store\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test9_load_str: .string "\"test: 188; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test9_load\""
-Sv_cp_sv48_nleaf_pte_DAU_Smode_test9_exec_str: .string "\"test: 189; cg: Sv; cp: cp_sv48_nleaf_pte_DAU_Smode; bin: test9_exec\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test1_store_str: .string "\"test: 163; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_write_s; bin: test1_store\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test1_load_str: .string "\"test: 164; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_read_s; bin: test1_load\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test1_exec_str: .string "\"test: 165; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_exec_s; bin: test1_exec\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test2_store_str: .string "\"test: 166; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_write_s; bin: test2_store\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test2_load_str: .string "\"test: 167; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_read_s; bin: test2_load\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test2_exec_str: .string "\"test: 168; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_exec_s; bin: test2_exec\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test3_store_str: .string "\"test: 169; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_write_s; bin: test3_store\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test3_load_str: .string "\"test: 170; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_read_s; bin: test3_load\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test3_exec_str: .string "\"test: 171; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_exec_s; bin: test3_exec\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test4_store_str: .string "\"test: 172; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_write_s; bin: test4_store\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test4_load_str: .string "\"test: 173; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_read_s; bin: test4_load\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test4_exec_str: .string "\"test: 174; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_exec_s; bin: test4_exec\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test5_store_str: .string "\"test: 175; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_write_s; bin: test5_store\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test5_load_str: .string "\"test: 176; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_read_s; bin: test5_load\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test5_exec_str: .string "\"test: 177; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_exec_s; bin: test5_exec\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test6_store_str: .string "\"test: 178; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_write_s; bin: test6_store\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test6_load_str: .string "\"test: 179; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_read_s; bin: test6_load\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test6_exec_str: .string "\"test: 180; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_exec_s; bin: test6_exec\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test7_store_str: .string "\"test: 181; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_write_s; bin: test7_store\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test7_load_str: .string "\"test: 182; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_read_s; bin: test7_load\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test7_exec_str: .string "\"test: 183; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_exec_s; bin: test7_exec\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test8_store_str: .string "\"test: 184; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_write_s; bin: test8_store\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test8_load_str: .string "\"test: 185; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_read_s; bin: test8_load\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test8_exec_str: .string "\"test: 186; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_exec_s; bin: test8_exec\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_write_s_test9_store_str: .string "\"test: 187; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_write_s; bin: test9_store\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_read_s_test9_load_str: .string "\"test: 188; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_read_s; bin: test9_load\""
+Sv_vm_permissions_cg_cp_PTE_DAU_nleaf_exec_s_test9_exec_str: .string "\"test: 189; cg: Sv_vm_permissions_cg; cp: cp_PTE_DAU_nleaf_exec_s; bin: test9_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

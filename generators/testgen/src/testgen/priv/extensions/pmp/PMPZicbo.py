@@ -37,7 +37,8 @@ def make_pmpzicbo_cbo(test_data: TestData) -> list[TestChunk]:
     for number, lxwr in ((1, "1000"), (2, "1001"), (3, "1011")):
         chunk = test_data.begin_test_chunk(f"cbo_wr_{number:02d}")
         chunk.section_header = comment_banner(
-            "cp_cbo", f"cbo.zero/clean/flush/inval against a locked page-sized NAPOT region with WR = {lxwr[2:]}."
+            "cp_cbo_zero, cp_cbo_clean, cp_cbo_flush and cp_cbo_inval",
+            f"cbo.zero/clean/flush/inval against a locked page-sized NAPOT region with WR = {lxwr[2:]}.",
         )
         chunk.code.extend(
             lxwr_walk_body(
@@ -45,7 +46,7 @@ def make_pmpzicbo_cbo(test_data: TestData) -> list[TestChunk]:
                 [(lxwr, 0)],
                 "napot",
                 gen_cbo,
-                "cp_cbo",
+                lambda instruction: f"cp_cbo_{instruction.removeprefix('cbo.')}",
                 first=number,
                 extra_setup=_ENABLE_CBO,
                 napot_mask=napot_mask_defines(12),
@@ -65,7 +66,8 @@ def make_pmpzicbo_cbo(test_data: TestData) -> list[TestChunk]:
 def make_pmpzicbo_prefetch(test_data: TestData) -> list[TestChunk]:
     chunk = test_data.begin_test_chunk("prefetch")
     chunk.section_header = comment_banner(
-        "cp_prefetch", "prefetch.i/r/w against a locked page-sized NAPOT region with each legal XWR; never faults."
+        "cp_prefetch_i, cp_prefetch_r and cp_prefetch_w",
+        "prefetch.i/r/w against a locked page-sized NAPOT region with each legal XWR; never faults.",
     )
     chunk.code.extend(
         lxwr_walk_body(
@@ -73,7 +75,7 @@ def make_pmpzicbo_prefetch(test_data: TestData) -> list[TestChunk]:
             LOCKED_LXWR_CASES,
             "napot",
             gen_prefetch,
-            "cp_prefetch",
+            lambda instruction: f"cp_prefetch_{instruction.removeprefix('prefetch.')}",
             extra_setup=_ENABLE_CBO,
             napot_mask=napot_mask_defines(12),
         )

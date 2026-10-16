@@ -12,18 +12,30 @@ from testgen.asm.csr import gen_csr_read_sigupd
 from testgen.asm.helpers import write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.sv.access import Crosses
 from testgen.priv.extensions.sv.assembly import DATA_REGION
 from testgen.priv.registry import add_priv_test_generator
 
+BARE_CROSSES = Crosses("Svbare_cg", "cp_satp_bare_store", "cp_satp_bare_load", "cp_satp_bare_exec")
 
-def bare_rwx(test_data: TestData, name: str, *, enter: tuple[str, ...] = (), leave: tuple[str, ...] = ()) -> list[str]:
+
+def bare_rwx(
+    test_data: TestData,
+    name: str,
+    *,
+    crosses: Crosses = BARE_CROSSES,
+    enter: tuple[str, ...] = (),
+    leave: tuple[str, ...] = (),
+) -> list[str]:
     lines = [*enter, "LA(a5, rvtest_data_1)", "addi a2, a2, 16"]
     for operation, register, instruction in (
         ("store", 12, "sw a2, 20(a5)"),
         ("load", 13, "lw a3, 20(a5)"),
         ("exec", 14, "jalr ra, a5, 0"),
     ):
-        lines.append(test_data.add_testcase(f"{name}_{operation}", "cp_bare_access", f"{test_data.testsuite}_cg"))
+        lines.append(
+            test_data.add_testcase(f"{name}_{operation}", crosses.by_operation()[operation], crosses.covergroup)
+        )
         lines.extend([instruction, write_sigupd(register, test_data, label=test_data.current_testcase_label)])
     lines.extend(leave)
     return lines
@@ -31,7 +43,8 @@ def bare_rwx(test_data: TestData, name: str, *, enter: tuple[str, ...] = (), lea
 
 def begin_bare_test(test_data: TestData, split_name: str) -> TestChunk:
     chunk = test_data.begin_test_chunk(split_name)
-    satp_label = test_data.add_testcase("satp_bare", "cp_satp", f"{test_data.testsuite}_cg")
+    # The satp readback checks the setup that the satp_bare coverpoint samples.
+    satp_label = test_data.add_testcase("satp_bare", "satp_bare", f"{test_data.testsuite}_cg")
     chunk.code.extend(
         [
             "main:",

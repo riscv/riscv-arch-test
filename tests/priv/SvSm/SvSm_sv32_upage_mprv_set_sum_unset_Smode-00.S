@@ -30,7 +30,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_sv32_upage_mprv_set_sum_unset_Smode
+// cp_mprv_upage_smode_sumunset_nowrite, cp_mprv_upage_smode_sumunset_noread, cp_mprv_upage_smode_sumunset_noexec
 /////////////////////////////////
 
 
@@ -83,7 +83,7 @@ main:
   addi a2, a2, 16
 
 // Store
-SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test1_store:
+SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_nowrite_test1_store:
   sw a2, 20(a5)
   nop
   LI(t0, MSTATUS_MPRV)
@@ -96,7 +96,7 @@ SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test1_store:
   csrc mstatus, t0
 
 // Load
-SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test1_load:
+SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noread_test1_load:
   lw a3, 20(a5)
   nop
   LI(t0, MSTATUS_MPRV)
@@ -110,7 +110,7 @@ SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test1_load:
   LA(a5, rvtest_data_1)
 
 // Execute
-SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test1_exec:
+SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noexec_test1_exec:
   jalr ra, a5, 0
   nop
 
@@ -118,11 +118,11 @@ SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test1_exec:
   csrc mstatus, t0
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test1_store, SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test1_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_nowrite_test1_store, SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_nowrite_test1_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test1_load, SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noread_test1_load, SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noread_test1_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test1_exec, SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test1_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noexec_test1_exec, SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noexec_test1_exec_str)
 
 
 // 4KB page at level 0
@@ -144,7 +144,7 @@ SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test1_exec:
   addi a2, a2, 16
 
 // Store
-SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test2_store:
+SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_nowrite_test2_store:
   sw a2, 20(a5)
   nop
   LI(t0, MSTATUS_MPRV)
@@ -157,7 +157,7 @@ SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test2_store:
   csrc mstatus, t0
 
 // Load
-SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test2_load:
+SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noread_test2_load:
   lw a3, 20(a5)
   nop
   LI(t0, MSTATUS_MPRV)
@@ -171,7 +171,7 @@ SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test2_load:
   LA(a5, rvtest_data_1)
 
 // Execute
-SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test2_exec:
+SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noexec_test2_exec:
   jalr ra, a5, 0
   nop
 
@@ -179,11 +179,11 @@ SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test2_exec:
   csrc mstatus, t0
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test2_store, SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test2_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_nowrite_test2_store, SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_nowrite_test2_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test2_load, SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test2_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noread_test2_load, SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noread_test2_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test2_exec, SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test2_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noexec_test2_exec, SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noexec_test2_exec_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -213,12 +213,12 @@ rvtest_slvl0_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test1_store_str: .string "\"test: 19; cg: SvSm; cp: cp_sv32_upage_mprv_set_sum_unset_Smode; bin: test1_store\""
-SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test1_load_str: .string "\"test: 20; cg: SvSm; cp: cp_sv32_upage_mprv_set_sum_unset_Smode; bin: test1_load\""
-SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test1_exec_str: .string "\"test: 21; cg: SvSm; cp: cp_sv32_upage_mprv_set_sum_unset_Smode; bin: test1_exec\""
-SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test2_store_str: .string "\"test: 22; cg: SvSm; cp: cp_sv32_upage_mprv_set_sum_unset_Smode; bin: test2_store\""
-SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test2_load_str: .string "\"test: 23; cg: SvSm; cp: cp_sv32_upage_mprv_set_sum_unset_Smode; bin: test2_load\""
-SvSm_cp_sv32_upage_mprv_set_sum_unset_Smode_test2_exec_str: .string "\"test: 24; cg: SvSm; cp: cp_sv32_upage_mprv_set_sum_unset_Smode; bin: test2_exec\""
+SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_nowrite_test1_store_str: .string "\"test: 19; cg: SvSm_mstatus_mprv_cg; cp: cp_mprv_upage_smode_sumunset_nowrite; bin: test1_store\""
+SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noread_test1_load_str: .string "\"test: 20; cg: SvSm_mstatus_mprv_cg; cp: cp_mprv_upage_smode_sumunset_noread; bin: test1_load\""
+SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noexec_test1_exec_str: .string "\"test: 21; cg: SvSm_mstatus_mprv_cg; cp: cp_mprv_upage_smode_sumunset_noexec; bin: test1_exec\""
+SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_nowrite_test2_store_str: .string "\"test: 22; cg: SvSm_mstatus_mprv_cg; cp: cp_mprv_upage_smode_sumunset_nowrite; bin: test2_store\""
+SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noread_test2_load_str: .string "\"test: 23; cg: SvSm_mstatus_mprv_cg; cp: cp_mprv_upage_smode_sumunset_noread; bin: test2_load\""
+SvSm_mstatus_mprv_cg_cp_mprv_upage_smode_sumunset_noexec_test2_exec_str: .string "\"test: 24; cg: SvSm_mstatus_mprv_cg; cp: cp_mprv_upage_smode_sumunset_noexec; bin: test2_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

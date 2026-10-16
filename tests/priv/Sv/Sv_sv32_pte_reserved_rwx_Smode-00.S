@@ -30,7 +30,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_sv32_pte_reserved_rwx_Smode
+// cp_PTE_res_rwx_s_d_write, cp_PTE_res_rwx_s_d_read, cp_PTE_res_rwx_s_i_exec
 /////////////////////////////////
 
 #ifdef S1P12P0_OR_LATER_SUPPORTED
@@ -77,26 +77,26 @@ main:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv32_pte_reserved_rwx_Smode_test1_store:
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_write_test1_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv32_pte_reserved_rwx_Smode_test1_load:
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_read_test1_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv32_pte_reserved_rwx_Smode_test1_exec:
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_i_exec_test1_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_pte_reserved_rwx_Smode_test1_store, Sv_cp_sv32_pte_reserved_rwx_Smode_test1_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_write_test1_store, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_write_test1_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_pte_reserved_rwx_Smode_test1_load, Sv_cp_sv32_pte_reserved_rwx_Smode_test1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_read_test1_load, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_read_test1_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_pte_reserved_rwx_Smode_test1_exec, Sv_cp_sv32_pte_reserved_rwx_Smode_test1_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_i_exec_test1_exec, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_i_exec_test1_exec_str)
 
 
 // 4MB page at level 1
@@ -113,26 +113,26 @@ Sv_cp_sv32_pte_reserved_rwx_Smode_test1_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv32_pte_reserved_rwx_Smode_test2_store:
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_write_test2_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv32_pte_reserved_rwx_Smode_test2_load:
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_read_test2_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv32_pte_reserved_rwx_Smode_test2_exec:
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_i_exec_test2_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_pte_reserved_rwx_Smode_test2_store, Sv_cp_sv32_pte_reserved_rwx_Smode_test2_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_write_test2_store, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_write_test2_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_pte_reserved_rwx_Smode_test2_load, Sv_cp_sv32_pte_reserved_rwx_Smode_test2_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_read_test2_load, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_read_test2_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_pte_reserved_rwx_Smode_test2_exec, Sv_cp_sv32_pte_reserved_rwx_Smode_test2_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_i_exec_test2_exec, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_i_exec_test2_exec_str)
 
 
 // 4KB page at level 0
@@ -146,26 +146,26 @@ Sv_cp_sv32_pte_reserved_rwx_Smode_test2_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv32_pte_reserved_rwx_Smode_test3_store:
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_write_test3_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv32_pte_reserved_rwx_Smode_test3_load:
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_read_test3_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv32_pte_reserved_rwx_Smode_test3_exec:
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_i_exec_test3_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_pte_reserved_rwx_Smode_test3_store, Sv_cp_sv32_pte_reserved_rwx_Smode_test3_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_write_test3_store, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_write_test3_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_pte_reserved_rwx_Smode_test3_load, Sv_cp_sv32_pte_reserved_rwx_Smode_test3_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_read_test3_load, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_read_test3_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_pte_reserved_rwx_Smode_test3_exec, Sv_cp_sv32_pte_reserved_rwx_Smode_test3_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_i_exec_test3_exec, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_i_exec_test3_exec_str)
 
 
 // 4KB page at level 0
@@ -179,26 +179,26 @@ Sv_cp_sv32_pte_reserved_rwx_Smode_test3_exec:
   addi a2, a2, 16
 
 // Store
-Sv_cp_sv32_pte_reserved_rwx_Smode_test4_store:
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_write_test4_store:
   sw a2, 20(a5)
   nop
 
 // Load
-Sv_cp_sv32_pte_reserved_rwx_Smode_test4_load:
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_read_test4_load:
   lw a3, 20(a5)
   nop
 
 // Execute
-Sv_cp_sv32_pte_reserved_rwx_Smode_test4_exec:
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_i_exec_test4_exec:
   jalr ra, a5, 0
   nop
 
   # Check if x12 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_cp_sv32_pte_reserved_rwx_Smode_test4_store, Sv_cp_sv32_pte_reserved_rwx_Smode_test4_store_str)
+  RVTEST_SIGUPD(x2, x5, x4, x12, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_write_test4_store, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_write_test4_store_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_cp_sv32_pte_reserved_rwx_Smode_test4_load, Sv_cp_sv32_pte_reserved_rwx_Smode_test4_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_read_test4_load, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_read_test4_load_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_cp_sv32_pte_reserved_rwx_Smode_test4_exec, Sv_cp_sv32_pte_reserved_rwx_Smode_test4_exec_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_i_exec_test4_exec, Sv_vm_permissions_cg_cp_PTE_res_rwx_s_i_exec_test4_exec_str)
 
 #endif
 
@@ -229,18 +229,18 @@ rvtest_slvl0_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_cp_sv32_pte_reserved_rwx_Smode_test1_store_str: .string "\"test: 91; cg: Sv; cp: cp_sv32_pte_reserved_rwx_Smode; bin: test1_store\""
-Sv_cp_sv32_pte_reserved_rwx_Smode_test1_load_str: .string "\"test: 92; cg: Sv; cp: cp_sv32_pte_reserved_rwx_Smode; bin: test1_load\""
-Sv_cp_sv32_pte_reserved_rwx_Smode_test1_exec_str: .string "\"test: 93; cg: Sv; cp: cp_sv32_pte_reserved_rwx_Smode; bin: test1_exec\""
-Sv_cp_sv32_pte_reserved_rwx_Smode_test2_store_str: .string "\"test: 94; cg: Sv; cp: cp_sv32_pte_reserved_rwx_Smode; bin: test2_store\""
-Sv_cp_sv32_pte_reserved_rwx_Smode_test2_load_str: .string "\"test: 95; cg: Sv; cp: cp_sv32_pte_reserved_rwx_Smode; bin: test2_load\""
-Sv_cp_sv32_pte_reserved_rwx_Smode_test2_exec_str: .string "\"test: 96; cg: Sv; cp: cp_sv32_pte_reserved_rwx_Smode; bin: test2_exec\""
-Sv_cp_sv32_pte_reserved_rwx_Smode_test3_store_str: .string "\"test: 97; cg: Sv; cp: cp_sv32_pte_reserved_rwx_Smode; bin: test3_store\""
-Sv_cp_sv32_pte_reserved_rwx_Smode_test3_load_str: .string "\"test: 98; cg: Sv; cp: cp_sv32_pte_reserved_rwx_Smode; bin: test3_load\""
-Sv_cp_sv32_pte_reserved_rwx_Smode_test3_exec_str: .string "\"test: 99; cg: Sv; cp: cp_sv32_pte_reserved_rwx_Smode; bin: test3_exec\""
-Sv_cp_sv32_pte_reserved_rwx_Smode_test4_store_str: .string "\"test: 100; cg: Sv; cp: cp_sv32_pte_reserved_rwx_Smode; bin: test4_store\""
-Sv_cp_sv32_pte_reserved_rwx_Smode_test4_load_str: .string "\"test: 101; cg: Sv; cp: cp_sv32_pte_reserved_rwx_Smode; bin: test4_load\""
-Sv_cp_sv32_pte_reserved_rwx_Smode_test4_exec_str: .string "\"test: 102; cg: Sv; cp: cp_sv32_pte_reserved_rwx_Smode; bin: test4_exec\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_write_test1_store_str: .string "\"test: 91; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_s_d_write; bin: test1_store\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_read_test1_load_str: .string "\"test: 92; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_s_d_read; bin: test1_load\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_i_exec_test1_exec_str: .string "\"test: 93; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_s_i_exec; bin: test1_exec\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_write_test2_store_str: .string "\"test: 94; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_s_d_write; bin: test2_store\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_read_test2_load_str: .string "\"test: 95; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_s_d_read; bin: test2_load\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_i_exec_test2_exec_str: .string "\"test: 96; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_s_i_exec; bin: test2_exec\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_write_test3_store_str: .string "\"test: 97; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_s_d_write; bin: test3_store\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_read_test3_load_str: .string "\"test: 98; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_s_d_read; bin: test3_load\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_i_exec_test3_exec_str: .string "\"test: 99; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_s_i_exec; bin: test3_exec\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_write_test4_store_str: .string "\"test: 100; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_s_d_write; bin: test4_store\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_d_read_test4_load_str: .string "\"test: 101; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_s_d_read; bin: test4_load\""
+Sv_vm_permissions_cg_cp_PTE_res_rwx_s_i_exec_test4_exec_str: .string "\"test: 102; cg: Sv_vm_permissions_cg; cp: cp_PTE_res_rwx_s_i_exec; bin: test4_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

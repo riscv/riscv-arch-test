@@ -12,12 +12,13 @@ from testgen.asm.helpers import write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.pmp import helpers as pmp
-from testgen.priv.extensions.sv.access import add_rwx_test
+from testgen.priv.extensions.sv.access import ad_crosses, add_rwx_test, cross_names
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import SV32, SV39, SV48, SV57, PteFlags, SvMode, create_page_mapping
 from testgen.priv.registry import add_priv_test_generator
 
 _VA_DATA = {"sv32": "0x00000000", "sv39": "0x000000000", "sv48": "0x000000000000", "sv57": "0x00000000000000"}
+_PMP = "_pmpW_unset"
 _AD_CASES = (
     (False, True, "PTE.A unset"),
     (True, False, "PTE.D unset"),
@@ -25,8 +26,8 @@ _AD_CASES = (
 )
 
 
-def _add_pte_readback(test_data: TestData, sv: SvMode, level: int, number: int) -> list[str]:
-    label = test_data.add_testcase(f"test{number}_read_pte", "cp_ad_update", "SvaduPMP_cg").removesuffix(":")
+def _add_pte_readback(test_data: TestData, sv: SvMode, level: int, number: int, cross: str) -> list[str]:
+    label = test_data.add_testcase(f"test{number}_read_pte", cross, "SvaduPMP_cg").removesuffix(":")
     return [
         f"LA(a0, {sv.page_table_label(level)})",
         f"{label}:",
@@ -42,7 +43,9 @@ def _make_svadupmp_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk
         sv,
         mode,
         f"{sv.name}_Svadu_no_pmp_perm_{mode}",
-        coverpoint="cp_ad_update",
+        coverpoint=cross_names(
+            *(ad_crosses("SvaduPMP_cg", mode, accessed=accessed, infix=_PMP) for accessed in (False, True))
+        ),
         code_prefix=pmp.napot_mask_defines(),
         va_defs=(("va_data", _VA_DATA[sv.name]),),
         pre_va_asm=("RVTEST_PMP_SET_BACKGROUND x4",),
@@ -61,6 +64,7 @@ def _make_svadupmp_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk
                                 test_data,
                                 pmp.cfg_byte("0101", "napot", pmp.cfg_shift(0)),
                                 "write_pmpcfg0",
+                                "PMP_pagetable",
                             ),
                             "",
                         ]
@@ -72,6 +76,7 @@ def _make_svadupmp_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk
                 accessed=accessed,
                 dirty=dirty,
             )
+            crosses = ad_crosses("SvaduPMP_cg", mode, accessed=accessed, infix=_PMP)
             chunk.code.extend(
                 [
                     f"// Test case {number}: {description}; PMP blocks the A/D update",
@@ -86,8 +91,10 @@ def _make_svadupmp_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk
                         level,
                         f"test{number}",
                         driver_mode="Mmode",
+                        crosses=crosses,
                     ),
-                    *_add_pte_readback(test_data, sv, level, number),
+                    # The PTE readback checks that PMP blocked the A/D update; it shares the store's cross.
+                    *_add_pte_readback(test_data, sv, level, number, crosses.store),
                     "",
                 ]
             )

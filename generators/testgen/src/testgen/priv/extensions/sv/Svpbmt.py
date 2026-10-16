@@ -11,7 +11,7 @@
 from testgen.asm.tsbi import tsbi_call
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.sv.access import add_rwx_test
+from testgen.priv.extensions.sv.access import Crosses, add_rwx_test, cross_names
 from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import SV39, SV48, SV57, PteFlags, SvMode, create_page_mapping
 from testgen.priv.registry import add_priv_test_generator
@@ -19,12 +19,18 @@ from testgen.priv.registry import add_priv_test_generator
 _PBMT = (("(1 << 61)", "PBMT=1", False), ("(2 << 61)", "PBMT=2", False), ("(3 << 61)", "PBMT=3", True))
 
 
-def _begin_test(test_data: TestData, sv: SvMode, mode: str, topic: str) -> TestChunk:
+def _crosses(prefix: str, mode: str) -> Crosses:
+    m = mode[0].lower()
+    return Crosses("Svpbmt_cg", f"{prefix}_write_{m}", f"{prefix}_read_{m}", f"{prefix}_exec_{m}")
+
+
+def _begin_test(test_data: TestData, sv: SvMode, mode: str, topic: str, banner: str) -> TestChunk:
     return begin_sv_test(
         test_data,
         sv,
         mode,
         f"{sv.name}_{topic}_{mode}",
+        coverpoint=banner,
         setup_asm=("LI(t0, MENVCFG_PBMTE)", tsbi_call("csrs menvcfg, t0")),
     )
 
@@ -36,7 +42,8 @@ def _finish_test(test_data: TestData, sv: SvMode) -> TestChunk:
 
 
 def _make_leaf_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
-    chunk = _begin_test(test_data, sv, mode, "Svpbmt")
+    legal, reserved = _crosses("leaf_PTE_pbmt", mode), _crosses("leaf_PTE_pbmt_reserved_enc", mode)
+    chunk = _begin_test(test_data, sv, mode, "Svpbmt", cross_names(legal, reserved))
     umode = mode == "Umode"
     number = 0
     for level in sv.levels_desc:
@@ -59,6 +66,8 @@ def _make_leaf_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                         level,
                         f"test{number}",
                         driver_mode="Smode",
+                        # The guarded encoding, PBMT = 3, is reserved.
+                        crosses=reserved if guarded else legal,
                     ),
                 ]
             )
@@ -69,7 +78,8 @@ def _make_leaf_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
 
 
 def _make_nonleaf_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
-    chunk = _begin_test(test_data, sv, mode, "Svpbmt_nonleaf")
+    crosses = _crosses("nonleaf_PTE_pbmt", mode)
+    chunk = _begin_test(test_data, sv, mode, "Svpbmt_nonleaf", cross_names(crosses))
     chunk.code.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
     umode = mode == "Umode"
     number = 0
@@ -96,6 +106,7 @@ def _make_nonleaf_tests(test_data: TestData, sv: SvMode, mode: str) -> TestChunk
                         level,
                         f"test{number}",
                         driver_mode="Smode",
+                        crosses=crosses,
                     ),
                     "",
                 ]

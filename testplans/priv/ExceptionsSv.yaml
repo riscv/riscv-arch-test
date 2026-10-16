@@ -22,16 +22,16 @@ coverpoints:
       Check behavior of a misaligned load spanning a page boundary, in which one of the two pages faults.
       Set up two consecutive virtual kilopages, with both combinations of one page RWX=111 and the other RWX=000.
       Issue misaligned lw crossing page boundary.
-      If misaligned accesses are supported, expect a misaligned load fault.
+      If misaligned accesses are not supported, expect a misaligned load fault.
       If misaligned access is supported, expect a load page fault.
       stval could be 0, or should be the address of the load if the fault occurs in the first page,
       or the address of the start of the second virtual page if the fault occurs in the second page.
     bins: 2 bins
   - name: cp_misaligned_store_page_fault_s
     goal: Page fault on each part of a misaligned access
-    description: Same as cp_misaligned_load_page_fault_u but with sw and store faults.
+    description: Same as cp_misaligned_load_page_fault_s but with sw and store faults.
     bins: 2 bins
-  - name: cp_misaligned_instr_page_fault_s
+  - name: cp_misaligned_inst_page_fault_s
     goal: Page fault on each part of a misaligned instruction
     description: |-
       Same setup as cp_misaligned_load_page_fault_s

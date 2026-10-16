@@ -88,8 +88,9 @@ coverpoints:
       write sstatus.SIE = 1
       write sie = 0s
       RVTEST_SET_<type>_INT (7 choose 2) pairs of sip.<TYPE1, TYPE2>
-      write sie = 1s
       RVTEST_IDLE_FOR_INT
+      read sip masked to the raised bits and SIGUPD it
+      write sie = 1s
       RVTEST_CLR_<type>_INT for both
     expectation: highest priority pending interrupt will fire
     bins: 21 int * 4 priv
@@ -99,8 +100,9 @@ coverpoints:
       write sstatus.SIE = 1
       write sie = 0s
       RVTEST_SET_<type>_INT for all 7 types
-      write sie with two ones for all (7 choose 2) pairs
       RVTEST_IDLE_FOR_INT
+      read sip masked to the raised bits and SIGUPD it
+      write sie with two ones for all (7 choose 2) pairs
       RVTEST_CLR_<type>_INT for all
     expectation: highest priority enabled interrupt will fire
     bins: 21 int * 4 priv
@@ -118,7 +120,7 @@ coverpoints:
       } until STI has fired (see Zawrs)
       RVTEST_CLR_SSTC_INT
     expectation: Wait for timer interrupt.  MIE and SIE not affect results.
-    bins: 4 priv * 2 SIE
+    bins: S * 2 SIE
   - name: cp_wfi_timeout
     goal: WFI waits until timeout
     description: |-

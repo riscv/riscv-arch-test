@@ -171,7 +171,7 @@ coverpoints:
       Precondition for leg (d): menvcfg/senvcfg CBIE, CBCFE and CBZE must be enabled, otherwise the cache-block op traps on its own gating instead of on the SS page.
       Leg (f) is best-effort: it is not established that a page-table walk through an SS page is reachable in this environment.
       Additional accessor classes:
-      (h) LR/SC to the SS page (requires Zalrsc).
+      (h) LR and SC to the SS page, as separate accessors (requires Zalrsc).
       (i) AMOCAS to the SS page (requires Zacas).
       (j) if V is implemented, vector loads and stores to the SS page, including strided and indexed accesses that BEGIN on a different page and run into the SS page.
       Leg (g), the ordinary-load leg, is additionally crossed with mstatus.MXR = 0 and 1: the SS page is R=0, so MXR is what decides whether a plain load may read it.
@@ -180,10 +180,11 @@ coverpoints:
       (b),(c),(d) store/AMO access-fault (cause=7), NOT a page-fault.
       (e),(f) access-fault appropriate to the access type (instruction access-fault for fetch).
       (g) succeeds -- the shadow stack is readable by any instruction that only loads.
-      (h),(i) store/AMO access-fault -- LR/SC and AMOCAS are not in the set permitted to write an SS page.
+      (h) LR succeeds -- it only loads, so the SS page is readable to it. SC store/AMO access-faults -- it is not in the set permitted to write an SS page.
+      (i) store/AMO access-fault -- AMOCAS is not in the set permitted to write an SS page.
       (j) vector stores fault; vector loads follow the ordinary-load rule. An access that starts on an adjacent page must still fault on the element that lands in the SS page.
       (g) the ordinary load succeeds for BOTH MXR values -- the shadow stack is readable by any instruction that only loads, so this must not depend on MXR.
-    bins: accessor {ss_store, ordinary_store, ordinary_amo, lr_sc, amocas, cbo, ifetch, implicit_walk, ordinary_load, vector_load, vector_store} x MXR {0,1} x result {ok, af}
+    bins: accessor {ss_store, ordinary_store, ordinary_amo, lr, sc, amocas, cbo, ifetch, implicit_walk, ordinary_load, vector_load, vector_store} x MXR {0,1} x result {ok, af}
     id: ssmp_ss_page_access_fault ssmp_ss_cache_block_access_fault ssmp_ss_implicit_access_fault ssmp_ss_load
     rules:
       - "[norm:ssmp_ss_page_access_fault] [norm:ssmp_ss_cache_block_access_fault] [norm:ssmp_ss_implicit_access_fault] [norm:ssmp_ss_load]"

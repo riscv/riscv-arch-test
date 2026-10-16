@@ -15,10 +15,16 @@ coverpoints:
     goal: Load with both faults
     description: Access fault of lr.w and lr.d with misaligned address
     bins: 2 instr
-  - name: cp_store_address_misaligned
+  - name: |-
+      cp_store_address_misaligned_legal_w
+      cp_store_address_misaligned_illegal_w
+      cp_store_address_misaligned_legal_d
+      cp_store_address_misaligned_illegal_d
     goal: Store Misaligned
-    description: Misaligned sc.w, sc.d cross match lr address  (8 bins for bottom 3 bits of address) cross rd having an initial value > 1
-    expectation: Faulting sc should not change rd
+    description: |-
+      Misaligned sc.w, sc.d cross match lr address  (8 bins for bottom 3 bits of address) cross rd having an initial value > 1
+      The aligned sc.w (offsets 0, 4) and sc.d (offset 0) are retried in a constrained LR/SC loop of up to 100 attempts. Faulting SCs are tried once.
+    expectation: Faulting sc should not change rd; aligned sc writes 0 to rd
     bins: 8 lsbs * 2 instr
   - name: cp_store_access_fault
     goal: Store Access Fault

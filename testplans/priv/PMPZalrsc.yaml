@@ -5,7 +5,7 @@ coverpoints:
   - heading: |-
       General Test Environment (PMPZalrsc):
       - Runs when Zalrsc and Sm are implemented and NUM_PMP_ENTRIES > 0. M-mode only.
-      - lr.w, sc.w (also lr.d, sc.d on RV64). Each lr is followed by an sc to the same address; when W=1 the pair retries in a constrained LR/SC loop until the sc succeeds.
+      - lr.w, sc.w (also lr.d, sc.d on RV64). Each lr is followed by an sc to the same address; when W=1 the pair retries in a constrained LR/SC loop of up to 100 attempts until the sc succeeds.
       - Standard region and L=1 XWR walk as in PMPSm cp_cfg_X/R/W.
   - name: cp_cfg_RW
     goal: Verify that LR needs R and SC needs W.

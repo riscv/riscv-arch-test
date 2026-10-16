@@ -5,7 +5,7 @@ coverpoints:
   - heading: "General Test Environment (SvSm):\n- Sm suite: boots to M-mode (BOOT_TO_MMODE) because each coverpoint needs M-mode state (mstatus.MPRV/MPP, mstatus.TVM, mstatus.SBE or an M-mode CSR access). Mode changes use RVTEST_TSBI_GOTO_*.\n- These coverpoints were split out of Sv. Faults taken in M-mode are sampled from mcause.\n- Run for every supported translation mode: Sv32 on RV32; Sv39, Sv48 and Sv57 on RV64, as selected by the UDB configuration.\n- Split from Sv: the M-mode half of cp_access_m_s (now cp_access_m) and all of Sv_mstatus_mprv_cg."
   - name: cp_access_m
     goal: Verify satp is readable and writable from M-mode with csrrw, csrrs and csrrc
-    description: "Sv32 and Sv39 configurations, M-mode: csrrw satp with 1, csrrs with 2, csrrc with 1, reading satp back after each; and the same three accesses with satp = 0 while mstatus.TVM=1, which does not restrict M-mode."
+    description: "Sv32 and Sv39 configurations, M-mode: csrrw satp with MODE = the suite's translation mode and PPN = 0, then csrrs and csrrc with the lowest ASID bit, reading satp back after each; and csrrw, csrrs and csrrc satp with 0 while mstatus.TVM=1, which does not restrict M-mode. satp is never written with MODE=Bare and a nonzero PPN or ASID, which is UNSPECIFIED."
     expectation: No exception; each read returns the value produced by the write.
     bins: |-
       cp_ins x Mcause x tvm_mstatus x mode {M-mode}
@@ -53,13 +53,6 @@ coverpoints:
     id: mstatus_mprv_inst_xlat_op
     rules:
       - "[norm:mstatus_mprv_inst_xlat_op]"
-  - name: PTE_upage_i
-    goal: Verify a user leaf PTE is observed on the instruction side during the MPRV tests
-    description: Sampled when an instruction fetch walks a user leaf PTE (U=1) during the MPRV/SUM tests.
-    expectation: A valid user leaf PTE (U=1) is seen by the fetch.
-    bins: |-
-      PTE_upage_i {leaflvl_u}
-      = 1 bins on RV64, 1 on RV32
   - name: cp_mprv_upage_smode_sumunset_noread
     goal: Verify an M-mode load with MPRV=1, MPP=S to a user page faults when mstatus.SUM=0
     description: "M-mode with MPRV=1, MPP=S and mstatus.SUM=0: user leaf PTE (U=1) at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data."
@@ -85,8 +78,8 @@ coverpoints:
     description: "M-mode with MPRV=1, MPP=S and SUM=0, user page (U=1) mapped at va_data: jump (jalr) to the physical address of the page."
     expectation: "No fault: instruction fetch ignores MPRV."
     bins: |-
-      mprv_mstatus x mpp_mstatus x exec_acc x PageType_i x sum_sstatus x mode {M-mode}
-      = 7 bins on RV64, 2 on RV32
+      mprv_mstatus x mpp_mstatus x exec_acc x satp_mode x sum_sstatus x mode {M-mode}
+      = 3 bins on RV64, 1 on RV32
     id: mstatus_sum_op mstatus_sum_op_mprv_mpp
     rules:
       - "[norm:mstatus_sum_op] [norm:mstatus_sum_op_mprv_mpp]"
@@ -95,8 +88,8 @@ coverpoints:
     description: "M-mode with MPRV=1, MPP=S and SUM=1, user page (U=1) mapped at va_data: jump (jalr) to the physical address of the page."
     expectation: "No fault: instruction fetch ignores MPRV."
     bins: |-
-      mprv_mstatus x mpp_mstatus x exec_acc x PageType_i x sum_sstatus x mode {M-mode}
-      = 7 bins on RV64, 2 on RV32
+      mprv_mstatus x mpp_mstatus x exec_acc x satp_mode x sum_sstatus x mode {M-mode}
+      = 3 bins on RV64, 1 on RV32
     id: mstatus_sum_op mstatus_sum_op_mprv_mpp
     rules:
       - "[norm:mstatus_sum_op] [norm:mstatus_sum_op_mprv_mpp]"

@@ -124,8 +124,9 @@ This rule is checked by the time bin of cp_cntr coverpoint.
 [%autowidth]
 |===
 |Coverpoint|Bins|Definition
-|cp_cntr|3|Read each of the counters (`cycle`, `time`, `instret`) twice using `csrrs rd, csr, x0` and check that the difference is exactly right for `instret`, or at least 1 for `cycle`, 0 for `time` (`time` may not increment between reads).
-For RV32, also check `cycleh`, `timeh`, `instreth` with the same definitions.
+|cp_cntr|3 (6 on RV32)|Read each of the counters (`cycle`, `time`, `instret`) twice using `csrrs rd, csr, x0` and check that the difference is exactly right for `instret`, or at least 1 for `cycle` and `time`.
+`time` may not increment between two close reads, so the second read is repeated until `time` increments (at most 2000 reads).
+For RV32, also read `cycleh`, `timeh`, `instreth` twice and record the difference; the high halves almost never change between two reads, so no minimum is checked.
 Skip `time` and `timeh` if parameter TIME_CSR_IMPLEMENTED = False.
 |===
 

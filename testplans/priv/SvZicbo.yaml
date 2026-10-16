@@ -6,20 +6,20 @@ coverpoints:
   - name: cp_PTE_rwx_zicbop_s
     goal: Verify prefetch.i/r/w through a valid mapping execute without exception from S-mode
     description: "S-mode: RWX leaf PTE with PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute prefetch.i, prefetch.r and prefetch.w on va_data."
-    expectation: No exception; prefetches never fault.
+    expectation: "No exception; prefetches never fault. A prefetch is a hint that need not translate, so the bins do not cross the PTE or page type; the self-checking test checks that no trap is taken."
     bins: |-
-      PTE_RWX_d x PageType_d x zicbop_ins x mode {S-mode}
-      = 7 bins on RV64, 2 on RV32
+      zicbop_ins x mode x mode {S-mode}
+      = 3 bins on RV64, 1 on RV32
     id: cbp_unperm_translate
     rules:
       - "[norm:cbp_unperm_translate]"
   - name: cp_PTE_rwx_zicbop_u
     goal: Verify prefetch.i/r/w through a valid mapping execute without exception from U-mode
     description: "U-mode: RWX leaf PTE with PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute prefetch.i, prefetch.r and prefetch.w on va_data."
-    expectation: No exception; prefetches never fault.
+    expectation: "No exception; prefetches never fault. A prefetch is a hint that need not translate, so the bins do not cross the PTE or page type; the self-checking test checks that no trap is taken."
     bins: |-
-      PTE_RWX_d x PageType_d x zicbop_ins x mode {U-mode}
-      = 7 bins on RV64, 2 on RV32
+      zicbop_ins x mode x mode {U-mode}
+      = 3 bins on RV64, 1 on RV32
     id: cbp_unperm_translate
     rules:
       - "[norm:cbp_unperm_translate]"
@@ -236,5 +236,5 @@ coverpoints:
     description: "S-mode and U-mode: non-leaf PTE pointing at RVMODEL_ACCESS_FAULT_ADDRESS instead of the next page table. Execute the CBOs on va_data."
     expectation: Store/AMO access fault (scause = 7).
     bins: |-
-      pointer_PTE_d x d_phys_address_nonexistent x PageType_d x store_acc_fault x cbo_ins x mode {S/U-mode}
+      pointer_PTE_d x nonleaf_ppn_nonexistent x PageType_d x store_acc_fault x cbo_ins x mode {S/U-mode}
       = 20 bins on RV64, 4 on RV32

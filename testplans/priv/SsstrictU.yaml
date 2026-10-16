@@ -9,7 +9,7 @@ coverpoints:
     description: Read all 4096 CSRs from U-mode (CSRR with rd≠x0). Skips user-custom CSRs only (0x800-0x8FF, 0xCC0-0xCFF). All non-user CSRs should raise illegal-instruction from U-mode.
     expectation: User-level CSRs (cycle, time, instret, hpmcounters, fflags, frm, fcsr, vtype etc.) succeed if enabled; all others trap.
     bins: One bin per CSR 0x000–0xFFF (excluding user-custom ranges), executed from U-mode
-  - name: cp_csrw_corners
+  - name: cp_csrw_edges
     goal: CSR Accesses
     description: "Write all-zeros and all-ones to every CSR from U-mode. Skips user-custom CSRs. Writable user-level CSRs: fflags, frm, fcsr. All others trap."
     expectation: Only fflags/frm/fcsr accept writes from U-mode; all other writes raise illegal-instruction.
@@ -17,7 +17,7 @@ coverpoints:
   - name: cp_csrcs
     goal: CSR Accesses
     description: CSRRS/CSRRC with rs1=all-ones for every CSR from U-mode.
-    expectation: Same as cp_csrw_corners — only fp CSRs succeed, all others trap.
+    expectation: Same as cp_csrw_edges — only fp CSRs succeed, all others trap.
     bins: "Two bins per CSR: CSRRS and CSRRC all-ones from U-mode"
   - name: cp_illegal_instruction
     goal: Illegal Uncompressed Instructions

@@ -9,7 +9,7 @@ coverpoints:
       - Standard region and L=1 XWR walk as in PMPSm cp_cfg_X/R/W.
   - name: cp_cfg_R
     goal: Verify that R controls floating-point loads when the entry is locked.
-    description: Six legal XWR with L=1, one entry each (as in PMPSm cp_cfg_R). flh, flw and fld at the start of the region.
+    description: Six legal XWR with L=1, one entry each (as in PMPSm cp_cfg_R). flh, flw and fld at the start of the region, the NAPOT region base PMP_NAPOT_REGION_START, so fld is naturally aligned at every PMP granularity.
     expectation: Load access fault when R=0.
     bins: 6 XWR × 3 loads = 18
     rules:

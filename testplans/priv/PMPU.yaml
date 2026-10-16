@@ -11,7 +11,7 @@ coverpoints:
   - heading: Permission bits
   - name: cp_cfg_X
     goal: Verify that X controls U-mode instruction fetch whether or not the entry is locked.
-    description: One standard NAPOT region. Walk the six legal XWR values with L=1, then again with L=0, each in its own entry as in PMPSm cp_cfg_X. jalr to the start of the region from U-mode.
+    description: One standard NAPOT region based at PMP_NAPOT_REGION_START, so the 8-byte probes are naturally aligned at every PMP granularity. Walk the six legal XWR values with L=1, then again with L=0, each in its own entry as in PMPSm cp_cfg_X. jalr to the start of the region from U-mode.
     expectation: Instruction access fault when X=0, for both L=0 and L=1.
     bins: 2 L × 6 XWR = 12
     rules:

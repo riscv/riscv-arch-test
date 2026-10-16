@@ -35,7 +35,7 @@ coverpoints:
       - "[norm:satp_sz] [norm:satp_acc] [norm:satp_op] [norm:satp_mode]"
   - name: cp_access_s
     goal: Verify satp is readable and writable from S-mode with csrrw, csrrs and csrrc
-    description: "S-mode with mstatus.TVM=0 and scause cleared: csrrw satp with 4, csrrs with 8, csrrc with 4, reading satp back after each (satp.MODE stays Bare)."
+    description: "Sv32 and Sv39 configurations, S-mode with mstatus.TVM=0 and scause cleared: csrrw satp with MODE = the suite's translation mode and PPN = the identity-mapped root table, then csrrs and csrrc with the lowest ASID bit, reading satp back after each. satp is never written with MODE=Bare and a nonzero PPN or ASID, which is UNSPECIFIED."
     expectation: No exception; each read returns the value produced by the write.
     bins: |-
       cp_ins x Scause x tvm_mstatus x mode {S-mode}
@@ -856,7 +856,7 @@ coverpoints:
     description: "RV64, S-mode: top-level leaf PTE with each of bits 60..54 set in turn. Store (sw) to the page through va_data."
     expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
     bins: |-
-      reserved_PTE_d x store_page_fault x read_acc x mode
+      reserved_PTE_d x store_page_fault x write_acc x mode
       = 21 bins on RV64 (RV64 only)
     id: Sv39_pte_future_rsv
     rules:
@@ -866,7 +866,7 @@ coverpoints:
     description: "RV64, S-mode: top-level leaf PTE with each of bits 60..54 set in turn. Jump (jalr) into the page through va_data."
     expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
     bins: |-
-      reserved_PTE_i x ins_page_fault x read_acc x mode
+      reserved_PTE_i x ins_page_fault x exec_acc x mode
       = 21 bins on RV64 (RV64 only)
     id: Sv39_pte_future_rsv
     rules:

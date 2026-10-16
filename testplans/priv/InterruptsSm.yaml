@@ -102,8 +102,9 @@ coverpoints:
       write mstatus.MIE = 1
       write mie = 0s
       RVTEST_SET_<type>_INT (10 choose 2) pairs of mip.<TYPE1, TYPE2>
-      write mie = 1s
       RVTEST_IDLE_FOR_INT
+      read mip masked to the raised bits and SIGUPD it
+      write mie = 1s
       RVTEST_CLR_<type>_INT for both
     expectation: if supported - higher priority interrupt will fire
     bins: 45 int * 5 priv
@@ -114,8 +115,9 @@ coverpoints:
       write mstatus.MIE = 1
       write mie = 0s
       RVTEST_SET_<type>_INT for all 10 types
-      write mie with two ones for all (10 choose 2) pairs
       RVTEST_IDLE_FOR_INT
+      read mip masked to the raised bits and SIGUPD it
+      write mie with two ones for all (10 choose 2) pairs
       RVTEST_CLR_<type>_INT for all
     expectation: if supported - higher priority enabled interrupt will fire
     bins: 45 int * 5 priv
@@ -127,8 +129,9 @@ coverpoints:
       write mie = 0s
       RVTEST_SET_<type>_INT (10 choose 2) pairs of mip.<TYPE1, TYPE2>
       mideleg = 0s except {1 in TYPE1, 1 in TYPE2} (one at a time)
-      write mie = 1s
       RVTEST_IDLE_FOR_INT
+      read mip masked to the raised bits and SIGUPD it
+      write mie = 1s
       RVTEST_CLR_<type>_INT for both
     expectation: if supported - undelegated interrupt takes priority
     bins: 21 int * 2 mideleg * 5 priv

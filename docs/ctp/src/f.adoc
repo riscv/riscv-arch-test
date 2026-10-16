@@ -91,8 +91,14 @@ a spreadsheet and manual coverpoints rather than a CSV, they do not assume
 any privileged capabilities, including the existence of machine mode. Hence
 they are compatible with RVI20 and simple cores that lack privileged modes.
 
-Note that this suite also tests that the underflow flag is set only if the
-result is tiny after rounding, per the RISC-V spec.
+This suite also tests that the underflow flag is set only if the result is
+tiny after rounding, and the fused multiply-add special cases: ∞ × 0 with a
+NaN or finite addend, and the sign of an exact zero sum, which depends on the
+rounding mode. The tininess and exact-zero cases run under all five static
+rounding modes. Every case checks the result and fflags. The fused
+multiply-add cases are in a separate test file (`ZicsrF_fma`). Cases are
+skipped when the extension they need (D, Zfh or Zfhmin) is absent.
+<<t-ZicsrF-coverpoints>> lists them.
 
 include::{testplansdir}/priv/ZicsrF.adoc[]
 

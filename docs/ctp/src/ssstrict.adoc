@@ -24,6 +24,8 @@ Attempt to issue all flavors of 32-bit instructions in the standard and reserved
 
 According to the RVA23 profile spec, the illegal instruction should be cause a trap to the supervisor trap handler.  However, delegation is the business of the firmware, not the hardware.  These tests only check that a trap occurs and matches the reference model.
 
+On a hart without Zca, the 16-bit encodings in the compressed sweep may be treated as the start of 32-bit instructions, so xtval may hold either the 16-bit parcel or the 32-bit word it begins.  Sail reports the 16-bit parcel.  The tests accept exactly those two values: an xtval that matches the 32-bit word at xepc is reduced to its 16-bit parcel before comparison, and any other value mismatches.
+
 include::{testplansdir}/priv/SsstrictS.adoc[]
 include::norm/SsstrictS_norm_rules.adoc[]
 

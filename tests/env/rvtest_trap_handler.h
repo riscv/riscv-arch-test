@@ -2789,7 +2789,7 @@ trap_handler_fastillegalinstr:
 fast_Millegalinstruction:
         RVTEST_SIGUPD_FAST_TRAP(x2, a1, a0, CSR_MCAUSE, 0, fast_Mcause_mismatch)
         RVTEST_SIGUPD_FAST_TRAP(x2, a1, a0, CSR_MEPC, SIG_STRIDE, fast_Mepc_mismatch)
-        RVTEST_SIGUPD_FAST_TRAP(x2, a1, a0, CSR_MTVAL, 2*SIG_STRIDE, fast_Mtval_mismatch)
+        RVTEST_SIGUPD_FAST_TRAP_TVAL(x2, a1, a0, CSR_MTVAL, CSR_MEPC, 2*SIG_STRIDE, fast_Mtval_mismatch)
         addi x2, x2, 3*SIG_STRIDE
 #ifdef ZCA_SUPPORTED
         // mepc advance using only a0 — reads bits[1:0] from *mepc using lhu
@@ -2860,7 +2860,7 @@ strap_handler_fastillegalinstr:
 fast_Sillegalinstruction:
         RVTEST_SIGUPD_FAST_TRAP(x2, a1, a0, CSR_SCAUSE, 0, fast_Scause_mismatch)
         RVTEST_SIGUPD_FAST_TRAP(x2, a1, a0, CSR_SEPC, SIG_STRIDE, fast_Sepc_mismatch)
-        RVTEST_SIGUPD_FAST_TRAP(x2, a1, a0, CSR_STVAL, 2*SIG_STRIDE, fast_Stval_mismatch)
+        RVTEST_SIGUPD_FAST_TRAP_TVAL(x2, a1, a0, CSR_STVAL, CSR_SEPC, 2*SIG_STRIDE, fast_Stval_mismatch)
         addi x2, x2, 3*SIG_STRIDE
 #ifdef ZCA_SUPPORTED
         // Width detection: lhu at sepc (2-byte aligned -> no misalign trap).

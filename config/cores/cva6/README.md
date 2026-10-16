@@ -6,10 +6,13 @@ testharness (`corev_apu/tb/ariane_testharness.sv`), pinned to CVA6 commit `81245
 | Config     | ISA                                        | Modes |
 | ---------- | ------------------------------------------ | ----- |
 | `cv32a65x` | RV32IMC_Zicsr_Zifencei_Zcb_Zba_Zbb_Zbc_Zbs | M     |
+| `cv32a60x` | RV32IMC_Zicsr_Zifencei_Zcb_Zba_Zbb_Zbc_Zbs | M     |
 
 `cv32a65x` is the 6-stage, single-issue, M-mode-only release configuration described in the
 [CV32A65X Design Document](https://docs.openhwfoundation.org/projects/cva6-user-manual/04_cv32a65x/design/design.html).
-Its RTL parameters are in `core/include/cv32a65x_config_pkg.sv`.
+Its RTL parameters are in `core/include/cv32a65x_config_pkg.sv`. `cv32a60x` is the same ISA with
+single issue (`SuperscalarEn=0`) and no PMP entries (`NrPMPEntries=0`); its parameters are in
+`core/include/cv32a60x_config_pkg.sv`. Both share `ci.yaml` and `install-cva6.sh`.
 
 ## Building and running
 
@@ -18,6 +21,7 @@ Its RTL parameters are in `core/include/cv32a65x_config_pkg.sv`.
 export PATH=$HOME/repos/cva6-builds/bin:$PATH
 export CVA6_SNAPSHOT=$HOME/repos/cva6-builds
 make cv32a65x EXCLUDE_EXTENSIONS=Sm,ExceptionsZc,InterruptsSm
+make cv32a60x EXCLUDE_EXTENSIONS=Sm,ExceptionsZc,InterruptsSm
 ```
 
 The install script clones CVA6, builds the Verilator and Spike versions CVA6's own CI uses (the

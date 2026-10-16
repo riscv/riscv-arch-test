@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
-# CI configuration for the OpenHW CVA6 Verilator testharness
+# CI configuration for the OpenHW CVA6 Verilator testharness.
+# cv32a65x and cv32a60x share this file: one ci.yaml covers every run_cmd.txt in this directory.
 
 ci_enabled: true
 

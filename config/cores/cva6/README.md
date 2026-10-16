@@ -1,16 +1,35 @@
-## DUT Configuration for the CV32A65X
+# ACT Configuration for the OpenHW CVA6 Verilator Testharness
 
-The following configuration is provided for the CVA6 core in its 32-bit application-class setup:
+These configurations run the [CVA6](https://github.com/openhwfoundation/cva6) core in its Verilator
+testharness (`corev_apu/tb/ariane_testharness.sv`), pinned to CVA6 commit `81245a4`.
 
-| Config     | ISA                               | Notes                                          |
-| ---------- | --------------------------------- | ---------------------------------------------- |
-| `cv32a65x` | RV32IMC_Zicsr_Zcb_Zba_Zbb_Zbc_Zbs | Formal release version of the CVA6 32-bit core |
+| Config     | ISA                                        | Modes |
+| ---------- | ------------------------------------------ | ----- |
+| `cv32a65x` | RV32IMC_Zicsr_Zifencei_Zcb_Zba_Zbb_Zbc_Zbs | M     |
 
-This configuration implements a 6-stage in-order, single-issue pipeline compliant with the RISC-V Privileged Architecture v1.13 (Machine-mode only). The specific architectural features, supported exceptions, and parameters for this core version are detailed in the [CV32A65X Design Document](https://docs.openhwfoundation.org/projects/cva6-user-manual/04_cv32a65x/design/design.html). This configuration is intended for high-confidence validation using the ACT 4.0 framework.
+`cv32a65x` is the 6-stage, single-issue, M-mode-only release configuration described in the
+[CV32A65X Design Document](https://docs.openhwfoundation.org/projects/cva6-user-manual/04_cv32a65x/design/design.html).
+Its RTL parameters are in `core/include/cv32a65x_config_pkg.sv`.
 
-To build the UDB configuration, coverage files and ELFs run the following
-command from the top of your working copy of this repo:
+## Building and running
 
+```bash
+.github/scripts/install-cva6.sh ~/repos/cva6-builds
+export PATH=$HOME/repos/cva6-builds/bin:$PATH
+export CVA6_SNAPSHOT=$HOME/repos/cva6-builds
+make cv32a65x EXCLUDE_EXTENSIONS=Sm,ExceptionsZc,InterruptsSm
 ```
-$ make CONFIG_FILES=config/cores/cva6/cv32a65x/test_config.yaml
-```
+
+The install script clones CVA6, builds the Verilator and Spike versions CVA6's own CI uses (the
+testharness links Spike's libraries), verilates one testharness per configuration under
+`<install-dir>/cva6/work-ver-<config>/`, and installs the `run-<config>.sh` runners. It needs
+`riscv64-unknown-elf-gcc` on `PATH`. The two exports do what `.github/scripts/setup-cva6.sh` does in
+CI. The excluded extensions and their reasons are listed in `ci.yaml`.
+
+The testharness halts on a write to `tohost`: 1 is a pass, any other value a fail. The runner passes
+the `tohost` address to the simulator and turns the testharness verdict into an `RVCP-SUMMARY`
+line. Each simulation uses about 2.5 GB of memory and `make` runs one per CPU, so on machines with
+less than 2.5 GB per CPU run the ELFs with fewer jobs (`./run_tests.py -j N`).
+
+With `DEBUG=True`, the runner also writes `work/<config>/logs/<test>.trace.log` (RVFI trace
+decoded with `spike-dasm`) and `<test>.fst` (waveform).

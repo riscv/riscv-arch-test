@@ -9,7 +9,7 @@ notes: |
   Triggers are not assumed to be precise, so priority and timing not tested
   Hit is optional and not tested
   Only test action=0 of breakpoint exception because external debug and trace are not required
-  Do not test trigger types 1 (SiFive legacy), 2 (Deprecated mcontrol), 7 (tmexttrig), 12-14 (custom)
+  Do not test trigger types 1 (SiFive legacy), 2 (Deprecated mcontrol), 7 (tmexttrig), 8-11 (reserved), 12-14 (custom)
   Reset Values not tested
 
   Unless otherwise specified, test mcontrol6 with tdata1.select=match=size=chain=0
@@ -32,14 +32,14 @@ coverpoints:
       At least one trigger must be supported
     description: |-
       For each of UDB_SDTRIG_NUM_TRIGGERS in tselect:
-      For i each type in {0-15}
+      For i each supported type in {0, 3, 4, 5, 6, 15}
       tdata1.type = i
       For x register in {tdata1,tdata2,tdata3,tinfo,tcontrol,hcontext,mcontext,scontext} if x_AVAILABLE:
       csr read, write all 1s, write all 0s, set all 1s, clear all 1s, write back initial value of each register:
     expectation: |-
       WARL
       illegal instruction exception on CSR access if it is not implemented by any trigger
-    bins: UDB_SDTRIG_NUM_TRIGGERS * 16 types * 9 regs * 6 accesses
+    bins: UDB_SDTRIG_NUM_TRIGGERS * 6 types * 9 regs * 6 accesses
     rules:
       - Sdtrig_csr_mode
       - Sdtrig_num_trigs_ge1

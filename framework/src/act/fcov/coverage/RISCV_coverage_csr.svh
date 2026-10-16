@@ -882,28 +882,36 @@ function `XLEN_BITS get_csr_val_addr(int hart, int issue, int prev, int addr, st
     endcase
   end else if (name == "tdata1") begin
     case(field)
+      // mcontrol6 fields
+      "action" : val = (val >> 12) & 'hf;
+      "chain" : val = (val >> 11) & 'h1;
 `ifdef UDB_MXLEN_32
       "dmode" : val = (val >> 27) & 32'h1;
 `endif
 `ifdef UDB_MXLEN_64
       "dmode" : val = (val >> 59) & 64'h1;
 `endif
+      "execute" : val = (val >> 2) & 'h1;
+      "hit0" : val = (val >> 22) & 'h1;
+      "hit1" : val = (val >> 25) & 'h1;
+      "load" : val = val & 'h1;
+      "m" : val = (val >> 6) & 'h1;
+      "match" : val = (val >> 7) & 'hf;
+      "s" : val = (val >> 4) & 'h1;
+      "select" : val = (val >> 21) & 'h1;
+      "size" : val = (val >> 16) & 'h7;
+      "store" : val = (val >> 1) & 'h1;
 `ifdef UDB_MXLEN_32
       "type" : val = (val >> 28) & 32'hf;
 `endif
 `ifdef UDB_MXLEN_64
       "type" : val = (val >> 60) & 64'hf;
 `endif
-      // mcontrol6 fields
-      "action" : val = (val >> 12) & 'hf;
-      "chain" : val = (val >> 11) & 'h1;
-      "execute" : val = (val >> 2) & 'h1;
-      "load" : val = val & 'h1;
-      "m" : val = (val >> 6) & 'h1;
-      "match" : val = (val >> 7) & 'hf;
-      "select" : val = (val >> 21) & 'h1;
-      "size" : val = (val >> 16) & 'h7;
-      "store" : val = (val >> 1) & 'h1;
+      "u" : val = (val >> 3) & 'h1;
+      "uncertain" : val = (val >> 26) & 'h1;
+      "uncertainen" : val = (val >> 5) & 'h1;
+      "vs" : val = (val >> 24) & 'h1;
+      "vu" : val = (val >> 23) & 'h1;
       default: $fatal(1, "get_csr_val: RV%0d CSR %s has no field %s", `UDB_MXLEN, name, field);
     endcase
   end else if (name == "textra32") begin

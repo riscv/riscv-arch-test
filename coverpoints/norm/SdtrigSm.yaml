@@ -9,7 +9,7 @@ normative_rule_definitions:
   - name: Sdtrig_num_trigs_ge1
     coverpoint:
       [
-        "SdtrigSm_sdtrig_cg/cp_csr_access_common",
+        "SdtrigSm_access_cg/cp_csr_access_common",
         "SdtrigSm_csr_cg/cp_tselect_trigs",
       ]
 
@@ -22,7 +22,7 @@ normative_rule_definitions:
   # implemented triggers must succeed, regardless of the current type of the
   # currently selected trigger.
   - name: Sdtrig_csr_mode
-    coverpoint: ["SdtrigSm_sdtrig_cg/cp_csr_access_common"]
+    coverpoint: ["SdtrigSm_access_cg/cp_csr_access_common"]
 
   # Triggers do not fire while in Debug Mode.
   - name: Sdtrig_no_debug_fires
@@ -346,7 +346,7 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_tdata1
-    coverpoint: ["SdtrigSm_sdtrig_cg/cp_csr_access_common"]
+    coverpoint: ["SdtrigSm_access_cg/cp_csr_access_common"]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_tdata1_reset
@@ -398,7 +398,7 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_tdata2
-    coverpoint: ["SdtrigSm_sdtrig_cg/cp_csr_access_common"]
+    coverpoint: ["SdtrigSm_access_cg/cp_csr_access_common"]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_tdata2_reset
@@ -415,7 +415,7 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_tdata3
-    coverpoint: ["SdtrigSm_sdtrig_cg/cp_csr_access_common"]
+    coverpoint: ["SdtrigSm_access_cg/cp_csr_access_common"]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_tdata3_reset
@@ -432,7 +432,7 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_tinfo
-    coverpoint: ["SdtrigSm_sdtrig_cg/cp_csr_access_common"]
+    coverpoint: ["SdtrigSm_access_cg/cp_csr_access_common"]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_tinfo_reset
@@ -470,7 +470,7 @@ normative_rule_definitions:
   # This optional register is only accessible in M-mode and Debug Mode and provides
   # various control bits related to triggers.
   - name: Sdtrig_trigger_modes_1
-    coverpoint: ["SdtrigSm_sdtrig_cg/cp_csr_access_common"]
+    coverpoint: ["SdtrigSm_access_cg/cp_csr_access_common"]
 
   # When any trap into M-mode is taken, mpte is set to the value of mte.
   - name: Sdtrig_tcontrol_mpte
@@ -524,7 +524,7 @@ normative_rule_definitions:
   # Supervisor mode software can write a context number to this register, which can
   # be used to set triggers that only fire in that specific context.
   - name: Sdtrig_scontext_data
-    coverpoint: ["SdtrigSm_sdtrig_cg/cp_csr_access_common"]
+    coverpoint: ["SdtrigSm_access_cg/cp_csr_access_common"]
 
   # This register must be implemented if hcontext is implemented, and is optional
   # otherwise.
@@ -539,7 +539,7 @@ normative_rule_definitions:
   # register, which can be used to set triggers that only fire in that specific
   # context.
   - name: Sdtrig_mcontext_hcontext_data
-    coverpoint: ["SdtrigSm_sdtrig_cg/cp_csr_access_common"]
+    coverpoint: ["SdtrigSm_access_cg/cp_csr_access_common"]
 
   # This optional register is an alias for scontext.
   - name: Sdtrig_mscontext
@@ -780,7 +780,7 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_mcontrol6
-    coverpoint: ["SdtrigSm_sdtrig_cg/cp_csr_access_common"]
+    coverpoint: ["SdtrigSm_access_cg/cp_csr_access_common"]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_mcontrol6_reset
@@ -1116,7 +1116,7 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_icount
-    coverpoint: ["SdtrigSm_sdtrig_cg/cp_csr_access_common"]
+    coverpoint: ["SdtrigSm_access_cg/cp_csr_access_common"]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_icount_reset
@@ -1240,7 +1240,7 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_itrigger
-    coverpoint: ["SdtrigSm_sdtrig_cg/cp_csr_access_common"]
+    coverpoint: ["SdtrigSm_access_cg/cp_csr_access_common"]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_itrigger_reset
@@ -1327,7 +1327,7 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_etrigger
-    coverpoint: ["SdtrigSm_sdtrig_cg/cp_csr_access_common"]
+    coverpoint: ["SdtrigSm_access_cg/cp_csr_access_common"]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_etrigger_reset
@@ -1486,7 +1486,7 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_textra32
-    coverpoint: ["SdtrigSm_sdtrig_cg/cp_csr_access_common"]
+    coverpoint: ["SdtrigSm_access_cg/cp_csr_access_common"]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_textra32_reset
@@ -1598,7 +1598,7 @@ normative_rule_definitions:
 
   # This register provides access to the trigger selected by tselect.
   - name: Sdtrig_textra64
-    coverpoint: ["SdtrigSm_sdtrig_cg/cp_csr_access_common"]
+    coverpoint: ["SdtrigSm_access_cg/cp_csr_access_common"]
 
   # The reset values listed here apply to every underlying trigger.
   - name: Sdtrig_textra64_reset

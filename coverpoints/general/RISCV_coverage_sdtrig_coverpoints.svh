@@ -87,3 +87,7 @@ tdata2_adr: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.rs1_val + ins
     bins scratch = {1'b1};
     bins zero    = {1'b0} iff (ins.current.csr[CSR_TDATA2] == '0);
 }
+tdata2_pc: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.pc_rdata) {
+    type_option.weight = 0;
+    bins pc = {1'b1};
+}

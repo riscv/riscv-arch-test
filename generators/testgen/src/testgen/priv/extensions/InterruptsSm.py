@@ -45,9 +45,10 @@ SUITE = InterruptSuite(
     ip="mip",
     ie="mie",
     status={"csr": "mstatus", "mask": 0x88, "field": "MIE"},
-    # cp_wfi: wake on the machine timer, enabled by mie.MTIE, pending in mip.MTIP
+    # cp_wfi: wake on the machine timer, enabled by mie.MTIE, pending in mip.MTIP. Arming it relative to mtime
+    # needs RVMODEL_MTIME_ADDRESS.
     wfi={
-        "guard": "UDB_MTI_INTR_IMPL",
+        "guard": "defined(UDB_MTI_INTR_IMPL) && defined(RVMODEL_MTIME_ADDRESS)",
         "timer": "MTIME",
         "ie": ("MTIE", 0x80),
         "ip": ("mip", "MTIP", 0x80),

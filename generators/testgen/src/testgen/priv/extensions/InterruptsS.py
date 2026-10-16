@@ -42,7 +42,13 @@ SUITE = InterruptSuite(
     ie="sie",
     status={"csr": "sstatus", "mask": 0x22, "field": "SIE"},
     # cp_wfi: wake on the Sstc supervisor timer, enabled by sie.STIE, pending in sip.STIP
-    wfi={"guard": "SSTC_SUPPORTED", "timer": "SSTC", "ie": ("STIE", 0x20), "ip": ("sip", "STIP", 0x20), "stce": True},
+    wfi={
+        "guard": "defined(SSTC_SUPPORTED)",
+        "timer": "SSTC",
+        "ie": ("STIE", 0x20),
+        "ip": ("sip", "STIP", 0x20),
+        "stce": True,
+    },
     deleg=[],
 )
 COVERGROUP = SUITE.covergroup

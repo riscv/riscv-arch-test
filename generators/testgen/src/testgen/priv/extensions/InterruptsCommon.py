@@ -94,7 +94,7 @@ class InterruptSuite:
     ip: str  # pending CSR
     ie: str  # enable CSR
     status: dict  # global enable written in the boot mode: csr, mask, field
-    wfi: dict  # cp_wfi timer: guard, timer macro, ie (name, mask), ip (csr, name, mask), stce
+    wfi: dict  # cp_wfi timer: guard (#if expression), timer macro, ie (name, mask), ip (csr, name, mask), stce
     deleg: list[str]  # default delegation setup before each case
 
     @property
@@ -318,7 +318,7 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
             # S-mode suite with SIE = 0); lower modes take it regardless of the global enable.
             taken = enable == 1 or priv != boot
             tc.code += [
-                f"#ifdef {wfi['guard']}",
+                f"#if {wfi['guard']}",
                 *suite.deleg,
                 *(write_stce(test_data, True, boot) if wfi["stce"] else []),
                 f"LI(x{tmp_reg}, 0x200000)",

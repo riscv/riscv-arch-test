@@ -375,7 +375,8 @@ def instret_interrupt_tests(test_data: TestData, covergroup: str, mode: Mode) ->
         f"#endif // {cond}",
     ]
 
-    lines.append("#ifdef UDB_MTI_INTR_IMPL")
+    # Arming the timer relative to mtime needs RVMODEL_MTIME_ADDRESS
+    lines.append("#if defined(UDB_MTI_INTR_IMPL) && defined(RVMODEL_MTIME_ADDRESS)")
     if mode == "M":
         r_tmp = test_data.int_regs.get_register()
         lines += [
@@ -404,7 +405,7 @@ def instret_interrupt_tests(test_data: TestData, covergroup: str, mode: Mode) ->
     ]
     if mode == "U":
         lines.append("#endif // UDB_WFI_U_MODE")
-    lines.append("#endif // UDB_MTI_INTR_IMPL")
+    lines.append("#endif // UDB_MTI_INTR_IMPL && RVMODEL_MTIME_ADDRESS")
 
     lines += [
         "#ifdef ZAWRS_SUPPORTED",

@@ -14,7 +14,7 @@ mkdir -p "$INSTALL_DIR/bin"
 INSTALL_DIR="$(cd "$INSTALL_DIR" && pwd)"
 CVA6_REPO="https://github.com/openhwfoundation/cva6.git"
 CVA6_COMMIT="81245a47fad8fe1a5d562d953ef2662e099def76"
-TARGETS="cv32a65x"
+TARGETS="cv32a65x cv32a60x"
 
 export NUM_JOBS="${NUM_JOBS:-$(nproc)}"
 export VERILATOR_INSTALL_DIR="$INSTALL_DIR/verilator"

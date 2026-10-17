@@ -8,7 +8,7 @@
 #   (https://github.com/riscv/sail-riscv/issues/1134, https://github.com/riscv/sail-riscv/pull/1874).
 # SsstrictS: Sail traps on siselect/stopi accesses that Whisper permits with mstateen0 enabled.
 # Sdtrig* not yet implemented in Sail (https://github.com/riscv/sail-riscv/issues/222)
-# Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)
+# Ssnpm,SsnpmSm,Smmpm,SmnpmS: Failing due to mismatch in scause/mcause ,Issue Link (https://github.com/tenstorrent/whisper/issues/200)
 ci_enabled: true
 exclude_extensions: "SsstrictSm,SsstrictS,Smstateen,SdtrigSm,SdtrigS,SdtrigU,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm"
 exclude_configs:

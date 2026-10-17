@@ -983,9 +983,23 @@ def generate_jalr_tests(prefix: str, test_data: TestData, cg: str, mxr: int = 0)
         f"LA(x{base}, {pad})",
     ]
     for upper in UPPER_PATTERNS:
+        # Without translation the target is a physical address. A tag whose top bit is below
+        # PHYS_ADDR_WIDTH can land in implemented memory, which fetches as zeros (c.illegal)
+        # instead of faulting, so also set bit PHYS_ADDR_WIDTH to keep the target unmapped.
+        top_bit = 48 + upper.bit_length() - 1
         lines.extend(
             [
+                f"#if {top_bit} < UDB_PHYS_ADDR_WIDTH && UDB_PHYS_ADDR_WIDTH < 64",
+                f"LI(x{a}, ({hex(upper << 48)} | (1 << UDB_PHYS_ADDR_WIDTH)))",
+                "#else",
                 f"LI(x{a}, {hex(upper << 48)})",
+                "#endif",
+            ]
+            if upper
+            else [f"LI(x{a}, {hex(upper << 48)})"]
+        )
+        lines.extend(
+            [
                 f"xor x{a}, x{a}, x{base}",
                 f"LI(x{chk}, 0)",
                 test_data.add_testcase(_binname(f"{prefix}_mxr{mxr}", upper, "jalr"), "cp_pmm_jalr", cg),

@@ -36,10 +36,7 @@ UDB_DEFINES = [
     "#define UDB_TDATA2_AVAILABLE",
     "#define UDB_TDATA3_AVAILABLE",
     "#define UDB_TINFO_AVAILABLE",
-    "#define UDB_SCONTEXT_AVAILABLE",
-    "#define UDB_MCONTEXT_AVAILABLE",
     "//#define UDB_TCONTROL_AVAILABLE",
-    "//#define UDB_HCONTEXT_AVAILABLE",
     "//#define UDB_MSCONTEXT_AVAILABLE",
     # MCONTROl6 params
     "#define UDB_SDTRIG_MCONTROL6_SUPPORTED0",
@@ -488,7 +485,7 @@ def _generate_access_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     for trig_num in range(UDB_NUM_TRIGGERS):
         for trig_type in range(16):
             for csr in csrs:
-                lines.append(f"#ifdef UDB_{csr}_AVAILABLE")
+                lines.append(f"#ifdef UDB_{csr.upper()}_AVAILABLE")
                 binname = f"tselect_{trig_num}_type_{trig_type}_csr_{csr}"
                 lines.extend(
                     [

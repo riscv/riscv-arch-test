@@ -1,0 +1,185 @@
+# yaml-language-server: $schema=../../../../external/riscv-unified-db/spec/schemas/config_schema.json
+# Copyright (c) 2026, 10xEngineers, Harvey Mudd College and Eclipse Foundation
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+# UDB Architecture Configuration for the CV32A60X, a configuration of the CVA6 project.
+
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: cv32a60x
+description: OpenHW Group CVA6 cv32a60x configuration;
+implemented_extensions:
+  - name: I
+    version: = 2.1
+  - name: M
+    version: = 2.0
+  - name: Zmmul
+    version: = 1.0.0
+  - name: C
+    version: = 2.0
+  - name: Zba
+    version: = 1.0.0
+  - name: Zbb
+    version: = 1.0.0
+  - name: Zbs
+    version: = 1.0.0
+  - name: Zca
+    version: = 1.0.0
+  - name: Zbc
+    version: = 1.0.0
+  - name: Zbkc
+    version: = 1.0.0
+  - name: Zcb
+    version: = 1.0.0
+  - name: Zicsr
+    version: = 2.0
+  - name: Sm
+    version: = 1.12.0
+  - name: Zifencei
+    version: = 2.0
+params:
+  MXLEN: 32
+  PHYS_ADDR_WIDTH: 32
+  MUTABLE_MISA_M: false
+  MUTABLE_MISA_C: false
+  MISA_CSR_IMPLEMENTED: true
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false
+  M_MODE_ENDIANNESS: little
+  MEI_INTR_IMPL: true
+  MSI_INTR_IMPL: false
+  MTI_INTR_IMPL: true
+  WFI_FINITE: false
+  WFI_U_MODE: false
+  TRAP_ON_ECALL_FROM_M: true
+  TRAP_ON_EBREAK: true
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+  TRAP_ON_ILLEGAL_WLRL: false
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: false
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: false
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: false
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: false
+  MTVAL_WIDTH: 0
+  MISALIGNED_LDST: false
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low
+  ARCH_ID_VALUE: 3
+  IMP_ID_VALUE: 0
+  VENDOR_ID_BANK: 12
+  VENDOR_ID_OFFSET: 2
+  MTVEC_MODES:
+    - 0
+  MTVEC_ACCESS: rw
+  MTVEC_ILLEGAL_WRITE_BEHAVIOR: retain
+  MTVEC_BASE_ALIGNMENT_DIRECT: 4
+  PRECISE_SYNCHRONOUS_EXCEPTIONS: true
+  MARCHID_IMPLEMENTED: true
+  MIMPID_IMPLEMENTED: true
+  PMA_GRANULARITY: 4
+  HPM_COUNTER_EN:
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+  MCOUNTINHIBIT_IMPLEMENTED: true
+  COUNTINHIBIT_EN:
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+  NUM_PMP_ENTRIES: 0
+  MCOUNTENABLE_EN:
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+    - false
+  CONFIG_PTR_ADDRESS: 0

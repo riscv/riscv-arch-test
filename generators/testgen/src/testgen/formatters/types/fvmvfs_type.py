@@ -17,7 +17,9 @@ from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
 
 fvmvfs_config = InstructionTypeConfig(
-    instruction_class=["vector_fp"], required_params={"fd", "vs2"}, vector_data=VectorTypeConfig(scalar_regs={"vs2"})
+    instruction_class=["vector_fp"],
+    required_params={"fd", "vs2"},
+    vector_data=VectorTypeConfig(scalar_regs={"vs2"}, require_zero_vstart=True),
 )
 
 

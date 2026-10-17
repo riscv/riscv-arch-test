@@ -31,6 +31,7 @@ vm_config = InstructionTypeConfig(
         mask_regs={"vs2"},
         overlap_constraints={("vd", "vs2")},
         masked_constraints={("vd", "v0")},
+        require_zero_vstart=True,
     ),
 )
 vv_config = InstructionTypeConfig(required_params={"vd", "vs2"}, vector_data=VectorTypeConfig())

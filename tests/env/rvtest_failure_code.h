@@ -333,6 +333,39 @@
         mv DEFAULT_LINK_REG, x14
         j failedtest_saveregs
 
+    # vstart failure entry points (failure_type = 6)
+    failedtest_vstart_x5_x4:
+        la DEFAULT_TEMP_REG, begin_failure_scratch
+        SREG DEFAULT_LINK_REG, 40(DEFAULT_TEMP_REG)
+        SREG x1, 8(DEFAULT_TEMP_REG)
+        LI (x1, 6)
+        sw x1, 0(DEFAULT_TEMP_REG)                  # failure_type = 6 (vstart)
+        j failedtest_saveregs
+
+    failedtest_vstart_x8_x7:
+        la x7, begin_failure_scratch
+        SREG x8, 64(x7)
+        SREG DEFAULT_TEMP_REG, 32(x7)
+        SREG DEFAULT_LINK_REG, 40(x7)
+        SREG x1, 8(x7)
+        LI (x1, 6)
+        sw x1, 0(x7)                                # failure_type = 6 (vstart)
+        mv DEFAULT_TEMP_REG, x7
+        mv DEFAULT_LINK_REG, x8
+        j failedtest_saveregs
+
+    failedtest_vstart_x14_x13:
+        la x13, begin_failure_scratch
+        SREG x14, 104(x13)
+        SREG DEFAULT_TEMP_REG, 32(x13)
+        SREG DEFAULT_LINK_REG, 40(x13)
+        SREG x1, 8(x13)
+        LI (x1, 6)
+        sw x1, 0(x13)                               # failure_type = 6 (vstart)
+        mv DEFAULT_TEMP_REG, x13
+        mv DEFAULT_LINK_REG, x14
+        j failedtest_saveregs
+
 #endif // RVTEST_VECTOR
 
     # for the rest of this code, DEFAULT_LINK_REG contains return address of jal from the failure, DEFAULT_TEMP_REG points to scratch space
@@ -454,6 +487,8 @@
         beq x9, x10, failedtest_saveresults_vector
         li x10, 5
         beq x9, x10, failedtest_saveresults_vxsat
+        li x10, 6
+        beq x9, x10, failedtest_saveresults_vstart
 #endif // RVTEST_VECTOR
         li x10, 3
         beq x9, x10, failedtest_saveresults_trap
@@ -886,7 +921,14 @@
         # Re-read vxsat for bad value (hasn't changed since failure).
         csrr x6, vxsat
         SREG x6, 272(DEFAULT_TEMP_REG)    # failing_value
+        j failedtest_vector_csr_common
 
+    failedtest_saveresults_vstart:
+        # Re-read vstart for bad value (no vector instructions have retired since failure).
+        csrr x6, vstart
+        SREG x6, 272(DEFAULT_TEMP_REG)    # failing_value
+
+    failedtest_vector_csr_common:
         # Extract load instruction at -12 for expected value (same approach as integer)
         lhu x6, -10(DEFAULT_LINK_REG)
         lhu x7, -12(DEFAULT_LINK_REG)
@@ -1304,6 +1346,8 @@
         beq a0, a1, failedtest_report_vecreg
         li a1, 5
         beq a0, a1, failedtest_report_vxsat
+        li a1, 6
+        beq a0, a1, failedtest_report_vstart
         # fflags: print "fflags\n"
         LA(a0, fflagsstr)
         call rvmodel_io_write_str
@@ -1327,6 +1371,10 @@
         j failedtest_report_print_regstr
     failedtest_report_vxsat:
         LA(a0, vxsatstr)
+        call rvmodel_io_write_str
+        j failedtest_report_after_reg
+    failedtest_report_vstart:
+        LA(a0, vstartstr)
         call rvmodel_io_write_str
         j failedtest_report_after_reg
     failedtest_report_print_regstr:
@@ -2450,6 +2498,8 @@
 #endif
     vxsatstr:
         .string "vxsat\n"
+    vstartstr:
+        .string "vstart\n"
     regstr:
         .string "RVCP: Register: "
     badvalstr:

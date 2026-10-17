@@ -26,7 +26,9 @@ fvmvvf_config = InstructionTypeConfig(
     instruction_class=["vector_fp"], required_params={"vd", "fs1"}, vector_data=VectorTypeConfig()
 )
 fvmvsf_config = InstructionTypeConfig(
-    instruction_class=["vector_fp"], required_params={"vd", "fs1"}, vector_data=VectorTypeConfig(scalar_regs={"vd"})
+    instruction_class=["vector_fp"],
+    required_params={"vd", "fs1"},
+    vector_data=VectorTypeConfig(scalar_regs={"vd"}, require_zero_vstart=True),
 )
 
 

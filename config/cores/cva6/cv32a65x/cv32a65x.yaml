@@ -148,6 +148,16 @@ params:
     - false
     - false
     - false
+  # TODO(riscv-arch-test#2904): the RTL has NrPMPEntries=8, TOR-only (PMPNapotEn=0,
+  # NA4 unsupported, 8-byte granularity). It is not declared because ACT rejects PMP
+  # without NAPOT (tests/env/check_defines.h). Once that is fixed, declare below and
+  # match sail.json; PMPSm_cfg_A_tor_zero still needs #2905 (no RAM at address 0):
+  # NUM_PMP_ENTRIES: 16
+  # NUM_USABLE_PMP_ENTRIES: 8
+  # PMP_GRANULARITY: 3
+  # PMP_TOR_SUPPORTED: true
+  # PMP_NA4_SUPPORTED: false
+  # PMP_NAPOT_SUPPORTED: false
   NUM_PMP_ENTRIES: 0
   MCOUNTENABLE_EN:
     - false

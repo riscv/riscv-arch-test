@@ -4,13 +4,14 @@
 
 ci_enabled: true
 
-# Sm, ExceptionsZc: the Sail reference run overflows the trap signature
-#   ("Increase TRAP_SIGUPD_COUNT") in Sm_csr_insufficient_priv-00 and ExceptionsZc-00.
 # InterruptsSm: the Verilator testharness is built without the UART (InclUART=0), so
-#   there is no external interrupt source behind the PLIC:
+#   there is no external interrupt source behind the PLIC, and machine external
+#   interrupts (MEI) cannot be raised. RVMODEL_SET_MEXT_INT/RVMODEL_CLR_MEXT_INT are
+#   therefore not defined in rvmodel_macros.h. Remove this exclusion once the testbench
+#   has an interrupt source.
 #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/corev_apu/tb/ariane_testharness.sv#L586-L590
 #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/corev_apu/tb/ariane_peripherals.sv#L287
-exclude_extensions: "Sm,ExceptionsZc,InterruptsSm"
+exclude_extensions: "InterruptsSm"
 
 # device-tree-compiler and the Boost libraries are required by CVA6's Spike build
 # (verif/regress/install-spike.sh). Without them fesvr is not installed and the

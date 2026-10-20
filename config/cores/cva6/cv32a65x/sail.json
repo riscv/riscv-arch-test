@@ -100,7 +100,7 @@
       "fetch_access_fault": false,
       "fetch_page_fault": false,
       "software_check": false,
-      "hardware_error": true,
+      "hardware_error": false,
       "reserved_exceptions": false
     },
     "reserved_behavior": {
@@ -123,7 +123,7 @@
     "vmidlen": 7,
     "pmp": {
       "grain": 0,
-      // UDB yaml uses 0 (no PMPSm in this config). RTL has NrPMPEntries=8, PMPNapotEn=0.
+      // Keep in sync with UDB NUM_PMP_ENTRIES: 0 until #2904; then TOR-only as in cv32a65x.yaml TODO.
       "count": 0,
       "usable_count": 0,
       "tor_supported": false,

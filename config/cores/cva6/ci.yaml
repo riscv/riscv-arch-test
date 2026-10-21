@@ -11,7 +11,16 @@ ci_enabled: true
 #   has an interrupt source.
 #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/corev_apu/tb/ariane_testharness.sv#L586-L590
 #   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/corev_apu/tb/ariane_peripherals.sv#L287
-exclude_extensions: "InterruptsSm"
+# PMPSm: PMPSm_cfg_A_tor_zero stores to and loads from address 0. In the testharness
+#   address 0 is the debug module (DebugBase=0x0, DebugLength=0x1000), not RAM, and Sail
+#   expects an access fault there. CVA6 does not implement PMA and its AXI adapters
+#   ignore error responses, so the DUT raises no fault and the load returns 0.
+#   The other 28 ExceptionsSm/PMPSm tests pass. Remove this exclusion if the test can
+#   be excluded individually, or once the DUT faults on accesses to unmapped addresses.
+#   https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/corev_apu/tb/ariane_soc_pkg.sv#L58
+#   https://github.com/openhwfoundation/cva6/issues/2370
+#   https://github.com/openhwfoundation/cva6/issues/3656
+exclude_extensions: "InterruptsSm,PMPSm"
 
 # device-tree-compiler and the Boost libraries are required by CVA6's Spike build
 # (verif/regress/install-spike.sh). Without them fesvr is not installed and the

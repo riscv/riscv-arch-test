@@ -3,8 +3,8 @@
 These configurations run the [CVA6](https://github.com/openhwfoundation/cva6) core in its Verilator
 testharness (`corev_apu/tb/ariane_testharness.sv`), pinned to CVA6 commit `81245a4`.
 
-| Config     | ISA                                        | Modes |
-| ---------- | ------------------------------------------ | ----- |
+| Config     | ISA                                             | Modes |
+| ---------- | ----------------------------------------------- | ----- |
 | `cv32a65x` | RV32IMC_Zicsr_Zifencei_Zcb_Zba_Zbb_Zbc_Zbkc_Zbs | M     |
 | `cv32a60x` | RV32IMC_Zicsr_Zifencei_Zcb_Zba_Zbb_Zbc_Zbkc_Zbs | M     |
 

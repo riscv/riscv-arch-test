@@ -429,17 +429,23 @@ def _ifdef_guard(instr: str, closing: bool = False) -> list[str]:
     return list(ifdefs)
 
 
-def _disable_trigger(reg: int, trig_num: int, mode: str) -> list[str]:
-    """Disable a trigger by zeroing tdata1/2/3."""
-    lines: list[str] = [f"\n# disable trigger {trig_num}"]
-    lines.extend(
-        [
-            _load_reg(reg, trig_num),
-            _csr_access(f"csrw tselect, x{reg}", mode),
-            _csr_access("csrw tdata1, x0", mode),
-        ]
-    )
-    return lines
+def _select_trigger(reg: int, trig_num: int, mode: str) -> list[str]:
+    """Select trigger ``trig_num`` once at the start of its block, and disable it.
+
+    The _config_* helpers expect the selected trigger to be disabled, and every case disables it again at its end
+    with _disable_trigger. tdata1 resets to an UNDEFINED_LEGAL value, so the trigger may be armed out of reset.
+    """
+    return [
+        f"\n# select and disable trigger {trig_num}",
+        _load_reg(reg, trig_num),
+        _csr_access(f"csrw tselect, x{reg}", mode),
+        _csr_access("csrw tdata1, x0 # disable", mode),
+    ]
+
+
+def _disable_trigger(mode: str) -> list[str]:
+    """Disable the selected trigger at the end of a case, so the next _config_* finds it disabled."""
+    return [_csr_access("csrw tdata1, x0 # disable trigger", mode)]
 
 
 def _mprv_as_umode_setup(scratch_reg: int) -> list[str]:
@@ -753,7 +759,10 @@ def _config_mcontrol6(
     action: int = 0,
     tdata3: int | str | list[str] = 0,
 ) -> list[str]:
-    """Emit assembly configuring trigger ``tselect`` as an mcontrol6 trigger."""
+    """Emit assembly configuring trigger ``tselect`` as an mcontrol6 trigger.
+
+    Expects ``tselect`` to be selected (_select_trigger) and disabled: the previous case ended with _disable_trigger.
+    """
     if privbits is None:
         privbits = MODE_PRIVBIT[mode]
 
@@ -779,10 +788,7 @@ def _config_mcontrol6(
     lines: list[str] = []
     lines.extend(
         [
-            f"# configure trigger {tselect} as mcontrol6",
-            _load_reg(reg, tselect),
-            _csr_access(f"csrw tselect, x{reg}", mode),
-            _csr_access("csrw tdata1, x0 # disable before configuring", mode),
+            f"# configure trigger {tselect} as mcontrol6 (already selected and disabled)",
             *_load_value_or_lines(reg, tdata2),
             *_if_implemented("tdata2", _csr_access(f"csrw tdata2, x{reg} # match value", mode)),
             *_write_tdata3(reg, tdata3, mode),
@@ -804,7 +810,10 @@ def _config_icount(
     action: int = 0,
     tdata3: int | str | list[str] = 0,
 ) -> list[str]:
-    """Emit assembly configuring trigger ``tselect`` as an icount trigger."""
+    """Emit assembly configuring trigger ``tselect`` as an icount trigger.
+
+    Expects ``tselect`` to be selected (_select_trigger) and disabled: the previous case ended with _disable_trigger.
+    """
     if privbits is None:
         privbits = MODE_PRIVBIT[mode]
 
@@ -827,10 +836,7 @@ def _config_icount(
     lines: list[str] = []
     lines.extend(
         [
-            f"# configure trigger {tselect} as icount",
-            _load_reg(reg, tselect),
-            _csr_access(f"csrw tselect, x{reg}", mode),
-            _csr_access("csrw tdata1, x0 # disable before configuring", mode),
+            f"# configure trigger {tselect} as icount (already selected and disabled)",
             *_write_tdata3(reg, tdata3, mode),
             f"# tdata1: type={icount} priv={privbits:05b} count={count} pending={pending} action={action}",
             *_load_tdata1(reg, icount, mode, lowfields),  # load data in tdata1
@@ -850,7 +856,10 @@ def _config_itrigger(
     action: int = 0,
     tdata3: int | str | list[str] = 0,
 ) -> list[str]:
-    """Emit assembly configuring trigger ``tselect`` as an itrigger."""
+    """Emit assembly configuring trigger ``tselect`` as an itrigger.
+
+    Expects ``tselect`` to be selected (_select_trigger) and disabled: the previous case ended with _disable_trigger.
+    """
     if privbits is None:
         privbits = MODE_PRIVBIT[mode]
 
@@ -864,10 +873,7 @@ def _config_itrigger(
     lines: list[str] = []
     lines.extend(
         [
-            f"# configure trigger {tselect} as itrigger",
-            _load_reg(reg, tselect),
-            _csr_access(f"csrw tselect, x{reg}", mode),
-            _csr_access("csrw tdata1, x0 # disable before configuring", mode),
+            f"# configure trigger {tselect} as itrigger (already selected and disabled)",
             _load_reg(reg, tdata2),
             *_if_implemented("tdata2", _csr_access(f"csrw tdata2, x{reg} # interrupt-cause mask", mode)),
             _csr_access(f"csrs mie, x{reg} # enable masked interrupt(s)", mode),
@@ -889,7 +895,10 @@ def _config_etrigger(
     action: int = 0,
     tdata3: int | str | list[str] = 0,
 ) -> list[str]:
-    """Emit assembly configuring trigger ``tselect`` as an etrigger."""
+    """Emit assembly configuring trigger ``tselect`` as an etrigger.
+
+    Expects ``tselect`` to be selected (_select_trigger) and disabled: the previous case ended with _disable_trigger.
+    """
     if privbits is None:
         privbits = MODE_PRIVBIT[mode]
 
@@ -903,10 +912,7 @@ def _config_etrigger(
     lines: list[str] = []
     lines.extend(
         [
-            f"# configure trigger {tselect} as etrigger",
-            _load_reg(reg, tselect),
-            _csr_access(f"csrw tselect, x{reg}", mode),
-            _csr_access("csrw tdata1, x0 # disable before configuring", mode),
+            f"# configure trigger {tselect} as etrigger (already selected and disabled)",
             _load_reg(reg, tdata2),
             *_if_implemented("tdata2", _csr_access(f"csrw tdata2, x{reg} # exception-cause mask", mode)),
             *_write_tdata3(reg, tdata3, mode),
@@ -932,7 +938,7 @@ _FIRE_TYPE_GUARDS = {
 def _fire_supported_trigger(
     trig_type: str, trig_num: int, mode: str, cfg_reg: int, addr_reg: int, data_reg: int
 ) -> list[str]:
-    """Arm trig_num as trig_type for ``mode``, make it fire once, and disable it.
+    """Arm trig_num, already selected and disabled, as trig_type for ``mode``, make it fire once, and disable it.
 
     The trailing spacers are the instructions the trap handler skips, wherever the breakpoint is taken.
     """
@@ -943,14 +949,14 @@ def _fire_supported_trigger(
             f"LI(x{data_reg}, 0x{random_int(32, signed=False):x})",
             f"sw x{data_reg}, 0(x{addr_reg}) # fire mcontrol6",
             "nop # spacer (an address match may fire after the store)",
-            *_disable_trigger(cfg_reg, trig_num, mode),
+            *_disable_trigger(mode),
         ]
     if trig_type == "icount":  # count=1: fires on the next retired instruction
         return [
             *_config_icount(cfg_reg, trig_num, 1, mode),
             "nop # icount: count reaches 0 and pending is set",
             "nop # spacer: the instruction the breakpoint is taken on",
-            *_disable_trigger(cfg_reg, trig_num, mode),
+            *_disable_trigger(mode),
         ]
     raise ValueError(f"unsupported trigger type: {trig_type}")
 
@@ -1073,10 +1079,11 @@ def _write_tdata3(reg: int, tdata3: int | str | list[str], mode: str) -> list[st
 def _generate_access_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     """Generate common trigger-CSR access tests.
 
-    SdtrigS makes the accesses through T-SBI, so they run in M-mode as in SdtrigSm, and adds the direct S-mode
-    accesses of _generate_access_trap_tests. SdtrigU has only the direct accesses.
+    Only SdtrigSm has cp_csr_access_common. Through T-SBI, SdtrigS would make the same M-mode accesses, which
+    SdtrigSm already covers on every hart with S, at about 150 times the cost. SdtrigS and SdtrigU have only the
+    direct accesses of _generate_access_trap_tests.
     """
-    if mode == "U":
+    if mode != "Sm":
         return _generate_access_trap_tests(test_data, mode)
     covergroup = f"Sdtrig{mode}_access_cg"
     chunks: list[TestChunk] = []
@@ -1132,8 +1139,6 @@ def _generate_access_tests(test_data: TestData, mode: str) -> list[TestChunk]:
 
     test_data.int_regs.return_registers([type_reg, save_reg, temp_reg])
     chunks.append(test_data.end_test_chunk())
-    if mode == "S":
-        chunks.extend(_generate_access_trap_tests(test_data, mode))
     return chunks
 
 
@@ -1211,6 +1216,7 @@ def _generate_native_triggers_tests(test_data: TestData, mode: str) -> list[Test
             ]
         )
         for trig_num in TRIGGERS:
+            lines.extend([f"\n{_num_guard(trig_num)}", *_select_trigger(cfg_reg, trig_num, mode)])
             for trig_type, type_guards in _FIRE_TYPE_GUARDS.items():
                 guards = [g.format(trig_num=trig_num, mode_letter=MODE_UDB_LETTER[mode]) for g in type_guards]
                 lines.extend(
@@ -1224,6 +1230,7 @@ def _generate_native_triggers_tests(test_data: TestData, mode: str) -> list[Test
                         *(["#endif"] * len(guards)),
                     ]
                 )
+            lines.append(f"#endif // UDB_SDTRIG_NUM_TRIGGERS > {trig_num}")
     lines.extend(_global_ie(mode, False))  # medeleg[3] stays 1, as the suite boots
 
     test_data.int_regs.return_registers([cfg_reg, addr_reg, data_reg, temp_reg])
@@ -1341,7 +1348,7 @@ def _generate_zalrsc_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     )
     for trig_num in TRIGGERS:
         gates = _mcontrol6_gates(trig_num, mode)
-        lines.extend(gates)
+        lines.extend([*gates, *_select_trigger(temp_reg, trig_num, mode)])
         for tdata2 in ("scratch", 0):
             for perm in perms:  # perm_xsl
                 lines.extend(_xsl_ifdefs(perm))
@@ -1368,11 +1375,11 @@ def _generate_zalrsc_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                                     "fire iff addr==tdata2 and xsl has store bit",
                                 ),
                             ),
+                            *_disable_trigger(mode),
                         ]
                     )
                     lines.extend(_ifdef_guard(f"lr.{width}", closing=True))
                 lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(perm)))
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(_close_gates(gates))
 
     ######################################
@@ -1395,7 +1402,7 @@ def _generate_zalrsc_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     )
     for trig_num in TRIGGERS:
         gates = _mcontrol6_gates(trig_num, mode, select=1)
-        lines.extend(gates)
+        lines.extend([*gates, *_select_trigger(temp_reg, trig_num, mode)])
         for td2_name, td2_base in (("dataval", dataval), ("zero", 0)):
             for perm in perms:  # perm_xsl
                 lines.extend(_xsl_ifdefs(perm))
@@ -1426,13 +1433,13 @@ def _generate_zalrsc_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                                 ),
                                 data_match=True,
                             ),
+                            *_disable_trigger(mode),
                         ]
                     )
                     if width == "w":
                         lines.append("#endif // __riscv_xlen == 32")
                     lines.extend(_ifdef_guard(f"lr.{width}", closing=True))
                 lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(perm)))
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(_close_gates(gates))
 
     test_data.int_regs.return_registers([lr_reg, sc_reg, addr_reg, data_reg, temp_reg])
@@ -1472,7 +1479,7 @@ def _generate_zaamo_tests(test_data: TestData, mode: str) -> list[TestChunk]:
         )
         for trig_num in TRIGGERS:
             gates = _mcontrol6_gates(trig_num, mode)
-            lines.extend(gates)
+            lines.extend([*gates, *_select_trigger(temp_reg, trig_num, mode)])
             for tdata2 in ("scratch", 0):
                 for perm in perms:  # perm_xsl
                     lines.extend(_xsl_ifdefs(perm))
@@ -1492,12 +1499,12 @@ def _generate_zaamo_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                                     ["zaamo"],
                                 ),
                                 "nop # spacer",
+                                *_disable_trigger(mode),
                                 write_sigupd(dest_reg, test_data),
                             ]
                         )
                         lines.extend(_ifdef_guard(insn, closing=True))
                     lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(perm)))
-            lines.extend(_disable_trigger(temp_reg, trig_num, mode))
             lines.extend(_close_gates(gates))
 
     test_data.int_regs.return_registers([dest_reg, addr_reg, data_reg, temp_reg])
@@ -1550,6 +1557,7 @@ def _generate_vector_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     for trig_num in TRIGGERS:
         gates = _mcontrol6_gates(trig_num, mode)
         lines.extend(gates)
+        lines.extend(_select_trigger(temp_reg, trig_num, mode))
         for vperm, (vinstr, xsl) in vops.items():
             lines.extend(_xsl_ifdefs(xsl))
             for tdata2 in ("scratch", 0):
@@ -1563,10 +1571,10 @@ def _generate_vector_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                         lines.append(_add_tc(test_data, binname, coverpoint, covergroup))
                         lines.extend(vector_access(vinstr, sew, 1, "fire iff addr==tdata2 and size in (0, SEW)"))
                         lines.extend(["#endif // ZVE64X_SUPPORTED"] if sew == 64 else [])
+                    lines.extend(_disable_trigger(mode))
                     if size > 0:
                         lines.extend(_size_close(size))
             lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(xsl)))
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(_close_gates(gates))
 
     ######################################
@@ -1580,6 +1588,7 @@ def _generate_vector_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     for trig_num in TRIGGERS:
         gates = _mcontrol6_gates(trig_num, mode)
         lines.extend(gates)
+        lines.extend(_select_trigger(temp_reg, trig_num, mode))
         for vperm, (vinstr, xsl) in vops.items():
             lines.extend(_xsl_ifdefs(xsl))
             for tdata2_name, tdata2 in (("scratch", "scratch"), ("scratch8", "scratch+8"), ("0", 0)):
@@ -1591,8 +1600,8 @@ def _generate_vector_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                         lines.append(_add_tc(test_data, binname, coverpoint, covergroup))
                         lines.extend(vector_access(vinstr, sew, avl, "fire iff an accessed element addr==tdata2"))
                         lines.extend(["#endif // ZVE64X_SUPPORTED"] if sew == 64 else [])
+                lines.extend(_disable_trigger(mode))
             lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(xsl)))
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(_close_gates(gates))
 
     ######################################
@@ -1606,6 +1615,7 @@ def _generate_vector_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     for trig_num in TRIGGERS:
         gates = _mcontrol6_gates(trig_num, mode)
         lines.extend(gates)
+        lines.extend(_select_trigger(temp_reg, trig_num, mode))
         for vperm, (vinstr, xsl) in vops.items():
             lines.extend(_xsl_ifdefs(xsl))
             lines.extend(_config_mcontrol6(temp_reg, trig_num, "scratch+8", mode, xsl=xsl, select=0))
@@ -1625,8 +1635,8 @@ def _generate_vector_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                         ]
                     )
                     lines.extend(["#endif // ZVE64X_SUPPORTED"] if sew == 64 else [])
+            lines.extend(_disable_trigger(mode))
             lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(xsl)))
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(_close_gates(gates))
 
     test_data.int_regs.return_registers([addr_reg, temp_reg])
@@ -1686,6 +1696,7 @@ def _generate_zicbom_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     for trig_num in TRIGGERS:
         gates = _mcontrol6_gates(trig_num, mode)
         lines.extend(gates)
+        lines.extend(_select_trigger(temp_reg, trig_num, mode))
         for td2_name, tdata2 in CBO_TDATA2:
             for select in (0, 1):
                 if select:
@@ -1710,12 +1721,12 @@ def _generate_zicbom_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                                     "nop # spacer",
                                 ]
                             )
+                        lines.extend(_disable_trigger(mode))
                         lines.append("#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE")
                     if size:
                         lines.extend(_size_close(size))
                 if select:
                     lines.append("#endif // UDB_SDTRIG_MCONTROL6_SELECT_WRITABLE")
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(_close_gates(gates))
 
     lines.extend(_global_ie(mode, False))
@@ -1742,6 +1753,7 @@ def _generate_zicboz_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     for trig_num in TRIGGERS:
         gates = _mcontrol6_gates(trig_num, mode)
         lines.extend(gates)
+        lines.extend(_select_trigger(temp_reg, trig_num, mode))
         for td2_name, tdata2 in CBO_TDATA2:
             for select in (0, 1):
                 if select:
@@ -1765,6 +1777,7 @@ def _generate_zicboz_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                                     ["zicboz"],
                                 ),
                                 "nop # spacer",
+                                *_disable_trigger(mode),
                                 "#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE",
                             ]
                         )
@@ -1772,7 +1785,6 @@ def _generate_zicboz_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                         lines.extend(_size_close(size))
                 if select:
                     lines.append("#endif // UDB_SDTRIG_MCONTROL6_SELECT_WRITABLE")
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(_close_gates(gates))
 
     lines.extend(_global_ie(mode, False))
@@ -1801,6 +1813,7 @@ def _generate_zicbop_tests(test_data: TestData, mode: str) -> list[TestChunk]:
         gates = _mcontrol6_gates(trig_num, mode)
         lines.extend(gates)
         lines.extend(xsl_ifdefs)
+        lines.extend(_select_trigger(temp_reg, trig_num, mode))
         for td2_name, tdata2 in (("scratch", "scratch"), ("zero", 0)):
             for select in (0, 1):
                 if select:
@@ -1815,10 +1828,10 @@ def _generate_zicbop_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                             "nop # spacer",
                         ]
                     )
+                lines.extend(_disable_trigger(mode))
                 if select:
                     lines.append("#endif // UDB_SDTRIG_MCONTROL6_SELECT_WRITABLE")
         lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(xsl_ifdefs))
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(_close_gates(gates))
 
     lines.extend(_global_ie(mode, False))
@@ -1886,6 +1899,7 @@ def _generate_address_matches_tests(test_data: TestData, mode: str) -> list[Test
         for trig_num in TRIGGERS:
             lines.append(f"#ifdef UDB_SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS_{trig_num}")
             lines.extend(_xsl_ifdefs(0b100))
+            lines.extend(_select_trigger(cfg_reg, trig_num, mode))
             for value_name, value_lines in values:
                 lines.extend(
                     [
@@ -1895,9 +1909,9 @@ def _generate_address_matches_tests(test_data: TestData, mode: str) -> list[Test
                         _csr_access(f"csrw tdata2, x{temp_reg} # address to hold", mode),
                         _csr_access(f"csrr x{cfg_reg}, tdata2 # must read back exactly", mode),
                         write_sigupd(cfg_reg, test_data),
+                        *_disable_trigger(mode),
                     ]
                 )
-            lines.extend(_disable_trigger(cfg_reg, trig_num, mode))
             lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(0b100)))
             lines.append(f"#endif // UDB_SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS_{trig_num}")
         if guards:
@@ -1950,6 +1964,7 @@ def _generate_address_matches_tests(test_data: TestData, mode: str) -> list[Test
         )
         for trig_num in TRIGGERS:
             lines.append(f"#ifdef UDB_SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS_{trig_num}")
+            lines.extend(_select_trigger(cfg_reg, trig_num, mode))
             for case, reg in (("va", va_reg), ("pa", pa_reg)):
                 lines.extend(
                     [
@@ -1960,7 +1975,7 @@ def _generate_address_matches_tests(test_data: TestData, mode: str) -> list[Test
                         *(["RVTEST_TSBI_GOTO_SMODE"] if mode == "Sm" else []),
                         f"jalr ra, 0(x{va_reg}) # run sdtrig_xlate_target at its alias VA",
                         *(["RVTEST_TSBI_GOTO_MMODE"] if mode == "Sm" else []),
-                        *_disable_trigger(cfg_reg, trig_num, mode),
+                        *_disable_trigger(mode),
                         *_sign_trap_count(temp_reg, test_data),
                     ]
                 )
@@ -2004,7 +2019,7 @@ def _li_xlen(reg: int, rv64: int, rv32: int, comment: str) -> list[str]:
     ]
 
 
-def _select_trigger(reg: int, trig_num: int, mode: str) -> list[str]:
+def _write_tselect(reg: int, trig_num: int, mode: str) -> list[str]:
     """Write tselect = trig_num."""
     return [
         f"LI(x{reg}, {trig_num})",
@@ -2057,7 +2072,7 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             [
                 f"\n{_num_guard(trig_num)}",
                 _add_tc(test_data, f"trig_num_{trig_num}", coverpoint, covergroup),
-                *_select_trigger(temp_reg, trig_num, mode),
+                *_write_tselect(temp_reg, trig_num, mode),
                 _csr_access(f"csrr x{data_reg}, tselect # an implemented index reads back as written", mode),
                 write_sigupd(data_reg, test_data),
                 _csr_access(f"csrr x{old1_reg}, tinfo", mode),
@@ -2208,7 +2223,7 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     )
     lines.append(f"LI(x{ones_reg}, -1) # all 1s")
     for trig_num in TRIGGERS:
-        lines.extend([f"\n{_num_guard(trig_num)}", *_select_trigger(temp_reg, trig_num, mode)])
+        lines.extend([f"\n{_num_guard(trig_num)}", *_write_tselect(temp_reg, trig_num, mode)])
         for csr in (*TDATA_CSRS, "tinfo"):
             optional = csr in ("tdata2", "tdata3")
             lines.extend(
@@ -2266,7 +2281,7 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     )
     lines.append(f"LI(x{ones_reg}, -1) # all 1s")
     for trig_num in TRIGGERS:
-        lines.extend([f"\n{_num_guard(trig_num)}", *_select_trigger(temp_reg, trig_num, mode)])
+        lines.extend([f"\n{_num_guard(trig_num)}", *_write_tselect(temp_reg, trig_num, mode)])
         for csr in TDATA_CSRS:
             others = list(zip([c for c in TDATA_CSRS if c != csr], (old1_reg, old2_reg)))
             body = [
@@ -2303,7 +2318,7 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines.extend(
         [
             f"\n{_num_guard(1)}",
-            *_select_trigger(temp_reg, 0, mode),
+            *_write_tselect(temp_reg, 0, mode),
             *_clear_tdata(mode),
             *_li_xlen(temp_reg, TDATA1_TYPE_DISABLED << 60, TDATA1_TYPE_DISABLED << 28, "tdata1.type = 15"),
             _csr_access(f"csrw tdata1, x{temp_reg} # trigger 0 disabled", mode),
@@ -2317,19 +2332,19 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     for csr in TDATA_CSRS:
         body = [
             _add_tc(test_data, f"trig_num_1_{csr}_trig_num_0", coverpoint, covergroup),
-            *_select_trigger(temp_reg, 0, mode),
+            *_write_tselect(temp_reg, 0, mode),
         ]
         for other, before_reg in before_regs:
             body.extend(_if_implemented(other, _csr_access(f"csrr x{before_reg}, {other} # trigger 0 before", mode)))
         body.extend(
             [
-                *_select_trigger(temp_reg, 1, mode),
+                *_write_tselect(temp_reg, 1, mode),
                 *_clear_tdata(mode),
                 *_li_xlen(temp_reg, TDATA1_TYPE_DISABLED << 60, TDATA1_TYPE_DISABLED << 28, "tdata1.type = 15"),
                 _csr_access(f"csrw tdata1, x{temp_reg} # trigger 1 disabled", mode),
                 _csr_access(f"csrw {csr}, x0 # trigger 1: write all 0s", mode),
                 _csr_access(f"csrw {csr}, x{ones_reg} # trigger 1: write all 1s", mode),
-                *_select_trigger(temp_reg, 0, mode),
+                *_write_tselect(temp_reg, 0, mode),
             ]
         )
         for other, before_reg in before_regs:
@@ -2343,7 +2358,7 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines.extend(
         [
             *_clear_tdata(mode),
-            *_select_trigger(temp_reg, 1, mode),
+            *_write_tselect(temp_reg, 1, mode),
             *_clear_tdata(mode),
             "#endif // UDB_SDTRIG_NUM_TRIGGERS",
         ]
@@ -2387,7 +2402,7 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             [
                 f"\n#ifdef UDB_SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS_{trig_num}",
                 _add_tc(test_data, f"trig_num_{trig_num}", coverpoint, covergroup),
-                *_select_trigger(temp_reg, trig_num, mode),
+                *_write_tselect(temp_reg, trig_num, mode),
                 *_clear_tdata(mode),
                 *_li_xlen(
                     data_reg,
@@ -2433,7 +2448,7 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                 [
                     *gates,
                     _add_tc(test_data, f"trig_num_{trig_num}_{type_name}", coverpoint, covergroup),
-                    *_select_trigger(temp_reg, trig_num, mode),
+                    *_write_tselect(temp_reg, trig_num, mode),
                     *_clear_tdata(mode),
                     *_li_xlen(
                         data_reg,
@@ -2471,7 +2486,7 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             [
                 f"\n{_num_guard(trig_num)}",
                 _add_tc(test_data, f"trig_num_{trig_num}", coverpoint, covergroup),
-                *_select_trigger(temp_reg, trig_num, mode),
+                *_write_tselect(temp_reg, trig_num, mode),
                 _csr_access(f"csrr x{old1_reg}, tinfo # before", mode),
                 _csr_access("csrw tinfo, x0 # write all 0s", mode),
                 _csr_access(f"csrw tinfo, x{ones_reg} # write all 1s", mode),
@@ -2521,7 +2536,7 @@ def _generate_tcontrol_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     lines.extend(["#ifdef UDB_SDTRIG_BREAKPOINT_REENTRANCY_USE_TCONTROL", *_global_ie(mode, True)])
     for trig_num in TRIGGERS:
         gates = [*_mcontrol6_gates(trig_num, mode), *_xsl_ifdefs(0b100)]
-        lines.extend(gates)
+        lines.extend([*gates, *_select_trigger(cfg_reg, trig_num, mode)])
         for mte in (0, 1):
             label = f"tcontrol_enable_trig_num_{trig_num}_mte_{mte}"
             lines.extend(
@@ -2533,7 +2548,7 @@ def _generate_tcontrol_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     f"{label}:",
                     f"add x0, x1, x2 # PC == tdata2: fires iff mte = {mte} is 1",
                     "nop # spacer",
-                    *_disable_trigger(cfg_reg, trig_num, mode),
+                    *_disable_trigger(mode),
                     *_sign_trap_count(data_reg, test_data),
                 ]
             )
@@ -2635,6 +2650,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     for trig_num in TRIGGERS:
         lines.append(f"\n#ifdef UDB_SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS_{trig_num}")
         lines.extend(_xsl_ifdefs(0b010))
+        lines.extend(_select_trigger(temp_reg, trig_num, mode))
         for priv in (0, MODE_PRIVBIT[mode]):
             if priv != 0:
                 lines.append(f"\n#ifdef {_mode_writable(mode)}")
@@ -2647,6 +2663,8 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                     f"LA(x{addr_reg}, scratch)",
                     f"LI(x{data_reg}, {random_int(32, signed=False)})",
                     f"sw x{data_reg}, 0(x{addr_reg}) # fire trigger if applicable",
+                    "nop # spacer (an address match may fire after the store)",
+                    *_disable_trigger(mode),
                 ]
             )
 
@@ -2661,9 +2679,9 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                 f"LI(x{data_reg}, 0x5A5A5A5A)",
                 f"sw x{data_reg}, 0(x{addr_reg}) # must not fire: the current mode's bit is clear",
                 "nop # spacer",
+                *_disable_trigger(mode),
             ]
         )
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(0b010)))
         lines.append(f"#endif // UDB_SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS_{trig_num}")
 
@@ -2681,6 +2699,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     for trig_num in TRIGGERS:
         gates = _mcontrol6_gates(trig_num, mode)
         lines.extend(gates)
+        lines.extend(_select_trigger(temp_reg, trig_num, mode))
         for perm in range(8):  # perm_xsl
             lines.extend(_xsl_ifdefs(perm))
             label = f"exec_adr_trig_num_{trig_num}_xls_{perm:03b}"
@@ -2691,6 +2710,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                     *_config_mcontrol6(temp_reg, trig_num, label, mode, xsl=perm, select=0),
                     f"{label}:",
                     "add x0, x1, x2 # execute here; PC == tdata2",
+                    *_disable_trigger(mode),
                 ]
             )
             binname = f"trig_num_{trig_num}_exec_adr_nofire_perm_{perm:03b}"
@@ -2699,10 +2719,10 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                     _add_tc(test_data, binname, coverpoint, covergroup),
                     *_config_mcontrol6(temp_reg, trig_num, 0, mode, xsl=perm, select=0),
                     "add x0, x1, x2 # execute here; PC == tdata2",
+                    *_disable_trigger(mode),
                 ]
             )
             lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(perm)))
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(_close_gates(gates))
 
     ######################################
@@ -2719,6 +2739,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     for trig_num in TRIGGERS:
         gates = _mcontrol6_gates(trig_num, mode)
         lines.extend(gates)
+        lines.extend(_select_trigger(temp_reg, trig_num, mode))
         for tdata2_name, tdata2 in (("scratch", "scratch"), ("scratch_plus_8", "scratch+8"), ("0", 0)):
             for perm in range(8):  # perm_xsl
                 lines.extend(_xsl_ifdefs(perm))
@@ -2734,10 +2755,10 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                             "nop # spacer",
                             f"lw x{data_reg}, {offset}(x{addr_reg}) # fire iff addr==tdata2 and xsl has load bit",
                             "nop # spacer",
+                            *_disable_trigger(mode),
                         ]
                     )
                 lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(perm)))
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(_close_gates(gates))
 
     ######################################
@@ -2755,6 +2776,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     for trig_num in TRIGGERS:
         gates = _mcontrol6_gates(trig_num, mode, select=1)
         lines.extend(gates)
+        lines.extend(_select_trigger(temp_reg, trig_num, mode))
         for tdata2 in (ADDI_HINT, TDATA2_NOFIRE):
             for perm in range(8):  # perm_xsl
                 lines.extend(_xsl_ifdefs(perm))
@@ -2766,10 +2788,10 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                         "addi x0, x1, 0 # fire trigger when opcode==tdata2",
                         "nop # spacer (does not match tdata2)",
                         "nop # spacer (does not match tdata2)",
+                        *_disable_trigger(mode),
                     ]
                 )
                 lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(perm)))
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(_close_gates(gates))
 
     ######################################
@@ -2789,6 +2811,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
         match_val = _xlen_value(random_int(32, signed=False))
         # no-fire values differ in bit 0 (RV32) or only in the upper half (RV64), so the whole register is compared
         nofire_val = (match_val[0] ^ 1, match_val[1] ^ (1 << 32))
+        lines.extend(_select_trigger(temp_reg, trig_num, mode))
         for case, tdata2 in [("Fire", match_val), ("NoFire", nofire_val)]:
             for perm in range(8):  # perm_xsl
                 lines.extend(_xsl_ifdefs(perm))
@@ -2803,10 +2826,10 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                         "nop # spacer (data match fires after)",
                         f"LREG x{data_reg}, 0(x{addr_reg}) # XLEN-wide load: fire iff data==tdata2 and xsl has load bit",
                         "nop # spacer (data match fires after)",
+                        *_disable_trigger(mode),
                     ]
                 )
                 lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(perm)))
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(_close_gates(gates))
 
     ######################################
@@ -2825,6 +2848,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
         gates = _mcontrol6_gates(trig_num, mode, select=1)
         lines.extend(gates)
         lines.extend(_xsl_ifdefs(0b111))
+        lines.extend(_select_trigger(temp_reg, trig_num, mode))
         for tdata2 in (ADDI_HINT, C_NOP):  # tdata2 sizes: 32-bit and 16-bit targets
             for size in range(7):
                 lines.append(f"\n# Size = {size}")
@@ -2838,6 +2862,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                         *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=0b111, select=1, size=size),
                         "addi x0, x1, 0 # 32-bit target; fires iff tdata2 matches",
                         # "nop # spacer (does not match tdata2)",
+                        *_disable_trigger(mode),
                     ]
                 )
                 lines.extend(
@@ -2847,13 +2872,13 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                         *_config_mcontrol6(temp_reg, trig_num, tdata2, mode, xsl=0b111, select=1, size=size),
                         *_arch_guard("c.nop", ["zca"]),
                         "nop # spacer (does not match tdata2)",
+                        *_disable_trigger(mode),
                         "#endif",
                     ]
                 )
                 if size > 0:
                     lines.extend(_size_close(size))
         lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(0b111)))
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(_close_gates(gates))
 
     ######################################
@@ -2878,7 +2903,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     exec_adr_size_cases += ((5, "addi"), (5, "c.nop"))
     for trig_num in TRIGGERS:
         gates = [*_mcontrol6_gates(trig_num, mode), *_xsl_ifdefs(0b100)]
-        lines.extend(gates)
+        lines.extend([*gates, *_select_trigger(temp_reg, trig_num, mode)])
         for size, insn in exec_adr_size_cases:
             label = f"exec_adr_size_trig_num_{trig_num}_size_{size}_{insn.replace('.', '_')}"
             compressed = insn == "c.nop"
@@ -2902,11 +2927,10 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                 )
             else:
                 lines.extend([f"{label}:", f"addi x0, x1, 0 # PC == tdata2: fires iff size = {size} is 3 (32 bits)"])
-            lines.append("nop # spacer")
+            lines.extend(["nop # spacer", *_disable_trigger(mode)])
             if compressed:
                 lines.append("#endif // ZCA_SUPPORTED")
             lines.extend(_size_close(size))
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(_close_gates(gates))
 
     ######################################
@@ -2980,6 +3004,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
         gates = _mcontrol6_gates(trig_num, mode)
         lines.extend(gates)
         lines.extend(_xsl_ifdefs(0b011))
+        lines.extend(_select_trigger(temp_reg, trig_num, mode))
         for tdata2 in ("scratch", 0):
             for size in (0, 1, 2, 3, 5):
                 lines.append(f"\n# Size = {size}")
@@ -3008,10 +3033,10 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                             *_ifdef_guard(instr, closing=True),
                         ]
                     )
+                lines.extend(_disable_trigger(mode))
                 if size > 0:
                     lines.extend(_size_close(size))
         lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(0b011)))
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(_close_gates(gates))
 
     ######################################
@@ -3029,6 +3054,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
         gates = _mcontrol6_gates(trig_num, mode, select=1)
         lines.extend(gates)
         lines.extend(_xsl_ifdefs(0b010))
+        lines.extend(_select_trigger(temp_reg, trig_num, mode))
         for match in (0, 2, 3, 8):
             lines.append(f"\n# Match = {match}")
             if match > 0:
@@ -3045,6 +3071,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                         f"LI(x{data_reg}, {data}) # store data value",
                         f"sw x{data_reg}, 0(x{addr_reg})",
                         "nop # spacer (data match fires after)",
+                        *_disable_trigger(mode),
                     ]
                 )
             lines.append("#else // XLEN == 64")
@@ -3065,13 +3092,13 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                         f"LI(x{data_reg}, {data})",
                         f"sd x{data_reg}, 0(x{addr_reg})",
                         "nop # spacer (data match fires after)",
+                        *_disable_trigger(mode),
                     ]
                 )
             lines.append("#endif // __riscv_xlen")
             if match > 0:
                 lines.append(f"#endif // {_match_legal(match)}")
         lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(0b010)))
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(_close_gates(gates))
 
     ######################################
@@ -3090,6 +3117,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
         gates = _mcontrol6_gates(trig_num, mode, select=1)
         lines.extend(gates)
         lines.extend(_xsl_ifdefs(0b010))
+        lines.extend(_select_trigger(temp_reg, trig_num, mode))
         for match in (1, 9):
             lines.append(f"\n# Match = {match}")
             lines.append(f"#ifdef {_match_legal(match)}")
@@ -3119,11 +3147,10 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                                 "nop # spacer (data match fires after)",
                             ]
                         )
-                    lines.append("#endif // UDB_SDTRIG_MCONTROL6_MASKMAX6")
+                    lines.extend([*_disable_trigger(mode), "#endif // UDB_SDTRIG_MCONTROL6_MASKMAX6"])
                 lines.append("#endif // __riscv_xlen")
             lines.append(f"#endif // {_match_legal(match)}")
         lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(0b010)))
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(_close_gates(gates))
 
     ######################################
@@ -3145,6 +3172,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
         lines.append("#if defined(UDB_TDATA2_IMPLEMENTED) && UDB_SDTRIG_MCONTROL6_MASKMAX6 < __riscv_xlen")
         for trig_num in TRIGGERS:
             lines.append(f"\n#ifdef UDB_SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS_{trig_num}")
+            lines.extend(_select_trigger(temp_reg, trig_num, mode))
             for match in (1, 9):
                 lines.extend(
                     [
@@ -3157,10 +3185,10 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                         f"srli x{data_reg}, x{data_reg}, UDB_SDTRIG_MCONTROL6_MASKMAX6 - 1",
                         f"andi x{data_reg}, x{data_reg}, 1 # bit maskmax6-1, which must read 0",
                         write_sigupd(data_reg, test_data),
+                        *_disable_trigger(mode),
                         f"#endif // {_match_legal(match)}",
                     ]
                 )
-            lines.extend(_disable_trigger(temp_reg, trig_num, mode))
             lines.append(f"#endif // UDB_SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS_{trig_num}")
         lines.append("#endif // UDB_TDATA2_IMPLEMENTED && maskmax6 < XLEN")
 
@@ -3198,6 +3226,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
         gates = _mcontrol6_gates(trig_num, mode, select=1)
         lines.extend(gates)
         lines.extend(_xsl_ifdefs(0b010))
+        lines.extend(_select_trigger(temp_reg, trig_num, mode))
         for match in (4, 5, 12, 13):  # 4: mask low, 5: mask high, 12: not mask low, 13: not mask high
             lines.append(f"\n# Match = {match}")
             lines.append(f"#ifdef {_match_legal(match)}")
@@ -3219,10 +3248,9 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                             "nop # spacer (data match fires after)",
                         ]
                     )
-                lines.append("#endif // __riscv_xlen")
+                lines.extend([*_disable_trigger(mode), "#endif // __riscv_xlen"])
             lines.append(f"#endif // {_match_legal(match)}")
         lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(0b010)))
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(_close_gates(gates))
 
     ######################################
@@ -3249,7 +3277,10 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
         lines.extend(_xsl_ifdefs(0b010))
         lines.extend(
             [
+                *_select_trigger(temp_reg, trig_num + 1, mode),
+                *_select_trigger(temp_reg, trig_num, mode),
                 *_config_mcontrol6(temp_reg, trig_num, "scratch", mode, xsl=0b010, select=0, chain=1),
+                *_write_tselect(temp_reg, trig_num + 1, mode),
                 *_config_mcontrol6(
                     temp_reg, trig_num + 1, _xlen_li(temp_reg, *match_val), mode, xsl=0b010, select=1, chain=0
                 ),
@@ -3268,9 +3299,8 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                         "nop # spacer (data match fires after)",
                     ]
                 )
+        lines.extend([*_disable_trigger(mode), *_write_tselect(temp_reg, trig_num, mode), *_disable_trigger(mode)])
         lines.extend(["#endif // UDB_SDTRIG_MCONTROL6_XSL_WRITABLE"] * len(_xsl_ifdefs(0b010)))
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
-        lines.extend(_disable_trigger(temp_reg, trig_num + 1, mode))
         lines.extend(_close_gates(gates))
 
     ######################################
@@ -3295,18 +3325,27 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
             "#ifdef UDB_SDTRIG_MCONTROL6_STORE_WRITABLE",
         ]
         lines.extend(gates)
+        for t in range(length):
+            lines.extend(_select_trigger(temp_reg, t, mode))
         for case, miss in [("all_match", None), *[(f"trig_{t}_misses", t) for t in range(length)]]:
             lines.append(_add_tc(test_data, f"length_{length}_{case}", coverpoint, covergroup))
             for t in range(length):
                 tdata2 = "scratch+8" if t == miss else "scratch"
                 lines.extend(
-                    _config_mcontrol6(temp_reg, t, tdata2, mode, xsl=0b010, select=0, chain=int(t < length - 1))
+                    [
+                        *_write_tselect(temp_reg, t, mode),
+                        *_config_mcontrol6(temp_reg, t, tdata2, mode, xsl=0b010, select=0, chain=int(t < length - 1)),
+                    ]
                 )
             lines.extend(
                 [
                     f"SREG x0, 0(x{addr_reg}) # fires iff every trigger in the chain matches",
                     "nop # spacer (an address match may fire after the store)",
-                    *[line for t in range(length) for line in _disable_trigger(temp_reg, t, mode)],
+                    *[
+                        line
+                        for t in range(length)
+                        for line in (*_write_tselect(temp_reg, t, mode), *_disable_trigger(mode))
+                    ],
                     *_sign_trap_count(data_reg, test_data),
                 ]
             )
@@ -3336,7 +3375,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
     )
     for trig_num in TRIGGERS:
         gates = [*_mcontrol6_gates(trig_num, mode, select=1), *_xsl_ifdefs(0b010)]
-        lines.extend(gates)
+        lines.extend([*gates, *_select_trigger(temp_reg, trig_num, mode)])
         for size, store, other_store, value in size_cases:
             bits = _SIZE_BITS[size]
             lines.extend(_size_open(size))
@@ -3380,6 +3419,7 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
             # The next narrower store, with tdata2 a value that fits in it: the size-N store of that value fires, and
             # the narrower store of it, which writes tdata2 zero-extended, must not
             narrower = {2: ("sb", 0x5A), 3: ("sh", 0xA55A), 5: ("sw", 0x1234A55A)}.get(size)
+            lines.extend(_disable_trigger(mode))
             if narrower:
                 narrow_store, small = narrower
                 lines.extend(_config_mcontrol6(temp_reg, trig_num, small, mode, xsl=0b010, select=1, size=size))
@@ -3393,8 +3433,8 @@ def _generate_mcontrol6_tests(test_data: TestData, mode: str) -> list[TestChunk]
                             *_sign_trap_count(data_reg, test_data),
                         ]
                     )
+                lines.extend(_disable_trigger(mode))
             lines.extend(_size_close(size))
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(_close_gates(gates))
 
     test_data.int_regs.return_registers([sp_reg, addr_reg, data_reg, temp_reg])
@@ -3779,7 +3819,7 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
 
     lines.append("#ifdef UDB_SDTRIG_ICOUNT_COUNT_HARDWIRED_1")
     for trig_num in TRIGGERS:
-        lines.extend(_icount_gates(trig_num, mode))
+        lines.extend([*_icount_gates(trig_num, mode), *_select_trigger(temp_reg, trig_num, mode)])
         binname = f"trig_num_{trig_num}"
         lines.extend(
             [
@@ -3790,7 +3830,7 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                 "nop # landing pad",
                 _csr_access(f"csrr x{data_reg}, tdata1 # firing clears m/s/u/vs/vu when count is hard-wired", mode),
                 *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "hit (bit 24) is optional: not signed"),
-                *_disable_trigger(temp_reg, trig_num, mode),
+                *_disable_trigger(mode),
                 *_sign_trap_count(data_reg, test_data),
             ]
         )
@@ -3810,7 +3850,7 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     )
     lines.append("#ifndef UDB_SDTRIG_ICOUNT_COUNT_HARDWIRED_1")
     for trig_num in TRIGGERS:
-        lines.extend(_icount_gates(trig_num, mode))
+        lines.extend([*_icount_gates(trig_num, mode), *_select_trigger(temp_reg, trig_num, mode)])
         for priv_en in (0, 1):  # test enabled/not enabled in current mode
             privbits = MODE_PRIVBIT[mode] if priv_en else 0
             binname = f"trig_num_{trig_num}_priv_{priv_en}"
@@ -3825,7 +3865,7 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     write_sigupd(addr_reg, test_data),
                     _csr_access(f"csrr x{data_reg}, tdata1 # read back count/pending after firing", mode),
                     *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "hit (bit 24) is optional: not signed"),
-                    *_disable_trigger(temp_reg, trig_num, mode),
+                    *_disable_trigger(mode),
                     *_sign_trap_count(data_reg, test_data),
                 ]
             )
@@ -3844,7 +3884,7 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
         )
     )
     for trig_num in TRIGGERS:
-        lines.extend(_icount_gates(trig_num, mode))
+        lines.extend([*_icount_gates(trig_num, mode), *_select_trigger(temp_reg, trig_num, mode)])
         for priv_en in (0, 1):  # trigger disabled/enabled in the current mode
             privbits = MODE_PRIVBIT[mode] if priv_en else 0
             binname = f"trig_num_{trig_num}_priv_{priv_en}"
@@ -3858,7 +3898,7 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     write_sigupd(addr_reg, test_data),  # 7 = no fire, 6 = fired after the trap, 5 = trap not counted
                     _csr_access(f"csrr x{data_reg}, tdata1 # count and pending after the trap", mode),
                     *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "hit (bit 24) is optional: not signed"),
-                    *_disable_trigger(temp_reg, trig_num, mode),
+                    *_disable_trigger(mode),
                     *_sign_trap_count(data_reg, test_data),
                 ]
             )
@@ -3877,7 +3917,7 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     )
     lines.append("#ifndef UDB_SDTRIG_ICOUNT_COUNT_HARDWIRED_1")
     for trig_num in TRIGGERS:
-        lines.extend(_icount_gates(trig_num, mode))
+        lines.extend([*_icount_gates(trig_num, mode), *_select_trigger(temp_reg, trig_num, mode)])
         for pending in (0, 1):  # tdata1[8]
             binname = f"trig_num_{trig_num}_pending_{pending}"
             lines.extend(
@@ -3890,7 +3930,7 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     *["nop # count stays 0, so nothing matches again"] * 8,
                     _csr_access(f"csrr x{data_reg}, tdata1 # count still 0, pending cleared", mode),
                     *_sigupd_masked(data_reg, temp_reg, 0x1000000, test_data, "hit (bit 24) is optional: not signed"),
-                    *_disable_trigger(temp_reg, trig_num, mode),
+                    *_disable_trigger(mode),
                     *_sign_trap_count(data_reg, test_data),
                 ]
             )
@@ -3920,6 +3960,7 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             lines.extend(
                 [
                     *gates,
+                    *_select_trigger(temp_reg, trig_num, mode),
                     _add_tc(test_data, f"trig_num_{trig_num}", coverpoint, covergroup),
                     *_li_xlen(
                         data_reg,
@@ -3937,7 +3978,7 @@ def _generate_icount_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     f"sltiu x{data_reg}, x{data_reg}, 2",
                     f"xori x{data_reg}, x{data_reg}, 1 # 1 if count > 1",
                     write_sigupd(data_reg, test_data),
-                    *_disable_trigger(temp_reg, trig_num, mode),
+                    *_disable_trigger(mode),
                     *_sign_trap_count(data_reg, test_data),
                     *_close_gates(gates),
                 ]
@@ -4063,7 +4104,7 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                 f"#ifdef UDB_SDTRIG_ITRIGGER_SUPPORTED_TRIGGERS_{trig_num}",
                 f"#ifdef {_mode_writable(origin)}",
             ]
-            lines.extend(trig_gates)
+            lines.extend([*trig_gates, *_select_trigger(t1, trig_num, mode)])
             for code in codes:
                 for delegate in delegations:
                     code_guard = guard_symbol(_INT_TYPE[code])
@@ -4085,7 +4126,15 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                             if cause_gated:
                                 lines.append("#ifdef S_SUPPORTED")
                             lines.extend(_global_ie(mode, enable=False))
-                            wait = [f"RVTEST_IDLE_FOR_INTERRUPT(x{t1})"] if cause in (3, 7, 11) else []
+                            # The M-level sources reach mip only eventually. They are raised only with origin Sm,
+                            # so the wait runs in M-mode and polls mip instead of idling for the whole latency.
+                            wait = (
+                                [
+                                    f"RVTEST_WAIT_MIP_PENDING_M(x{t1}, x{t2}, {cause}) # until interrupt {cause} is pending"
+                                ]
+                                if cause in (3, 7, 11)
+                                else []
+                            )
                             if mode == "Sm":
                                 lines.append("csrci mstatus, 0x2 # SIE=0 while the source is prepared")
                                 if gated:
@@ -4121,7 +4170,7 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                                 [
                                     *_clear_interrupt(cause, mode),
                                     *_sign_trap_count(t2, test_data),
-                                    *_disable_trigger(t1, trig_num, mode),
+                                    *_disable_trigger(mode),
                                 ]
                             )
                             if mode == "Sm" and gated:
@@ -4163,6 +4212,7 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             lines.extend([f"\n{gate}", *set_ctx])
             for trig_num in TRIGGERS:
                 lines.append(f"#ifdef UDB_SDTRIG_ITRIGGER_SUPPORTED_TRIGGERS_{trig_num}")
+                lines.extend(_select_trigger(t1, trig_num, mode))
                 for case, tdata3 in cases:
                     lines.extend(
                         [
@@ -4184,7 +4234,7 @@ def _generate_itrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                             "RVTEST_TSBI_GOTO_MMODE",
                             *_clear_interrupt(1, mode),
                             *_sign_trap_count(t2, test_data),
-                            *_disable_trigger(t1, trig_num, mode),
+                            *_disable_trigger(mode),
                             *_set_itrigger_delegation(1, 0, t1),
                         ]
                     )
@@ -4236,6 +4286,7 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
 
     for trig_num in TRIGGERS:
         lines.extend([f"\n#ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS_{trig_num}", f"#ifdef {_mode_writable(mode)}"])
+        lines.extend(_select_trigger(temp_reg, trig_num, mode))
         for code, raisable in codes_to_test.items():
             name = ETRIGGER_EXCODE_NAMES[code]
             lines.append(f"\n#ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_{code} // {name}")
@@ -4272,11 +4323,10 @@ def _generate_etrigger_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     )
                     if is_pf:
                         lines.extend(pf_mode_disarm(mode))
-                    lines.extend(_sign_trap_count(data_reg, test_data))
+                    lines.extend([*_sign_trap_count(data_reg, test_data), *_disable_trigger(mode)])
                     if is_pf:
                         lines.append("#endif // paging")
             lines.append(f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_{code}")
-        lines.extend(_disable_trigger(temp_reg, trig_num, mode))
         lines.extend(
             [f"#endif // {_mode_writable(mode)}", f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS_{trig_num}"]
         )
@@ -4321,7 +4371,11 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
 
     for trig_num in TRIGGERS:
         lines.extend(
-            [f"\n#ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS_{trig_num}", f"#ifdef {_mode_writable(target_mode)}"]
+            [
+                f"\n#ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS_{trig_num}",
+                f"#ifdef {_mode_writable(target_mode)}",
+                *_select_trigger(temp_reg, trig_num, "Sm"),
+            ]
         )
         for code, raisable in codes_to_test.items():
             name = ETRIGGER_EXCODE_NAMES[code]
@@ -4380,11 +4434,10 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
                                 *_set_medeleg(temp_reg, code, False),
                             ]
                         )
-                        lines.extend(_sign_trap_count(data_reg, test_data))
+                        lines.extend([*_sign_trap_count(data_reg, test_data), *_disable_trigger("Sm")])
                         if is_pf:
                             lines.append("#endif // paging")
             lines.append(f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_{code}")
-        lines.extend(_disable_trigger(temp_reg, trig_num, "Sm"))
         lines.extend(
             [f"#endif // {_mode_writable(target_mode)}", f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS_{trig_num}"]
         )
@@ -4411,6 +4464,7 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
             lines.extend([f"\n{gate}", *set_ctx])
             for trig_num in TRIGGERS:
                 lines.append(f"#ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS_{trig_num}")
+                lines.extend(_select_trigger(cfg_reg, trig_num, "Sm"))
                 for case, tdata3 in cases:
                     lines.extend(
                         [
@@ -4430,9 +4484,9 @@ def etrigger_cross_priv_delegate_test(test_data: TestData, target_mode: str) -> 
                             "RVTEST_TSBI_GOTO_MMODE",
                             *_set_medeleg(temp_reg, 5, False),
                             *_sign_trap_count(data_reg, test_data),
+                            *_disable_trigger("Sm"),
                         ]
                     )
-                lines.extend(_disable_trigger(temp_reg, trig_num, "Sm"))
                 lines.append(f"#endif // UDB_SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS_{trig_num}")
             lines.extend([*clear_ctx, f"#endif // {ctx} textra match"])
         lines.extend(
@@ -4472,7 +4526,7 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             _add_tc(test_data, binname, cp, covergroup),
             *_config_textra(cfg_reg, trig_num, trig_type, tdata3_lines, mode),
             *_fire_textra_trigger(trig_type, mode, cfg_reg, addr_reg, data_reg),
-            *_disable_trigger(cfg_reg, trig_num, mode),
+            *_disable_trigger(mode),
             *_sign_trap_count(temp_reg, test_data),
         ]
 
@@ -4480,7 +4534,13 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
         guards = [
             g.format(trig_num=trig_num, mode_letter=MODE_UDB_LETTER[mode]) for g in _TEXTRA_TYPE_GUARDS[trig_type]
         ]
-        return [f"\n# trig_num {trig_num}, {trig_type}", *guards, *body, *(["#endif"] * len(guards))]
+        return [
+            f"\n# trig_num {trig_num}, {trig_type}",
+            *guards,
+            *_select_trigger(cfg_reg, trig_num, mode),
+            *body,
+            *(["#endif"] * len(guards)),
+        ]
 
     def context_access(csr: str, instr: str) -> list[str]:
         if mode == "S" and csr in ("scontext", "hcontext"):
@@ -4680,7 +4740,7 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     arm = _config_icount(cfg_reg, trig_num, 1, mode, privbits=0)
                 else:
                     arm = _config_mcontrol6(cfg_reg, trig_num, 0x12345678, mode, xsl=0b000, select=1)
-                body = list(arm)
+                body = [*_select_trigger(cfg_reg, trig_num, mode), *arm]
                 for mhsel in (1, 2, 3, 5, 6, 7):
                     body += [
                         _add_tc(
@@ -4698,7 +4758,7 @@ def _generate_textra_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                         f"seqz x{data_reg}, x{data_reg} # 1 if mhselect is 0 or 4",
                         write_sigupd(data_reg, test_data),
                     ]
-                body += _disable_trigger(cfg_reg, trig_num, mode)
+                body += _disable_trigger(mode)
                 # the mcontrol6 arm writes select = 1, and neither arm needs the mode bits
                 guards = [f"UDB_SDTRIG_{trig_type.upper()}_SUPPORTED_TRIGGERS_{trig_num}"]
                 if trig_type == "mcontrol6":

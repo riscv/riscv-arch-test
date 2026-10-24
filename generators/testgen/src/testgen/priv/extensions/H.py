@@ -118,20 +118,23 @@ def _vgein_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+# S CSRs that the HS-mode trap handler needs (stvec, sscratch) or that a trap into HS-mode rewrites
+TRAP_HANDLER_S_CSRS = ("stvec", "sscratch", "sepc", "scause", "stval")
+
+
 def _replica_tests(test_data: TestData) -> list[str]:
-    """S CSRs and their VS replicas accessed from HS-mode and from VS-mode, and read back in M-mode."""
+    """S CSRs and their VS replicas accessed from HS-mode and from VS-mode, and read back in HS-mode."""
     save_s, save_vs, mask_reg, val_reg = test_data.int_regs.get_registers(4)
     lines = [
         comment_banner(
             "cp_replica (HS-mode)",
-            "M-mode writes different values to an S CSR and its VS replica.  HS-mode reads both, writes new\n"
-            "values and reads them back.  M-mode reads both again",
+            "HS-mode writes different values to an S CSR and its VS replica, reads both, writes new values and\n"
+            "reads them back",
         )
     ]
     for rep in REPLICAS:
         mask = [f"LI(x{mask_reg}, {rep.mask:#x})"] if rep.mask else []
         body = [
-            "RVTEST_TSBI_GOTO_MMODE",
             f"LI(x{val_reg}, MIP_VS_MASK)",
             f"csrw hideleg, x{val_reg}",
             f"csrr x{save_s}, {rep.s}",
@@ -139,63 +142,62 @@ def _replica_tests(test_data: TestData) -> list[str]:
             *replica_write(test_data, rep, rep.s, rep.values[0], val_reg),
             *replica_write(test_data, rep, rep.vs, rep.values[1], val_reg),
             *mask,
-            "RVTEST_TSBI_GOTO_SMODE",
             *replica_read(test_data, rep, rep.s, mask_reg, f"hs_{rep.s}_init", HS_CG),
             *replica_read(test_data, rep, rep.vs, mask_reg, f"hs_{rep.vs}_init", HS_CG),
             *replica_write(test_data, rep, rep.s, rep.values[2], val_reg),
             *replica_write(test_data, rep, rep.vs, rep.values[3], val_reg),
             *replica_read(test_data, rep, rep.s, mask_reg, f"hs_{rep.s}", HS_CG),
             *replica_read(test_data, rep, rep.vs, mask_reg, f"hs_{rep.vs}", HS_CG),
-            "RVTEST_TSBI_GOTO_MMODE",
-            *replica_read(test_data, rep, rep.s, mask_reg, f"hs_{rep.s}_m", HS_CG),
-            *replica_read(test_data, rep, rep.vs, mask_reg, f"hs_{rep.vs}_m", HS_CG),
             f"csrw {rep.s}, x{save_s}",
             f"csrw {rep.vs}, x{save_vs}",
             "csrw hideleg, zero",
-            "RVTEST_TSBI_GOTO_SMODE",
         ]
         lines.extend(gated(body, REPLICA_ATP_GATE) if rep.s == "satp" else body)
 
     lines.append(
         comment_banner(
             "cp_replica (VS-mode)",
-            "M-mode writes different values to an S CSR and its VS replica.  VS-mode reads the S CSR name,\n"
-            "writes a new value and reads it back, which reaches the replica.  M-mode reads both.  VS-mode\n"
-            "ecalls go to M-mode so that no trap into HS-mode changes sepc, scause, stval or sstatus",
+            "HS-mode writes different values to an S CSR and its VS replica.  VS-mode reads the S CSR name,\n"
+            "writes a new value and reads it back, which reaches the replica.  HS-mode reads both.  The return\n"
+            "to HS-mode is a trap, which needs stvec and sscratch and rewrites sepc, scause and stval: HS-mode\n"
+            "leaves those S CSRs alone and checks only their replicas.  satp and vsatp stay Bare, because\n"
+            "the HS-mode and VS-mode code is not mapped",
         )
     )
     for rep in REPLICAS:
-        # vsatp stays Bare while VS-mode runs
-        values = (
-            ("rvtest_Sroot_pg_tbl", None, None) if rep.s == "satp" else (rep.values[0], rep.values[1], rep.values[3])
+        satp = rep.s == "satp"
+        s_checked = rep.s not in TRAP_HANDLER_S_CSRS
+        s_init, vs_init, vs_new = (None, None, None) if satp else (rep.values[0], rep.values[1], rep.values[3])
+        body = [f"LI(x{val_reg}, MIP_VS_MASK)", f"csrw hideleg, x{val_reg}"]
+        if s_checked:
+            body.extend([f"csrr x{save_s}, {rep.s}", *replica_write(test_data, rep, rep.s, s_init, val_reg)])
+        body.extend(
+            [
+                f"csrr x{save_vs}, {rep.vs}",
+                *replica_write(test_data, rep, rep.vs, vs_init, val_reg),
+                *([f"LI(x{mask_reg}, {rep.mask:#x})"] if rep.mask else []),
+                "RVTEST_TSBI_GOTO_VSMODE",
+                *replica_read(test_data, rep, rep.s, mask_reg, f"vs_{rep.s}_init", VS_CG),
+                *replica_write(test_data, rep, rep.s, vs_new, val_reg),
+                *replica_read(test_data, rep, rep.s, mask_reg, f"vs_{rep.s}", VS_CG),
+                "RVTEST_TSBI_GOTO_SMODE",
+            ]
         )
-        s_init, vs_init, vs_new = values
-        body = [
-            "RVTEST_TSBI_GOTO_MMODE",
-            f"LI(x{val_reg}, 1 << CAUSE_VIRTUAL_SUPERVISOR_ECALL)",
-            f"csrc medeleg, x{val_reg}",
-            f"LI(x{val_reg}, MIP_VS_MASK)",
-            f"csrw hideleg, x{val_reg}",
-            f"csrr x{save_s}, {rep.s}",
-            f"csrr x{save_vs}, {rep.vs}",
-            *replica_write(test_data, rep, rep.s, s_init, val_reg),
-            *replica_write(test_data, rep, rep.vs, vs_init, val_reg),
-            *([f"LI(x{mask_reg}, {rep.mask:#x})"] if rep.mask else []),
-            "RVTEST_TSBI_GOTO_VSMODE",
-            *replica_read(test_data, rep, rep.s, mask_reg, f"vs_{rep.s}_init", VS_CG),
-            *replica_write(test_data, rep, rep.s, vs_new, val_reg),
-            *replica_read(test_data, rep, rep.s, mask_reg, f"vs_{rep.s}", VS_CG),
-            "RVTEST_TSBI_GOTO_MMODE",
-            *replica_read(test_data, rep, rep.s, mask_reg, f"vs_{rep.s}_m", VS_CG),
-            *replica_read(test_data, rep, rep.vs, mask_reg, f"vs_{rep.vs}_m", VS_CG),
-            f"csrw {rep.s}, x{save_s}",
-            f"csrw {rep.vs}, x{save_vs}",
-            "csrw hideleg, zero",
-            f"LI(x{val_reg}, 1 << CAUSE_VIRTUAL_SUPERVISOR_ECALL)",
-            f"csrs medeleg, x{val_reg}",
-            "RVTEST_TSBI_GOTO_SMODE",
-        ]
-        lines.extend(gated(body, REPLICA_ATP_GATE) if rep.s == "satp" else body)
+        if s_checked:
+            body.extend(
+                [
+                    *replica_read(test_data, rep, rep.s, mask_reg, f"vs_{rep.s}_hs", VS_CG),
+                    f"csrw {rep.s}, x{save_s}",
+                ]
+            )
+        body.extend(
+            [
+                *replica_read(test_data, rep, rep.vs, mask_reg, f"vs_{rep.vs}_hs", VS_CG),
+                f"csrw {rep.vs}, x{save_vs}",
+                "csrw hideleg, zero",
+            ]
+        )
+        lines.extend(gated(body, REPLICA_ATP_GATE) if satp else body)
 
     test_data.int_regs.return_registers([save_s, save_vs, mask_reg, val_reg])
     return lines
@@ -360,6 +362,43 @@ def _hfence_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _vtvm_tests(test_data: TestData) -> list[str]:
+    """hstatus.VTVM = {0, 1}: sfence.vma and satp accesses in VS-mode, and hfence.vvma in HS-mode.
+
+    VTVM = 1 makes the VS-mode accesses raise virtual instruction, but does not trap hfence.vvma.  vsatp stays Bare.
+    """
+    rd = test_data.int_regs.get_register()
+    lines = [
+        comment_banner(
+            "cp_vtvm_sfence, cp_vtvm_satp, cp_vtvm_hfence_vvma",
+            "With hstatus.VTVM = {0, 1}, execute hfence.vvma in HS-mode, and sfence.vma, csrr satp and csrw satp\n"
+            "in VS-mode.  VTVM = 1 raises virtual instruction for the VS-mode instructions only",
+        )
+    ]
+    for vtvm in (0, 1):
+        lines.extend(
+            [
+                f"LI(x{rd}, HSTATUS_VTVM)",
+                f"{'csrs' if vtvm else 'csrc'} hstatus, x{rd}",
+                test_data.add_testcase(f"hs_hfence_vvma_vtvm{vtvm}", "cp_vtvm_hfence_vvma", INST_CG),
+                "hfence.vvma",
+                "RVTEST_TSBI_GOTO_VSMODE",
+                test_data.add_testcase(f"vs_sfence_vma_vtvm{vtvm}", "cp_vtvm_sfence", INST_CG),
+                "sfence.vma",
+                f"LI(x{rd}, 42)",
+                test_data.add_testcase(f"vs_csrr_satp_vtvm{vtvm}", "cp_vtvm_satp", INST_CG),
+                f"csrr x{rd}, satp",
+                write_sigupd(rd, test_data),
+                test_data.add_testcase(f"vs_csrw_satp_vtvm{vtvm}", "cp_vtvm_satp", INST_CG),
+                "csrw satp, zero",
+                "RVTEST_TSBI_GOTO_SMODE",
+            ]
+        )
+    lines.extend([f"LI(x{rd}, HSTATUS_VTVM)", f"csrc hstatus, x{rd}"])
+    test_data.int_regs.return_register(rd)
+    return lines
+
+
 @add_priv_test_generator(
     "H",
     required_extensions=["H"],
@@ -387,7 +426,12 @@ def make_h(test_data: TestData) -> list[TestChunk]:
 
     tc = test_data.new_test_chunk(test_chunks, "inst")
     tc.code.extend(
-        [*hlv_tests(test_data, tc, INST_CG, ("hs", "u")), *_xret_tests(test_data), *_hfence_tests(test_data)]
+        [
+            *hlv_tests(test_data, tc, INST_CG, ("hs", "u")),
+            *_xret_tests(test_data),
+            *_hfence_tests(test_data),
+            *_vtvm_tests(test_data),
+        ]
     )
 
     tc = test_data.new_test_chunk(test_chunks, "trap")

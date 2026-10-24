@@ -125,6 +125,7 @@ function void pmp_F_sample(int hart, int issue, ins_t ins);
   PMP_F_cg.sample(ins, pmpcfg, pmp_hit);
 endfunction
 `endif
+
 `ifdef S_SUPPORTED
 covergroup PMP_S_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pack_pmpaddr, logic [31:0] pmpcfg_a, [7:0] pmpcfg [63:0], logic [14:0] pmp_hit);
   option.per_instance = 0;
@@ -508,6 +509,7 @@ function void pmp_S_sample(int hart, int issue, ins_t ins);
   `endif
   PMP_S_cg.sample(ins, pack_pmpaddr, pmpcfg_a, pmpcfg, pmp_hit);
 endfunction
+
 `endif
 `define PMP_NAPOT_PRIORITY_REGION_START ((`PMP_REGION_START & ~(64*`g_napot - 1)) + 64*`g_napot)
 // The priority tests write pmpaddr while the entry is OFF, which reads (and traces) pmpaddr[G-1:0]
@@ -2240,6 +2242,7 @@ function void pmp_Sm_sample(int hart, int issue, ins_t ins);
   `endif
   PMP_Sm_cg.sample(ins, pmpcfg, pmpaddr, pack_pmpaddr, pmpcfg_wr, pmpcfg_WR, pmpcfg_a, pmpcfg_A, pmpcfg_x, pmpcfg_X, pmpcfg_l, pmpcfg_L, pmp_hit, pmp_HIT);
 endfunction
+
 `ifdef U_SUPPORTED
 covergroup PMP_U_cg with function sample(ins_t ins, logic [16*`UDB_MXLEN-1:0] pack_pmpaddr, logic [31:0] pmpcfg_a, logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
   option.per_instance = 0;
@@ -2624,6 +2627,7 @@ function void pmp_U_sample(int hart, int issue, ins_t ins);
   PMP_U_cg.sample(ins, pack_pmpaddr, pmpcfg_a, pmpcfg, pmp_hit);
 endfunction
 `endif
+
 `ifdef ZAAMO_SUPPORTED
 covergroup PMP_Zaamo_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
   option.per_instance = 0;
@@ -2710,6 +2714,7 @@ function void pmp_Zaamo_sample(int hart, int issue, ins_t ins);
   PMP_Zaamo_cg.sample(ins, pmpcfg, pmp_hit);
 endfunction
 `endif
+
 `ifdef ZALRSC_SUPPORTED
 covergroup PMP_Zalrsc_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
   option.per_instance = 0;
@@ -2787,6 +2792,7 @@ function void pmp_Zalrsc_sample(int hart, int issue, ins_t ins);
   PMP_Zalrsc_cg.sample(ins, pmpcfg, pmp_hit);
 endfunction
 `endif
+
 `ifdef ZCA_SUPPORTED
 covergroup PMP_Zca_cg with function sample(ins_t ins, logic [7:0] pmpcfg [63:0], logic [14:0] pmp_hit, logic [`UDB_MXLEN-1:0] pmpaddr [62:0]);
   option.per_instance = 0;
@@ -3051,6 +3057,7 @@ function void pmp_Zca_sample(int hart, int issue, ins_t ins);
   PMP_Zca_cg.sample(ins, pmpcfg, pmp_hit, pmpaddr);
 endfunction
 `endif
+
 `ifdef PMP_HAS_ZICBO
 `define PMPZICBO_REGION_SHIFT ((`UDB_PMP_GRANULARITY > 12) ? `UDB_PMP_GRANULARITY : 12)
 `define PMPZICBO_PMPADDR_MASK ((2 ** (`PMPZICBO_REGION_SHIFT - 3)) - 1)
@@ -3172,6 +3179,7 @@ function void pmp_Zicbo_sample(int hart, int issue, ins_t ins);
   PMP_Zicbo_cg.sample(ins, pmpcfg, pmp_hit, pmpaddr);
 endfunction
 `endif
+
 `ifdef PMP_HAS_SV
 covergroup PMP_Sv_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -3334,6 +3342,7 @@ function void pmp_Sv_sample(int hart, int issue, ins_t ins);
     PMP_Sv_cg.sample(ins);
 endfunction
 `endif
+
 `ifdef PMP_COVER_SVZICBO
 covergroup PMP_SvZicbo_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -3397,6 +3406,7 @@ function void pmp_SvZicbo_sample(int hart, int issue, ins_t ins);
     PMP_SvZicbo_cg.sample(ins);
 endfunction
 `endif
+
 `ifdef SVADU_SUPPORTED
 covergroup PMP_Svadu_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -3506,6 +3516,7 @@ endgroup
 function void pmp_Svadu_sample(int hart, int issue, ins_t ins);
     PMP_Svadu_cg.sample(ins);
 endfunction
+
 `endif
 
 function void pmp_sample(int hart, int issue, ins_t ins);

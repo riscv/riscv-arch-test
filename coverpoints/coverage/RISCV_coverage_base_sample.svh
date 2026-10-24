@@ -82,29 +82,8 @@
     `ifdef COVER_MISALIGNV
         misalignv_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_PMPF
-        pmpf_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_PMPS
-        pmps_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_PMPSM
-        pmpsm_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_PMPU
-        pmpu_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_PMPZAAMO
-        pmpzaamo_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_PMPZALRSC
-        pmpzalrsc_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_PMPZCA
-        pmpzca_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_PMPZICBO
-        pmpzicbo_sample(hart, issue, ins);
+    `ifdef COVER_PMP
+        pmp_sample(hart, issue, ins);
     `endif
     `ifdef COVER_S
         s_sample(hart, issue, ins);
@@ -187,20 +166,11 @@
     `ifdef COVER_SVH
         svh_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_SVPMP
-        svpmp_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_SVPMPZICBO
-        svpmpzicbo_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_SVADE
         svade_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SVADU
         svadu_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_SVADUPMP
-        svadupmp_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SVBARE
         svbare_sample(hart, issue, ins);

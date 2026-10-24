@@ -83,29 +83,8 @@
 `ifdef MISALIGNV_COVERAGE
   `include "MisalignV_coverage.svh"
 `endif
-`ifdef PMPF_COVERAGE
-  `include "PMPF_coverage.svh"
-`endif
-`ifdef PMPS_COVERAGE
-  `include "PMPS_coverage.svh"
-`endif
-`ifdef PMPSM_COVERAGE
-  `include "PMPSm_coverage.svh"
-`endif
-`ifdef PMPU_COVERAGE
-  `include "PMPU_coverage.svh"
-`endif
-`ifdef PMPZAAMO_COVERAGE
-  `include "PMPZaamo_coverage.svh"
-`endif
-`ifdef PMPZALRSC_COVERAGE
-  `include "PMPZalrsc_coverage.svh"
-`endif
-`ifdef PMPZCA_COVERAGE
-  `include "PMPZca_coverage.svh"
-`endif
-`ifdef PMPZICBO_COVERAGE
-  `include "PMPZicbo_coverage.svh"
+`ifdef PMP_COVERAGE
+  `include "PMP_coverage.svh"
 `endif
 `ifdef S_COVERAGE
   `include "S_coverage.svh"
@@ -188,20 +167,11 @@
 `ifdef SVH_COVERAGE
   `include "SvH_coverage.svh"
 `endif
-`ifdef SVPMP_COVERAGE
-  `include "SvPMP_coverage.svh"
-`endif
-`ifdef SVPMPZICBO_COVERAGE
-  `include "SvPMPZicbo_coverage.svh"
-`endif
 `ifdef SVADE_COVERAGE
   `include "Svade_coverage.svh"
 `endif
 `ifdef SVADU_COVERAGE
   `include "Svadu_coverage.svh"
-`endif
-`ifdef SVADUPMP_COVERAGE
-  `include "SvaduPMP_coverage.svh"
 `endif
 `ifdef SVBARE_COVERAGE
   `include "Svbare_coverage.svh"

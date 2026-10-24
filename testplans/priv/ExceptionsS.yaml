@@ -97,5 +97,5 @@ coverpoints:
     description: ecall cross {mode = user/supervisor, mstatus.mie = {0/1}, mstatus.sie = {0/1}}
     expectation: xpie gets xie, xie gets 0
     bins: 3 modes * 2 medleg * 2 mie * 2 sie
-  - heading: "Note: instruction/load/store fault pages are being tested in ExceptionsSv"
+  - heading: "Note: instruction/load/store fault pages are being tested in Sv_Exceptions"
   - heading: "Note: tests that differ from ExceptionsSm are cp_medeleg_mu and cp_stvec.  Also, cp_misaligned_priority is not split here."

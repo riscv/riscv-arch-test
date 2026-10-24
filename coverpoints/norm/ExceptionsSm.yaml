@@ -112,7 +112,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "ExceptionsSm_cg/cp_instr_access_fault",
-        "ExceptionsSv_cg/cp_instr_page_fault_s",
+        "Sv_Exceptions_cg/cp_instr_page_fault_s",
       ]
 
   - name: branch_misaligned_taken_exception
@@ -476,7 +476,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "ExceptionsSm_cg/{cp_misaligned_priority_load, cp_misaligned_priority_store}",
-        "ExceptionsSvSm_cg/cp_misaligned_priority_m",
+        "Sv_ExceptionsSm_cg/cp_misaligned_priority_m",
       ]
 
   # When a trap is taken into M-mode, mtval is either set to zero or written with exception-specific

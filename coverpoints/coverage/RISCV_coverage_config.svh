@@ -50,24 +50,6 @@
 `ifdef EXCEPTIONSSM_COVERAGE
   `include "ExceptionsSm_coverage.svh"
 `endif
-`ifdef EXCEPTIONSSV_COVERAGE
-  `include "ExceptionsSv_coverage.svh"
-`endif
-`ifdef EXCEPTIONSSVSM_COVERAGE
-  `include "ExceptionsSvSm_coverage.svh"
-`endif
-`ifdef EXCEPTIONSSVZAAMO_COVERAGE
-  `include "ExceptionsSvZaamo_coverage.svh"
-`endif
-`ifdef EXCEPTIONSSVZAAMOSM_COVERAGE
-  `include "ExceptionsSvZaamoSm_coverage.svh"
-`endif
-`ifdef EXCEPTIONSSVZALRSC_COVERAGE
-  `include "ExceptionsSvZalrsc_coverage.svh"
-`endif
-`ifdef EXCEPTIONSSVZALRSCSM_COVERAGE
-  `include "ExceptionsSvZalrscSm_coverage.svh"
-`endif
 `ifdef EXCEPTIONSU_COVERAGE
   `include "ExceptionsU_coverage.svh"
 `endif
@@ -220,12 +202,6 @@
 `endif
 `ifdef SVPMPZICBO_COVERAGE
   `include "SvPMPZicbo_coverage.svh"
-`endif
-`ifdef SVSM_COVERAGE
-  `include "SvSm_coverage.svh"
-`endif
-`ifdef SVZICBO_COVERAGE
-  `include "SvZicbo_coverage.svh"
 `endif
 `ifdef SVADE_COVERAGE
   `include "Svade_coverage.svh"

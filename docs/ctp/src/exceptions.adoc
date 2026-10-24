@@ -75,38 +75,6 @@ include::{testplansdir}/priv/ExceptionsZicboSm.adoc[]
 
 include::norm/ExceptionsZicboSm_norm_rules.adoc[]
 
-==== ExceptionsSv Virtual Memory Exceptions
+==== Sv Virtual Memory Exceptions
 
-include::{testplansdir}/priv/ExceptionsSv.adoc[]
-
-include::norm/ExceptionsSv_norm_rules.adoc[]
-
-==== ExceptionsSvSm Virtual Memory Exceptions with M-mode State
-
-include::{testplansdir}/priv/ExceptionsSvSm.adoc[]
-
-include::norm/ExceptionsSvSm_norm_rules.adoc[]
-
-==== ExceptionsSvZalrsc Virtual Memory LR/SC Exceptions
-
-include::{testplansdir}/priv/ExceptionsSvZalrsc.adoc[]
-
-include::norm/ExceptionsSvZalrsc_norm_rules.adoc[]
-
-==== ExceptionsSvZalrscSm Virtual Memory LR/SC Exceptions with M-mode State
-
-include::{testplansdir}/priv/ExceptionsSvZalrscSm.adoc[]
-
-// include::norm/ExceptionsSvZalrscSm_norm_rules.adoc[]
-
-==== ExceptionsSvZaamo Virtual Memory AMO Exceptions
-
-include::{testplansdir}/priv/ExceptionsSvZaamo.adoc[]
-
-include::norm/ExceptionsSvZaamo_norm_rules.adoc[]
-
-==== ExceptionsSvZaamoSm Virtual Memory AMO Exceptions with M-mode State
-
-include::{testplansdir}/priv/ExceptionsSvZaamoSm.adoc[]
-
-// include::norm/ExceptionsSvZaamoSm_norm_rules.adoc[]
+The Sv suite contains the virtual-memory exception tests, in the `Sv_Exceptions*` groups. See <<Sv* Virtual Memory>>.

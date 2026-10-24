@@ -31,10 +31,10 @@ out-of-order application-class core. The configuration runs the `smart_run/` SoC
 .github/scripts/install-c910.sh ~/c910-install
 export PATH=~/c910-install/bin:$PATH
 export C910_SNAPSHOT=~/c910-install/openc910/smart_run/work
-EXCLUDE_EXTENSIONS=Sv make c910-openc910
+EXCLUDE_EXTENSIONS=Sv_sv39_VA_all_zeros make c910-openc910
 ```
 
-The install script checks out the pinned commit and installs `run-c910.sh`. `Sv` is excluded
+The install script checks out the pinned commit and installs `run-c910.sh`. `Sv_sv39_VA_all_zeros` is excluded
 because the reference model cannot run `Sv_sv39_VA_all_zeros_Smode`, which maps VA 0 over the
 test image; `ci.yaml` lists the other suites that fail.
 

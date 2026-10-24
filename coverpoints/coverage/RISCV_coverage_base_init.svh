@@ -62,30 +62,6 @@
         `cover_info("//      ExceptionsSm - Enabled");
         `include "ExceptionsSm_coverage_init.svh"
     `endif
-    `ifdef COVER_EXCEPTIONSSV
-        `cover_info("//      ExceptionsSv - Enabled");
-        `include "ExceptionsSv_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSSVSM
-        `cover_info("//      ExceptionsSvSm - Enabled");
-        `include "ExceptionsSvSm_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSSVZAAMO
-        `cover_info("//      ExceptionsSvZaamo - Enabled");
-        `include "ExceptionsSvZaamo_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSSVZAAMOSM
-        `cover_info("//      ExceptionsSvZaamoSm - Enabled");
-        `include "ExceptionsSvZaamoSm_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSSVZALRSC
-        `cover_info("//      ExceptionsSvZalrsc - Enabled");
-        `include "ExceptionsSvZalrsc_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSSVZALRSCSM
-        `cover_info("//      ExceptionsSvZalrscSm - Enabled");
-        `include "ExceptionsSvZalrscSm_coverage_init.svh"
-    `endif
     `ifdef COVER_EXCEPTIONSU
         `cover_info("//      ExceptionsU - Enabled");
         `include "ExceptionsU_coverage_init.svh"
@@ -289,14 +265,6 @@
     `ifdef COVER_SVPMPZICBO
         `cover_info("//      SvPMPZicbo - Enabled");
         `include "SvPMPZicbo_coverage_init.svh"
-    `endif
-    `ifdef COVER_SVSM
-        `cover_info("//      SvSm - Enabled");
-        `include "SvSm_coverage_init.svh"
-    `endif
-    `ifdef COVER_SVZICBO
-        `cover_info("//      SvZicbo - Enabled");
-        `include "SvZicbo_coverage_init.svh"
     `endif
     `ifdef COVER_SVADE
         `cover_info("//      Svade - Enabled");

@@ -5,8 +5,8 @@
 # memory and expects them to complete: the scalar integer, compressed, and F/D floating
 # point loads/stores at misaligned addresses, and the misaligned-load/store coverpoints
 # of the exception suites, which check that no address-misaligned exception is raised.
-# The rule excludes AMOs, LR/SC and other Za* accesses, so ExceptionsZaamo,
-# ExceptionsZalrsc and Zama16b are deliberately not listed.
+# The rule excludes AMOs, LR/SC and other Za* accesses, so Exceptions_Zaamo,
+# Exceptions_Zalrsc and Zama16b are deliberately not listed.
 #
 # This file also maps the rules of the other Zicc* main-memory PMA extensions
 # (Ziccif, Ziccrse, Ziccamoa, Ziccamoc), which have no suites of their own. Every

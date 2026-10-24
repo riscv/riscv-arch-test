@@ -79,24 +79,13 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zicboz|Cache Block Zero|<<t-Zicboz-coverpoints>>|||x|x|x
 |Zicbop|Cache Block Prefetch|<<t-Zicbop-coverpoints>>|||x|x|x
 |Za64rs|Max 64B Reservation Sets|<<t-Za64rs-coverpoints>>|||x|x|x
-|Zic64bZicboz|64B Cache Blocks|<<t-Zic64bZicboz-coverpoints>>|||x|x|x
+|Zic64b|64B Cache Blocks|<<t-Zic64b-coverpoints>>|||x|x|x
 8+^|Privileged
 |Sm|Machine CSRs|<<t-Sm-coverpoints>>||x|x|x|x
 |S|Supervisor CSRs|<<t-S-coverpoints>>|||x|x|x
 |U|User CSRs|<<t-U-coverpoints>>|||x|x|x
 |Zkr|Entropy CSR|<<t-Zkr_S-coverpoints>>|||o|o|o
-|ExceptionsSm|Machine Exceptions|<<t-ExceptionsSm-coverpoints>>||x|x|x|x
-|ExceptionsS|Supervisor Exceptions|<<t-ExceptionsS-coverpoints>>|||x|x|x
-|ExceptionsU|User Exceptions|<<t-ExceptionsU-coverpoints>>|||x|x|x
-|ExceptionsF|Float Exceptions|<<t-ExceptionsF-coverpoints>>|||x|x|x
-|ExceptionsZalrsc|LR/SC Exceptions|<<t-ExceptionsZalrsc-coverpoints>>|||x|x|x
-|ExceptionsZaamo|AMO Exceptions|<<t-ExceptionsZaamo-coverpoints>>|||x|x|x
-|ExceptionsZc|Compressed Exceptions|<<t-ExceptionsZc-coverpoints>>||x|x|x|x
-|ExceptionsZicboS|Supervisor CBO Exceptions|<<t-ExceptionsZicboS-coverpoints>>|||x|x|x
-|ExceptionsZicboU|User CBO Exceptions|<<t-ExceptionsZicboU-coverpoints>>|||x|x|x
-|ExceptionsSv|Virt Mem Exceptions|<<t-ExceptionsSv-coverpoints>>|||x|x|x
-|ExceptionsSvZalrsc|Virt Mem LR/SC Exceptions|<<t-ExceptionsSvZalrsc-coverpoints>>|||x|x|x
-|ExceptionsSvZaamo|Virt Mem AMO Exceptions|<<t-ExceptionsSvZaamo-coverpoints>>|||x|x|x
+|Exceptions|Exceptions|<<t-Exceptions_Sm-coverpoints>>||x|x|x|x
 |InterruptsSm|Machine Interrupts|<<t-InterruptsSm-coverpoints>>||x|x|x|x
 |InterruptsS|Supervisor Interrupts|<<t-InterruptsS-coverpoints>>|||x|x|x
 |Sstc|Supervisor Timer Compare|<<t-Sstc-coverpoints>>|||x|x|x
@@ -118,10 +107,8 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |PMPZalrsc|LR/SC PMP|<<t-PMPZalrsc-coverpoints>>|||x|x|x
 |Svbare|No Virtual Memory|<<t-Svbare-coverpoints>>|||x|x|x
 |Sv|Sv32/39/48/57 Virtual Memory|<<t-Sv-coverpoints>>|||x|x|x
-|SvSm|Machine-Mode Virtual Memory|<<t-SvSm-coverpoints>>|||x|x|x
 |Svinval|TLB Invalidation|<<t-Svinval-coverpoints>>|||x|x|x
 |SvPMP|VM + PMP|<<t-SvPMP-coverpoints>>|||x|x|x
-|SvZicbo|VM + CBOM/CBOZ|<<t-SvZicbo-coverpoints>>|||x|x|x
 |SvPMPZicbo|VM + PMP + CBOM/CBOZ|<<t-SvPMPZicbo-coverpoints>>|||x|x|x
 |Svade|Page Table A/D Exceptions|<<t-Svade-coverpoints>>|||x|x|x
 |Svadu|Page Table Update|<<t-Svadu-coverpoints>>||||o|o
@@ -243,10 +230,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Smdbltrp|Machine Double Trap|<<t-Smdbltrp-coverpoints>>|||||
 |Ssdbltrp|Supervisor Double Trap|<<t-Ssdbltrp-coverpoints>>|||||
 |SsdbltrpH|Hypervisor Double Trap|<<t-SsdbltrpH-coverpoints>>|||||
-|SmnpmS|Machine Pointer Masking with S-mode|<<t-SmnpmS-coverpoints>>|||||
-|SmnpmSSm|Machine Pointer Masking with S-mode and MPRV|<<t-SmnpmSSm-coverpoints>>|||||
-|SmnpmU|Machine Pointer Masking without S-mode|<<t-SmnpmU-coverpoints>>|||||
-|SmnpmUSm|Machine Pointer Masking without S-mode and with MPRV|<<t-SmnpmUSm-coverpoints>>|||||
+|Smnpm|Machine Pointer Masking|<<t-Smnpm_S-coverpoints>>|||||
 |Smmpm|Pointer Masking|<<t-Smmpm-coverpoints>>|||||
 |SmnpmH|Hypervisor Pointer Masking|<<t-SmnpmH-coverpoints>>|||||
 |Smctr|Control Transfer Records|<<t-Smctr-coverpoints>>|||||

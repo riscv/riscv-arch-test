@@ -104,9 +104,9 @@ include::{testplansdir}/priv/SscfgH.adoc[]
 
 include::{testplansdir}/priv/SmctrH.adoc[]
 
-==== SvinvalH Hypervisor Memory Management Table Invalidation
+==== Svinval Hypervisor Memory Management Table Invalidation
 
-include::{testplansdir}/priv/SvinvalH.adoc[]
+The hypervisor TLB invalidation tests are the H and SmH groups of the Svinval suite: see <<t-Svinval_H-coverpoints>> and <<t-Svinval_SmH-coverpoints>>.
 
 ==== SvaduH Hypervisor Hardware Page Table A/D Updates
 

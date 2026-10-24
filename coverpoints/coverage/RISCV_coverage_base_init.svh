@@ -330,10 +330,6 @@
         `cover_info("//      Svinval - Enabled");
         `include "Svinval_coverage_init.svh"
     `endif
-    `ifdef COVER_SVINVALH
-        `cover_info("//      SvinvalH - Enabled");
-        `include "SvinvalH_coverage_init.svh"
-    `endif
     `ifdef COVER_SVNAPOT
         `cover_info("//      Svnapot - Enabled");
         `include "Svnapot_coverage_init.svh"

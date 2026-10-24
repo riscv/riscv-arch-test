@@ -345,10 +345,10 @@ normative_rule_definitions:
   # store memory addresses are translated and protected, and endianness is applied,
   # as though the current privilege mode were set to MPP.
   - name: mstatus_mprv_ldst_op
-    # Representative coverpoints; also PMPS_cg/cp_mprv_sw, PMPU_cg/cp_mprv_lw, SvSm SUM+MPRV
+    # Representative coverpoints; also PMPS_cg/cp_mprv_sw, PMPU_cg/cp_mprv_lw, Sv_Sm SUM+MPRV
     coverpoint:
       [
-        "SvSm_mstatus_mprv_cg/{cp_mprv_load, cp_mprv_store}",
+        "Sv_Sm_mstatus_mprv_cg/{cp_mprv_load, cp_mprv_store}",
         "PMPS_cg/cp_mprv_lw",
         "PMPU_cg/cp_mprv_sw",
       ]
@@ -358,7 +358,7 @@ normative_rule_definitions:
   - name: mstatus_mprv_inst_xlat_op
     coverpoint:
       [
-        "SvSm_mstatus_mprv_cg/{cp_mprv_ins, cp_mprv_upage_smode_sumset_exec}",
+        "Sv_Sm_mstatus_mprv_cg/{cp_mprv_ins, cp_mprv_upage_smode_sumset_exec}",
         "PMPS_cg/cp_mprv_jalr",
         "PMPU_cg/cp_mprv_jalr",
       ]
@@ -407,7 +407,7 @@ normative_rule_definitions:
   # in &lt;&lt;sv32pte&gt;&gt;) will fault. When SUM=1, these accesses are
   # permitted.
   - name: mstatus_sum_op
-    # Representative coverpoints; also Sv_vm_permissions_cg/cp_spage_*, SvSm SUM+MPRV
+    # Representative coverpoints; also Sv_vm_permissions_cg/cp_spage_*, Sv_Sm SUM+MPRV
     coverpoint:
       [
         "Sv_vm_permissions_cg/{cp_upage_smode_sumunset_noread_s, cp_upage_smode_sumunset_nowrite_s}",
@@ -424,8 +424,8 @@ normative_rule_definitions:
     # Representative coverpoints; also the _noexec and _exec variants
     coverpoint:
       [
-        "SvSm_mstatus_mprv_cg/{cp_mprv_upage_smode_sumunset_noread, cp_mprv_upage_smode_sumunset_nowrite}",
-        "SvSm_mstatus_mprv_cg/{cp_mprv_upage_smode_sumset_read, cp_mprv_upage_smode_sumset_write}",
+        "Sv_Sm_mstatus_mprv_cg/{cp_mprv_upage_smode_sumunset_noread, cp_mprv_upage_smode_sumunset_nowrite}",
+        "Sv_Sm_mstatus_mprv_cg/{cp_mprv_upage_smode_sumset_read, cp_mprv_upage_smode_sumset_write}",
       ]
 
   # SUM is read-only 0 if S-mode is not supported or if satp.MODE is read-only 0.
@@ -466,7 +466,7 @@ normative_rule_definitions:
   # supported.
   - name: mstatus_tvm_op
     coverpoint:
-      ["SvSm_mstatus_mprv_cg/cp_tvm_exception_s", "Svinval_cg/cp_svinval"]
+      ["Sv_Sm_mstatus_mprv_cg/cp_tvm_exception_s", "Svinval_cg/cp_svinval"]
 
   # csr::[tvm] is read-only 0 when S-mode is not supported or if satp.MODE is read-only 0;
   # otherwise, it must be writable.

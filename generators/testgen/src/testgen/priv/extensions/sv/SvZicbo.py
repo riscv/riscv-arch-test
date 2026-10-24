@@ -1,7 +1,7 @@
 ##################################
 # priv/extensions/sv/SvZicbo.py
 #
-# SvZicbo suite: cache-block operations under virtual memory.
+# Sv suite, Zicbo group: cache-block operations under virtual memory.
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: Apache-2.0
 ##################################
@@ -38,14 +38,14 @@ def _add_operation(
         for operation in ("prefetch.i", "prefetch.r", "prefetch.w"):
             lines.extend(
                 [
-                    test_data.add_testcase(f"test{number}_{operation.replace('.', '_')}", cross, "SvZicbo_cg"),
+                    test_data.add_testcase(f"test{number}_{operation.replace('.', '_')}", cross, "Sv_Zicbo_cg"),
                     f"{operation} 0({addr})",
                     "nop",
                 ]
             )
     elif family == "zicbom":
         labels = {
-            operation: test_data.add_testcase(f"test{number}_{operation}", cross, "SvZicbo_cg").removesuffix(":")
+            operation: test_data.add_testcase(f"test{number}_{operation}", cross, "Sv_Zicbo_cg").removesuffix(":")
             for operation in ("clean", "flush", "inval")
         }
         results = (("clean", regs.value), ("flush", regs.load), ("inval", regs.result))
@@ -60,7 +60,7 @@ def _add_operation(
         )
         return lines
     else:
-        label = test_data.add_testcase(f"test{number}_zero", cross, "SvZicbo_cg").removesuffix(":")
+        label = test_data.add_testcase(f"test{number}_zero", cross, "Sv_Zicbo_cg").removesuffix(":")
         lines.extend(
             [
                 f"addi {value}, {value}, 16",
@@ -307,10 +307,10 @@ def _begin_test(test_data: TestData, regs: SvRegs, sv: SvMode, mode: str, family
         regs,
         sv,
         mode,
-        f"{sv.name}_{family}{qualifier}_{mode}",
+        f"Zicbo_{sv.name}_{family}{qualifier}_{mode}",
         coverpoint=f"cp_zicbop_no_fault_{mode[0].lower()}"
         if family == "zicbop"
-        else f"SvZicbo {family} exception crosses",
+        else f"Sv_Zicbo {family} exception crosses",
         sig_init=None if family == "zicbop" else "0x800",
         setup_asm=tuple(setup),
     )
@@ -362,7 +362,7 @@ def _make_svzicbo(test_data: TestData, sv: SvMode, family: str) -> list[TestChun
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv32", "Zicbom"],
     march_extensions=["Zicbom"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -372,7 +372,7 @@ def make_svzicbo_sv32_zicbom(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv32", "Zicboz"],
     march_extensions=["Zicboz"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -382,7 +382,7 @@ def make_svzicbo_sv32_zicboz(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv32", "Zicbop"],
     march_extensions=["Zicbop"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -392,7 +392,7 @@ def make_svzicbo_sv32_zicbop(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv39", "Zicbom"],
     march_extensions=["Zicbom"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -402,7 +402,7 @@ def make_svzicbo_sv39_zicbom(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv39", "Zicboz"],
     march_extensions=["Zicboz"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -412,7 +412,7 @@ def make_svzicbo_sv39_zicboz(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv39", "Zicbop"],
     march_extensions=["Zicbop"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -422,7 +422,7 @@ def make_svzicbo_sv39_zicbop(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv48", "Zicbom"],
     march_extensions=["Zicbom"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -432,7 +432,7 @@ def make_svzicbo_sv48_zicbom(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv48", "Zicboz"],
     march_extensions=["Zicboz"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -442,7 +442,7 @@ def make_svzicbo_sv48_zicboz(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv48", "Zicbop"],
     march_extensions=["Zicbop"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -452,7 +452,7 @@ def make_svzicbo_sv48_zicbop(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv57", "Zicbom"],
     march_extensions=["Zicbom"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -462,7 +462,7 @@ def make_svzicbo_sv57_zicbom(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv57", "Zicboz"],
     march_extensions=["Zicboz"],
     extra_defines=["#define BOOT_TO_SMODE"],
@@ -472,7 +472,7 @@ def make_svzicbo_sv57_zicboz(test_data: TestData) -> list[TestChunk]:
 
 
 @add_priv_test_generator(
-    "SvZicbo",
+    "Sv",
     required_extensions=["Sv57", "Zicbop"],
     march_extensions=["Zicbop"],
     extra_defines=["#define BOOT_TO_SMODE"],

@@ -181,7 +181,7 @@ Note that these tests can have race conditions of timeouts, timer interrupts, an
 
 ==== Zama16b Misaligned Atomics
 
-Misaligned atomics are supported by the Misaligned Atomicity Granularity.  They are also exercised via ExceptionsZaamo.
+Misaligned atomics are supported by the Misaligned Atomicity Granularity.  They are also exercised via Exceptions_Zaamo.
 
 include::{testplansdir}/priv/Zama16b.adoc[]
 

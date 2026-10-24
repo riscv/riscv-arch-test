@@ -161,7 +161,7 @@ help:
 	@printf '  make CONFIG_FILES=config/spike/spike-rv64-max/test_config.yaml  # build ELFs for one config\n'
 	@printf '  make spike-rv64-max                  # build & run a single config\n'
 	@printf '  make tests EXTENSIONS=I,M            # generate just I and M tests\n'
-	@printf '  make EXCLUDE_EXTENSIONS=ExceptionsSm # skip an extension\n'
+	@printf '  make EXCLUDE_EXTENSIONS=Exceptions_Sm # skip an extension\n'
 	@printf '  make CERTIFICATE=RVA23               # build RVA23 tests only\n'
 	@printf '  make coverage                        # coverage build\n'
 

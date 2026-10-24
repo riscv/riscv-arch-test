@@ -27,14 +27,14 @@ from testgen.priv.extensions.sv.page_tables import (
     write_pte,
 )
 
-# G-stage and VS-stage modes of the two-stage tests on each XLEN
-XLEN_STAGES = ((64, SV39X4, VS_SV39), (32, SV32X4, VS_SV32))
+# G-stage and VS-stage modes of the hypervisor two-stage tests on each XLEN (not used by the S-level Sv tests)
+TWO_STAGE_MODES = ((64, SV39X4, VS_SV39), (32, SV32X4, VS_SV32))
 
 
 def per_xlen(build: Callable[[SvMode, SvMode], list[str]]) -> list[str]:
     """The lines ``build(g, vs)`` emits for each XLEN's G-stage and VS-stage modes, under ``#if __riscv_xlen``."""
     lines = []
-    for xlen, g, vs in XLEN_STAGES:
+    for xlen, g, vs in TWO_STAGE_MODES:
         lines.extend(["#if __riscv_xlen == 64" if xlen == 64 else "#else", *build(g, vs)])
     return [*lines, "#endif"]
 

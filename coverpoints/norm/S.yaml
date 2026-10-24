@@ -36,7 +36,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "InterruptsS_cg/cp_trigger_tsbi",
-        "ExceptionsSm_cg/cp_medeleg_msu_illegalinstruction",
+        "Exceptions_Sm_cg/cp_medeleg_msu_illegalinstruction",
         "S_sprivinst_cg/cp_sret_s",
         "Sm_mprivinst_cg/cp_sret_s",
       ]
@@ -119,7 +119,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "S_scsr_cg/{cp_stvec_vaddr_walk1, cp_stvec_vaddr_walk0}",
-        "ExceptionsS_cg/cp_stvec",
+        "Exceptions_S_cg/cp_stvec",
       ]
 
   # Value|Name|Description === 0 1 ≥2|Direct Vectored|All exceptions set pc to BASE.
@@ -127,7 +127,7 @@ normative_rule_definitions:
   - name: stvec_mode_enc
     coverpoint:
       [
-        "ExceptionsS_cg/cp_stvec (Direct)",
+        "Exceptions_S_cg/cp_stvec (Direct)",
         "TODO: S-mode interrupts with stvec.MODE=Vectored, and a write of a reserved MODE value",
       ]
 
@@ -275,7 +275,7 @@ normative_rule_definitions:
   # explicitly written by software.
   - name: sepc_op_trap_write
     coverpoint:
-      ["ExceptionsS_cg/cp_illegal_instruction", "InterruptsS_cg/cp_trigger"]
+      ["Exceptions_S_cg/cp_illegal_instruction", "InterruptsS_cg/cp_trigger"]
 
   # The scause CSR is an SXLEN-bit read-write register formatted as shown in . When a trap
   # is taken into S-mode, scause is written with a code indicating the event that caused
@@ -285,7 +285,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "S_scause_cg/{cp_scause_write_exception, cp_scause_write_interrupt}",
-        "ExceptionsS_cg/cp_illegal_instruction",
+        "Exceptions_S_cg/cp_illegal_instruction",
         "InterruptsS_cg/cp_trigger",
       ]
 
@@ -299,7 +299,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "S_scause_cg/cp_scause_write_{interrupt, exception}",
-        "ExceptionsS_cg/cp_illegal_instruction",
+        "Exceptions_S_cg/cp_illegal_instruction",
         "InterruptsS_cg/cp_trigger",
       ]
 
@@ -324,12 +324,12 @@ normative_rule_definitions:
   # Reserved Software check Hardware error Reserved Designated for custom use Reserved
   # Designated for custom use Reserved ===
   - name: scause_exccode_enc_tbl
-    # Representative coverpoints; also the other delegated ExceptionsS_cg trap coverpoints and InterruptsS_cg.
+    # Representative coverpoints; also the other delegated Exceptions_S_cg trap coverpoints and InterruptsS_cg.
     # Not cp_ecall_s: ecall from S traps to M.
     coverpoint:
       [
         "S_scause_cg/{cp_scause_write_exception, cp_scause_write_interrupt}",
-        "ExceptionsS_cg/{cp_illegal_instruction, cp_breakpoint}",
+        "Exceptions_S_cg/{cp_illegal_instruction, cp_breakpoint}",
       ]
 
   # The stval CSR is an SXLEN-bit read-write register formatted as shown in . When a trap
@@ -343,7 +343,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "S_scsr_cg/cp_scsr_access/stval",
-        "ExceptionsS_cg/cp_illegal_instruction",
+        "Exceptions_S_cg/cp_illegal_instruction",
       ]
 
   # If stval is written with a nonzero value when a breakpoint, address-misaligned,
@@ -353,13 +353,13 @@ normative_rule_definitions:
     # Representative coverpoints; also cp_store_address_misaligned, cp_instr_adr_misaligned_{branch,jal,jalr}, cp_load_access_fault
     coverpoint:
       [
-        "ExceptionsS_cg/{cp_breakpoint, cp_load_address_misaligned, cp_instr_access_fault, cp_store_access_fault}",
+        "Exceptions_S_cg/{cp_breakpoint, cp_load_address_misaligned, cp_instr_access_fault, cp_store_access_fault}",
       ]
 
   # On a breakpoint exception raised by an EBREAK or C.EBREAK instruction, stval is
   # written with either zero or the virtual address of the instruction.
   - name: stval_op_breakpoint
-    coverpoint: ["ExceptionsS_cg/cp_breakpoint"]
+    coverpoint: ["Exceptions_S_cg/cp_breakpoint"]
 
   # If stval is written with a nonzero value when a misaligned load or store causes
   # an access-fault, page-fault, or hardware-error exception, then stval will
@@ -385,14 +385,14 @@ normative_rule_definitions:
   # an illegal-instruction exception occurs, then stval will contain the shortest
   # of:
   - name: stval_op_illegal_instr
-    coverpoint: ["ExceptionsS_cg/cp_illegal_instruction"]
+    coverpoint: ["Exceptions_S_cg/cp_illegal_instruction"]
 
   # The value loaded into stval on an illegal-instruction exception is
   # right-justified and all unused upper bits are cleared to zero.
   - name: stval_op_illegal_instr_format
     coverpoint:
       [
-        "ExceptionsZc_cg/cp_illegal_instruction",
+        "Exceptions_Zc_cg/cp_illegal_instruction",
         "Ssstrict_S_comp_instr_cg/cp_compressed00",
       ]
 

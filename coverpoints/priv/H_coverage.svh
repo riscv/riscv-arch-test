@@ -15,69 +15,17 @@
 
 `include "general/RISCV_coverage_hypervisor.svh"
 
-// Accesses of each CSR test: csrrw all 1s, csrrw 0s, csrrs all 1s, csrrc all 1s, csrr
-`define H_CSRACCESSES \
-    csraccesses : coverpoint ins.current.insn { \
-        wildcard bins csrrc_all = {CSRRC} iff (ins.current.rs1_val == '1); \
-        wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val ==  0); \
-        wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val == '1); \
-        wildcard bins csrrs_all = {CSRRS} iff (ins.current.rs1_val == '1); \
-        wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val ==  0); \
-    }
-
-// Machine-level H-extension CSRs
-`define H_MCSRS \
-    bins mtval2 = {CSR_MTVAL2}; \
-    bins mtinst = {CSR_MTINST};
-
-// HS and VS H-extension CSRs (keep in sync with HCommon.py)
-`define H_HSVSCSRS \
-    bins hstatus    = {CSR_HSTATUS}; \
-    bins hedeleg    = {CSR_HEDELEG}; \
-    bins hideleg    = {CSR_HIDELEG}; \
-    bins hie        = {CSR_HIE}; \
-    bins hcounteren = {CSR_HCOUNTEREN}; \
-    bins hgeie      = {CSR_HGEIE}; \
-    bins henvcfg    = {CSR_HENVCFG}; \
-    bins htval      = {CSR_HTVAL}; \
-    bins hip        = {CSR_HIP}; \
-    bins hvip       = {CSR_HVIP}; \
-    bins htinst     = {CSR_HTINST}; \
-    bins hgatp      = {CSR_HGATP}; \
-    bins hgeip      = {CSR_HGEIP}; \
-    bins vsstatus   = {CSR_VSSTATUS}; \
-    bins vsie       = {CSR_VSIE}; \
-    bins vstval     = {CSR_VSTVAL}; \
-    bins vsip       = {CSR_VSIP}; \
-    bins vstvec     = {CSR_VSTVEC}; \
-    bins vsscratch  = {CSR_VSSCRATCH}; \
-    bins vsepc      = {CSR_VSEPC}; \
-    bins vscause    = {CSR_VSCAUSE}; \
-    bins vsatp      = {CSR_VSATP};
-
-// High halves of H CSRs, which are illegal on RV64
-`define H_UPPERCSRS \
-    bins hedelegh    = {CSR_HEDELEGH}; \
-    bins htimedeltah = {CSR_HTIMEDELTAH}; \
-    bins henvcfgh    = {CSR_HENVCFGH}; \
-    bins vstimecmph  = {CSR_VSTIMECMPH};
-
-// S CSRs with VS replicas, apart from satp
-`define H_SREPLICATED \
-    bins sstatus  = {CSR_SSTATUS}; \
-    bins sie      = {CSR_SIE}; \
-    bins stvec    = {CSR_STVEC}; \
-    bins sscratch = {CSR_SSCRATCH}; \
-    bins sepc     = {CSR_SEPC}; \
-    bins scause   = {CSR_SCAUSE}; \
-    bins stval    = {CSR_STVAL}; \
-    bins sip      = {CSR_SIP};
-
 covergroup H_hscsr_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    `H_CSRACCESSES
+    csraccesses : coverpoint ins.current.insn {
+        wildcard bins csrrc_all = {CSRRC} iff (ins.current.rs1_val == '1); // csrc all ones
+        wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val ==  0); // csrw all zeros
+        wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val == '1); // csrw all ones
+        wildcard bins csrrs_all = {CSRRS} iff (ins.current.rs1_val == '1); // csrs all ones
+        wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val ==  0); // csrr
+    }
     csraccesses_masked : coverpoint ins.current.insn {
         wildcard bins csrrc_all = {CSRRC} iff (ins.current.rs1_val != 0); // csrc mask
         wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val == 0); // csrw all zeros
@@ -119,6 +67,9 @@ covergroup H_hscsr_cg with function sample(ins_t ins);
             bins vstimecmp = {CSR_VSTIMECMP};
         `endif
         `ifdef UDB_MXLEN_32
+            `ifdef SM1P13P0_OR_LATER_SUPPORTED
+                bins hedelegh = {CSR_HEDELEGH}; // every bit is reserved, so the walk checks that each reads zero
+            `endif
             `ifdef ZICNTR_SUPPORTED
                 bins htimedeltah = {CSR_HTIMEDELTAH};
             `endif
@@ -133,11 +84,6 @@ covergroup H_hscsr_cg with function sample(ins_t ins);
         bins htinst = {CSR_HTINST};
         bins hgatp  = {CSR_HGATP};
         bins vsatp  = {CSR_VSATP};
-        `ifdef UDB_MXLEN_32
-            `ifdef SM1P13P0_OR_LATER_SUPPORTED
-                bins hedelegh = {CSR_HEDELEGH};
-            `endif
-        `endif
     }
     hcsrname_masked : coverpoint ins.current.insn[31:20] {
         bins hstatus = {CSR_HSTATUS};
@@ -149,15 +95,10 @@ covergroup H_hscsr_cg with function sample(ins_t ins);
     hgeip : coverpoint ins.current.insn[31:20] {
         bins hgeip = {CSR_HGEIP};
     }
-    mcsrname : coverpoint ins.current.insn[31:20] {
-        `H_MCSRS
-    }
-
     cp_hcsr_access:         cross priv_mode_hs, hcsrname, csraccesses;
     cp_hcsr_access_zero:    cross priv_mode_hs, hcsrname_zero, csraccesses;
     cp_hcsr_access_masked:  cross priv_mode_hs, hcsrname_masked, csraccesses_masked;
     cp_hcsr_access_ro:      cross priv_mode_hs, hgeip, csraccesses;
-    cp_hcsr_inaccessible:   cross priv_mode_hs, mcsrname, csraccesses;
     cp_hcsrwalk:            cross priv_mode_hs, hcsrname, csrop, walking_ones {
         // vsepc and vstval may legalize invalid addresses, so they are walked with valid addresses instead
         ignore_bins vaddr = binsof(hcsrname.vsepc) || binsof(hcsrname.vstval);
@@ -245,6 +186,21 @@ covergroup H_hscsr_cg with function sample(ins_t ins);
         cp_vstval_vaddr_walk1:   cross priv_mode_hs, csrrw, vstval, vaddr_walk1;
         cp_vstval_vaddr_walk0:   cross priv_mode_hs, csrrw, vstval, vaddr_walk0;
     `endif
+    // vstval must hold 0 and, when the illegal instruction encoding is reported in it, every ILEN-bit value
+    vstval_zero : coverpoint ins.current.rs1_val {
+        bins zero = {0};
+    }
+    cp_vstval_zero:          cross priv_mode_hs, csrrw, vstval, vstval_zero;
+    `ifdef UDB_REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION
+        vstval_ilen_walk1 : coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+            bins b_1[] = { [0:31] };
+        }
+        vstval_ilen_ones : coverpoint ins.current.rs1_val {
+            bins ones = {32'hFFFFFFFF};
+        }
+        cp_vstval_ilen_walk1: cross priv_mode_hs, csrrw, vstval, vstval_ilen_walk1;
+        cp_vstval_ilen_ones:  cross priv_mode_hs, csrrw, vstval, vstval_ilen_ones;
+    `endif
 
     // Read an S CSR in HS-mode right after writing its VS replica
     csrw_prev : coverpoint ins.prev.insn {
@@ -262,7 +218,12 @@ covergroup H_hscsr_cg with function sample(ins_t ins);
         bins scause   = {{CSR_VSCAUSE, CSR_SCAUSE}};
         bins stval    = {{CSR_VSTVAL, CSR_STVAL}};
         bins sip      = {{CSR_VSIP, CSR_SIP}};
-        `ifdef H_REPLICA_SATP
+        // satp always supports Sv39 (RV64) or Sv32 (RV32), but vsatp need not
+        `ifdef UDB_MXLEN_64
+            `ifdef UDB_SV39_VSMODE_TRANSLATION
+                bins satp = {{CSR_VSATP, CSR_SATP}};
+            `endif
+        `elsif UDB_SV32_VSMODE_TRANSLATION
             bins satp = {{CSR_VSATP, CSR_SATP}};
         `endif
     }
@@ -282,7 +243,16 @@ covergroup H_hscsr_cg with function sample(ins_t ins);
     }
     cp_hstatus_vgein:       cross priv_mode_hs, csrrw, hstatus, vgein;
 
-    // vscause holds each exception and interrupt code
+endgroup
+
+// HS-mode writes each exception and interrupt code to vscause, which must hold the codes that scause holds
+covergroup H_vscause_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    csrrw : coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW};
+    }
     vscause : coverpoint ins.current.insn[31:20] {
         bins vscause = {CSR_VSCAUSE};
     }
@@ -351,12 +321,56 @@ covergroup H_vscsr_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    `H_CSRACCESSES
-    mcsrname : coverpoint ins.current.insn[31:20] {
-        `H_MCSRS
+    csraccesses : coverpoint ins.current.insn {
+        wildcard bins csrrc_all = {CSRRC} iff (ins.current.rs1_val == '1); // csrc all ones
+        wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val ==  0); // csrw all zeros
+        wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val == '1); // csrw all ones
+        wildcard bins csrrs_all = {CSRRS} iff (ins.current.rs1_val == '1); // csrs all ones
+        wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val ==  0); // csrr
     }
+    csrr : coverpoint ins.current.insn {
+        wildcard bins csrr = {CSRR};
+    }
+    nonzerord : coverpoint ins.current.insn[11:7] {
+        type_option.weight = 0;
+        bins nonzero = { [1:$] }; // rd != 0
+    }
+
+    // Every M-mode CSR number raises illegal instruction in VS-mode, as in S_scsr_cg
+    csr_machine : coverpoint ins.current.insn[31:20] {
+        bins machine_0[]  = {[12'h300:12'h3FF]};
+        bins machine_1a[] = {[12'h700:12'h7A9]};
+        // ignore mscontext at 0x7aa, which is accessible from S mode
+        bins machine_1b[] = {[12'h7AB:12'h7FF]};
+        bins machine_2[]  = {[12'hB00:12'hBFF]};
+        bins machine_3[]  = {[12'hF00:12'hFFF]};
+    }
+    cp_csr_insufficient_priv:        cross priv_mode_vs, csrr, csr_machine, nonzerord;
+
+    // HS and VS H CSRs raise virtual instruction in VS-mode when the access is legal in HS-mode
     hsvscsrname : coverpoint ins.current.insn[31:20] {
-        `H_HSVSCSRS
+        bins hstatus    = {CSR_HSTATUS};
+        bins hedeleg    = {CSR_HEDELEG};
+        bins hideleg    = {CSR_HIDELEG};
+        bins hie        = {CSR_HIE};
+        bins hcounteren = {CSR_HCOUNTEREN};
+        bins hgeie      = {CSR_HGEIE};
+        bins henvcfg    = {CSR_HENVCFG};
+        bins htval      = {CSR_HTVAL};
+        bins hip        = {CSR_HIP};
+        bins hvip       = {CSR_HVIP};
+        bins htinst     = {CSR_HTINST};
+        bins hgatp      = {CSR_HGATP};
+        bins hgeip      = {CSR_HGEIP};
+        bins vsstatus   = {CSR_VSSTATUS};
+        bins vsie       = {CSR_VSIE};
+        bins vstval     = {CSR_VSTVAL};
+        bins vsip       = {CSR_VSIP};
+        bins vstvec     = {CSR_VSTVEC};
+        bins vsscratch  = {CSR_VSSCRATCH};
+        bins vsepc      = {CSR_VSEPC};
+        bins vscause    = {CSR_VSCAUSE};
+        bins vsatp      = {CSR_VSATP};
         `ifdef ZICNTR_SUPPORTED
             bins htimedelta = {CSR_HTIMEDELTA};
         `endif
@@ -376,11 +390,14 @@ covergroup H_vscsr_cg with function sample(ins_t ins);
             `endif
         `endif
     }
-    cp_hcsr_inaccessible:            cross priv_mode_vs, mcsrname, csraccesses;
     cp_hcsr_virtualinstructionfault: cross priv_mode_vs, hsvscsrname, csraccesses;
+    // The high halves of H CSRs do not exist on RV64, so they raise illegal instruction
     `ifdef UDB_MXLEN_64
         uppercsrname : coverpoint ins.current.insn[31:20] {
-            `H_UPPERCSRS
+            bins hedelegh    = {CSR_HEDELEGH};
+            bins htimedeltah = {CSR_HTIMEDELTAH};
+            bins henvcfgh    = {CSR_HENVCFGH};
+            bins vstimecmph  = {CSR_VSTIMECMPH};
         }
         cp_illegalupper:             cross priv_mode_vs, uppercsrname, csraccesses;
     `endif
@@ -390,8 +407,20 @@ covergroup H_vscsr_cg with function sample(ins_t ins);
         wildcard bins csrw = {CSRW};
     }
     sreplicated : coverpoint ins.current.insn[31:20] {
-        `H_SREPLICATED
-        `ifdef H_REPLICA_SATP
+        bins sstatus  = {CSR_SSTATUS};
+        bins sie      = {CSR_SIE};
+        bins stvec    = {CSR_STVEC};
+        bins sscratch = {CSR_SSCRATCH};
+        bins sepc     = {CSR_SEPC};
+        bins scause   = {CSR_SCAUSE};
+        bins stval    = {CSR_STVAL};
+        bins sip      = {CSR_SIP};
+        // satp always supports Sv39 (RV64) or Sv32 (RV32), but vsatp need not
+        `ifdef UDB_MXLEN_64
+            `ifdef UDB_SV39_VSMODE_TRANSLATION
+                bins satp = {CSR_SATP};
+            `endif
+        `elsif UDB_SV32_VSMODE_TRANSLATION
             bins satp = {CSR_SATP};
         `endif
     }
@@ -412,32 +441,14 @@ covergroup H_vscsr_cg with function sample(ins_t ins);
             bins scountinhibit = {CSR_SCOUNTINHIBIT};
         }
         `ifdef UDB_MXLEN_64
-            menvcfg_cde : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cde") {
+            menvcfg_cde : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "cde")[0] {
+            }
         `else
-            menvcfg_cde : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "cde") {
+            menvcfg_cde : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfgh", "cde")[0] {
+            }
         `endif
-            bins off = {0};
-            bins on  = {1};
-        }
         cp_scountinhibit_vs:    cross priv_mode_vs, scountinhibit, csraccesses, menvcfg_cde;
     `endif
-
-    // vsstatus.SD is read-only and summarizes FS, VS and XS
-    csrrw : coverpoint ins.current.insn {
-        wildcard bins csrrw = {CSRRW};
-    }
-    sstatus : coverpoint ins.current.insn[31:20] {
-        bins sstatus = {CSR_SSTATUS};
-    }
-    sstatus_sd : coverpoint ins.current.rs1_val[`UDB_MXLEN-1] {
-    }
-    sstatus_fs : coverpoint ins.current.rs1_val[14:13] {
-    }
-    sstatus_xs : coverpoint ins.current.rs1_val[16:15] {
-    }
-    sstatus_vs : coverpoint ins.current.rs1_val[10:9] {
-    }
-    cp_vsstatus_sd_write:   cross priv_mode_vs, csrrw, sstatus, sstatus_sd, sstatus_fs, sstatus_xs, sstatus_vs;
 
     // vsepc[1] is masked on reads, including sret's in VS-mode, while misa.C = 0 makes IALIGN = 32
     `ifdef ZCA_SUPPORTED
@@ -459,60 +470,58 @@ covergroup H_vscsr_cg with function sample(ins_t ins);
     `endif
 endgroup
 
-// Accesses from U-mode and VU-mode to every H CSR and every S CSR
-covergroup H_ucsr_cg with function sample(ins_t ins);
+// vsstatus.SD is read-only and summarizes FS, VS and XS.  VS-mode writes it through sstatus, as S_sstatus_cg.
+covergroup H_vsstatus_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    `H_CSRACCESSES
-    mcsrname : coverpoint ins.current.insn[31:20] {
-        `H_MCSRS
+    cp_vsstatus_sd : coverpoint ins.current.rs1_val[`UDB_MXLEN-1] {
     }
-    hsvscsrname : coverpoint ins.current.insn[31:20] {
-        `H_HSVSCSRS
-        `ifdef ZICNTR_SUPPORTED
-            bins htimedelta = {CSR_HTIMEDELTA};
-        `endif
-        `ifdef SSTC_SUPPORTED
-            bins vstimecmp = {CSR_VSTIMECMP};
-        `endif
-        `ifdef UDB_MXLEN_32
-            `ifdef SM1P13P0_OR_LATER_SUPPORTED
-                bins hedelegh = {CSR_HEDELEGH};
-            `endif
-            `ifdef ZICNTR_SUPPORTED
-                bins htimedeltah = {CSR_HTIMEDELTAH};
-            `endif
-            bins henvcfgh = {CSR_HENVCFGH};
-            `ifdef SSTC_SUPPORTED
-                bins vstimecmph = {CSR_VSTIMECMPH};
-            `endif
-        `endif
+    cp_vsstatus_fs : coverpoint ins.current.rs1_val[14:13] {
     }
-    snames : coverpoint ins.current.insn[31:20] {
-        `H_SREPLICATED
-        bins satp       = {CSR_SATP};
-        bins scounteren = {CSR_SCOUNTEREN};
-        `ifdef S1P12P0_OR_LATER_SUPPORTED
-            bins senvcfg = {CSR_SENVCFG};
-        `endif
-        `ifdef SSCCFG_SUPPORTED
-            bins scountinhibit = {CSR_SCOUNTINHIBIT};
-        `endif
+    cp_vsstatus_vs : coverpoint ins.current.rs1_val[10:9] {
     }
-    // Machine-level H CSRs raise illegal instruction in U-mode and VU-mode
-    cp_hcsr_inaccessible:            cross priv_mode_u_vu, mcsrname, csraccesses;
-    // HS and VS H CSRs raise illegal instruction in U-mode and virtual instruction in VU-mode
-    cp_hcsr_inaccessible_u:          cross priv_mode_u, hsvscsrname, csraccesses;
-    cp_hcsr_virtualinstructionfault: cross priv_mode_vu, hsvscsrname, csraccesses;
-    // S CSRs raise illegal instruction in U-mode and virtual instruction in VU-mode
-    cp_scsr:                         cross priv_mode_u_vu, snames, csraccesses;
-    `ifdef UDB_MXLEN_64
-        uppercsrname : coverpoint ins.current.insn[31:20] {
-            `H_UPPERCSRS
-        }
-        cp_illegalupper:             cross priv_mode_u_vu, uppercsrname, csraccesses;
-    `endif
+    cp_vsstatus_xs : coverpoint ins.current.rs1_val[16:15] {
+    }
+    csrrw : coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW};
+    }
+    sstatus : coverpoint ins.current.insn[31:20] {
+        bins sstatus = {CSR_SSTATUS};
+    }
+    cp_vsstatus_sd_write: cross priv_mode_vs, csrrw, sstatus, cp_vsstatus_sd, cp_vsstatus_fs, cp_vsstatus_vs, cp_vsstatus_xs;
+endgroup
+
+// Accesses from VU-mode, as U_ucsr_cg from U-mode: every CSR number that is not a user CSR raises illegal or virtual
+// instruction, and so does every write to a user read-only CSR
+covergroup H_vucsr_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    csr_nonuser: coverpoint ins.current.insn[31:20]  {
+        bins nonuser_0[]  = {[12'h100:12'h3FF]};
+        bins nonuser_1a[] = {[12'h500:12'h7A9]};
+        // ignore mscontext at 0x7aa, which may be accessible from S mode
+        bins nonuser_1b[] = {[12'h7AB:12'h7FF]};
+        bins nonuser_2[] = {[12'h900:12'hBFF]};
+        bins nonuser_3[] = {[12'hD00:12'hFFF]};
+    }
+    csrr: coverpoint ins.current.insn  {
+        wildcard bins csrr = {CSRR};
+    }
+    csrw: coverpoint ins.current.insn  {
+        wildcard bins csrw = {CSRRW};
+    }
+    csr_uro: coverpoint ins.current.insn[31:20]  {
+        bins sro[] = {[12'hC00:12'hCFF]};
+    }
+    nonzerord: coverpoint ins.current.insn[11:7] {
+        type_option.weight = 0;
+        bins nonzero = { [1:$] }; // rd != 0
+    }
+
+    cp_csr_insufficient_priv: cross priv_mode_vu, csrr, csr_nonuser, nonzerord;
+    cp_csr_ro:                cross priv_mode_vu, csrw, csr_uro;
 endgroup
 
 covergroup H_inst_cg with function sample(ins_t ins);
@@ -543,10 +552,13 @@ covergroup H_inst_cg with function sample(ins_t ins);
                 wildcard bins hsv_d = {HSV_D};
             `endif
         }
-        // hlv, hlvx and hsv from HS-mode and from U-mode with hstatus.HU = 1
-        cp_hlv:  cross priv_mode_s_u, hlv;
-        cp_hlvx: cross priv_mode_s_u, hlvx;
-        cp_hsv:  cross priv_mode_s_u, hsv;
+        // hlv, hlvx and hsv from HS-mode and from U-mode with hstatus.HU = 1, which U-mode needs to execute them
+        hstatus_hu : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hu")[0] {
+            bins on = {1};
+        }
+        cp_hlv:  cross priv_mode_s_u, hlv, hstatus_hu;
+        cp_hlvx: cross priv_mode_s_u, hlvx, hstatus_hu;
+        cp_hsv:  cross priv_mode_s_u, hsv, hstatus_hu;
 
         hlv_hsv : coverpoint ins.current.insn {
             wildcard bins hlv_w = {HLV_W};
@@ -556,8 +568,11 @@ covergroup H_inst_cg with function sample(ins_t ins);
             bins bare  = {0};
             bins paged = {[1:15]};
         }
-        guest_page_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], ins.current.csr[CSR_SCAUSE][4:0]} {
-            bins load_store = {6'b110101, 6'b110111};
+        // The instruction traps to HS-mode with a load (21) or store (23) guest-page fault.  csr_wb shows that this
+        // instruction wrote scause, so the scause of an earlier trap does not count.
+        guest_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+                           iff (ins.current.csr_wb[CSR_SCAUSE]) {
+            bins load_store = {21, 23};
         }
         // Guest-page faults on the final translation (vsatp Bare) and on an implicit VS-stage access
         cp_guest_page_fault: cross priv_mode_hs, hlv_hsv, vsatp_mode, guest_page_fault;
@@ -572,22 +587,44 @@ covergroup H_inst_cg with function sample(ins_t ins);
     cp_mret_illegal:  cross priv_mode_hs_vs_vu, mret;
     cp_sret_illegal:  cross priv_mode_vu, sret;
 
+    // hfence.vvma and hfence.gvma execute in HS-mode and raise virtual instruction in VS-mode and VU-mode and illegal
+    // instruction in U-mode, as S_sprivinst_cg executes sfence.vma.  Sm_H_tvm_cg/cp_hfence adds mstatus.TVM and
+    // hstatus.VTVM, and SvH checks the translations they remove.
+    hfence : coverpoint ins.current.insn {
+        wildcard bins hfence_vvma = {HFENCE_VVMA};
+        wildcard bins hfence_gvma = {HFENCE_GVMA};
+    }
+    cp_hfence:        cross priv_mode_hs_vs_u_vu, hfence;
+
+    // hstatus.VTVM = 1 makes sfence.vma and satp accesses raise virtual instruction in VS-mode, but does not trap
+    // hfence.vvma in HS-mode.  mstatus.TVM needs M-mode, so it is in Sm_H.
+    hstatus_vtvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtvm")[0] {
+    }
+    sfence_vma : coverpoint ins.current.insn {
+        wildcard bins sfence_vma = {SFENCE_VMA};
+    }
+    hfence_vvma : coverpoint ins.current.insn {
+        wildcard bins hfence_vvma = {HFENCE_VVMA};
+    }
+    satp_access : coverpoint ins.current.insn {
+        wildcard bins csrr = {CSRR};
+        wildcard bins csrw = {CSRW};
+    }
+    satp : coverpoint ins.current.insn[31:20] {
+        bins satp = {CSR_SATP};
+    }
+    cp_vtvm_sfence:      cross priv_mode_vs, sfence_vma, hstatus_vtvm;
+    cp_vtvm_satp:        cross priv_mode_vs, satp_access, satp, hstatus_vtvm;
+    cp_vtvm_hfence_vvma: cross priv_mode_hs, hfence_vvma, hstatus_vtvm;
+
     // In VS-mode the trace reports vsstatus as sstatus
-    old_spp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp") {
-        bins u = {0};
-        bins s = {1};
+    old_spp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0] {
     }
-    old_spie : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spie") {
-        bins off = {0};
-        bins on  = {1};
+    old_spie : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spie")[0] {
     }
-    old_spv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spv") {
-        bins off = {0};
-        bins on  = {1};
+    old_spv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spv")[0] {
     }
-    old_vtsr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtsr") {
-        bins off = {0};
-        bins on  = {1};
+    old_vtsr : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtsr")[0] {
     }
     cp_sret_hs:  cross priv_mode_hs, sret, old_spp, old_spie, old_spv;
     cp_sret_vs:  cross priv_mode_vs, sret, old_spp, old_spie, old_vtsr;
@@ -595,7 +632,9 @@ endgroup
 
 function void h_sample(int hart, int issue, ins_t ins);
     H_hscsr_cg.sample(ins);
+    H_vscause_cg.sample(ins);
     H_vscsr_cg.sample(ins);
-    H_ucsr_cg.sample(ins);
+    H_vsstatus_cg.sample(ins);
+    H_vucsr_cg.sample(ins);
     H_inst_cg.sample(ins);
 endfunction

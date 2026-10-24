@@ -10,6 +10,7 @@
 
 from collections.abc import Mapping
 from dataclasses import dataclass, replace
+from typing import Literal
 
 # Root and lower-level page-table labels of each translation stage
 _TABLES = {"s": ("Sroot", "slvl"), "vs": ("Vroot", "vlvl"), "g": ("Hroot", "hlvl")}
@@ -35,7 +36,7 @@ class SvMode:
     data_va: str
     code_va: str
     page_names: tuple[str, ...]
-    stage: str = "s"
+    stage: Literal["s", "vs", "g"] = "s"
 
     @property
     def extension(self) -> str:
@@ -136,8 +137,9 @@ def guest_table_data() -> list[str]:
     requires: Sv32x4/Sv32 walk one level below the root on RV32, and Sv39x4/Sv39 walk two on RV64.  Tests of
     Sv48x4/Sv48 and Sv57x4/Sv57 add the deeper tables with lower_table_data."""
     return [
+        "#if __riscv_xlen == 32",
         *lower_table_data(SV32X4, VS_SV32),
-        "#if __riscv_xlen == 64",
+        "#else",
         *table_data(SV39X4.page_table_label(1)),
         *table_data(VS_SV39.page_table_label(1)),
         "#endif",
@@ -192,7 +194,9 @@ def _check_level(mode: SvMode, level: int) -> None:
 # TODO: write satp tables with write_pte too, and drop the PTE_SETUP_* macro path and this check
 def _check_macro_stage(mode: SvMode) -> None:
     if mode.stage != "s":
-        raise ValueError(f"The PTE_SETUP_* macros write satp tables only; write {mode.stage}-stage PTEs with regs")
+        raise NotImplementedError(
+            f"The PTE_SETUP_* macros write satp tables only; write {mode.stage}-stage PTEs with regs"
+        )
 
 
 def write_pte(

@@ -97,22 +97,12 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |EndianZalrsc|LR/SC Endian|<<t-EndianZalrsc-coverpoints>>|||||
 |EndianF|Float Endian|<<t-EndianF-coverpoints>>|||||
 |EndianZca|Compressed Endian|<<t-EndianZca-coverpoints>>|||||
-|PMPSm|Machine PMP|<<t-PMPSm-coverpoints>>||x|x|x|x
-|PMPS|Supervisor PMP|<<t-PMPS-coverpoints>>|||x|x|x
-|PMPU|User PMP|<<t-PMPU-coverpoints>>|||x|x|x
-|PMPF|Float PMP|<<t-PMPF-coverpoints>>|||x|x|x
-|PMPZca|Compressed PMP|<<t-PMPZca-coverpoints>>||x|x|x|x
-|PMPZicbo|PMP + CBOM/CBOZ|<<t-PMPZicbo-coverpoints>>|||x|x|x
-|PMPZaamo|AMO PMP|<<t-PMPZaamo-coverpoints>>|||x|x|x
-|PMPZalrsc|LR/SC PMP|<<t-PMPZalrsc-coverpoints>>|||x|x|x
+|PMP|Physical Memory Protection|<<t-PMP-coverpoints>>|||||
 |Svbare|No Virtual Memory|<<t-Svbare-coverpoints>>|||x|x|x
 |Sv|Sv32/39/48/57 Virtual Memory|<<t-Sv-coverpoints>>|||x|x|x
 |Svinval|TLB Invalidation|<<t-Svinval-coverpoints>>|||x|x|x
-|SvPMP|VM + PMP|<<t-SvPMP-coverpoints>>|||x|x|x
-|SvPMPZicbo|VM + PMP + CBOM/CBOZ|<<t-SvPMPZicbo-coverpoints>>|||x|x|x
 |Svade|Page Table A/D Exceptions|<<t-Svade-coverpoints>>|||x|x|x
 |Svadu|Page Table Update|<<t-Svadu-coverpoints>>||||o|o
-|SvaduPMP|Page Table Update + PMP|<<t-SvaduPMP-coverpoints>>||||o|o
 |Svpbmt|Page-based Memory Types|<<t-Svpbmt-coverpoints>>|||x|x|x
 |Svnapot|Naturally Aligned Pages|<<t-Svnapot-coverpoints>>|||o|x|x
 |Svukte|User Kernel Translation Enable|<<t-Svukte-coverpoints>>|||o|o|o

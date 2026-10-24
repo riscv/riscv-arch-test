@@ -7,10 +7,18 @@ ci_enabled: true
 # Run experimental extensions in their dedicated workflow job.
 exclude_configs:
   - spike-rv64-experimental
-# Sscofpmf*: spike hardwires mhpmcounter3..31 to 0 but keeps mhpmevent3..31 writable
+# Smstateen: the -max configs declare Smaia and Ssaia (for the IMSIC guest interrupt files), so mstateen0.IMSIC, AIA and
+#   CSRIND are writable, but Sail does not model those extensions (https://github.com/riscv/sail-riscv/issues/1134).
+#   The exclusion applies to every Spike config, so the -mu configs, which pass, lose Smstateen too until
+#   exclusions can be given per config.
+# Sscofpmf_Sm_access (rv32-max), Sscofpmf_{Sm,S,U}_inhibit, Sscofpmf_{Sm,S}_mcounteren, Sscofpmf_{Sm,S,U}_overflow,
+#   Sscofpmf_{Sm,S}_shadow (the other groups pass): spike hardwires mhpmcounter3..31 to 0 but keeps mhpmevent3..31 writable
 #   (https://github.com/riscv-software-src/riscv-isa-sim/issues/2370). Sail's
 #   writable_hpm_counters makes both or neither writable, so no reference config matches.
-exclude_extensions: "SscofpmfSm,SscofpmfS,SscofpmfU"
+# SdtrigSm_mcontrol6_napot_allones: spike stores tdata2 as written (trigger_t::tdata2_write in riscv/triggers.cc), so
+#   an all-ones write to an mcontrol6 NAPOT trigger reads back with bit maskmax6-1 set; the Debug spec requires it to
+#   read 0 (fix: https://github.com/riscv-software-src/riscv-isa-sim/pull/2481). Drop it when the Spike pin includes it.
+exclude_extensions: "Smstateen,SdtrigSm_mcontrol6_napot_allones,Sscofpmf_Sm_access,Sscofpmf_Sm_inhibit,Sscofpmf_Sm_mcounteren,Sscofpmf_Sm_overflow,Sscofpmf_Sm_shadow,Sscofpmf_S_inhibit,Sscofpmf_S_mcounteren,Sscofpmf_S_overflow,Sscofpmf_S_shadow,Sscofpmf_U_inhibit,Sscofpmf_U_overflow"
 install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"
 shards: 1

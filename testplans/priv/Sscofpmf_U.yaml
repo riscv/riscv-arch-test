@@ -1,0 +1,68 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Sscofpmf_U
+source: https://docs.google.com/spreadsheets/d/13ibIsAhJpQBXcL1Y5F7sddysLPFpaCr8_oDyQV_Boqw/edit?gid=0#gid=0
+coverpoints:
+  - heading: The U-mode tests reach the M-level CSRs, and sip and sie, through T-SBI. Where S-mode is not implemented, mip and mie take the place of sip and sie.
+  - name: cp_uinh_inhibits_umode
+    goal: UINH inhibits counting in U-mode
+    description: |-
+      In U-mode:
+      mhpmevent[55:0] = RVMODEL_MHPMEVENT_VAL, OF = 0, MINH = SINH = 1
+      UINH = 0, then 1: mhpmcounter = 0, run RVMODEL_MHPMEVENT_CODE, read mhpmcounter
+      mhpmevent[62:58] (MINH, SINH, UINH, VSINH, VUINH) = each of the 32 combinations: read mhpmevent
+    expectation: |-
+      mhpmcounter is nonzero iff UINH = 0
+      mhpmevent reads back the combination, with the bits of unimplemented modes reading 0
+    bins: 32 xINH combinations
+  - name: cp_of_set_on_overflow
+    goal: OF is set when mhpmcounter overflows
+    description: |-
+      In U-mode, for mhpmevent[62:58] = {11000, 11100}:
+      sip = 0, sie = 0
+      mhpmevent[55:0] = RVMODEL_MHPMEVENT_VAL, OF = 0
+      mhpmcounter = all 1s (mhpmcounterh too on RV32)
+      Run RVMODEL_MHPMEVENT_CODE
+      Read mhpmevent (OF and xINH) and mhpmcounter
+      Wait for RVMODEL_INTERRUPT_LATENCY, read sip.LCOFIP
+    expectation: |-
+      If UINH = 0: mhpmcounter wraps, OF becomes 1 and sip.LCOFIP becomes 1
+      If UINH = 1: mhpmcounter does not move, and OF and sip.LCOFIP stay 0
+    bins: 1 pattern with UINH = 0
+  - name: cp_of_already_set
+    goal: An overflow with OF already 1 does not request a count overflow interrupt
+    description: |-
+      In U-mode:
+      mie = 0
+      mhpmevent[55:0] = RVMODEL_MHPMEVENT_VAL, xINH = 11000, OF = 1
+      mhpmcounter = all 1s (mhpmcounterh too on RV32)
+      Clear sip.LCOFIP
+      Run RVMODEL_MHPMEVENT_CODE, wait for RVMODEL_INTERRUPT_LATENCY
+      Read mhpmevent, mhpmcounter and sip.LCOFIP
+    expectation: mhpmcounter wraps, OF stays 1, and sip.LCOFIP stays 0
+    bins: "1"
+  - name: cp_overflow_hw_only
+    goal: Software writes to mhpmcounter never cause an overflow
+    description: |-
+      In U-mode:
+      mie = 0, mhpmevent = 0, clear sip.LCOFIP
+      mhpmcounter = all 1s, read OF
+      mhpmcounter = all 0s, read OF
+    expectation: OF stays 0
+    bins: 2 mhpmcounter values
+  - name: cp_lcofip_hw_only
+    goal: Setting OF by software does not raise LCOFIP
+    description: |-
+      In U-mode:
+      mie = 0, clear sip.LCOFIP
+      Set mhpmevent.OF with a CSR write, wait for RVMODEL_INTERRUPT_LATENCY, read sip.LCOFIP
+      Clear mhpmevent.OF with a CSR write, wait for RVMODEL_INTERRUPT_LATENCY, read sip.LCOFIP
+    expectation: sip.LCOFIP stays 0
+    bins: 2 OF values
+  - name: cp_lcofi_sip_u
+    goal: LCOFI is taken from U-mode iff it is pending and enabled
+    description: |-
+      In U-mode, mideleg.LCOFI = 1, sstatus.SIE = 0
+      For sip.LCOFIP = {0, 1} (written by software) x sie.LCOFIE = {0, 1}:
+          wait for RVMODEL_INTERRUPT_LATENCY
+    expectation: Trap to S-mode iff LCOFIP = 1 and LCOFIE = 1, because S-level interrupts are always enabled in U-mode
+    bins: 2 pending * 2 enabled

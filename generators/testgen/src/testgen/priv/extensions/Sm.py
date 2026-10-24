@@ -3,6 +3,7 @@
 #
 # Sm machine mode privileged extension test generator.
 # Also generates the Sm_F, Sm_V and Sm_VF groups, run only when F, Zve32x or Zve32f is also supported.
+# Also generates the Sm_Zicntr group, run only when Zicntr is also supported.
 # jcarlin@hmc.edu Jan 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
@@ -27,6 +28,12 @@ from testgen.priv.extensions.PrivCommon import (
 )
 from testgen.priv.extensions.VCommon import gen_v_tests
 from testgen.priv.extensions.VFCommon import gen_vf_tests
+from testgen.priv.extensions.ZicntrCommon import (
+    counteren_walk_tests,
+    instret_exception_tests,
+    instret_interrupt_tests,
+    instret_retire_tests,
+)
 from testgen.priv.registry import add_priv_test_generator
 
 # Address CSRs that must hold every valid virtual address: {csr: (held-low mask, {bit: gate define})}
@@ -223,9 +230,7 @@ def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
         "",
         # ecall test
         test_data.add_testcase("ecall", coverpoint, covergroup),
-        "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
-        "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
-        write_sigupd(10, test_data),
+        "RVTEST_TSBI_ECALL_TEST  # ecall to the execution environment, recorded in the trap signature",
         "",
         # ebreak test
         test_data.add_testcase("ebreak", coverpoint, covergroup),
@@ -1698,3 +1703,53 @@ def make_smv(test_data: TestData) -> list[TestChunk]:
 def make_smvf(test_data: TestData) -> list[TestChunk]:
     """Generate Sm_VF tests (vector-FP x mstatus.FS state)."""
     return gen_vf_tests(test_data, "M", "Sm_VF_cg")
+
+
+_ZICNTR_CG = "Sm_Zicntr_cg"
+
+
+@add_priv_test_generator(
+    "Sm",
+    required_extensions=["Sm", "Zicntr"],
+    march_extensions=["Zicntr", "Zihpm", "Zawrs"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_zicntrsm(test_data: TestData) -> list[TestChunk]:
+    """Generate Sm_Zicntr tests: the M-mode halves of the Zicntr counter-enable tests."""
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk("Zicntr")
+
+    tc.code.append("#ifdef U_SUPPORTED")
+    tc.code.extend(
+        counteren_walk_tests(
+            test_data,
+            _ZICNTR_CG,
+            "cp_mcounteren_access_m",
+            "Write walking 1s and 0s to mcounteren.  Read from corresponding counter and counterh in M-mode",
+            csrs=["mcounteren"],
+            mode="M",
+        )
+    )
+    tc.code.append("#endif // U_SUPPORTED")
+    tc.code.append("#ifdef S_SUPPORTED")
+    for setting in ("ones", "zeros"):
+        tc.code.extend(
+            counteren_walk_tests(
+                test_data,
+                _ZICNTR_CG,
+                "cp_scounteren_access_m",
+                f"Write walking 1s and 0s to scounteren with mcounteren = all {setting}.  Read from corresponding counter and counterh in M-mode",
+                csrs=["scounteren"],
+                mode="M",
+                mcounteren=setting,
+                tag=f"mcounteren_{setting}_",
+            )
+        )
+    tc.code.append("#endif // S_SUPPORTED")
+
+    tc.code.extend(instret_retire_tests(test_data, _ZICNTR_CG, "M"))
+    tc.code.extend(instret_exception_tests(test_data, _ZICNTR_CG, "M"))
+    tc.code.extend(instret_interrupt_tests(test_data, _ZICNTR_CG, "M"))
+
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

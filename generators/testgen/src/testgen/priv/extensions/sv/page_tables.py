@@ -11,6 +11,11 @@
 from collections.abc import Mapping
 from dataclasses import dataclass
 
+# The PTE_SETUP_* macros (rvtest_macros.h) build each PTE in a0 and its address in t1, clobbering a0, a1, t0
+# and t1. They leave the last PTE and its address there, which change_pte_to_be reads.
+PTE_SETUP_VALUE_REG = 10
+PTE_SETUP_ADDR_REG = 6
+
 
 @dataclass(frozen=True)
 class SvMode:

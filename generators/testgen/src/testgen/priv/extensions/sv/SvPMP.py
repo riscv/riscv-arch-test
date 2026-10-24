@@ -13,7 +13,7 @@ from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.pmp import helpers as pmp
 from testgen.priv.extensions.sv.access import Crosses, add_rwx_test, cross_names
 from testgen.priv.extensions.sv.assembly import DATA_REGION_ALIGNED
-from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
+from testgen.priv.extensions.sv.generate import SvRegs, begin_sv_test, end_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import SV32, SV39, SV48, SV57, PteFlags, SvMode, create_page_mapping
 from testgen.priv.registry import add_priv_test_generator
 
@@ -38,6 +38,7 @@ def _crosses(target: str, mode: str) -> Crosses:
 
 def _begin_test(
     test_data: TestData,
+    regs: SvRegs,
     sv: SvMode,
     mode: str,
     topic: str,
@@ -51,6 +52,7 @@ def _begin_test(
     split_name = f"{sv.name}_{topic}_{mode}"
     return begin_sv_test(
         test_data,
+        regs,
         sv,
         mode,
         split_name,
@@ -63,16 +65,18 @@ def _begin_test(
 
 
 def _make_pmp_on_pa(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
+    regs = SvRegs.allocate(test_data)
     crosses = _crosses("PA", mode)
     chunk = _begin_test(
         test_data,
+        regs,
         sv,
         mode,
         "pmp_on_pa",
         pmp.napot_mask_defines(5),
         crosses=crosses,
         pre_va_asm=(
-            "RVTEST_PMP_SET_BACKGROUND x4",
+            f"RVTEST_PMP_SET_BACKGROUND x{regs.scratch}",
             "",
             *pmp.set_pmpaddr("napot", 1, "rvtest_data_1"),
             "sfence.vma",
@@ -95,6 +99,7 @@ def _make_pmp_on_pa(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     *add_rwx_test(
                         test_data,
                         sv,
+                        regs,
                         mode,
                         "va_data",
                         level,
@@ -105,22 +110,24 @@ def _make_pmp_on_pa(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                     "",
                 ]
             )
-    chunk.raw_data.extend(sv_data(sv, data_region_body=DATA_REGION_ALIGNED))
+    chunk.raw_data.extend(sv_data(sv, regs, data_region_body=DATA_REGION_ALIGNED))
     chunk.trap_sigupd_count = trap_sigupd_count(faults)
-    return test_data.end_test_chunk()
+    return end_sv_test(test_data, regs)
 
 
 def _make_pmp_on_pte(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
     va_data, va_code = PMP_PTE_VAS[sv.name]
+    regs = SvRegs.allocate(test_data)
     crosses = _crosses("pte", mode)
     chunk = _begin_test(
         test_data,
+        regs,
         sv,
         mode,
         "pmp_on_pte",
         pmp.napot_mask_defines(),
         crosses=crosses,
-        pre_va_asm=("RVTEST_PMP_SET_BACKGROUND x4",),
+        pre_va_asm=(f"RVTEST_PMP_SET_BACKGROUND x{regs.scratch}",),
         va_defs=(("va_data", va_data),),
         va_code_override=va_code,
     )
@@ -151,6 +158,7 @@ def _make_pmp_on_pte(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
                 *add_rwx_test(
                     test_data,
                     sv,
+                    regs,
                     mode,
                     "va_data",
                     level,
@@ -163,9 +171,9 @@ def _make_pmp_on_pte(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
         if top:
             chunk.code.append(".endif")
         chunk.code.append("")
-    chunk.raw_data.extend(sv_data(sv, page_table_align="(UDB_PMP_GRANULARITY)"))
+    chunk.raw_data.extend(sv_data(sv, regs, page_table_align="(UDB_PMP_GRANULARITY)"))
     chunk.trap_sigupd_count = trap_sigupd_count(sv.levels * 3)
-    return test_data.end_test_chunk()
+    return end_sv_test(test_data, regs)
 
 
 def _make_svpmp(test_data: TestData, sv: SvMode) -> list[TestChunk]:

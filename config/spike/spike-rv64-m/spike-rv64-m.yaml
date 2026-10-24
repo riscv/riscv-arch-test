@@ -356,15 +356,172 @@ params:
   REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK: true
   REPORT_CAUSE_IN_VSTVAL_ON_LANDING_PAD_SOFTWARE_CHECK: true
   # Sdtrig params
-  DBG_HCONTEXT_WIDTH: 14
+  DBG_HCONTEXT_WIDTH: 13
   DBG_SCONTEXT_WIDTH: 32
   DCSR_MPRVEN_TYPE: rw
   DCSR_STEPIE_TYPE: rw
   DCSR_STOPCOUNT_TYPE: rw
   DCSR_STOPTIME_TYPE: rw
-  HCONTEXT_AVAILABLE: false
-  MCONTEXT_AVAILABLE: true
+  MCONTEXT_IMPLEMENTED: true
   # Pointer masking params
   SUPPORTED_PMLEN_SMMPM: [0, 7, 16]
   # Zawrs params
   ZAWRS_NTO_IS_NOP: true
+  # Sdtrig and Zkr seed parameters added for riscv-unified-db#2069 (values from sail.json)
+  SDTRIG_NUM_TRIGGERS: 4
+  SDTRIG_BREAKPOINT_REENTRANCY: Use_tcontrol
+  TCONTROL_IMPLEMENTED: true
+  TDATA2_IMPLEMENTED: true
+  TDATA3_IMPLEMENTED: true
+  SDTRIG_M_WRITABLE: true
+  SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS: [true, true, true, true]
+  SDTRIG_ICOUNT_SUPPORTED_TRIGGERS: [true, true, true, true]
+  SDTRIG_ITRIGGER_SUPPORTED_TRIGGERS: [true, true, true, true]
+  SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS: [true, true, true, true]
+  SDTRIG_MCONTROL6_MASKMAX6: 63
+  SDTRIG_MAX_CHAIN_LENGTH: 4
+  SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES: [0, 1, 2, 3, 4, 5]
+  SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES: [0]
+  SDTRIG_MCONTROL6_SELECT_WRITABLE: true
+  SDTRIG_MCONTROL6_EXECUTE_WRITABLE: true
+  SDTRIG_MCONTROL6_LOAD_WRITABLE: true
+  SDTRIG_MCONTROL6_STORE_WRITABLE: true
+  SDTRIG_ICOUNT_COUNT_HARDWIRED_1: false
+  SDTRIG_ICOUNT_SELF_WRITE_SETS_PENDING: false
+  SDTRIG_ITRIGGER_SUPPORTED_INTERRUPTS:
+    [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+    ]
+  SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS:
+    [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+    ]
+  SDTRIG_TEXTRA_MHVALUE_LEN: 13
+  SDTRIG_TEXTRA_SVALUE_LEN: 0
+  SDTRIG_TEXTRA_MHSELECT_MCONTEXT_MATCH: true

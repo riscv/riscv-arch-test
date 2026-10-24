@@ -953,15 +953,16 @@
         "C": "CSRBit_ReadOnlyZero"
       },
       // Bit 63 of mstateen1, mstateen2 and mstateen3. These can only be
-      // read-only zero if H is not supported.
+      // read-only zero if H is not supported. Whisper leaves them read-only
+      // zero unless whisper.json gives them a write mask.
       "mstateen1": {
-        "SE1": "CSRBit_Writable"
+        "SE1": "CSRBit_ReadOnlyZero"
       },
       "mstateen2": {
-        "SE2": "CSRBit_Writable"
+        "SE2": "CSRBit_ReadOnlyZero"
       },
       "mstateen3": {
-        "SE3": "CSRBit_Writable"
+        "SE3": "CSRBit_ReadOnlyZero"
       },
       // hstateen0.SE0 is always writable.
       "hstateen0": {
@@ -1042,7 +1043,7 @@
         "mhselect": {
           // Values 1, 4 and 5, match on `mcontext`. Requires the
           // `mcontext` CSR. Values 1 and 5 also require H.
-          "mcontext_match": false,
+          "mcontext_match": true,
           // Values 2 and 6, match on the VMID in `hgatp`. Requires H.
           "vmid_match": false
         },
@@ -1056,7 +1057,7 @@
         // The number of implemented `mhvalue` and `svalue` bits. Bits
         // above these are read only zero. At most 6 and 16 on RV32,
         // 13 and 32 on RV64.
-        "mhvalue_len": 0,
+        "mhvalue_len": 13,
         "svalue_len": 0
       },
       // CSRs

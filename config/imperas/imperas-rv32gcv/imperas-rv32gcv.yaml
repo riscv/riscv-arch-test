@@ -109,6 +109,142 @@ implemented_extensions:
   - { name: Zvl512b, version: "= 1.0.0" }
 
 params:
+  # Trap delegation: the writable medeleg and mideleg bits (sail.json base.medeleg and
+  # base.mideleg delegatable_bits, without LCOFI when Sscofpmf is absent; with H, VSSI, VSTI, VSEI are always delegated)
+  MEDELEG_DELEGATABLE:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  MIDELEG_DELEGATABLE:
+    [
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
   NON_STANDARD_EXTENSION_IMPLEMENTED: false
   # A params
   MISALIGNED_AMO: false
@@ -429,14 +565,13 @@ params:
   REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK: true
   REPORT_CAUSE_IN_VSTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK: true
   # Sdtrig params
-  DBG_HCONTEXT_WIDTH: 14
-  DBG_SCONTEXT_WIDTH: 32
+  DBG_HCONTEXT_WIDTH: 6
+  DBG_SCONTEXT_WIDTH: 16
   DCSR_MPRVEN_TYPE: rw
   DCSR_STEPIE_TYPE: rw
   DCSR_STOPCOUNT_TYPE: rw
   DCSR_STOPTIME_TYPE: rw
-  HCONTEXT_AVAILABLE: false
-  MCONTEXT_AVAILABLE: true
+  MCONTEXT_IMPLEMENTED: true
   # Smstateen params
   MSTATEEN_ENVCFG_TYPE: rw
   MSTATEEN_CONTEXT_TYPE: rw
@@ -466,3 +601,35 @@ params:
   MCTRCTL_TRETINH_IMPLEMENTED: true
   # Zawrs params
   ZAWRS_NTO_IS_NOP: true
+  # Sdtrig and Zkr seed parameters added for riscv-unified-db#2069 (values from sail.json)
+  SDTRIG_NUM_TRIGGERS: 4
+  SDTRIG_BREAKPOINT_REENTRANCY: Use_interrupt_enables
+  TCONTROL_IMPLEMENTED: false
+  TDATA2_IMPLEMENTED: true
+  TDATA3_IMPLEMENTED: true
+  SDTRIG_M_WRITABLE: true
+  SDTRIG_S_WRITABLE: true
+  SDTRIG_U_WRITABLE: true
+  SCONTEXT_IMPLEMENTED: true
+  SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS: [true, true, true, true]
+  SDTRIG_ICOUNT_SUPPORTED_TRIGGERS: [true, true, true, true]
+  SDTRIG_ITRIGGER_SUPPORTED_TRIGGERS: [true, true, true, true]
+  SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS: [true, true, true, true]
+  SDTRIG_MCONTROL6_MASKMAX6: 32
+  SDTRIG_MAX_CHAIN_LENGTH: 4
+  SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES: [0, 1, 2, 3, 4, 5, 8, 9, 12, 13]
+  SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES: [0, 1, 2, 3, 4, 5, 6]
+  SDTRIG_MCONTROL6_SELECT_WRITABLE: true
+  SDTRIG_MCONTROL6_EXECUTE_WRITABLE: true
+  SDTRIG_MCONTROL6_LOAD_WRITABLE: true
+  SDTRIG_MCONTROL6_STORE_WRITABLE: true
+  SDTRIG_ICOUNT_COUNT_HARDWIRED_1: true
+  SDTRIG_ICOUNT_SELF_WRITE_SETS_PENDING: false
+  SDTRIG_ITRIGGER_SUPPORTED_INTERRUPTS: [1, 3, 5, 7, 9, 11, 13]
+  SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS:
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 15, 18, 19]
+  SDTRIG_TEXTRA_MHVALUE_LEN: 6
+  SDTRIG_TEXTRA_SVALUE_LEN: 16
+  SDTRIG_TEXTRA_MHSELECT_MCONTEXT_MATCH: true
+  SDTRIG_TEXTRA_SSELECT_SCONTEXT_MATCH: true
+  SDTRIG_TEXTRA_SSELECT_ASID_MATCH: true

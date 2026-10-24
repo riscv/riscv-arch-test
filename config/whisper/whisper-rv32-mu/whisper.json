@@ -142,29 +142,26 @@
     "itrigger",
     "etrigger"
   ],
-  // tdata1 masks: mcontrol6 s (bit 4) is read-only 0 because the hart has no S mode. Whisper applies one tdata1
-  // mask to every trigger type, so the icount/itrigger/etrigger s bit (7) cannot be masked as well: it is
-  // mcontrol6 match[0] (tenstorrent/whisper#213).
   "triggers": [
     {
       "reset": [0, 0, 0, "0x1008078"],
-      "mask": ["0xfdffffef", "0xffffffff", "0x0", 0],
-      "poke_mask": ["0xfdffffef", "0xffffffff", "0x0", 0]
+      "mask": ["0xfdffffef", "0xffffffff", "0xffffffff", 0],
+      "poke_mask": ["0xfdffffef", "0xffffffff", "0xffffffff", 0]
     },
     {
       "reset": [0, 0, 0, "0x1008078"],
-      "mask": ["0xfdffffef", "0xffffffff", "0x0", 0],
-      "poke_mask": ["0xfdffffef", "0xffffffff", "0x0", 0]
+      "mask": ["0xfdffffef", "0xffffffff", "0xffffffff", 0],
+      "poke_mask": ["0xfdffffef", "0xffffffff", "0xffffffff", 0]
     },
     {
       "reset": [0, 0, 0, "0x1008078"],
-      "mask": ["0xfdffffef", "0xffffffff", "0x0", 0],
-      "poke_mask": ["0xfdffffef", "0xffffffff", "0x0", 0]
+      "mask": ["0xfdffffef", "0xffffffff", "0xffffffff", 0],
+      "poke_mask": ["0xfdffffef", "0xffffffff", "0xffffffff", 0]
     },
     {
       "reset": [0, 0, 0, "0x1008078"],
-      "mask": ["0xfdffffef", "0xffffffff", "0x0", 0],
-      "poke_mask": ["0xfdffffef", "0xffffffff", "0x0", 0]
+      "mask": ["0xfdffffef", "0xffffffff", "0xffffffff", 0],
+      "poke_mask": ["0xfdffffef", "0xffffffff", "0xffffffff", 0]
     }
   ]
 }

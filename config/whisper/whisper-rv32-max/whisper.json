@@ -13,7 +13,7 @@
   "clear_tinst_on_cbo_inval": false,
   "enable_pmp_na4": false,
   "enable_pmp_tor": true,
-  "guest_interrupt_count": 5,
+  "guest_interrupt_count": 31, // GEILEN: hgeie bits 31:1 are writable
   "indexed_nmi": false,
 
   "memmap": {
@@ -90,6 +90,19 @@
     "stoptrace",
     "emittrace"
   ],
+  // IMSIC for the guest interrupt files: the APLIC below still delivers MEXT and SEXT directly, which the M-level
+  // and S-level files allow (maplic, saplic) once RVMODEL_BOOT sets their eidelivery to 0x40000000.  One S-level file plus 31 guest files per hart, 4 KiB apart, at the
+  // addresses rvmodel_macros.h uses.  guests matches guest_interrupt_count (GEILEN).
+  "imsic": {
+    "mbase": "0x24000000",
+    "mstride": "0x1000",
+    "sbase": "0x28000000",
+    "sstride": "0x20000",
+    "guests": 31,
+    "maplic": true,
+    "saplic": true
+  },
+
   "aplic": {
     "num_sources": 2, // two sources (MEXT and SEXT)
     "domains": {
@@ -151,23 +164,23 @@
   "triggers": [
     {
       "reset": [0, 0, 0, "0x1008078"],
-      "mask": ["0xfdffffff", "0xffffffff", "0x0", 0],
-      "poke_mask": ["0xfdffffff", "0xffffffff", "0x0", 0]
+      "mask": ["0xfdffffff", "0xffffffff", "0xffffffff", 0],
+      "poke_mask": ["0xfdffffff", "0xffffffff", "0xffffffff", 0]
     },
     {
       "reset": [0, 0, 0, "0x1008078"],
-      "mask": ["0xfdffffff", "0xffffffff", "0x0", 0],
-      "poke_mask": ["0xfdffffff", "0xffffffff", "0x0", 0]
+      "mask": ["0xfdffffff", "0xffffffff", "0xffffffff", 0],
+      "poke_mask": ["0xfdffffff", "0xffffffff", "0xffffffff", 0]
     },
     {
       "reset": [0, 0, 0, "0x1008078"],
-      "mask": ["0xfdffffff", "0xffffffff", "0x0", 0],
-      "poke_mask": ["0xfdffffff", "0xffffffff", "0x0", 0]
+      "mask": ["0xfdffffff", "0xffffffff", "0xffffffff", 0],
+      "poke_mask": ["0xfdffffff", "0xffffffff", "0xffffffff", 0]
     },
     {
       "reset": [0, 0, 0, "0x1008078"],
-      "mask": ["0xfdffffff", "0xffffffff", "0x0", 0],
-      "poke_mask": ["0xfdffffff", "0xffffffff", "0x0", 0]
+      "mask": ["0xfdffffff", "0xffffffff", "0xffffffff", 0],
+      "poke_mask": ["0xfdffffff", "0xffffffff", "0xffffffff", 0]
     }
   ]
 }

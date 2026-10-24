@@ -3,6 +3,7 @@
 #
 # S supervisor mode privileged extension test generator.
 # Also generates the S_F, S_V and S_VF groups, run only when F, Zve32x or Zve32f is also supported.
+# Also generates the S_Zicntr group, run only when Zicntr is also supported.
 # David_Harris@hmc.edu 1 March 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
@@ -27,6 +28,7 @@ from testgen.priv.extensions.PrivCommon import (
 )
 from testgen.priv.extensions.VCommon import gen_v_tests
 from testgen.priv.extensions.VFCommon import gen_vf_tests
+from testgen.priv.extensions.ZicntrCommon import counter_inc_inaccessible_tests, counteren_walk_tests
 from testgen.priv.registry import add_priv_test_generator
 
 # Address CSRs that must hold every valid virtual address: {csr: (held-low mask, {bit: gate define})}.
@@ -463,3 +465,66 @@ def make_sv(test_data: TestData) -> list[TestChunk]:
 def make_svf(test_data: TestData) -> list[TestChunk]:
     """Generate S_VF tests (vector-FP x sstatus.FS state)."""
     return gen_vf_tests(test_data, "S", "S_VF_cg")
+
+
+_ZICNTR_CG = "S_Zicntr_cg"
+
+
+@add_priv_test_generator(
+    "S",
+    required_extensions=["S", "Zicntr"],
+    march_extensions=["Zicntr", "Zihpm"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
+def make_zicntrs(test_data: TestData) -> list[TestChunk]:
+    """Generate S_Zicntr tests"""
+    test_chunks: list[TestChunk] = []
+    tc = test_data.begin_test_chunk("Zicntr")
+
+    tc.code.extend(
+        counteren_walk_tests(
+            test_data,
+            _ZICNTR_CG,
+            "cp_mcounteren_access_s",
+            "Write walking 1s and 0s to mcounteren.  Read from corresponding counter and counterh in S-mode",
+            csrs=["mcounteren"],
+            mode="S",
+        )
+    )
+    tc.code.extend(
+        counteren_walk_tests(
+            test_data,
+            _ZICNTR_CG,
+            "cp_scounteren_access_s",
+            "Write walking 1s and 0s to scounteren with mcounteren = all 1s.  Read from corresponding counter and counterh in S-mode",
+            csrs=["scounteren"],
+            mode="S",
+            mcounteren="ones",
+        )
+    )
+    tc.code.append("RVTEST_TSBI_GOTO_UMODE")
+    tc.code.extend(
+        counteren_walk_tests(
+            test_data,
+            _ZICNTR_CG,
+            "cp_scounteren_access_u",
+            "Write walking 1s and 0s to scounteren with mcounteren = all 1s.  Read from corresponding counter and counterh in U-mode",
+            csrs=["scounteren"],
+            mode="U",
+            mcounteren="ones",
+        )
+    )
+    tc.code.extend(
+        counteren_walk_tests(
+            test_data,
+            _ZICNTR_CG,
+            "cp_mscounteren_access_u",
+            "Write walking 1s and 0s to both mcounteren and scounteren (same value in each).  Read from corresponding counter and counterh in U-mode",
+            csrs=["mcounteren", "scounteren"],
+            mode="U",
+        )
+    )
+    tc.code.append("RVTEST_TSBI_GOTO_SMODE")
+    tc.code.extend(counter_inc_inaccessible_tests(test_data, _ZICNTR_CG, "S"))
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks

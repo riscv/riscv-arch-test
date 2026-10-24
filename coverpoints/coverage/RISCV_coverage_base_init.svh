@@ -106,37 +106,9 @@
         `cover_info("//      MisalignV - Enabled");
         `include "MisalignV_coverage_init.svh"
     `endif
-    `ifdef COVER_PMPF
-        `cover_info("//      PMPF - Enabled");
-        `include "PMPF_coverage_init.svh"
-    `endif
-    `ifdef COVER_PMPS
-        `cover_info("//      PMPS - Enabled");
-        `include "PMPS_coverage_init.svh"
-    `endif
-    `ifdef COVER_PMPSM
-        `cover_info("//      PMPSm - Enabled");
-        `include "PMPSm_coverage_init.svh"
-    `endif
-    `ifdef COVER_PMPU
-        `cover_info("//      PMPU - Enabled");
-        `include "PMPU_coverage_init.svh"
-    `endif
-    `ifdef COVER_PMPZAAMO
-        `cover_info("//      PMPZaamo - Enabled");
-        `include "PMPZaamo_coverage_init.svh"
-    `endif
-    `ifdef COVER_PMPZALRSC
-        `cover_info("//      PMPZalrsc - Enabled");
-        `include "PMPZalrsc_coverage_init.svh"
-    `endif
-    `ifdef COVER_PMPZCA
-        `cover_info("//      PMPZca - Enabled");
-        `include "PMPZca_coverage_init.svh"
-    `endif
-    `ifdef COVER_PMPZICBO
-        `cover_info("//      PMPZicbo - Enabled");
-        `include "PMPZicbo_coverage_init.svh"
+    `ifdef COVER_PMP
+        `cover_info("//      PMP - Enabled");
+        `include "PMP_coverage_init.svh"
     `endif
     `ifdef COVER_S
         `cover_info("//      S - Enabled");
@@ -222,14 +194,6 @@
         `cover_info("//      SvH - Enabled");
         `include "SvH_coverage_init.svh"
     `endif
-    `ifdef COVER_SVPMP
-        `cover_info("//      SvPMP - Enabled");
-        `include "SvPMP_coverage_init.svh"
-    `endif
-    `ifdef COVER_SVPMPZICBO
-        `cover_info("//      SvPMPZicbo - Enabled");
-        `include "SvPMPZicbo_coverage_init.svh"
-    `endif
     `ifdef COVER_SVADE
         `cover_info("//      Svade - Enabled");
         `include "Svade_coverage_init.svh"
@@ -237,10 +201,6 @@
     `ifdef COVER_SVADU
         `cover_info("//      Svadu - Enabled");
         `include "Svadu_coverage_init.svh"
-    `endif
-    `ifdef COVER_SVADUPMP
-        `cover_info("//      SvaduPMP - Enabled");
-        `include "SvaduPMP_coverage_init.svh"
     `endif
     `ifdef COVER_SVBARE
         `cover_info("//      Svbare - Enabled");

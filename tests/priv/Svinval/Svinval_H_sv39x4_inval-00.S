@@ -1280,6 +1280,7 @@ fence_page_a:
 fence_page_b:
   .4byte 0x0b0b0b0b
   .skip 4092
+#if __riscv_xlen == 32
   .ifndef rvtest_hlvl0_pg_tbl
   .p2align 12
 rvtest_hlvl0_pg_tbl:
@@ -1290,7 +1291,7 @@ rvtest_hlvl0_pg_tbl:
 rvtest_vlvl0_pg_tbl:
   .skip 4096
   .endif
-#if __riscv_xlen == 64
+#else
   .ifndef rvtest_hlvl1_pg_tbl
   .p2align 12
 rvtest_hlvl1_pg_tbl:

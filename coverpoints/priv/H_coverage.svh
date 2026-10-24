@@ -577,6 +577,27 @@ covergroup H_inst_cg with function sample(ins_t ins);
     }
     cp_hfence:        cross priv_mode_hs_vs_u_vu, hfence;
 
+    // hstatus.VTVM = 1 makes sfence.vma and satp accesses raise virtual instruction in VS-mode, but does not trap
+    // hfence.vvma in HS-mode.  mstatus.TVM needs M-mode, so it is in Sm_H.
+    hstatus_vtvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtvm")[0] {
+    }
+    sfence_vma : coverpoint ins.current.insn {
+        wildcard bins sfence_vma = {SFENCE_VMA};
+    }
+    hfence_vvma : coverpoint ins.current.insn {
+        wildcard bins hfence_vvma = {HFENCE_VVMA};
+    }
+    satp_access : coverpoint ins.current.insn {
+        wildcard bins csrr = {CSRR};
+        wildcard bins csrw = {CSRW};
+    }
+    satp : coverpoint ins.current.insn[31:20] {
+        bins satp = {CSR_SATP};
+    }
+    cp_vtvm_sfence:      cross priv_mode_vs, sfence_vma, hstatus_vtvm;
+    cp_vtvm_satp:        cross priv_mode_vs, satp_access, satp, hstatus_vtvm;
+    cp_vtvm_hfence_vvma: cross priv_mode_hs, hfence_vvma, hstatus_vtvm;
+
     // In VS-mode the trace reports vsstatus as sstatus
     old_spp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0] {
     }

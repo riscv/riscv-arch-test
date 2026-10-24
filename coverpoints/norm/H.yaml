@@ -427,6 +427,13 @@ normative_rule_definitions:
   - names: [hfence-vvma_hfence-gvma_op, hfence-vvma_mode, hfence-gvma_op, hfence-vvma_hfence-gvma_exceptions]
     coverpoint: ["H_inst_cg/cp_hfence"]
 
+  # When VTVM=1, VS-mode sfence.vma and satp accesses raise virtual instruction, but neither mstatus.TVM nor
+  # hstatus.VTVM traps hfence.vvma.  SINVAL.VMA is in Svinval; mstatus.TVM is in Sm_H.
+  - names: [hstatus_vtvm_op, H_virtinst_vs_sfence_sinval_satp_vtvm1]
+    coverpoint: ["H_inst_cg/{cp_vtvm_sfence, cp_vtvm_satp}"]
+  - names: [hfence-vvma_tvm]
+    coverpoint: ["H_inst_cg/cp_vtvm_hfence_vvma"]
+
   # Attempting to execute an xRET instruction in a mode less privileged than x will raise
   # an illegal-instruction exception.
   - name: xret_in_lower_mode

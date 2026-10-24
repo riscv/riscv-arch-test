@@ -10,47 +10,38 @@
 
 `define COVER_PMP
 
-// One suite directory holds every group, so each group is enabled only when its extensions are supported.
 `ifndef PMP_HAS_SV
-`ifdef SV32_SUPPORTED
-`define PMP_HAS_SV
-`elsif SV39_SUPPORTED
-`define PMP_HAS_SV
-`elsif SV48_SUPPORTED
-`define PMP_HAS_SV
-`elsif SV57_SUPPORTED
-`define PMP_HAS_SV
+  `ifdef SV32_SUPPORTED
+    `define PMP_HAS_SV
+  `elsif SV39_SUPPORTED
+    `define PMP_HAS_SV
+  `endif
 `endif
-`endif
+
 // PMP_HAS_CBO: Zicbom or Zicboz. PMP_HAS_ZICBO: Zicbom and Zicboz, or Zicbop.
 `ifdef ZICBOM_SUPPORTED
-`define PMP_HAS_CBO
+  `define PMP_HAS_CBO
 `elsif ZICBOZ_SUPPORTED
-`define PMP_HAS_CBO
+  `define PMP_HAS_CBO
 `endif
+
 `ifdef ZICBOM_SUPPORTED
-`ifdef ZICBOZ_SUPPORTED
-`define PMP_HAS_ZICBO
-`endif
+  `ifdef ZICBOZ_SUPPORTED
+    `define PMP_HAS_ZICBO
+  `endif
 `endif
 `ifdef ZICBOP_SUPPORTED
-`ifndef PMP_HAS_ZICBO
-`define PMP_HAS_ZICBO
-`endif
-`endif
-
-
-`ifdef PMP_HAS_SV
-`ifdef PMP_HAS_CBO
-`define PMP_COVER_SVZICBO
-`endif
+  `ifndef PMP_HAS_ZICBO
+    `define PMP_HAS_ZICBO
+  `endif
 `endif
 
 `ifdef PMP_HAS_SV
-`ifdef SVADU_SUPPORTED
-`define PMP_COVER_SVADU
+  `ifdef PMP_HAS_CBO
+    `define PMP_COVER_SVZICBO
+  `endif
 `endif
-`endif
+
 
 `ifdef F_SUPPORTED
 covergroup PMP_F_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0],logic [14:0] pmp_hit);
@@ -3406,7 +3397,7 @@ function void pmp_SvZicbo_sample(int hart, int issue, ins_t ins);
     PMP_SvZicbo_cg.sample(ins);
 endfunction
 `endif
-`ifdef PMP_COVER_SVADU
+`ifdef SVADU_SUPPORTED
 covergroup PMP_Svadu_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
@@ -3518,13 +3509,13 @@ endfunction
 `endif
 
 function void pmp_sample(int hart, int issue, ins_t ins);
+  pmp_Sm_sample(hart, issue, ins);
   `ifdef F_SUPPORTED
     pmp_F_sample(hart, issue, ins);
   `endif
   `ifdef S_SUPPORTED
     pmp_S_sample(hart, issue, ins);
   `endif
-  pmp_Sm_sample(hart, issue, ins);
   `ifdef U_SUPPORTED
     pmp_U_sample(hart, issue, ins);
   `endif
@@ -3546,7 +3537,7 @@ function void pmp_sample(int hart, int issue, ins_t ins);
   `ifdef PMP_COVER_SVZICBO
     pmp_SvZicbo_sample(hart, issue, ins);
   `endif
-  `ifdef PMP_COVER_SVADU
+  `ifdef SVADU_SUPPORTED
     pmp_Svadu_sample(hart, issue, ins);
   `endif
 endfunction

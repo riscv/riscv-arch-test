@@ -8,13 +8,13 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
+    PMP_Sm_cg = new();    PMP_Sm_cg.set_inst_name("obj_PMP_Sm");
 `ifdef F_SUPPORTED
     PMP_F_cg = new();    PMP_F_cg.set_inst_name("obj_PMP_F");
 `endif
 `ifdef S_SUPPORTED
     PMP_S_cg = new();    PMP_S_cg.set_inst_name("obj_PMP_S");
 `endif
-    PMP_Sm_cg = new();    PMP_Sm_cg.set_inst_name("obj_PMP_Sm");
 `ifdef U_SUPPORTED
     PMP_U_cg = new();    PMP_U_cg.set_inst_name("obj_PMP_U");
 `endif
@@ -36,6 +36,6 @@
 `ifdef PMP_COVER_SVZICBO
     PMP_SvZicbo_cg = new();    PMP_SvZicbo_cg.set_inst_name("obj_PMP_SvZicbo");
 `endif
-`ifdef PMP_COVER_SVADU
+`ifdef SVADU_SUPPORTED
     PMP_Svadu_cg = new();    PMP_Svadu_cg.set_inst_name("obj_PMP_Svadu");
 `endif

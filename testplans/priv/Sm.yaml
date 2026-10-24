@@ -533,10 +533,10 @@ coverpoints:
       - H_mtval_nrz
   - heading: mstatus.TVM and hstatus.VTVM (Sm_H_tvm_cg)
   - name: cp_tvm_hs
-    goal: TVM traps access to satp and hgatp, but not vsatp
-    description: With mstatus.TVM = {0/1}, in HS-mode read and write satp, hgatp and vsatp
-    expectation: Illegal instruction fault for satp and hgatp if TVM = 1.  vsatp accesses never trap.
-    bins: 3 regs * 2 accesses * 2 TVM
+    goal: TVM traps access to satp and hgatp, but not vsatp; VTVM does not affect HS-mode
+    description: With mstatus.TVM = {0/1} cross hstatus.VTVM = {0/1}, in HS-mode read and write satp, hgatp and vsatp
+    expectation: Illegal instruction fault for satp and hgatp if TVM = 1.  vsatp accesses never trap.  VTVM has no effect.
+    bins: 3 regs * 2 accesses * 2 TVM * 2 VTVM
   - name: cp_tvm_vs
     goal: VTVM traps access to satp
     description: With mstatus.TVM = {0/1} cross hstatus.VTVM = {0/1}, in VS-mode read and write satp

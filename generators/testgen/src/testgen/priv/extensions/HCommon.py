@@ -12,7 +12,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from testgen.asm.csr import csr_access_test, csr_walk_test, gen_csr_read_sigupd, gen_csr_write_sigupd
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.data.random import random_int
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -53,16 +53,19 @@ class HCsr:
         return self.asm or self.name
 
 
-# hstatus fields checked by the access and walk tests.  VSBE is left out like UBE, because Sail has no
-# big-endian support; VGEIN is WLRL (cp_hstatus_vgein); VSXL is WARL.
+# hstatus fields checked by the access and walk tests
 HSTATUS_MASK = (
-    (1 << 6)  # GVA
-    | (1 << 7)  # SPV
-    | (1 << 8)  # SPVP
-    | (1 << 9)  # HU
-    | (1 << 20)  # VTVM
-    | (1 << 21)  # VTW
-    | (1 << 22)  # VTSR
+    (0 << 5)  # VSBE not yet supported by Sail; test in EndianH
+    | (1 << 6)  # GVA:   Guest Virtual Address
+    | (1 << 7)  # SPV:   Supervisor Previous Virtualization mode
+    | (1 << 8)  # SPVP:  Supervisor Previous Virtual Privilege
+    | (1 << 9)  # HU:    Hypervisor in U-mode
+    | (0 << 12)  # VGEIN is WLRL, so it is written only with legal values in cp_hstatus_vgein
+    | (1 << 20)  # VTVM:  Virtual TVM
+    | (1 << 21)  # VTW:   Virtual Timeout Wait
+    | (1 << 22)  # VTSR:  Virtual Trap SRET
+    | (0 << 32)  # VSXL is WARL and VS-mode XLEN is not changeable in Sail yet; should be tested in Xlen suite
+    | (0 << 48)  # HUPMM is tested in the Ssnpm suite
 )
 
 # hedeleg bits the spec requires to be writable (1-8, 12, 13, 15) or read-only zero (9-11, 16, 20-23).
@@ -111,7 +114,7 @@ P1P13_ON = ("#ifdef SMSTATEEN_SUPPORTED", "RVTEST_TSBI_CSR_SET(CSR_MSTATEEN0H, M
 P1P13_OFF = ("#ifdef SMSTATEEN_SUPPORTED", "RVTEST_TSBI_CSR_CLEAR(CSR_MSTATEEN0H, MSTATEEN0H_PRIV113)", "#endif")
 
 # mtval2 and htval must hold zero (mtval2_val, htval_val), and mtinst and htinst must hold the zero that a trap
-# may write (mtinst_val, htinst_val).  hgatp, vsatp and hedelegh hold zero, and their other bits are WARL.
+# may write (mtinst_val, htinst_val).  hgatp and vsatp hold zero, and their other bits are WARL.
 H_M_CSRS = [HCsr("mtval2", zero=True), HCsr("mtinst", zero=True)]
 
 H_HS_CSRS = [
@@ -131,8 +134,8 @@ H_HS_CSRS = [
     # RV32-only high halves
     HCsr(
         "hedelegh",
+        0,  # all bits reserved, as medelegh in Sm
         asm="CSR_HEDELEGH",  # LLVM does not know the name
-        zero=True,
         gate="__riscv_xlen == 32 && defined(SM1P13P0_OR_LATER_SUPPORTED)",
         setup=P1P13_ON,
         restore=P1P13_OFF,
@@ -157,21 +160,14 @@ H_VS_CSRS = [
 
 # Configs where Sv39/Sv39x4 (RV64) or Sv32/Sv32x4 (RV32) can be selected
 ATP_GATE = {
-    "satp": "(__riscv_xlen == 64 && defined(SV39_SUPPORTED)) || (__riscv_xlen == 32 && defined(SV32_SUPPORTED))",
     "vsatp": "(__riscv_xlen == 64 && defined(UDB_SV39_VSMODE_TRANSLATION)) || "
     "(__riscv_xlen == 32 && defined(UDB_SV32_VSMODE_TRANSLATION))",
     "hgatp": "(__riscv_xlen == 64 && defined(UDB_SV39X4_TRANSLATION)) || "
     "(__riscv_xlen == 32 && defined(UDB_SV32X4_TRANSLATION))",
 }
 TWO_STAGE_GATE = f"({ATP_GATE['vsatp']}) && ({ATP_GATE['hgatp']})"
-REPLICA_ATP_GATE = f"({ATP_GATE['satp']}) && ({ATP_GATE['vsatp']})"
-
-
-def gated(lines: list[str], gate: str | None) -> list[str]:
-    """Wrap lines in #if gate."""
-    if gate is None:
-        return lines
-    return [f"#if {gate}", *lines, f"#endif // {gate}"]
+# satp always supports Sv39 (RV64) or Sv32 (RV32), so the satp replica tests need only a paged vsatp mode
+REPLICA_ATP_GATE = ATP_GATE["vsatp"]
 
 
 def hcsr_tests(test_data: TestData, test_chunks: list[TestChunk], csrs: list[HCsr], covergroup: str) -> None:
@@ -357,8 +353,8 @@ def hlv_tests(test_data: TestData, tc: TestChunk, covergroup: str, modes: tuple[
     """hlv, hlvx and hsv from each of modes ("m", "hs" or "u") through non-identity two-stage translation.
 
     The VS-stage maps the superpage at vs.data_va to the guest physical superpage at g.data_va, which the G-stage
-    maps to the superpage of H_hlv_data.  U-mode runs with hstatus.HU = 1.  H_hlv_data is written and checked
-    through its physical address.
+    maps to the superpage of H_hlv_data.  hstatus.HU = 1 throughout, as U-mode needs.  H_hlv_data is written and
+    checked through its physical address.
     """
     tc.raw_data.extend([".p2align 3", "H_hlv_data:", "  .dword 0"])
     va_reg = test_data.int_regs.get_register()
@@ -412,9 +408,10 @@ def hlv_tests(test_data: TestData, tc: TestChunk, covergroup: str, modes: tuple[
         f"LI(x{val_reg}, {HLV_DATA & 0xFFFFFFFF:#x})",
         "#endif",
     ]
+    lines.extend([f"LI(x{pa_reg}, HSTATUS_HU)", f"csrs hstatus, x{pa_reg}"])
     for mode in modes:
         if mode == "u":
-            lines.extend([f"LI(x{pa_reg}, HSTATUS_HU)", f"csrs hstatus, x{pa_reg}", "RVTEST_TSBI_GOTO_UMODE"])
+            lines.append("RVTEST_TSBI_GOTO_UMODE")
         lines.append(f"LA(x{pa_reg}, H_hlv_data)")
         for instrs, coverpoint in ((HLV_INSTRS, "cp_hlv"), (HLVX_INSTRS, "cp_hlvx")):
             for instr, rv64 in instrs:
@@ -437,7 +434,8 @@ def hlv_tests(test_data: TestData, tc: TestChunk, covergroup: str, modes: tuple[
             ]
             lines.extend(gated(body, "__riscv_xlen == 64" if rv64 else None))
         if mode == "u":
-            lines.extend(["RVTEST_TSBI_GOTO_SMODE", f"LI(x{pa_reg}, HSTATUS_HU)", f"csrc hstatus, x{pa_reg}"])
+            lines.append("RVTEST_TSBI_GOTO_SMODE")
+    lines.extend([f"LI(x{pa_reg}, HSTATUS_HU)", f"csrc hstatus, x{pa_reg}"])
     test_data.int_regs.return_registers([va_reg, pa_reg, val_reg, rd])
     return [*lines, *guest_translation_teardown(test_data), f"#endif // {TWO_STAGE_GATE}"]
 
@@ -553,27 +551,17 @@ def sret_tests(test_data: TestData, covergroup: str, coverpoint: str, home: str)
     """Execute sret in home ("m" or "s") with each SPP, SPIE and hstatus.SPV.
 
     home writes SPP and SPIE through its own status CSR, which the coverage samples.  After each sret, a read of
-    mscratch traps into M-mode and the trap record shows the mode reached.  home then checks SPP, SPIE, SIE and
-    hstatus.SPV.  For home "s", medeleg sends illegal instructions and U/VU and VS ecalls to M-mode during the test,
-    so that no trap into HS-mode rewrites SPP, SPIE or SPV before they are checked.
+    mscratch traps and the trap record shows the mode reached.  home then checks SPP, SPIE, SIE and hstatus.SPV.
+    For home "s" the trap and the return to HS-mode are traps into HS-mode, which rewrite SPP, SPIE and SPV from
+    the mode and SIE that the sret produced, so the checked values still depend only on the sret.
     """
     status = "mstatus" if home == "m" else "sstatus"
     save_reg, save_h_reg, temp_reg, rd = test_data.int_regs.get_registers(4)
-    to_m = "(1 << CAUSE_ILLEGAL_INSTRUCTION) | (1 << CAUSE_USER_ECALL) | (1 << CAUSE_VIRTUAL_SUPERVISOR_ECALL)"
     lines = [
         comment_banner(
             coverpoint, f"Execute sret with {status}.SPP = {{0, 1}}, SPIE = {{0, 1}} and hstatus.SPV = {{0, 1}}"
         )
     ]
-    if home == "s":
-        lines.extend(
-            [
-                "RVTEST_TSBI_GOTO_MMODE",
-                f"LI(x{temp_reg}, {to_m})",
-                f"csrc medeleg, x{temp_reg}",
-                "RVTEST_TSBI_GOTO_SMODE",
-            ]
-        )
     lines.extend([f"csrr x{save_reg}, {status}", f"csrr x{save_h_reg}, hstatus"])
     for spp in (0, 1):
         for spie in (0, 1):
@@ -611,15 +599,6 @@ def sret_tests(test_data: TestData, covergroup: str, coverpoint: str, home: str)
                     ]
                 )
     lines.extend([f"csrw {status}, x{save_reg}", f"csrw hstatus, x{save_h_reg}"])
-    if home == "s":
-        lines.extend(
-            [
-                "RVTEST_TSBI_GOTO_MMODE",
-                f"LI(x{temp_reg}, {to_m})",
-                f"csrs medeleg, x{temp_reg}",
-                "RVTEST_TSBI_GOTO_SMODE",
-            ]
-        )
     test_data.int_regs.return_registers([save_reg, save_h_reg, temp_reg, rd])
     return lines
 

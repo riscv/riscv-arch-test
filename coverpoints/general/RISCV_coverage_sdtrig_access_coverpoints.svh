@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   cp_csr_access_common building blocks of the SdtrigSm/SdtrigS access covergroups
+//   cp_csr_access_common building blocks of the SdtrigSm access covergroup
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////

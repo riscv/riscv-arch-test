@@ -32,10 +32,8 @@ covergroup SdtrigS_access_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "general/RISCV_coverage_sdtrig_coverpoints.svh"
-    `include "general/RISCV_coverage_sdtrig_access_coverpoints.svh"
 
     // main coverpoints
-    cp_csr_access_common: cross priv_mode_m, triggernum, tdata1_type, csr_common_reg, csr_access_common;  // through T-SBI: NTRIG * 5 types * implemented CSRs (4-8) * 5 accesses
     cp_csr_access_trap_s: cross priv_mode_s, csr_read_write, csr_trigger_mlevel, illegal_insn_trap;  // 2 accesses * implemented M-level trigger CSRs (5-7)
 endgroup
 

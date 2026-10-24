@@ -35,41 +35,14 @@
 `ifdef ENDIANZALRSC_COVERAGE
   `include "EndianZalrsc_coverage.svh"
 `endif
-`ifdef EXCEPTIONSF_COVERAGE
-  `include "ExceptionsF_coverage.svh"
+`ifdef EXCEPTIONS_COVERAGE
+  `include "Exceptions_coverage.svh"
 `endif
 `ifdef EXCEPTIONSH_COVERAGE
   `include "ExceptionsH_coverage.svh"
 `endif
 `ifdef EXCEPTIONSHV_COVERAGE
   `include "ExceptionsHV_coverage.svh"
-`endif
-`ifdef EXCEPTIONSS_COVERAGE
-  `include "ExceptionsS_coverage.svh"
-`endif
-`ifdef EXCEPTIONSSM_COVERAGE
-  `include "ExceptionsSm_coverage.svh"
-`endif
-`ifdef EXCEPTIONSSV_COVERAGE
-  `include "ExceptionsSv_coverage.svh"
-`endif
-`ifdef EXCEPTIONSSVSM_COVERAGE
-  `include "ExceptionsSvSm_coverage.svh"
-`endif
-`ifdef EXCEPTIONSSVZAAMO_COVERAGE
-  `include "ExceptionsSvZaamo_coverage.svh"
-`endif
-`ifdef EXCEPTIONSSVZAAMOSM_COVERAGE
-  `include "ExceptionsSvZaamoSm_coverage.svh"
-`endif
-`ifdef EXCEPTIONSSVZALRSC_COVERAGE
-  `include "ExceptionsSvZalrsc_coverage.svh"
-`endif
-`ifdef EXCEPTIONSSVZALRSCSM_COVERAGE
-  `include "ExceptionsSvZalrscSm_coverage.svh"
-`endif
-`ifdef EXCEPTIONSU_COVERAGE
-  `include "ExceptionsU_coverage.svh"
 `endif
 `ifdef EXCEPTIONSVF16_COVERAGE
   `include "ExceptionsVf16_coverage.svh"
@@ -88,24 +61,6 @@
 `endif
 `ifdef EXCEPTIONSVX_COVERAGE
   `include "ExceptionsVx_coverage.svh"
-`endif
-`ifdef EXCEPTIONSZAAMO_COVERAGE
-  `include "ExceptionsZaamo_coverage.svh"
-`endif
-`ifdef EXCEPTIONSZALRSC_COVERAGE
-  `include "ExceptionsZalrsc_coverage.svh"
-`endif
-`ifdef EXCEPTIONSZC_COVERAGE
-  `include "ExceptionsZc_coverage.svh"
-`endif
-`ifdef EXCEPTIONSZICBOS_COVERAGE
-  `include "ExceptionsZicboS_coverage.svh"
-`endif
-`ifdef EXCEPTIONSZICBOSM_COVERAGE
-  `include "ExceptionsZicboSm_coverage.svh"
-`endif
-`ifdef EXCEPTIONSZICBOU_COVERAGE
-  `include "ExceptionsZicboU_coverage.svh"
 `endif
 `ifdef F_COVERAGE
   `include "F_coverage.svh"
@@ -238,12 +193,6 @@
 `endif
 `ifdef SVPMPZICBO_COVERAGE
   `include "SvPMPZicbo_coverage.svh"
-`endif
-`ifdef SVSM_COVERAGE
-  `include "SvSm_coverage.svh"
-`endif
-`ifdef SVZICBO_COVERAGE
-  `include "SvZicbo_coverage.svh"
 `endif
 `ifdef SVADE_COVERAGE
   `include "Svade_coverage.svh"

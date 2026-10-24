@@ -15,7 +15,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hedeleg",
-        "H_hscsr_cg/cp_hcsr_access_zero/hedelegh",
+        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hedelegh",
       ]
   # Each bit of hedeleg shall be either writable or read-only zero.
   - name: hedeleg_acc
@@ -172,9 +172,9 @@ normative_rule_definitions:
   - name: hedelegh_sz_acc_op
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsr_access_zero/hedelegh",
+        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hedelegh",
         "H_vscsr_cg/cp_illegalupper/hedelegh",
-        "H_ucsr_cg/cp_illegalupper/hedelegh",
+        "H_vucsr_cg/cp_csr_insufficient_priv",
       ]
   # When XLEN=32, henvcfgh is a 32-bit read/write register that aliases bits 63:32 of
   # henvcfg. Register henvcfgh does not exist when XLEN=64.
@@ -183,7 +183,7 @@ normative_rule_definitions:
       [
         "H_hscsr_cg/{cp_hcsr_access_masked, cp_hcsrwalk_masked}/henvcfgh",
         "H_vscsr_cg/cp_illegalupper/henvcfgh",
-        "H_ucsr_cg/cp_illegalupper/henvcfgh",
+        "H_vucsr_cg/cp_csr_insufficient_priv",
       ]
   # When XLEN=32, htimedeltah is a 32-bit read/write register that aliases bits 63:32 of
   # htimedelta. Register htimedeltah does not exist when XLEN=64.
@@ -192,7 +192,7 @@ normative_rule_definitions:
       [
         "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/htimedeltah",
         "H_vscsr_cg/cp_illegalupper/htimedeltah",
-        "H_ucsr_cg/cp_illegalupper/htimedeltah",
+        "H_vucsr_cg/cp_csr_insufficient_priv",
       ]
 
   # The VS CSRs can be accessed as themselves only from M-mode or HS-mode.
@@ -202,7 +202,8 @@ normative_rule_definitions:
         "H_hscsr_cg/cp_hcsr_access",
         "H_hscsr_cg/cp_hcsr_access_zero/vsatp",
         "H_vscsr_cg/cp_hcsr_virtualinstructionfault",
-        "H_ucsr_cg/cp_hcsr_inaccessible_u",
+        "H_vucsr_cg/cp_csr_insufficient_priv",
+        "U_ucsr_cg/cp_csr_insufficient_priv",
       ]
   # The vsstatus register is a VSXLEN-bit read/write register that is VS-mode’s version of
   # supervisor register sstatus, formatted as shown in when VSXLEN=32 and when VSXLEN=64.
@@ -288,6 +289,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "H_hscsr_cg/{cp_vstval_vaddr_walk1, cp_vstval_vaddr_walk0, cp_vstval_vaddr_pc, cp_vstval_vaddr_scratch}",
+        "H_hscsr_cg/{cp_vstval_zero, cp_vstval_ilen_walk1, cp_vstval_ilen_ones}",
       ]
   # The vsatp register is a VSXLEN-bit read/write register that is VS-mode’s version of
   # supervisor register satp, formatted as shown in for VSXLEN=32 and for VSXLEN=64. When
@@ -328,9 +330,10 @@ normative_rule_definitions:
   - names: [mtval2_sz_acc_op, mtinst_sz_acc_op]
     coverpoint:
       [
-        "H_hscsr_cg/cp_hcsr_inaccessible",
-        "H_vscsr_cg/cp_hcsr_inaccessible",
-        "H_ucsr_cg/cp_hcsr_inaccessible",
+        "S_scsr_cg/cp_csr_insufficient_priv",
+        "H_vscsr_cg/cp_csr_insufficient_priv",
+        "H_vucsr_cg/cp_csr_insufficient_priv",
+        "U_ucsr_cg/cp_csr_insufficient_priv",
       ]
 
   # hstatus.VGEIN holds 0 through GEILEN
@@ -345,8 +348,8 @@ normative_rule_definitions:
   - name: vscause_sz_acc_op
     coverpoint:
       [
-        "H_hscsr_cg/cp_vscause_write_exception",
-        "H_hscsr_cg/cp_vscause_write_interrupt",
+        "H_vscause_cg/cp_vscause_write_exception",
+        "H_vscause_cg/cp_vscause_write_interrupt",
         "H_vscsr_cg/cp_replica",
       ]
   # vscause is a WLRL register that must be able to hold the same set of values that
@@ -354,8 +357,8 @@ normative_rule_definitions:
   - name: vscause_wlrl
     coverpoint:
       [
-        "H_hscsr_cg/cp_vscause_write_exception",
-        "H_hscsr_cg/cp_vscause_write_interrupt",
+        "H_vscause_cg/cp_vscause_write_exception",
+        "H_vscause_cg/cp_vscause_write_interrupt",
       ]
 
   # With V=0, S CSRs and their VS replicas are separate registers, but vsstatus applies to HLV, HLVX and HSV
@@ -384,11 +387,12 @@ normative_rule_definitions:
 
   # For RV64, the addresses of all standard high-half CSRs are reserved (the hypervisor high-half CSRs)
   - names: [Zicsr_high_half_rv64_rsv]
-    coverpoint: ["H_vscsr_cg/cp_illegalupper", "H_ucsr_cg/cp_illegalupper"]
+    coverpoint:
+      ["H_vscsr_cg/cp_illegalupper", "H_vucsr_cg/cp_csr_insufficient_priv"]
 
   # H and S CSRs are inaccessible from U-mode
   - names: [H_vscsrs_acc_u]
-    coverpoint: ["H_ucsr_cg/cp_hcsr_inaccessible_u", "H_ucsr_cg/cp_scsr"]
+    coverpoint: ["U_ucsr_cg/cp_csr_insufficient_priv"]
 
   # in VS-mode or VU-mode, attempts to access an implemented non-high-half hypervisor CSR
   # or VS CSR when the same access (read/write) would be allowed in HS-mode, assuming
@@ -397,16 +401,16 @@ normative_rule_definitions:
     coverpoint:
       [
         "H_vscsr_cg/cp_hcsr_virtualinstructionfault",
-        "H_ucsr_cg/cp_hcsr_virtualinstructionfault",
+        "H_vucsr_cg/cp_csr_insufficient_priv",
       ]
   # in VU-mode, attempts to access an implemented non-high-half supervisor CSR when the
   # same access (read/write) would be allowed in HS-mode, assuming mstatus.TVM=0;
   - name: H_virtinst_vu_nonhigh_supervisor_allowedhs_tvm0
-    coverpoint: ["H_ucsr_cg/cp_scsr"]
+    coverpoint: ["H_vucsr_cg/cp_csr_insufficient_priv"]
 
   # vsstatus.SD and XS summarize FS, VS and XS as VS-mode sees them
   - names: [vsstatus_sd_xs_op]
-    coverpoint: ["H_vscsr_cg/cp_vsstatus_sd_write"]
+    coverpoint: ["H_vsstatus_cg/cp_vsstatus_sd_write"]
 
   # Hypervisor virtual-machine loads and stores from HS-mode and from U-mode with hstatus.HU = 1
   - names: [hlsv_mode, hlsv_op, hstatus_hu_op, hlvx-wu_valid32]
@@ -417,6 +421,25 @@ normative_rule_definitions:
         "H_inst_cg/cp_hsv",
         "ExceptionsH_cg/cp_loadstore_priv",
       ]
+
+  # hfence.vvma and hfence.gvma execute in HS-mode with mstatus.TVM = 0, raise virtual instruction in VS-mode and
+  # VU-mode, and raise illegal instruction in U-mode.  Sm_H adds mstatus.TVM, and SvH the
+  # translations the fences remove.
+  - names:
+      [
+        hfence-vvma_hfence-gvma_op,
+        hfence-vvma_mode,
+        hfence-gvma_op,
+        hfence-vvma_hfence-gvma_exceptions,
+      ]
+    coverpoint: ["H_inst_cg/cp_hfence"]
+
+  # When VTVM=1, VS-mode sfence.vma and satp accesses raise virtual instruction, but neither mstatus.TVM nor
+  # hstatus.VTVM traps hfence.vvma.  SINVAL.VMA is in Svinval; mstatus.TVM is in Sm_H.
+  - names: [hstatus_vtvm_op, H_virtinst_vs_sfence_sinval_satp_vtvm1]
+    coverpoint: ["H_inst_cg/{cp_vtvm_sfence, cp_vtvm_satp}"]
+  - names: [hfence-vvma_tvm]
+    coverpoint: ["H_inst_cg/cp_vtvm_hfence_vvma"]
 
   # Attempting to execute an xRET instruction in a mode less privileged than x will raise
   # an illegal-instruction exception.
@@ -492,7 +515,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "H_vscsr_cg/cp_hcsr_virtualinstructionfault",
-        "H_ucsr_cg/cp_hcsr_virtualinstructionfault",
+        "H_vucsr_cg/cp_csr_insufficient_priv",
         "ZicntrH_cg/cp_hcounteren_access_vs",
         "ZicntrH_cg/cp_hcounteren_access_vu",
       ]

@@ -9,9 +9,9 @@ ci_enabled: true
 #   Zifencei      fence.i executes as a halfword load from rs1 + imm and can trap: rtl/serv_decode.v#L88
 #   Sm_csr, Sm_mcsr_access, Sm_mcsr_cntr, Sm_mcsr_walk, Sm_misa, Sm_xret
 #                 Unimplemented CSRs alias onto implemented ones; mstatus.MPIE and mie read 0: rtl/serv_decode.v#L168
-#   ExceptionsSm- No illegal-instruction exception: README.md#L209
-#   ExceptionsZc  No illegal-instruction exception: README.md#L209
-exclude_extensions: "Zicsr,Zifencei,Sm_csr,Sm_mcsr_access,Sm_mcsr_cntr,Sm_mcsr_walk,Sm_misa,Sm_xret,ExceptionsSm-,ExceptionsZc"
+#   Exceptions_Sm- No illegal-instruction exception: README.md#L209
+#   Exceptions_Zc  No illegal-instruction exception: README.md#L209
+exclude_extensions: "Zicsr,Zifencei,Sm_csr,Sm_mcsr_access,Sm_mcsr_cntr,Sm_mcsr_walk,Sm_misa,Sm_xret,Exceptions_Sm-,Exceptions_Zc"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-serv.sh"

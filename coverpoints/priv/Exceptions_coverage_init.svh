@@ -40,3 +40,21 @@
       Exceptions_ZicboU_cg = new();   Exceptions_ZicboU_cg.set_inst_name("obj_Exceptions_ZicboU");
   `endif // U_SUPPORTED
 `endif // EXCEPTIONS_ZICBO_ANY
+`ifdef H_SUPPORTED
+    Exceptions_H_cg = new();   Exceptions_H_cg.set_inst_name("obj_Exceptions_H");
+`endif // H_SUPPORTED
+`ifdef H_SUPPORTED
+  `ifndef EXCLUDE_SM
+      Exceptions_HSm_cg = new();   Exceptions_HSm_cg.set_inst_name("obj_Exceptions_HSm");
+  `endif // EXCLUDE_SM
+`endif // H_SUPPORTED
+`ifdef H_SUPPORTED
+  `ifdef F_SUPPORTED
+      Exceptions_HF_cg = new();   Exceptions_HF_cg.set_inst_name("obj_Exceptions_HF");
+  `endif // F_SUPPORTED
+`endif // H_SUPPORTED
+`ifdef H_SUPPORTED
+  `ifdef V_SUPPORTED
+      Exceptions_HV_cg = new();   Exceptions_HV_cg.set_inst_name("obj_Exceptions_HV");
+  `endif // V_SUPPORTED
+`endif // H_SUPPORTED

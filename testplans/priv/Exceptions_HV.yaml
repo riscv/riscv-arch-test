@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Exceptions_HV
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=552219666#gid=552219666
+coverpoints:
+  - name: cp_exceptionsHV_vs
+    goal: mstatus.VS and vsstatus.VS are selected correctly according to the privilege level to disable vector instructions when off.
+    description: Cross mstatus.VS = {00, 01, 10, 11}, vsstatus.VS = {00, 01, 10, 11}, mode = {HS/VS/VU/U}.  Attempt csrr vl and vadd.vv v1, v1, v2, then separately vsetvli changing vl from 1 to 2.  Read back mstatus.VS and vsstatus.VS.
+    expectation: |-
+      Illegal instruction if mstatus.VS = 00 or ((mode = VS or VU) and vsstatus.VS = 00).  Otherwise, vadd.vv and vsetvli set mstatus.VS to 11, and also set vsstatus.VS to 11 if mode = VS or VU.
+      A field written Initial (01) or Clean (10) and not dirtied reads back exactly only on configurations with precise dirty tracking that support Initial and Clean; otherwise the check is only that it is not Off.
+    bins: 4 modes * 4 mstatus.VS * 4 vsstatus.VS * 3 instructions
+    notes: |-
+      M-mode is left out: with V = 0, vsstatus.VS has no effect, and Sm covers mstatus.VS in M-mode.
+  - name: |-
+      cp_vsstatus_vs_set_dirty_arithmetic
+      cp_vsstatus_vs_set_dirty_csr
+    goal: With V = 1, changing vector state sets vsstatus.VS to Dirty
+    description: In VS and VU modes with mstatus.VS = Clean and vsstatus.VS = {Initial, Clean}, execute vadd.vv (arithmetic) or vsetvli (a vector CSR write) with vtype.vill = 0, vstart = 0 and vl != 0.
+    expectation: vsstatus.VS and mstatus.VS become Dirty.
+    bins: 2 modes * 2 vsstatus.VS values for each instruction

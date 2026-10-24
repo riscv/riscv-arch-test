@@ -419,7 +419,7 @@ normative_rule_definitions:
         "H_inst_cg/cp_hlv",
         "H_inst_cg/cp_hlvx",
         "H_inst_cg/cp_hsv",
-        "ExceptionsH_cg/cp_loadstore_priv",
+        "Exceptions_H_cg/cp_loadstore_priv",
       ]
 
   # hfence.vvma and hfence.gvma execute in HS-mode with mstatus.TVM = 0, raise virtual instruction in VS-mode and
@@ -451,7 +451,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "H_inst_cg/cp_sret_illegal",
-        "ExceptionsH_cg/cp_virtual_instr_vu_sfence_vma",
+        "Exceptions_H_cg/cp_virtual_instr_vu_sfence_vma",
       ]
 
   # sret from HS-mode uses SPV

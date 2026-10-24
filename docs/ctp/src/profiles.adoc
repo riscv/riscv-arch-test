@@ -153,8 +153,9 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |SsstrictV|Vector Strict|<<t-SsstrictV-coverpoints>>|||o|o|o
 8+^|Hypervisor
 |H|Hypervisor Instructions|<<t-H-coverpoints>>|||o|o|x
-|ExceptionsH|Hypervisor Exceptions|<<t-ExceptionsH-coverpoints>>|||o|o|x
-|ExceptionsHV|Hypervisor Vector Exceptions|<<t-ExceptionsHV-coverpoints>>|||o|o|x
+|Exceptions_H|Hypervisor Exceptions|<<t-Exceptions_H-coverpoints>>|||o|o|x
+|Exceptions_HF|Hypervisor Floating-Point Exceptions|<<t-Exceptions_HF-coverpoints>>|||o|o|x
+|Exceptions_HV|Hypervisor Vector Exceptions|<<t-Exceptions_HV-coverpoints>>|||o|o|x
 |InterruptsH|Hypervisor Interrupts|<<t-InterruptsH-coverpoints>>|||o|o|x
 |EndianH|Hypervisor Endian|<<t-EndianH-coverpoints>>|||||
 |ZicntrH|Hypervisor Counters|<<t-ZicntrH-coverpoints>>|||o|o|x

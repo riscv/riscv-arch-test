@@ -1,0 +1,34 @@
+# Directory-level test unit manifest for the Sha (Augmented Hypervisor) suite.
+#
+# Sha = H + Ssstateen + Shcounterenw + Shvstvala + Shtvala + Shvstvecd +
+#       Shvsatpa + Shgatpa
+#
+# The whole directory is one test: every file listed in SOURCES plus the
+# RUNTIME sources are compiled and linked into a single ELF. The unit boots
+# itself through the runtime's entry.S, so the ACT4 C runtime
+# (tests/env/c_test_start.S) is not linked in.
+#
+# Assertion-based self-checking: the runtime prints the RVCP-SUMMARY line the
+# harness parses, so there is no reference-model signature to compare against.
+
+REQUIRED_EXTENSIONS: ["I", "S", "H", "Sha"]
+FORBIDDEN_EXTENSIONS: []
+MARCH: rv${XLEN}imach_zicsr_zifencei
+NEEDS_SIGNATURE: False
+MIN_HARTS: 1
+
+SOURCES:
+  - main.c
+  - tests/sha_strap.S
+  # tests/test_register.c textually includes the other tests/test_*.c files.
+  - tests/test_register.c
+
+RUNTIME: [base, vm, hyp]
+LINKER_SCRIPT: kernel.ld
+
+EXTRA_CFLAGS:
+  - -DENABLE_HYP
+  - -I{c_common}/hyp
+  # Mode-agnostic suite: follow the platform-selected paging modes.
+  - -DSUITE_VSATP_MODE=PLATFORM_SATP_MODE
+  - -DSUITE_HGATP_MODE=PLATFORM_HGATP_MODE

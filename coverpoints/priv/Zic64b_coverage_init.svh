@@ -7,4 +7,4 @@
 //
 ///////////////////////////////////////////////
 
-    Zic64bZicboz_cg = new();         Zic64bZicboz_cg.set_inst_name("obj_Zic64bZicboz");
+    Zic64b_cg = new();         Zic64b_cg.set_inst_name("obj_Zic64b");

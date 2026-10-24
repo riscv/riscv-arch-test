@@ -1008,7 +1008,7 @@ normative_rule_definitions:
   # Zpm) for the next-lower privilege mode (S-/HS-mode if S-mode is implemented, or U-mode
   # otherwise), according to the values in menvcfg_pmm_enc.
   - name: menvcfg_pmm_op
-    coverpoint: ["SmnpmS_cg/cp_pmlen_masking", "SmnpmU_cg/cp_pmlen_masking"]
+    coverpoint: ["Smnpm_S_cg/cp_pmlen_masking", "Smnpm_U_cg/cp_pmlen_masking"]
 
   # If Smnpm is not implemented, PMM is read-only zero. The PMM field is read-only zero for RV32.
   - name: menvcfg_pmm_rdonly0
@@ -1024,8 +1024,8 @@ normative_rule_definitions:
   - name: menvcfg_pmm_enc
     coverpoint:
       [
-        "SmnpmS_cg/cp_pmlen_masking",
-        "SmnpmU_cg/cp_pmlen_masking",
+        "Smnpm_S_cg/cp_pmlen_masking",
+        "Smnpm_U_cg/cp_pmlen_masking",
         "Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg",
       ]
 

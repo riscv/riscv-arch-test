@@ -209,8 +209,8 @@ include::{testplansdir}/priv/Za64rs.adoc[]
 
 include::norm/Za64rs_norm_rules.adoc[]
 
-==== Zic64bZicboz 64B Cache Block Zero
+==== Zic64b 64B Cache Block Zero
 
-include::{testplansdir}/priv/Zic64bZicboz.adoc[]
+include::{testplansdir}/priv/Zic64b.adoc[]
 
 include::norm/Zic64b_norm_rules.adoc[]

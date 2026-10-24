@@ -11,17 +11,6 @@
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////
-a_xsl: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "execute")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "store")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "load")[0]} {
-    type_option.weight = 0;
-    bins execute = {3'b100};
-    bins store   = {3'b010};
-    bins load    = {3'b001};
-}
-a_tdata2_adr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") {
-    type_option.weight = 0;
-    wildcard bins scratch = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") == ins.current.rs1_val);
-    bins zero             = {'0};
-}
 a_tdata2_data: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") {
     type_option.weight = 0;
     wildcard bins value = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") != '0);

@@ -88,10 +88,21 @@ include::norm/Zpm_norm_rules.adoc[]
 
 ==== Smnpm Pointer Masking
 
-include::{testplansdir}/priv/SmnpmS.adoc[]
-include::{testplansdir}/priv/SmnpmSSm.adoc[]
-include::{testplansdir}/priv/SmnpmU.adoc[]
-include::{testplansdir}/priv/SmnpmUSm.adoc[]
+===== Smnpm_S
+
+include::{testplansdir}/priv/Smnpm_S.adoc[]
+
+===== Smnpm_SSm
+
+include::{testplansdir}/priv/Smnpm_SSm.adoc[]
+
+===== Smnpm_U
+
+include::{testplansdir}/priv/Smnpm_U.adoc[]
+
+===== Smnpm_USm
+
+include::{testplansdir}/priv/Smnpm_USm.adoc[]
 
 See <<t-Ssnpm-normative-rules>> for normative rules.
 

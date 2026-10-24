@@ -33,8 +33,7 @@ ci_enabled: true
 # Sscofpmf_{Sm,S,U}_interrupt: mie/sie drop LCOFIE and sip neither writes nor reads LCOFIP, so LCOFI is never taken
 #   (https://gitlab.com/qemu-project/qemu/-/work_items/3969); on RV32 overflows are also lost
 #   (https://gitlab.com/qemu-project/qemu/-/work_items/4723).
-# Sscofpmf_{Sm,S,U}_inhibit_lo, _overflow: RVMODEL_MHPMEVENT_VAL 0x02 counts instructions on QEMU, but sail.json maps no
-#   event selector, so Sail never counts. Beyond that, overflow needs 3969 fixed, and on RV32 also 4723 and
+# Sscofpmf_{Sm,S,U}_overflow: overflow needs 3969 fixed, and on RV32 also 4723 and
 #   https://gitlab.com/qemu-project/qemu/-/work_items/4724 (mhpmcounterNh reads wrong).
 # Sscofpmf_Sm_access (RV32): mhpmevent[57:56] (WPRI) are writable (https://gitlab.com/qemu-project/qemu/-/work_items/4722).
 #   The other Sscofpmf groups pass.
@@ -45,9 +44,9 @@ ci_enabled: true
 #    filed the same day, 4611 through 4617, so this exclusion will be needed for a while.
 # Svadu_sv39/48/57_Svadu_fault: with ADUE=1, QEMU sets A/D on a PTE with a reserved Svnapot encoding before raising the page fault
 #    (https://gitlab.com/qemu-project/qemu/-/work_items/4636)
-# Ssnpm_*/SmnpmS_* (bare pmm00/pmm10 and sv* pmm10/pmm11 sweep groups), Smmpm_pmm00/pmm10 sweeps, SmnpmU, SmnpmUSm: QEMU CBOs do not fault on inaccessible addresses in bare mode, shifting trap signatures;
+# Ssnpm_*/Smnpm_S_* (bare pmm00/pmm10 and sv* pmm10/pmm11 sweep groups), Smmpm_pmm00/pmm10 sweeps, Smnpm_U, Smnpm_USm: QEMU CBOs do not fault on inaccessible addresses in bare mode, shifting trap signatures;
 # same issue as ExceptionsZicboU/S and SvZicbo (https://gitlab.com/qemu-project/qemu/-/work_items/3501).
-# Ssnpm_sv*_pmm00_sweep, SmnpmS_sv*_pmm00_sweep: on a store/AMO page fault from ssamoswap.w, QEMU writes a
+# Ssnpm_sv*_pmm00_sweep, Smnpm_S_sv*_pmm00_sweep: on a store/AMO page fault from ssamoswap.w, QEMU writes a
 # transformed instruction to htinst, but SSAMOSWAP has no defined transformation, so it must be 0
 # (https://gitlab.com/qemu-project/qemu/-/work_items/4721).
 # Sm_Zicntr fails on qemu because ecall, ebreak and illegal instruction increments minstret/instret. Filed QEMU issue: https://gitlab.com/qemu-project/qemu/-/work_items/4227
@@ -60,7 +59,7 @@ ci_enabled: true
 #     S-mode access to senvcfg then raises an illegal instruction (cause 2, xtval holding the
 #     csrrc encoding) and the landing-pad tests diverge from the reference on senvcfg.LPE.
 # All three suites pass on qemu-rv64-max, but exclusions apply to every QEMU config.
-exclude_extensions: "Sm_mcsr_access,Sm_mcsr_cntr,Sm_mcsr_walk,Sm_shadow,Sm_xret,S-,S_scsr-,Ssstrict_Sm_CSR,Ssstrict_Sm_IllegalInstr,Ssstrict_S_CSR,Ssstrict_S_IllegalInstr,Ssstrict_U_IllegalInstr,Zacas,InterruptsSm_enable,InterruptsSm_priority,InterruptsSm_trigger,InterruptsS_enable,InterruptsS_priority,InterruptsS_trigger,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo_sv32_zicbom,SvZicbo_sv32_zicbop_Umode,SvZicbo_sv32_zicboz_exceptions_Umode,SvZicbo_sv39_zicbom,SvZicbo_sv48_zicbom,SvZicbo_sv57_zicbom,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm_sv32_exceptions,ExceptionsSvZalrscSm_sv39_exceptions,Zama16b,SsstrictV,Smstateen,Ssstateen,Zawrs_S,Zawrs_U,SdtrigSm,SdtrigS,SdtrigU,H,Svadu_sv39_Svadu_fault,Svadu_sv48_Svadu_fault,Svadu_sv57_Svadu_fault,Ssnpm_bare_pmm00_sweep,Ssnpm_bare_pmm10_sweep,Ssnpm_sv39_pmm00_sweep,Ssnpm_sv39_pmm10_sweep,Ssnpm_sv39_pmm11_sweep,Ssnpm_sv48_pmm00_sweep,Ssnpm_sv48_pmm10_sweep,Ssnpm_sv48_pmm11_sweep,Ssnpm_sv57_pmm00_sweep,Ssnpm_sv57_pmm10_sweep,Ssnpm_sv57_pmm11_sweep,Smmpm_pmm00_sweep,Smmpm_pmm10_sweep,SmnpmS_bare_pmm00_sweep,SmnpmS_bare_pmm10_sweep,SmnpmS_sv39_pmm00_sweep,SmnpmS_sv39_pmm10_sweep,SmnpmS_sv39_pmm11_sweep,SmnpmS_sv48_pmm00_sweep,SmnpmS_sv48_pmm10_sweep,SmnpmS_sv48_pmm11_sweep,SmnpmS_sv57_pmm00_sweep,SmnpmS_sv57_pmm10_sweep,SmnpmS_sv57_pmm11_sweep,SmnpmU,SmnpmUSm,Sm_Zicntr,Sscofpmf_Sm_access,Sscofpmf_Sm_inhibit_lo,Sscofpmf_Sm_interrupt,Sscofpmf_Sm_overflow,Sscofpmf_S_inhibit_lo,Sscofpmf_S_interrupt,Sscofpmf_S_overflow,Sscofpmf_U_inhibit_lo,Sscofpmf_U_interrupt,Sscofpmf_U_overflow,Zicfilp_Sm,Zicfilp_S,Zicfilp_U"
+exclude_extensions: "Sm_mcsr_access,Sm_mcsr_cntr,Sm_mcsr_walk,Sm_shadow,Sm_xret,S-,S_scsr-,Ssstrict_Sm_CSR,Ssstrict_Sm_IllegalInstr,Ssstrict_S_CSR,Ssstrict_S_IllegalInstr,Ssstrict_U_IllegalInstr,Zacas,InterruptsSm_enable,InterruptsSm_priority,InterruptsSm_trigger,InterruptsS_enable,InterruptsS_priority,InterruptsS_trigger,ExceptionsZalrsc,ExceptionsZicboU,ExceptionsZicboS,ExceptionsZicboSm,SvZicbo_sv32_zicbom,SvZicbo_sv32_zicbop_Umode,SvZicbo_sv32_zicboz_exceptions_Umode,SvZicbo_sv39_zicbom,SvZicbo_sv48_zicbom,SvZicbo_sv57_zicbom,ExceptionsZaamo,ExceptionsSvZalrsc,ExceptionsSvZalrscSm_sv32_exceptions,ExceptionsSvZalrscSm_sv39_exceptions,Zama16b,SsstrictV,Smstateen,Ssstateen,Zawrs_S,Zawrs_U,SdtrigSm,SdtrigS,SdtrigU,H,Svadu_sv39_Svadu_fault,Svadu_sv48_Svadu_fault,Svadu_sv57_Svadu_fault,Ssnpm_bare_pmm00_sweep,Ssnpm_bare_pmm10_sweep,Ssnpm_sv39_pmm00_sweep,Ssnpm_sv39_pmm10_sweep,Ssnpm_sv39_pmm11_sweep,Ssnpm_sv48_pmm00_sweep,Ssnpm_sv48_pmm10_sweep,Ssnpm_sv48_pmm11_sweep,Ssnpm_sv57_pmm00_sweep,Ssnpm_sv57_pmm10_sweep,Ssnpm_sv57_pmm11_sweep,Smmpm_pmm00_sweep,Smmpm_pmm10_sweep,Smnpm_S_bare_pmm00_sweep,Smnpm_S_bare_pmm10_sweep,Smnpm_S_sv39_pmm00_sweep,Smnpm_S_sv39_pmm10_sweep,Smnpm_S_sv39_pmm11_sweep,Smnpm_S_sv48_pmm00_sweep,Smnpm_S_sv48_pmm10_sweep,Smnpm_S_sv48_pmm11_sweep,Smnpm_S_sv57_pmm00_sweep,Smnpm_S_sv57_pmm10_sweep,Smnpm_S_sv57_pmm11_sweep,Smnpm_U,Smnpm_USm,Sm_Zicntr,Sscofpmf_Sm_access,Sscofpmf_Sm_interrupt,Sscofpmf_Sm_overflow,Sscofpmf_S_interrupt,Sscofpmf_S_overflow,Sscofpmf_U_interrupt,Sscofpmf_U_overflow,Zicfilp_Sm,Zicfilp_S,Zicfilp_U"
 # qemu-rv32-mu, qemu-rv64-mu: U-mode cbo.zero/clean/flush/inval raise illegal-instruction without S-mode
 #   because check_zicbo_envcfg() also requires senvcfg, which does not exist
 #   (https://gitlab.com/qemu-project/qemu/-/work_items/4596)

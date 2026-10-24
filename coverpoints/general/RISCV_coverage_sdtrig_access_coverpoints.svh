@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   cp_csr_access_common building blocks of the SdtrigSm/SdtrigS access covergroups
+//   cp_csr_access_common building blocks of the SdtrigSm access covergroup
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////
@@ -60,3 +60,21 @@ csr_access_common: coverpoint ins.current.insn {
     wildcard bins csrrs1 = {CSRS} iff (ins.current.rs1_val == '1);
     wildcard bins csrrc1 = {CSRC} iff (ins.current.rs1_val == '1);
 }
+`ifndef SDTRIG_SUITE_SM
+// SdtrigS/U cp_csr_access_trap: a direct S- or U-mode csrr or csrw of an M-level trigger CSR, which raises an
+// illegal-instruction exception (into S when medeleg[2] = 1, else into M). scontext and hcontext are S/H-level CSRs.
+csr_trigger_mlevel: coverpoint ins.current.insn[31:20] {
+    type_option.weight = 0;
+    bins tselect = {CSR_TSELECT};
+    bins tdata1  = {CSR_TDATA1};
+    bins tdata2  = {CSR_TDATA2};
+    bins tdata3  = {CSR_TDATA3};
+    bins tinfo   = {CSR_TINFO};
+    `ifdef UDB_TCONTROL_IMPLEMENTED
+        bins tcontrol = {CSR_TCONTROL};
+    `endif
+    `ifdef UDB_MCONTEXT_IMPLEMENTED
+        bins mcontext = {CSR_MCONTEXT};
+    `endif
+}
+`endif

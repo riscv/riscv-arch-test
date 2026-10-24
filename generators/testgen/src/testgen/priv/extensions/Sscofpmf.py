@@ -158,8 +158,17 @@ def write_event_pattern(r_val: int, r_hval: int, inhibit_pattern: int, priv_mode
     ]
 
 
-def write_counter_all_ones(r_temp: int, priv_mode: str) -> list[str]:
+# MINH, SINH, UINH, VSINH and VUINH: nothing counts in any mode.
+INHIBIT_ALL_PATTERN = 0b11111
+
+
+def write_counter_all_ones(r_val: int, r_hval: int, r_temp: int, priv_mode: str) -> list[str]:
+    """Preset the counter to all 1s with counting inhibited in every mode. An event that
+    counts every instruction would otherwise also count the preset writes: on RV32 the
+    low half would wrap before the high half is written, and the counter would never
+    overflow. The caller enables counting afterwards with write_event_pattern()."""
     return [
+        *write_event_pattern(r_val, r_hval, INHIBIT_ALL_PATTERN, priv_mode),
         f"LI(x{r_temp}, -1)",
         tsbi_call_or_direct(f"csrw RVTEST_CSR_MHPMCOUNTER, x{r_temp}   # all 1s -> next count overflows", priv_mode),
         "#if __riscv_xlen == 32",
@@ -171,8 +180,8 @@ def write_counter_all_ones(r_temp: int, priv_mode: str) -> list[str]:
 def prime_counter_overflow(r_val: int, r_hval: int, r_temp: int, r_addr: int, priv_mode: str) -> list[str]:
     """Overflow the counter in the mode under test, which sets OF and raises LCOFIP."""
     return [
+        *write_counter_all_ones(r_val, r_hval, r_temp, priv_mode),
         *write_event_pattern(r_val, r_hval, HIGHER_MODE_PATTERN[priv_mode], priv_mode),
-        *write_counter_all_ones(r_temp, priv_mode),
         f"LA(x{r_addr}, scratch)",
         f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_val})",
     ]
@@ -380,9 +389,9 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
 
         lines.extend(
             [
-                *write_event_pattern(r_val, r_hval, inhibit_pattern, priv_mode),
-                *write_counter_all_ones(r_temp, priv_mode),
+                *write_counter_all_ones(r_val, r_hval, r_temp, priv_mode),
                 tsbi_call_or_direct(f"csrr x{r_preset}, RVTEST_CSR_MHPMCOUNTER   # preset as read back", priv_mode),
+                *write_event_pattern(r_val, r_hval, inhibit_pattern, priv_mode),
                 "",
                 f"LA(x{r_addr}, scratch)",
                 "# One counted event is enough to wrap the all-1s counter and set OF",
@@ -411,6 +420,9 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
             "",
             f"# Testcase: mode = {priv_mode}, inhibit pattern = {HIGHER_MODE_PATTERN[priv_mode]:05b}, OF initial = 1",
             tsbi_call_or_direct("csrw mie, zero   # disable interrupts", priv_mode),
+            *write_counter_all_ones(r_val, r_hval, r_temp, priv_mode),
+            tsbi_call_or_direct(f"csrr x{r_preset}, RVTEST_CSR_MHPMCOUNTER   # preset as read back", priv_mode),
+            *clear_lcofip(r_temp, priv_mode),
             "#if __riscv_xlen == 32",
             f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL)",
             tsbi_call_or_direct(f"csrw RVTEST_CSR_MHPMEVENT, x{r_val}", priv_mode),
@@ -420,9 +432,7 @@ def _generate_of_set_on_overflow_tests(test_data: TestData, priv_mode: str) -> l
             f"LI(x{r_val}, RVMODEL_MHPMEVENT_VAL | {hex((1 << 63) | HIGHER_MODE_INHIBITS[priv_mode])})   # OF = 1",
             tsbi_call_or_direct(f"csrw RVTEST_CSR_MHPMEVENT, x{r_val}", priv_mode),
             "#endif",
-            *write_counter_all_ones(r_temp, priv_mode),
-            tsbi_call_or_direct(f"csrr x{r_preset}, RVTEST_CSR_MHPMCOUNTER   # preset as read back", priv_mode),
-            *clear_lcofip(r_temp, priv_mode),
+            "# Counting starts here, after LCOFIP was cleared, so a wrongly raised LCOFIP stays visible",
             "",
             f"LA(x{r_addr}, scratch)",
             f"RVMODEL_MHPMEVENT_CODE(x{r_addr}, x{r_val})",

@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=testplan.schema.json
-suite: SmnpmUSm
+suite: Smnpm_USm
 title: Smnpm Coverpoints (no S mode, M-mode with MPRV)
 source: https://docs.google.com/spreadsheets/d/15yJhyhBB5X9cq4SDQ-YCPzo2oPQnDBh5wEIZhi0-9Ps/edit?gid=645084995#gid=645084995
 notes: |

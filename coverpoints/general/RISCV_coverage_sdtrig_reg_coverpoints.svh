@@ -23,12 +23,7 @@ priv_bits: coverpoint ins.current.rs1_val[26:0] {
     type_option.weight = 0;
     bins priv = {27'b001_1000_0000_0000_0000_0101_1000};
 }
-// cp_tdata1_dmode: an M-mode write of dmode = 1 with a supported type leaves dmode = 0
-tdata1_type_dmode: coverpoint ins.current.rs1_val[XLEN-1:XLEN-4] {
-    type_option.weight = 0;
-    bins icount    = {4'd3};
-    bins mcontrol6 = {4'd6};
-}
+// cp_tdata1_dmode: an M-mode write of dmode = 1 with a supported type (tdata1_write_type) leaves dmode = 0
 dmode_written: coverpoint ins.current.rs1_val[XLEN-5] {
     type_option.weight = 0;
     bins set = {1'b1};

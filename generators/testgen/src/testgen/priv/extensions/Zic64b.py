@@ -1,12 +1,12 @@
 ##################################
-# priv/extensions/Zic64bZicboz.py
+# priv/extensions/Zic64b.py
 #
-# Zic64bZicboz privileged extension test generator.
+# Zic64b privileged extension test generator.
 # Ammarah Wakeel  email:ammarahwakeel9@gmail.com (UET, April 2026)
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Zic64bZicboz extension test generator.
+"""Zic64b extension test generator.
 Zic64b : Cache blocks must be 64 bytes in size, naturally aligned.
 Zicboz : Cache-Block Zero instruction (cbo.zero).
 """
@@ -21,9 +21,9 @@ _SAMPLE_OFFSETS: list[int] = [0, 60, 64, 124]
 
 
 def _generate_zic64b_tests(test_data: TestData) -> list[str]:
-    """Generate cp_zic64bZicboz tests for Zic64bZicboz."""
+    """Generate cp_zic64b tests for Zic64b."""
 
-    covergroup = "Zic64bZicboz_cg"
+    covergroup = "Zic64b_cg"
     coverpoint = "cp_zic64b"
 
     base_reg, tmp_reg, val_reg = test_data.int_regs.get_registers(3)
@@ -73,13 +73,13 @@ def _generate_zic64b_tests(test_data: TestData) -> list[str]:
 
 
 @add_priv_test_generator(
-    "Zic64bZicboz",
+    "Zic64b",
     required_extensions=["Zicboz", "Zic64b"],
 )
-def make_zic64bzicboz(test_data: TestData) -> list[TestChunk]:
-    """Generate tests for the Zic64bZicboz extension."""
+def make_zic64b(test_data: TestData) -> list[TestChunk]:
+    """Generate tests for the Zic64b extension."""
     test_chunks: list[TestChunk] = []
-    tc = test_data.begin_test_chunk()
+    tc = test_data.begin_test_chunk("Zicboz")
     tc.code.extend(_generate_zic64b_tests(test_data))
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

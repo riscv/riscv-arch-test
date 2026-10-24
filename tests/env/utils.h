@@ -458,6 +458,18 @@
     99: addi _R1, _R1, -1; \
         bnez _R1, 99b;
 
+// From M-mode, poll mip until bit _BIT is pending, for at most RVMODEL_INTERRUPT_LATENCY iterations.
+// Unlike RVTEST_IDLE_FOR_INTERRUPT, it stops as soon as the interrupt is pending.
+#define RVTEST_WAIT_MIP_PENDING_M(_R1, _R2, _BIT) \
+    LA(_R1, RVMODEL_INTERRUPT_LATENCY); \
+    98: csrr _R2, mip; \
+        srli _R2, _R2, _BIT; \
+        andi _R2, _R2, 1; \
+        bnez _R2, 97f; \
+        addi _R1, _R1, -1; \
+        bnez _R1, 98b; \
+    97:
+
 // Using generic RVTEST macros that can be invoked by tests, which then jump to the appropriate RVMODEL macros that implement the interrupt setup for the specific target platform.
 // This allows tests to be portable across different platforms with different interrupt implementations.
 

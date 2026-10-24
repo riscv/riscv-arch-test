@@ -105,8 +105,12 @@ triggernum_etrigger: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, 
     `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS_15 bins trigger_15 = {15}; `endif
 }
 `endif
-// SdtrigS/U: the mode the instruction on this record runs in or, on an xRET, the mode it returns to. A trigger that
-// fires on the first instruction after the T-SBI return is logged on the xRET record.
+// the mode the instruction on this record runs in and a trap on it is taken from or, on an xRET, the mode it returns
+// to. A trigger that fires on the first instruction after the T-SBI return (SdtrigS/U) is logged on the xRET record.
+exec_mode_m: coverpoint sdtrig_trap_origin(ins) {
+    type_option.weight = 0;
+    bins M_mode = {2'd3};
+}
 exec_mode_s: coverpoint sdtrig_trap_origin(ins) {
     type_option.weight = 0;
     bins S_mode = {2'd1};
@@ -123,9 +127,32 @@ csrw: coverpoint ins.current.insn {
     type_option.weight = 0;
     wildcard bins csrw = {CSRW};
 }
+csr_read_write: coverpoint ins.current.insn {
+    type_option.weight = 0;
+    wildcard bins csrr = {CSRR};
+    wildcard bins csrw = {CSRW};
+}
 csr_tdata1: coverpoint ins.current.insn[31:20] {
     type_option.weight = 0;
     bins tdata1 = {CSR_TDATA1};
+}
+csr_tdata2: coverpoint ins.current.insn[31:20] {
+    type_option.weight = 0;
+    bins tdata2 = {CSR_TDATA2};
+}
+// the type a csrw writes to tdata1
+tdata1_write_type: coverpoint ins.current.rs1_val[XLEN-1:XLEN-4] {
+    type_option.weight = 0;
+    bins icount    = {4'd3};
+    bins mcontrol6 = {4'd6};
+}
+illegal_insn_trap: coverpoint sdtrig_illegal_taken(ins) {
+    type_option.weight = 0;
+    bins illegal = {1'b1};
+}
+mret: coverpoint ins.current.insn {
+    type_option.weight = 0;
+    bins mret = {MRET};
 }
 
 // mcontrol6 fields of the selected trigger's tdata1
@@ -169,6 +196,24 @@ tdata1_xsl: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1"
     type_option.weight = 0;
     bins xsl[] = {[0:7]};
 }
+tdata1_xsl_one: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "execute")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "store")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "load")[0]} {
+    type_option.weight = 0;
+    bins execute = {3'b100};
+    bins store   = {3'b010};
+    bins load    = {3'b001};
+}
+tdata1_xsl_store: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "execute")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "store")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "load")[0]} {
+    type_option.weight = 0;
+    bins store = {3'b010};
+}
+tdata1_xsl_load_store: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "execute")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "store")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "load")[0]} {
+    type_option.weight = 0;
+    bins load_store = {3'b011};
+}
+tdata1_xsl_load_store_execute: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "execute")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "store")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "load")[0]} {
+    type_option.weight = 0;
+    bins execute = {3'b111};
+}
 // tdata1 defaults, crossed where a coverpoint does not vary them
 tdata1_match_equal: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "match")[3:0] {
     type_option.weight = 0;
@@ -193,6 +238,12 @@ tdata2_adr: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.rs1_val + ins
     type_option.weight = 0;
     bins scratch = {1'b1};
     bins zero    = {1'b0} iff (ins.current.csr[CSR_TDATA2] == '0);
+}
+// tdata2 relative to the address in rs1 of an instruction without an offset (lr/sc, AMO, cache operation, vector base)
+tdata2_rs1: coverpoint ins.current.csr[CSR_TDATA2] {
+    type_option.weight = 0;
+    wildcard bins rs1  = {'x} iff (ins.current.csr[CSR_TDATA2] == ins.current.rs1_val);
+    bins zero          = {'0};
 }
 tdata2_pc: coverpoint (ins.current.csr[CSR_TDATA2] == ins.current.pc_rdata) {
     type_option.weight = 0;

@@ -736,7 +736,7 @@ There are a few important gotchas to keep in mind when writing privileged tests:
 
 - There should be no loops in the assembly code. Loops make debugging difficult and prevent testcases from being uniquely associated with debug strings. Instead, use loops in the Python generator to emit repetitive assembly.
 
-For examples of how to write the individual coverpoint helper functions for privileged test generators, review [`Sm.py`](../generators/testgen/src/testgen/priv/extensions/Sm.py) and [`ExceptionsZc.py`](../generators/testgen/src/testgen/priv/extensions/ExceptionsZc.py). Here are a few additional notes that apply to all privileged test helper functions:
+For examples of how to write the individual coverpoint helper functions for privileged test generators, review [`Sm.py`](../generators/testgen/src/testgen/priv/extensions/Sm.py) and [`ExceptionsZc.py`](../generators/testgen/src/testgen/priv/extensions/exceptions/ExceptionsZc.py). Here are a few additional notes that apply to all privileged test helper functions:
 
 - Do not hardcode register numbers. Instead use the register allocator described above for unprivileged coverpoints (`test_data.int_regs.get_registers(3)`, etc.).
 - Begin each coverpoint with a call to `comment_banner(coverpoint, "comments")` to add a descriptive marker to the generated test.

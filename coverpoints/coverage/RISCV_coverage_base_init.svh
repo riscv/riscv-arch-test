@@ -42,9 +42,9 @@
         `cover_info("//      EndianZalrsc - Enabled");
         `include "EndianZalrsc_coverage_init.svh"
     `endif
-    `ifdef COVER_EXCEPTIONSF
-        `cover_info("//      ExceptionsF - Enabled");
-        `include "ExceptionsF_coverage_init.svh"
+    `ifdef COVER_EXCEPTIONS
+        `cover_info("//      Exceptions - Enabled");
+        `include "Exceptions_coverage_init.svh"
     `endif
     `ifdef COVER_EXCEPTIONSH
         `cover_info("//      ExceptionsH - Enabled");
@@ -53,18 +53,6 @@
     `ifdef COVER_EXCEPTIONSHV
         `cover_info("//      ExceptionsHV - Enabled");
         `include "ExceptionsHV_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSS
-        `cover_info("//      ExceptionsS - Enabled");
-        `include "ExceptionsS_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSSM
-        `cover_info("//      ExceptionsSm - Enabled");
-        `include "ExceptionsSm_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSU
-        `cover_info("//      ExceptionsU - Enabled");
-        `include "ExceptionsU_coverage_init.svh"
     `endif
     `ifdef COVER_EXCEPTIONSVF16
         `cover_info("//      ExceptionsVf16 - Enabled");
@@ -89,30 +77,6 @@
     `ifdef COVER_EXCEPTIONSVX
         `cover_info("//      ExceptionsVx - Enabled");
         `include "ExceptionsVx_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSZAAMO
-        `cover_info("//      ExceptionsZaamo - Enabled");
-        `include "ExceptionsZaamo_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSZALRSC
-        `cover_info("//      ExceptionsZalrsc - Enabled");
-        `include "ExceptionsZalrsc_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSZC
-        `cover_info("//      ExceptionsZc - Enabled");
-        `include "ExceptionsZc_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSZICBOS
-        `cover_info("//      ExceptionsZicboS - Enabled");
-        `include "ExceptionsZicboS_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSZICBOSM
-        `cover_info("//      ExceptionsZicboSm - Enabled");
-        `include "ExceptionsZicboSm_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSZICBOU
-        `cover_info("//      ExceptionsZicboU - Enabled");
-        `include "ExceptionsZicboU_coverage_init.svh"
     `endif
     `ifdef COVER_F
         `cover_info("//      F - Enabled");

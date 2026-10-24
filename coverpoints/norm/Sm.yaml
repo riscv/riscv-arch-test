@@ -953,8 +953,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg",
-        "ExceptionsZicboS_cg/cp_cbze",
-        "ExceptionsZicboU_cg/cp_cbze",
+        "Exceptions_ZicboS_cg/cp_cbze",
+        "Exceptions_ZicboU_cg/cp_cbze",
       ]
   # When the Zicboz extension is not implemented, CBZE is read-only zero.
   - name: menvcfg_cbze_rdonly0
@@ -969,8 +969,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg",
-        "ExceptionsZicboS_cg/cp_cbcfe",
-        "ExceptionsZicboU_cg/cp_cbcfe",
+        "Exceptions_ZicboS_cg/cp_cbcfe",
+        "Exceptions_ZicboU_cg/cp_cbcfe",
       ]
   # When the Zicbom extension is not implemented, CBCFE is read-only zero.
   - name: menvcfg_cbcfe_rdonly0
@@ -984,8 +984,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sm_mcsr_cg/cp_mcsrwalk_masked/menvcfg",
-        "ExceptionsZicboS_cg/cp_cbie",
-        "ExceptionsZicboU_cg/cp_cbie",
+        "Exceptions_ZicboS_cg/cp_cbie",
+        "Exceptions_ZicboU_cg/cp_cbie",
       ]
   # When the Zicbom extension is not implemented, CBIE is read-only zero.
   - name: menvcfg_cbie_rdonly0
@@ -995,7 +995,7 @@ normative_rule_definitions:
   # privileged than M, it behaves as follows:
   - name: menvcfg_cbie_cbo-inval_op_lead_in
     # TODO: cp_cbie checks only whether cbo.inval traps, not whether it flushes or invalidates (#2370)
-    coverpoint: ["ExceptionsZicboS_cg/cp_cbie", "ExceptionsZicboU_cg/cp_cbie"]
+    coverpoint: ["Exceptions_ZicboS_cg/cp_cbie", "Exceptions_ZicboU_cg/cp_cbie"]
   # 0b01&#8201;&#8212;&#8201;The instruction is executed and performs a flush operation,
   # even if configured by a mode less privileged than M to perform an invalidate
   # operation. 0b11&#8201;&#8212;&#8201;The instruction is executed and performs an
@@ -1003,7 +1003,7 @@ normative_rule_definitions:
   # flush operation.
   - name: menvcfg_cbie_cbo-inval_op_list
     # TODO: cp_cbie checks only whether cbo.inval traps, not whether it flushes or invalidates (#2370)
-    coverpoint: ["ExceptionsZicboS_cg/cp_cbie", "ExceptionsZicboU_cg/cp_cbie"]
+    coverpoint: ["Exceptions_ZicboS_cg/cp_cbie", "Exceptions_ZicboU_cg/cp_cbie"]
 
   # If the Smnpm extension is implemented, the PMM field enables or disables pointer masking (see
   # Zpm) for the next-lower privilege mode (S-/HS-mode if S-mode is implemented, or U-mode
@@ -1492,7 +1492,7 @@ normative_rule_definitions:
   # For other traps, mtval is set to zero
   # ECALL and interrupt entries record mtval; cp_trigger leaves it nonzero before each interrupt.
   - name: mtval_other_traps_zero
-    coverpoint: ["ExceptionsSm_cg/cp_ecall_m", "InterruptsSm_cg/cp_trigger"]
+    coverpoint: ["Exceptions_Sm_cg/cp_ecall_m", "InterruptsSm_cg/cp_trigger"]
 
   # must be able to hold all valid virtual addresses and the value zero.
   - name: mtval_vaddr_and_0_sz
@@ -1684,7 +1684,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sm_mprivinst_cg/cp_mprivinst",
-        "ExceptionsSm_cg/{cp_ecall_m, cp_breakpoint}",
+        "Exceptions_Sm_cg/{cp_ecall_m, cp_breakpoint}",
       ]
 
   - name: xret_enc_img

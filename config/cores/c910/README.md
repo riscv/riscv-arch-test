@@ -39,7 +39,7 @@ because the reference model cannot run `Sv_sv39_VA_all_zeros_Smode`, which maps 
 test image; `ci.yaml` lists the other suites that fail.
 
 The model runs at 1,000 to 2,000 cycles per second. The CSR tests in `S`, `U` and
-`ExceptionsZaamo` take about 280,000 cycles, so on a busy host they can exceed the 300 s limit
+`Exceptions_Zaamo` take about 280,000 cycles, so on a busy host they can exceed the 300 s limit
 that `run_tests.py` sets for each test.
 
 ## Platform

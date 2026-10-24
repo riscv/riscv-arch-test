@@ -1,79 +1,64 @@
 
 === Exceptions
 
-Exception tests are organized according to the privilege mode or extension supported.  For example, a configuration with Machine, Supervisor, User, and Floating-Point supported should run <<t-ExceptionsSm-coverpoints,ExceptionsSm>>, <<t-ExceptionsS-coverpoints,ExceptionsS>>, <<t-ExceptionsU-coverpoints,ExceptionsU>>, and <<t-ExceptionsF-coverpoints,ExceptionsF>>.
+The Exceptions suite has one covergroup and test plan per privilege mode or extension supported, named Exceptions_<group>_cg.  For example, a configuration with Machine, Supervisor, User, and Floating-Point supported should run <<t-Exceptions_Sm-coverpoints,Exceptions_Sm>>, <<t-Exceptions_S-coverpoints,Exceptions_S>>, <<t-Exceptions_U-coverpoints,Exceptions_U>>, and <<t-Exceptions_F-coverpoints,Exceptions_F>>.
 Note that vector exceptions are in <<Vector Privileged Test Suites>>.
 
-==== ExceptionsSm Machine-Mode Exceptions
+==== Exceptions_Sm Machine-Mode Exceptions
 
 These tests are run on any configuration with machine mode that supports exceptions.
 
-include::{testplansdir}/priv/ExceptionsSm.adoc[]
+include::{testplansdir}/priv/Exceptions_Sm.adoc[]
 
-include::norm/ExceptionsSm_norm_rules.adoc[]
-
-==== ExceptionsS Supervisor-Mode Exceptions
+==== Exceptions_S Supervisor-Mode Exceptions
 
 These additional exception tests are run on configurations with supervisor mode.
 
-include::{testplansdir}/priv/ExceptionsS.adoc[]
+include::{testplansdir}/priv/Exceptions_S.adoc[]
 
-include::norm/ExceptionsS_norm_rules.adoc[]
-
-==== ExceptionsU User-Mode Exceptions
+==== Exceptions_U User-Mode Exceptions
 
 These additional exception tests are run on configurations with user mode.
 
-include::{testplansdir}/priv/ExceptionsU.adoc[]
+include::{testplansdir}/priv/Exceptions_U.adoc[]
 
-include::norm/ExceptionsU_norm_rules.adoc[]
-
-==== ExceptionsF Floating-Point Exceptions
+==== Exceptions_F Floating-Point Exceptions
 
 These additional exception tests are run on configurations with floating-point (at least the F extension).
 
-include::{testplansdir}/priv/ExceptionsF.adoc[]
+include::{testplansdir}/priv/Exceptions_F.adoc[]
 
-include::norm/ExceptionsF_norm_rules.adoc[]
+==== Exceptions_Zalrsc Atomic LR/SC Exceptions
 
-==== ExceptionsZalrsc Atomic LR/SC Exceptions
+include::{testplansdir}/priv/Exceptions_Zalrsc.adoc[]
 
-include::{testplansdir}/priv/ExceptionsZalrsc.adoc[]
+==== Exceptions_Zaamo Atomic Memory Operation Exceptions
 
-include::norm/ExceptionsZalrsc_norm_rules.adoc[]
+include::{testplansdir}/priv/Exceptions_Zaamo.adoc[]
 
-==== ExceptionsZaamo Atomic Memory Operation Exceptions
-
-include::{testplansdir}/priv/ExceptionsZaamo.adoc[]
-
-include::norm/ExceptionsZaamo_norm_rules.adoc[]
-
-==== ExceptionsZc Compressed Instruction Exceptions
+==== Exceptions_Zc Compressed Instruction Exceptions
 
 These additional exception tests are run on configurations with compressed instructions (C, Zca, Zcb, etc.).  They attempt to test all compressed loads and stores, but may throw an illegal instruction fault on compressed subword load/store if Zcb is not supported.
 
-include::{testplansdir}/priv/ExceptionsZc.adoc[]
+include::{testplansdir}/priv/Exceptions_Zc.adoc[]
 
-include::norm/ExceptionsZc_norm_rules.adoc[]
+==== Exceptions_ZicboS Supervisor-Mode CBO Exceptions
 
+include::{testplansdir}/priv/Exceptions_ZicboS.adoc[]
 
-==== ExceptionsZicboS Supervisor-Mode CBO Exceptions
+==== Exceptions_ZicboU User-Mode CBO Exceptions
 
-include::{testplansdir}/priv/ExceptionsZicboS.adoc[]
+include::{testplansdir}/priv/Exceptions_ZicboU.adoc[]
 
-include::norm/ExceptionsZicboS_norm_rules.adoc[]
+==== Exceptions_ZicboSm Machine-Mode CBO Exceptions
 
-==== ExceptionsZicboU User-Mode CBO Exceptions
+include::{testplansdir}/priv/Exceptions_ZicboSm.adoc[]
 
-include::{testplansdir}/priv/ExceptionsZicboU.adoc[]
+==== Exceptions Normative Rules
 
-include::norm/ExceptionsZicboU_norm_rules.adoc[]
+The rules apply to all Exceptions groups.
 
-==== ExceptionsZicboSm Machine-Mode CBO Exceptions
-
-include::{testplansdir}/priv/ExceptionsZicboSm.adoc[]
-
-include::norm/ExceptionsZicboSm_norm_rules.adoc[]
+include::norm/Exceptions_norm_rules.adoc[]
 
 ==== Sv Virtual Memory Exceptions
 

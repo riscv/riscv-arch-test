@@ -85,15 +85,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |S|Supervisor CSRs|<<t-S-coverpoints>>|||x|x|x
 |U|User CSRs|<<t-U-coverpoints>>|||x|x|x
 |Zkr|Entropy CSR|<<t-Zkr_S-coverpoints>>|||o|o|o
-|ExceptionsSm|Machine Exceptions|<<t-ExceptionsSm-coverpoints>>||x|x|x|x
-|ExceptionsS|Supervisor Exceptions|<<t-ExceptionsS-coverpoints>>|||x|x|x
-|ExceptionsU|User Exceptions|<<t-ExceptionsU-coverpoints>>|||x|x|x
-|ExceptionsF|Float Exceptions|<<t-ExceptionsF-coverpoints>>|||x|x|x
-|ExceptionsZalrsc|LR/SC Exceptions|<<t-ExceptionsZalrsc-coverpoints>>|||x|x|x
-|ExceptionsZaamo|AMO Exceptions|<<t-ExceptionsZaamo-coverpoints>>|||x|x|x
-|ExceptionsZc|Compressed Exceptions|<<t-ExceptionsZc-coverpoints>>||x|x|x|x
-|ExceptionsZicboS|Supervisor CBO Exceptions|<<t-ExceptionsZicboS-coverpoints>>|||x|x|x
-|ExceptionsZicboU|User CBO Exceptions|<<t-ExceptionsZicboU-coverpoints>>|||x|x|x
+|Exceptions|Exceptions|<<t-Exceptions_Sm-coverpoints>>||x|x|x|x
 |InterruptsSm|Machine Interrupts|<<t-InterruptsSm-coverpoints>>||x|x|x|x
 |InterruptsS|Supervisor Interrupts|<<t-InterruptsS-coverpoints>>|||x|x|x
 |Sstc|Supervisor Timer Compare|<<t-Sstc-coverpoints>>|||x|x|x

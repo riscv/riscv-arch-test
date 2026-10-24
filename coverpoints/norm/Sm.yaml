@@ -19,7 +19,6 @@ normative_rule_definitions:
         "Sm_mcsr_cg/cp_scsr_from_m",
         "Sm_F_cg/cp_fcsr_access",
         "Sm_V_cg/cp_vcsrrswc",
-        "H_mcsr_cg/cp_hcsr_access",
       ]
 
   # The misa CSR is a WARL read-write register

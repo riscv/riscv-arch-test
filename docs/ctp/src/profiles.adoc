@@ -168,7 +168,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |InterruptsH|Hypervisor Interrupts|<<t-InterruptsH-coverpoints>>|||o|o|x
 |EndianH|Hypervisor Endian|<<t-EndianH-coverpoints>>|||||
 |ZicntrH|Hypervisor Counters|<<t-ZicntrH-coverpoints>>|||o|o|x
-|HV|Hypervisor + Vector CSRs|<<t-HV-coverpoints>>|||o|o|x
 |PMPH|Hypervisor PMP|<<t-PMPH-coverpoints>>|||o|o|x
 |SvH|Hypervisor Virtual Memory|<<t-SvH-coverpoints>>|||o|o|x
 |SvHZicbo|Hypervisor Virtual Memory + CBO|<<t-SvHZicbo-coverpoints>>|||o|o|x

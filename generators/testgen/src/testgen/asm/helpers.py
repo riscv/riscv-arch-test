@@ -46,6 +46,13 @@ def arch_block(lines: list[str], *extensions: str) -> list[str]:
     return [".option push", f".option arch, {adds}", *lines, ".option pop"]
 
 
+def gated(lines: list[str], gate: str | None) -> list[str]:
+    """Wrap *lines* in ``#if gate``, or return *lines* unchanged if gate is None."""
+    if gate is None:
+        return lines
+    return [f"#if {gate}", *lines, f"#endif // {gate}"]
+
+
 def lrsc_retry_loop(label: str, counter_reg: int, sc_rd: int) -> tuple[list[str], list[str]]:
     """Return the lines that open and close a constrained LR/SC loop.
 

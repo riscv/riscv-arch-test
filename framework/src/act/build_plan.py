@@ -561,7 +561,7 @@ def gen_coverage_tasks(
 # Top-level build plan construction
 # ---------------------------------------------------------------------------
 
-_COVERAGE_GROUPS_WITHOUT_COVERPOINTS = frozenset({Path("priv/H")})
+_COVERAGE_GROUPS_WITHOUT_COVERPOINTS: frozenset[Path] = frozenset()
 
 
 def generate_build_plan(

@@ -1082,9 +1082,19 @@ rvtest_vlvl0_pg_tbl:
   .skip 4096
   .endif
 #else
+  .ifndef rvtest_hlvl0_pg_tbl
+  .p2align 12
+rvtest_hlvl0_pg_tbl:
+  .skip 4096
+  .endif
   .ifndef rvtest_hlvl1_pg_tbl
   .p2align 12
 rvtest_hlvl1_pg_tbl:
+  .skip 4096
+  .endif
+  .ifndef rvtest_vlvl0_pg_tbl
+  .p2align 12
+rvtest_vlvl0_pg_tbl:
   .skip 4096
   .endif
   .ifndef rvtest_vlvl1_pg_tbl

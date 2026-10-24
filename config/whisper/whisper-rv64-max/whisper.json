@@ -70,9 +70,6 @@
     "stvec": {
       "mask": "0xFFFFFFFFFFFFFFFD" // don't allow setting MODE field to 2 (reserved)
     },
-    "vstvec": {
-      "mask": "0xFFFFFFFFFFFFFFFD" // don't allow setting MODE field to 2 (reserved)
-    },
     "mcounteren": {
       "mask": "0x000007FF"
     },

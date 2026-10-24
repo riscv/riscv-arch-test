@@ -387,7 +387,8 @@ normative_rule_definitions:
 
   # For RV64, the addresses of all standard high-half CSRs are reserved (the hypervisor high-half CSRs)
   - names: [Zicsr_high_half_rv64_rsv]
-    coverpoint: ["H_vscsr_cg/cp_illegalupper", "H_vucsr_cg/cp_csr_insufficient_priv"]
+    coverpoint:
+      ["H_vscsr_cg/cp_illegalupper", "H_vucsr_cg/cp_csr_insufficient_priv"]
 
   # H and S CSRs are inaccessible from U-mode
   - names: [H_vscsrs_acc_u]
@@ -422,9 +423,15 @@ normative_rule_definitions:
       ]
 
   # hfence.vvma and hfence.gvma execute in HS-mode with mstatus.TVM = 0, raise virtual instruction in VS-mode and
-  # VU-mode, and raise illegal instruction in U-mode.  Sm_H adds mstatus.TVM and hstatus.VTVM, and SvH the
+  # VU-mode, and raise illegal instruction in U-mode.  Sm_H adds mstatus.TVM, and SvH the
   # translations the fences remove.
-  - names: [hfence-vvma_hfence-gvma_op, hfence-vvma_mode, hfence-gvma_op, hfence-vvma_hfence-gvma_exceptions]
+  - names:
+      [
+        hfence-vvma_hfence-gvma_op,
+        hfence-vvma_mode,
+        hfence-gvma_op,
+        hfence-vvma_hfence-gvma_exceptions,
+      ]
     coverpoint: ["H_inst_cg/cp_hfence"]
 
   # When VTVM=1, VS-mode sfence.vma and satp accesses raise virtual instruction, but neither mstatus.TVM nor

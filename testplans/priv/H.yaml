@@ -153,7 +153,7 @@ coverpoints:
       The other high-half addresses are accessed by SsstrictSm.
   - name: cp_replica
     goal: In VS, writing to S-mode CSRs affects replica instead
-    description: In HS-mode, write different random values into S-mode CSRs and their VS-mode replicas.  Switch to VS-mode and write and readback S CSRs. Switch back to HS-mode and read back both the S-mode CSRs and VS replicas.  The return to HS-mode is a trap, which needs stvec and sscratch and rewrites sepc, scause and stval: those S CSRs are left alone and only their replicas are checked.  satp and vsatp stay Bare, because the test code is not mapped.
+    description: In HS-mode, write different random values into S-mode CSRs and their VS-mode replicas.  Switch to VS-mode and write and readback S CSRs. Switch back to HS-mode and read back both the S-mode CSRs and VS replicas.  The return to HS-mode is a trap, which needs stvec and sscratch and rewrites sepc, scause and stval, so those S CSRs are left alone and only their replicas are checked.  satp and vsatp stay Bare, because the test code is not mapped.
     expectation: VS replica should have changed but S CSR does not change.
     bins: "9"
     rules:

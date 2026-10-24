@@ -770,6 +770,125 @@ coverpoints:
       - Sdtrig_mcontrol6_size_16bit
       - Sdtrig_mcontrol6_size_32bit
       - Sdtrig_mcontrol6_size_64bit
+  - name: cp_mcontrol6_match_size_store
+    goal: Every legal match crossed with every legal size on a select = 1 store trigger
+    description: |-
+      For each of UDB_SDTRIG_NUM_TRIGGERS if UDB_SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS[i], SELECT_WRITABLE and STORE_WRITABLE:
+      tdata1.select = 1 (data), tdata1.XSL = 010
+      For each match in UDB_SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES and each size N in
+      UDB_SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES (1/2/3/5, 5 on RV64 only):
+      tdata2 = a value whose low N bits have bit N-1 set, with other bits set above N
+      perform {sb/sh/sw/sd} of size N of a register with other bits set above N whose low N bits:
+        equal / not equal: the value; the value with bit 0 or bit N-1 flipped
+        ge / lt: the value; the value minus 1; 1 (ordered the other way by a signed compare)
+        NAPOT / not NAPOT over bits 3:0: both ends of the range; bit 4 or bit N-1 flipped
+        mask low / high and their inverses (XLEN halves of tdata2: mask high, value low): the value; an unmasked bit
+        flipped; a masked bit flipped; for mask high with N <= XLEN/2, tdata2 value 0 and tdata2 value = the data
+      perform a store of each other width W (N/2, 2N up to XLEN) whose low W bits match a tdata2 built the same way
+      for W, and an XLEN-wide store equal to tdata2 above N
+      The trigger is disarmed after each store and rvtest_trap_count is written to the signature.
+    expectation: |-
+      Breakpoint exception exactly for the stores of size N whose low N bits satisfy the match against the low N
+      bits of tdata2 (equal, not equal, ge, lt, NAPOT), or the XLEN halves of tdata2 and of the zero-extended data
+      (mask matches). The near misses, and every store of another width, do not fire.
+      Each miss would fire on a hart that compared tdata2 or the register above N, compared signed, ignored size,
+      or matched the store's own width.
+      The mask and NAPOT expectations follow the reading Sail 0.16, Whisper and ImperasDV implement; they wait on
+      riscv-isa-manual#3461. Sail 0.16 compares all of tdata2 (sail-riscv#2038).
+    bins: NTRIG * legal matches * legal sizes * {fired, not fired, other width}
+    rules:
+      - Sdtrig_mcontrol6_comparisons
+      - Sdtrig_mcontrol6_select_data
+      - Sdtrig_mcontrol6_size_8bit
+      - Sdtrig_mcontrol6_size_16bit
+      - Sdtrig_mcontrol6_size_32bit
+      - Sdtrig_mcontrol6_size_64bit
+      - Sdtrig_mcontrol6_match_equal
+      - Sdtrig_mcontrol6_match_napot
+      - Sdtrig_mcontrol6_match_ge
+      - Sdtrig_mcontrol6_match_lt
+      - Sdtrig_mcontrol6_match_mask_low
+      - Sdtrig_mcontrol6_match_mask_high
+      - Sdtrig_mcontrol6_match_not_equal
+      - Sdtrig_mcontrol6_match_not_napot
+      - Sdtrig_mcontrol6_match_not_mask_low
+      - Sdtrig_mcontrol6_match_not_mask_high
+  - name: cp_mcontrol6_match_size_load
+    goal: Every legal match crossed with every legal size on a select = 1 load trigger
+    description: |-
+      As cp_mcontrol6_match_size_store, with tdata1.XSL = 001 (LOAD_WRITABLE) and sign-extending {lb/lh/lw/ld}:
+      the word at scratch holds the value in its low N bits and other bits set above them, written before the
+      trigger is armed. Because bit N-1 is set, the loaded register differs from the compare value above N.
+    expectation: |-
+      As cp_mcontrol6_match_size_store; a hart that compared the sign-extended register would miss the cases that
+      fire.
+    bins: NTRIG * legal matches * legal sizes * {fired, not fired, other width}
+    rules:
+      - Sdtrig_mcontrol6_comparisons
+      - Sdtrig_mcontrol6_select_data
+      - Sdtrig_mcontrol6_size_8bit
+      - Sdtrig_mcontrol6_size_16bit
+      - Sdtrig_mcontrol6_size_32bit
+      - Sdtrig_mcontrol6_size_64bit
+      - Sdtrig_mcontrol6_match_equal
+      - Sdtrig_mcontrol6_match_napot
+      - Sdtrig_mcontrol6_match_ge
+      - Sdtrig_mcontrol6_match_lt
+      - Sdtrig_mcontrol6_match_mask_low
+      - Sdtrig_mcontrol6_match_mask_high
+      - Sdtrig_mcontrol6_match_not_equal
+      - Sdtrig_mcontrol6_match_not_napot
+      - Sdtrig_mcontrol6_match_not_mask_low
+      - Sdtrig_mcontrol6_match_not_mask_high
+  - name: cp_mcontrol6_match_size_execute
+    goal: Every legal match crossed with sizes 2 and 3 on a select = 1 execute trigger
+    description: |-
+      M-mode only. For each of UDB_SDTRIG_NUM_TRIGGERS if UDB_SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS[i], SELECT_WRITABLE
+      and EXECUTE_WRITABLE: tdata1.select = 1 (data), tdata1.XSL = 100
+      For each match in UDB_SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES and size 2 (16-bit, ZCA only) or 3 (32-bit), as
+      cp_mcontrol6_match_size_store with instruction encodings in place of data, tdata2 bits above N set, and step
+      the lowest free field bit:
+        16-bit targets: c.nop hints (nzimm varies)
+        32-bit targets: addi/slti x0 hints (rs1 and imm vary) and, for not equal / not NAPOT / not mask low, csrrw
+        and csrrwi writes of 0 to tdata1, so that the csrw tdata1, x0 that disarms the trigger never matches
+      execute the target right after arming, then csrw tdata1, x0
+      also execute instructions of the other width with tdata2 built for that width: 32-bit ones on size 2, and
+      16-bit ones on size 3 where the disarming csrw would not match
+    expectation: |-
+      Breakpoint exception exactly for the targets of size N that satisfy the match; the near misses and the other
+      width do not fire.
+      On RV64 the high half of an instruction is 0, so mask high and not mask high on 32-bit instructions are tested
+      only with groups that never fire (the others would fire on the disarming csrw) and are not in the cross.
+      Waits on riscv-isa-manual#3461 as cp_mcontrol6_match_size_store.
+    bins: NTRIG * legal matches * sizes 2/3 * {fired, not fired}
+    rules:
+      - Sdtrig_mcontrol6_comparisons
+      - Sdtrig_mcontrol6_select_data
+      - Sdtrig_mcontrol6_size_16bit
+      - Sdtrig_mcontrol6_size_32bit
+      - Sdtrig_mcontrol6_match_equal
+      - Sdtrig_mcontrol6_match_napot
+      - Sdtrig_mcontrol6_match_ge
+      - Sdtrig_mcontrol6_match_lt
+      - Sdtrig_mcontrol6_match_mask_low
+      - Sdtrig_mcontrol6_match_mask_high
+      - Sdtrig_mcontrol6_match_not_equal
+      - Sdtrig_mcontrol6_match_not_napot
+      - Sdtrig_mcontrol6_match_not_mask_low
+      - Sdtrig_mcontrol6_match_not_mask_high
+  - name: cp_mcontrol6_match_size_execute_other
+    goal: A size = 2 execute trigger never fires on a 32-bit instruction it would otherwise match
+    description: |-
+      The cases of cp_mcontrol6_match_size_execute that execute a 32-bit target on a size = 2 trigger whose tdata2
+      the target satisfies for each legal match (ZCA and size 2 legal)
+    expectation: |-
+      No breakpoint exception.
+      On RV64 no 32-bit instruction satisfies mask high or not mask high (its high half is 0, see
+      cp_mcontrol6_match_size_execute), so those matches are not in the cross.
+    bins: NTRIG * legal matches (RV64 without 5 and 13)
+    rules:
+      - Sdtrig_mcontrol6_size_16bit
+      - Sdtrig_mcontrol6_select_data
   - heading: "Notes:"
   - heading: uncertain and uncertainen not tested because optional and unpredictable
   - heading: vs, vu deferred to SdtrigH

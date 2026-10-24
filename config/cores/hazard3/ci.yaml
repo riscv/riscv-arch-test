@@ -5,7 +5,7 @@
 ci_enabled: true
 
 # Wren6991/Hazard3 ba0c83c; paths are under https://github.com/Wren6991/Hazard3/blob/ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6/
-#   ExceptionsZalrsc  Waived: legal implementation-defined behavior that the test does not allow for.
+#   Exceptions_Zalrsc  Waived: legal implementation-defined behavior that the test does not allow for.
 #                     Hazard3 has no PMA checker and learns that an address is inaccessible only from the bus error
 #                     response, so a plain store to RVMODEL_ACCESS_FAULT_ADDRESS (0x90000000, no bus slave) raises a
 #                     store access fault. An sc.w with no reservation fails inside the core and returns rd = 1 without
@@ -17,7 +17,7 @@ ci_enabled: true
 #                     https://github.com/Wren6991/Hazard3/issues/53). Allowing it would need a per-DUT switch for
 #                     whether a failing SC sees bus errors, which is not worth the complexity for so obscure a case.
 #   Sm_Zicntr,U_Zicntr  a load that takes a bus-error access fault is still counted in minstret: hdl/hazard3_core.v#L1138 (https://github.com/Wren6991/Hazard3/issues/49)
-exclude_extensions: "ExceptionsZalrsc,Sm_Zicntr,U_Zicntr"
+exclude_extensions: "Exceptions_Zalrsc,Sm_Zicntr,U_Zicntr"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-hazard3.sh"

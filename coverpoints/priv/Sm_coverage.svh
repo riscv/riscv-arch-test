@@ -724,9 +724,12 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         scause_csr : coverpoint ins.current.insn[31:20] {
             bins scause = {CSR_SCAUSE};
         }
-        // the scause Exception Code is WLRL and must hold the values 0-31
+        // the scause Exception Code is WLRL; Ss1p12 and later must hold the values 0-31, Ss1p11 only the supported codes
         scause_wlrl_values : coverpoint ins.current.rs1_val {
-            bins code[] = {[0:31]};
+            bins code[] = {[0:9], 12, 13, 15};
+            `ifdef S1P12P0_OR_LATER_SUPPORTED
+              bins code_ss1p12[] = {10, 11, 14, [16:31]};
+            `endif
         }
         shadow : coverpoint {ins.prev.insn[31:20], ins.current.insn[31:20]} {
             bins mstatus_sstatus = { {CSR_MSTATUS, CSR_SSTATUS} };

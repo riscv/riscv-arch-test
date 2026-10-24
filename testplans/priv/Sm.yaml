@@ -97,9 +97,9 @@ coverpoints:
   - name: cp_scsr_from_m
     description: "If S supported, read/write/set/clear each S-mode CSR: sstatus, sie, stvec, scounteren, senvcfg, sscratch, sepc, stval, sip.  stvec is WARL with complex legal values, so only MODE[1], which must read 0, is checked.  scause is tested in cp_scause_from_m."
   - name: cp_scause_from_m
-    description: If S supported, write scause from M-mode with each Exception Code 0-31 and read it back.
-    expectation: The Exception Code is WLRL and must hold the values 0-31, so each reads back as written.
-    bins: 32
+    description: "If S supported, write scause from M-mode with each Exception Code 0-9, 12, 13 and 15 and read it back.  If Ss1p12 or later is supported, also write codes 10, 11, 14 and 16-31."
+    expectation: The Exception Code is WLRL.  Ss1p12 and later must hold the values 0-31, so each reads back as written.  Ss1p11 need only hold the supported codes, so the other codes are written only on Ss1p12 or later.
+    bins: 13 (32 on Ss1p12 or later)
   - name: cp_satp_from_m
     description: If S is supported, read satp with mstatus.TVM=0/1
     expectation: shouldn't trap on either TVM.  Value is not predictable.

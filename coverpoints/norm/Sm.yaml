@@ -1867,6 +1867,10 @@ normative_rule_definitions:
   - names: [H_vscsrs_v0]
     coverpoint: ["Sm_H_mcsr_cg/cp_replica"]
 
+  # With V=1, S CSR names access the VS replicas, and the S CSRs keep their values
+  - names: [H_vscsrs_sub, H_vscsrs_v1]
+    coverpoint: ["Sm_H_mcsr_cg/cp_replica_vs"]
+
   # mtval is not read-only zero with H
   - names: [H_mtval_nrz]
     coverpoint: ["Sm_H_mcsr_cg/cp_mtvala"]

@@ -666,12 +666,18 @@ def replica_write(test_data: TestData, rep: Replica, csr: str, value: int | str 
 
 
 def replica_read(
-    test_data: TestData, rep: Replica, csr: str, mask_reg: int, bin_name: str, covergroup: str
+    test_data: TestData,
+    rep: Replica,
+    csr: str,
+    mask_reg: int,
+    bin_name: str,
+    covergroup: str,
+    coverpoint: str = "cp_replica",
 ) -> list[str]:
     """Read csr and check the replica test's bits.  mask_reg already holds rep.mask if there is one."""
     check = test_data.int_regs.get_register()
     lines = [
-        test_data.add_testcase(bin_name, "cp_replica", covergroup),
+        test_data.add_testcase(bin_name, coverpoint, covergroup),
         gen_csr_read_sigupd(check, (csr, rep.mask), test_data, mask_reg if rep.mask is not None else None),
     ]
     test_data.int_regs.return_register(check)

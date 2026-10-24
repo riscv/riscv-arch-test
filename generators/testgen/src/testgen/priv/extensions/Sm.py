@@ -12,7 +12,7 @@
 """Sm privileged extension test generator."""
 
 from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -21,10 +21,14 @@ from testgen.priv.extensions.HCommon import (
     H_HS_CSRS,
     H_M_CSRS,
     H_VS_CSRS,
+    REPLICA_ATP_GATE,
+    REPLICAS,
     guest_page_fault_tests,
     hcsr_tests,
     hlv_tests,
+    replica_read,
     replica_rw_tests,
+    replica_write,
     sret_tests,
 )
 from testgen.priv.extensions.PrivCommon import (
@@ -1645,6 +1649,47 @@ def _h_replica_tests(test_data: TestData) -> list[str]:
     ]
 
 
+def _h_replica_vs_tests(test_data: TestData) -> list[str]:
+    """In VS-mode, write each S CSR name, which reaches its VS replica; M-mode checks that the S CSR keeps its value."""
+    save_s, save_vs, mask_reg, val_reg = test_data.int_regs.get_registers(4)
+    lines = [
+        comment_banner(
+            "cp_replica_vs",
+            "M-mode writes different values to an S CSR and its VS replica.  VS-mode reads the S CSR name,\n"
+            "writes a new value and reads it back, which reaches the replica.  VS-mode ecalls go to M-mode, so\n"
+            "M-mode checks that the S CSR keeps its value and the replica holds the new one.  vsatp stays Bare\n"
+            "while VS-mode runs; satp holds a paged value, which VS-mode ignores",
+        ),
+        f"LI(x{val_reg}, MIP_S_MASK)",
+        f"csrw mideleg, x{val_reg}",
+        f"LI(x{val_reg}, MIP_VS_MASK)",
+        f"csrw hideleg, x{val_reg}",
+    ]
+    for rep in REPLICAS:
+        satp = rep.s == "satp"
+        s_init, vs_init, vs_new = ("rvtest_Sroot_pg_tbl", None, None) if satp else rep.values[0:2] + rep.values[3:4]
+        body = [
+            f"csrr x{save_s}, {rep.s}",
+            f"csrr x{save_vs}, {rep.vs}",
+            *([f"LI(x{mask_reg}, {rep.mask:#x})"] if rep.mask else []),
+            *replica_write(test_data, rep, rep.s, s_init, val_reg),
+            *replica_write(test_data, rep, rep.vs, vs_init, val_reg),
+            "RVTEST_TSBI_GOTO_VSMODE",
+            *replica_read(test_data, rep, rep.s, mask_reg, f"{rep.s}_init", _H_CSR_CG, "cp_replica_vs"),
+            *replica_write(test_data, rep, rep.s, vs_new, val_reg),
+            *replica_read(test_data, rep, rep.s, mask_reg, rep.s, _H_CSR_CG, "cp_replica_vs"),
+            "RVTEST_TSBI_GOTO_MMODE",
+            *replica_read(test_data, rep, rep.s, mask_reg, f"{rep.s}_m", _H_CSR_CG, "cp_replica_vs"),
+            *replica_read(test_data, rep, rep.vs, mask_reg, f"{rep.vs}_m", _H_CSR_CG, "cp_replica_vs"),
+            f"csrw {rep.s}, x{save_s}",
+            f"csrw {rep.vs}, x{save_vs}",
+        ]
+        lines.extend(gated(body, REPLICA_ATP_GATE if satp else None))
+    lines.extend(["csrw mideleg, zero", "csrw hideleg, zero"])
+    test_data.int_regs.return_registers([save_s, save_vs, mask_reg, val_reg])
+    return lines
+
+
 def _h_mtvala_tests(test_data: TestData) -> list[str]:
     """With H, mtval is not read-only zero."""
     save_reg, check_reg = test_data.int_regs.get_registers(2)
@@ -1825,7 +1870,7 @@ def make_smh(test_data: TestData) -> list[TestChunk]:
     hcsr_tests(test_data, test_chunks, [*H_M_CSRS, *H_HS_CSRS, *H_VS_CSRS], _H_CSR_CG, prefix="H_")
 
     tc = test_data.new_test_chunk(test_chunks, "H_replica")
-    tc.code.extend([*_h_replica_tests(test_data), *_h_mtvala_tests(test_data)])
+    tc.code.extend([*_h_replica_tests(test_data), *_h_replica_vs_tests(test_data), *_h_mtvala_tests(test_data)])
 
     tc = test_data.new_test_chunk(test_chunks, "H_tvm")
     tc.code.extend(_h_tvm_tests(test_data))

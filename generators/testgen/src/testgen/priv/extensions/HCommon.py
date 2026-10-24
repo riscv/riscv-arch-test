@@ -676,3 +676,32 @@ def replica_read(
     ]
     test_data.int_regs.return_register(check)
     return lines
+
+
+def replica_rw_tests(test_data: TestData, covergroup: str, steps: tuple[tuple[int, int, str], ...]) -> list[str]:
+    """Write different values to each S CSR and its VS replica and read both back, in the current mode.
+
+    Each step is (S value index, VS value index, bin name format with {csr}) into Replica.values.  Each pair is
+    saved first and restored after.  The caller sets mideleg and hideleg so sie, sip, vsie and vsip show the bits.
+    """
+    save_s, save_vs, mask_reg, val_reg = test_data.int_regs.get_registers(4)
+    lines = []
+    for rep in REPLICAS:
+        body = [
+            f"csrr x{save_s}, {rep.s}",
+            f"csrr x{save_vs}, {rep.vs}",
+            *([f"LI(x{mask_reg}, {rep.mask:#x})"] if rep.mask else []),
+        ]
+        for s_idx, vs_idx, bin_fmt in steps:
+            body.extend(
+                [
+                    *replica_write(test_data, rep, rep.s, rep.values[s_idx], val_reg),
+                    *replica_write(test_data, rep, rep.vs, rep.values[vs_idx], val_reg),
+                    *replica_read(test_data, rep, rep.s, mask_reg, bin_fmt.format(csr=rep.s), covergroup),
+                    *replica_read(test_data, rep, rep.vs, mask_reg, bin_fmt.format(csr=rep.vs), covergroup),
+                ]
+            )
+        body.extend([f"csrw {rep.s}, x{save_s}", f"csrw {rep.vs}, x{save_vs}"])
+        lines.extend(gated(body, REPLICA_ATP_GATE if rep.s == "satp" else None))
+    test_data.int_regs.return_registers([save_s, save_vs, mask_reg, val_reg])
+    return lines

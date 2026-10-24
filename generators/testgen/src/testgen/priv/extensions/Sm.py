@@ -21,14 +21,11 @@ from testgen.priv.extensions.HCommon import (
     H_HS_CSRS,
     H_M_CSRS,
     H_VS_CSRS,
-    REPLICA_ATP_GATE,
-    REPLICAS,
     gated,
     guest_page_fault_tests,
     hcsr_tests,
     hlv_tests,
-    replica_read,
-    replica_write,
+    replica_rw_tests,
     sret_tests,
 )
 from testgen.priv.extensions.PrivCommon import (
@@ -1631,7 +1628,7 @@ _H_INST_CG = "Sm_H_inst_cg"
 
 def _h_replica_tests(test_data: TestData) -> list[str]:
     """Write different values to each S CSR and its VS replica, then read both back."""
-    save_s, save_vs, mask_reg, val_reg = test_data.int_regs.get_registers(4)
+    val_reg = test_data.int_regs.get_register()
     lines = [
         comment_banner("cp_replica", "Write different values to each S CSR and its VS replica, then read both"),
         f"LI(x{val_reg}, MIP_S_MASK)",
@@ -1639,23 +1636,9 @@ def _h_replica_tests(test_data: TestData) -> list[str]:
         f"LI(x{val_reg}, MIP_VS_MASK)",
         f"csrw hideleg, x{val_reg}    # vsie and vsip show only delegated interrupts",
     ]
-    for rep in REPLICAS:
-        body = [
-            f"csrr x{save_s}, {rep.s}",
-            f"csrr x{save_vs}, {rep.vs}",
-            *([f"LI(x{mask_reg}, {rep.mask:#x})"] if rep.mask else []),
-            *replica_write(test_data, rep, rep.s, rep.values[0], val_reg),
-            *replica_write(test_data, rep, rep.vs, rep.values[1], val_reg),
-            *replica_read(test_data, rep, rep.s, mask_reg, rep.s, _H_CSR_CG),
-            *replica_read(test_data, rep, rep.vs, mask_reg, rep.vs, _H_CSR_CG),
-            f"csrw {rep.s}, x{save_s}",
-            f"csrw {rep.vs}, x{save_vs}",
-        ]
-        lines.extend(gated(body, REPLICA_ATP_GATE if rep.s == "satp" else None))
+    test_data.int_regs.return_register(val_reg)
     # Boot delegates nothing
-    lines.extend(["csrw mideleg, zero", "csrw hideleg, zero"])
-    test_data.int_regs.return_registers([save_s, save_vs, mask_reg, val_reg])
-    return lines
+    return [*lines, *replica_rw_tests(test_data, _H_CSR_CG, ((0, 1, "{csr}"),)), "csrw mideleg, zero", "csrw hideleg, zero"]
 
 
 def _h_mtvala_tests(test_data: TestData) -> list[str]:

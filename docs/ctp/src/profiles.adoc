@@ -85,15 +85,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |S|Supervisor CSRs|<<t-S-coverpoints>>|||x|x|x
 |U|User CSRs|<<t-U-coverpoints>>|||x|x|x
 |Zkr|Entropy CSR|<<t-Zkr_S-coverpoints>>|||o|o|o
-|Exceptions_Sm|Machine Exceptions|<<t-Exceptions_Sm-coverpoints>>||x|x|x|x
-|Exceptions_S|Supervisor Exceptions|<<t-Exceptions_S-coverpoints>>|||x|x|x
-|Exceptions_U|User Exceptions|<<t-Exceptions_U-coverpoints>>|||x|x|x
-|Exceptions_F|Float Exceptions|<<t-Exceptions_F-coverpoints>>|||x|x|x
-|Exceptions_Zalrsc|LR/SC Exceptions|<<t-Exceptions_Zalrsc-coverpoints>>|||x|x|x
-|Exceptions_Zaamo|AMO Exceptions|<<t-Exceptions_Zaamo-coverpoints>>|||x|x|x
-|Exceptions_Zc|Compressed Exceptions|<<t-Exceptions_Zc-coverpoints>>||x|x|x|x
-|Exceptions_ZicboS|Supervisor CBO Exceptions|<<t-Exceptions_ZicboS-coverpoints>>|||x|x|x
-|Exceptions_ZicboU|User CBO Exceptions|<<t-Exceptions_ZicboU-coverpoints>>|||x|x|x
+|Exceptions|Exceptions|<<t-Exceptions_Sm-coverpoints>>||x|x|x|x
 |ExceptionsSv|Virt Mem Exceptions|<<t-ExceptionsSv-coverpoints>>|||x|x|x
 |ExceptionsSvZalrsc|Virt Mem LR/SC Exceptions|<<t-ExceptionsSvZalrsc-coverpoints>>|||x|x|x
 |ExceptionsSvZaamo|Virt Mem AMO Exceptions|<<t-ExceptionsSvZaamo-coverpoints>>|||x|x|x

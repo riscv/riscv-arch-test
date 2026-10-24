@@ -149,7 +149,7 @@ See https://github.com/riscv/riscv-isa-manual/issues/2558[RISC-V ISA Manual Issu
 
 [NOTE]
 ====
-MCOUNTENABLE_EN, SCOUNTENABLE_EN and HCOUNTENABLE_EN are exercised by the Sm_Zicntr, S_Zicntr, U_Zicntr and ZicntrH `cp_mcounteren_access_*`, `cp_scounteren_access_*` and `cp_hcounteren_access_*` coverpoints (<<t-S-coverpoints>>). COUNTINHIBIT_EN is exercised by the Sm `cp_inhibit_*` coverpoints (<<t-Sm-coverpoints>>).
+MCOUNTENABLE_EN, SCOUNTENABLE_EN and HCOUNTENABLE_EN are exercised by the Sm_Zicntr, S_Zicntr, U_Zicntr and H_Zicntr `cp_mcounteren_access_*`, `cp_scounteren_access_*` and `cp_hcounteren_access_*` coverpoints (<<t-S-coverpoints>>). COUNTINHIBIT_EN is exercised by the Sm `cp_inhibit_*` coverpoints (<<t-Sm-coverpoints>>).
 ====
 
 ==== Zihintpause Pause Hint

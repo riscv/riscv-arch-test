@@ -506,10 +506,6 @@
         `cover_info("//      Zicntr - Enabled");
         `include "Zicntr_coverage_init.svh"
     `endif
-    `ifdef COVER_ZICNTRH
-        `cover_info("//      ZicntrH - Enabled");
-        `include "ZicntrH_coverage_init.svh"
-    `endif
     `ifdef COVER_ZICOND
         `cover_info("//      Zicond - Enabled");
         `include "Zicond_coverage_init.svh"

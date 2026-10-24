@@ -74,12 +74,7 @@
     },
     "scounteren": {
       "mask": "0x000007FF"
-    },
-    // Whisper leaves bit 63 (SE) of mstateen1-3 read-only zero unless given a mask, but it must
-    // be writable with H (norm:mstateen_bit_63_roz).
-    "mstateen1h": { "mask": "0x80000000", "poke_mask": "0x80000000" },
-    "mstateen2h": { "mask": "0x80000000", "poke_mask": "0x80000000" },
-    "mstateen3h": { "mask": "0x80000000", "poke_mask": "0x80000000" }
+    }
   },
 
   "misaligned_has_priority": false,

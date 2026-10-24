@@ -11,16 +11,6 @@
 //   Weight 0: only the crosses count.
 //
 ///////////////////////////////////////////
-cbo_xsl: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "execute")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "store")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "load")[0]} {
-    type_option.weight = 0;
-    bins execute = {3'b100};
-    bins store   = {3'b010};
-    bins load    = {3'b001};
-}
-prefetch_xsl: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "execute")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "store")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "load")[0]} {
-    type_option.weight = 0;
-    bins load_store = {3'b011};
-}
 cbo_select: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "select")[0] {
     type_option.weight = 0;
     bins address = {1'b0};
@@ -33,11 +23,6 @@ cbo_tdata2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2",
     wildcard bins below      = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") == ins.current.rs1_val - 1);
     wildcard bins next_block = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") == ins.current.rs1_val + XLEN'(`UDB_CACHE_BLOCK_SIZE));
     bins zero                = {'0};
-}
-prefetch_tdata2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") {
-    type_option.weight = 0;
-    wildcard bins address = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") == ins.current.rs1_val);
-    bins zero             = {'0};
 }
 // fired (into M, mcause = 3) iff the operation matches as a store
 cbo_outcome: coverpoint sdtrig_cbo_as_expected(ins) {

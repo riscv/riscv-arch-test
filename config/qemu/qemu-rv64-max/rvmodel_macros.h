@@ -268,7 +268,11 @@
 
 ##### Sscofpmf #####
 #define RVMODEL_HPM_COUNTER 3   // HPM counter used by the Sscofpmf tests (3 to 31)
-#define RVMODEL_MHPMEVENT_VAL  0x02   // RISCV_PMU_EVENT_HW_INSTRUCTIONS
+// Selector 2 is QEMU's instructions-retired event (RISCV_PMU_EVENT_HW_INSTRUCTIONS), so any
+// instruction counts, including the nop below. sail.json maps EV_FENCE to the same selector and
+// the Sail reference counts the fence that its build runs in place of RVMODEL_MHPMEVENT_CODE.
+// The tests check only whether the counter moved and whether it overflowed, not by how much.
+#define RVMODEL_MHPMEVENT_VAL  0x02
 #define RVMODEL_MHPMEVENT_CODE(_R1, _R2) \
     nop
 

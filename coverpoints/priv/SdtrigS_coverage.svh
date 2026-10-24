@@ -8,47 +8,20 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 `define COVER_SDTRIGS
-`define SDTRIG_ICOUNT_MODE_BIT 7  // icount tdata1.s: the tests count in S-mode
+// suite-local defines for the shared coverpoints, undefined at the end of this file
+`define SDTRIG_SUITE_S               // the tests run in S-mode
+`define SDTRIG_ICOUNT_MODE_BIT 7     // icount tdata1.s: the tests count in S-mode
+`define SDTRIG_MCONTROL6_MODE_BIT 4  // mcontrol6 tdata1.s
 `include "general/RISCV_coverage_sdtrig_derived.svh"
 `include "general/RISCV_coverage_sdtrig_functions.svh"
-
-// illegal-instruction trap (mcause/scause = 2) taken on this record; the instruction raising it does not name xcause
-function automatic logic sdtrigs_illegal_taken(ins_t ins);
-    logic [11:0] cause = ins.current.csr_wb[CSR_SCAUSE] ? CSR_SCAUSE : CSR_MCAUSE;
-    return ins.current.csr_wb[cause] && ins.current.csr[cause] == 2;
-endfunction
-
-// cp_mcontrol6_priv_bits_s: outcome of the sw that an mcontrol6 store trigger watches.
-//   1: the trigger's s bit is set and the breakpoint was taken (into S, or into M on harts that use tcontrol)
-//   2: s is clear, m or u is set, and no breakpoint was taken    0: anything else
-function automatic logic [1:0] sdtrigs_priv_bits_outcome(ins_t ins);
-    logic [XLEN-1:0] tdata1 = get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "tdata1");
-    if (tdata1[4] && sdtrig_bp_taken(ins)) return 2'd1;
-    if (!tdata1[4] && (tdata1[6] || tdata1[3]) && !sdtrig_bp_taken(ins)) return 2'd2;
-    return 2'd0;
-endfunction
 
 covergroup SdtrigS_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "general/RISCV_coverage_sdtrig_coverpoints.svh"
+    `include "general/RISCV_coverage_sdtrig_bp_coverpoints.svh"
 
-    // Triggers are armed in M through T-SBI; this covers the type of the trigger selected when a breakpoint is
-    // taken from S-mode. itrigger/etrigger are left out: in these tests (medeleg[3] = 1) they are suppressed on
-    // harts that use the interrupt enables and fire into M on harts that use tcontrol, so neither outcome is a bin.
-    bp_type: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "type")[3:0] iff (sdtrig_bp_taken(ins)) {
-        bins icount    = {4'd3};
-        bins mcontrol6 = {4'd6};
-    }
-    // cp_breakpoint_delegate_s: medeleg[3] and the mode the breakpoint taken from S-mode was handled in
-    bp_routing: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "medeleg", "medeleg")[3], ins.current.csr_wb[CSR_SCAUSE]} iff (sdtrig_bp_taken(ins)) {
-        bins not_delegated_to_m = {2'b00};
-        `ifdef UDB_MEDELEG_DELEGATABLE_3  // medeleg[3] is read-only 0 on a hart that uses tcontrol for reentrancy
-            bins delegated_to_s = {2'b11};
-        `endif
-    }
-
-    // main coverpoints
+    // main coverpoints: breakpoints taken from S-mode
     cp_breakpoint_s: cross priv_mode_s, triggernum, bp_type;  // NTRIG * 2 types; handled in S (medeleg[3] = 1) or M (tcontrol)
     `ifdef S_SUPPORTED
         cp_breakpoint_delegate_s: cross priv_mode_s, triggernum, bp_type, bp_routing;  // NTRIG * 2 types * 2 (medeleg[3] = 0 into M, 1 into S)
@@ -59,36 +32,8 @@ covergroup SdtrigS_access_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "general/RISCV_coverage_sdtrig_coverpoints.svh"
-    `include "general/RISCV_coverage_sdtrig_access_coverpoints.svh"
-
-    // a direct S-mode csrr or csrw of an M-level trigger CSR, which raises an illegal-instruction exception
-    // (into S when medeleg[2] = 1, else into M). scontext and hcontext are S/H-level CSRs.
-    csr_trigger_mlevel: coverpoint ins.current.insn[31:20] {
-        type_option.weight = 0;
-        bins tselect = {CSR_TSELECT};
-        bins tdata1  = {CSR_TDATA1};
-        bins tdata2  = {CSR_TDATA2};
-        bins tdata3  = {CSR_TDATA3};
-        bins tinfo   = {CSR_TINFO};
-        `ifdef UDB_TCONTROL_IMPLEMENTED
-            bins tcontrol = {CSR_TCONTROL};
-        `endif
-        `ifdef UDB_MCONTEXT_IMPLEMENTED
-            bins mcontext = {CSR_MCONTEXT};
-        `endif
-    }
-    csr_read_write: coverpoint ins.current.insn {
-        type_option.weight = 0;
-        wildcard bins csrr = {CSRR};
-        wildcard bins csrw = {CSRW};
-    }
-    illegal_insn_trap: coverpoint sdtrigs_illegal_taken(ins) {
-        type_option.weight = 0;
-        bins illegal = {1'b1};
-    }
 
     // main coverpoints
-    cp_csr_access_common: cross priv_mode_m, triggernum, tdata1_type, csr_common_reg, csr_access_common;  // through T-SBI: NTRIG * 5 types * implemented CSRs (4-8) * 5 accesses
     cp_csr_access_trap_s: cross priv_mode_s, csr_read_write, csr_trigger_mlevel, illegal_insn_trap;  // 2 accesses * implemented M-level trigger CSRs (5-7)
 endgroup
 
@@ -107,7 +52,7 @@ covergroup SdtrigS_trig_module_reg_cg with function sample(ins_t ins);
         cp_tdata1_mode_hardwired: cross priv_mode_m, triggernum_mcontrol6, csrw, csr_tdata1, tdata1_type_six, priv_bits;  // mcontrol6 triggers
     `endif
     cp_tinfo_read_only:       cross priv_mode_m, triggernum, csr_tinfo, csr_access;                         // NTRIG
-    cp_tdata1_dmode:          cross priv_mode_m, triggernum, csrw, csr_tdata1, tdata1_type_dmode, dmode_written, dmode_after;  // NTRIG * 2 types
+    cp_tdata1_dmode:          cross priv_mode_m, triggernum, csrw, csr_tdata1, tdata1_write_type, dmode_written, dmode_after;  // NTRIG * 2 types
 endgroup
 
 covergroup SdtrigS_icount_cg with function sample(ins_t ins);
@@ -139,9 +84,9 @@ covergroup SdtrigS_a_cg with function sample(ins_t ins);
 
     // main coverpoints
     `ifdef SDTRIG_MCONTROL6_ANY
-    cp_lrsc_addr: cross exec_mode_s, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_s_on, tdata1_select_adr, a_tdata2_adr, a_xsl, lrsc_op, a_outcome;        // NTRIG * 2 tdata2 * 3 xsl * 2 (RV64 4) ops
-    cp_lrsc_data: cross exec_mode_s, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_s_on, tdata1_select_data, a_tdata2_data, a_xsl, lrsc_op_xlen, a_outcome; // NTRIG * 2 tdata2 * 3 xsl * 2 ops
-    cp_amo:       cross exec_mode_s, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_s_on, tdata1_select_adr, a_tdata2_adr, a_xsl, amo_op, a_outcome;         // NTRIG * 2 tdata2 * 3 xsl * 9 (RV64 18) ops
+    cp_lrsc_addr: cross exec_mode_s, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_s_on, tdata1_select_adr, tdata2_rs1, tdata1_xsl_one, lrsc_op, a_outcome;        // NTRIG * 2 tdata2 * 3 xsl * 2 (RV64 4) ops
+    cp_lrsc_data: cross exec_mode_s, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_s_on, tdata1_select_data, a_tdata2_data, tdata1_xsl_one, lrsc_op_xlen, a_outcome; // NTRIG * 2 tdata2 * 3 xsl * 2 ops
+    cp_amo:       cross exec_mode_s, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_s_on, tdata1_select_adr, tdata2_rs1, tdata1_xsl_one, amo_op, a_outcome;         // NTRIG * 2 tdata2 * 3 xsl * 9 (RV64 18) ops
     `endif
 endgroup
 
@@ -154,13 +99,13 @@ covergroup SdtrigS_cache_operations_cg with function sample(ins_t ins);
     // main coverpoints
     `ifdef SDTRIG_MCONTROL6_ANY
     `ifdef ZICBOM_SUPPORTED
-        cp_cache_zicbom: cross exec_mode_s, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_s_on, cbo_tdata2, cbo_select, tdata1_size, cbo_xsl, cbom_op, cbo_outcome;                  // NTRIG * 4 tdata2 * 2 select * sizes * 3 xsl * 3 ops
+        cp_cache_zicbom: cross exec_mode_s, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_s_on, cbo_tdata2, cbo_select, tdata1_size, tdata1_xsl_one, cbom_op, cbo_outcome;                  // NTRIG * 4 tdata2 * 2 select * sizes * 3 xsl * 3 ops
     `endif
     `ifdef ZICBOZ_SUPPORTED
-        cp_cache_zicboz: cross exec_mode_s, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_s_on, cbo_tdata2, cbo_select, tdata1_size, cbo_xsl, cboz_op, cbo_outcome;                  // NTRIG * 4 tdata2 * 2 select * sizes * 3 xsl
+        cp_cache_zicboz: cross exec_mode_s, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_s_on, cbo_tdata2, cbo_select, tdata1_size, tdata1_xsl_one, cboz_op, cbo_outcome;                  // NTRIG * 4 tdata2 * 2 select * sizes * 3 xsl
     `endif
     `ifdef ZICBOP_SUPPORTED
-        cp_cache_zicbop: cross exec_mode_s, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_s_on, prefetch_tdata2, cbo_select, tdata1_size_any, prefetch_xsl, prefetch_op, cbo_outcome; // NTRIG * 2 tdata2 * 2 select * 3 ops
+        cp_cache_zicbop: cross exec_mode_s, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_s_on, tdata2_rs1, cbo_select, tdata1_size_any, tdata1_xsl_load_store, prefetch_op, cbo_outcome; // NTRIG * 2 tdata2 * 2 select * 3 ops
     `endif
     `endif
 endgroup
@@ -174,7 +119,7 @@ covergroup SdtrigS_combined_accesses_cg with function sample(ins_t ins);
 
     // main coverpoints
     `ifdef SDTRIG_MCONTROL6_ANY
-    cp_vector_load_store: cross exec_mode_s, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_s_on, tdata1_select_adr, vec_tdata2_base_zero, tdata1_size, vec_vl_one, vec_unmasked, vec_access, vec_xsl, vec_outcome;  // NTRIG * 2 tdata2 * sizes * 6 (Zve64x 8) accesses
+    cp_vector_load_store: cross exec_mode_s, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_s_on, tdata1_select_adr, tdata2_rs1, tdata1_size, vec_vl_one, vec_unmasked, vec_access, vec_xsl, vec_outcome;  // NTRIG * 2 tdata2 * sizes * 6 (Zve64x 8) accesses
     cp_vector_accesses:   cross exec_mode_s, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_s_on, tdata1_select_adr, vec_tdata2, tdata1_size_any, vec_vl, vec_unmasked, vec_access, vec_xsl, vec_outcome;    // NTRIG * 3 tdata2 * 2 vl * 6 (8) accesses
     cp_vector_mask:       cross exec_mode_s, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_s_on, tdata1_select_adr, vec_tdata2_plus_8, tdata1_size_any, vec_vl_reaches_8, vec_masked, vec_element_8, vec_access, vec_xsl, vec_outcome; // NTRIG * 2 mask states * 6 (8) accesses
     `endif
@@ -190,8 +135,8 @@ covergroup SdtrigS_itrigger_cg with function sample(ins_t ins);
     // main coverpoints: S-level interrupts taken from S-mode and delegated to S
     `ifdef SDTRIG_ITRIGGER_ANY
     `ifdef S_SUPPORTED
-        cp_itrigger_s:       cross trap_from_s, triggernum_itrigger, itrigger_interrupt, itrigger_code_s, trap_delegated, trap_selected, trap_handled_s;   // NTRIG * S interrupts * 2 s
-        cp_itrigger_s_other: cross trap_from_s, triggernum_itrigger, itrigger_interrupt, trap_delegated, trap_not_selected, trap_result_s_other;    // NTRIG * 2 s
+        cp_itrigger_s:       cross exec_mode_s, triggernum_itrigger, itrigger_interrupt, itrigger_code_s, trap_delegated, trap_selected, trap_handled_s;   // NTRIG * S interrupts * 2 s
+        cp_itrigger_s_other: cross exec_mode_s, triggernum_itrigger, itrigger_interrupt, trap_delegated, trap_not_selected, trap_result_s_other;    // NTRIG * 2 s
     `endif
     `endif
 endgroup
@@ -202,36 +147,11 @@ covergroup SdtrigS_etrigger_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_sdtrig_coverpoints.svh"
     `include "general/RISCV_coverage_sdtrig_trap_coverpoints.svh"
 
-    // {handler, fired, cause} of an exception raised in S-mode. The causes the suite delegates (medeleg) are
-    // handled in S, where whether the trigger fires depends on the hart's re-entrancy option; ecall from S is not delegated (the T-SBI uses it), so it is handled in M and never fires.
-    // An illegal instruction is handled in S, or in M on a DUT that emulates the time CSR and forwards it.
-    etrigger_route_s: coverpoint {sdtrig_trap_handler(ins), sdtrig_trap_fired(ins), sdtrig_trap_cause(ins)[7:0]} {
-        type_option.weight = 0;
-        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_1 wildcard bins iacc = {11'b01_?_00000001}; `endif
-        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_2 wildcard bins ill  = {11'b01_?_00000010, 11'b11_0_00000010}; `endif
-        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_5 wildcard bins lacc = {11'b01_?_00000101}; `endif
-        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_7 wildcard bins sacc = {11'b01_?_00000111}; `endif
-        `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_9 bins ecs = {11'b11_0_00001001}; `endif
-        `ifdef UDB_MXLEN_64
-            `ifdef SV39_SUPPORTED
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_12 wildcard bins ipf = {11'b01_?_00001100}; `endif
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 wildcard bins lpf = {11'b01_?_00001101}; `endif
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_15 wildcard bins spf = {11'b01_?_00001111}; `endif
-            `endif
-        `else
-            `ifdef SV32_SUPPORTED
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_12 wildcard bins ipf = {11'b01_?_00001100}; `endif
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_13 wildcard bins lpf = {11'b01_?_00001101}; `endif
-                `ifdef UDB_SDTRIG_ETRIGGER_SUPPORTED_EXCEPTIONS_15 wildcard bins spf = {11'b01_?_00001111}; `endif
-            `endif
-        `endif
-    }
-
-    // main coverpoints
+    // main coverpoints: exceptions raised in S-mode (etrigger_route)
     `ifdef SDTRIG_ETRIGGER_ANY
     `ifdef S_SUPPORTED
-        cp_etrigger_s:       cross trap_from_s, triggernum_etrigger, etrigger_exception, trap_selected, etrigger_route_s, trap_priv;  // NTRIG * S exceptions * 2 s
-        cp_etrigger_s_other: cross trap_from_s, triggernum_etrigger, etrigger_exception, trap_not_selected, trap_result_other;     // NTRIG * 2 s
+        cp_etrigger_s:       cross exec_mode_s, triggernum_etrigger, etrigger_exception, trap_selected, etrigger_route, trap_priv;  // NTRIG * S exceptions * 2 s
+        cp_etrigger_s_other: cross exec_mode_s, triggernum_etrigger, etrigger_exception, trap_not_selected, trap_result_other;     // NTRIG * 2 s
     `endif
     `endif
 endgroup
@@ -241,21 +161,6 @@ covergroup SdtrigS_mcontrol6_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "general/RISCV_coverage_sdtrig_coverpoints.svh"
     `include "general/RISCV_coverage_sdtrig_mcontrol6_coverpoints.svh"
-
-    // a sw to the address watched by an mcontrol6 store trigger (select = 0, store = 1)
-    priv_bits_sw: coverpoint ins.current.insn iff (
-            get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "type")[3:0] == 4'd6 &&
-            get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "store")[0] &&
-            !get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "select")[0] &&
-            get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata2", "tdata2") == ins.current.rs1_val + ins.current.imm) {
-        type_option.weight = 0;
-        wildcard bins sw = {SW};
-    }
-    priv_bits_outcome: coverpoint sdtrigs_priv_bits_outcome(ins) {
-        type_option.weight = 0;
-        bins own_fired      = {2'd1};
-        bins others_no_fire = {2'd2};
-    }
 
     // main coverpoints
     `ifdef SDTRIG_MCONTROL6_ANY
@@ -278,6 +183,12 @@ covergroup SdtrigS_mcontrol6_cg with function sample(ins_t ins);
     `endif
     `ifdef SDTRIG_SIZE_DATA
         cp_mcontrol6_size_data: cross exec_mode_s, triggernum_mcontrol6, tdata1_type_mcontrol6, tdata1_s_on, tdata1_chain_disabled, tdata1_select_data, tdata1_xsl_store, tdata1_size_data, size_data_case, size_data_outcome; // NTRIG * sizes * 3
+    `endif
+    `ifdef SDTRIG_MATCH_SIZE_STORE
+        cp_mcontrol6_match_size_store: cross exec_mode_s, triggernum_mcontrol6, ms_match, ms_size_data, ms_store_case; // NTRIG * legal matches * legal sizes * 3
+    `endif
+    `ifdef SDTRIG_MATCH_SIZE_LOAD
+        cp_mcontrol6_match_size_load:  cross exec_mode_s, triggernum_mcontrol6, ms_match, ms_size_data, ms_load_case;  // NTRIG * legal matches * legal sizes * 3
     `endif
     `ifdef SDTRIG_CHAIN_3
         cp_mcontrol6_chain_long: cross exec_mode_s, triggernum_chain_end, tdata1_type_mcontrol6, tdata1_s_on, tdata1_chain_disabled, tdata1_select_adr, tdata1_size_any, tdata1_xsl_store, store_xlen, chain_store_x0, chain_store_adr, chain_fired; // chain lengths * 2
@@ -357,3 +268,7 @@ function void sdtrigs_sample(int hart, int issue, ins_t ins);
     if (csr || ldst || op == 7'b0010011) SdtrigS_textra_cg.sample(ins);
     if (csr || trap || op == 7'b0010011 || op == 7'b1100111) SdtrigS_address_matches_cg.sample(ins);
 endfunction
+
+`undef SDTRIG_SUITE_S
+`undef SDTRIG_ICOUNT_MODE_BIT
+`undef SDTRIG_MCONTROL6_MODE_BIT

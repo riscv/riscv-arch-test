@@ -24,7 +24,7 @@ include::{testplansdir}/Zibi.adoc[]
 |===
 
 The instruction-address-misaligned exception rule uses Zibi-specific tests in
-`ExceptionsSm`, `ExceptionsS`, and `ExceptionsU`, which check both taken
+`Exceptions_Sm`, `Exceptions_S`, and `Exceptions_U`, which check both taken
 branches that trap and not-taken branches that do not trap for `beqi` and
 `bnei`.
 

@@ -524,6 +524,14 @@ coverpoints:
     bins: "9"
     rules:
       - H_vscsrs_v0
+  - name: cp_replica_vs
+    goal: In VS, writing to S-mode CSRs affects replica instead
+    description: In M-mode, write different values into S-mode CSRs and their VS-mode replicas (satp and vsatp only when vsatp supports Sv39 (RV64) or Sv32 (RV32)).  Switch to VS-mode and write and read back the S CSRs.  VS-mode ecalls go to M-mode, so no trap changes the S CSRs.  Back in M-mode, read both the S CSRs and the VS replicas.  vsatp stays Bare while VS-mode runs; satp holds a paged value.
+    expectation: VS replica should have changed but S CSR does not change.
+    bins: "9"
+    rules:
+      - H_vscsrs_sub
+      - H_vscsrs_v1
   - name: cp_mtvala
     goal: mtval must not be read-only zero
     description: Write 1s to mtval
@@ -533,10 +541,10 @@ coverpoints:
       - H_mtval_nrz
   - heading: mstatus.TVM and hstatus.VTVM (Sm_H_tvm_cg)
   - name: cp_tvm_hs
-    goal: TVM traps access to satp and hgatp, but not vsatp
-    description: With mstatus.TVM = {0/1}, in HS-mode read and write satp, hgatp and vsatp
-    expectation: Illegal instruction fault for satp and hgatp if TVM = 1.  vsatp accesses never trap.
-    bins: 3 regs * 2 accesses * 2 TVM
+    goal: TVM traps access to satp and hgatp, but not vsatp; VTVM does not affect HS-mode
+    description: With mstatus.TVM = {0/1} cross hstatus.VTVM = {0/1}, in HS-mode read and write satp, hgatp and vsatp
+    expectation: Illegal instruction fault for satp and hgatp if TVM = 1.  vsatp accesses never trap.  VTVM has no effect.
+    bins: 3 regs * 2 accesses * 2 TVM * 2 VTVM
   - name: cp_tvm_vs
     goal: VTVM traps access to satp
     description: With mstatus.TVM = {0/1} cross hstatus.VTVM = {0/1}, in VS-mode read and write satp

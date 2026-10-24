@@ -2040,11 +2040,40 @@ covergroup Sm_H_mcsr_cg with function sample(ins_t ins);
         bins scause   = {{CSR_VSCAUSE, CSR_SCAUSE}};
         bins stval    = {{CSR_VSTVAL, CSR_STVAL}};
         bins sip      = {{CSR_VSIP, CSR_SIP}};
-        `ifdef H_REPLICA_SATP
+        // satp always supports Sv39 (RV64) or Sv32 (RV32), but vsatp need not
+        `ifdef UDB_MXLEN_64
+            `ifdef UDB_SV39_VSMODE_TRANSLATION
+                bins satp = {{CSR_VSATP, CSR_SATP}};
+            `endif
+        `elsif UDB_SV32_VSMODE_TRANSLATION
             bins satp = {{CSR_VSATP, CSR_SATP}};
         `endif
     }
     cp_replica:             cross priv_mode_m, csrw_prev, csrr, replica_pair;
+
+    // In VS-mode, S CSR names access the VS replicas.  VS-mode ecalls go to M-mode, so M-mode can check that
+    // the S CSRs keep their values
+    csrw : coverpoint ins.current.insn {
+        wildcard bins csrw = {CSRW};
+    }
+    sreplicated : coverpoint ins.current.insn[31:20] {
+        bins sstatus  = {CSR_SSTATUS};
+        bins sie      = {CSR_SIE};
+        bins stvec    = {CSR_STVEC};
+        bins sscratch = {CSR_SSCRATCH};
+        bins sepc     = {CSR_SEPC};
+        bins scause   = {CSR_SCAUSE};
+        bins stval    = {CSR_STVAL};
+        bins sip      = {CSR_SIP};
+        `ifdef UDB_MXLEN_64
+            `ifdef UDB_SV39_VSMODE_TRANSLATION
+                bins satp = {CSR_SATP};
+            `endif
+        `elsif UDB_SV32_VSMODE_TRANSLATION
+            bins satp = {CSR_SATP};
+        `endif
+    }
+    cp_replica_vs:          cross priv_mode_vs, csrw, sreplicated;
 
     // mtval must not be read-only zero with H
     mtval : coverpoint ins.current.insn[31:20] {
@@ -2072,7 +2101,7 @@ covergroup Sm_H_tvm_cg with function sample(ins_t ins);
         wildcard bins csrr = {CSRR};
         wildcard bins csrw = {CSRW};
     }
-    // mstatus.TVM = 1 traps satp and hgatp accesses in HS-mode, but not vsatp accesses
+    // mstatus.TVM = 1 traps satp and hgatp accesses in HS-mode, but not vsatp accesses; hstatus.VTVM does not affect HS-mode
     atp_hs : coverpoint ins.current.insn[31:20] {
         bins satp  = {CSR_SATP};
         bins hgatp = {CSR_HGATP};
@@ -2089,7 +2118,7 @@ covergroup Sm_H_tvm_cg with function sample(ins_t ins);
         wildcard bins sfence_vma = {SFENCE_VMA};
     }
 
-    cp_tvm_hs:  cross priv_mode_hs, atp_hs, csr_rw, mstatus_tvm;
+    cp_tvm_hs:  cross priv_mode_hs, atp_hs, csr_rw, mstatus_tvm, hstatus_vtvm;
     cp_tvm_vs:  cross priv_mode_vs, satp, csr_rw, mstatus_tvm, hstatus_vtvm;
     cp_hfence:  cross priv_mode_m_hs_vs_u_vu, hfence, mstatus_tvm, hstatus_vtvm;
     cp_sfence:  cross priv_mode_m_hs_vs_u_vu, sfence, mstatus_tvm, hstatus_vtvm;

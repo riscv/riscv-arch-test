@@ -21,7 +21,7 @@ coverpoints:
     goal: All H-extension CSRs are able to read, write, set, and clear
     description: |-
       Write all 1s and all 0s, then set all bits, then clear all bits, then read each {HS/VS} H-Extension CSR.
-      cp_hcsr_access_zero: htval, htinst, hgatp, vsatp and (RV32, Priv 1.13) hedelegh need only hold zero, so their readback is checked only after writing 0 and after clearing every bit.
+      cp_hcsr_access_zero: htval, htinst, hgatp and vsatp need only hold zero, so their readback is checked only after writing 0 and after clearing every bit.  Every bit of hedelegh (RV32, Priv 1.13) is reserved, so cp_hcsr_access and cp_hcsrwalk check that each reads zero, as for medelegh in Sm.
       cp_hcsr_access_masked: hstatus and henvcfg (and henvcfgh on RV32) are written only with their checked fields, because the others are WLRL, WARL with reserved encodings, or change the endianness or XLEN.
       cp_hcsr_access_ro: hgeip is read-only.
       hedeleg bits 1-8, 12, 13 and 15 must be writable and 9-11, 16 and 20-23 read-only zero; bits 14 and 17 are not checked.  With Priv 1.13, writing all 1s also checks that bits 18 and 19 are writable; without Zca (IALIGN = 32), that bit 0 is writable.  hie.SGEIE is checked by InterruptsH, because it is writable only if GEILEN > 0.
@@ -95,16 +95,17 @@ coverpoints:
     bins: |-
       walk1, walk0: 2 CSRs * (32 (Sv32), 38 (Sv39), 47 (Sv48) or 56 (Sv57)) each
       pc, scratch: 2 CSRs * 1 each
-  - name: cp_hcsr_inaccessible
-    goal: M-mode H-extension registers are inaccessible from HS-mode
-    description: csrrw, csrrs, csrrc, csrr each Machine H-Extension CSR
-    expectation: Illegal instruction fault
-    bins: 5 * 2
-    rules:
-      - Zicsr_illegal_mode
+  - name: |-
+      cp_vstval_zero
+      cp_vstval_ilen_walk1
+      cp_vstval_ilen_ones
+    goal: vstval holds 0 and every ILEN-bit value
+    description: In HS-mode, csrrw vstval with 0 and, when the illegal instruction encoding is reported in vstval (REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION), with a walking 1 through bits 0 to 31 and with all 32 bits set, as cp_stval_zero, cp_stval_ilen_walk1 and cp_stval_ilen_ones in S.
+    expectation: Each value reads back as written
+    bins: 1 + 32 + 1
   - name: cp_replica
     goal: In HS, writing to S/VS-mode CSRs doesn't affect replica
-    description: In M-mode, write different random values into S-mode CSRs and their VS-mode replicas (satp and vsatp only when both support Sv39 (RV64) or Sv32 (RV32)).  Switch to HS-mode and read, write random, and readback S and VS CSRs. Switch back to M-mode and read back both the S-mode CSRs and VS replicas.
+    description: In HS-mode, write different random values into S-mode CSRs and their VS-mode replicas (satp and vsatp only when vsatp supports Sv39 (RV64) or Sv32 (RV32); satp always does), read both, write new random values, and read both back.
     expectation: Each CSR should have value written.
     bins: "9"
     rules:
@@ -116,6 +117,7 @@ coverpoints:
     bins: 4 (1 with GEILEN = 0)
     rules:
       - hstatus_vgein_wlrl
+  - heading: Tests executed in HS-mode (H_vscause_cg)
   - name: |-
       cp_vscause_write_exception
       cp_vscause_write_interrupt
@@ -126,11 +128,11 @@ coverpoints:
     expectation: Each value reads back as written
     bins: 32 exceptions + 32 interrupts (13 + 6 before Priv 1.12)
   - heading: Tests executed in VS-mode (H_vscsr_cg)
-  - name: cp_hcsr_inaccessible
-    goal: M-mode H-extension registers are inaccessible from VS-mode
-    description: csrrw, csrrs, csrrc, csrr each Machine H-Extension CSR
-    expectation: Illegal instruction fault
-    bins: 5 * 2
+  - name: cp_csr_insufficient_priv
+    goal: M-mode CSRs are inaccessible from VS-mode
+    description: In VS-mode, attempt to read each CSR number in the M-mode ranges (0x300-0x3FF, 0x700-0x7FF except 0x7AA mscontext, 0xB00-0xBFF, 0xF00-0xFFF) with a nonzero rd, as S_scsr_cg/cp_csr_insufficient_priv in S-mode
+    expectation: Illegal instruction fault, and rd is unchanged
+    bins: 1023 CSRs
     rules:
       - Zicsr_illegal_mode
   - name: cp_hcsr_virtualinstructionfault
@@ -151,7 +153,7 @@ coverpoints:
       The other high-half addresses are accessed by SsstrictSm.
   - name: cp_replica
     goal: In VS, writing to S-mode CSRs affects replica instead
-    description: In M-mode, write different random values into S-mode CSRs and their VS-mode replicas.  Switch to VS-mode and write and readback S CSRs. Switch back to M-mode and read back both the S-mode CSRs and VS replicas.  VS-mode ecalls go to M-mode so that no trap into HS-mode changes sepc, scause, stval or sstatus.
+    description: In HS-mode, write different random values into S-mode CSRs and their VS-mode replicas.  Switch to VS-mode and write and readback S CSRs. Switch back to HS-mode and read back both the S-mode CSRs and VS replicas.  The return to HS-mode is a trap, which needs stvec and sscratch and rewrites sepc, scause and stval, so those S CSRs are left alone and only their replicas are checked.  satp and vsatp stay Bare, because the test code is not mapped.
     expectation: VS replica should have changed but S CSR does not change.
     bins: "9"
     rules:
@@ -169,60 +171,40 @@ coverpoints:
     description: "If Ssccfg is supported: csrrw, csrrc, csrrs, csrr scountinhibit in VS-mode with menvcfg.CDE = {0/1}.  The test currently runs only CDE = 0 (the boot value), because Sail does not implement menvcfg.CDE."
     expectation: Illegal instruction fault if CDE = 0, virtual instruction fault if CDE = 1
     bins: 5 * 2 CDE
+  - heading: Tests executed in VS-mode (H_vsstatus_cg)
   - name: cp_vsstatus_sd_write
     goal: vsstatus.SD affected by vsstatus.FS/XS/VS
     description: In VS-mode, write sstatus (which accesses vsstatus) with the cross-product of SD, FS, XS and VS.
     expectation: vsstatus.SD = 1 if FS, XS or VS is nonzero
     bins: 2 * 4 * 4 * 4
-  - heading: Tests executed in U-mode and VU-mode (H_ucsr_cg)
-  - name: cp_hcsr_inaccessible
-    goal: Machine-level H-extension CSRs are inaccessible from U-mode and VU-mode
-    description: In {U, VU}-mode, csrrw, csrrc, csrrs, csrr each Machine H-Extension CSR
-    expectation: Illegal instruction fault
-    bins: 2 modes * 5 * 2
-    rules:
-      - Zicsr_illegal_mode
-  - name: cp_hcsr_inaccessible_u
-    goal: HS and VS H-extension CSRs are inaccessible from U-mode
-    description: In U-mode, csrrw, csrrc, csrrs, csrr each {HS/VS} H-Extension CSR
-    expectation: Illegal instruction fault
-    bins: 5 * (14-17 + 9-11)
-    rules:
-      - Zicsr_illegal_mode
-  - name: cp_hcsr_virtualinstructionfault
-    goal: HS and VS H-extension CSRs cause virtual instruction fault from VU-mode
-    description: In VU-mode, csrrw, csrrc, csrrs, csrr each {HS/VS} H-Extension CSR
-    expectation: Virtual instruction fault, or illegal instruction for an access that HS-mode could not perform (a write to hgeip)
-    bins: 5 * (14-17 + 9-11)
-  - name: cp_illegalupper
-    goal: In RV64, h half of CSRs are illegal.
-    description: "RV64 ONLY: in {U, VU}-mode, csrrw, csrrs, csrrc, csrr  each h H-extension CSR"
-    expectation: Illegal instruction fault
-    bins: 2 modes * 5 * 4
-    rules:
-      - Zicsr_illegal_mode
-  - name: cp_scsr
-    goal: U-mode and VU-mode accesses to supervisor CSRs trap
-    description: In {U, VU}-mode, csrrw, csrrc, csrrs, csrr each S CSR {with/without VS replicas}
-    expectation: Illegal instruction fault in U-mode. In VU-mode, virtual instruction fault, or illegal instruction for an access that HS-mode could not perform (scountinhibit with menvcfg.CDE = 0)
-    bins: 2 modes * 5 * (9 + 3)
+  - heading: Tests executed in VU-mode (H_vucsr_cg)
+  - name: cp_csr_insufficient_priv
+    goal: CSRs other than user CSRs are inaccessible from VU-mode
+    description: In VU-mode, attempt to read each CSR number that is not a user CSR (0x100-0x3FF, 0x500-0x7FF except 0x7AA mscontext, which may be accessible from S-mode, 0x900-0xBFF, 0xD00-0xFFF) with a nonzero rd, as U_ucsr_cg/cp_csr_insufficient_priv in U-mode.  U-mode accesses are covered by the U suite.
+    expectation: Virtual instruction fault for an implemented supervisor, hypervisor or VS CSR whose access HS-mode could perform; otherwise illegal instruction fault.  rd is unchanged
+    bins: 3071 CSRs
     rules:
       - H_vscsrs_acc_vs
       - Zicsr_illegal_mode
+  - name: cp_csr_ro
+    goal: User read-only CSRs cannot be written from VU-mode
+    description: In VU-mode, attempt to write all 1s to each CSR number from 0xC00 to 0xCFF, as U_ucsr_cg/cp_csr_ro in U-mode
+    expectation: Illegal instruction fault, and rd is unchanged
+    bins: 256 CSRs
   - heading: Instructions (H_inst_cg)
   - name: cp_hlv
     goal: Basic load
-    description: "Set up non-identity G and VS-stage page tables (Sv39x4 and Sv39, or Sv32x4 and Sv32). In {HS, U (with hstatus.HU = 1)}: Write a value with the sign bit of every access size set to scratch. hlv.b, hlv.bu, hlv.h,  hlv.hu, hlv.w from scratch.  For rv64, also test hlv.wu, hlv.d.  Random source and destination registers."
+    description: "Set up non-identity G and VS-stage page tables (Sv39x4 and Sv39, or Sv32x4 and Sv32). With hstatus.HU = 1, in {HS, U}: Write a value with the sign bit of every access size set to scratch. hlv.b, hlv.bu, hlv.h,  hlv.hu, hlv.w from scratch.  For rv64, also test hlv.wu, hlv.d.  Random source and destination registers."
     expectation: Read and sign/zero extend
     bins: 2 modes * 5 instr (7 on RV64)
   - name: cp_hlvx
     goal: Basic load
-    description: "Set up non-identity G and VS-stage page tables. In {HS, U (with hstatus.HU = 1)}: Write a value to scratch. hlvx.hu, hlvx.wu from scratch.  Random source and destination registers."
+    description: "Set up non-identity G and VS-stage page tables. With hstatus.HU = 1, in {HS, U}: Write a value to scratch. hlvx.hu, hlvx.wu from scratch.  Random source and destination registers."
     expectation: Read and sign/zero extend
     bins: 2 modes * 2 instr
   - name: cp_hsv
     goal: Basic store
-    description: "Set up non-identity G and VS-stage page tables. In {HS, U (with hstatus.HU = 1)}: hsv.b, hsv.h, hsv.w to scratch, and read scratch through its physical address.  For rv64, also test hsv.d.  Random source and destination registers."
+    description: "Set up non-identity G and VS-stage page tables. With hstatus.HU = 1, in {HS, U}: hsv.b, hsv.h, hsv.w to scratch, and read scratch through its physical address.  For rv64, also test hsv.d.  Random source and destination registers."
     expectation: Stores the low bytes of the source register
     bins: 2 modes * 3 instr (4 on RV64)
   - name: cp_guest_page_fault
@@ -240,9 +222,25 @@ coverpoints:
     description: Execute sret in VU mode.
     expectation: Virtual instruction
     bins: 1 mode
+  - name: cp_hfence
+    goal: Hypervisor fences execute only in HS-mode (and M-mode)
+    description: With mstatus.TVM = 0 and hstatus.VTVM = 0, execute hfence.vvma and hfence.gvma (rs1 = rs2 = x0) in {HS, VS, VU, U} modes, as S_sprivinst_cg executes sfence.vma.  Sm_H_tvm_cg/cp_hfence crosses them with M-mode, mstatus.TVM and hstatus.VTVM, and SvH checks that they remove stale VS-stage and G-stage translations.
+    expectation: Executes in HS-mode; virtual instruction in VS-mode and VU-mode; illegal instruction in U-mode
+    bins: 4 modes * 2 instr
+  - name: |-
+      cp_vtvm_sfence
+      cp_vtvm_satp
+      cp_vtvm_hfence_vvma
+    goal: hstatus.VTVM traps VS-mode sfence.vma and satp accesses, but not hfence.vvma
+    description: With hstatus.VTVM = {0, 1}, execute hfence.vvma in HS-mode, and sfence.vma, csrr satp and csrw satp (writing zero, so vsatp stays Bare) in VS-mode.  sinval.vma is in Svinval, and mstatus.TVM, which needs M-mode, in Sm_H.
+    expectation: With VTVM = 1, the VS-mode instructions raise virtual instruction; otherwise they execute.  hfence.vvma executes with either VTVM.
+    bins: |-
+      cp_vtvm_sfence: 2 VTVM
+      cp_vtvm_satp: 2 accesses * 2 VTVM
+      cp_vtvm_hfence_vvma: 2 VTVM
   - name: cp_sret_hs
     goal: sret from HS mode
-    description: Execute sret in HS-mode with cross-product of sstatus.SPP / SPIE  / hstatus.SPV.  After the sret, a read of mscratch traps to M-mode, and the trap record shows the mode reached; medeleg sends illegal instructions and U/VU and VS ecalls to M-mode during the test, so that no trap into HS-mode rewrites SPP, SPIE or SPV before they are checked.  Then check sstatus.SPP, SIE, SPIE, hstatus.SPV in HS-mode.
+    description: Execute sret in HS-mode with cross-product of sstatus.SPP / SPIE / hstatus.SPV.  After the sret, a read of mscratch traps to HS-mode, and the trap record shows the mode reached.  Then check sstatus.SPP, SIE, SPIE and hstatus.SPV in HS-mode; the trap and the return to HS-mode rewrite them from the mode and SIE that the sret produced.
     expectation: Goes to appropriate mode
     bins: 2 SPP * 2 SPIE * 2 SPV
   - name: cp_sret_vs

@@ -3,7 +3,7 @@
 
 The C extension is subdivided into Zca, Zcf, and Zcd.  All configurations supporting C contain Zca.  RV32CF configurations also contain Zcf, and RV{32/64}CD configurations also contain Zcd.  A configuration supporting C should test all of the applicable Zc* extensions.
 
-Compressed-instruction behavior that traps (reserved encodings, illegal instructions, misaligned and faulting loads and stores) is covered by the ExceptionsZc (<<t-ExceptionsZc-coverpoints>>) and Ssstrict_S (<<t-Ssstrict_S-coverpoints>>) test plans. <<t-ExceptionsZc-normative-rules>> summarizes the normative rules for compressed-instruction exceptions.
+Compressed-instruction behavior that traps (reserved encodings, illegal instructions, misaligned and faulting loads and stores) is covered by the Exceptions_Zc (<<t-Exceptions_Zc-coverpoints>>) and Ssstrict_S (<<t-Ssstrict_S-coverpoints>>) test plans. <<t-Exceptions-normative-rules>> summarizes the normative rules for compressed-instruction exceptions.
 
 ==== Zca Compressed Extension
 

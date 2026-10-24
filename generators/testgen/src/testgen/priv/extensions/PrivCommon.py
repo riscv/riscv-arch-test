@@ -339,12 +339,22 @@ MCAUSE_CODES: dict[str, dict[int, str | None]] = {
     },
 }
 # scause, and vscause like it, must hold every code 0-31 from Ss1p12 (scause_exception_code_sz).  Before that,
-# they need only hold the codes of the causes that every S-mode hart supports.
+# they need only hold the codes of the causes that every S-mode hart supports, and those of software check and
+# local counter overflow when Zicfilp, Zicfiss or Sscofpmf adds them.  The H causes need no entry: H requires Ss1p12.
+_SCAUSE_ALWAYS = {"exception": (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 15), "interrupt": (1, 3, 5, 7, 9, 11)}
+_SCAUSE_EXTENSION = {"exception": (18,), "interrupt": (13,)}
+
+
+def _scause_gate(kind: str, code: int) -> str | None:
+    if code in _SCAUSE_ALWAYS[kind]:
+        return None
+    if code in _SCAUSE_EXTENSION[kind]:
+        return f"{S1P12_GATE} || {MCAUSE_CODES[kind][code]}"
+    return S1P12_GATE
+
+
 SCAUSE_CODES: dict[str, dict[int, str | None]] = {
-    "exception": {
-        code: None if code in (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 15) else S1P12_GATE for code in range(32)
-    },
-    "interrupt": {code: None if code in (1, 3, 5, 7, 9, 11) else S1P12_GATE for code in range(32)},
+    kind: {code: _scause_gate(kind, code) for code in range(32)} for kind in ("exception", "interrupt")
 }
 
 

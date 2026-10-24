@@ -21,6 +21,22 @@
     `endif
 `endif
 
+// scause must hold every code 0-31 from Ss1p12; before that, only the codes of supported causes
+`ifdef S1P12P0_OR_LATER_SUPPORTED
+    `define SCAUSE_HOLDS_SOFTWARE_CHECK
+    `define SCAUSE_HOLDS_COUNTER_OVERFLOW
+`endif
+`ifdef SOFTWARE_CHECK_SUPPORTED
+    `ifndef SCAUSE_HOLDS_SOFTWARE_CHECK
+        `define SCAUSE_HOLDS_SOFTWARE_CHECK
+    `endif
+`endif
+`ifdef SSCOFPMF_SUPPORTED
+    `ifndef SCAUSE_HOLDS_COUNTER_OVERFLOW
+        `define SCAUSE_HOLDS_COUNTER_OVERFLOW
+    `endif
+`endif
+
 covergroup S_scause_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -59,7 +75,6 @@ covergroup S_scause_cg with function sample(ins_t ins);
             bins b_14_reserved = {14};
             bins b_16_double_trap = {16}; // never delegated to S mode
             bins b_17_reserved = {17};
-            bins b_18_software_check = {18}; // only can be triggered in hardware if SOFTWARE_CHECK_SUPPORTED but scause must be able to hold 0-31
             bins b_19_hardware_error = {19}; // scause must be able to hold 0-31
             // These can only be triggered in hardware if H supported, but scause must be able to hold 0-31
             bins b_20_instr_guest_page_fault = {20};
@@ -67,6 +82,9 @@ covergroup S_scause_cg with function sample(ins_t ins);
             bins b_22_virtual_instruction = {22};
             bins b_23_store_guest_page_fault = {23};
             bins b_31_24_custom[] = {[24:31]}; // scause must be able to hold 0-31
+        `endif
+        `ifdef SCAUSE_HOLDS_SOFTWARE_CHECK
+            bins b_18_software_check = {18}; // Zicfilp or Zicfiss, or any code 0-31 in Ss1p12 or higher
         `endif
         //bins b_47_32_reserved = {[47:32]};
         //bins b_63_48_custom = {[63:48]};
@@ -88,10 +106,12 @@ covergroup S_scause_cg with function sample(ins_t ins);
             bins b_8_reserved = {8};
             bins b_10_vs_external = {10};
             bins b_12_supervisor_guest_external = {12};
-            bins b_13_counter_overflow = {13};
             bins b_14_reserved = {14};
             bins b_15_reserved = {15};
             bins b_31_16_custom[] = {[31:16]}; // designated for platform use
+        `endif
+        `ifdef SCAUSE_HOLDS_COUNTER_OVERFLOW
+            bins b_13_counter_overflow = {13}; // Sscofpmf, or any code 0-31 in Ss1p12 or higher
         `endif
     }
 

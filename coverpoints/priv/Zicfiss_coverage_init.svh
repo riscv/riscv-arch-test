@@ -10,4 +10,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    ZicfissH_cg = new();         ZicfissH_cg.set_inst_name("obj_ZicfissH");
+`ifndef EXCLUDE_SM
+    Zicfiss_Sm_cg = new();     Zicfiss_Sm_cg.set_inst_name("obj_Zicfiss_Sm");
+`endif
+    Zicfiss_S_cg = new();     Zicfiss_S_cg.set_inst_name("obj_Zicfiss_S");
+    Zicfiss_U_cg = new();     Zicfiss_U_cg.set_inst_name("obj_Zicfiss_U");
+    Zicfiss_H_cg = new();     Zicfiss_H_cg.set_inst_name("obj_Zicfiss_H");

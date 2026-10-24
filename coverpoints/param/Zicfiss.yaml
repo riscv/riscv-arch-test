@@ -22,7 +22,7 @@ parameter_definitions:
         "Same as the mtval parameter, for a software-check exception taken in VS-mode. No
         current coverpoint drives this: the VS/VU coverpoints exercise ssp CSR gating,
         which raises virtual-instruction, not software-check. Listed for when the
-        ZicfissH generator lands.",
+        Zicfiss_H generator lands.",
       ]
   - name: MISALIGNED_AMO
     coverpoint:

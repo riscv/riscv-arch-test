@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=testplan.schema.json
-suite: ZicfissU
+suite: Zicfiss_U
 source: https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?gid=542351736#gid=542351736
 description: |
   General Test Environment (applies to every coverpoint on this sheet -- do not repeat per row):
@@ -63,7 +63,7 @@ coverpoints:
     description: |-
       Point ssp at memory whose access will fault, and simultaneously set the link register so a value mismatch would also be detected. Execute SSPOPCHK.
       An UNMAPPED page yields a store/AMO PAGE-fault (15). To get a store/AMO ACCESS-fault (7) the page must be mapped to RVMODEL_ACCESS_FAULT_ADDRESS, guarded by #ifdef.
-      PMP-denied regions can only be programmed from M-mode, so that variant lives on the ZicfissSm sheet as cp_sspopchk_fault_priority_pmp.
+      PMP-denied regions can only be programmed from M-mode, so that variant lives on the Zicfiss_Sm sheet as cp_sspopchk_fault_priority_pmp.
     expectation: |-
       The memory fault is reported, not the software-check exception.
       Unmapped page: store/AMO page-fault (cause=15). RVMODEL_ACCESS_FAULT_ADDRESS: store/AMO access-fault (cause=7). Either way the fault code is remapped to the store/AMO flavour.
@@ -210,7 +210,7 @@ coverpoints:
       SSAMOSWAP is encoded in the AMO major opcode, NOT in the Zimop/Zcmop MOP space, so it does not silently no-op when Zicfiss is deactivated -- it traps. Execute SSAMOSWAP.W and SSAMOSWAP.D against a valid aligned SS address for:
       (a) menvcfg.SSE=0, from U-mode;
       (b) menvcfg.SSE=1, senvcfg.SSE=0, from U-mode.
-      The S-mode case is cp_ssamoswap_sse_gating_s on ZicfissS.
+      The S-mode case is cp_ssamoswap_sse_gating_s on Zicfiss_S.
       Positive control: both set -- the instruction completes (see cp_ssamoswap).
     expectation: |-
       (a), (b) illegal-instruction exception.
@@ -254,7 +254,7 @@ coverpoints:
       The reason is restartability: SSPOPCHK performs a load and then a comparison, and if the comparison faults and the handler restarts the instruction the load runs twice -- which is unsafe on non-idempotent memory.
       Positive control with PBMT=PMA: no fault.
     bins: instr {SSPUSH x1, C.SSPUSH x1, SSPOPCHK x1, C.SSPOPCHK x5, SSAMOSWAP.W, SSAMOSWAP.D} x pte.PBMT {PMA, NC, IO} x cause {none, 7}
-  - goal: Folded into cp_ss_instr_inactive_u (gate sweep) and cp_ssamoswap_sse_gating (the trapping half). Other privilege modes are the corresponding rows on the ZicfissS / ZicfissSm / ZicfissH sheets.
+  - goal: Folded into cp_ss_instr_inactive_u (gate sweep) and cp_ssamoswap_sse_gating (the trapping half). Other privilege modes are the corresponding rows on the Zicfiss_S / Zicfiss_Sm / Zicfiss_H sheets.
     description: Test all Zifiss instructions with each combination of {menvcfg.SSE/senvcfg.SSE} = 0, 1 in every priv mode. Check all state is unaffected if xSSE=0. Some throw illegal or virtual instructions
   - goal: "PROMOTED to its own coverpoint: cp_ss_page_crossing."
     description: Test ssp pointing to the bottom of a page such that ssp-XLEN/8 is not on a valid shadow stack page, and also such that ssp is not on a valid shadow stack pages but ssp-XLEN/8 is valid.
@@ -268,7 +268,7 @@ coverpoints:
     description: LRSC and AMOCAS to SS page.
   - goal: Folded into cp_ss_instr_target_page as a pte.U = 0/1 axis.
     description: Test U bit of shadow stack page = 0/1
-  - goal: "Folded into cp_ss_instr_inactive_u, and cp_ss_instr_inactive_m/_s on ZicfissSm, as the STRONG FORM: the same instructions repeated with a misaligned, unmapped, or mismatching ssp."
+  - goal: "Folded into cp_ss_instr_inactive_u, and cp_ss_instr_inactive_m/_s on Zicfiss_Sm, as the STRONG FORM: the same instructions repeated with a misaligned, unmapped, or mismatching ssp."
     description: When xSSE, SSPUSH/SSPOPCHK must do no memory access and raise nothing even if ssp is misaligned, unmapped, or values mismatch.
   - goal: "PROMOTED to its own coverpoint: cp_ss_page_ad_bits, including the Svadu/ADUE variant."
     description: Test all combinations of A and D bits on the SS page, that fault occurs if D=0 for SSPUSH/SSAMOSWAP but not SSPOPCHK, if A=0 for all accesses. If Svadu supported, check no faults.

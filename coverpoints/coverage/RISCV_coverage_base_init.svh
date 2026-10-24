@@ -434,21 +434,9 @@
         `cover_info("//      Zicfilp - Enabled");
         `include "Zicfilp_coverage_init.svh"
     `endif
-    `ifdef COVER_ZICFISSH
-        `cover_info("//      ZicfissH - Enabled");
-        `include "ZicfissH_coverage_init.svh"
-    `endif
-    `ifdef COVER_ZICFISSS
-        `cover_info("//      ZicfissS - Enabled");
-        `include "ZicfissS_coverage_init.svh"
-    `endif
-    `ifdef COVER_ZICFISSSM
-        `cover_info("//      ZicfissSm - Enabled");
-        `include "ZicfissSm_coverage_init.svh"
-    `endif
-    `ifdef COVER_ZICFISSU
-        `cover_info("//      ZicfissU - Enabled");
-        `include "ZicfissU_coverage_init.svh"
+    `ifdef COVER_ZICFISS
+        `cover_info("//      Zicfiss - Enabled");
+        `include "Zicfiss_coverage_init.svh"
     `endif
     `ifdef COVER_ZICNTR
         `cover_info("//      Zicntr - Enabled");

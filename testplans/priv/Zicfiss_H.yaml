@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=testplan.schema.json
-suite: ZicfissH
+suite: Zicfiss_H
 source: https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?gid=1673462063#gid=1673462063
 coverpoints:
-  - heading: "General Test Environment (VS/VU-mode, H-extension):\n- Same base environment as ZicfissU plus H-extension implemented.\n- menvcfg.SSE=1 and henvcfg.SSE=1 unless stated otherwise. VU additionally requires senvcfg.SSE=1.\n- G-stage translation active (hgatp.MODE != Bare) unless stated otherwise."
+  - heading: "General Test Environment (VS/VU-mode, H-extension):\n- Same base environment as Zicfiss_U plus H-extension implemented.\n- menvcfg.SSE=1 and henvcfg.SSE=1 unless stated otherwise. VU additionally requires senvcfg.SSE=1.\n- G-stage translation active (hgatp.MODE != Bare) unless stated otherwise."
   - name: cp_ssp_csr_gating_virt_zicfiss
     goal: Verify ssp CSR accessibility from VS-mode and VU-mode across the henvcfg.SSE / senvcfg.SSE enable chain
     description: |-
@@ -69,7 +69,7 @@ coverpoints:
       Link 1: with menvcfg.SSE=0, henvcfg.SSE reads back 0 after every write attempt. No exception -- SSE is WARL, so the write is discarded rather than rejected.
       Link 2: with henvcfg.SSE=0 and V=1, senvcfg.SSE reads back 0. The (henvcfg=0, senvcfg=1) combination is therefore architecturally unreachable, exactly as (menvcfg=0, senvcfg=1) is at V=0.
       Positive controls: with the parent field set, the child is writable and reads back what was written.
-      Together with cp_senvcfg_sse_rdonly0_s_zicfiss (ZicfissS) and cp_envcfg_sse_rdonly0_zicfiss (ZicfissSm) this closes the whole menvcfg -> henvcfg -> senvcfg chain.
+      Together with cp_senvcfg_sse_rdonly0_s_zicfiss (Zicfiss_S) and cp_envcfg_sse_rdonly0_zicfiss (Zicfiss_Sm) this closes the whole menvcfg -> henvcfg -> senvcfg chain.
     bins: link {menvcfg->henvcfg, henvcfg->senvcfg@V=1} x parent {0,1} x csr_op {csrw, csrs, csrrw} x written {0,1} x readback {0 when parent=0, written when parent=1}
     id: menvcfg_sse_rdonly0 henvcfg_sse_op
     rules:
@@ -147,7 +147,7 @@ coverpoints:
       With V=1, menvcfg.SSE=1, henvcfg.SSE=1 (and senvcfg.SSE=1 for VU), map the shadow stack page with a VS-stage PTE of xwr=010 and a G-stage PTE with R=W=1, U=1. Sweep the VS-stage PBMT and the G-stage PBMT independently over {PMA, NC, IO}, and execute each SS instruction that accesses memory from VS-mode and from VU-mode: SSPUSH x1/x5, C.SSPUSH x1, SSPOPCHK x1/x5, C.SSPOPCHK x5, SSAMOSWAP.W and SSAMOSWAP.D.
       Repeat with henvcfg.PBMTE=0 (menvcfg.PBMTE=1), and with menvcfg.PBMTE=0, which makes henvcfg.PBMTE read-only zero.
       Svpbmt applies the two stages in order: "if hgatp.MODE is not equal to zero, non-zero G-stage PTE PBMT bits override the attributes in the PMA to produce an intermediate set of attributes" ([norm:Svpbmt_hgatp_stage_override_rule]), then "if vsatp.MODE is not equal to zero, non-zero VS-stage PTE PBMT bits override the intermediate attributes to produce the final set of attributes used by accesses to the page in question" ([norm:Svpbmt_vsatp_stage_override_rule]).
-      SSAMOSWAP is not executed where the final type is NC, for the reason given in cp_ss_non_idempotent_s_zicfiss on the ZicfissS sheet.
+      SSAMOSWAP is not executed where the final type is NC, for the reason given in cp_ss_non_idempotent_s_zicfiss on the Zicfiss_S sheet.
     expectation: |-
       menvcfg.PBMTE=1 and henvcfg.PBMTE=1: the final memory type is the VS-stage PBMT if it is nonzero, else the G-stage PBMT if it is nonzero, else the PMA.
        Final type IO is non-idempotent: store/AMO access-fault (cause=7), with the faulting guest VA in the tval register of the mode the trap is taken in. This covers VS=IO over any G-stage PBMT, and VS=PMA over G=IO.
@@ -159,10 +159,10 @@ coverpoints:
     id: ssmp_ss_idempotent_memory Svpbmt_hgatp_stage_override_rule Svpbmt_vsatp_stage_override_rule
     rules:
       - "[norm:ssmp_ss_idempotent_memory] [norm:Svpbmt_hgatp_stage_override_rule] [norm:Svpbmt_vsatp_stage_override_rule]"
-  - name: (reused) ZicfissU instruction coverpoints, re-run from VS-mode and VU-mode
-    goal: Re-run the ZicfissU coverpoints with the hart in VS/VU instead of U
+  - name: (reused) Zicfiss_U instruction coverpoints, re-run from VS-mode and VU-mode
+    goal: Re-run the Zicfiss_U coverpoints with the hart in VS/VU instead of U
     description: |-
-      BOOKKEEPING ROW, not a new coverpoint. These 13 ZicfissU coverpoints are re-run with V=1, sampled into the H covergroup via priv_mode_vs / priv_mode_vu:
+      BOOKKEEPING ROW, not a new coverpoint. These 13 Zicfiss_U coverpoints are re-run with V=1, sampled into the H covergroup via priv_mode_vs / priv_mode_vu:
        cp_ssp_access_zicfiss
        cp_sspush_zicfiss
        cp_sspopchk_match_zicfiss

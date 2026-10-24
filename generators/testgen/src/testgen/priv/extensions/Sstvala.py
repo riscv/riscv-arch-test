@@ -11,7 +11,7 @@
 from testgen.asm.helpers import comment_banner
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.ExceptionsCommon import (
+from testgen.priv.extensions.exceptions.ExceptionsCommon import (
     generate_illegal_instruction_tests,
     generate_instr_access_fault_tests,
     generate_instr_adr_misaligned_jalr_tests,

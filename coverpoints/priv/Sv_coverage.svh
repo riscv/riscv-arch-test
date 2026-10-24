@@ -4,11 +4,21 @@
 //
 // Copyright (C) 2024 Harvey Mudd College, 10x Engineers, UET Lahore, Habib University
 //
+// Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+//
 // SPDX-License-Identifier: Apache-2.0
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 `define COVER_SV
+
+`ifdef ZICBOM_SUPPORTED
+    `define SV_ZICBO_ANY
+`elsif ZICBOZ_SUPPORTED
+    `define SV_ZICBO_ANY
+`elsif ZICBOP_SUPPORTED
+    `define SV_ZICBO_ANY
+`endif
 
 covergroup Sv_satp_cg with function sample(ins_t ins);
     option.per_instance = 0;
@@ -923,12 +933,960 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
     `endif
 endgroup
 
+`ifndef EXCLUDE_SM
+covergroup Sv_Sm_satp_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include  "general/RISCV_coverage_standard_coverpoints.svh"
+
+    tvm_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tvm")[0]{
+        bins zero = {0};
+        bins set  = {1};
+    }
+
+    // satp is always accessible from M-mode, so an access here never raises an exception.
+    Mcause: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") {
+        bins no_exception = {0};
+    }
+
+    cp_ins: coverpoint ins.current.insn {
+        wildcard bins csrrs = {CSRRS};
+        wildcard bins csrrw = {CSRRW};
+        wildcard bins csrrc = {CSRRC};
+    }
+    satp_csr: coverpoint ins.current.insn[31:20] {
+        bins satp = {CSR_SATP};
+    }
+
+    cp_access_m: cross priv_mode_m, cp_ins, satp_csr, Mcause, tvm_mstatus; //sat.1
+endgroup
+
+covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include  "general/RISCV_coverage_standard_coverpoints.svh"
+
+    tvm_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tvm")[0] {
+        bins set = {1};
+    }
+    Mcause: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") {
+        bins illegal_ins = {ILLEGAL_INSTRUCTION};
+    }
+    cp_ins: coverpoint ins.current.insn {
+        wildcard bins csrrs  = {CSRRS} iff (ins.current.insn[31:20] == CSR_SATP);
+        wildcard bins csrrw  = {CSRRW} iff (ins.current.insn[31:20] == CSR_SATP);
+        wildcard bins csrrc  = {CSRRC} iff (ins.current.insn[31:20] == CSR_SATP);
+        wildcard bins sfence = {SFENCE_VMA};
+    }
+
+    cp_tvm_exception_s: cross tvm_mstatus, priv_mode_s, Mcause, cp_ins; //ms.1
+
+    mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mprv")[0] {
+        bins set = {1};
+    }
+    mpp_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
+        bins U_mode = {2'b00};
+        bins S_mode = {2'b01};
+    }
+    read_acc: coverpoint ins.current.read_access {
+        bins set = {1};
+    }
+    write_acc: coverpoint ins.current.write_access {
+        bins set = {1};
+    }
+    exec_acc: coverpoint ins.current.execute_access {
+        bins set = {1};
+    }
+
+    `ifdef UDB_MXLEN_64
+        satp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
+            `ifdef SV57_SUPPORTED
+                bins sv57 = {4'b1010};
+            `endif
+            `ifdef SV48_SUPPORTED
+                bins sv48 = {4'b1001};
+            `endif
+            `ifdef SV39_SUPPORTED
+                bins sv39 = {4'b1000};
+            `endif
+        }
+    `else
+        satp_mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] {
+            bins sv32 = {1'b1};
+        }
+    `endif
+
+    cp_mprv_load:  cross mprv_mstatus, mpp_mstatus, read_acc,  priv_mode_m, satp_mode; //ms.2
+    cp_mprv_store: cross mprv_mstatus, mpp_mstatus, write_acc, priv_mode_m, satp_mode; //ms.2
+    cp_mprv_ins:   cross mprv_mstatus, mpp_mstatus, exec_acc,  priv_mode_m, satp_mode; //ms.2
+
+    PTE_upage_d: coverpoint ins.current.pte_d[7:0] { //ms.3 & 4
+        wildcard bins leaflvl_u = {8'b11?11111};
+    }
+
+    `ifdef UDB_MXLEN_64
+        PageType_d: coverpoint ins.current.page_type_d {
+            `ifdef SV48_SUPPORTED
+                bins sv48_tera = {2'b11} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+            `endif
+            `ifdef SV39_SUPPORTED
+                bins sv39_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+            `endif
+        }
+    `else
+        PageType_d: coverpoint ins.current.page_type_d {
+            bins sv32_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
+            bins sv32_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
+        }
+    `endif
+
+    load_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") {
+        bins load_page_fault = {LOAD_PAGE_FAULT};
+    }
+    store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") {
+        bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
+    }
+    sum_sstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "sum")[0] {
+        bins notset = {0};
+        bins set = {1};
+    }
+
+    cp_mprv_upage_smode_sumunset_noread: cross mprv_mstatus, mpp_mstatus, read_acc, priv_mode_m, PTE_upage_d, PageType_d, load_page_fault, sum_sstatus { //ms.3
+        ignore_bins ig1 = binsof(mpp_mstatus.U_mode);
+        ignore_bins ig5 = binsof(sum_sstatus.set);
+    }
+    cp_mprv_upage_smode_sumunset_nowrite: cross mprv_mstatus, mpp_mstatus, write_acc, priv_mode_m, PTE_upage_d, PageType_d, store_page_fault, sum_sstatus { //ms.3
+        ignore_bins ig1 = binsof(mpp_mstatus.U_mode);
+        ignore_bins ig5 = binsof(sum_sstatus.set);
+    }
+    // MPRV does not translate instruction fetch, so the fetch has no page type to cross with
+    cp_mprv_upage_smode_sumunset_noexec: cross mprv_mstatus, mpp_mstatus, exec_acc, priv_mode_m, satp_mode, sum_sstatus { //ms.3
+        ignore_bins ig1 = binsof(mpp_mstatus.U_mode);
+        ignore_bins ig3 = binsof(sum_sstatus.set);
+    }
+    cp_mprv_upage_smode_sumset_exec: cross mprv_mstatus, mpp_mstatus, exec_acc, priv_mode_m, satp_mode, sum_sstatus { //ms.4
+        ignore_bins ig1 = binsof(mpp_mstatus.U_mode);
+        ignore_bins ig3 = binsof(sum_sstatus.notset);
+    }
+    cp_mprv_upage_smode_sumset_read: cross mprv_mstatus, mpp_mstatus, read_acc, priv_mode_m, PTE_upage_d, PageType_d, sum_sstatus { //ms.4
+        ignore_bins ig1 = binsof(mpp_mstatus.U_mode);
+        ignore_bins ig3 = binsof(sum_sstatus.notset);
+    }
+    cp_mprv_upage_smode_sumset_write: cross mprv_mstatus, mpp_mstatus, write_acc, priv_mode_m, PTE_upage_d, PageType_d, sum_sstatus { //ms.4
+        ignore_bins ig1 = binsof(mpp_mstatus.U_mode);
+        ignore_bins ig3 = binsof(sum_sstatus.notset);
+    }
+
+    PTE_sbe_d: coverpoint ins.current.pte_d[7:0] { //ms.5
+        wildcard bins leaflvl_u = {8'b11?11111};
+        wildcard bins leaflvl_s = {8'b11?01111};
+    }
+    `ifdef UDB_MXLEN_64
+        sbe_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "sbe")[0] { //ms.5
+            bins set = {1};
+            bins not_set = {0};
+        }
+    `else
+        sbe_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "sbe")[0] { //ms.5
+            bins set = {1};
+            bins not_set = {0};
+        }
+    `endif
+
+    cp_mstatus_sbe_read: cross read_acc, PTE_sbe_d, PageType_d, sbe_mstatus; //ms.5
+    cp_mstatus_sbe_write: cross write_acc, PTE_sbe_d, PageType_d, sbe_mstatus; //ms.5
+
+endgroup
+`endif // EXCLUDE_SM
+
+`ifdef SV_ZICBO_ANY
+covergroup Sv_Zicbo_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include  "general/RISCV_coverage_standard_coverpoints.svh"
+    //pte permission for leaf PTEs
+    PTE_d_inv: coverpoint ins.current.pte_d[7:0] {
+        wildcard bins leaflvl_u_w = {8'b11?1?110};
+        wildcard bins leaflvl_s_w = {8'b11?0?110};
+    }
+
+    PTE_d_res_rwx: coverpoint ins.current.pte_d[7:0] {
+        wildcard bins leaflvl_exec_u = {8'b11?11101};
+        wildcard bins leaflvl_noexec_u = {8'b11?10101};
+        wildcard bins leaflvl_exec_s = {8'b11?01101};
+        wildcard bins leaflvl_noexec_s = {8'b11?00101};
+    }
+
+    PTE_nonleaf_lvl0_d: coverpoint ins.current.pte_d[7:0] {
+        wildcard bins lvl0_s = {8'b???00001};
+        wildcard bins lvl0_u = {8'b???10001};
+    }
+
+    PTE_r_set_w_unset_spage_d: coverpoint ins.current.pte_d[7:0] {
+        wildcard bins leaflvl_r_s = {8'b11?0?011};
+    }
+
+    PTE_w_unset_spage_d: coverpoint ins.current.pte_d[7:0] {
+        wildcard bins leaflvl_w_0 = {8'b11?0?0?1};
+    }
+
+    PTE_x_spage_d: coverpoint ins.current.pte_d[7:0] {
+        wildcard bins leaflvl_x_s = {8'b11?01001};
+    }
+
+    PTE_spage_d: coverpoint ins.current.pte_d[7:0] {
+        wildcard bins leaflvl_s = {8'b11?01111};
+    }
+
+    PTE_upage_d: coverpoint ins.current.pte_d[7:0] {
+        wildcard bins leaflvl_u = {8'b11?11111};
+    }
+
+    PTE_r_set_w_unset_upage_d: coverpoint ins.current.pte_d[7:0] {
+        wildcard bins leaflvl_r_u = {8'b11?1?011};
+    }
+
+    PTE_w_unset_upage_d: coverpoint ins.current.pte_d[7:0] {
+        wildcard bins leaflvl_w_0 = {8'b11?1?0?1};
+    }
+
+    PTE_x_upage_d: coverpoint ins.current.pte_d[7:0] {
+        wildcard bins leaflvl_x_u = {8'b11?11001};
+    }
+
+    PTE_Abit_unset_d: coverpoint ins.current.pte_d[7:0] {
+        wildcard bins leaflvl_u = {8'b?0?11111};
+        wildcard bins leaflvl_s = {8'b?0?01111};
+    }
+
+    PTE_Dbit_unset_d: coverpoint ins.current.pte_d[7:0] {
+        wildcard bins leaflvl_u = {8'b01?1?111};
+        wildcard bins leaflvl_s = {8'b01?0?111};
+    }
+
+    PTE_RWX_d: coverpoint ins.current.pte_d[7:0] {
+        wildcard bins leaflvl_u = {8'b11?11111};
+        wildcard bins leaflvl_s = {8'b11?01111};
+    }
+
+    pointer_PTE_d: coverpoint ins.current.pte_d[7:0] {
+        wildcard bins pointer = {8'b00?00001};
+    }
+
+    PTE_DAU_d: coverpoint ins.current.pte_d[7:0] {
+        wildcard bins nonleaf_D_bit = {8'b10?00001};
+        wildcard bins nonleaf_A_bit = {8'b01?00001};
+        wildcard bins nonleaf_U_bit = {8'b00?10001};
+    }
+
+    // satp.mode for coverage of SV32, SV39, SV48 & SV57
+    `ifdef UDB_MXLEN_64
+        mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] {
+            `ifdef SV57_SUPPORTED
+                bins sv57 = {4'b1010};
+            `endif
+            `ifdef SV48_SUPPORTED
+                bins sv48 = {4'b1001};
+            `endif
+            `ifdef SV39_SUPPORTED
+                bins sv39 = {4'b1000};
+            `endif
+        }
+    `else
+        mode: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] {
+            bins sv32 = {1'b1};
+        }
+    `endif
+
+    `ifdef UDB_MXLEN_64
+        PageType_d: coverpoint ins.current.page_type_d {
+            `ifdef SV48_SUPPORTED
+                bins sv48_tera = {2'b11} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+                bins sv48_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001);
+            `endif
+            `ifdef SV39_SUPPORTED
+                bins sv39_giga = {2'b10} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+                bins sv39_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+            `endif
+        }
+    `else
+        PageType_d: coverpoint ins.current.page_type_d {
+            bins sv32_mega = {2'b01} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
+            bins sv32_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1);
+        }
+    `endif
+
+    kilo_page: coverpoint ins.current.page_type_d {
+        bins kilo_page = {2'b00};
+    }
+
+    `ifdef UDB_MXLEN_64
+        misaligned_PPN_d: coverpoint ins.current.page_type_d {
+            `ifdef SV48_SUPPORTED
+                bins sv48_tera_misaligned = {2'b11} iff ((ins.current.ppn_d[26:0] != 27'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001));
+                bins sv48_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001));
+                bins sv48_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001));
+            `endif
+            `ifdef SV39_SUPPORTED
+                bins sv39_giga_misaligned = {2'b10} iff ((ins.current.ppn_d[17:0] != 18'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000));
+                bins sv39_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[8:0]  !=  9'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000));
+            `endif
+        }
+    `else
+        misaligned_PPN_d: coverpoint ins.current.page_type_d {
+            bins sv32_mega_misaligned = {2'b01} iff ((ins.current.ppn_d[9:0] != 10'b0) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[0] == 1'b1));
+        }
+    `endif
+
+    store_page_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause") iff (ins.trap == 1) {
+        bins store_amo_page_fault = {STORE_AMO_PAGE_FAULT};
+    }
+    // Only reachable when the DUT has an address that faults: its sole bin is the
+    // store/AMO access fault cause, and its only consumers are the guarded
+    // cp_*_to_nonexistent_pa_cbo_* crosses below.
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        store_acc_fault: coverpoint  get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause") iff (ins.trap == 1) {
+            bins store_amo_access_fault = {STORE_AMO_ACCESS_FAULT};
+        }
+    `endif
+    sum_sstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sstatus", "sum")[0]{
+        bins notset = {0};
+        bins set = {1};
+    }
+
+    cbo_ins: coverpoint ins.current.insn {
+        `ifdef ZICBOM_SUPPORTED
+            wildcard bins any_zicbom_ins = {CBO_INVAL, CBO_CLEAN, CBO_FLUSH};
+        `endif
+        `ifdef ZICBOZ_SUPPORTED
+            wildcard bins zicboz_ins = {CBO_ZERO};
+        `endif
+    }
+
+    zicbop_ins: coverpoint ins.current.insn {
+        wildcard bins any_prefetch_ins = {PREFETCH_I, PREFETCH_R, PREFETCH_W};
+    }
+
+    // A prefetch is a hint that need not translate, so it has no PTE or page type to cross with
+    cp_zicbop_no_fault_s: cross zicbop_ins, mode, priv_mode_s iff (ins.trap == 0);
+    cp_zicbop_no_fault_u: cross zicbop_ins, mode, priv_mode_u iff (ins.trap == 0);
+
+    cp_PTE_inv_cbo_s: cross PTE_d_inv, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
+        ignore_bins ig1 = binsof(PTE_d_inv.leaflvl_u_w);
+    }
+    cp_PTE_inv_cbo_u: cross PTE_d_inv, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
+        ignore_bins ig1 = binsof(PTE_d_inv.leaflvl_s_w);
+    }
+
+    cp_PTE_res_rwx_cbo_s: cross PTE_d_res_rwx, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
+        ignore_bins ig1 = binsof(PTE_d_res_rwx.leaflvl_exec_u);
+        ignore_bins ig2 = binsof(PTE_d_res_rwx.leaflvl_noexec_u);
+    }
+    cp_PTE_res_rwx_cbo_u: cross PTE_d_res_rwx, PageType_d, store_page_fault, cbo_ins, priv_mode_u  {
+        ignore_bins ig1 = binsof(PTE_d_res_rwx.leaflvl_exec_s);
+        ignore_bins ig2 = binsof(PTE_d_res_rwx.leaflvl_noexec_s);
+    }
+
+    cp_PTE_nonleaf_lvl0_cbo_s: cross PTE_nonleaf_lvl0_d, kilo_page, mode, store_page_fault, cbo_ins, priv_mode_s {
+        ignore_bins ig1 = binsof(PTE_nonleaf_lvl0_d.lvl0_u);
+    }
+
+    cp_PTE_nonleaf_lvl0_cbo_u: cross PTE_nonleaf_lvl0_d, kilo_page, mode, store_page_fault, cbo_ins, priv_mode_u {
+        ignore_bins ig1 = binsof(PTE_nonleaf_lvl0_d.lvl0_s);
+    }
+
+    // A Zicbom instruction is allowed if a load or store instruction is permitted to access the corresponding physical addresses
+    cp_PTE_r_set_w_unset_zicbom_s: cross PTE_r_set_w_unset_spage_d, PageType_d, cbo_ins, priv_mode_s, sum_sstatus {
+        ignore_bins ig1 = binsof(cbo_ins.zicboz_ins);
+    }
+    cp_PTE_r_set_w_unset_zicbom_u: cross PTE_r_set_w_unset_upage_d, PageType_d, cbo_ins, priv_mode_u {
+        ignore_bins ig1 = binsof(cbo_ins.zicboz_ins);
+    }
+    cp_PTE_rw_unset_zicbom_s: cross PTE_x_spage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
+        ignore_bins ig1 = binsof(cbo_ins.zicboz_ins);
+    }
+    cp_PTE_rw_unset_zicbom_u: cross PTE_x_upage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
+        ignore_bins ig1 = binsof(cbo_ins.zicboz_ins);
+    }
+
+    // A Zicboz instruction is allowed if a store instruction is permitted to access the corresponding physical addresses
+    cp_PTE_w_unset_zicboz_s: cross PTE_w_unset_spage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s, sum_sstatus {
+        ignore_bins ig1 = binsof(cbo_ins.any_zicbom_ins);
+    }
+    cp_PTE_w_unset_zicboz_u: cross PTE_w_unset_upage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
+        ignore_bins ig1 = binsof(cbo_ins.any_zicbom_ins);
+    }
+
+    cp_spage_rwx_cbo_u: cross PTE_spage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u;
+
+    cp_upage_sumunset_cbo_s: cross PTE_upage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s, sum_sstatus {
+        ignore_bins ig1 = binsof(sum_sstatus.set);
+    }
+
+    cp_Abit_unset_cbo_s: cross PTE_Abit_unset_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
+        ignore_bins ig1 = binsof(PTE_Abit_unset_d.leaflvl_u);
+    }
+    cp_Abit_unset_cbo_u: cross PTE_Abit_unset_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
+        ignore_bins ig1 = binsof(PTE_Abit_unset_d.leaflvl_s);
+    }
+
+    // A Zicbom instruction does not check the dirty bit and neither raises an exception nor sets the bit
+    cp_Dbit_unset_zicbom_s: cross PTE_Dbit_unset_d, PageType_d, cbo_ins, priv_mode_s {
+        ignore_bins ig1 = binsof(PTE_Dbit_unset_d.leaflvl_u);
+        ignore_bins ig2 = binsof(cbo_ins.zicboz_ins);
+    }
+    cp_Dbit_unset_zicbom_u: cross PTE_Dbit_unset_d, PageType_d, cbo_ins, priv_mode_u {
+        ignore_bins ig1 = binsof(PTE_Dbit_unset_d.leaflvl_s);
+        ignore_bins ig2 = binsof(cbo_ins.zicboz_ins);
+    }
+    // A Zicboz instruction checks the dirty bit and may raise an exception and set the bit as required
+    cp_Dbit_unset_zicboz_s: cross PTE_Dbit_unset_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
+        ignore_bins ig1 = binsof(PTE_Dbit_unset_d.leaflvl_u);
+        ignore_bins ig2 = binsof(cbo_ins.any_zicbom_ins);
+    }
+    cp_Dbit_unset_zicboz_u: cross PTE_Dbit_unset_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
+        ignore_bins ig1 = binsof(PTE_Dbit_unset_d.leaflvl_s);
+        ignore_bins ig2 = binsof(cbo_ins.any_zicbom_ins);
+    }
+
+    cp_misaligned_page_cbo_s: cross PTE_RWX_d, misaligned_PPN_d, store_page_fault, cbo_ins, priv_mode_s  {
+        ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_u);
+    }
+    cp_misaligned_page_cbo_u: cross PTE_RWX_d, misaligned_PPN_d, store_page_fault, cbo_ins, priv_mode_u  {
+        ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_s);
+    }
+
+    cp_PTE_nonleaf_DAU_cbo: cross PTE_DAU_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s_u {
+        `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_kilo); `endif
+        `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_kilo); `endif
+        `ifdef UDB_MXLEN_32   ignore_bins ig3 = binsof(PageType_d.sv32_kilo); `endif
+    }
+
+    // access fault coverpoints
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        `ifdef UDB_MXLEN_64
+            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                bins non_existent_pa = {1};
+            }
+        `else
+            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                bins non_existent_pa = {1};
+            }
+        `endif
+        // PTE points to a non existent physical address
+        cp_leaf_PTE_to_nonexistent_pa_cbo_s: cross PTE_RWX_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s {
+            ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_u);
+        }
+        cp_leaf_PTE_to_nonexistent_pa_cbo_u: cross PTE_RWX_d, d_phys_address_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_u {
+            ignore_bins ig1 = binsof(PTE_RWX_d.leaflvl_s);
+        }
+
+        // Non leaf PTE points to a non existatant phys addr instead of next page table. Store access fault required during walk
+        // Example: Setup a giga page in sv48, lvl 3 pte (tera) should point to lvl2 page table, but it points to non existent PA
+        // The walk faults before any data physical address exists, so check where the pointer PTE points instead
+        `ifdef UDB_MXLEN_64
+            nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[53:10] == (`RVMODEL_ACCESS_FAULT_ADDRESS >> 12)) {
+                bins non_existent_pa = {1};
+            }
+        `else
+            nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[31:10] == (`RVMODEL_ACCESS_FAULT_ADDRESS >> 12)) {
+                bins non_existent_pa = {1};
+            }
+        `endif
+        cp_nonleaf_PTE_to_nonexistent_pa_cbo: cross pointer_PTE_d, nonleaf_ppn_nonexistent, PageType_d, store_acc_fault, cbo_ins, priv_mode_s_u {
+            `ifdef SV48_SUPPORTED ignore_bins ig1 = binsof(PageType_d.sv48_tera); `endif     // Here PageType_d will be the page being pointed towards
+            `ifdef SV39_SUPPORTED ignore_bins ig2 = binsof(PageType_d.sv39_giga); `endif
+            `ifdef UDB_MXLEN_32   ignore_bins ig3 = binsof(PageType_d.sv32_mega); `endif
+        }
+    `endif
+
+endgroup
+`endif // SV_ZICBO_ANY
+
+covergroup Sv_Exceptions_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    // building blocks for the main coverpoints
+
+    instr_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") == `UDB_MXLEN'(INSTRUCTION_PAGE_FAULT)) {
+        // auto fill 0/1
+    }
+    load_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") == `UDB_MXLEN'(LOAD_PAGE_FAULT)) {
+        // auto fill 0/1
+    }
+    store_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") == `UDB_MXLEN'(STORE_AMO_PAGE_FAULT)) {
+        // auto fill 0/1
+    }
+    // The PC of the target: a fetch that spans two parcels may report either parcel in virt_adr_i
+    i_virt_adr_misaligned: coverpoint ins.current.pc_rdata[1:0] {
+        bins aligned    = {2'b00};
+        bins misaligned = {2'b10};
+    }
+    i_page_table_entry_invalid: coverpoint ins.current.pte_i[0] {
+        // auto fill valid bit 0/1
+    }
+    d_virt_adr_misaligned: coverpoint ins.current.virt_adr_d[1:0] {
+        bins aligned    = {2'b00};
+        bins misaligned = {2'b10};
+    }
+    d_page_table_entry_invalid: coverpoint ins.current.pte_d[0] {
+        // auto fill valid bit 0/1
+    }
+    memops: coverpoint ins.current.insn {
+        wildcard bins sw       = {SW};
+        wildcard bins lw       = {LW};
+    }
+    lw: coverpoint ins.current.insn {
+        wildcard bins lw = {LW};
+    }
+    sw: coverpoint ins.current.insn {
+        wildcard bins sw = {SW};
+    }
+    jalr: coverpoint ins.prev.insn {
+        wildcard bins jalr = {JALR};
+    }
+
+    d_page_table_entry_bad: coverpoint ins.current.pte_d[7:0] {
+        bins invalid = {8'b00000000}; // invalid
+    }
+
+    d_phys_address: coverpoint ins.current.phys_adr_d[11:0] {
+        // check that fault occurs on the last halfword of the first page and the first halfword of the second page
+        bins first  = {12'b111111111110};
+        bins second = {12'b000000000000};
+    }
+
+    i_page_table_entry_bad: coverpoint ins.current.pte_i[7:0] {
+        bins invalid = {8'b00000000}; // invalid
+    }
+
+    i_phys_address: coverpoint ins.current.phys_adr_i[11:0] {
+        // check that fault occurs on the last halfword of the first page and the first halfword of the second page
+        bins first  = {12'b111111111110};
+        bins second = {12'b000000000000};
+    }
+
+
+    // Main Coverpoints
+    cp_instr_page_fault_s:           cross priv_mode_s, instr_page_fault;
+    cp_load_page_fault_s:            cross priv_mode_s, load_page_fault;
+    cp_store_page_fault_s:           cross priv_mode_s, store_page_fault;
+    cp_misaligned_load_page_fault_s: cross priv_mode_s, d_page_table_entry_bad, d_phys_address, lw;
+    cp_misaligned_store_page_fault_s:cross priv_mode_s, d_page_table_entry_bad, d_phys_address, sw;
+    cp_misaligned_inst_page_fault_s: cross priv_mode_s, i_page_table_entry_bad, i_phys_address, jalr;
+    cp_instr_page_fault_u:           cross priv_mode_u, instr_page_fault;
+    cp_load_page_fault_u:            cross priv_mode_u, load_page_fault;
+    cp_store_page_fault_u:           cross priv_mode_u, store_page_fault;
+
+    // Access fault coverpoints
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        // Accesses land at an offset into the faulting region, which is at least 128 bytes
+        i_phys_address_nonexistent: coverpoint ((64'(ins.current.phys_adr_i) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS)) < 64'd128) {
+            // auto fill 1/0 for the physical address being valid
+        }
+        d_phys_address_nonexistent: coverpoint ((64'(ins.current.phys_adr_d) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS)) < 64'd128) {
+            // auto fill 1/0 for the physical address being valid
+        }
+        cp_misaligned_priority_s:        cross priv_mode_s, memops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent {
+            `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
+                `ifndef UDB_MISALIGNED_LDST
+                    // The misaligned exception is raised before translation, so there is no PTE or physical address
+                    ignore_bins misaligned_before_translation = binsof(d_virt_adr_misaligned.misaligned);
+                `endif
+            `endif
+        }
+        cp_misaligned_priority_fetch_s:  cross priv_mode_s, jalr,   i_virt_adr_misaligned, i_page_table_entry_invalid, i_phys_address_nonexistent {
+            `ifndef ZCA_SUPPORTED
+                // Without Zca, a jalr to a misaligned target raises instruction-address-misaligned on the jalr
+                ignore_bins misaligned_target = binsof(i_virt_adr_misaligned.misaligned);
+            `endif
+        }
+        cp_misaligned_priority_u:        cross priv_mode_u, memops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent {
+            `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
+                `ifndef UDB_MISALIGNED_LDST
+                    // The misaligned exception is raised before translation, so there is no PTE or physical address
+                    ignore_bins misaligned_before_translation = binsof(d_virt_adr_misaligned.misaligned);
+                `endif
+            `endif
+        }
+        cp_misaligned_priority_fetch_u:  cross priv_mode_u, jalr,   i_virt_adr_misaligned, i_page_table_entry_invalid, i_phys_address_nonexistent {
+            `ifndef ZCA_SUPPORTED
+                // Without Zca, a jalr to a misaligned target raises instruction-address-misaligned on the jalr
+                ignore_bins misaligned_target = binsof(i_virt_adr_misaligned.misaligned);
+            `endif
+        }
+    `endif
+
+endgroup
+
+`ifndef EXCLUDE_SM
+covergroup Sv_ExceptionsSm_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    mstatus_mprv_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mprv")[0] {
+        bins one = {1};
+    }
+    mstatus_mpp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
+        bins u_mode = {2'b00};
+        bins s_mode = {2'b01};
+    }
+    instr_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == `UDB_MXLEN'(INSTRUCTION_PAGE_FAULT)) {
+        // auto fill 0/1
+    }
+    load_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == `UDB_MXLEN'(LOAD_PAGE_FAULT)) {
+        // auto fill 0/1
+    }
+    store_page_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == `UDB_MXLEN'(STORE_AMO_PAGE_FAULT)) {
+        // auto fill 0/1
+    }
+    i_page_table_entry_invalid: coverpoint ins.current.pte_i[0] {
+        // auto fill valid bit 0/1
+    }
+    d_virt_adr_misaligned: coverpoint ins.current.virt_adr_d[1:0] {
+        bins aligned    = {2'b00};
+        bins misaligned = {2'b10};
+    }
+    d_page_table_entry_invalid: coverpoint ins.current.pte_d[0] {
+        // auto fill valid bit 0/1
+    }
+    memops: coverpoint ins.current.insn {
+        wildcard bins sw = {SW};
+        wildcard bins lw = {LW};
+    }
+    medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg") {
+        bins zeros                    = {16'b0000_0000_0000_0000};
+        `ifndef ZCA_SUPPORTED
+            bins instrmisaligned_enabled = {16'b0000_0000_0000_0001};
+        `endif
+        bins illegalinstr_enabled     = {16'b0000_0000_0000_0100};
+        bins breakpoint_enabled       = {16'b0000_0000_0000_1000};
+        bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000};
+        bins storemisaligned_enabled  = {16'b0000_0000_0100_0000};
+        bins ecallu_enabled           = {16'b0000_0001_0000_0000};
+        // Delegating ecall to S mode makes it impossible to escape S mode
+        // bins ecalls_enabled           = {16'b0000_0010_0000_0000};
+        // bit 10 reserved
+        // bit 11 is read only zero
+        bins instrpagefault_enabled   = {16'b0001_0000_0000_0000};
+        bins loadpagefault_enabled    = {16'b0010_0000_0000_0000};
+        // bit 14 reserved
+        bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
+        wildcard bins ones            = {16'b1011_0001_?1?1_11??}; // access faults might not be possible to delegate if they don't exist
+        `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+            bins instraccessfault_enabled = {16'b0000_0000_0000_0010};
+            bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000};
+            bins storeaccessfault_enabled = {16'b0000_0000_1000_0000};
+        `endif
+    }
+    jalr: coverpoint ins.prev.insn {
+        wildcard bins jalr = {JALR};
+    }
+
+    // Main Coverpoints
+    // Test M mode fetches using an identity mapped Virtual Address with V=0. No translation for instruction fetches and V=0 won't be checked, therefore it must not fault
+    cp_instr_page_fault_m: cross priv_mode_m, mstatus_mprv_one, mstatus_mpp, jalr;
+    cp_load_page_fault_m:  cross priv_mode_m, mstatus_mprv_one, mstatus_mpp, load_page_fault;
+    cp_store_page_fault_m: cross priv_mode_m, mstatus_mprv_one, mstatus_mpp, store_page_fault;
+    cp_medeleg_m:          cross priv_mode_m, mstatus_mprv_one, mstatus_mpp, memops, d_page_table_entry_invalid, medeleg_walk;
+    cp_medeleg_fetch_m:    cross priv_mode_m, mstatus_mprv_one, mstatus_mpp, medeleg_walk, jalr;
+    cp_medeleg_s:          cross priv_mode_s, memops, d_page_table_entry_invalid, medeleg_walk;
+    cp_medeleg_fetch_s:    cross priv_mode_s, jalr,   i_page_table_entry_invalid, medeleg_walk;
+    cp_medeleg_u:          cross priv_mode_u, memops, d_page_table_entry_invalid, medeleg_walk;
+    cp_medeleg_fetch_u:    cross priv_mode_u, jalr,   i_page_table_entry_invalid, medeleg_walk;
+
+    // Access fault coverpoints
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        // Accesses land at an offset into the faulting region, which is at least 128 bytes
+        d_phys_address_nonexistent: coverpoint ((64'(ins.current.phys_adr_d) - 64'(`RVMODEL_ACCESS_FAULT_ADDRESS)) < 64'd128) {
+            // auto fill 1/0 for the physical address being valid
+        }
+        cp_misaligned_priority_m:       cross priv_mode_m, memops, d_virt_adr_misaligned, d_phys_address_nonexistent, d_page_table_entry_invalid {
+            `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
+                `ifndef UDB_MISALIGNED_LDST
+                    // The misaligned exception is raised before translation, so there is no PTE or physical address
+                    ignore_bins misaligned_before_translation = binsof(d_virt_adr_misaligned.misaligned);
+                `endif
+            `endif
+        }
+    `endif
+endgroup
+`endif // EXCLUDE_SM
+
+`ifdef ZAAMO_SUPPORTED
+covergroup Sv_ExceptionsZaamo_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    // building blocks for the main coverpoints
+
+    d_virt_adr_misaligned: coverpoint ins.current.virt_adr_d[1:0] {
+        bins aligned    = {2'b00};
+        bins misaligned = {2'b10};
+    }
+    d_page_table_entry_invalid: coverpoint ins.current.pte_d[0] {
+        // auto fill valid bit 0/1
+    }
+    amoops: coverpoint ins.current.insn {
+        wildcard bins amoadd_w = {AMOADD_W};
+    }
+    // main coverpoints
+    // Access fault coverpoints
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
+            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                // auto fill 1/0 for the physical address being valid
+            }
+        `else
+            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                // auto fill 1/0 for the physical address being valid
+            }
+        `endif
+        cp_misaligned_priority_s:        cross priv_mode_s, amoops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent {
+            `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
+                `ifndef UDB_MISALIGNED_AMO
+                    // The misaligned exception is raised before translation, so there is no PTE or physical address
+                    ignore_bins misaligned_before_translation = binsof(d_virt_adr_misaligned.misaligned);
+                `endif
+            `endif
+        }
+        cp_misaligned_priority_u:        cross priv_mode_u, amoops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent {
+            `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
+                `ifndef UDB_MISALIGNED_AMO
+                    // The misaligned exception is raised before translation, so there is no PTE or physical address
+                    ignore_bins misaligned_before_translation = binsof(d_virt_adr_misaligned.misaligned);
+                `endif
+            `endif
+        }
+    `endif
+
+endgroup
+`endif // ZAAMO_SUPPORTED
+
+`ifdef ZAAMO_SUPPORTED
+`ifndef EXCLUDE_SM
+covergroup Sv_ExceptionsZaamoSm_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    d_virt_adr_misaligned: coverpoint ins.current.virt_adr_d[1:0] {
+        bins aligned    = {2'b00};
+        bins misaligned = {2'b10};
+    }
+    d_page_table_entry_invalid: coverpoint ins.current.pte_d[0] {
+        // auto fill valid bit 0/1
+    }
+    amoops: coverpoint ins.current.insn {
+        wildcard bins amoadd_w = {AMOADD_W};
+    }
+    medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg") {
+        bins zeros                    = {16'b0000_0000_0000_0000};
+        `ifndef ZCA_SUPPORTED
+            bins instrmisaligned_enabled = {16'b0000_0000_0000_0001};
+        `endif
+        bins instraccessfault_enabled = {16'b0000_0000_0000_0010};
+        bins illegalinstr_enabled     = {16'b0000_0000_0000_0100};
+        bins breakpoint_enabled       = {16'b0000_0000_0000_1000};
+        bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000};
+        bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000};
+        bins storemisaligned_enabled  = {16'b0000_0000_0100_0000};
+        bins storeaccessfault_enabled = {16'b0000_0000_1000_0000};
+        bins ecallu_enabled           = {16'b0000_0001_0000_0000};
+        // Delegating ecall to S mode makes it impossible to escape S mode
+        // bins ecalls_enabled           = {16'b0000_0010_0000_0000};
+        // bit 10 reserved
+        // bit 11 is read only zero
+        bins instrpagefault_enabled   = {16'b0001_0000_0000_0000};
+        bins loadpagefault_enabled    = {16'b0010_0000_0000_0000};
+        // bit 14 reserved
+        bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
+        wildcard bins ones            = {16'b1011_0001_1111_111?};
+    }
+
+    // main coverpoints
+    cp_medeleg_m: cross priv_mode_m, amoops, d_page_table_entry_invalid, medeleg_walk;
+    cp_medeleg_s: cross priv_mode_s, amoops, d_page_table_entry_invalid, medeleg_walk;
+    cp_medeleg_u: cross priv_mode_u, amoops, d_page_table_entry_invalid, medeleg_walk;
+
+    // Access fault coverpoints
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
+            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                // auto fill 1/0 for the physical address being valid
+            }
+        `else
+            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                // auto fill 1/0 for the physical address being valid
+            }
+        `endif
+        cp_misaligned_priority_m: cross priv_mode_m, amoops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent {
+            `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
+                `ifndef UDB_MISALIGNED_AMO
+                    // The misaligned exception is raised before translation, so there is no PTE or physical address
+                    ignore_bins misaligned_before_translation = binsof(d_virt_adr_misaligned.misaligned);
+                `endif
+            `endif
+        }
+    `endif
+endgroup
+`endif // EXCLUDE_SM
+`endif // ZAAMO_SUPPORTED
+
+`ifdef ZALRSC_SUPPORTED
+covergroup Sv_ExceptionsZalrsc_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    // building blocks for the main coverpoints
+
+    d_virt_adr_misaligned: coverpoint ins.current.virt_adr_d[1:0] {
+        bins aligned    = {2'b00};
+        bins misaligned = {2'b10};
+    }
+    d_page_table_entry_invalid: coverpoint ins.current.pte_d[0] {
+        // auto fill valid bit 0/1
+    }
+    lrscops: coverpoint ins.current.insn {
+        wildcard bins lr_w     = {LR_W};
+        wildcard bins sc_w     = {SC_W};
+    }
+    // main coverpoints
+
+    // access fault coverpoints
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
+            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                // auto fill 1/0 for the physical address being valid
+            }
+        `else
+            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                // auto fill 1/0 for the physical address being valid
+            }
+        `endif
+        cp_misaligned_priority_s:        cross priv_mode_s, lrscops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent {
+            `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
+                `ifdef UDB_LRSC_MISALIGNED_BEHAVIOR_ALWAYS_RAISE_MISALIGNED_EXCEPTION
+                    // The misaligned exception is raised before translation, so there is no PTE or physical address
+                    ignore_bins misaligned_before_translation = binsof(d_virt_adr_misaligned.misaligned);
+                `endif
+            `endif
+        }
+        cp_misaligned_priority_u:        cross priv_mode_u, lrscops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent {
+            `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
+                `ifdef UDB_LRSC_MISALIGNED_BEHAVIOR_ALWAYS_RAISE_MISALIGNED_EXCEPTION
+                    // The misaligned exception is raised before translation, so there is no PTE or physical address
+                    ignore_bins misaligned_before_translation = binsof(d_virt_adr_misaligned.misaligned);
+                `endif
+            `endif
+        }
+    `endif
+endgroup
+`endif // ZALRSC_SUPPORTED
+
+`ifdef ZALRSC_SUPPORTED
+`ifndef EXCLUDE_SM
+covergroup Sv_ExceptionsZalrscSm_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    d_virt_adr_misaligned: coverpoint ins.current.virt_adr_d[1:0] {
+        bins aligned    = {2'b00};
+        bins misaligned = {2'b10};
+    }
+    d_page_table_entry_invalid: coverpoint ins.current.pte_d[0] {
+        // auto fill valid bit 0/1
+    }
+    lrscops: coverpoint ins.current.insn {
+        wildcard bins lr_w = {LR_W};
+        wildcard bins sc_w = {SC_W};
+    }
+    medeleg_walk: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "medeleg", "medeleg") {
+        bins zeros                    = {16'b0000_0000_0000_0000};
+        `ifndef ZCA_SUPPORTED
+            bins instrmisaligned_enabled = {16'b0000_0000_0000_0001};
+        `endif
+        bins instraccessfault_enabled = {16'b0000_0000_0000_0010};
+        bins illegalinstr_enabled     = {16'b0000_0000_0000_0100};
+        bins breakpoint_enabled       = {16'b0000_0000_0000_1000};
+        bins loadmisaligned_enabled   = {16'b0000_0000_0001_0000};
+        bins loadaccessfault_enabled  = {16'b0000_0000_0010_0000};
+        bins storemisaligned_enabled  = {16'b0000_0000_0100_0000};
+        bins storeaccessfault_enabled = {16'b0000_0000_1000_0000};
+        bins ecallu_enabled           = {16'b0000_0001_0000_0000};
+        // Delegating ecall to S mode makes it impossible to escape S mode
+        // bins ecalls_enabled           = {16'b0000_0010_0000_0000};
+        // bit 10 reserved
+        // bit 11 is read only zero
+        bins instrpagefault_enabled   = {16'b0001_0000_0000_0000};
+        bins loadpagefault_enabled    = {16'b0010_0000_0000_0000};
+        // bit 14 reserved
+        bins storepagefault_enabled   = {16'b1000_0000_0000_0000};
+        wildcard bins ones            = {16'b1011_0001_1111_111?};
+    }
+
+    // main coverpoints
+    cp_medeleg_m: cross priv_mode_m, lrscops, d_page_table_entry_invalid, medeleg_walk;
+    cp_medeleg_s: cross priv_mode_s, lrscops, d_page_table_entry_invalid, medeleg_walk;
+    cp_medeleg_u: cross priv_mode_u, lrscops, d_page_table_entry_invalid, medeleg_walk;
+
+    // access fault coverpoints
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        `ifdef UDB_MXLEN_64 // Number of physical address bits is different by XLEN, either 34 or 56
+            d_phys_address_nonexistent: coverpoint ({8'b0, ins.current.phys_adr_d[55:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                // auto fill 1/0 for the physical address being valid
+            }
+        `else
+            d_phys_address_nonexistent: coverpoint ({30'b0, ins.current.phys_adr_d[33:2], 2'b00} == `RVMODEL_ACCESS_FAULT_ADDRESS) {
+                // auto fill 1/0 for the physical address being valid
+            }
+        `endif
+        cp_misaligned_priority_m: cross priv_mode_m, lrscops, d_virt_adr_misaligned, d_page_table_entry_invalid, d_phys_address_nonexistent {
+            `ifdef UDB_MISALIGNED_LDST_EXCEPTION_PRIORITY_HIGH
+                `ifdef UDB_LRSC_MISALIGNED_BEHAVIOR_ALWAYS_RAISE_MISALIGNED_EXCEPTION
+                    // The misaligned exception is raised before translation, so there is no PTE or physical address
+                    ignore_bins misaligned_before_translation = binsof(d_virt_adr_misaligned.misaligned);
+                `endif
+            `endif
+        }
+    `endif
+endgroup
+`endif // EXCLUDE_SM
+`endif // ZALRSC_SUPPORTED
 
 function void sv_sample(int hart, int issue, ins_t ins);
-    Sv_VA_cg.sample(ins);
     Sv_satp_cg.sample(ins);
+    Sv_VA_cg.sample(ins);
     Sv_sfence_cg.sample(ins);
     Sv_vm_permissions_cg.sample(ins);
     Sv_res_global_pte_cg.sample(ins);
     Sv_add_feature_cg.sample(ins);
+`ifndef EXCLUDE_SM
+    Sv_Sm_satp_cg.sample(ins);
+    Sv_Sm_mstatus_mprv_cg.sample(ins);
+`endif // EXCLUDE_SM
+`ifdef SV_ZICBO_ANY
+    Sv_Zicbo_cg.sample(ins);
+`endif // SV_ZICBO_ANY
+    Sv_Exceptions_cg.sample(ins);
+`ifndef EXCLUDE_SM
+    Sv_ExceptionsSm_cg.sample(ins);
+`endif // EXCLUDE_SM
+`ifdef ZAAMO_SUPPORTED
+    Sv_ExceptionsZaamo_cg.sample(ins);
+    `ifndef EXCLUDE_SM
+        Sv_ExceptionsZaamoSm_cg.sample(ins);
+    `endif // EXCLUDE_SM
+`endif // ZAAMO_SUPPORTED
+`ifdef ZALRSC_SUPPORTED
+    Sv_ExceptionsZalrsc_cg.sample(ins);
+    `ifndef EXCLUDE_SM
+        Sv_ExceptionsZalrscSm_cg.sample(ins);
+    `endif // EXCLUDE_SM
+`endif // ZALRSC_SUPPORTED
 endfunction

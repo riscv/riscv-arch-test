@@ -1,8 +1,9 @@
 
 === Sv* Virtual Memory
 
-==== Sv
+==== Sv Virtual Memory
 
+The Sv suite has one covergroup and test plan per group: the base `Sv` group, then `Sm`, `Zicbo` and the `Exceptions` groups.
 The UDB configuration file determines whether to run tests for Sv32, or for Sv39 and possibly Sv48 and Sv57.
 
 Coverpoints that need M-mode state (`mstatus.MPRV`, `mstatus.TVM`, `mstatus.SBE`, or an M-mode CSR access)
@@ -11,22 +12,53 @@ The PMP suites (SvPMP, SvPMPZicbo, SvaduPMP) boot to M-mode because they program
 
 include::{testplansdir}/priv/Sv.adoc[]
 
-include::norm/Sv_norm_rules.adoc[]
-
 *UDB Parameters:*
 
 * REPORT_VA_IN_{MTVAL/STVAL}ON_{INSTRUCTION/LOAD/STORE_AMO}PAGE_FAULT affects result in {MTVAL,STVAL} during page-fault exceptions, such as coverpoints TODO
 * TODO other coverpoints at least SATP_MODE_BARE, TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY
 
-==== SvSm Virtual Memory with M-mode State
+===== Sv_Sm Virtual Memory with M-mode State
 
-Covers `mstatus.MPRV` accesses, `mstatus.TVM` trapping of `satp` and `SFENCE.VMA`, `mstatus.SBE` for implicit
+The `Sm` group runs only on configurations with `Sm`, so it is not part of a certificate without `Sm`, such as RVA23.
+It covers `mstatus.MPRV` accesses, `mstatus.TVM` trapping of `satp` and `SFENCE.VMA`, `mstatus.SBE` for implicit
 page-table accesses, and M-mode access to `satp`. The `mstatus.SBE` tests are generated but not run until a
 big-endian configuration is available.
 
-include::{testplansdir}/priv/SvSm.adoc[]
+include::{testplansdir}/priv/Sv_Sm.adoc[]
 
-include::norm/SvSm_norm_rules.adoc[]
+===== Sv_Zicbo VirtMem + CBOM/CBOZ
+
+include::{testplansdir}/priv/Sv_Zicbo.adoc[]
+
+===== Sv_Exceptions Virtual Memory Exceptions
+
+include::{testplansdir}/priv/Sv_Exceptions.adoc[]
+
+===== Sv_ExceptionsSm Virtual Memory Exceptions with M-mode State
+
+include::{testplansdir}/priv/Sv_ExceptionsSm.adoc[]
+
+===== Sv_ExceptionsZalrsc Virtual Memory LR/SC Exceptions
+
+include::{testplansdir}/priv/Sv_ExceptionsZalrsc.adoc[]
+
+===== Sv_ExceptionsZalrscSm Virtual Memory LR/SC Exceptions with M-mode State
+
+include::{testplansdir}/priv/Sv_ExceptionsZalrscSm.adoc[]
+
+===== Sv_ExceptionsZaamo Virtual Memory AMO Exceptions
+
+include::{testplansdir}/priv/Sv_ExceptionsZaamo.adoc[]
+
+===== Sv_ExceptionsZaamoSm Virtual Memory AMO Exceptions with M-mode State
+
+include::{testplansdir}/priv/Sv_ExceptionsZaamoSm.adoc[]
+
+===== Sv Normative Rules
+
+The rules apply to all Sv groups.
+
+include::norm/Sv_norm_rules.adoc[]
 
 ==== Svbare Virtual Memory Off
 
@@ -49,13 +81,6 @@ include::norm/Svbare_norm_rules.adoc[]
 include::{testplansdir}/priv/SvPMP.adoc[]
 
 include::norm/SvPMP_norm_rules.adoc[]
-
-==== SvZicbo VirtMem + CBOM/CBOZ
-
-include::{testplansdir}/priv/SvZicbo.adoc[]
-
-include::norm/SvZicbo_norm_rules.adoc[]
-
 
 ==== SvPMPZicbo VirtMem + PMP + CBOM/CBOZ
 

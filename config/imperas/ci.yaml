@@ -53,15 +53,15 @@
 # - Zama16b is not declared. The model has no misaligned atomicity granule: Zam=T performs every
 #   misaligned AMO, including SSAMOSWAP (riscv-isa-manual#3426), so the configs use Zam=F, where
 #   misaligned AMOs, SSAMOSWAP and LR/SC raise store/AMO access faults.
-# - Ssnpm, Ssnpm_Sm, SmnpmS, SmnpmSSm (stock only): Imperas applies pointer masking when MXR is set:
+# - Ssnpm, Ssnpm_Sm, Smnpm_S, Smnpm_SSm (stock only): Imperas applies pointer masking when MXR is set:
 #   https://solvnetplus.synopsys.com/s/case/500WQ000025qNCkYAM/pointer-masking-should-be-disabled-when-mxr1
-#   (fixed in Imperas-HMC101126-eng-build). Smmpm, SmnpmU and SmnpmUSm pass on both. The xtval mismatches on
+#   (fixed in Imperas-HMC101126-eng-build). Smmpm, Smnpm_U and Smnpm_USm pass on both. The xtval mismatches on
 #   faulting addresses at or above 2^PHYS_ADDR_WIDTH were a Sail bug (https://github.com/riscv/sail-riscv/issues/1962),
 #   fixed in Sail 0.16.
 # - SsstrictV passes on stock Y-2026.09 and is no longer excluded.
 #
 ci_enabled: false
 # Stock ImperasDV Y-2026.09:
-# exclude_extensions: "Ssstrict_Sm,Ssstrict_S,Ssstrict_U,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,Svnapot,Svadu,Ssnpm,Ssnpm_Sm,SmnpmS,SmnpmSSm,Zicfilp_Sm,Zicfilp_S"
+# exclude_extensions: "Ssstrict_Sm,Ssstrict_S,Ssstrict_U,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,Svnapot,Svadu,Ssnpm,Ssnpm_Sm,Smnpm_S,Smnpm_SSm,Zicfilp_Sm,Zicfilp_S"
 # Imperas-HMC101126-eng-build:
 exclude_extensions: "Zicfilp_Sm,Zicfilp_S"

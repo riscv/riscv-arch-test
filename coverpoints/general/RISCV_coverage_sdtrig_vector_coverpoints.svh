@@ -61,11 +61,6 @@ vec_tdata2: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2",
     wildcard bins base_plus_8 = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") == ins.current.rs1_val + 8);
     bins zero                 = {'0};
 }
-vec_tdata2_base_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") {
-    type_option.weight = 0;
-    wildcard bins base = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") == ins.current.rs1_val);
-    bins zero          = {'0};
-}
 vec_tdata2_plus_8: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") {
     type_option.weight = 0;
     wildcard bins base_plus_8 = {'x} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata2", "tdata2") == ins.current.rs1_val + 8);

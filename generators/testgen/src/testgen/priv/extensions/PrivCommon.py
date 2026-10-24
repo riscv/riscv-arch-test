@@ -1,18 +1,19 @@
 ##################################
 # priv/extensions/PrivCommon.py
 #
-# Shared test generation for the Sm, S, and U privileged suites.
+# Shared test generation for the Sm, S, U and H privileged suites.
 # David_Harris@hmc.edu 31 August 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Shared test generation for the privileged mode suites (Sm, S, U)."""
+"""Shared test generation for the privileged mode suites (Sm, S, U, H)."""
 
 from collections.abc import Callable
 
 from testgen.asm.csr import gen_csr_read_sigupd, gen_csr_read_sigupd_in_mode, gen_csr_write_sigupd
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.asm.tsbi import tsbi_call, tsbi_call_or_direct
+from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 
@@ -317,6 +318,129 @@ def xtval_value_tests(test_data: TestData, csr_name: str, covergroup: str) -> li
     return lines
 
 
+H_GATE = "defined(H_SUPPORTED)"
+S1P12_GATE = "defined(S1P12P0_OR_LATER_SUPPORTED)"
+
+# Codes written to each cause CSR, as {kind: {code: #if condition, or None if always written}}.
+# mcause need only hold the codes of supported causes (mcause_exccode_wlrl); exception codes 14 and 17 are reserved.
+MCAUSE_CODES: dict[str, dict[int, str | None]] = {
+    "exception": {
+        **dict.fromkeys((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 15)),
+        10: H_GATE,  # ecall from VS-mode
+        16: "defined(SSDBLTRP_SUPPORTED)",  # double trap
+        18: "defined(ZICFILP_SUPPORTED) || defined(ZICFISS_SUPPORTED)",  # software check
+        19: "defined(SM1P13P0_OR_LATER_SUPPORTED)",  # hardware error
+        **dict.fromkeys((20, 21, 22, 23), H_GATE),  # guest-page faults and virtual instruction
+    },
+    "interrupt": {
+        **dict.fromkeys((1, 3, 5, 7, 9, 11)),
+        **dict.fromkeys((2, 6, 10, 12), H_GATE),  # VS-level and supervisor guest external interrupts
+        13: "defined(SSCOFPMF_SUPPORTED)",  # local counter overflow
+    },
+}
+# scause, and vscause like it, must hold every code 0-31 from Ss1p12 (scause_exception_code_sz).  Before that,
+# they need only hold the codes of the causes that every S-mode hart supports.
+SCAUSE_CODES: dict[str, dict[int, str | None]] = {
+    "exception": {
+        code: None if code in (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 15) else S1P12_GATE for code in range(32)
+    },
+    "interrupt": {code: None if code in (1, 3, 5, 7, 9, 11) else S1P12_GATE for code in range(32)},
+}
+
+
+def xcause_write_tests(test_data: TestData, csr: str, covergroup: str) -> list[str]:
+    """Write each exception and interrupt code that csr (mcause, scause or vscause) must hold.
+
+    The codes are WLRL, so only legal codes are written (MCAUSE_CODES, SCAUSE_CODES).
+    """
+    codes = MCAUSE_CODES if csr == "mcause" else SCAUSE_CODES
+    save_reg, check_reg, temp_reg = test_data.int_regs.get_registers(3)
+    lines = [f"csrr x{save_reg}, {csr}     # save CSR before testing it"]
+    for kind, interrupt in (("exception", 0), ("interrupt", 1)):
+        coverpoint = f"cp_{csr}_write_{kind}"
+        lines.append(comment_banner(coverpoint, f"with interrupt = {interrupt}: test writing each {kind} cause"))
+        if interrupt:
+            lines.append(f"SET_MSB(x{temp_reg})  # set x{temp_reg} to have msb = 1 for interrupt tests")
+        for code, gate in sorted(codes[kind].items()):
+            body = ["", f"# Testcase: set {csr} to {kind} cause {code}", f"LI(x{check_reg}, {code})"]
+            if interrupt:
+                body.append(f"or x{check_reg}, x{check_reg}, x{temp_reg}          # set interrupt bit")
+            body.extend(
+                [
+                    test_data.add_testcase(f"b_{code}", coverpoint, covergroup),
+                    gen_csr_write_sigupd(check_reg, csr, test_data),
+                ]
+            )
+            lines.extend(gated(body, gate))
+    lines.append(f"\ncsrw {csr}, x{save_reg}       # restore CSR")
+    test_data.int_regs.return_registers([save_reg, check_reg, temp_reg])
+    return lines
+
+
+def xstatus_sd_tests(test_data: TestData, csr: str, covergroup: str, coverpoint: str) -> list[str]:
+    """Write csr (mstatus, or sstatus in S-mode or VS-mode) with each SD, FS, XS and VS.
+
+    SD is read-only, so writing it has no effect; it summarizes FS, XS and VS.
+    """
+    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5)
+    lines = [
+        comment_banner(
+            coverpoint,
+            f"Write all combinations of {csr}.SD = {{0/1}}, FS/XS/VS = {{00, 01, 10, 11}}\n"
+            f"{csr}.SD is read-only, so nothing should happen",
+        ),
+        "",
+        "# Setup",
+        f"SET_MSB(x{reg1}) # put a 1 in the msb of x{reg1} (XLEN-1)",
+        f"csrr x{save_reg}, {csr}        # read and save {csr}",
+        f"{INDENT}# set up x{reg3} with {csr} except SD, FS, XS, VS cleared",
+        f"not x{reg2}, x{reg1}              # x{reg2} has all but msb set",
+        f"and x{reg3}, x{save_reg}, x{reg2} # clear SD bit",
+        f"LI(x{reg2}, 0x1E600)              # x{reg2} has all FS, XS, VS bits set (bits [14:13], [16:15], [10:9], respectively)",
+        f"not x{reg2}, x{reg2}              # x{reg2} has all but FS, XS, VS bits set",
+        f"and x{reg3}, x{reg3}, x{reg2}     # clear FS, XS, VS bits",
+    ]
+    for sd in (0, 1):
+        for fs in range(4):
+            for xs in range(4):
+                for vs in range(4):
+                    fields = fs << 13 | xs << 15 | vs << 9
+                    lines.extend(
+                        [
+                            "",
+                            f"# Testcase: set {csr} to sd = {sd}, fs = {fs:02b}, xs = {xs:02b}, vs = {vs:02b}",
+                            f"LI(x{check_reg}, 0x{fields:08x})  # fs = {fs:02b} xs = {xs:02b} vs = {vs:02b}",
+                        ]
+                    )
+                    if sd == 1:
+                        lines.append(f"or x{check_reg}, x{check_reg}, x{reg1}      # set SD bit")
+                    lines.extend(
+                        [
+                            f"or x{check_reg}, x{check_reg}, x{reg3}   # value to write to {csr} with SD/FS/XS/VS bits set/clear",
+                            test_data.add_testcase(
+                                f"sd_{sd}_fs_{fs:02b}_xs_{xs:02b}_vs_{vs:02b}", coverpoint, covergroup
+                            ),
+                            gen_csr_write_sigupd(check_reg, csr, test_data),
+                        ]
+                    )
+    lines.append(f"\ncsrw {csr}, x{save_reg}    # restore CSR")
+    test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
+    return lines
+
+
+def _csr_chunks(csr_ranges: list[range], csrs_per_chunk: int) -> list[list[int]]:
+    """Split the CSR numbers in csr_ranges into lists of csrs_per_chunk."""
+    csrs = [csr for csr_range in csr_ranges for csr in csr_range]
+    return [csrs[i : i + csrs_per_chunk] for i in range(0, len(csrs), csrs_per_chunk)]
+
+
+def _in_mode(lines: list[str], mode: str | None) -> list[str]:
+    """Run lines in mode ("VS" or "VU"), entered from HS-mode, or in the current mode if mode is None."""
+    if mode is None:
+        return lines
+    return [f"RVTEST_TSBI_GOTO_{mode}MODE", *lines, "RVTEST_TSBI_GOTO_SMODE"]
+
+
 def csr_insufficient_priv_tests(
     test_data: TestData,
     test_chunks: list[TestChunk],
@@ -324,15 +448,20 @@ def csr_insufficient_priv_tests(
     csr_ranges: list[range],
     chunk_name: str,
     description: str,
+    mode: str | None = None,
+    csrs_per_chunk: int = 1,
 ) -> None:
-    """Attempt to read each higher-privilege CSR; every read must raise illegal instruction."""
+    """Attempt to read each higher-privilege CSR; every read must raise illegal instruction.
+
+    Each chunk of csrs_per_chunk CSRs enters mode ("VS" or "VU") from HS-mode first, if mode is given.
+    """
     coverpoint = "cp_csr_insufficient_priv"
     tc = test_data.new_test_chunk(test_chunks, chunk_name)
     tc.section_header = comment_banner(coverpoint, description)
-    for csr_range in csr_ranges:
-        for csr in csr_range:
-            tc = test_data.new_test_chunk(test_chunks, chunk_name)
-            temp_reg = test_data.int_regs.get_register()
+    for csrs in _csr_chunks(csr_ranges, csrs_per_chunk):
+        tc = test_data.new_test_chunk(test_chunks, chunk_name)
+        temp_reg = test_data.int_regs.get_register()
+        for csr in csrs:
             tc.code.extend(
                 [
                     test_data.add_testcase(f"{csr:03x}", coverpoint, covergroup),
@@ -342,7 +471,8 @@ def csr_insufficient_priv_tests(
                     "",
                 ]
             )
-            test_data.int_regs.return_register(temp_reg)
+        tc.code[:] = _in_mode(tc.code, mode)
+        test_data.int_regs.return_register(temp_reg)
 
 
 def csr_ro_write_tests(
@@ -351,15 +481,20 @@ def csr_ro_write_tests(
     covergroup: str,
     csr_ranges: list[range],
     chunk_name: str,
+    mode: str | None = None,
+    csrs_per_chunk: int = 1,
 ) -> None:
-    """Attempt to write each read-only CSR; every write must raise illegal instruction."""
+    """Attempt to write each read-only CSR; every write must raise illegal instruction.
+
+    Each chunk of csrs_per_chunk CSRs enters mode ("VS" or "VU") from HS-mode first, if mode is given.
+    """
     coverpoint = "cp_csr_ro"
     tc = test_data.new_test_chunk(test_chunks, chunk_name)
     tc.section_header = comment_banner(coverpoint, "Attempt to write read-only CSRs.  Should throw illegal instruction")
-    for csr_range in csr_ranges:
-        for csr in csr_range:
-            tc = test_data.new_test_chunk(test_chunks, chunk_name)
-            temp_reg, read_reg = test_data.int_regs.get_registers(2)
+    for csrs in _csr_chunks(csr_ranges, csrs_per_chunk):
+        tc = test_data.new_test_chunk(test_chunks, chunk_name)
+        temp_reg, read_reg = test_data.int_regs.get_registers(2)
+        for csr in csrs:
             tc.code.extend(
                 [
                     test_data.add_testcase(f"{csr:03x}", coverpoint, covergroup),
@@ -370,7 +505,8 @@ def csr_ro_write_tests(
                     "",
                 ]
             )
-            test_data.int_regs.return_registers([temp_reg, read_reg])
+        tc.code[:] = _in_mode(tc.code, mode)
+        test_data.int_regs.return_registers([temp_reg, read_reg])
 
 
 def priv_inst_trap_tests(

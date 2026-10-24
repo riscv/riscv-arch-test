@@ -1057,6 +1057,10 @@ normative_rule_definitions:
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_execute_data",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_load_store_data",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_size_data",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute_other",
       ]
 
   # The trigger will attempt to match against an access of any size. The behavior is
@@ -1076,6 +1080,8 @@ normative_rule_definitions:
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_execute_size",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_execute_adr_size",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_size_data",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
       ]
 
   # The trigger will only match against 16-bit memory accesses or execution of
@@ -1087,6 +1093,10 @@ normative_rule_definitions:
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_load_store_size",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_execute_adr_size",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_size_data",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute_other",
         "A select = 0 execute trigger with size = 2 on a 32-bit instruction is not tested: Sail 0.16 fires it (sail-riscv#2033, ACT #2921)",
       ]
 
@@ -1099,6 +1109,9 @@ normative_rule_definitions:
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_load_store_size",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_execute_adr_size",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_size_data",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
         "A select = 0 execute trigger with size = 3 on a 16-bit instruction is not tested: Sail 0.16 fires it (sail-riscv#2033, ACT #2921)",
       ]
 
@@ -1120,6 +1133,8 @@ normative_rule_definitions:
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_load_store_size",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_execute_adr_size",
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_size_data",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
         "On RV32 size = 5 is never written, so 64-bit fld/fsd and vector accesses are not tested there: Sail 0.16 disables a trigger whose size exceeds XLEN (sail-riscv#2034, ACT #2921)",
       ]
 
@@ -1174,12 +1189,24 @@ normative_rule_definitions:
 
   # Matches when any compare value equals tdata2.
   - name: Sdtrig_mcontrol6_match_equal
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # Matches when the top M bits of any compare value match the top M bits of tdata2.
   # M is XLEN-1 minus the index of the least-significant bit containing 0 in tdata2.
   - name: Sdtrig_mcontrol6_match_napot
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # if bits maskmax6-1:0 are written with all ones then bit maskmax6-1 will be set
   # to 0 while the values of bits maskmax6-2:0 are UNSPECIFIED.
@@ -1193,39 +1220,87 @@ normative_rule_definitions:
 
   # Matches when any compare value is greater than (unsigned) or equal to tdata2.
   - name: Sdtrig_mcontrol6_match_ge
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # Matches when any compare value is less than (unsigned) tdata2.
   - name: Sdtrig_mcontrol6_match_lt
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # Matches when latexmath:[$\fracXLEN2-{1:0}] of any compare value equals
   # latexmath:[$\fracXLEN2-{1:0}] of tdata2 after latexmath:[$\fracXLEN2-{1:0}] of
   # the compare value is ANDed with XLEN-1:\fracXLEN2 of tdata2.
   - name: Sdtrig_mcontrol6_match_mask_low
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_mask"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_mask",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # Matches when XLEN-1:\fracXLEN2 of any compare value equals
   # latexmath:[$\fracXLEN2-{1:0}] of tdata2 after XLEN-1:\fracXLEN2 of the compare
   # value is ANDed with XLEN-1:\fracXLEN2 of tdata2.
   - name: Sdtrig_mcontrol6_match_mask_high
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_mask"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_mask",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # Matches when match =0 would not match.
   - name: Sdtrig_mcontrol6_match_not_equal
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # Matches when match =1 would not match.
   - name: Sdtrig_mcontrol6_match_not_napot
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_napot",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # Matches when match =4 would not match.
   - name: Sdtrig_mcontrol6_match_not_mask_low
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_mask"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_mask",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # Matches when match =5 would not match.
   - name: Sdtrig_mcontrol6_match_not_mask_high
-    coverpoint: ["SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_mask"]
+    coverpoint:
+      [
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_mask",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+      ]
 
   # Other values are reserved for future use.
   - name: Sdtrig_mcontrol6_match_rsv
@@ -1239,7 +1314,10 @@ normative_rule_definitions:
     coverpoint:
       [
         "SdtrigSm_mcontrol6_cg/cp_mcontrol6_size_data",
-        "The lower-N-bit compare of tdata2 is not tested (tdata2 bits above N are never set): Sail 0.16 compares the zero-extended access data with all of tdata2 (sail-riscv#2038, ACT #2921). Compares at a narrower current-mode XLEN need a writable UXL/SXL; not tested",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_store",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_load",
+        "SdtrigSm_mcontrol6_cg/cp_mcontrol6_match_size_execute",
+        "Compares at a narrower current-mode XLEN need a writable UXL/SXL; not tested",
       ]
 
   # When set, enable this trigger in M-mode.

@@ -88,10 +88,21 @@ include::norm/Zpm_norm_rules.adoc[]
 
 ==== Smnpm Pointer Masking
 
-include::{testplansdir}/priv/SmnpmS.adoc[]
-include::{testplansdir}/priv/SmnpmSSm.adoc[]
-include::{testplansdir}/priv/SmnpmU.adoc[]
-include::{testplansdir}/priv/SmnpmUSm.adoc[]
+===== Smnpm_S
+
+include::{testplansdir}/priv/Smnpm_S.adoc[]
+
+===== Smnpm_SSm
+
+include::{testplansdir}/priv/Smnpm_SSm.adoc[]
+
+===== Smnpm_U
+
+include::{testplansdir}/priv/Smnpm_U.adoc[]
+
+===== Smnpm_USm
+
+include::{testplansdir}/priv/Smnpm_USm.adoc[]
 
 See <<t-Ssnpm-normative-rules>> for normative rules.
 
@@ -170,7 +181,7 @@ Note that these tests can have race conditions of timeouts, timer interrupts, an
 
 ==== Zama16b Misaligned Atomics
 
-Misaligned atomics are supported by the Misaligned Atomicity Granularity.  They are also exercised via ExceptionsZaamo.
+Misaligned atomics are supported by the Misaligned Atomicity Granularity.  They are also exercised via Exceptions_Zaamo.
 
 include::{testplansdir}/priv/Zama16b.adoc[]
 

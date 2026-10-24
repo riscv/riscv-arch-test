@@ -21,7 +21,6 @@ from testgen.priv.extensions.HCommon import (
     H_HS_CSRS,
     H_M_CSRS,
     H_VS_CSRS,
-    gated,
     guest_page_fault_tests,
     hcsr_tests,
     hlv_tests,
@@ -1638,7 +1637,12 @@ def _h_replica_tests(test_data: TestData) -> list[str]:
     ]
     test_data.int_regs.return_register(val_reg)
     # Boot delegates nothing
-    return [*lines, *replica_rw_tests(test_data, _H_CSR_CG, ((0, 1, "{csr}"),)), "csrw mideleg, zero", "csrw hideleg, zero"]
+    return [
+        *lines,
+        *replica_rw_tests(test_data, _H_CSR_CG, ((0, 1, "{csr}"),)),
+        "csrw mideleg, zero",
+        "csrw hideleg, zero",
+    ]
 
 
 def _h_mtvala_tests(test_data: TestData) -> list[str]:

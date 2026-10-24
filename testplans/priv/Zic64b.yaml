@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=testplan.schema.json
-suite: Zic64bZicboz
+suite: Zic64b
 source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=1677990180#gid=1677990180
 coverpoints:
   - name: cp_zic64b

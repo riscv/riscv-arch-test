@@ -470,6 +470,28 @@
         `define SDTRIG_EXEC_ADR_SIZE
     `endif
 `endif
+// cp_mcontrol6_match_size_*: select = 1 triggers on stores, loads (any data size) and execution (sizes 2 and 3)
+`ifdef UDB_SDTRIG_MCONTROL6_SELECT_WRITABLE
+    `ifdef SDTRIG_SIZE_DATA
+        `ifdef UDB_SDTRIG_MCONTROL6_STORE_WRITABLE
+            `define SDTRIG_MATCH_SIZE_STORE
+        `endif
+        `ifdef UDB_SDTRIG_MCONTROL6_LOAD_WRITABLE
+            `define SDTRIG_MATCH_SIZE_LOAD
+        `endif
+    `endif
+    `ifdef UDB_SDTRIG_MCONTROL6_EXECUTE_WRITABLE
+        `ifdef UDB_SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES_3
+            `define SDTRIG_MATCH_SIZE_EXEC
+        `endif
+        `ifdef ZCA_SUPPORTED
+            `ifdef UDB_SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES_2
+                `define SDTRIG_MATCH_SIZE_EXEC
+                `define SDTRIG_MATCH_SIZE_EXEC16
+            `endif
+        `endif
+    `endif
+`endif
 // textra context matches with value bits to compare (the generator's _MCONTEXT_MATCH_GATE, _SCONTEXT_MATCH_GATE)
 `ifdef UDB_SDTRIG_TEXTRA_MHSELECT_MCONTEXT_MATCH
     `ifndef UDB_SDTRIG_TEXTRA_MHVALUE_LEN_0

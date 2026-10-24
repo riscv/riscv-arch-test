@@ -222,21 +222,9 @@
         `cover_info("//      Smmpm - Enabled");
         `include "Smmpm_coverage_init.svh"
     `endif
-    `ifdef COVER_SMNPMS
-        `cover_info("//      SmnpmS - Enabled");
-        `include "SmnpmS_coverage_init.svh"
-    `endif
-    `ifdef COVER_SMNPMSSM
-        `cover_info("//      SmnpmSSm - Enabled");
-        `include "SmnpmSSm_coverage_init.svh"
-    `endif
-    `ifdef COVER_SMNPMU
-        `cover_info("//      SmnpmU - Enabled");
-        `include "SmnpmU_coverage_init.svh"
-    `endif
-    `ifdef COVER_SMNPMUSM
-        `cover_info("//      SmnpmUSm - Enabled");
-        `include "SmnpmUSm_coverage_init.svh"
+    `ifdef COVER_SMNPM
+        `cover_info("//      Smnpm - Enabled");
+        `include "Smnpm_coverage_init.svh"
     `endif
     `ifdef COVER_SMSTATEEN
         `cover_info("//      Smstateen - Enabled");
@@ -490,9 +478,9 @@
         `cover_info("//      Zibi - Enabled");
         `include "Zibi_coverage_init.svh"
     `endif
-    `ifdef COVER_ZIC64BZICBOZ
-        `cover_info("//      Zic64bZicboz - Enabled");
-        `include "Zic64bZicboz_coverage_init.svh"
+    `ifdef COVER_ZIC64B
+        `cover_info("//      Zic64b - Enabled");
+        `include "Zic64b_coverage_init.svh"
     `endif
     `ifdef COVER_ZICBOM
         `cover_info("//      Zicbom - Enabled");

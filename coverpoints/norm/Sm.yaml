@@ -344,12 +344,12 @@ normative_rule_definitions:
   # store memory addresses are translated and protected, and endianness is applied,
   # as though the current privilege mode were set to MPP.
   - name: mstatus_mprv_ldst_op
-    # Representative coverpoints; also PMPS_cg/cp_mprv_sw, PMPU_cg/cp_mprv_lw, Sv_Sm SUM+MPRV
+    # Representative coverpoints; also PMP_S_cg/cp_mprv_sw, PMP_U_cg/cp_mprv_lw, Sv_Sm SUM+MPRV
     coverpoint:
       [
         "Sv_Sm_mstatus_mprv_cg/{cp_mprv_load, cp_mprv_store}",
-        "PMPS_cg/cp_mprv_lw",
-        "PMPU_cg/cp_mprv_sw",
+        "PMP_S_cg/cp_mprv_lw",
+        "PMP_U_cg/cp_mprv_sw",
       ]
 
   # Instruction address-translation and protection are unaffected by the setting of
@@ -358,8 +358,8 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sv_Sm_mstatus_mprv_cg/{cp_mprv_ins, cp_mprv_upage_smode_sumset_exec}",
-        "PMPS_cg/cp_mprv_jalr",
-        "PMPU_cg/cp_mprv_jalr",
+        "PMP_S_cg/cp_mprv_jalr",
+        "PMP_U_cg/cp_mprv_jalr",
       ]
 
   # MPRV is read-only 0 if U-mode is not supported.

@@ -1443,7 +1443,7 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
         bins ecall  = {ECALL}  iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg")[8]);
         bins ebreak = {EBREAK} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hedeleg", "deleg")[3]);
     }
-    vstvec_not_stvec: coverpoint (ins.prev.csr[CSR_VSTVEC] != ins.prev.csr[CSR_STVEC]) {
+    vstvec_not_stvec: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstvec", "vstvec") != get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "stvec", "stvec")) {
         bins different = {1};
     }
     cp_vstvec: cross priv_mode_vs_vu, vstvec_trap, vstvec_not_stvec {

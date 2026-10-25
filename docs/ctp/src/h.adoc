@@ -124,9 +124,9 @@ include::{testplansdir}/priv/ZicfissH.adoc[]
 
 include::{testplansdir}/priv/SsdbltrpH.adoc[]
 
-==== SsnpmH Hypervisor Pointer Masking
+==== Hypervisor Pointer Masking
 
-include::{testplansdir}/priv/SsnpmH.adoc[]
+The hypervisor pointer masking tests are the <<t-Ssnpm_H-coverpoints,Ssnpm_H>> group of the Ssnpm suite.
 
 ==== SmnpmH Hypervisor Pointer Masking
 

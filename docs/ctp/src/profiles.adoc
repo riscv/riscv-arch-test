@@ -178,7 +178,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 8+^|Miscellaneous RV{A/B}23 Extensions
 |Ss1p13|Supervisor 1p13|<<t-Ss1p13-coverpoints>>||||x|x
 |Ssnpm|Pointer Masking|<<t-Ssnpm-coverpoints>>||||x|x
-|SsnpmH|Hypervisor Pointer Masking|<<t-SsnpmH-coverpoints>>|||||
+|Ssnpm_H|Hypervisor Pointer Masking|<<t-Ssnpm_H-coverpoints>>|||||
 |Zacas|Atomic Compare-And-Swap|<<t-Zacas-coverpoints>>||||o|o
 |Zabha|Subword Atomics|<<t-Zabha-coverpoints>>||||o|o
 |Zama16b|Main memory PMA supports misaligned atomics within 16-byte regions|<<t-Zama16b-coverpoints>>|||||x

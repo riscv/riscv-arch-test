@@ -800,8 +800,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.extend(["", "# Write scause with each guaranteed Exception Code 0-31", f"csrr x{save_reg}, scause # save"])
     for code, gate in sorted(SCAUSE_CODES["exception"].items()):
         body = [
-            test_data.add_testcase(f"scause_{code}", coverpoint, covergroup),
             f"LI(x{val_reg}, {code})",
+            test_data.add_testcase(f"scause_{code}", coverpoint, covergroup),
             f"csrw scause, x{val_reg}",
             gen_csr_read_sigupd(check_reg, ("scause", None), test_data),
         ]

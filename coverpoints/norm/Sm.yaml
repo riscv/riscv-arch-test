@@ -1895,7 +1895,12 @@ normative_rule_definitions:
 
   # hfence.vvma and hfence.gvma are valid in M-mode and HS-mode, and order VS-stage and G-stage translation
   - names: [hfence-vvma_hfence-gvma_op, hfence-vvma_mode]
-    coverpoint: ["Sm_H_tvm_cg/cp_hfence"]
+    coverpoint:
+      [
+        "Sm_H_tvm_cg/cp_hfence",
+        "Sv_H_fence_cg/cp_hfence_vvma",
+        "Sv_H_fence_cg/cp_hfence_gvma",
+      ]
 
   # hfence.vvma and hfence.gvma in M-mode and HS-mode, and TVM
   - names:
@@ -1979,4 +1984,23 @@ normative_rule_definitions:
   # hfence.gvma is valid in HS-mode with mstatus.TVM=0 and in M-mode, and orders prior stores before G-stage
   # implicit reads; a nonzero rs1 selects one guest physical address and a nonzero rs2 one VMID
   - names: [hfence-gvma_op]
-    coverpoint: ["Sm_H_tvm_cg/cp_hfence"]
+    coverpoint: ["Sm_H_tvm_cg/cp_hfence", "Sv_H_fence_cg/cp_hfence_gvma"]
+
+  # hfence.gvma ignores rs2 bits above VMIDMAX and unimplemented VMID bits
+  - names: [hfence-gvma_vmid]
+    coverpoint:
+      [
+        "Sv_H_fence_cg/cp_hfence_gvma (rs2 with every VMIDMAX bit set; ignoring bits above VMIDMAX is only a should)",
+      ]
+
+  # hfence.vvma ignores rs2 bits above ASIDMAX and unimplemented ASID bits
+  - names: [hfence-vvma_asid]
+    coverpoint:
+      [
+        "Sv_H_fence_cg/cp_hfence_vvma (rs2 with every ASIDMAX bit set; ignoring bits above ASIDMAX is only a should)",
+      ]
+
+  # hfence.vvma need not order implicit reads under a different hgatp.VMID; a nonzero rs1 selects one guest
+  # virtual address and a nonzero rs2 one ASID
+  - names: [hfence-vvma_limits]
+    coverpoint: ["Sv_H_fence_cg/cp_hfence_vvma"]

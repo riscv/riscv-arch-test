@@ -27,6 +27,7 @@ from testgen.priv.extensions.HCommon import (
     hcsr_tests,
     hlv_tests,
     replica_read,
+    replica_rw_tests,
     replica_write,
     sret_tests,
 )
@@ -124,35 +125,20 @@ TRAP_HANDLER_S_CSRS = ("stvec", "sscratch", "sepc", "scause", "stval")
 
 def _replica_tests(test_data: TestData) -> list[str]:
     """S CSRs and their VS replicas accessed from HS-mode and from VS-mode, and read back in HS-mode."""
-    save_s, save_vs, mask_reg, val_reg = test_data.int_regs.get_registers(4)
+    val_reg = test_data.int_regs.get_register()
     lines = [
         comment_banner(
             "cp_replica (HS-mode)",
             "HS-mode writes different values to an S CSR and its VS replica, reads both, writes new values and\n"
             "reads them back",
-        )
+        ),
+        f"LI(x{val_reg}, MIP_VS_MASK)",
+        f"csrw hideleg, x{val_reg}",
     ]
-    for rep in REPLICAS:
-        mask = [f"LI(x{mask_reg}, {rep.mask:#x})"] if rep.mask else []
-        body = [
-            f"LI(x{val_reg}, MIP_VS_MASK)",
-            f"csrw hideleg, x{val_reg}",
-            f"csrr x{save_s}, {rep.s}",
-            f"csrr x{save_vs}, {rep.vs}",
-            *replica_write(test_data, rep, rep.s, rep.values[0], val_reg),
-            *replica_write(test_data, rep, rep.vs, rep.values[1], val_reg),
-            *mask,
-            *replica_read(test_data, rep, rep.s, mask_reg, f"hs_{rep.s}_init", HS_CG),
-            *replica_read(test_data, rep, rep.vs, mask_reg, f"hs_{rep.vs}_init", HS_CG),
-            *replica_write(test_data, rep, rep.s, rep.values[2], val_reg),
-            *replica_write(test_data, rep, rep.vs, rep.values[3], val_reg),
-            *replica_read(test_data, rep, rep.s, mask_reg, f"hs_{rep.s}", HS_CG),
-            *replica_read(test_data, rep, rep.vs, mask_reg, f"hs_{rep.vs}", HS_CG),
-            f"csrw {rep.s}, x{save_s}",
-            f"csrw {rep.vs}, x{save_vs}",
-            "csrw hideleg, zero",
-        ]
-        lines.extend(gated(body, REPLICA_ATP_GATE) if rep.s == "satp" else body)
+    test_data.int_regs.return_register(val_reg)
+    lines.extend(
+        [*replica_rw_tests(test_data, HS_CG, ((0, 1, "hs_{csr}_init"), (2, 3, "hs_{csr}"))), "csrw hideleg, zero"]
+    )
 
     lines.append(
         comment_banner(
@@ -164,6 +150,7 @@ def _replica_tests(test_data: TestData) -> list[str]:
             "the HS-mode and VS-mode code is not mapped",
         )
     )
+    save_s, save_vs, mask_reg, val_reg = test_data.int_regs.get_registers(4)
     for rep in REPLICAS:
         satp = rep.s == "satp"
         s_checked = rep.s not in TRAP_HANDLER_S_CSRS

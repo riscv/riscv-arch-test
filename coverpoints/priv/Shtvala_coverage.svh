@@ -29,20 +29,20 @@ covergroup Shtvala_cg with function sample(ins_t ins);
         jalr : coverpoint ins.current.insn {
             wildcard bins jalr = {JALR};
         }
-        instr_guest_page_fault : coverpoint ins.current.csr[CSR_SCAUSE] {
+        instr_guest_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
             bins scause = {20};
         }
-        load_guest_page_fault : coverpoint ins.current.csr[CSR_SCAUSE] {
+        load_guest_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
             bins scause = {21};
         }
-        store_guest_page_fault : coverpoint ins.current.csr[CSR_SCAUSE] {
+        store_guest_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
             bins scause = {23};
         }
         // The access whose guest physical address htval holds (>> 2): the final access, whose address has the
         // page offset of the virtual address, or the implicit read of a VS-stage PTE, after which htinst holds a
         // pseudoinstruction.  The test sets htval to a random value before each trap.
         htval_gpa : coverpoint {
-            ins.current.csr[CSR_HTINST] == (`UDB_MXLEN == 64 ? 'h3000 : 'h2000),
+            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") == (`UDB_MXLEN == 64 ? 'h3000 : 'h2000),
             ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") << 2) & 'hFFF) ==
                 ((ins.current.rs1_val + ins.current.imm) & 'hFFF)
         } {
@@ -61,7 +61,7 @@ covergroup Shtvala_cg with function sample(ins_t ins);
         }
         // As htval_gpa, for HLV, HSV, AMOs and LR, whose address is rs1 alone
         htval_gpa_hlsv : coverpoint {
-            ins.current.csr[CSR_HTINST] == (`UDB_MXLEN == 64 ? 'h3000 : 'h2000),
+            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") == (`UDB_MXLEN == 64 ? 'h3000 : 'h2000),
             ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") << 2) & 'hFFF) ==
                 (ins.current.rs1_val & 'hFFF)
         } {

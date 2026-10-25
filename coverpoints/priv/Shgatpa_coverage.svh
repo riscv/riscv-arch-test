@@ -25,20 +25,17 @@ covergroup Shgatpa_cg with function sample(ins_t ins);
     // Bare and SvNNx4 for each SvNN that satp supports, with the other fields zero
     hgatp_mode: coverpoint ins.current.rs1_val {
         bins bare = {0};
-        `ifdef UDB_MXLEN_32
-            `ifdef SV32_SUPPORTED
-                bins sv32x4 = {32'h80000000};
-            `endif
-        `else
-            `ifdef SV39_SUPPORTED
-                bins sv39x4 = {64'h8000000000000000};
-            `endif
-            `ifdef SV48_SUPPORTED
-                bins sv48x4 = {64'h9000000000000000};
-            `endif
-            `ifdef SV57_SUPPORTED
-                bins sv57x4 = {64'hA000000000000000};
-            `endif
+        `ifdef SV32_SUPPORTED
+            bins sv32x4 = {32'h80000000};
+        `endif
+        `ifdef SV39_SUPPORTED
+            bins sv39x4 = {64'h8000000000000000};
+        `endif
+        `ifdef SV48_SUPPORTED
+            bins sv48x4 = {64'h9000000000000000};
+        `endif
+        `ifdef SV57_SUPPORTED
+            bins sv57x4 = {64'hA000000000000000};
         `endif
     }
 

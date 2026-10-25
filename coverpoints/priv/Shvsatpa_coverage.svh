@@ -25,20 +25,17 @@ covergroup Shvsatpa_cg with function sample(ins_t ins);
     // Each MODE that satp supports, with the other fields zero
     vsatp_mode: coverpoint ins.current.rs1_val {
         bins bare = {0};
-        `ifdef UDB_MXLEN_32
-            `ifdef SV32_SUPPORTED
-                bins sv32 = {32'h80000000};
-            `endif
-        `else
-            `ifdef SV39_SUPPORTED
-                bins sv39 = {64'h8000000000000000};
-            `endif
-            `ifdef SV48_SUPPORTED
-                bins sv48 = {64'h9000000000000000};
-            `endif
-            `ifdef SV57_SUPPORTED
-                bins sv57 = {64'hA000000000000000};
-            `endif
+        `ifdef SV32_SUPPORTED
+            bins sv32 = {32'h80000000};
+        `endif
+        `ifdef SV39_SUPPORTED
+            bins sv39 = {64'h8000000000000000};
+        `endif
+        `ifdef SV48_SUPPORTED
+            bins sv48 = {64'h9000000000000000};
+        `endif
+        `ifdef SV57_SUPPORTED
+            bins sv57 = {64'hA000000000000000};
         `endif
     }
 

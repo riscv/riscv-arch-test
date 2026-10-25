@@ -95,13 +95,13 @@ covergroup Shvstvala_cg with function sample(ins_t ins);
     }
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-        instr_access_fault : coverpoint ins.current.csr[CSR_VSCAUSE] {
+        instr_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "code") {
             bins vscause = {1};
         }
-        load_access_fault : coverpoint ins.current.csr[CSR_VSCAUSE] {
+        load_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "code") {
             bins vscause = {5};
         }
-        store_access_fault : coverpoint ins.current.csr[CSR_VSCAUSE] {
+        store_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "code") {
             bins vscause = {7};
         }
         cp_load_access_fault:  cross priv_mode_vs_vu, loadops,  load_access_fault,  vstval_address;
@@ -111,10 +111,10 @@ covergroup Shvstvala_cg with function sample(ins_t ins);
 
     // Misaligned loads and stores trap only when the implementation does not perform them
     `ifndef UDB_MISALIGNED_LDST
-        load_misaligned : coverpoint ins.current.csr[CSR_VSCAUSE] {
+        load_misaligned : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "code") {
             bins vscause = {4};
         }
-        store_misaligned : coverpoint ins.current.csr[CSR_VSCAUSE] {
+        store_misaligned : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "code") {
             bins vscause = {6};
         }
         cp_load_address_misaligned:  cross priv_mode_vs_vu, wide_loadops,  load_misaligned,  vstval_address;
@@ -123,26 +123,26 @@ covergroup Shvstvala_cg with function sample(ins_t ins);
 
     // Misaligned fetches trap only when IALIGN = 32
     `ifndef ZCA_SUPPORTED
-        instr_misaligned : coverpoint ins.current.csr[CSR_VSCAUSE] {
+        instr_misaligned : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "code") {
             bins vscause = {0};
         }
         cp_instr_adr_misaligned_jalr: cross priv_mode_vs_vu, jalr, instr_misaligned, vstval_target;
     `endif
 
-    illegal_instruction : coverpoint ins.current.csr[CSR_VSCAUSE] {
+    illegal_instruction : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "code") {
         bins vscause = {2};
     }
     cp_illegal_instruction: cross priv_mode_vs_vu, illegal, illegal_instruction, vstval_insn;
 
     // VS-stage leaves without R, W or X under two-stage translation
     `ifdef H_TWO_STAGE
-        instr_page_fault : coverpoint ins.current.csr[CSR_VSCAUSE] {
+        instr_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "code") {
             bins vscause = {12};
         }
-        load_page_fault : coverpoint ins.current.csr[CSR_VSCAUSE] {
+        load_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "code") {
             bins vscause = {13};
         }
-        store_page_fault : coverpoint ins.current.csr[CSR_VSCAUSE] {
+        store_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "code") {
             bins vscause = {15};
         }
         cp_load_page_fault:  cross priv_mode_vs_vu, lw,   load_page_fault,  vstval_address;

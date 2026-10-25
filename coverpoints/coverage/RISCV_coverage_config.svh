@@ -146,9 +146,6 @@
 `ifdef SV_COVERAGE
   `include "Sv_coverage.svh"
 `endif
-`ifdef SVH_COVERAGE
-  `include "SvH_coverage.svh"
-`endif
 `ifdef SVADE_COVERAGE
   `include "Svade_coverage.svh"
 `endif

@@ -760,7 +760,7 @@ def _t_svnapot_not_supported(test_data: TestData, test_chunks: list[TestChunk], 
     test_chunks.append(end_sv_test(test_data, regs))
 
 
-_PAGE_PERMS = (
+PAGE_PERMS = (
     (True, True, True, "RWX"),
     (False, False, True, "X-only"),
     (True, False, True, "RX"),
@@ -784,7 +784,7 @@ def _add_page_permission_matrix(
     number = 0
     faults = 0
     for level in sv.levels_desc:
-        for read, write, execute, description in _PAGE_PERMS:
+        for read, write, execute, description in PAGE_PERMS:
             number += 1
             case_faults = fault_counts[description] if isinstance(fault_counts, Mapping) else fault_counts
             faults += case_faults

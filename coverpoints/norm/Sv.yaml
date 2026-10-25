@@ -23,6 +23,7 @@ normative_rule_definitions:
       [
         "Sv_vm_permissions_cg/{cp_upage_smode_sumunset_noread_s, cp_upage_smode_sumunset_noexec_s}",
         "Sv_vm_permissions_cg/{cp_upage_smode_sumset_read_s, cp_upage_smode_sumset_noexec_s}",
+        "Sv_HZicbo_cg/{cp_vs_sum,cp_g_pte}",
       ]
 
   # The satp CSR is an SXLEN-bit read/write register, formatted as shown in for SXLEN=32
@@ -381,7 +382,11 @@ normative_rule_definitions:
   # must have bits 63–39 all equal to bit 38, or else a page-fault exception will occur
   - name: Sv39_va_signext
     # Representative coverpoints; also cp_canonical_{read,write,exec}_u
-    coverpoint: ["Sv_vm_permissions_cg/cp_canonical_{read,write,exec}_s"]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/cp_canonical_{read,write,exec}_s",
+        "Sv_H_twostage_cg/cp_twostage_canonical",
+      ]
 
   # Any level of PTE may be a leaf PTE
   - names: [Sv39_leaf_any_level, Sv39_page_sizes]
@@ -480,7 +485,11 @@ normative_rule_definitions:
   # must have bits 63–48 all equal to bit 47, or else a page-fault exception will occur
   - name: Sv48_va_signext
     # Representative coverpoints; also cp_canonical_{read,write,exec}_u
-    coverpoint: ["Sv_vm_permissions_cg/cp_canonical_{read,write,exec}_s"]
+    coverpoint:
+      [
+        "Sv_vm_permissions_cg/cp_canonical_{read,write,exec}_s",
+        "Sv_H_twostage_cg/cp_twostage_canonical",
+      ]
 
   # Any level of PTE may be a leaf PTE
   - names: [Sv48_leaf_any_level, Sv48_page_sizes]
@@ -550,7 +559,7 @@ normative_rule_definitions:
   # must have bits 63–57 all equal to bit 56, or else a page-fault exception will occur
   # Needs Sv57 bins in canonical_page_{i,d}; the Sv57 canonical tests run but no cross records them.
   - name: Sv57_va_signext
-    coverpoint: [""]
+    coverpoint: ["Sv_H_twostage_cg/cp_twostage_canonical"]
 
   # Any level of PTE may be a leaf PTE
   # Needs Sv57 bins in PageType_{i,d}; the Sv57 superpage tests run but no cross records the leaf level.
@@ -642,7 +651,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sv_Zicbo_cg/{cp_PTE_inv_cbo_s,cp_PTE_inv_cbo_u}",
-        "TODO: guest page fault",
+        "Sv_HZicbo_cg/{cp_vs_gpa,cp_vs_gpa_implicit,cp_g_pte}",
       ]
 
   # If access to the cache block is not permitted, a cache-block management instruction
@@ -652,7 +661,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sv_Zicbo_cg/{cp_PTE_rw_unset_zicbom_s,cp_PTE_rw_unset_zicbom_u}",
-        "TODO: guest page fault",
+        "Sv_HZicbo_cg/{cp_vs_pte,cp_vs_gpa,cp_g_pte}",
       ]
 
   # The permissions required for a cache-block management instruction are defined in the
@@ -663,6 +672,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sv_Zicbo_cg/{cp_PTE_rw_unset_zicbom_s, cp_PTE_rw_unset_zicbom_u, cp_PTE_inv_cbo_s, cp_spage_rwx_cbo_u}",
+        "Sv_HZicbo_cg/{cp_vs_pte,cp_vs_gpa,cp_g_pte}",
       ]
 
   # During address translation, the instruction also checks the accessed bit and may
@@ -671,7 +681,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sv_Zicbo_cg/{cp_Abit_unset_cbo_s,cp_Abit_unset_cbo_u}",
-        "TODO: guest page fault",
+        "Sv_HZicbo_cg/{cp_vs_pte,cp_g_pte}",
       ]
 
   # If access to the cache block is not permitted, a cache-block zero instruction raises
@@ -681,7 +691,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sv_Zicbo_cg/{cp_PTE_w_unset_zicboz_s,cp_PTE_w_unset_zicboz_u}",
-        "TODO: guest page fault",
+        "Sv_HZicbo_cg/{cp_vs_pte,cp_vs_gpa,cp_g_pte}",
       ]
 
   # During address translation, the instruction also checks the accessed and dirty bits
@@ -690,6 +700,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sv_Zicbo_cg/{cp_Abit_unset_cbo_s, cp_Abit_unset_cbo_u, cp_Dbit_unset_zicboz_s, cp_Dbit_unset_zicboz_u}",
+        "Sv_HZicbo_cg/{cp_vs_pte,cp_g_pte}",
       ]
 
   # During address translation, the instruction does not check the accessed and dirty
@@ -707,6 +718,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sv_Zicbo_cg/{cp_PTE_r_set_w_unset_zicbom_s,cp_PTE_r_set_w_unset_zicbom_u}",
+        "Sv_HZicbo_cg/{cp_vs_pte,cp_vs_gpa,cp_g_pte}",
       ]
 
   # PMAs are checked for any access to physical memory, including accesses that have
@@ -715,6 +727,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sv_Zicbo_cg/{cp_leaf_PTE_to_nonexistent_pa_cbo_s,cp_leaf_PTE_to_nonexistent_pa_cbo_u}",
+        "Sv_HZicbo_cg/{cp_vs_gpa,cp_g_pa}",
       ]
 
   # Load/store/AMO address-misaligned exceptions may have either higher or lower
@@ -789,4 +802,349 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sv_ExceptionsZalrsc_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}",
+      ]
+
+  # Two-stage translation in VS-mode and VU-mode, with either stage Bare or both
+  - names:
+      [H_vm_supported, H_vm_twostage, hgatp_mode_bare, hgatp_mode_bare_trans]
+    coverpoint:
+      [
+        "Sv_H_vsstage_cg/cp_vsatp_perm",
+        "Sv_H_gstage_cg/cp_hgatp_perm",
+        "Sv_H_twostage_cg/cp_twostage_perm",
+        "Sv_H_twostage_cg/cp_stage_both_bare",
+        "Sv_HZicbo_cg/{cp_vs_pte,cp_vs_gpa,cp_g_pte}",
+      ]
+
+  # G-stage leaves are checked as for U-mode with the Sv algorithm; the G bit is ignored; any exception is
+  # reported for the original access type
+  - names:
+      [
+        H_vm_gpatrans,
+        H_vm_gpapriv,
+        H_vm_gpa_g,
+        Svrsw60t59b_H_g_stage_reserved_bits,
+      ]
+    coverpoint:
+      [
+        "Sv_H_gstage_cg/cp_hgatp_perm",
+        "Sv_H_twostage_cg/cp_twostage_perm",
+        "Sv_H_twostage_cg/cp_implicit_gpf",
+        "Sv_HZicbo_cg/{cp_vs_sum,cp_g_pte}",
+      ]
+
+  # Guest physical addresses are 2 bits wider than the Sv mode's virtual addresses; the extra bits index the 16 KiB
+  # root table, and higher bits must be zero
+  - name: hgatp_mode_x4
+    coverpoint:
+      [
+        "Sv_H_gstage_cg/cp_hgatp_gpa_width",
+        "Sv_H_twostage_cg/cp_hgatp_sv32x4_gpa",
+        "Sv_H_twostage_cg/cp_twostage_gpa_width",
+      ]
+
+  # Each G-stage mode walks its tables with the Sv algorithm for permissions, every leaf level and A/D bits, and
+  # faults on guest physical address bits above its width, including bits that a VS-stage PPN sets
+  - names: [hgatp_mode_sv39x4, hgatp_mode_sv48x4, hgatp_mode_Sv57x4]
+    coverpoint:
+      [
+        "Sv_H_gstage_cg/cp_hgatp_perm",
+        "Sv_H_gstage_cg/cp_hgatp_adue",
+        "Sv_H_twostage_cg/cp_twostage_perm",
+        "Sv_H_gstage_cg/cp_hgatp_gpa_width",
+        "Sv_H_twostage_cg/cp_twostage_gpa_width",
+      ]
+
+  - name: hgatp_mode_sv32x4
+    coverpoint: ["Sv_H_twostage_cg/cp_hgatp_sv32x4_gpa"]
+
+  # When V=0, a write to vsatp with an unsupported MODE value is either ignored as it is
+  # for satp, or the fields of vsatp are treated as WARL in the normal way.
+  - name: vsatp_mode_unsupported_v0
+    coverpoint: ["Sv_H_csr_cg/cp_vsatp_mode_field"]
+
+  - names: [vsatp_mode_unsupported_v1, vsatp_sz_acc_op]
+    coverpoint: ["Sv_H_csr_cg/cp_satp_mode_field"]
+
+  - names: [hgatp_mode_Sv, hgatp_mode_warl]
+    coverpoint: ["Sv_H_csr_cg/cp_hgatp_mode_field"]
+
+  # Implicit VS-stage page-table accesses use the G-stage; a guest-page fault on one writes a pseudoinstruction
+  - names:
+      [H_vm_gstagetrans, H_trap_xtinst_guestpage, H_trap_xtinst_guestpage_rw]
+    coverpoint:
+      [
+        "Sv_H_twostage_cg/cp_implicit_gpf",
+        "Sv_HSm_trap_cg/cp_guest_page_fault_m",
+        "Sv_HSm_trap_cg/cp_implicit_gpf_m",
+        "Sv_HZicbo_cg/{cp_vs_gpa,cp_vs_gpa_implicit,cp_g_pte}",
+      ]
+
+  # Guest-page faults taken in HS-mode write htval and hstatus.GVA
+  - names: [htval_trapval, mtval2_htval_virtaddr, hstatus_gva_op]
+    coverpoint:
+      [
+        "Sv_H_gstage_cg/cp_hgatp_perm",
+        "Sv_H_twostage_cg/cp_twostage_perm",
+        "Sv_H_twostage_cg/cp_implicit_gpf",
+        "Sv_H_twostage_cg/cp_hgatp_sv32x4_gpa",
+        "Sv_HSm_trap_cg/cp_guest_page_fault_m",
+        "Sv_HSm_trap_cg/cp_implicit_gpf_m",
+        "Sv_HZicbo_cg/{cp_vs_gpa,cp_vs_gpa_implicit,cp_g_pte}",
+      ]
+
+  # Guest-page-fault traps may be delegated from M-mode to HS-mode under the control of
+  # CSR csr:medeleg[], but cannot be delegated to other privilege modes. On a guest-page
+  # fault, CSR csr:mtval[] or csr:stval[] is written with the faulting guest virtual
+  # address as usual, and csr:mtval2[] or csr:htval[] is written either with zero or with
+  # the faulting guest physical address, shifted right by qty:2[bits]. CSR csr:mtinst[] or
+  # csr:htinst[] may also be written with information about the faulting instruction or
+  # other reason for the access, as explained in .
+  - name: H_guest_page_fault
+    coverpoint:
+      [
+        "Sv_H_twostage_cg/cp_hedeleg_guest_page_fault",
+        "Sv_H_gstage_cg/cp_hgatp_perm",
+        "Sv_H_twostage_cg/cp_twostage_perm",
+        "Sv_H_twostage_cg/cp_implicit_gpf",
+        "Sv_HSm_trap_cg/cp_guest_page_fault_m",
+        "Sv_HSm_trap_cg/cp_implicit_gpf_m",
+      ]
+
+  # Representative coverpoints; also Sv_H_twostage_cg/cp_hgatp_sv32x4_gpa
+  # A fetch or a misaligned load or store that straddles a page boundary reports the address of the faulting page
+  - name: H_straddle
+    coverpoint:
+      [
+        "Sv_H_twostage_cg/cp_straddle",
+        "Sv_H_twostage_cg/cp_ldst_straddle",
+        "Sv_HSm_trap_cg/cp_straddle_m",
+        "Sv_HSm_trap_cg/cp_ldst_straddle_m",
+      ]
+
+  # hedeleg can delegate page faults, but not guest-page faults, to VS-mode
+  - names: [hedeleg_op, H_trap_deleg]
+    coverpoint:
+      [
+        "Sv_H_twostage_cg/cp_hedeleg_page_fault",
+        "Sv_H_twostage_cg/cp_hedeleg_guest_page_fault",
+      ]
+
+  # vsstatus.MXR affects only the VS-stage; the HS-level MXR affects both stages
+  - names: [vsstatus_mxr_vm, sstatus_mxr_vm]
+    coverpoint:
+      [
+        "Sv_H_vsstage_cg/cp_vsstatus_mxr",
+        "Sv_H_gstage_cg/cp_hgatp_mxr",
+        "Sv_H_twostage_cg/cp_twostage_mxr",
+      ]
+
+  # vsstatus.SUM in VS-mode
+  - name: vsstatus_sz_acc_op
+    coverpoint: ["Sv_H_vsstage_cg/cp_vsatp_sum"]
+
+  # HLV, HLVX and HSV: hstatus.SPVP selects the privilege, vsstatus.SUM applies and sstatus.SUM does not,
+  # sstatus.MXR affects both stages and vsstatus.MXR the VS-stage, and HLVX needs execute permission
+  - names:
+      [hlsv_priv, hlsv_trans, hlsv_sstatus_mxr, hlsv_vsstatus_mxr, vsatp_v0]
+    coverpoint:
+      [
+        "Sv_H_hlv_cg/cp_hlv_priv",
+        "Sv_H_hlv_cg/cp_hlv_mxr",
+        "Sv_HSm_mprv_cg/cp_vsatp_mprv_effects",
+        "Sv_HSm_mprv_cg/cp_hgatp_mprv_effects",
+        "Sv_HSm_mprv_cg/cp_mprv_sum",
+        "Sv_HSm_mprv_cg/cp_mprv_mxr",
+      ]
+
+  # HLVX reads execute-only pages, and raises a load page fault or load guest-page fault on a readable page that is
+  # not executable in the VS-stage or the G-stage
+  - name: hlsv_u_op
+    coverpoint: ["Sv_H_hlv_cg/cp_hlv_mxr", "Sv_H_hlv_cg/cp_hlvx_perm"]
+
+  # henvcfg.PBMTE gates Svpbmt in the VS-stage, and menvcfg.PBMTE in the G-stage
+  - names: [henvcfg_pbmte_op, Svpbmt_vsatp_stage_override_rule]
+    coverpoint: ["Sv_H_vsstage_cg/cp_vsatp_pbmt"]
+
+  - names: [menvcfg_pbmte_op, Svpbmt_hgatp_stage_override_rule]
+    coverpoint: ["Sv_H_gstage_cg/cp_hgatp_pbmt"]
+
+  # henvcfg.ADUE selects Svadu or Svade for the VS-stage, and menvcfg.ADUE for the G-stage
+  - name: henvcfg_adue_op
+    coverpoint:
+      ["Sv_H_vsstage_cg/cp_vsatp_adue", "Sv_H_twostage_cg/cp_twostage_adue"]
+
+  - name: menvcfg_adue_op
+    coverpoint:
+      ["Sv_H_gstage_cg/cp_hgatp_adue", "Sv_H_twostage_cg/cp_twostage_adue"]
+
+  # henvcfg.ADUE and henvcfg.PBMTE are writable only while menvcfg.ADUE and menvcfg.PBMTE are set
+  - names:
+      [
+        menvcfg_adue_henvcfg_adue_rdonly0,
+        menvcfg_pbmte_henvcfg_pbmte_rdonly0,
+        Svadu_hypervisor_adue_writable,
+      ]
+    coverpoint:
+      ["Sv_H_csr_cg/cp_henvcfg_menvcfg", "Sv_H_vsstage_cg/cp_vsatp_adue"]
+
+  # Svnapot in the G-stage, with the VS-stage Bare and paged
+  - name: Svnapot_hyp_gstage
+    coverpoint:
+      ["Sv_H_gstage_cg/cp_hgatp_napot", "Sv_H_twostage_cg/cp_twostage_napot"]
+
+  # VS-stage A bits must not be set speculatively
+  - name: vs_stage_speculative_a_bit
+    coverpoint:
+      ["Not tested: speculative execution is not architecturally observable"]
+
+  # hstatus.SPVP sets the effective privilege of the explicit accesses of HLV, HLVX and HSV
+  - name: hstatus_spvp_virtls_op
+    coverpoint: ["Sv_H_hlv_cg/cp_hlv_priv"]
+
+  # For Sv32x4, Sv39x4, Sv48x4 and Sv57x4, the root page table is 16 KiB and aligned to 16 KiB
+  - name: hgatp_root_pt_sz_align
+    coverpoint:
+      [
+        "Sv_H_gstage_cg/cp_hgatp_gpa_width",
+        "Sv_H_twostage_cg/cp_hgatp_sv32x4_gpa",
+      ]
+
+  # Writing hgatp does not order page-table updates before later G-stage translations
+  - name: hgatp_op_hfence_gvma
+    coverpoint:
+      [
+        "Not tested: no behavior is required; tests execute hfence.gvma after writing hgatp",
+      ]
+
+  # With V=0, SFENCE.VMA takes an HS-level address and ASID and orders only HS-level address translation
+  - name: sfence_vma_v0
+    coverpoint: ["Sv_sfence_cg/cp_ins (Sv tests on an H hart run with V=0)"]
+
+  # With V=1, SFENCE.VMA takes a guest virtual address and a VS-level ASID and orders VS-stage translation for the
+  # current VMID
+  - name: sfence_vma_v1
+    coverpoint: ["Sv_H_fence_cg/cp_sfence_vma_vs"]
+
+  # PMP applies to the supervisor physical address of a CBO from VS-mode or VU-mode: a cache-block
+  # management instruction needs read or write permission, and cbo.zero needs write permission
+  - names: [H_pmp, pmp_cbm_fault, pmp_store_fault]
+    coverpoint: ["Sv_HZicboSm_cg/cp_pmp"]
+
+  # MPRV with MPV = 1 translates M-mode loads and stores through both stages, where vsstatus.SUM replaces the
+  # HS-level SUM and the HS-level MXR covers both stages
+  - name: mstatus_mprv_hypervisor
+    coverpoint:
+      [
+        "Sv_HSm_mprv_cg/cp_vsatp_mprv_effects",
+        "Sv_HSm_mprv_cg/cp_hgatp_mprv_effects",
+        "Sv_HSm_mprv_cg/cp_mprv_sum",
+        "Sv_HSm_mprv_cg/cp_mprv_mxr",
+      ]
+
+  # MPRV does not affect HLV and HSV
+  - name: mstatus_mprv_hlsv
+    coverpoint: ["Sv_HSm_mprv_cg/cp_hgatp_mprv_effects"]
+
+  # Guest page faults and guest-page faults taken in M-mode write mtval2, mtinst, mstatus.GVA and mstatus.MPV
+  - names:
+      [mtval2_trapval, mtval2_trapval_vstrans, mstatus_gva_op, mstatus_mpv_op]
+    coverpoint:
+      [
+        "Sv_HSm_trap_cg/cp_guest_page_fault_m",
+        "Sv_HSm_trap_cg/cp_implicit_gpf_m",
+      ]
+
+  # For a misaligned access or a variable-length instruction fetch that takes a guest-page fault, a nonzero mtval2
+  # corresponds to the faulting portion of the access that mtval indicates
+  - name: mtval2_trapval_other
+    coverpoint:
+      ["Sv_HSm_trap_cg/cp_straddle_m", "Sv_HSm_trap_cg/cp_ldst_straddle_m"]
+
+  # The Zicbom extension adds the CBIE (Cache Block Invalidate instruction Enable) WARL
+  # field to henvcfg. The CBIE field controls execution of the cache block invalidate
+  # instruction (CBO.INVAL) in privilege modes VS and VU. The encoding 0b10 is reserved.
+  # When the Zicbom extension is not implemented, CBIE is read-only zero.
+  - name: henvcfg_cbie
+    coverpoint:
+      [
+        "Sv_HZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}",
+        "H_hscsr_cg/cp_hcsrwalk_masked",
+        "HSm_mcsr_cg/cp_hcsrwalk_masked",
+      ]
+
+  # When V=1, if the CBO.INVAL instruction is not HS-qualified, it raises an
+  # illegal-instruction exception. If the instruction is HS-qualified and the CBIE field
+  # is set to 0b01 or 0b11, the instruction is enabled for execution; otherwise, it raises
+  # a virtual-instruction exception.
+  - name: cbo-inval_h_mode_veq1_op
+    coverpoint: ["Sv_HZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}"]
+
+  # A insn:cbo.inval[] instruction executes or raises either an illegal-instruction
+  # exception or a virtual-instruction exception based on the state of the
+  # csr:envcfg[cbie] fields:
+  - name: cbo-inval
+    coverpoint: ["Sv_HZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}"]
+
+  # The Zicbom extension adds the CBCFE (Cache Block Clean and Flush instruction Enable)
+  # field to henvcfg. When V=1, if the CBO.CLEAN and CBO.FLUSH instructions are not
+  # HS-qualified, they raise an illegal-instruction exception. If the instructions are
+  # HS-qualified and the CBCFE field is set to 1, the instructions are enabled for
+  # execution; otherwise, if the CBCFE field is set to 0, they raise a virtual-instruction
+  # exception. When the Zicbom extension is not implemented, CBCFE is read-only zero.
+  - name: henvcfg_cbcfe
+    coverpoint:
+      [
+        "Sv_HZicbo_envcfg_cg/{cp_cbcfe_vs,cp_cbcfe_vu}",
+        "H_hscsr_cg/cp_hcsrwalk_masked",
+        "HSm_mcsr_cg/cp_hcsrwalk_masked",
+      ]
+
+  # A insn:cbo.clean[] or insn:cbo.flush[] instruction executes or raises an
+  # illegal-instruction or virtual-instruction exception based on the state of the
+  # csr:envcfg[cbcfe] bits:
+  - name: cbo-clean_cbo-flush
+    coverpoint: ["Sv_HZicbo_envcfg_cg/{cp_cbcfe_vs,cp_cbcfe_vu}"]
+
+  # The Zicboz extension adds the CBZE (Cache Block Zero instruction enable) field to
+  # henvcfg. The CBZE field applies to execution of the cache block zero instruction
+  # (CBO.ZERO) in privilege modes VS and VU, and only when the instruction is
+  # HS-qualified. If the instruction is not HS-qualified, it raises an illegal-instruction
+  # exception. If the instruction is HS-qualified and the CBZE field is set to 1, the
+  # instruction is enabled for execution; otherwise, if the CBZE field is set to 0, it
+  # raises a virtual-instruction exception. When the Zicboz extension is not implemented,
+  # CBZE is read-only zero.
+  - name: henvcfg_cbze
+    coverpoint:
+      [
+        "Sv_HZicbo_envcfg_cg/{cp_cbze_vs,cp_cbze_vu}",
+        "H_hscsr_cg/cp_hcsrwalk_masked",
+        "HSm_mcsr_cg/cp_hcsrwalk_masked",
+      ]
+
+  # Finally, a insn:cbo.zero[] instruction executes or raises an illegal-instruction or
+  # virtual-instruction exception based on the state of the csr:envcfg[cbze] bits:
+  - name: cbo-zero_basedon_xenvcfg_cbze
+    coverpoint: ["Sv_HZicbo_envcfg_cg/{cp_cbze_vs,cp_cbze_vu}"]
+
+  # CBO permission and faults under two-stage translation
+  - name: cbz_access
+    coverpoint: ["Sv_HZicbo_cg/{cp_vs_pte,cp_vs_gpa,cp_g_pte}"]
+
+  # With ADUE = 0, a clear A bit, or a clear D bit for cbo.zero, raises a fault in either stage
+  - name: Svadu_disabled_hw_update_falls_back_to_Svade
+    coverpoint: ["Sv_HZicbo_cg/{cp_vs_pte,cp_g_pte}"]
+
+  # If CBO.INVAL is enabled in HS-mode to perform a flush operation, then when the
+  # instruction is enabled in VS- or VU-mode it performs a flush operation, even if CBIE
+  # is set to 0b11. Otherwise, when the instruction is enabled for execution, its behavior
+  # depends on the CBIE encoding, as follows:
+  # A store, then cbo.inval with a CBIE field = 01, then a load that returns the stored data
+  - names: [cbo-inval_h_mode_enabled_op, cbo-inval_h_mode_flush_enc]
+    coverpoint: ["Sv_HZicbo_envcfg_cg/{cp_cbie_vs,cp_cbie_vu}"]
+
+  - name: cbo-inval_h_mode_inval_enc
+    coverpoint:
+      [
+        "Not tested: whether an invalidate discards stored data depends on the cache hierarchy, so a test cannot tell it from a flush",
       ]

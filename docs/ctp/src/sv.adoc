@@ -54,6 +54,22 @@ include::{testplansdir}/priv/Sv_ExceptionsZaamo.adoc[]
 
 include::{testplansdir}/priv/Sv_ExceptionsZaamoSm.adoc[]
 
+===== Sv_H Hypervisor 2-Stage Virtual Memory
+
+include::{testplansdir}/priv/Sv_H.adoc[]
+
+===== Sv_HSm Hypervisor 2-Stage Virtual Memory with M-mode State
+
+include::{testplansdir}/priv/Sv_HSm.adoc[]
+
+===== Sv_HZicbo Hypervisor VirtMem + CBOM/CBOZ
+
+include::{testplansdir}/priv/Sv_HZicbo.adoc[]
+
+===== Sv_HZicboSm Hypervisor VirtMem + CBOM/CBOZ with PMP
+
+include::{testplansdir}/priv/Sv_HZicboSm.adoc[]
+
 ===== Sv Normative Rules
 
 The rules apply to all Sv groups.

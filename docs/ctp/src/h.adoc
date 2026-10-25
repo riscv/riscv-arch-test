@@ -42,13 +42,10 @@ ZicntrH exercises hcounteren for all 32 counters, so no separate ZihpmH suite is
 
 include::{testplansdir}/priv/PMPH.adoc[]
 
-==== SvH Hypervisor 2-Stage Virtual Memory
+==== Hypervisor 2-Stage Virtual Memory
 
-include::{testplansdir}/priv/SvH.adoc[]
-
-==== SvHZicbo Hypervisor VirtMem + Cache Block Operations
-
-include::{testplansdir}/priv/SvHZicbo.adoc[]
+The hypervisor virtual memory tests are the <<t-Sv_H-coverpoints,Sv_H>>, <<t-Sv_HSm-coverpoints,Sv_HSm>>,
+<<t-Sv_HZicbo-coverpoints,Sv_HZicbo>> and <<t-Sv_HZicboSm-coverpoints,Sv_HZicboSm>> groups of the Sv suite.
 
 ==== Shcounterenw Writable Counter Enables
 

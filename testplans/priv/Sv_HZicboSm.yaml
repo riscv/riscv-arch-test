@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Sv_HZicboSm
+notes: |
+  Sv_HZicboSm boots to M-mode, which programs PMP, and delegates nothing, so every trap is taken in M-mode.
+  It runs with Sv39x4 and VS-stage Sv39 on RV64, or Sv32x4 and VS-stage Sv32 on RV32, and needs at least two PMP
+  entries, NAPOT support and a PMP granularity of at most 4 KiB.  PMP entry 0 is a NAPOT region covering the
+  4 KiB test page; the last entry is the background region.  The other Sv_HZicbo cases are in Sv_HZicbo.
+coverpoints:
+  - name: cp_pmp
+    goal: PMP checks the final supervisor physical address of a CBO from VS-mode and VU-mode
+    description: |-
+      Environment: VS-stage and G-stage translation are valid and permit the access.  PMP entry 0 covers the test page with XWR = 000, then with XWR = 001 (read only).
+      Test Case: In VS-mode and VU-mode, execute cbo.clean, cbo.flush and cbo.inval (Zicbom) or cbo.zero (Zicboz) on a guest virtual address that a VS-stage kilopage maps (through a G-stage identity mapping), and on one that a G-stage kilopage maps (through a VS-stage identity superpage).
+    expectation: |-
+      XWR = 000: store/AMO access fault (mcause = 7) for every CBO.
+      XWR = 001: cbo.clean, cbo.flush and cbo.inval execute without fault, since a cache-block management instruction needs only read or write permission; cbo.zero raises a store/AMO access fault.
+    bins: |-
+      {VS, VU} x {cbo.clean, cbo.flush, cbo.inval, cbo.zero} x {VS-stage page, G-stage page} x pmpcfg0 XWR {000, 001}
+      cbo.clean/flush/inval only with Zicbom, cbo.zero only with Zicboz
+    notes: |-
+      XWR = 001 follows cmo.adoc cbm_access (a cache-block management instruction may access a block whenever a load or a store may), as Sail and Spike do; machine.adoc pmp_cbm_fault defers to it.

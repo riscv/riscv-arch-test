@@ -53,8 +53,11 @@ ci_enabled: true
 #   H             hedeleg[10] and hedeleg[23:20] are writable but must be read-only zero: csr:csr_bsc.sv#L1320-L1339;
 #                 an hlv.d page fault in HS mode matches Sail's cause and tval but not the rest of its trap signature
 #                 (status/GVA/htinst; HS-mode trap CSR writes: csr:csr_bsc.sv#L2086-L2099)
+#   Sv_H, Sv_HSm, Sv_HZicbo
+#                 Not yet triaged on Sargantana: hangs in two-stage translation (Sv_H, Sv_HSm), and the trap
+#                 signature mismatches of H (excluded on the hypervisor branch)
 #   Sm_H          six of the eleven Sm_H tests end in an l2_behav.sv:464 assertion; not yet triaged
-exclude_extensions: "F-fmadd.s,F-fmsub.s,F-fnmadd.s,F-fnmsub.s,ZicsrF,Zfa-fleq.s,Zfa-fltq.s,ZfaD-fcvtmod.w.d,ZfaD-fleq.d,ZfaD-fleq.s,ZfaD-fltq.d,ZfaD-fltq.s,ZfaD-fround.s,ZfaD-froundnx.s,ZfaD-fmaxm.s,ZfaD-fminm.s,Zfhmin-fcvt.h.s,Zfhmin-fcvt.s.h,ZfhminD-fcvt.d.h,ZfhminD-fcvt.h.d,ZfhminD-fcvt.s.h,Zicntr,Sm_Zicntr,S_Zicntr,U_Zicntr,Sm_F,Sm_mcsr_access,Sm_mcsr_walk,Sm_scsr,Sm_shadow,S_F,S_scsr-,S_scsr_addr,U_F,InterruptsSm_priority_mideleg,InterruptsSm_trigger,Sscofpmf_Sm_mcounteren,Sv_sv39_canonical,Sv_sv39_nleaf_pte_DAU,Sv_sv39_nleaf_pte_reserved,Sv_sv39_pte_reserved,Sv_sv39_svnapot,Sv_sv39_svpbmt,Sv_Zicbo_sv39_zicbom,Sv_Zicbo_sv39_zicboz,Sv_Exceptions,Sv_ExceptionsSm,Sv_ExceptionsZalrsc,H,Sm_H"
+exclude_extensions: "F-fmadd.s,F-fmsub.s,F-fnmadd.s,F-fnmsub.s,ZicsrF,Zfa-fleq.s,Zfa-fltq.s,ZfaD-fcvtmod.w.d,ZfaD-fleq.d,ZfaD-fleq.s,ZfaD-fltq.d,ZfaD-fltq.s,ZfaD-fround.s,ZfaD-froundnx.s,ZfaD-fmaxm.s,ZfaD-fminm.s,Zfhmin-fcvt.h.s,Zfhmin-fcvt.s.h,ZfhminD-fcvt.d.h,ZfhminD-fcvt.h.d,ZfhminD-fcvt.s.h,Zicntr,Sm_Zicntr,S_Zicntr,U_Zicntr,Sm_F,Sm_mcsr_access,Sm_mcsr_walk,Sm_scsr,Sm_shadow,S_F,S_scsr-,S_scsr_addr,U_F,InterruptsSm_priority_mideleg,InterruptsSm_trigger,Sscofpmf_Sm_mcounteren,Sv_sv39_canonical,Sv_sv39_nleaf_pte_DAU,Sv_sv39_nleaf_pte_reserved,Sv_sv39_pte_reserved,Sv_sv39_svnapot,Sv_sv39_svpbmt,Sv_Zicbo_sv39_zicbom,Sv_Zicbo_sv39_zicboz,Sv_Exceptions,Sv_ExceptionsSm,Sv_ExceptionsZalrsc,H,Sm_H,Sv_H,Sv_HSm,Sv_HZicbo"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler libboost-dev libboost-regex-dev libboost-system-dev"
 install_script: ".github/scripts/install-sargantana.sh"

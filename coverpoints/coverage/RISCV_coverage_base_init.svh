@@ -190,10 +190,6 @@
         `cover_info("//      Sv - Enabled");
         `include "Sv_coverage_init.svh"
     `endif
-    `ifdef COVER_SVH
-        `cover_info("//      SvH - Enabled");
-        `include "SvH_coverage_init.svh"
-    `endif
     `ifdef COVER_SVADE
         `cover_info("//      Svade - Enabled");
         `include "Svade_coverage_init.svh"

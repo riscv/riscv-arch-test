@@ -96,7 +96,7 @@ covergroup Shtvala_cg with function sample(ins_t ins);
 
         // A 32-bit instruction two bytes below the end of a page, which IALIGN = 16 allows.  The fetch faults on its
         // second half: htval holds the guest physical address of the page boundary.  As straddle and
-        // htval_page_boundary below, which only misaligned-access harts compile.
+        // htval_page_boundary below, which only harts that perform misaligned accesses compile.
         `ifdef ZCA_SUPPORTED
             straddle_fetch : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
                 bins page_end = {'hFFE};
@@ -108,8 +108,9 @@ covergroup Shtvala_cg with function sample(ins_t ins);
                                                       htval_page_boundary_fetch;
         `endif
 
+        // A hart that performs misaligned accesses faults on the part in the next page, however it splits the access.
+        // Other harts raise an address-misaligned exception.
         `ifdef UDB_MISALIGNED_LDST
-        `ifdef UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES
             // A word two bytes below the end of a page, which continues into the next page
             straddle : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
                 bins page_end = {'hFFE};
@@ -127,9 +128,9 @@ covergroup Shtvala_cg with function sample(ins_t ins);
 
             cp_load_straddle_guest_page_fault:  cross priv_mode_vs_vu, lw, load_guest_page_fault, straddle, htval_page_boundary;
             cp_store_straddle_guest_page_fault: cross priv_mode_vs_vu, sw, store_guest_page_fault, straddle, htval_page_boundary;
-            cp_hlv_straddle_guest_page_fault:   cross priv_mode_hs, hlv_w, load_guest_page_fault, straddle_hlsv, htval_page_boundary;
-            cp_hsv_straddle_guest_page_fault:   cross priv_mode_hs, hsv_w, store_guest_page_fault, straddle_hlsv, htval_page_boundary;
-        `endif
+            // HLV and HSV from HS-mode and U-mode (hstatus.HU = 1)
+            cp_hlv_straddle_guest_page_fault:   cross priv_mode_s_u, hlv_w, load_guest_page_fault, straddle_hlsv, htval_page_boundary, hstatus_hu;
+            cp_hsv_straddle_guest_page_fault:   cross priv_mode_s_u, hsv_w, store_guest_page_fault, straddle_hlsv, htval_page_boundary, hstatus_hu;
         `endif
     `endif
 endgroup

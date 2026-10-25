@@ -7,8 +7,7 @@ normative_rule_definitions:
   - name: Shvstvecd_vstvec_mode_direct
     coverpoint:
       [
-        "Shvstvecd_cg/cp_vstvec_vaddr_pc",
-        "Shvstvecd_cg/cp_vstvec_vaddr_scratch",
+        "Shvstvecd_cg/{cp_vstvec_vaddr_pc, cp_vstvec_vaddr_scratch, cp_vstvec_vaddr_walk1, cp_vstvec_vaddr_walk0}",
       ]
 
   # Furthermore, when vstvec.MODE=Direct, vstvec.BASE must be capable of holding any valid

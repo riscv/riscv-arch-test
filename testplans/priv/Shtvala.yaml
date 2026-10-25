@@ -47,14 +47,14 @@ coverpoints:
       cp_store_straddle_guest_page_fault
     goal: A misaligned access that straddles into an unmapped guest page writes the page-boundary GPA >> 2 to htval
     description: |-
-      Only on harts with MISALIGNED_LDST and MISALIGNED_SPLIT_STRATEGY = sequential_bytes, which perform the first part of the access and fault on the second.  In VS-mode and VU-mode, lw and sw two bytes below the end of a mapped guest page whose successor has an unmapped guest physical address.
-    expectation: Load or store/AMO guest-page fault.  stval holds the page-boundary address and htval its guest physical address >> 2.
+      In VS-mode and VU-mode, lw and sw two bytes below the end of a mapped guest page whose successor has an unmapped guest physical address.  The coverpoints need MISALIGNED_LDST; harts that do not perform misaligned accesses run the test and raise an address-misaligned exception instead.
+    expectation: Load or store/AMO guest-page fault on the part of the access in the next page, however the hart splits it.  stval holds the page-boundary address and htval its guest physical address >> 2.
     bins: "{VS, VU} x {lw, sw} x guest-page fault x address at page end - 2 x htval at page boundary"
   - name: |-
       cp_hlv_straddle_guest_page_fault
       cp_hsv_straddle_guest_page_fault
     goal: HLV and HSV that straddle into an unmapped guest page write htval and the htinst Addr. Offset
     description: |-
-      Only on harts with MISALIGNED_LDST and MISALIGNED_SPLIT_STRATEGY = sequential_bytes.  In HS-mode with hstatus.SPVP = 0, hlv.w and hsv.w two bytes below the end of a mapped guest page whose successor has an unmapped guest physical address.
-    expectation: Load or store/AMO guest-page fault.  htval holds the page-boundary guest physical address >> 2.  A faulting hlv.w leaves rd unchanged.  htinst is zero or holds an Addr. Offset of 2, the difference between the faulting virtual address in stval and the original virtual address.
-    bins: "HS x {hlv.w, hsv.w} x guest-page fault x address at page end - 2 x htval at page boundary"
+      In HS-mode with hstatus.SPVP = 0 and in U-mode with hstatus.HU = 1, hlv.w and hsv.w two bytes below the end of a mapped guest page whose successor has an unmapped guest physical address.  The coverpoints need MISALIGNED_LDST, as above.
+    expectation: Load or store/AMO guest-page fault.  htval holds the page-boundary guest physical address >> 2.  A faulting hlv.w leaves rd unchanged.  htinst is zero or holds an Addr. Offset of 2, the difference between the faulting virtual address in stval and the original virtual address; HS-mode checks it, and the trap record holds it for U-mode.
+    bins: "{HS, U} x {hlv.w, hsv.w} x guest-page fault x address at page end - 2 x htval at page boundary"

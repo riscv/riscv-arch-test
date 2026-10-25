@@ -11,4 +11,10 @@
 `ifndef EXCLUDE_SM
     Svinval_Sm_cg = new();      Svinval_Sm_cg.set_inst_name("obj_Svinval_Sm");
 `endif
+`ifdef H_SUPPORTED
+    Svinval_H_cg = new();       Svinval_H_cg.set_inst_name("obj_Svinval_H");
+`ifndef EXCLUDE_SM
+    Svinval_SmH_cg = new();     Svinval_SmH_cg.set_inst_name("obj_Svinval_SmH");
+`endif
+`endif
     Svinval_cg = new();         Svinval_cg.set_inst_name("obj_Svinval");

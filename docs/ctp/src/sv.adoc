@@ -78,7 +78,7 @@ include::norm/Svbare_norm_rules.adoc[]
 
 ==== Svinval Memory Management Unit Table Invalidation
 
-The Svinval extension defines instructions to update memory management tables for virtual memory and optionally for PMP. Their effect is system-dependent, so these tests simply check that the instructions run.
+The Svinval extension defines instructions to update memory management tables for virtual memory and optionally for PMP. These tests check that the instructions run, and, with Sv39 or Sv32, that the SFENCE.W.INVAL, SINVAL.VMA, SFENCE.INVAL.IR sequence removes a changed leaf. A hart that caches no translations passes the invalidation test.
 
 include::{testplansdir}/priv/Svinval.adoc[]
 
@@ -89,6 +89,20 @@ include::norm/Svinval_norm_rules.adoc[]
 Runs the Svinval instructions in M, S and U mode with `mstatus.TVM=0` and `mstatus.TVM=1`.
 
 include::{testplansdir}/priv/Svinval_Sm.adoc[]
+
+===== Svinval_H Hypervisor Table Invalidation
+
+Runs the Svinval instructions in HS, VS, U and VU modes with `hstatus.VTVM=0` and `hstatus.VTVM=1`, and checks that
+the Svinval sequences remove changed VS-stage and G-stage leaves.
+
+include::{testplansdir}/priv/Svinval_H.adoc[]
+
+===== Svinval_SmH Hypervisor Table Invalidation with mstatus.TVM
+
+Runs the Svinval instructions in M-mode, and in HS, VS, U and VU modes with `mstatus.TVM=1`, whose traps are taken in
+M-mode.
+
+include::{testplansdir}/priv/Svinval_SmH.adoc[]
 
 ==== Svade A/D Bit Page Fault Exception
 

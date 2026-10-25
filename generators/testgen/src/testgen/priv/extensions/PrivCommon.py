@@ -226,6 +226,7 @@ def addr_value_tests(test_data: TestData, csr_name: str, covergroup: str) -> lis
         f"csrr x{save_reg}, {csr_name}      # Save CSR",
         "",
         f"# Testcase: {csr_name} = current pc",
+        ".p2align 2    # a 4-byte-aligned pc keeps xtvec.MODE = Direct",
         f"auipc x{walk_reg}, 0",
         test_data.add_testcase("pc", f"cp_{csr_name}_vaddr_pc", covergroup),
         f"csrw {csr_name}, x{walk_reg}    # directly follows the auipc so the value is this csrw's pc - 4",
@@ -338,13 +339,24 @@ MCAUSE_CODES: dict[str, dict[int, str | None]] = {
         13: "defined(SSCOFPMF_SUPPORTED)",  # local counter overflow
     },
 }
-# scause, and vscause like it, must hold every code 0-31 from Ss1p12 (scause_exception_code_sz).  Before that,
-# they need only hold the codes of the causes that every S-mode hart supports.
+# scause, and vscause, which must hold the same values (vscause_wlrl), must hold every code 0-31 from Ss1p12
+# (scause_exception_code_sz).  Before that, they need only hold the codes of the causes that every S-mode hart
+# supports, and those of the causes an extension adds: software check (Zicfilp, Zicfiss), local counter overflow
+# (Sscofpmf) and the H causes.
+_SCAUSE_ALWAYS = {"exception": (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 15), "interrupt": (1, 3, 5, 7, 9, 11)}
+_SCAUSE_EXTENSION = {"exception": (10, 18, 20, 21, 22, 23), "interrupt": (2, 6, 10, 12, 13)}
+
+
+def _scause_gate(kind: str, code: int) -> str | None:
+    if code in _SCAUSE_ALWAYS[kind]:
+        return None
+    if code in _SCAUSE_EXTENSION[kind]:
+        return f"{S1P12_GATE} || {MCAUSE_CODES[kind][code]}"
+    return S1P12_GATE
+
+
 SCAUSE_CODES: dict[str, dict[int, str | None]] = {
-    "exception": {
-        code: None if code in (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 15) else S1P12_GATE for code in range(32)
-    },
-    "interrupt": {code: None if code in (1, 3, 5, 7, 9, 11) else S1P12_GATE for code in range(32)},
+    kind: {code: _scause_gate(kind, code) for code in range(32)} for kind in ("exception", "interrupt")
 }
 
 
@@ -526,3 +538,32 @@ def priv_inst_trap_tests(
         instr = f"{name}    # test {name} instruction"
         lines.extend([test_data.add_testcase(name, coverpoint, covergroup), instr])
     return lines
+
+
+# htimedelta values.  time is far below 2^30 when the tests run.  The negative ones make time + htimedelta
+# wrap modulo 2^64 once time exceeds their magnitude; neg_1 wraps for any time >= 1.  pos_2p32m1 and neg_1
+# make the low-word add carry into the upper word on RV32.
+HTIMEDELTAS = {
+    "zero": 0,
+    "pos_2p30": 1 << 30,
+    "pos_2p32m1": (1 << 32) - 1,
+    "pos_2p60": 1 << 60,
+    "neg_1": -1,
+    "neg_2p30": -(1 << 30),
+    "neg_2p60": -(1 << 60),
+}
+
+
+def read_time(lo: int, hi: int, tmp: int) -> list[str]:
+    """Read time into lo, and on RV32 timeh into hi, reading again if timeh changes between the reads."""
+    return [
+        "#if __riscv_xlen == 64",
+        f"csrr x{lo}, time",
+        "#else",
+        "1:",
+        f"csrr x{hi}, timeh",
+        f"csrr x{lo}, time",
+        f"csrr x{tmp}, timeh",
+        f"bne x{hi}, x{tmp}, 1b    # timeh changed between the reads",
+        "#endif",
+    ]

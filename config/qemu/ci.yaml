@@ -37,6 +37,14 @@ exclude_extensions:
   - InterruptsS_enable
   - InterruptsS_priority
   - InterruptsS_trigger
+  # Interrupt WFI tests never enter VS/VU; the tests record SPV/MPV = 0, and InterruptsS_wfi_VS then waits in HS-mode
+  # for a timer interrupt that SIE = 0 masks (https://gitlab.com/qemu-project/qemu/-/issues/4620)
+  - InterruptsSm_wfi_VS
+  - InterruptsSm_wfi_timeout_VS
+  - InterruptsSm_wfi_timeout_VU
+  - InterruptsS_wfi_VS
+  - InterruptsS_wfi_timeout_VS
+  - InterruptsS_wfi_timeout_VU
   # sc.w to no-permission region returns failure instead of raising
   # store/AMO access fault (https://gitlab.com/qemu-project/qemu/-/work_items/4100, still failing in v11.1.1)
   - Exceptions_Zalrsc
@@ -83,6 +91,14 @@ exclude_extensions:
   # The same mstatus.MPV bug breaks the mret and mstatus.TVM tests, and every vsstatus bit is
   # writable (https://gitlab.com/qemu-project/qemu/-/work_items/4589).
   - Sm_H
+  # mstatus.MPV is read-only, so no VS/VU-mode (https://gitlab.com/qemu-project/qemu/-/work_items/4588);
+  # hlvx.wu raises the wrong fault (https://gitlab.com/qemu-project/qemu/-/work_items/4595)
+  - Shtvala
+  - Shvstvala
+  # The same mstatus.MPV and GVA bug: traps from VS and VU report the wrong status
+  # (https://gitlab.com/qemu-project/qemu/-/issues/4620).
+  - Svinval_H
+  - Svinval_SmH
   # Runs in VS-mode and VU-mode, which QEMU never enters (see H above).
   - Ssnpm_H
   # With ADUE=1, QEMU sets A/D on a PTE with a reserved Svnapot encoding before raising the page fault

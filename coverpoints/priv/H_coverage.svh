@@ -276,20 +276,25 @@ covergroup H_vscause_cg with function sample(ins_t ins);
         bins b_12_instruction_page_fault = {12};
         bins b_13_load_page_fault = {13};
         bins b_15_store_page_fault = {15};
+        // vscause holds the same codes as scause (vscause_wlrl), which with H include the H causes
+        bins b_10_ecall_vs = {10};
+        bins b_20_instr_guest_page_fault = {20};
+        bins b_21_load_guest_page_fault = {21};
+        bins b_22_virtual_instruction = {22};
+        bins b_23_store_guest_page_fault = {23};
         `ifdef S1P12P0_OR_LATER_SUPPORTED
             // vscause must hold exception codes 0-31
-            bins b_10_ecall_vs = {10};
             bins b_11_ecall_m = {11};
             bins b_14_reserved = {14};
             bins b_16_double_trap = {16};
             bins b_17_reserved = {17};
             bins b_18_software_check = {18};
             bins b_19_hardware_error = {19};
-            bins b_20_instr_guest_page_fault = {20};
-            bins b_21_load_guest_page_fault = {21};
-            bins b_22_virtual_instruction = {22};
-            bins b_23_store_guest_page_fault = {23};
             bins b_31_24_custom[] = {[31:24]};
+        `elsif ZICFILP_SUPPORTED
+            bins b_18_software_check = {18};
+        `elsif ZICFISS_SUPPORTED
+            bins b_18_software_check = {18};
         `endif
     }
     vscause_interrupt_values : coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
@@ -299,18 +304,20 @@ covergroup H_vscause_cg with function sample(ins_t ins);
         bins b_7_machine_timer = {7};
         bins b_9_supervisor_external = {9};
         bins b_11_machine_external = {11};
+        bins b_2_vs_software = {2};
+        bins b_6_vs_timer = {6};
+        bins b_10_vs_external = {10};
+        bins b_12_supervisor_guest_external = {12};
         `ifdef S1P12P0_OR_LATER_SUPPORTED
             bins b_0_reserved = {0};
-            bins b_2_vs_software = {2};
             bins b_4_reserved = {4};
-            bins b_6_vs_timer = {6};
             bins b_8_reserved = {8};
-            bins b_10_vs_external = {10};
-            bins b_12_supervisor_guest_external = {12};
             bins b_13_counter_overflow = {13};
             bins b_14_reserved = {14};
             bins b_15_reserved = {15};
             bins b_31_16_custom[] = {[31:16]};
+        `elsif SSCOFPMF_SUPPORTED
+            bins b_13_counter_overflow = {13};
         `endif
     }
     cp_vscause_write_exception: cross priv_mode_hs, csrrw, vscause, vscause_exception_values, vscause_exception;
@@ -611,6 +618,290 @@ covergroup H_inst_cg with function sample(ins_t ins);
     cp_sret_vs:  cross priv_mode_vs, sret, old_spp, old_spie, old_vtsr;
 endgroup
 
+// Counter access and htimedelta in HS, VS, U and VU modes.
+// Written: Julia Gong jgong@g.hmc.edu November 10, 2025
+`ifdef ZICNTR_SUPPORTED
+covergroup H_Zicntr_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    // The counter accessed: one that exists and whose mcounteren, hcounteren and scounteren bits are writable
+    counter: coverpoint ins.current.insn[31:20] {
+        `ifdef UDB_MCOUNTENABLE_EN_0 `ifdef UDB_HCOUNTENABLE_EN_0 `ifdef UDB_SCOUNTENABLE_EN_0
+            bins cycle_csr = {CSR_CYCLE};
+            `ifdef UDB_MXLEN_32
+                bins cycleh_csr = {CSR_CYCLEH};
+            `endif
+        `endif `endif `endif
+        `ifdef UDB_MCOUNTENABLE_EN_1 `ifdef UDB_HCOUNTENABLE_EN_1 `ifdef UDB_SCOUNTENABLE_EN_1
+            bins time_csr = {CSR_TIME};
+            `ifdef UDB_MXLEN_32
+                bins timeh_csr = {CSR_TIMEH};
+            `endif
+        `endif `endif `endif
+        `ifdef UDB_MCOUNTENABLE_EN_2 `ifdef UDB_HCOUNTENABLE_EN_2 `ifdef UDB_SCOUNTENABLE_EN_2
+            bins instret_csr = {CSR_INSTRET};
+            `ifdef UDB_MXLEN_32
+                bins instreth_csr = {CSR_INSTRETH};
+            `endif
+        `endif `endif `endif
+        `ifdef ZIHPM_SUPPORTED
+            `ifdef UDB_HPM_COUNTER_EN_3 `ifdef UDB_MCOUNTENABLE_EN_3 `ifdef UDB_HCOUNTENABLE_EN_3 `ifdef UDB_SCOUNTENABLE_EN_3
+                bins hpmcounter3_csr = {CSR_HPMCOUNTER3};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter3h_csr = {CSR_HPMCOUNTER3H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_4 `ifdef UDB_MCOUNTENABLE_EN_4 `ifdef UDB_HCOUNTENABLE_EN_4 `ifdef UDB_SCOUNTENABLE_EN_4
+                bins hpmcounter4_csr = {CSR_HPMCOUNTER4};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter4h_csr = {CSR_HPMCOUNTER4H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_5 `ifdef UDB_MCOUNTENABLE_EN_5 `ifdef UDB_HCOUNTENABLE_EN_5 `ifdef UDB_SCOUNTENABLE_EN_5
+                bins hpmcounter5_csr = {CSR_HPMCOUNTER5};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter5h_csr = {CSR_HPMCOUNTER5H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_6 `ifdef UDB_MCOUNTENABLE_EN_6 `ifdef UDB_HCOUNTENABLE_EN_6 `ifdef UDB_SCOUNTENABLE_EN_6
+                bins hpmcounter6_csr = {CSR_HPMCOUNTER6};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter6h_csr = {CSR_HPMCOUNTER6H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_7 `ifdef UDB_MCOUNTENABLE_EN_7 `ifdef UDB_HCOUNTENABLE_EN_7 `ifdef UDB_SCOUNTENABLE_EN_7
+                bins hpmcounter7_csr = {CSR_HPMCOUNTER7};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter7h_csr = {CSR_HPMCOUNTER7H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_8 `ifdef UDB_MCOUNTENABLE_EN_8 `ifdef UDB_HCOUNTENABLE_EN_8 `ifdef UDB_SCOUNTENABLE_EN_8
+                bins hpmcounter8_csr = {CSR_HPMCOUNTER8};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter8h_csr = {CSR_HPMCOUNTER8H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_9 `ifdef UDB_MCOUNTENABLE_EN_9 `ifdef UDB_HCOUNTENABLE_EN_9 `ifdef UDB_SCOUNTENABLE_EN_9
+                bins hpmcounter9_csr = {CSR_HPMCOUNTER9};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter9h_csr = {CSR_HPMCOUNTER9H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_10 `ifdef UDB_MCOUNTENABLE_EN_10 `ifdef UDB_HCOUNTENABLE_EN_10 `ifdef UDB_SCOUNTENABLE_EN_10
+                bins hpmcounter10_csr = {CSR_HPMCOUNTER10};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter10h_csr = {CSR_HPMCOUNTER10H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_11 `ifdef UDB_MCOUNTENABLE_EN_11 `ifdef UDB_HCOUNTENABLE_EN_11 `ifdef UDB_SCOUNTENABLE_EN_11
+                bins hpmcounter11_csr = {CSR_HPMCOUNTER11};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter11h_csr = {CSR_HPMCOUNTER11H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_12 `ifdef UDB_MCOUNTENABLE_EN_12 `ifdef UDB_HCOUNTENABLE_EN_12 `ifdef UDB_SCOUNTENABLE_EN_12
+                bins hpmcounter12_csr = {CSR_HPMCOUNTER12};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter12h_csr = {CSR_HPMCOUNTER12H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_13 `ifdef UDB_MCOUNTENABLE_EN_13 `ifdef UDB_HCOUNTENABLE_EN_13 `ifdef UDB_SCOUNTENABLE_EN_13
+                bins hpmcounter13_csr = {CSR_HPMCOUNTER13};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter13h_csr = {CSR_HPMCOUNTER13H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_14 `ifdef UDB_MCOUNTENABLE_EN_14 `ifdef UDB_HCOUNTENABLE_EN_14 `ifdef UDB_SCOUNTENABLE_EN_14
+                bins hpmcounter14_csr = {CSR_HPMCOUNTER14};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter14h_csr = {CSR_HPMCOUNTER14H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_15 `ifdef UDB_MCOUNTENABLE_EN_15 `ifdef UDB_HCOUNTENABLE_EN_15 `ifdef UDB_SCOUNTENABLE_EN_15
+                bins hpmcounter15_csr = {CSR_HPMCOUNTER15};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter15h_csr = {CSR_HPMCOUNTER15H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_16 `ifdef UDB_MCOUNTENABLE_EN_16 `ifdef UDB_HCOUNTENABLE_EN_16 `ifdef UDB_SCOUNTENABLE_EN_16
+                bins hpmcounter16_csr = {CSR_HPMCOUNTER16};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter16h_csr = {CSR_HPMCOUNTER16H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_17 `ifdef UDB_MCOUNTENABLE_EN_17 `ifdef UDB_HCOUNTENABLE_EN_17 `ifdef UDB_SCOUNTENABLE_EN_17
+                bins hpmcounter17_csr = {CSR_HPMCOUNTER17};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter17h_csr = {CSR_HPMCOUNTER17H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_18 `ifdef UDB_MCOUNTENABLE_EN_18 `ifdef UDB_HCOUNTENABLE_EN_18 `ifdef UDB_SCOUNTENABLE_EN_18
+                bins hpmcounter18_csr = {CSR_HPMCOUNTER18};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter18h_csr = {CSR_HPMCOUNTER18H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_19 `ifdef UDB_MCOUNTENABLE_EN_19 `ifdef UDB_HCOUNTENABLE_EN_19 `ifdef UDB_SCOUNTENABLE_EN_19
+                bins hpmcounter19_csr = {CSR_HPMCOUNTER19};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter19h_csr = {CSR_HPMCOUNTER19H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_20 `ifdef UDB_MCOUNTENABLE_EN_20 `ifdef UDB_HCOUNTENABLE_EN_20 `ifdef UDB_SCOUNTENABLE_EN_20
+                bins hpmcounter20_csr = {CSR_HPMCOUNTER20};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter20h_csr = {CSR_HPMCOUNTER20H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_21 `ifdef UDB_MCOUNTENABLE_EN_21 `ifdef UDB_HCOUNTENABLE_EN_21 `ifdef UDB_SCOUNTENABLE_EN_21
+                bins hpmcounter21_csr = {CSR_HPMCOUNTER21};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter21h_csr = {CSR_HPMCOUNTER21H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_22 `ifdef UDB_MCOUNTENABLE_EN_22 `ifdef UDB_HCOUNTENABLE_EN_22 `ifdef UDB_SCOUNTENABLE_EN_22
+                bins hpmcounter22_csr = {CSR_HPMCOUNTER22};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter22h_csr = {CSR_HPMCOUNTER22H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_23 `ifdef UDB_MCOUNTENABLE_EN_23 `ifdef UDB_HCOUNTENABLE_EN_23 `ifdef UDB_SCOUNTENABLE_EN_23
+                bins hpmcounter23_csr = {CSR_HPMCOUNTER23};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter23h_csr = {CSR_HPMCOUNTER23H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_24 `ifdef UDB_MCOUNTENABLE_EN_24 `ifdef UDB_HCOUNTENABLE_EN_24 `ifdef UDB_SCOUNTENABLE_EN_24
+                bins hpmcounter24_csr = {CSR_HPMCOUNTER24};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter24h_csr = {CSR_HPMCOUNTER24H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_25 `ifdef UDB_MCOUNTENABLE_EN_25 `ifdef UDB_HCOUNTENABLE_EN_25 `ifdef UDB_SCOUNTENABLE_EN_25
+                bins hpmcounter25_csr = {CSR_HPMCOUNTER25};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter25h_csr = {CSR_HPMCOUNTER25H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_26 `ifdef UDB_MCOUNTENABLE_EN_26 `ifdef UDB_HCOUNTENABLE_EN_26 `ifdef UDB_SCOUNTENABLE_EN_26
+                bins hpmcounter26_csr = {CSR_HPMCOUNTER26};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter26h_csr = {CSR_HPMCOUNTER26H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_27 `ifdef UDB_MCOUNTENABLE_EN_27 `ifdef UDB_HCOUNTENABLE_EN_27 `ifdef UDB_SCOUNTENABLE_EN_27
+                bins hpmcounter27_csr = {CSR_HPMCOUNTER27};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter27h_csr = {CSR_HPMCOUNTER27H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_28 `ifdef UDB_MCOUNTENABLE_EN_28 `ifdef UDB_HCOUNTENABLE_EN_28 `ifdef UDB_SCOUNTENABLE_EN_28
+                bins hpmcounter28_csr = {CSR_HPMCOUNTER28};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter28h_csr = {CSR_HPMCOUNTER28H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_29 `ifdef UDB_MCOUNTENABLE_EN_29 `ifdef UDB_HCOUNTENABLE_EN_29 `ifdef UDB_SCOUNTENABLE_EN_29
+                bins hpmcounter29_csr = {CSR_HPMCOUNTER29};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter29h_csr = {CSR_HPMCOUNTER29H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_30 `ifdef UDB_MCOUNTENABLE_EN_30 `ifdef UDB_HCOUNTENABLE_EN_30 `ifdef UDB_SCOUNTENABLE_EN_30
+                bins hpmcounter30_csr = {CSR_HPMCOUNTER30};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter30h_csr = {CSR_HPMCOUNTER30H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_31 `ifdef UDB_MCOUNTENABLE_EN_31 `ifdef UDB_HCOUNTENABLE_EN_31 `ifdef UDB_SCOUNTENABLE_EN_31
+                bins hpmcounter31_csr = {CSR_HPMCOUNTER31};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter31h_csr = {CSR_HPMCOUNTER31H};
+                `endif
+            `endif `endif `endif `endif
+        `endif
+    }
+
+    // The enable bit of the accessed counter in each counter-enable register
+    mcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[ins.current.insn[24:20]] {
+        bins disabled = {0};
+        bins enabled  = {1};
+    }
+    hcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[ins.current.insn[24:20]] {
+        bins disabled = {0};
+        bins enabled  = {1};
+    }
+    scounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[ins.current.insn[24:20]] {
+        bins disabled = {0};
+        bins enabled  = {1};
+    }
+    // The same bits held while another counter-enable register is walked
+    mcounteren_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[ins.current.insn[24:20]] {
+        bins one = {1};
+    }
+    hcounteren_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[ins.current.insn[24:20]] {
+        bins one = {1};
+    }
+    hcounteren_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[ins.current.insn[24:20]] {
+        bins zero = {0};
+    }
+    scounteren_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[ins.current.insn[24:20]] {
+        bins one = {1};
+    }
+    scounteren_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[ins.current.insn[24:20]] {
+        bins zero = {0};
+    }
+
+    csraccess: coverpoint ins.current.insn {
+        wildcard bins csrr = {CSRR};
+        wildcard bins csrw = {CSRW};
+    }
+
+    // htimedelta = {0, 2^30, 2^32-1, 2^60, -1, -2^30, -2^60} while time and timeh are read
+    csrr_time: coverpoint ins.current.insn[31:20] iff (ins.current.insn ==? CSRR) {
+        bins read_time = {CSR_TIME};
+        `ifdef UDB_MXLEN_32
+            bins read_timeh = {CSR_TIMEH};
+        `endif
+    }
+    `ifdef UDB_MXLEN_64
+        htimedelta: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedelta", "htimedelta") {
+    `else
+        htimedelta: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedeltah", "htimedeltah")[31:0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedelta", "htimedelta")[31:0]} {
+    `endif
+        bins zero       = {64'h0000000000000000};
+        bins pos_2p30   = {64'h0000000040000000};
+        bins pos_2p32m1 = {64'h00000000FFFFFFFF};
+        bins pos_2p60   = {64'h1000000000000000};
+        bins neg_1      = {64'hFFFFFFFFFFFFFFFF};
+        bins neg_2p30   = {64'hFFFFFFFFC0000000};
+        bins neg_2p60   = {64'hF000000000000000};
+    }
+
+    // HS-mode
+    cp_scounteren_access_hs: cross csraccess, counter, scounteren_bit, mcounteren_one, hcounteren_zero, priv_mode_hs;
+    cp_delta_hs: cross csrr_time, htimedelta, priv_mode_hs;
+
+    // VS-mode
+    cp_mcounteren_access_vs: cross csraccess, counter, mcounteren_bit, hcounteren_one, scounteren_zero, priv_mode_vs;
+    cp_mcounteren_access_vs_h0: cross csraccess, counter, mcounteren_bit, hcounteren_zero, scounteren_zero, priv_mode_vs;
+    cp_hcounteren_access_vs: cross csraccess, counter, hcounteren_bit, mcounteren_one, scounteren_zero, priv_mode_vs;
+    cp_delta_vs: cross csrr_time, htimedelta, priv_mode_vs;
+
+    // U-mode
+    cp_scounteren_access_u: cross csraccess, counter, scounteren_bit, mcounteren_one, hcounteren_zero, priv_mode_u;
+    cp_delta_u: cross csrr_time, htimedelta, priv_mode_u;
+
+    // VU-mode
+    cp_mcounteren_access_vu: cross csraccess, counter, mcounteren_bit, hcounteren_one, scounteren_one, priv_mode_vu;
+    cp_mcounteren_access_vu_hs0: cross csraccess, counter, mcounteren_bit, hcounteren_zero, scounteren_zero, priv_mode_vu;
+    cp_hcounteren_access_vu: cross csraccess, counter, hcounteren_bit, mcounteren_one, scounteren_one, priv_mode_vu;
+    cp_scounteren_access_vu: cross csraccess, counter, scounteren_bit, mcounteren_one, hcounteren_one, priv_mode_vu;
+    cp_delta_vu: cross csrr_time, htimedelta, priv_mode_vu;
+endgroup
+`endif
+
 function void h_sample(int hart, int issue, ins_t ins);
     H_hscsr_cg.sample(ins);
     H_vscause_cg.sample(ins);
@@ -618,4 +909,7 @@ function void h_sample(int hart, int issue, ins_t ins);
     H_vsstatus_cg.sample(ins);
     H_vucsr_cg.sample(ins);
     H_inst_cg.sample(ins);
+    `ifdef ZICNTR_SUPPORTED
+        H_Zicntr_cg.sample(ins);
+    `endif
 endfunction

@@ -522,7 +522,7 @@
       "supported": true
     },
     "C": {
-      "mutable_misa": false
+      "mutable_misa": true
     },
     "V": {
       "mutable_misa": false,

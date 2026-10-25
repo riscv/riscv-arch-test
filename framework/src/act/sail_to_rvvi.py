@@ -38,9 +38,29 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
     # S view back into the M register: the delegated bits take the logged value and the rest keep
     # what mip/mie already held. A read mirrors to the same value it already has, so it costs
     # nothing and resynchronises after a write this converter did not see.
+    # With H, the VS-level and SGEI bits of mip/mie live in hip/hie instead (sip/sie read them as
+    # zero even though mideleg has them set), and hvip drives the VS-level bits of mip, so those
+    # are mirrored over the same way. In VS/VU, sip/sie are vsip/vsie and are not mirrored.
+    # The other way round, traps and xrets log only mstatus, so its sstatus fields are mirrored
+    # into sstatus to keep reads of sstatus current after a trap.
     SIP, MIP, SIE, MIE, MIDELEG = 0x144, 0x344, 0x104, 0x304, 0x303
-    s_view_of = {SIP: MIP, SIE: MIE}
+    HIP, HIE, HVIP = 0x644, 0x604, 0x645
+    MSTATUS, SSTATUS = 0x300, 0x100
+    H_BITS, VS_BITS = 0x1444, 0x444
+    # SD (bit 63, or 31 on RV32), UXL, SDT, SPELP, MXR, SUM, XS, FS, VS, SPP, UBE, SPIE, SIE
+    SSTATUS_BITS = 0x8000_0003_818D_E762
+    s_view_of = {SIP: MIP, SIE: MIE, HIP: MIP, HIE: MIE, HVIP: MIP, MSTATUS: SSTATUS}
     csr_state: dict[int, int] = {}
+
+    def view_mask(csr_num: int) -> int:
+        """Bits of the mirrored register that a write to ``csr_num`` reaches."""
+        if csr_num in (HIP, HIE):
+            return H_BITS
+        if csr_num == HVIP:
+            return VS_BITS
+        if csr_num == MSTATUS:
+            return SSTATUS_BITS
+        return csr_state.get(MIDELEG, 0) & ~H_BITS
 
     # TODO: Add support for parsing traps, interrupts, and the remaining VM signals
 
@@ -95,9 +115,9 @@ def sailLog2Trace(inputLogFile: Path, outputTraceFile: Path) -> None:
                                 csr_num, csr_val = int(reg_num, 16), int(reg_val, 16)
                                 csr_state[csr_num] = csr_val
                                 m_num = s_view_of.get(csr_num)
-                                if m_num is not None:
-                                    mideleg = csr_state.get(MIDELEG, 0)
-                                    m_val = (csr_state.get(m_num, 0) & ~mideleg) | (csr_val & mideleg)
+                                if m_num is not None and not (prev_mode in ("VS", "VU") and csr_num in (SIP, SIE)):
+                                    mask = view_mask(csr_num)
+                                    m_val = (csr_state.get(m_num, 0) & ~mask) | (csr_val & mask)
                                     csr_state[m_num] = m_val
                                     reg_writes[("CSR", f"{m_num:x}")] = f"{m_val:016x}"
                             break

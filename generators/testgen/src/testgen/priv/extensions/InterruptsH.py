@@ -128,41 +128,37 @@ def _sie_vs_tests(test_data: TestData) -> list[str]:
         comment_banner(
             "cp_sie_vs",
             "With sie = 0, sip.SSIP = 1 (pending in HS-mode, not enabled), hideleg = hie = 0x444 and hvip.VSSIP = 0/1,\n"
-            "enter VS-mode with vsstatus.SIE = 0/1 and read sip.  VS-mode takes VSSI (as SSI) only when VSSIP = 1\n"
-            "and vsstatus.SIE = 1, and sip.SSIP reads hvip.VSSIP, never the HS-level SSIP",
+            "enter VS-mode with vsstatus.SIE = 0 and read sip.  sip.SSIP reads hvip.VSSIP, never the HS-level SSIP.\n"
+            "With vsstatus.SIE = 1, VS-mode would take VSSI and clear it first (cp_trigger_tsbi)",
         ),
         "#ifdef UDB_SSI_INTR_IMPL",
         "csrw sie, zero",
         "csrsi sip, MIP_SSIP",
         f"LI(x{tmp_reg}, MIP_VS_MASK)",
         f"csrw hideleg, x{tmp_reg}",
+        f"csrw hie, x{tmp_reg}",
+        f"LI(x{tmp_reg}, SSTATUS_SIE)",
+        f"csrc vsstatus, x{tmp_reg}",
     ]
-    for sie in (0, 1):
-        for vssip in (0, 1):
-            lines.extend(
-                [
-                    f"LI(x{tmp_reg}, MIP_VS_MASK)",
-                    f"csrw hie, x{tmp_reg}",
-                    f"LI(x{tmp_reg}, {vssip * 4:#x})",
-                    f"csrw hvip, x{tmp_reg}",
-                    f"LI(x{tmp_reg}, SSTATUS_SIE)",
-                    f"csr{'s' if sie else 'c'} vsstatus, x{tmp_reg}",
-                    "RVTEST_TSBI_GOTO_VSMODE",
-                    f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
-                    test_data.add_testcase(f"sie{sie}_vssip{vssip}", "cp_sie_vs", _CG),
-                    f"csrr x{tmp_reg}, sip",
-                    write_sigupd(tmp_reg, test_data),
-                    "RVTEST_TSBI_GOTO_SMODE",
-                    "csrw hvip, zero",
-                ]
-            )
+    for vssip in (0, 1):
+        lines.extend(
+            [
+                f"LI(x{tmp_reg}, {vssip * 4:#x})",
+                f"csrw hvip, x{tmp_reg}",
+                "RVTEST_TSBI_GOTO_VSMODE",
+                f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
+                test_data.add_testcase(f"vssip{vssip}", "cp_sie_vs", _CG),
+                f"csrr x{tmp_reg}, sip",
+                write_sigupd(tmp_reg, test_data),
+                "RVTEST_TSBI_GOTO_SMODE",
+                "csrw hvip, zero",
+            ]
+        )
     lines.extend(
         [
             "csrci sip, MIP_SSIP",
             "csrw hideleg, zero",
             "csrw hie, zero",
-            f"LI(x{tmp_reg}, SSTATUS_SIE)",
-            f"csrc vsstatus, x{tmp_reg}",
             "#endif // UDB_SSI_INTR_IMPL",
         ]
     )

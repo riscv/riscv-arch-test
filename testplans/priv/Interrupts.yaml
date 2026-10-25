@@ -204,6 +204,6 @@ coverpoints:
     bins: 8 hideleg * 4 accesses
   - name: cp_sie_vs
     goal: VS-mode sees vsip in sip, not the HS-level interrupts
-    description: With sie = 0, sip.SSIP = 1, hideleg = hie = 0x444 and hvip.VSSIP = {0/1}, change to VS-mode with vsstatus.SIE = {0/1} and read sip
-    expectation: VS-mode takes VSSI (as SSI) when VSSIP = 1 and SIE = 1.  sip.SSIP reads hvip.VSSIP; the pending HS-level SSIP is not visible.
-    bins: 2 SIE * 2 VSSIP
+    description: With sie = 0, sip.SSIP = 1, hideleg = hie = 0x444 and hvip.VSSIP = {0/1}, change to VS-mode with vsstatus.SIE = 0 and read sip.  With vsstatus.SIE = 1, VS-mode takes VSSI on entry and its handler clears vsip.SSIP before the read; cp_trigger_tsbi covers that case.
+    expectation: sip.SSIP reads hvip.VSSIP; the pending HS-level SSIP is not visible.
+    bins: 2 VSSIP

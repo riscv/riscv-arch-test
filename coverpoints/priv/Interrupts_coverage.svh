@@ -610,8 +610,10 @@ covergroup Interrupts_cg with function sample(ins_t ins);
                 bins sgei_vs = {13'h1444};
             `endif
         }
-        vsstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "vsstatus")[1] {
-            // autofill 0/1
+        // With vsstatus.SIE = 1 a pending VSSI is taken on entry, and the VS handler clears vsip.SSIP before
+        // the read; cp_trigger_tsbi covers vsstatus.SIE = 0/1 for the delegated VS-level interrupts
+        vsstatus_sie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "vsstatus")[1] {
+            bins zero = {0};
         }
         hvip_vssip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "hvip")[2] {
             // autofill 0/1
@@ -628,7 +630,7 @@ covergroup Interrupts_cg with function sample(ins_t ins);
         cp_vsip_vsie:   cross priv_mode_hs, csr_rw, csr_vsie_vsip, hideleg_vs;
         // In VS-mode, sip is vsip: it shows hvip.VSSIP when delegated and never the HS-level sip.SSIP
         `ifdef UDB_SSI_INTR_IMPL
-            cp_sie_vs:      cross priv_mode_vs, csrr, csr_sip, vsstatus_sie, hvip_vssip, mip_ssip_one, hideleg_vs_all;
+            cp_sie_vs:      cross priv_mode_vs, csrr, csr_sip, vsstatus_sie_zero, hvip_vssip, mip_ssip_one, hideleg_vs_all;
         `endif
     `endif
 

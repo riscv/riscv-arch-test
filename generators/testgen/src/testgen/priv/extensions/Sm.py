@@ -1253,7 +1253,10 @@ def _clear_misa_c(temp_reg: int) -> list[str]:
 
 def _set_misa_c(temp_reg: int) -> list[str]:
     """Set misa.C again in M-mode, making IALIGN = 16."""
-    return [f"LI(x{temp_reg}, 0b100)             # misa.C", f"csrs misa, x{temp_reg}"]
+    return [
+        f"LI(x{temp_reg}, 0b100)             # misa.C",
+        f"csrs misa, x{temp_reg}",
+    ]
 
 
 def _masked_xret_test(

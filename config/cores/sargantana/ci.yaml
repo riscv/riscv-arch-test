@@ -45,15 +45,15 @@ ci_enabled: true
 #                 A non-canonical VA gives an access fault and is checked at 41 bits:
 #                 core:datapath/rtl/exe_stage/rtl/load_store_queue.sv#L197; bad PTEs hang or give the wrong fault
 #                 (a non-leaf PTE with D, A, U or a reserved bit 63:54 set is walked instead of page-faulting)
-#   SvZicbo_sv39_zicbom, SvZicbo_sv39_zicboz
+#   Sv_Zicbo_sv39_zicbom, Sv_Zicbo_sv39_zicboz
 #                 PTE reads are never PMA-checked, so a walk to a faulting address page-faults:
 #                 mmu:dcache_adapters/bsc_mmu_hpdc_adapter.sv#L87-L93
-#   ExceptionsSv  A translated fetch is not PMA-checked: core:datapath/rtl/if_stage_1/rtl/if_stage_1.sv#L139-L141
-#   ExceptionsSvZalrsc  LR/SC exception cases under Sv39 deadlock ("200 cycles without a valid commit"), like the Sv hangs
+#   Sv_Exceptions  A translated fetch is not PMA-checked: core:datapath/rtl/if_stage_1/rtl/if_stage_1.sv#L139-L141
+#   Sv_ExceptionsZalrsc  LR/SC exception cases under Sv39 deadlock ("200 cycles without a valid commit"), like the Sv hangs
 #   H             hedeleg[10] and hedeleg[23:20] are writable but must be read-only zero: csr:csr_bsc.sv#L1320-L1339;
 #                 an hlv.d page fault in HS mode matches Sail's cause and tval but not the rest of its trap signature
 #                 (status/GVA/htinst; HS-mode trap CSR writes: csr:csr_bsc.sv#L2086-L2099)
-exclude_extensions: "F-fmadd.s,F-fmsub.s,F-fnmadd.s,F-fnmsub.s,ZicsrF,Zfa-fleq.s,Zfa-fltq.s,ZfaD-fcvtmod.w.d,ZfaD-fleq.d,ZfaD-fleq.s,ZfaD-fltq.d,ZfaD-fltq.s,ZfaD-fround.s,ZfaD-froundnx.s,ZfaD-fmaxm.s,ZfaD-fminm.s,Zfhmin-fcvt.h.s,Zfhmin-fcvt.s.h,ZfhminD-fcvt.d.h,ZfhminD-fcvt.h.d,ZfhminD-fcvt.s.h,Zicntr,Sm_Zicntr,S_Zicntr,U_Zicntr,Sm_F,Sm_mcsr_access,Sm_mcsr_walk,Sm_scsr,Sm_shadow,S_F,S_scsr-,S_scsr_addr,U_F,InterruptsSm_priority_mideleg,InterruptsSm_trigger,Sscofpmf_Sm_mcounteren,Sv_sv39_canonical,Sv_sv39_nleaf_pte_DAU,Sv_sv39_nleaf_pte_reserved,Sv_sv39_pte_reserved,Sv_sv39_svnapot,Sv_sv39_svpbmt,SvZicbo_sv39_zicbom,SvZicbo_sv39_zicboz,ExceptionsSv,ExceptionsSvSm,ExceptionsSvZalrsc,H"
+exclude_extensions: "F-fmadd.s,F-fmsub.s,F-fnmadd.s,F-fnmsub.s,ZicsrF,Zfa-fleq.s,Zfa-fltq.s,ZfaD-fcvtmod.w.d,ZfaD-fleq.d,ZfaD-fleq.s,ZfaD-fltq.d,ZfaD-fltq.s,ZfaD-fround.s,ZfaD-froundnx.s,ZfaD-fmaxm.s,ZfaD-fminm.s,Zfhmin-fcvt.h.s,Zfhmin-fcvt.s.h,ZfhminD-fcvt.d.h,ZfhminD-fcvt.h.d,ZfhminD-fcvt.s.h,Zicntr,Sm_Zicntr,S_Zicntr,U_Zicntr,Sm_F,Sm_mcsr_access,Sm_mcsr_walk,Sm_scsr,Sm_shadow,S_F,S_scsr-,S_scsr_addr,U_F,InterruptsSm_priority_mideleg,InterruptsSm_trigger,Sscofpmf_Sm_mcounteren,Sv_sv39_canonical,Sv_sv39_nleaf_pte_DAU,Sv_sv39_nleaf_pte_reserved,Sv_sv39_pte_reserved,Sv_sv39_svnapot,Sv_sv39_svpbmt,Sv_Zicbo_sv39_zicbom,Sv_Zicbo_sv39_zicboz,Sv_Exceptions,Sv_ExceptionsSm,Sv_ExceptionsZalrsc,H"
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler libboost-dev libboost-regex-dev libboost-system-dev"
 install_script: ".github/scripts/install-sargantana.sh"

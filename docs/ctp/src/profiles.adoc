@@ -85,18 +85,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |S|Supervisor CSRs|<<t-S-coverpoints>>|||x|x|x
 |U|User CSRs|<<t-U-coverpoints>>|||x|x|x
 |Zkr|Entropy CSR|<<t-Zkr_S-coverpoints>>|||o|o|o
-|ExceptionsSm|Machine Exceptions|<<t-ExceptionsSm-coverpoints>>||x|x|x|x
-|ExceptionsS|Supervisor Exceptions|<<t-ExceptionsS-coverpoints>>|||x|x|x
-|ExceptionsU|User Exceptions|<<t-ExceptionsU-coverpoints>>|||x|x|x
-|ExceptionsF|Float Exceptions|<<t-ExceptionsF-coverpoints>>|||x|x|x
-|ExceptionsZalrsc|LR/SC Exceptions|<<t-ExceptionsZalrsc-coverpoints>>|||x|x|x
-|ExceptionsZaamo|AMO Exceptions|<<t-ExceptionsZaamo-coverpoints>>|||x|x|x
-|ExceptionsZc|Compressed Exceptions|<<t-ExceptionsZc-coverpoints>>||x|x|x|x
-|ExceptionsZicboS|Supervisor CBO Exceptions|<<t-ExceptionsZicboS-coverpoints>>|||x|x|x
-|ExceptionsZicboU|User CBO Exceptions|<<t-ExceptionsZicboU-coverpoints>>|||x|x|x
-|ExceptionsSv|Virt Mem Exceptions|<<t-ExceptionsSv-coverpoints>>|||x|x|x
-|ExceptionsSvZalrsc|Virt Mem LR/SC Exceptions|<<t-ExceptionsSvZalrsc-coverpoints>>|||x|x|x
-|ExceptionsSvZaamo|Virt Mem AMO Exceptions|<<t-ExceptionsSvZaamo-coverpoints>>|||x|x|x
+|Exceptions|Exceptions|<<t-Exceptions_Sm-coverpoints>>||x|x|x|x
 |InterruptsSm|Machine Interrupts|<<t-InterruptsSm-coverpoints>>||x|x|x|x
 |InterruptsS|Supervisor Interrupts|<<t-InterruptsS-coverpoints>>|||x|x|x
 |Sstc|Supervisor Timer Compare|<<t-Sstc-coverpoints>>|||x|x|x
@@ -108,24 +97,12 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |EndianZalrsc|LR/SC Endian|<<t-EndianZalrsc-coverpoints>>|||||
 |EndianF|Float Endian|<<t-EndianF-coverpoints>>|||||
 |EndianZca|Compressed Endian|<<t-EndianZca-coverpoints>>|||||
-|PMPSm|Machine PMP|<<t-PMPSm-coverpoints>>||x|x|x|x
-|PMPS|Supervisor PMP|<<t-PMPS-coverpoints>>|||x|x|x
-|PMPU|User PMP|<<t-PMPU-coverpoints>>|||x|x|x
-|PMPF|Float PMP|<<t-PMPF-coverpoints>>|||x|x|x
-|PMPZca|Compressed PMP|<<t-PMPZca-coverpoints>>||x|x|x|x
-|PMPZicbo|PMP + CBOM/CBOZ|<<t-PMPZicbo-coverpoints>>|||x|x|x
-|PMPZaamo|AMO PMP|<<t-PMPZaamo-coverpoints>>|||x|x|x
-|PMPZalrsc|LR/SC PMP|<<t-PMPZalrsc-coverpoints>>|||x|x|x
+|PMP|Physical Memory Protection|<<t-PMP-coverpoints>>|||||
 |Svbare|No Virtual Memory|<<t-Svbare-coverpoints>>|||x|x|x
 |Sv|Sv32/39/48/57 Virtual Memory|<<t-Sv-coverpoints>>|||x|x|x
-|SvSm|Machine-Mode Virtual Memory|<<t-SvSm-coverpoints>>|||x|x|x
 |Svinval|TLB Invalidation|<<t-Svinval-coverpoints>>|||x|x|x
-|SvPMP|VM + PMP|<<t-SvPMP-coverpoints>>|||x|x|x
-|SvZicbo|VM + CBOM/CBOZ|<<t-SvZicbo-coverpoints>>|||x|x|x
-|SvPMPZicbo|VM + PMP + CBOM/CBOZ|<<t-SvPMPZicbo-coverpoints>>|||x|x|x
 |Svade|Page Table A/D Exceptions|<<t-Svade-coverpoints>>|||x|x|x
 |Svadu|Page Table Update|<<t-Svadu-coverpoints>>||||o|o
-|SvaduPMP|Page Table Update + PMP|<<t-SvaduPMP-coverpoints>>||||o|o
 |Svpbmt|Page-based Memory Types|<<t-Svpbmt-coverpoints>>|||x|x|x
 |Svnapot|Naturally Aligned Pages|<<t-Svnapot-coverpoints>>|||o|x|x
 |Svukte|User Kernel Translation Enable|<<t-Svukte-coverpoints>>|||o|o|o
@@ -181,7 +158,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |InterruptsH|Hypervisor Interrupts|<<t-InterruptsH-coverpoints>>|||o|o|x
 |EndianH|Hypervisor Endian|<<t-EndianH-coverpoints>>|||||
 |ZicntrH|Hypervisor Counters|<<t-ZicntrH-coverpoints>>|||o|o|x
-|HV|Hypervisor + Vector CSRs|<<t-HV-coverpoints>>|||o|o|x
 |PMPH|Hypervisor PMP|<<t-PMPH-coverpoints>>|||o|o|x
 |SvH|Hypervisor Virtual Memory|<<t-SvH-coverpoints>>|||o|o|x
 |SvHZicbo|Hypervisor Virtual Memory + CBO|<<t-SvHZicbo-coverpoints>>|||o|o|x

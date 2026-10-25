@@ -45,4 +45,4 @@ normative_rule_definitions:
   # memory.
   - name: cbp_unperm_noexcep
     # PMPZicbo prefetches blocks that PMP denies
-    coverpoint: ["PMPZicbo_cg/{cp_prefetch_i, cp_prefetch_r, cp_prefetch_w}"]
+    coverpoint: ["PMP_Zicbo_cg/{cp_prefetch_i, cp_prefetch_r, cp_prefetch_w}"]

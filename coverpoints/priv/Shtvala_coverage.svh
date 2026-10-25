@@ -69,13 +69,17 @@ covergroup Shtvala_cg with function sample(ins_t ins);
             bins implicit_gpa = {2'b10};
         }
 
+        hstatus_hu: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hu")[0] {
+            bins on = {1};
+        }
+
         cp_load_guest_page_fault:  cross priv_mode_vs_vu, lw,   load_guest_page_fault,  htval_gpa;
         cp_store_guest_page_fault: cross priv_mode_vs_vu, sw,   store_guest_page_fault, htval_gpa;
         cp_instr_guest_page_fault: cross priv_mode_vs_vu, jalr, instr_guest_page_fault, htval_gpa;
         // HLV and HSV from HS-mode and U-mode (hstatus.HU = 1)
-        cp_hlv_guest_page_fault:   cross priv_mode_s_u, hlv_w, load_guest_page_fault,  htval_gpa_hlsv;
-        cp_hlvx_guest_page_fault:  cross priv_mode_s_u, hlvx_wu, load_guest_page_fault, htval_gpa_hlsv;
-        cp_hsv_guest_page_fault:   cross priv_mode_s_u, hsv_w, store_guest_page_fault, htval_gpa_hlsv;
+        cp_hlv_guest_page_fault:   cross priv_mode_s_u, hlv_w, load_guest_page_fault,  htval_gpa_hlsv, hstatus_hu;
+        cp_hlvx_guest_page_fault:  cross priv_mode_s_u, hlvx_wu, load_guest_page_fault, htval_gpa_hlsv, hstatus_hu;
+        cp_hsv_guest_page_fault:   cross priv_mode_s_u, hsv_w, store_guest_page_fault, htval_gpa_hlsv, hstatus_hu;
 
         `ifdef ZAAMO_SUPPORTED
             amoswap_w : coverpoint ins.current.insn {

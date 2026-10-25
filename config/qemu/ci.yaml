@@ -37,6 +37,14 @@ exclude_extensions:
   - InterruptsS_enable
   - InterruptsS_priority
   - InterruptsS_trigger
+  # Interrupt WFI tests never enter VS/VU; the tests record SPV/MPV = 0, and InterruptsS_wfi_VS then waits in HS-mode
+  # for a timer interrupt that SIE = 0 masks (https://gitlab.com/qemu-project/qemu/-/issues/4620)
+  - InterruptsSm_wfi_VS
+  - InterruptsSm_wfi_timeout_VS
+  - InterruptsSm_wfi_timeout_VU
+  - InterruptsS_wfi_VS
+  - InterruptsS_wfi_timeout_VS
+  - InterruptsS_wfi_timeout_VU
   # sc.w to no-permission region returns failure instead of raising
   # store/AMO access fault (https://gitlab.com/qemu-project/qemu/-/work_items/4100, still failing in v11.1.1)
   - Exceptions_Zalrsc

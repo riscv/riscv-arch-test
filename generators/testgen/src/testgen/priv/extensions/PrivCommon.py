@@ -554,22 +554,6 @@ HTIMEDELTAS = {
 }
 
 
-def write64(csr: str, value: int, reg: int) -> list[str]:
-    """Write a 64-bit value to a CSR, and to its upper-half CSR first on RV32."""
-    value &= (1 << 64) - 1
-    return [
-        "#if __riscv_xlen == 64",
-        f"LI(x{reg}, {value:#x})",
-        f"csrw {csr}, x{reg}",
-        "#else",
-        f"LI(x{reg}, {value >> 32:#x})",
-        f"csrw {csr}h, x{reg}",
-        f"LI(x{reg}, {value & 0xFFFFFFFF:#x})",
-        f"csrw {csr}, x{reg}",
-        "#endif",
-    ]
-
-
 def read_time(lo: int, hi: int, tmp: int) -> list[str]:
     """Read time into lo, and on RV32 timeh into hi, reading again if timeh changes between the reads."""
     return [

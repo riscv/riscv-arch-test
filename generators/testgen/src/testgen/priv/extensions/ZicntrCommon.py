@@ -10,10 +10,10 @@
 
 from typing import Literal
 
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner, write64_csr, write_sigupd
 from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
-from testgen.priv.extensions.PrivCommon import HTIMEDELTAS, read_time, write64
+from testgen.priv.extensions.PrivCommon import HTIMEDELTAS, read_time
 
 Mode = Literal["M", "S", "U", "VS", "VU"]
 Counteren = Literal["ones", "zeros"]
@@ -190,9 +190,9 @@ def htimedelta_tests(test_data: TestData, covergroup: str, mode: Mode) -> list[s
         expected = delta & ((1 << 64) - 1) if virtual else 0
         lines.extend(
             [
-                *write64("htimedelta", 0, tmp),
+                *write64_csr("htimedelta", 0, tmp),
                 *read_time(base_lo, base_hi, tmp),
-                *write64("htimedelta", delta, tmp),
+                *write64_csr("htimedelta", delta, tmp),
                 *([f"RVTEST_TSBI_GOTO_{mode}MODE"] if lower else []),
                 f"LI(x{val_lo}, 0)",
                 f"LI(x{val_hi}, 0)",
@@ -232,7 +232,7 @@ def htimedelta_tests(test_data: TestData, covergroup: str, mode: Mode) -> list[s
                 write_sigupd(val_lo, test_data),
             ]
         )
-    lines.extend(write64("htimedelta", 0, tmp))
+    lines.extend(write64_csr("htimedelta", 0, tmp))
     test_data.int_regs.return_registers([base_lo, base_hi, val_lo, val_hi, tmp])
     return lines
 

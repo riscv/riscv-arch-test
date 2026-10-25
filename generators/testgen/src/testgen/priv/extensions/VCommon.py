@@ -56,7 +56,7 @@ def _gen_vcsrrswc(test_data: TestData, temp_reg: int, covergroup: str, priv: str
                 continue
             # A write that changes vector state must set xstatus.VS to Dirty, so preset the
             # CSR to a value the operation changes: 0 for csrrs/csrrw of all 1s, 1 for csrrc.
-            for vs in (1, 2):
+            for vs in (1, 2, 3):
                 lines.extend(
                     [
                         f"csrwi {csr}, {1 if op == 'csrrc' else 0}  # preset so {op} changes {csr}",
@@ -113,10 +113,10 @@ def _gen_status_vs_dirty(test_data: TestData, temp_reg: int, covergroup: str, pr
     lines = [
         comment_banner(
             f"cp_{status}_vs_set_dirty_arithmetic",
-            "VS=Initial(1)/Clean(2) -> vadd.vv -> expect Dirty",
+            "VS=Initial(1)/Clean(2)/Dirty(3) -> vadd.vv -> expect Dirty",
         ),
     ]
-    for vs in (1, 2):
+    for vs in (1, 2, 3):
         lines.extend(set_status_fields(temp_reg, priv, vs=3))
         lines.append(_VSET_M1)
         lines.append("vmv.v.i v1, 1")
@@ -126,8 +126,8 @@ def _gen_status_vs_dirty(test_data: TestData, temp_reg: int, covergroup: str, pr
         lines.append("vadd.vv v3, v1, v2")
         lines.append(gen_status_read_sigupd(check_reg, test_data, priv))
 
-    lines.append(comment_banner(f"cp_{status}_vs_set_dirty_csr", "VS=Initial/Clean -> vsetvli -> expect Dirty"))
-    for vs in (1, 2):
+    lines.append(comment_banner(f"cp_{status}_vs_set_dirty_csr", "VS=Initial/Clean/Dirty -> vsetvli -> expect Dirty"))
+    for vs in (1, 2, 3):
         lines.extend(set_status_fields(temp_reg, priv, vs=3))
         lines.extend(set_status_fields(temp_reg, priv, vs=vs))
         lines.append(test_data.add_testcase(f"vsetvli_vs{vs}", f"cp_{status}_vs_set_dirty_csr", covergroup))

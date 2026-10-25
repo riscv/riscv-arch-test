@@ -3,61 +3,78 @@
 # CI configuration for Imperas simulator
 # Imperas is proprietary and cannot run in public CI.
 
+ci_enabled: false
 # These exclusions don't affect CI because it doesn't run, but they help tracking incomplete features.
-# Items marked "fixed in Imperas-HMC101126-eng-build" apply to stock ImperasDV Y-2026.09 but pass with that engineering build of
-# the Imperas RISC-V model (HMC's fixes for the Solvnet cases below; at HMC:
-# export IMPERAS_VLNV=/proj/wally/imperas/Imperas-HMC101126-eng-build/lib/Linux64/ImperasLib), so they are commented out of
-# exclude_extensions at the end of this file. Use the commented-out line when running stock Y-2026.09.
-# - Ssstrict_{Sm,S,U}: on the vector configs, Imperas does not enforce the vector register-group
-#   overlap constraints, so it executes reserved widening encodings such as
-#   vwmaccu.vv v14, v9, v15, v0.t instead of raising an illegal instruction:
-#   https://solvnetplus.synopsys.com/s/case/500WQ0000230O4PYAU/imperas-treats-vwmaccuvv-v14-v9-v15-v0t-as-legal
-#   imperas-rv32gcv also executed the draft Zvqmac encodings in VectorInstr-00/-03; that is worked around
-#   in its imperas.ic (Zvqmac=F):
-#   https://solvnetplus.synopsys.com/s/case/500WQ00002CEtKrYAL/the-vqmacc-draft-zvqmac-encodings-execute-on-named-v-variants-with-vectorversion10ratified
-#   The VectorInstr tests are the only Ssstrict failures; rv32gck, which has no vector unit, passes all three.
-#   Both issues are fixed in Imperas-HMC101126-eng-build.
-# - Smstateen: imperas-rv64-max: Imperas lets mstateen0.P1P13 be written on RV64:
-#   https://solvnetplus.synopsys.com/s/case/500WQ0000289tyxYAA/mstateen0p1p13-should-be-readonly-zero-on-rv64
-#   (fixed in Imperas-HMC101126-eng-build). The other configs pass.
-# - ExceptionsVx: https://solvnetplus.synopsys.com/s/case/500WQ000023l1CPYAY/vmvnrrv-does-not-raise-an-illegalinstruction-exception-when-vtypevill-1
-#   (fixed in Imperas-HMC101126-eng-build)
-# - SdtrigSm, SdtrigS, SdtrigU (stock only): an icount trigger that fires with action=0 writes the PC to xtval
-#   instead of zero (norm:Sdtrig_icount_action0), so tests in which an icount trigger fires fail:
-#   https://solvnetplus.synopsys.com/s/case/500WQ00002BsufNYAR/an-icount-trigger-that-fires-with-action0-writes-the-pc-to-mtval-instead-of-zero
-#   (fixed in Imperas-HMC101126-eng-build). An itrigger on an interrupt sets tdata1.hit but takes no breakpoint
-#   once the handler's code has run before, so SdtrigSm_Itrigger fails on imperas-rv64-max and imperas-rv32gck:
-#   https://solvnetplus.synopsys.com/s/case/500WQ00002DmNGMYA3/itrigger-sets-tdata1hit-but-takes-no-breakpoint
-#   (fixed in Imperas-HMC101126-eng-build). mcontext, hcontext and scontext are kept per trigger instead of once
-#   per hart, so the Textra tests fail where textra context matching is claimed (imperas-rv32gck/gcv):
-#   https://solvnetplus.synopsys.com/s/case/500WQ00002Dmex7YAB/sdtrig-mcontext-hcontext-and-scontext-are-kept-per-trigger-selected-by-tselect-instead-of-once-per-hart
-#   (fixed in Imperas-HMC101126-eng-build). The imperas.ic files set amo_trigger=T, because AMOs must fire
-#   load/store address triggers, and tcontrol_undefined=T, because Sail cannot model tcontrol with a delegable
-#   medeleg[3].
-# - Zicfilp_Sm/Zicfilp_S: MRET and SRET leave xPELP set instead of clearing it, for both yLPE=0 and
-#   yLPE=1 (first failures mret_to_M_mlpe0_slpe0_ulpe0_pelp_1 and sret_to_S_slpe0_ulpe0_pelp_1):
-#   https://solvnetplus.synopsys.com/s/case/500WQ000029smeCYAQ/mretsret-do-not-set-mpelpspelp-to-nolpexpected
-#   norm:Zicfilp_pelp_trap_return requires xRET to set xPELP to NO_LP_EXPECTED unconditionally, and
-#   Sail, Spike, Whisper and QEMU all clear it. Zicfilp_U passes.
-#   (fixed in Imperas-HMC101126-eng-build)
-# - Svnapot: Imperas accepts N=1 on superpage leaf PTEs instead of page faulting
-#   (validSvnapotEntry checks only for a leaf, not level 0, and fillTLBEntry skips the alignment check):
-#   https://solvnetplus.synopsys.com/s/case/500WQ00002AsSN9YAN/svnapot-n1-accepted-on-superpage-leaf-ptes-instead-of-raising-a-page-fault
-#   (fixed in Imperas-HMC101126-eng-build)
-# - Svadu: the fault test hits the same Svnapot bug
-#   (fixed in Imperas-HMC101126-eng-build)
+# The list is for the Imperas-HMC101126-eng-build of the Imperas RISC-V model (HMC's fixes for the Solvnet cases
+# below; at HMC: export IMPERAS_VLNV=/proj/wally/imperas/Imperas-HMC101126-eng-build/lib/Linux64/ImperasLib).
+# Entries marked "fixed in Imperas-HMC101126-eng-build" fail on stock ImperasDV Y-2026.09 but pass with that
+# engineering build, so they are commented out. Uncomment them when running stock Y-2026.09.
+exclude_extensions:
+  # On the vector configs, Imperas does not enforce the vector register-group
+  # overlap constraints, so it executes reserved widening encodings such as
+  # vwmaccu.vv v14, v9, v15, v0.t instead of raising an illegal instruction:
+  # https://solvnetplus.synopsys.com/s/case/500WQ0000230O4PYAU/imperas-treats-vwmaccuvv-v14-v9-v15-v0t-as-legal
+  # imperas-rv32gcv also executed the draft Zvqmac encodings in VectorInstr-00/-03; that is worked around
+  # in its imperas.ic (Zvqmac=F):
+  # https://solvnetplus.synopsys.com/s/case/500WQ00002CEtKrYAL/the-vqmacc-draft-zvqmac-encodings-execute-on-named-v-variants-with-vectorversion10ratified
+  # The VectorInstr tests are the only Ssstrict failures; rv32gck, which has no vector unit, passes all three.
+  # Both issues are fixed in Imperas-HMC101126-eng-build.
+  # - Ssstrict_Sm
+  # - Ssstrict_S
+  # - Ssstrict_U
+  # imperas-rv64-max: Imperas lets mstateen0.P1P13 be written on RV64:
+  # https://solvnetplus.synopsys.com/s/case/500WQ0000289tyxYAA/mstateen0p1p13-should-be-readonly-zero-on-rv64
+  # (fixed in Imperas-HMC101126-eng-build). The other configs pass.
+  # - Smstateen
+  # https://solvnetplus.synopsys.com/s/case/500WQ000023l1CPYAY/vmvnrrv-does-not-raise-an-illegalinstruction-exception-when-vtypevill-1
+  # (fixed in Imperas-HMC101126-eng-build)
+  # - ExceptionsVx
+  # Stock only: an icount trigger that fires with action=0 writes the PC to xtval
+  # instead of zero (norm:Sdtrig_icount_action0), so tests in which an icount trigger fires fail:
+  # https://solvnetplus.synopsys.com/s/case/500WQ00002BsufNYAR/an-icount-trigger-that-fires-with-action0-writes-the-pc-to-mtval-instead-of-zero
+  # (fixed in Imperas-HMC101126-eng-build). An itrigger on an interrupt sets tdata1.hit but takes no breakpoint
+  # once the handler's code has run before, so SdtrigSm_Itrigger fails on imperas-rv64-max and imperas-rv32gck:
+  # https://solvnetplus.synopsys.com/s/case/500WQ00002DmNGMYA3/itrigger-sets-tdata1hit-but-takes-no-breakpoint
+  # (fixed in Imperas-HMC101126-eng-build). mcontext, hcontext and scontext are kept per trigger instead of once
+  # per hart, so the Textra tests fail where textra context matching is claimed (imperas-rv32gck/gcv):
+  # https://solvnetplus.synopsys.com/s/case/500WQ00002Dmex7YAB/sdtrig-mcontext-hcontext-and-scontext-are-kept-per-trigger-selected-by-tselect-instead-of-once-per-hart
+  # (fixed in Imperas-HMC101126-eng-build). mcontrol6 clears the low maskmax bits of tdata2 when they are all
+  # ones for every match type, not only match=1 (NAPOT), so on rv32 tdata2 = 0xffffffff with match=0 reads back 0
+  # and SdtrigSm_tdata2_translate fails on imperas-rv32gck and imperas-rv32gcv:
+  # https://solvnetplus.synopsys.com/s/case/500WQ00002DvzvvYAB/mcontrol6-tdata2-loses-its-low-maskmax-bits-when-they-are-all-ones-for-every-match-type-not-only-match1-napot
+  # (fixed in Imperas-HMC101126-eng-build). The imperas.ic files set amo_trigger=T, because AMOs must fire
+  # load/store address triggers, and tcontrol_undefined=T, because Sail cannot model tcontrol with a delegable
+  # medeleg[3].
+  # - SdtrigSm
+  # - SdtrigS
+  # - SdtrigU
+  # Imperas accepts N=1 on superpage leaf PTEs instead of page faulting
+  # (validSvnapotEntry checks only for a leaf, not level 0, and fillTLBEntry skips the alignment check):
+  # https://solvnetplus.synopsys.com/s/case/500WQ00002AsSN9YAN/svnapot-n1-accepted-on-superpage-leaf-ptes-instead-of-raising-a-page-fault
+  # (fixed in Imperas-HMC101126-eng-build)
+  # - Svnapot
+  # The fault test hits the same Svnapot bug
+  # (fixed in Imperas-HMC101126-eng-build)
+  # - Svadu
+  # Stock only: Imperas applies pointer masking when MXR is set:
+  # https://solvnetplus.synopsys.com/s/case/500WQ000025qNCkYAM/pointer-masking-should-be-disabled-when-mxr1
+  # (fixed in Imperas-HMC101126-eng-build). Smmpm, Smnpm_U and Smnpm_USm pass on both. The xtval mismatches on
+  # faulting addresses at or above 2^PHYS_ADDR_WIDTH were a Sail bug (https://github.com/riscv/sail-riscv/issues/1962),
+  # fixed in Sail 0.16.
+  # - Ssnpm
+  # - Ssnpm_Sm
+  # - Smnpm_S
+  # - Smnpm_SSm
+  # MRET and SRET leave xPELP set instead of clearing it, for both yLPE=0 and
+  # yLPE=1 (first failures mret_to_M_mlpe0_slpe0_ulpe0_pelp_1 and sret_to_S_slpe0_ulpe0_pelp_1):
+  # https://solvnetplus.synopsys.com/s/case/500WQ000029smeCYAQ/mretsret-do-not-set-mpelpspelp-to-nolpexpected
+  # norm:Zicfilp_pelp_trap_return requires xRET to set xPELP to NO_LP_EXPECTED unconditionally, and
+  # Sail, Spike, Whisper and QEMU all clear it. Zicfilp_U passes.
+  # (fixed in Imperas-HMC101126-eng-build)
+  - Zicfilp_Sm
+  - Zicfilp_S
+# Not excluded:
 # - Zama16b is not declared. The model has no misaligned atomicity granule: Zam=T performs every
 #   misaligned AMO, including SSAMOSWAP (riscv-isa-manual#3426), so the configs use Zam=F, where
 #   misaligned AMOs, SSAMOSWAP and LR/SC raise store/AMO access faults.
-# - Ssnpm, Ssnpm_Sm, SmnpmS, SmnpmSSm (stock only): Imperas applies pointer masking when MXR is set:
-#   https://solvnetplus.synopsys.com/s/case/500WQ000025qNCkYAM/pointer-masking-should-be-disabled-when-mxr1
-#   (fixed in Imperas-HMC101126-eng-build). Smmpm, SmnpmU and SmnpmUSm pass on both. The xtval mismatches on
-#   faulting addresses at or above 2^PHYS_ADDR_WIDTH were a Sail bug (https://github.com/riscv/sail-riscv/issues/1962),
-#   fixed in Sail 0.16.
 # - SsstrictV passes on stock Y-2026.09 and is no longer excluded.
-#
-ci_enabled: false
-# Stock ImperasDV Y-2026.09:
-# exclude_extensions: "Ssstrict_Sm,Ssstrict_S,Ssstrict_U,Smstateen,ExceptionsVx,SdtrigSm,SdtrigS,SdtrigU,Svnapot,Svadu,Ssnpm,Ssnpm_Sm,SmnpmS,SmnpmSSm,Zicfilp_Sm,Zicfilp_S"
-# Imperas-HMC101126-eng-build:
-exclude_extensions: "Zicfilp_Sm,Zicfilp_S"

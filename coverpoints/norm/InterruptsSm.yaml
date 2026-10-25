@@ -90,7 +90,7 @@ normative_rule_definitions:
   - name: mstatus_tw_op
     coverpoint:
       [
-        "InterruptsSm_cg/{cp_wfi, cp_wfi_vs, cp_wfi_timeout, cp_wfi_timeout_vs, cp_wfi_timeout_vu}",
+        "InterruptsSm_cg/{cp_wfi, cp_wfi_vs, cp_wfi_timeout, cp_wfi_timeout_vs, cp_wfi_timeout_vu, cp_wfi_vs_tw_vtw}",
       ]
 
   # When VTW=1 (and assuming mstatus.TW=0), an attempt in VS-mode to execute WFI raises a
@@ -101,7 +101,7 @@ normative_rule_definitions:
   - names: [hstatus_vtw_op, H_virtinst_wfi_vtw1_tw0, vtw_virtinstr]
     coverpoint:
       [
-        "InterruptsSm_cg/{cp_wfi_vs, cp_wfi_timeout_vs, cp_wfi_timeout_vs_vtw_one}",
+        "InterruptsSm_cg/{cp_wfi_vs, cp_wfi_timeout_vs, cp_wfi_timeout_vs_vtw_one, cp_wfi_vs_tw_vtw}",
       ]
 
   # in VU-mode, attempts to execute WFI when mstatus.TW=0

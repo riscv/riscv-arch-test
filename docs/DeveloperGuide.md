@@ -719,8 +719,8 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
     """Generate tests for Sm machine-mode testsuite."""
     test_chunks: list[TestChunk] = []
     tc = test_data.begin_test_chunk()
-    tc.code.extend(_generate_mcause_tests(test_data))
-    tc.code.extend(_generate_mstatus_sd_tests(test_data))
+    tc.code.extend(xcause_write_tests(test_data, "mcause", "Sm_mcause_cg"))
+    tc.code.extend(xstatus_sd_tests(test_data, "mstatus", "Sm_mstatus_cg", "cp_mstatus_sd_write"))
     tc.code.extend(_generate_priv_inst_tests(test_data))
     tc.code.extend(_generate_mret_tests(test_data))
     tc.code.extend(_generate_sret_tests(test_data))
@@ -736,7 +736,7 @@ There are a few important gotchas to keep in mind when writing privileged tests:
 
 - There should be no loops in the assembly code. Loops make debugging difficult and prevent testcases from being uniquely associated with debug strings. Instead, use loops in the Python generator to emit repetitive assembly.
 
-For examples of how to write the individual coverpoint helper functions for privileged test generators, review [`Sm.py`](../generators/testgen/src/testgen/priv/extensions/Sm.py) and [`ExceptionsZc.py`](../generators/testgen/src/testgen/priv/extensions/ExceptionsZc.py). Here are a few additional notes that apply to all privileged test helper functions:
+For examples of how to write the individual coverpoint helper functions for privileged test generators, review [`Sm.py`](../generators/testgen/src/testgen/priv/extensions/Sm.py) and [`ExceptionsZc.py`](../generators/testgen/src/testgen/priv/extensions/exceptions/ExceptionsZc.py). Here are a few additional notes that apply to all privileged test helper functions:
 
 - Do not hardcode register numbers. Instead use the register allocator described above for unprivileged coverpoints (`test_data.int_regs.get_registers(3)`, etc.).
 - Begin each coverpoint with a call to `comment_banner(coverpoint, "comments")` to add a descriptive marker to the generated test.
@@ -837,7 +837,10 @@ To run a simulator's configs in GitHub Actions CI, create a `ci.yaml` file in th
 
 ```yaml
 ci_enabled: true # Set false to skip in CI
-exclude_extensions: "Ext1,Ext2" # Extensions to skip (optional)
+exclude_extensions: # Extensions to skip (optional), one per line
+  # Why Ext1 fails, with a link to the bug report
+  - Ext1
+  - Ext2
 apt_packages: "libfoo libbar" # apt packages needed at runtime (optional)
 install_script: ".github/scripts/install-<sim>.sh" # Build script, skipped on cache hit (optional)
 setup_script: ".github/scripts/setup-<sim>.sh" # Setup script, always run before running tests
@@ -846,7 +849,7 @@ setup_script: ".github/scripts/setup-<sim>.sh" # Setup script, always run before
 Field details:
 
 - **`ci_enabled`**: Controls whether configs under this group appear in the CI matrix. Defaults to `true` if omitted.
-- **`exclude_extensions`**: Comma-separated list of extensions to exclude when running this simulator's tests in CI. Use for known failures with the simulator so CI passes until bugs are resolved upstream. An entry can also name a group of tests within a suite: it excludes every test whose file name starts with the entry followed by `_` or `-`, so `Sm_mcsr_walk` excludes `Sm_mcsr_walk-00.S` through `Sm_mcsr_walk-11.S` and `I-add` excludes `I-add-00.S`. An entry ending in `-` matches only that group, not longer groups that extend its name: `S_scsr-` excludes `S_scsr-00.S` but not `S_scsr_addr-00.S`, and `S-` excludes the unnamed group `S-00.S` but not `S_F-00.S`. Exclude only the groups that fail, so the rest of the suite still runs.
+- **`exclude_extensions`**: YAML list of extensions to exclude when running this simulator's tests in CI, one per line, with a comment just above each entry (or group of entries) saying why it fails and linking the bug report. Use for known failures with the simulator so CI passes until bugs are resolved upstream. One entry per line keeps PRs that add or remove different exclusions from conflicting. `.github/scripts/ci_config.py --exclusions config/<sim>/ci.yaml` prints the list as the comma-separated string that `EXCLUDE_EXTENSIONS` takes, e.g. `make EXCLUDE_EXTENSIONS="$(.github/scripts/ci_config.py --exclusions config/qemu/ci.yaml)" qemu`. An entry can also name a group of tests within a suite: it excludes every test whose file name starts with the entry followed by `_` or `-`, so `Sm_mcsr_walk` excludes `Sm_mcsr_walk-00.S` through `Sm_mcsr_walk-11.S` and `I-add` excludes `I-add-00.S`. An entry ending in `-` matches only that group, not longer groups that extend its name: `S_scsr-` excludes `S_scsr-00.S` but not `S_scsr_addr-00.S`, and `S-` excludes the unnamed group `S-00.S` but not `S_F-00.S`. Exclude only the groups that fail, so the rest of the suite still runs.
 - **`apt_packages`**: Space-separated list of apt packages required to run the simulator. These are installed unconditionally (even on cache hit).
 - **`install_script`**: Path to a shell script that builds and installs the simulator. Receives the install directory as its first argument. The built simulator is cached — the script only runs on cache miss. The cache key is derived from the script's content hash, so updating the script (e.g., bumping a version) automatically invalidates the cache.
 - **`setup_script`**: Path to a shell script that sets up the simulator environment. This script is always run before running tests.

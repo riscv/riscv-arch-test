@@ -786,6 +786,14 @@ covergroup Sm_F_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_priv_f_coverpoints.svh"
 
     mstatus_FS: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs")[1:0] {
+        bins off     = {2'b00};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins initial_state = {2'b01};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins clean   = {2'b10};
+        `endif
+        bins dirty   = {2'b11};
     }
     mstatus_FS_off_dirty: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs")[1:0] {
         bins off     = {2'b00};
@@ -896,18 +904,25 @@ covergroup Sm_V_cg with function sample(ins_t ins);
     // tests mstatus ability to set clean and initial to dirty only when supposed to
     //////////////////////////////////////////////////////////////////////////////////
 
-    mstatus_vs_initial_clean : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins first = {1};
-        bins clean  = {2};
+    // Initial and Clean only when MSTATUS_VS_LEGAL_VALUES includes them (otherwise a write
+    // of either reads back as Dirty)
+    mstatus_vs_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+        `ifdef UDB_MSTATUS_VS_LEGAL_VALUES_1
+            bins first = {1};
+        `endif
+        `ifdef UDB_MSTATUS_VS_LEGAL_VALUES_2
+            bins clean  = {2};
+        `endif
+        bins dirty  = {3};
     }
 
     mstatus_vs_inactive    : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
         bins inactive = {0};
     }
 
-    cp_mstatus_vs_set_dirty_arithmetic  : cross priv_mode_m, std_vec,        vector_vector_arithmetic_instruction,   mstatus_vs_initial_clean;
-    cp_mstatus_vs_set_dirty_csr         : cross priv_mode_m, std_vec,        vsetvli_instruction,                    mstatus_vs_initial_clean;
-    cp_mstatus_vs_set_dirty_vcsr        : cross priv_mode_m, vcsrs_writable, csrops,                                 mstatus_vs_initial_clean;
+    cp_mstatus_vs_set_dirty_arithmetic  : cross priv_mode_m, std_vec,        vector_vector_arithmetic_instruction,   mstatus_vs_on;
+    cp_mstatus_vs_set_dirty_csr         : cross priv_mode_m, std_vec,        vsetvli_instruction,                    mstatus_vs_on;
+    cp_mstatus_vs_set_dirty_vcsr        : cross priv_mode_m, vcsrs_writable, csrops,                                 mstatus_vs_on;
 
     cp_mstatus_vs_off_arithmetic        : cross priv_mode_m, mstatus_vs_inactive,     vector_vector_arithmetic_instruction iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
                                                                                                                    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -935,20 +950,1265 @@ covergroup Sm_VF_cg with function sample(ins_t ins);
         bins true = {1'b1};
     }
 
-    mstatus_fs_initial_clean : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins first_state = {1};
-        bins clean  = {2};
+    // Initial and Clean only when MSTATUS_FS_LEGAL_VALUES includes them (otherwise a write
+    // of either reads back as Dirty)
+    mstatus_fs_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins first_state = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins clean  = {2};
+        `endif
+        bins dirty  = {3};
     }
 
     mstatus_fs_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
         bins off = {0};
     }
 
-    cp_vectorfp_mstatus_fs_state_affecting_register : cross priv_mode_m, std_vec, vfmv_f_s, mstatus_fs_initial_clean;
-    cp_vectorfp_mstatus_fs_state_affecting_csr      : cross priv_mode_m, std_vec, vector_vector_arithmetic_fp_instruction, mstatus_fs_initial_clean, fflags_modified_after_clear;
-    cp_vectorfp_mstatus_fs_state_nonaffecting       : cross priv_mode_m, std_vec, vector_vector_arithmetic_fp_instruction, mstatus_fs_initial_clean, vs1_zero, vs2_zero;
+    cp_vectorfp_mstatus_fs_state_affecting_register : cross priv_mode_m, std_vec, vfmv_f_s, mstatus_fs_on;
+    cp_vectorfp_mstatus_fs_state_affecting_csr      : cross priv_mode_m, std_vec, vector_vector_arithmetic_fp_instruction, mstatus_fs_on, fflags_modified_after_clear;
+    cp_vectorfp_mstatus_fs_state_nonaffecting       : cross priv_mode_m, std_vec, vector_vector_arithmetic_fp_instruction, mstatus_fs_on, vs1_zero, vs2_zero;
     cp_vectorfp_mstatus_fs_off                      : cross priv_mode_m, std_trap_vec, vector_vector_arithmetic_fp_instruction, mstatus_fs_off, vs1_zero, vs2_zero;
 
+endgroup
+`endif
+
+`ifdef ZICNTR_SUPPORTED
+covergroup Sm_Zicntr_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    // building blocks for the main coverpoints
+    csraccess: coverpoint ins.current.insn  {
+        wildcard bins csrr = {CSRR};
+        wildcard bins csrw = {CSRW};
+    }
+    counters_mcounteren: coverpoint {ins.current.insn[31:20], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[31:0] } {
+      bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
+      bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
+      bins instret_enabled       = {44'b110000000010_00000000000000000000000000000100};
+      `ifdef ZIHPM_SUPPORTED
+        `ifdef UDB_HPM_COUNTER_EN_3
+          bins hpmcounter3_enabled   = {44'b110000000011_00000000000000000000000000001000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_4
+          bins hpmcounter4_enabled   = {44'b110000000100_00000000000000000000000000010000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_5
+          bins hpmcounter5_enabled   = {44'b110000000101_00000000000000000000000000100000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_6
+          bins hpmcounter6_enabled   = {44'b110000000110_00000000000000000000000001000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_7
+          bins hpmcounter7_enabled   = {44'b110000000111_00000000000000000000000010000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_8
+          bins hpmcounter8_enabled   = {44'b110000001000_00000000000000000000000100000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_9
+          bins hpmcounter9_enabled   = {44'b110000001001_00000000000000000000001000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_10
+          bins hpmcounter10_enabled  = {44'b110000001010_00000000000000000000010000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_11
+          bins hpmcounter11_enabled  = {44'b110000001011_00000000000000000000100000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_12
+          bins hpmcounter12_enabled  = {44'b110000001100_00000000000000000001000000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_13
+          bins hpmcounter13_enabled  = {44'b110000001101_00000000000000000010000000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_14
+          bins hpmcounter14_enabled  = {44'b110000001110_00000000000000000100000000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_15
+          bins hpmcounter15_enabled  = {44'b110000001111_00000000000000001000000000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_16
+          bins hpmcounter16_enabled  = {44'b110000010000_00000000000000010000000000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_17
+          bins hpmcounter17_enabled  = {44'b110000010001_00000000000000100000000000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_18
+          bins hpmcounter18_enabled  = {44'b110000010010_00000000000001000000000000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_19
+          bins hpmcounter19_enabled  = {44'b110000010011_00000000000010000000000000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_20
+          bins hpmcounter20_enabled  = {44'b110000010100_00000000000100000000000000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_21
+          bins hpmcounter21_enabled  = {44'b110000010101_00000000001000000000000000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_22
+          bins hpmcounter22_enabled  = {44'b110000010110_00000000010000000000000000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_23
+          bins hpmcounter23_enabled  = {44'b110000010111_00000000100000000000000000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_24
+          bins hpmcounter24_enabled  = {44'b110000011000_00000001000000000000000000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_25
+          bins hpmcounter25_enabled  = {44'b110000011001_00000010000000000000000000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_26
+          bins hpmcounter26_enabled  = {44'b110000011010_00000100000000000000000000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_27
+          bins hpmcounter27_enabled  = {44'b110000011011_00001000000000000000000000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_28
+          bins hpmcounter28_enabled  = {44'b110000011100_00010000000000000000000000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_29
+          bins hpmcounter29_enabled  = {44'b110000011101_00100000000000000000000000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_30
+          bins hpmcounter30_enabled  = {44'b110000011110_01000000000000000000000000000000};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_31
+          bins hpmcounter31_enabled  = {44'b110000011111_10000000000000000000000000000000};
+        `endif
+      `endif
+
+      bins cycle_disabled         = {44'b110000000000_11111111111111111111111111111110};
+      bins time_disabled          = {44'b110000000001_11111111111111111111111111111101};
+      bins instret_disabled       = {44'b110000000010_11111111111111111111111111111011};
+      `ifdef ZIHPM_SUPPORTED
+        `ifdef UDB_HPM_COUNTER_EN_3
+          bins hpmcounter3_disabled   = {44'b110000000011_11111111111111111111111111110111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_4
+          bins hpmcounter4_disabled   = {44'b110000000100_11111111111111111111111111101111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_5
+          bins hpmcounter5_disabled   = {44'b110000000101_11111111111111111111111111011111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_6
+          bins hpmcounter6_disabled   = {44'b110000000110_11111111111111111111111110111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_7
+          bins hpmcounter7_disabled   = {44'b110000000111_11111111111111111111111101111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_8
+          bins hpmcounter8_disabled   = {44'b110000001000_11111111111111111111111011111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_9
+          bins hpmcounter9_disabled   = {44'b110000001001_11111111111111111111110111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_10
+          bins hpmcounter10_disabled  = {44'b110000001010_11111111111111111111101111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_11
+          bins hpmcounter11_disabled  = {44'b110000001011_11111111111111111111011111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_12
+          bins hpmcounter12_disabled  = {44'b110000001100_11111111111111111110111111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_13
+          bins hpmcounter13_disabled  = {44'b110000001101_11111111111111111101111111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_14
+          bins hpmcounter14_disabled  = {44'b110000001110_11111111111111111011111111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_15
+          bins hpmcounter15_disabled  = {44'b110000001111_11111111111111110111111111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_16
+          bins hpmcounter16_disabled  = {44'b110000010000_11111111111111101111111111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_17
+          bins hpmcounter17_disabled  = {44'b110000010001_11111111111111011111111111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_18
+          bins hpmcounter18_disabled  = {44'b110000010010_11111111111110111111111111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_19
+          bins hpmcounter19_disabled  = {44'b110000010011_11111111111101111111111111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_20
+          bins hpmcounter20_disabled  = {44'b110000010100_11111111111011111111111111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_21
+          bins hpmcounter21_disabled  = {44'b110000010101_11111111110111111111111111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_22
+          bins hpmcounter22_disabled  = {44'b110000010110_11111111101111111111111111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_23
+          bins hpmcounter23_disabled  = {44'b110000010111_11111111011111111111111111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_24
+          bins hpmcounter24_disabled  = {44'b110000011000_11111110111111111111111111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_25
+          bins hpmcounter25_disabled  = {44'b110000011001_11111101111111111111111111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_26
+          bins hpmcounter26_disabled  = {44'b110000011010_11111011111111111111111111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_27
+          bins hpmcounter27_disabled  = {44'b110000011011_11110111111111111111111111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_28
+          bins hpmcounter28_disabled  = {44'b110000011100_11101111111111111111111111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_29
+          bins hpmcounter29_disabled  = {44'b110000011101_11011111111111111111111111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_30
+          bins hpmcounter30_disabled  = {44'b110000011110_10111111111111111111111111111111};
+        `endif
+        `ifdef UDB_HPM_COUNTER_EN_31
+          bins hpmcounter31_disabled  = {44'b110000011111_01111111111111111111111111111111};
+        `endif
+      `endif
+
+      `ifdef UDB_MXLEN_32
+          bins cycleh_enabled         = {44'b110010000000_00000000000000000000000000000001};
+          bins timeh_enabled          = {44'b110010000001_00000000000000000000000000000010};
+          bins instreth_enabled       = {44'b110010000010_00000000000000000000000000000100};
+          `ifdef ZIHPM_SUPPORTED
+            `ifdef UDB_HPM_COUNTER_EN_3
+              bins hpmcounter3h_enabled   = {44'b110010000011_00000000000000000000000000001000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_4
+              bins hpmcounter4h_enabled   = {44'b110010000100_00000000000000000000000000010000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_5
+              bins hpmcounter5h_enabled   = {44'b110010000101_00000000000000000000000000100000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_6
+              bins hpmcounter6h_enabled   = {44'b110010000110_00000000000000000000000001000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_7
+              bins hpmcounter7h_enabled   = {44'b110010000111_00000000000000000000000010000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_8
+              bins hpmcounter8h_enabled   = {44'b110010001000_00000000000000000000000100000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_9
+              bins hpmcounter9h_enabled   = {44'b110010001001_00000000000000000000001000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_10
+              bins hpmcounter10h_enabled  = {44'b110010001010_00000000000000000000010000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_11
+              bins hpmcounter11h_enabled  = {44'b110010001011_00000000000000000000100000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_12
+              bins hpmcounter12h_enabled  = {44'b110010001100_00000000000000000001000000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_13
+              bins hpmcounter13h_enabled  = {44'b110010001101_00000000000000000010000000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_14
+              bins hpmcounter14h_enabled  = {44'b110010001110_00000000000000000100000000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_15
+              bins hpmcounter15h_enabled  = {44'b110010001111_00000000000000001000000000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_16
+              bins hpmcounter16h_enabled  = {44'b110010010000_00000000000000010000000000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_17
+              bins hpmcounter17h_enabled  = {44'b110010010001_00000000000000100000000000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_18
+              bins hpmcounter18h_enabled  = {44'b110010010010_00000000000001000000000000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_19
+              bins hpmcounter19h_enabled  = {44'b110010010011_00000000000010000000000000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_20
+              bins hpmcounter20h_enabled  = {44'b110010010100_00000000000100000000000000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_21
+              bins hpmcounter21h_enabled  = {44'b110010010101_00000000001000000000000000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_22
+              bins hpmcounter22h_enabled  = {44'b110010010110_00000000010000000000000000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_23
+              bins hpmcounter23h_enabled  = {44'b110010010111_00000000100000000000000000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_24
+              bins hpmcounter24h_enabled  = {44'b110010011000_00000001000000000000000000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_25
+              bins hpmcounter25h_enabled  = {44'b110010011001_00000010000000000000000000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_26
+              bins hpmcounter26h_enabled  = {44'b110010011010_00000100000000000000000000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_27
+              bins hpmcounter27h_enabled  = {44'b110010011011_00001000000000000000000000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_28
+              bins hpmcounter28h_enabled  = {44'b110010011100_00010000000000000000000000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_29
+              bins hpmcounter29h_enabled  = {44'b110010011101_00100000000000000000000000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_30
+              bins hpmcounter30h_enabled  = {44'b110010011110_01000000000000000000000000000000};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_31
+              bins hpmcounter31h_enabled  = {44'b110010011111_10000000000000000000000000000000};
+            `endif
+          `endif
+
+          bins cycleh_disabled         = {44'b110010000000_11111111111111111111111111111110};
+          bins timeh_disabled          = {44'b110010000001_11111111111111111111111111111101};
+          bins instreth_disabled       = {44'b110010000010_11111111111111111111111111111011};
+          `ifdef ZIHPM_SUPPORTED
+            `ifdef UDB_HPM_COUNTER_EN_3
+              bins hpmcounter3h_disabled   = {44'b110010000011_11111111111111111111111111110111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_4
+              bins hpmcounter4h_disabled   = {44'b110010000100_11111111111111111111111111101111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_5
+              bins hpmcounter5h_disabled   = {44'b110010000101_11111111111111111111111111011111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_6
+              bins hpmcounter6h_disabled   = {44'b110010000110_11111111111111111111111110111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_7
+              bins hpmcounter7h_disabled   = {44'b110010000111_11111111111111111111111101111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_8
+              bins hpmcounter8h_disabled   = {44'b110010001000_11111111111111111111111011111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_9
+              bins hpmcounter9h_disabled   = {44'b110010001001_11111111111111111111110111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_10
+              bins hpmcounter10h_disabled  = {44'b110010001010_11111111111111111111101111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_11
+              bins hpmcounter11h_disabled  = {44'b110010001011_11111111111111111111011111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_12
+              bins hpmcounter12h_disabled  = {44'b110010001100_11111111111111111110111111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_13
+              bins hpmcounter13h_disabled  = {44'b110010001101_11111111111111111101111111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_14
+              bins hpmcounter14h_disabled  = {44'b110010001110_11111111111111111011111111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_15
+              bins hpmcounter15h_disabled  = {44'b110010001111_11111111111111110111111111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_16
+              bins hpmcounter16h_disabled  = {44'b110010010000_11111111111111101111111111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_17
+              bins hpmcounter17h_disabled  = {44'b110010010001_11111111111111011111111111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_18
+              bins hpmcounter18h_disabled  = {44'b110010010010_11111111111110111111111111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_19
+              bins hpmcounter19h_disabled  = {44'b110010010011_11111111111101111111111111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_20
+              bins hpmcounter20h_disabled  = {44'b110010010100_11111111111011111111111111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_21
+              bins hpmcounter21h_disabled  = {44'b110010010101_11111111110111111111111111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_22
+              bins hpmcounter22h_disabled  = {44'b110010010110_11111111101111111111111111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_23
+              bins hpmcounter23h_disabled  = {44'b110010010111_11111111011111111111111111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_24
+              bins hpmcounter24h_disabled  = {44'b110010011000_11111110111111111111111111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_25
+              bins hpmcounter25h_disabled  = {44'b110010011001_11111101111111111111111111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_26
+              bins hpmcounter26h_disabled  = {44'b110010011010_11111011111111111111111111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_27
+              bins hpmcounter27h_disabled  = {44'b110010011011_11110111111111111111111111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_28
+              bins hpmcounter28h_disabled  = {44'b110010011100_11101111111111111111111111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_29
+              bins hpmcounter29h_disabled  = {44'b110010011101_11011111111111111111111111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_30
+              bins hpmcounter30h_disabled  = {44'b110010011110_10111111111111111111111111111111};
+            `endif
+            `ifdef UDB_HPM_COUNTER_EN_31
+              bins hpmcounter31h_disabled  = {44'b110010011111_01111111111111111111111111111111};
+            `endif
+          `endif // ZIHPM_SUPPORTED
+      `endif // UDB_MXLEN_32
+    }
+
+    `ifdef U_SUPPORTED
+        cp_mcounteren_access_m: cross csraccess, counters_mcounteren, priv_mode_m;
+    `endif
+
+    `ifdef S_SUPPORTED
+      mcounteren: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren"){
+          bins ones  = {32'b11111111111111111111111111111111};
+          bins zeros = {32'b00000000000000000000000000000000};
+      }
+      counters_scounteren: coverpoint {ins.current.insn[31:20], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[31:0]} {
+        bins cycle_enabled         = {44'b110000000000_00000000000000000000000000000001};
+        bins time_enabled          = {44'b110000000001_00000000000000000000000000000010};
+        bins instret_enabled       = {44'b110000000010_00000000000000000000000000000100};
+        `ifdef ZIHPM_SUPPORTED
+          `ifdef UDB_HPM_COUNTER_EN_3
+            bins hpmcounter3_enabled   = {44'b110000000011_00000000000000000000000000001000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_4
+            bins hpmcounter4_enabled   = {44'b110000000100_00000000000000000000000000010000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_5
+            bins hpmcounter5_enabled   = {44'b110000000101_00000000000000000000000000100000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_6
+            bins hpmcounter6_enabled   = {44'b110000000110_00000000000000000000000001000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_7
+            bins hpmcounter7_enabled   = {44'b110000000111_00000000000000000000000010000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_8
+            bins hpmcounter8_enabled   = {44'b110000001000_00000000000000000000000100000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_9
+            bins hpmcounter9_enabled   = {44'b110000001001_00000000000000000000001000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_10
+            bins hpmcounter10_enabled  = {44'b110000001010_00000000000000000000010000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_11
+            bins hpmcounter11_enabled  = {44'b110000001011_00000000000000000000100000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_12
+            bins hpmcounter12_enabled  = {44'b110000001100_00000000000000000001000000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_13
+            bins hpmcounter13_enabled  = {44'b110000001101_00000000000000000010000000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_14
+            bins hpmcounter14_enabled  = {44'b110000001110_00000000000000000100000000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_15
+            bins hpmcounter15_enabled  = {44'b110000001111_00000000000000001000000000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_16
+            bins hpmcounter16_enabled  = {44'b110000010000_00000000000000010000000000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_17
+            bins hpmcounter17_enabled  = {44'b110000010001_00000000000000100000000000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_18
+            bins hpmcounter18_enabled  = {44'b110000010010_00000000000001000000000000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_19
+            bins hpmcounter19_enabled  = {44'b110000010011_00000000000010000000000000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_20
+            bins hpmcounter20_enabled  = {44'b110000010100_00000000000100000000000000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_21
+            bins hpmcounter21_enabled  = {44'b110000010101_00000000001000000000000000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_22
+            bins hpmcounter22_enabled  = {44'b110000010110_00000000010000000000000000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_23
+            bins hpmcounter23_enabled  = {44'b110000010111_00000000100000000000000000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_24
+            bins hpmcounter24_enabled  = {44'b110000011000_00000001000000000000000000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_25
+            bins hpmcounter25_enabled  = {44'b110000011001_00000010000000000000000000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_26
+            bins hpmcounter26_enabled  = {44'b110000011010_00000100000000000000000000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_27
+            bins hpmcounter27_enabled  = {44'b110000011011_00001000000000000000000000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_28
+            bins hpmcounter28_enabled  = {44'b110000011100_00010000000000000000000000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_29
+            bins hpmcounter29_enabled  = {44'b110000011101_00100000000000000000000000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_30
+            bins hpmcounter30_enabled  = {44'b110000011110_01000000000000000000000000000000};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_31
+            bins hpmcounter31_enabled  = {44'b110000011111_10000000000000000000000000000000};
+          `endif
+        `endif // ZIHPM_SUPPORTED
+
+        bins cycle_disabled         = {44'b110000000000_11111111111111111111111111111110};
+        bins time_disabled          = {44'b110000000001_11111111111111111111111111111101};
+        bins instret_disabled       = {44'b110000000010_11111111111111111111111111111011};
+        `ifdef ZIHPM_SUPPORTED
+          `ifdef UDB_HPM_COUNTER_EN_3
+            bins hpmcounter3_disabled   = {44'b110000000011_11111111111111111111111111110111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_4
+            bins hpmcounter4_disabled   = {44'b110000000100_11111111111111111111111111101111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_5
+            bins hpmcounter5_disabled   = {44'b110000000101_11111111111111111111111111011111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_6
+            bins hpmcounter6_disabled   = {44'b110000000110_11111111111111111111111110111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_7
+            bins hpmcounter7_disabled   = {44'b110000000111_11111111111111111111111101111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_8
+            bins hpmcounter8_disabled   = {44'b110000001000_11111111111111111111111011111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_9
+            bins hpmcounter9_disabled   = {44'b110000001001_11111111111111111111110111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_10
+            bins hpmcounter10_disabled  = {44'b110000001010_11111111111111111111101111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_11
+            bins hpmcounter11_disabled  = {44'b110000001011_11111111111111111111011111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_12
+            bins hpmcounter12_disabled  = {44'b110000001100_11111111111111111110111111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_13
+            bins hpmcounter13_disabled  = {44'b110000001101_11111111111111111101111111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_14
+            bins hpmcounter14_disabled  = {44'b110000001110_11111111111111111011111111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_15
+            bins hpmcounter15_disabled  = {44'b110000001111_11111111111111110111111111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_16
+            bins hpmcounter16_disabled  = {44'b110000010000_11111111111111101111111111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_17
+            bins hpmcounter17_disabled  = {44'b110000010001_11111111111111011111111111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_18
+            bins hpmcounter18_disabled  = {44'b110000010010_11111111111110111111111111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_19
+            bins hpmcounter19_disabled  = {44'b110000010011_11111111111101111111111111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_20
+            bins hpmcounter20_disabled  = {44'b110000010100_11111111111011111111111111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_21
+            bins hpmcounter21_disabled  = {44'b110000010101_11111111110111111111111111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_22
+            bins hpmcounter22_disabled  = {44'b110000010110_11111111101111111111111111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_23
+            bins hpmcounter23_disabled  = {44'b110000010111_11111111011111111111111111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_24
+            bins hpmcounter24_disabled  = {44'b110000011000_11111110111111111111111111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_25
+            bins hpmcounter25_disabled  = {44'b110000011001_11111101111111111111111111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_26
+            bins hpmcounter26_disabled  = {44'b110000011010_11111011111111111111111111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_27
+            bins hpmcounter27_disabled  = {44'b110000011011_11110111111111111111111111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_28
+            bins hpmcounter28_disabled  = {44'b110000011100_11101111111111111111111111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_29
+            bins hpmcounter29_disabled  = {44'b110000011101_11011111111111111111111111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_30
+            bins hpmcounter30_disabled  = {44'b110000011110_10111111111111111111111111111111};
+          `endif
+          `ifdef UDB_HPM_COUNTER_EN_31
+            bins hpmcounter31_disabled  = {44'b110000011111_01111111111111111111111111111111};
+          `endif
+        `endif // ZIHPM_SUPPORTED
+
+        `ifdef UDB_MXLEN_32
+            bins cycleh_enabled         = {44'b110010000000_00000000000000000000000000000001};
+            bins timeh_enabled          = {44'b110010000001_00000000000000000000000000000010};
+            bins instreth_enabled       = {44'b110010000010_00000000000000000000000000000100};
+            `ifdef ZIHPM_SUPPORTED
+              `ifdef UDB_HPM_COUNTER_EN_3
+                bins hpmcounter3h_enabled   = {44'b110010000011_00000000000000000000000000001000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_4
+                bins hpmcounter4h_enabled   = {44'b110010000100_00000000000000000000000000010000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_5
+                bins hpmcounter5h_enabled   = {44'b110010000101_00000000000000000000000000100000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_6
+                bins hpmcounter6h_enabled   = {44'b110010000110_00000000000000000000000001000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_7
+                bins hpmcounter7h_enabled   = {44'b110010000111_00000000000000000000000010000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_8
+                bins hpmcounter8h_enabled   = {44'b110010001000_00000000000000000000000100000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_9
+                bins hpmcounter9h_enabled   = {44'b110010001001_00000000000000000000001000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_10
+                bins hpmcounter10h_enabled  = {44'b110010001010_00000000000000000000010000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_11
+                bins hpmcounter11h_enabled  = {44'b110010001011_00000000000000000000100000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_12
+                bins hpmcounter12h_enabled  = {44'b110010001100_00000000000000000001000000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_13
+                bins hpmcounter13h_enabled  = {44'b110010001101_00000000000000000010000000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_14
+                bins hpmcounter14h_enabled  = {44'b110010001110_00000000000000000100000000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_15
+                bins hpmcounter15h_enabled  = {44'b110010001111_00000000000000001000000000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_16
+                bins hpmcounter16h_enabled  = {44'b110010010000_00000000000000010000000000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_17
+                bins hpmcounter17h_enabled  = {44'b110010010001_00000000000000100000000000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_18
+                bins hpmcounter18h_enabled  = {44'b110010010010_00000000000001000000000000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_19
+                bins hpmcounter19h_enabled  = {44'b110010010011_00000000000010000000000000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_20
+                bins hpmcounter20h_enabled  = {44'b110010010100_00000000000100000000000000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_21
+                bins hpmcounter21h_enabled  = {44'b110010010101_00000000001000000000000000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_22
+                bins hpmcounter22h_enabled  = {44'b110010010110_00000000010000000000000000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_23
+                bins hpmcounter23h_enabled  = {44'b110010010111_00000000100000000000000000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_24
+                bins hpmcounter24h_enabled  = {44'b110010011000_00000001000000000000000000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_25
+                bins hpmcounter25h_enabled  = {44'b110010011001_00000010000000000000000000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_26
+                bins hpmcounter26h_enabled  = {44'b110010011010_00000100000000000000000000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_27
+                bins hpmcounter27h_enabled  = {44'b110010011011_00001000000000000000000000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_28
+                bins hpmcounter28h_enabled  = {44'b110010011100_00010000000000000000000000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_29
+                bins hpmcounter29h_enabled  = {44'b110010011101_00100000000000000000000000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_30
+                bins hpmcounter30h_enabled  = {44'b110010011110_01000000000000000000000000000000};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_31
+                bins hpmcounter31h_enabled  = {44'b110010011111_10000000000000000000000000000000};
+              `endif
+            `endif // ZIHPM_SUPPORTED
+
+            bins cycleh_disabled         = {44'b110010000000_11111111111111111111111111111110};
+            bins timeh_disabled          = {44'b110010000001_11111111111111111111111111111101};
+            bins instreth_disabled       = {44'b110010000010_11111111111111111111111111111011};
+            `ifdef ZIHPM_SUPPORTED
+              `ifdef UDB_HPM_COUNTER_EN_3
+                bins hpmcounter3h_disabled   = {44'b110010000011_11111111111111111111111111110111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_4
+                bins hpmcounter4h_disabled   = {44'b110010000100_11111111111111111111111111101111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_5
+                bins hpmcounter5h_disabled   = {44'b110010000101_11111111111111111111111111011111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_6
+                bins hpmcounter6h_disabled   = {44'b110010000110_11111111111111111111111110111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_7
+                bins hpmcounter7h_disabled   = {44'b110010000111_11111111111111111111111101111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_8
+                bins hpmcounter8h_disabled   = {44'b110010001000_11111111111111111111111011111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_9
+                bins hpmcounter9h_disabled   = {44'b110010001001_11111111111111111111110111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_10
+                bins hpmcounter10h_disabled  = {44'b110010001010_11111111111111111111101111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_11
+                bins hpmcounter11h_disabled  = {44'b110010001011_11111111111111111111011111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_12
+                bins hpmcounter12h_disabled  = {44'b110010001100_11111111111111111110111111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_13
+                bins hpmcounter13h_disabled  = {44'b110010001101_11111111111111111101111111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_14
+                bins hpmcounter14h_disabled  = {44'b110010001110_11111111111111111011111111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_15
+                bins hpmcounter15h_disabled  = {44'b110010001111_11111111111111110111111111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_16
+                bins hpmcounter16h_disabled  = {44'b110010010000_11111111111111101111111111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_17
+                bins hpmcounter17h_disabled  = {44'b110010010001_11111111111111011111111111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_18
+                bins hpmcounter18h_disabled  = {44'b110010010010_11111111111110111111111111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_19
+                bins hpmcounter19h_disabled  = {44'b110010010011_11111111111101111111111111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_20
+                bins hpmcounter20h_disabled  = {44'b110010010100_11111111111011111111111111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_21
+                bins hpmcounter21h_disabled  = {44'b110010010101_11111111110111111111111111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_22
+                bins hpmcounter22h_disabled  = {44'b110010010110_11111111101111111111111111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_23
+                bins hpmcounter23h_disabled  = {44'b110010010111_11111111011111111111111111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_24
+                bins hpmcounter24h_disabled  = {44'b110010011000_11111110111111111111111111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_25
+                bins hpmcounter25h_disabled  = {44'b110010011001_11111101111111111111111111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_26
+                bins hpmcounter26h_disabled  = {44'b110010011010_11111011111111111111111111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_27
+                bins hpmcounter27h_disabled  = {44'b110010011011_11110111111111111111111111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_28
+                bins hpmcounter28h_disabled  = {44'b110010011100_11101111111111111111111111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_29
+                bins hpmcounter29h_disabled  = {44'b110010011101_11011111111111111111111111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_30
+                bins hpmcounter30h_disabled  = {44'b110010011110_10111111111111111111111111111111};
+              `endif
+              `ifdef UDB_HPM_COUNTER_EN_31
+                bins hpmcounter31h_disabled  = {44'b110010011111_01111111111111111111111111111111};
+              `endif
+            `endif // ZIHPM_SUPPORTED
+        `endif //UDB_MXLEN_32
+      }
+
+      cp_scounteren_access_m: cross csraccess, counters_scounteren, mcounteren, priv_mode_m;
+
+    `endif // S_SUPPORTED
+
+    // ---- minstret delta coverpoints ----
+
+    ecall: coverpoint ins.current.insn {
+        bins ecall = {ECALL};
+    }
+    ebreak: coverpoint ins.current.insn {
+        bins ebreak = {EBREAK};
+    }
+    insn_lw: coverpoint ins.current.insn {
+        wildcard bins lw = {LW};
+    }
+    adr_misaligned_1: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] {
+        bins one = {3'b001};  // scratch + 1
+    }
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        illegal_address: coverpoint ins.current.imm + ins.current.rs1_val {
+            bins illegal = {`RVMODEL_ACCESS_FAULT_ADDRESS};
+        }
+    `endif
+    wfi: coverpoint ins.current.insn {
+        bins wfi = {WFI};
+    }
+    mstatus_mie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
+        bins zero = {0};
+    }
+    mstatus_mie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
+        bins one = {1};
+    }
+
+    insn_add: coverpoint ins.current.insn {
+        wildcard bins add = {ADD};
+    }
+    insn_mret: coverpoint ins.current.insn {
+        wildcard bins mret = {MRET};
+    }
+    insn_sret: coverpoint ins.current.insn {
+        wildcard bins sret = {SRET};
+    }
+    `ifdef ZAWRS_SUPPORTED
+        wrs_nto: coverpoint ins.current.insn {
+            bins wrs_nto = {WRS_NTO};
+        }
+        wrs_sto: coverpoint ins.current.insn {
+            bins wrs_sto = {WRS_STO};
+        }
+    `endif
+
+    prev_minstret_read: coverpoint ins.prev.insn {
+        wildcard bins csrr_minstret = {32'b101100000010_00000_010_?????_1110011};
+    }
+    prev_ecall_li: coverpoint ins.prev.insn {
+        bins li_a0 = {32'h07300513};  // addi a0, x0, 0x73 (RVTEST_TSBI_ECALL_TEST)
+    }
+    mip_mtip_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "mtip")[0] {
+        bins one = {1};
+    }
+    mie_mtie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mtie")[0] {
+        bins one = {1};
+    }
+    mie_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mie")[31:0] {
+        bins zero = {0};
+    }
+
+    // retiring instructions
+    cp_instret_add:  cross priv_mode_m, insn_add, prev_minstret_read;
+    cp_instret_mret: cross priv_mode_m, insn_mret, prev_minstret_read;
+    `ifdef S_SUPPORTED
+        cp_instret_sret: cross priv_mode_m, insn_sret, prev_minstret_read;
+    `endif
+
+    // instructions that trap before retiring
+    cp_instret_ecall:  cross priv_mode_m, ecall, prev_ecall_li;
+    cp_instret_ebreak: cross priv_mode_m, ebreak, prev_minstret_read;
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        cp_instret_load_access_fault: cross priv_mode_m, insn_lw, illegal_address, prev_minstret_read;
+    `endif
+    cp_instret_load_misaligned: cross priv_mode_m, insn_lw, adr_misaligned_1, prev_minstret_read;
+
+    // wfi and wrs
+    `ifdef UDB_WFI_FINITE
+        cp_instret_wfi_timeout: cross priv_mode_m, wfi, mie_zero, prev_minstret_read;
+    `endif
+    `ifdef UDB_MTI_INTR_IMPL
+        cp_instret_wfi_pending: cross priv_mode_m, wfi, mip_mtip_one, mie_mtie_one, mstatus_mie_zero, prev_minstret_read;
+        cp_instret_wfi_taken:   cross priv_mode_m, wfi, mie_mtie_one, mstatus_mie_one;
+    `endif
+    `ifdef ZAWRS_SUPPORTED
+        cp_instret_wrs_nto: cross priv_mode_m, wrs_nto, prev_minstret_read;
+        cp_instret_wrs_sto: cross priv_mode_m, wrs_sto, prev_minstret_read;
+    `endif
+
+endgroup
+`endif
+
+`ifdef H_SUPPORTED
+`include "general/RISCV_coverage_hypervisor.svh"
+
+covergroup Sm_H_mcsr_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    csraccesses : coverpoint ins.current.insn {
+        wildcard bins csrrc_all = {CSRRC} iff (ins.current.rs1_val == '1); // csrc all ones
+        wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val ==  0); // csrw all zeros
+        wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val == '1); // csrw all ones
+        wildcard bins csrrs_all = {CSRRS} iff (ins.current.rs1_val == '1); // csrs all ones
+        wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val ==  0); // csrr
+    }
+    csraccesses_masked : coverpoint ins.current.insn {
+        wildcard bins csrrc_all = {CSRRC} iff (ins.current.rs1_val != 0); // csrc mask
+        wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val == 0); // csrw all zeros
+        wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val != 0); // csrw mask
+        wildcard bins csrrs_all = {CSRRS} iff (ins.current.rs1_val != 0); // csrs mask
+        wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val == 0); // csrr
+    }
+    csrop: coverpoint ins.current.insn {
+        wildcard bins csrrs = {CSRRS};
+        wildcard bins csrrc = {CSRRC};
+    }
+    walking_ones: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+        bins b_1[] = { [0:`UDB_MXLEN-1] };
+    }
+
+    // Machine, HS and VS H-extension CSRs accessed and walked without masked writes.  Keep in sync with HCommon.py.
+    hcsrname : coverpoint ins.current.insn[31:20] {
+        bins hedeleg    = {CSR_HEDELEG};
+        bins hideleg    = {CSR_HIDELEG};
+        bins hie        = {CSR_HIE};
+        bins hcounteren = {CSR_HCOUNTEREN};
+        bins hgeie      = {CSR_HGEIE};
+        bins hip        = {CSR_HIP};
+        bins hvip       = {CSR_HVIP};
+        `ifdef ZICNTR_SUPPORTED
+            bins htimedelta = {CSR_HTIMEDELTA};
+        `endif
+        bins vsstatus   = {CSR_VSSTATUS};
+        bins vsie       = {CSR_VSIE};
+        bins vstval     = {CSR_VSTVAL};
+        bins vsip       = {CSR_VSIP};
+        bins vstvec     = {CSR_VSTVEC};
+        bins vsscratch  = {CSR_VSSCRATCH};
+        bins vsepc      = {CSR_VSEPC};
+        `ifdef SSTC_SUPPORTED
+            bins vstimecmp = {CSR_VSTIMECMP};
+        `endif
+        `ifdef UDB_MXLEN_32
+            `ifdef ZICNTR_SUPPORTED
+                bins htimedeltah = {CSR_HTIMEDELTAH};
+            `endif
+            `ifdef SSTC_SUPPORTED
+                bins vstimecmph = {CSR_VSTIMECMPH};
+            `endif
+        `endif
+    }
+    // CSRs that need only hold zero: the readback is checked after writing zero and after clearing every bit
+    hcsrname_zero : coverpoint ins.current.insn[31:20] {
+        bins mtval2 = {CSR_MTVAL2};
+        bins mtinst = {CSR_MTINST};
+        bins htval  = {CSR_HTVAL};
+        bins htinst = {CSR_HTINST};
+        bins hgatp  = {CSR_HGATP};
+        bins vsatp  = {CSR_VSATP};
+        `ifdef UDB_MXLEN_32
+            `ifdef SM1P13P0_OR_LATER_SUPPORTED
+                bins hedelegh = {CSR_HEDELEGH};
+            `endif
+        `endif
+    }
+    // CSRs whose access and walk tests write only the checked fields
+    hcsrname_masked : coverpoint ins.current.insn[31:20] {
+        bins hstatus = {CSR_HSTATUS};
+        bins henvcfg = {CSR_HENVCFG};
+        `ifdef UDB_MXLEN_32
+            bins henvcfgh = {CSR_HENVCFGH};
+        `endif
+    }
+    hgeip : coverpoint ins.current.insn[31:20] {
+        bins hgeip = {CSR_HGEIP};
+    }
+
+    cp_hcsr_access:         cross priv_mode_m, hcsrname, csraccesses;
+    cp_hcsr_access_zero:    cross priv_mode_m, hcsrname_zero, csraccesses;
+    cp_hcsr_access_masked:  cross priv_mode_m, hcsrname_masked, csraccesses_masked;
+    cp_hcsr_access_ro:      cross priv_mode_m, hgeip, csraccesses;
+    cp_hcsrwalk:            cross priv_mode_m, hcsrname, csrop, walking_ones {
+        // vsepc and vstval may legalize invalid addresses, so they are walked with valid addresses instead
+        ignore_bins vaddr = binsof(hcsrname.vsepc) || binsof(hcsrname.vstval);
+    }
+    // Keep the lists below in sync with the masks in HCommon.py
+    cp_hcsrwalk_masked:     cross priv_mode_m, hcsrname_masked, csrop, walking_ones {
+        ignore_bins hstatus_not_walked = binsof(hcsrname_masked.hstatus) &&
+            binsof(walking_ones) intersect {[0:5], [10:19], [23:63]};
+        ignore_bins henvcfg_not_walked = binsof(hcsrname_masked.henvcfg) &&
+            binsof(walking_ones) intersect {1, [8:31], [34:60]};
+        `ifdef UDB_MXLEN_32
+            ignore_bins henvcfgh_not_walked = binsof(hcsrname_masked.henvcfgh) &&
+                binsof(walking_ones) intersect {[2:28]};
+        `endif
+    }
+
+    // hgatp and vsatp: walk a 1 and a 0 through the non-MODE bits with a legal MODE
+    csrrw : coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW};
+    }
+    atpname : coverpoint ins.current.insn[31:20] {
+        `ifdef UDB_MXLEN_64
+            `ifdef UDB_SV39X4_TRANSLATION
+                bins hgatp = {CSR_HGATP};
+            `endif
+            `ifdef UDB_SV39_VSMODE_TRANSLATION
+                bins vsatp = {CSR_VSATP};
+            `endif
+        `else
+            `ifdef UDB_SV32X4_TRANSLATION
+                bins hgatp = {CSR_HGATP};
+            `endif
+            `ifdef UDB_SV32_VSMODE_TRANSLATION
+                bins vsatp = {CSR_VSATP};
+            `endif
+        `endif
+    }
+    `ifdef UDB_MXLEN_64
+        atp_walk1 : coverpoint $clog2(ins.current.rs1_val[59:0])
+            iff (ins.current.rs1_val[63:60] == 8 && $onehot(ins.current.rs1_val[59:0])) {
+            bins b[] = {[0:59]};
+        }
+        atp_walk0 : coverpoint $clog2(~ins.current.rs1_val[59:0])
+            iff (ins.current.rs1_val[63:60] == 8 && $onehot(~ins.current.rs1_val[59:0])) {
+            bins b[] = {[0:59]};
+        }
+    `else
+        atp_walk1 : coverpoint $clog2(ins.current.rs1_val[30:0])
+            iff (ins.current.rs1_val[31] && $onehot(ins.current.rs1_val[30:0])) {
+            bins b[] = {[0:30]};
+        }
+        atp_walk0 : coverpoint $clog2(~ins.current.rs1_val[30:0])
+            iff (ins.current.rs1_val[31] && $onehot(~ins.current.rs1_val[30:0])) {
+            bins b[] = {[0:30]};
+        }
+    `endif
+    cp_atpwalk1:            cross priv_mode_m, csrrw, atpname, atp_walk1;
+    cp_atpwalk0:            cross priv_mode_m, csrrw, atpname, atp_walk0;
+
+    // vsepc and vstval hold every address that sepc and stval hold: the current pc, an address in scratch, and each
+    // canonical virtual address with one bit walked.  vsepc bit 0 is always 0, and bit 1 is 0 unless Zca allows
+    // 2-byte instruction alignment.
+    vsepc : coverpoint ins.current.insn[31:20] {
+        bins vsepc = {CSR_VSEPC};
+    }
+    vstval : coverpoint ins.current.insn[31:20] {
+        bins vstval = {CSR_VSTVAL};
+    }
+    xaddr_pc : coverpoint (ins.current.rs1_val + 4 == ins.current.pc_rdata) {
+        bins pc = {1};
+    }
+    xaddr_scratch : coverpoint (ins.current.rs1_val[7:0] == 8'hA8) {
+        bins scratch = {1};
+    }
+    cp_vsepc_vaddr_pc:       cross priv_mode_m, csrrw, vsepc, xaddr_pc;
+    cp_vsepc_vaddr_scratch:  cross priv_mode_m, csrrw, vsepc, xaddr_scratch;
+    cp_vstval_vaddr_pc:      cross priv_mode_m, csrrw, vstval, xaddr_pc;
+    cp_vstval_vaddr_scratch: cross priv_mode_m, csrrw, vstval, xaddr_scratch;
+    `ifdef H_VADDR_WALK_MSB
+        vaddr_walk1 : coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+            bins b_1[] = { [0:`H_VADDR_WALK_MSB] };
+        }
+        vaddr_walk0 : coverpoint $clog2(~ins.current.rs1_val) iff ($onehot(~ins.current.rs1_val)) {
+            bins b_0[] = { [0:`H_VADDR_WALK_MSB] };
+        }
+        cp_vsepc_vaddr_walk1:    cross priv_mode_m, csrrw, vsepc, vaddr_walk1;
+        cp_vsepc_vaddr_walk0:    cross priv_mode_m, csrrw, vsepc, vaddr_walk0;
+        cp_vstval_vaddr_walk1:   cross priv_mode_m, csrrw, vstval, vaddr_walk1;
+        cp_vstval_vaddr_walk0:   cross priv_mode_m, csrrw, vstval, vaddr_walk0;
+    `endif
+
+    // Read an S CSR right after writing its VS replica
+    csrw_prev : coverpoint ins.prev.insn {
+        wildcard bins csrw = {CSRW};
+    }
+    csrr : coverpoint ins.current.insn {
+        wildcard bins csrr = {CSRR};
+    }
+    replica_pair : coverpoint {ins.prev.insn[31:20], ins.current.insn[31:20]} {
+        bins sstatus  = {{CSR_VSSTATUS, CSR_SSTATUS}};
+        bins sie      = {{CSR_VSIE, CSR_SIE}};
+        bins stvec    = {{CSR_VSTVEC, CSR_STVEC}};
+        bins sscratch = {{CSR_VSSCRATCH, CSR_SSCRATCH}};
+        bins sepc     = {{CSR_VSEPC, CSR_SEPC}};
+        bins scause   = {{CSR_VSCAUSE, CSR_SCAUSE}};
+        bins stval    = {{CSR_VSTVAL, CSR_STVAL}};
+        bins sip      = {{CSR_VSIP, CSR_SIP}};
+        // satp always supports Sv39 (RV64) or Sv32 (RV32), but vsatp need not
+        `ifdef UDB_MXLEN_64
+            `ifdef UDB_SV39_VSMODE_TRANSLATION
+                bins satp = {{CSR_VSATP, CSR_SATP}};
+            `endif
+        `elsif UDB_SV32_VSMODE_TRANSLATION
+            bins satp = {{CSR_VSATP, CSR_SATP}};
+        `endif
+    }
+    cp_replica:             cross priv_mode_m, csrw_prev, csrr, replica_pair;
+
+    // In VS-mode, S CSR names access the VS replicas.  VS-mode ecalls go to M-mode, so M-mode can check that
+    // the S CSRs keep their values
+    csrw : coverpoint ins.current.insn {
+        wildcard bins csrw = {CSRW};
+    }
+    sreplicated : coverpoint ins.current.insn[31:20] {
+        bins sstatus  = {CSR_SSTATUS};
+        bins sie      = {CSR_SIE};
+        bins stvec    = {CSR_STVEC};
+        bins sscratch = {CSR_SSCRATCH};
+        bins sepc     = {CSR_SEPC};
+        bins scause   = {CSR_SCAUSE};
+        bins stval    = {CSR_STVAL};
+        bins sip      = {CSR_SIP};
+        `ifdef UDB_MXLEN_64
+            `ifdef UDB_SV39_VSMODE_TRANSLATION
+                bins satp = {CSR_SATP};
+            `endif
+        `elsif UDB_SV32_VSMODE_TRANSLATION
+            bins satp = {CSR_SATP};
+        `endif
+    }
+    cp_replica_vs:          cross priv_mode_vs, csrw, sreplicated;
+
+    // mtval must not be read-only zero with H
+    mtval : coverpoint ins.current.insn[31:20] {
+        bins mtval = {CSR_MTVAL};
+    }
+    rs1_ones : coverpoint ins.current.rs1_val {
+        bins ones = {'1};
+    }
+    cp_mtvala:              cross priv_mode_m, csrrw, mtval, rs1_ones;
+endgroup
+
+covergroup Sm_H_tvm_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    mstatus_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    hstatus_vtvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtvm") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    csr_rw : coverpoint ins.current.insn {
+        wildcard bins csrr = {CSRR};
+        wildcard bins csrw = {CSRW};
+    }
+    // mstatus.TVM = 1 traps satp and hgatp accesses in HS-mode, but not vsatp accesses; hstatus.VTVM does not affect HS-mode
+    atp_hs : coverpoint ins.current.insn[31:20] {
+        bins satp  = {CSR_SATP};
+        bins hgatp = {CSR_HGATP};
+        bins vsatp = {CSR_VSATP};
+    }
+    satp : coverpoint ins.current.insn[31:20] {
+        bins satp = {CSR_SATP};
+    }
+    hfence : coverpoint ins.current.insn {
+        wildcard bins hfence_vvma = {HFENCE_VVMA};
+        wildcard bins hfence_gvma = {HFENCE_GVMA};
+    }
+    sfence : coverpoint ins.current.insn {
+        wildcard bins sfence_vma = {SFENCE_VMA};
+    }
+
+    cp_tvm_hs:  cross priv_mode_hs, atp_hs, csr_rw, mstatus_tvm, hstatus_vtvm;
+    cp_tvm_vs:  cross priv_mode_vs, satp, csr_rw, mstatus_tvm, hstatus_vtvm;
+    cp_hfence:  cross priv_mode_m_hs_vs_u_vu, hfence, mstatus_tvm, hstatus_vtvm;
+    cp_sfence:  cross priv_mode_m_hs_vs_u_vu, sfence, mstatus_tvm, hstatus_vtvm;
+endgroup
+
+covergroup Sm_H_inst_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    `ifdef H_TWO_STAGE
+        hlv : coverpoint ins.current.insn {
+            wildcard bins hlv_b  = {HLV_B};
+            wildcard bins hlv_bu = {HLV_BU};
+            wildcard bins hlv_h  = {HLV_H};
+            wildcard bins hlv_hu = {HLV_HU};
+            wildcard bins hlv_w  = {HLV_W};
+            `ifdef UDB_MXLEN_64
+                wildcard bins hlv_wu = {HLV_WU};
+                wildcard bins hlv_d  = {HLV_D};
+            `endif
+        }
+        hlvx : coverpoint ins.current.insn {
+            wildcard bins hlvx_hu = {HLVX_HU};
+            wildcard bins hlvx_wu = {HLVX_WU};
+        }
+        hsv : coverpoint ins.current.insn {
+            wildcard bins hsv_b = {HSV_B};
+            wildcard bins hsv_h = {HSV_H};
+            wildcard bins hsv_w = {HSV_W};
+            `ifdef UDB_MXLEN_64
+                wildcard bins hsv_d = {HSV_D};
+            `endif
+        }
+        cp_hlv:  cross priv_mode_m, hlv;
+        cp_hlvx: cross priv_mode_m, hlvx;
+        cp_hsv:  cross priv_mode_m, hsv;
+
+        hlv_hsv : coverpoint ins.current.insn {
+            wildcard bins hlv_w = {HLV_W};
+            wildcard bins hsv_w = {HSV_W};
+        }
+        vsatp_mode : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+            bins bare  = {0};
+            bins paged = {[1:15]};
+        }
+        guest_page_fault : coverpoint {ins.current.csr_wb[CSR_MCAUSE], ins.current.csr[CSR_MCAUSE][4:0]} {
+            bins load_store = {6'b110101, 6'b110111};
+        }
+        // Guest-page faults on the final translation (vsatp Bare) and on an implicit VS-stage access
+        cp_guest_page_fault: cross priv_mode_m, hlv_hsv, vsatp_mode, guest_page_fault;
+    `endif
+
+    mret : coverpoint ins.current.insn {
+        bins mret = {MRET};
+    }
+    sret : coverpoint ins.current.insn {
+        bins sret = {SRET};
+    }
+    old_mpp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
+        bins u = {0};
+        bins s = {1};
+        bins m = {3};
+    }
+    `ifdef UDB_MXLEN_64
+        old_mpv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpv") {
+    `else
+        old_mpv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpv") {
+    `endif
+        bins off = {0};
+        bins on  = {1};
+    }
+    old_mpie : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpie") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    old_spp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spp") {
+        bins u = {0};
+        bins s = {1};
+    }
+    old_spie : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spie") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    old_spv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spv") {
+        bins off = {0};
+        bins on  = {1};
+    }
+
+    cp_mret_m:  cross priv_mode_m, mret, old_mpp, old_mpv, old_mpie;
+    cp_sret_m:  cross priv_mode_m, sret, old_spp, old_spv, old_spie;
 endgroup
 `endif
 
@@ -965,6 +2225,16 @@ function void sm_sample(int hart, int issue, ins_t ins);
     `endif
     `ifdef ZVE32F_SUPPORTED
         Sm_VF_cg.sample(ins);
+    `endif
+    `ifndef EXCLUDE_SM
+        `ifdef ZICNTR_SUPPORTED
+            Sm_Zicntr_cg.sample(ins);
+        `endif
+        `ifdef H_SUPPORTED
+            Sm_H_mcsr_cg.sample(ins);
+            Sm_H_tvm_cg.sample(ins);
+            Sm_H_inst_cg.sample(ins);
+        `endif
     `endif
     //$display("Sm_sample: PC = %h (%s) misa %b rs1 %b, misa_c0 %b, pc_1 %b",
     //    ins.current.pc_rdata, ins.current.disass, ins.current.insn[31:20] == CSR_MISA, ins.current.rs1_val[25:0],

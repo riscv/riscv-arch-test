@@ -13,12 +13,16 @@
 `ifndef RISCV_COVERAGE_SDTRIG_FUNCTIONS_SVH
 `define RISCV_COVERAGE_SDTRIG_FUNCTIONS_SVH
 
-// 1 when a trigger breakpoint was taken into the mode whose xcause is cause on this record: the trace logs the
-// trap's xcause = 3 on the record of the instruction it follows or replaces. A CSR instruction that names xcause,
-// and ebreak, are not one.
+// 1 when a trap wrote xcause (addr) on this record: the trace logs an interrupt, exception or trigger breakpoint on
+// the record of the instruction it follows or replaces. A CSR instruction that names xcause also logs it, so only
+// other records count as trap entries.
+function automatic logic sdtrig_trap_wrote(ins_t ins, logic [11:0] addr);
+    return ins.current.csr_wb[addr] &&
+           !(ins.current.insn[6:0] == 7'b1110011 && ins.current.insn[14:12] != 3'b000 && ins.current.insn[31:20] == addr);
+endfunction
+// 1 when a trigger breakpoint (xcause = 3, not an ebreak) was taken into the mode whose xcause is cause on this record
 function automatic logic sdtrig_bp_into(ins_t ins, logic [11:0] cause);
-    return ins.current.csr_wb[cause] && ins.current.csr[cause] == 3 &&
-           !(ins.current.insn[6:0] == 7'b1110011 && ins.current.insn[14:12] != 3'b000 && ins.current.insn[31:20] == cause) &&
+    return sdtrig_trap_wrote(ins, cause) && ins.current.csr[cause] == 3 &&
            ins.current.insn != EBREAK && !(ins.current.insn[1:0] != 2'b11 && ins.current.insn[15:0] == C_EBREAK[15:0]);
 endfunction
 // 1 when a trigger breakpoint was taken on this record, into M or (medeleg[3] = 1) into S
@@ -126,22 +130,12 @@ function automatic logic sdtrig_vec_as_expected(ins_t ins);
 endfunction
 `endif
 
-// Traps seen by itrigger/etrigger. The trace puts an interrupt or exception, and a trigger that fires on it
-// (mcause = 3 with the breakpoint taken into M), on the record of the instruction the trap follows or replaces.
-// A CSR instruction that names xcause also logs it, so only other records count as trap entries.
-function automatic logic sdtrig_trap_wrote(ins_t ins, logic [11:0] addr);
-    return ins.current.csr_wb[addr] &&
-           !(ins.current.insn[6:0] == 7'b1110011 && ins.current.insn[14:12] != 3'b000 && ins.current.insn[31:20] == addr);
-endfunction
-// 1 when a trigger breakpoint was taken into M on this record
-function automatic logic sdtrig_trap_fired(ins_t ins);
-    return sdtrig_trap_wrote(ins, CSR_MCAUSE) && ins.current.csr[CSR_MCAUSE] == 3 &&
-           ins.current.insn != EBREAK && !(ins.current.insn[1:0] != 2'b11 && ins.current.insn[15:0] == C_EBREAK[15:0]);
-endfunction
+// Traps seen by itrigger/etrigger. A trigger that fires on an interrupt or exception takes the breakpoint into M
+// (sdtrig_bp_into(ins, CSR_MCAUSE)) on the same record as the trap.
 // Mode that handled the interrupt or exception taken on this record: 3 = M, 1 = S, 2 = none
 function automatic logic [1:0] sdtrig_trap_handler(ins_t ins);
     if (sdtrig_trap_wrote(ins, CSR_SCAUSE)) return 2'd1;
-    if (sdtrig_trap_wrote(ins, CSR_MCAUSE) && !sdtrig_trap_fired(ins)) return 2'd3;
+    if (sdtrig_trap_wrote(ins, CSR_MCAUSE) && !sdtrig_bp_into(ins, CSR_MCAUSE)) return 2'd3;
     return 2'd2;
 endfunction
 function automatic logic [XLEN-1:0] sdtrig_trap_cause(ins_t ins);
@@ -169,7 +163,7 @@ function automatic logic [3:0] sdtrig_trap_result(ins_t ins);
         2'd1:    priv_bit = tdata1[7];
         default: priv_bit = tdata1[6];
     endcase
-    return {sdtrig_trap_handler(ins), priv_bit, sdtrig_trap_fired(ins)};
+    return {sdtrig_trap_handler(ins), priv_bit, sdtrig_bp_into(ins, CSR_MCAUSE)};
 endfunction
 // 1 when tdata2 selects the cause taken on this record
 function automatic logic sdtrig_trap_selected(ins_t ins);
@@ -181,6 +175,24 @@ function automatic logic sdtrig_trap_delegated(ins_t ins);
     logic [XLEN-1:0] deleg = sdtrig_trap_cause(ins)[XLEN-1] ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mideleg", "mideleg") :
                                                               get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "medeleg", "medeleg");
     return deleg[sdtrig_trap_cause(ins)[$clog2(XLEN)-1:0]];
+endfunction
+
+// 1 when an illegal-instruction trap (xcause = 2) was taken on this record, into S when delegated else into M.
+// The instruction raising it does not name xcause.
+function automatic logic sdtrig_illegal_taken(ins_t ins);
+    logic [11:0] cause = ins.current.csr_wb[CSR_SCAUSE] ? CSR_SCAUSE : CSR_MCAUSE;
+    return ins.current.csr_wb[cause] && ins.current.csr[cause] == 2;
+endfunction
+
+// SdtrigS/U cp_mcontrol6_priv_bits: outcome of the sw that an mcontrol6 store trigger watches. mode_bit is the
+// mcontrol6 tdata1 bit of the mode the tests run in (s 4, u 3).
+//   1: that bit is set and the breakpoint was taken (into S, or into M on harts that use tcontrol)
+//   2: it is clear, another of m (6), s (4), u (3) is set, and no breakpoint was taken    0: anything else
+function automatic logic [1:0] sdtrig_priv_bits_outcome(ins_t ins, int mode_bit);
+    logic [XLEN-1:0] tdata1 = get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "tdata1");
+    if (tdata1[mode_bit] && sdtrig_bp_taken(ins)) return 2'd1;
+    if (!tdata1[mode_bit] && (tdata1[6] || tdata1[4] || tdata1[3]) && !sdtrig_bp_taken(ins)) return 2'd2;
+    return 2'd0;
 endfunction
 
 // An execute trigger that fires takes the breakpoint instead of executing the instruction it matches, which never
@@ -204,7 +216,7 @@ endfunction
 // an address that is 2 mod 4 and an addi target at 0 mod 4, so tdata2[1] names a target that did not retire.
 function automatic logic [3:0] sdtrig_exec_adr_size_case(ins_t ins);
     logic [2:0] size = get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "size")[2:0];
-    if (sdtrig_exec_fired(ins) && ins.current.csr[CSR_MEPC] == ins.current.csr[CSR_TDATA2])
+    if (sdtrig_exec_fired(ins) && sdtrig_bp_epc(ins) == ins.current.csr[CSR_TDATA2])
         return {size, ins.current.csr[CSR_TDATA2][1]};
     if (ins.current.pc_rdata != ins.current.csr[CSR_TDATA2]) return 4'd0;
     if (ins.current.insn == 32'h00008013) return {size, 1'b0};
@@ -228,6 +240,52 @@ function automatic logic [1:0] sdtrig_size_data_case(ins_t ins);
     if (bytes != size_bytes) return 2'd3;
     mask = (8 * bytes >= XLEN) ? '1 : ((XLEN'(1) << (8 * bytes)) - 1);
     return ((ins.current.rs2_val & mask) == ins.current.csr[CSR_TDATA2]) ? 2'd1 : 2'd2;
+endfunction
+// cp_mcontrol6_match_size_*: an execute fire is sampled on the record before the matched instruction (see
+// sdtrig_exec_fired), where tdata1 is read after; every other record reads tdata1 from before it, so a target that
+// itself rewrites tdata1 (a csrw tdata1 that does not fire) is sampled with the trigger that saw it
+function automatic int sdtrig_ms_when(ins_t ins);
+    return sdtrig_exec_fired(ins) ? `SAMPLE_AFTER : `SAMPLE_BEFORE;
+endfunction
+// For a select = 1 mcontrol6 trigger armed for the mode the instruction runs in (sdtrig_trap_origin) whose x/s/l
+// bits are exactly xsl (execute = 3'b100, store = 3'b010, load = 3'b001): 1 = an access of the trigger's size fired
+// it, 2 = an access of that size did not, 3 = an access of another width did not; 0 = anything else. Execution
+// counts only the test's targets: addi/slti x0 hints, c.nop hints and CSR instructions on tdata1/tdata3 (which
+// include the csrw tdata1, x0 that disarms the trigger)
+function automatic logic [1:0] sdtrig_ms_case(ins_t ins, logic [2:0] xsl);
+    int when = sdtrig_ms_when(ins);
+    logic [1:0] origin = sdtrig_trap_origin(ins);
+    string mode_bit = (origin == 2'd3) ? "m" : (origin == 2'd1) ? "s" : "u";
+    int bytes, size_bytes;
+    logic fired;
+    if (get_csr_val(ins.hart, ins.issue, when, "tdata1", "type")[3:0] != 4'd6 ||
+        get_csr_val(ins.hart, ins.issue, when, "tdata1", mode_bit)[0] != 1'b1 ||
+        get_csr_val(ins.hart, ins.issue, when, "tdata1", "chain")[0] != 1'b0 ||
+        get_csr_val(ins.hart, ins.issue, when, "tdata1", "select")[0] != 1'b1 ||
+        {get_csr_val(ins.hart, ins.issue, when, "tdata1", "execute")[0], get_csr_val(ins.hart, ins.issue, when, "tdata1", "store")[0],
+         get_csr_val(ins.hart, ins.issue, when, "tdata1", "load")[0]} != xsl) return 2'd0;
+    case (get_csr_val(ins.hart, ins.issue, when, "tdata1", "size")[2:0])
+        3'd1:    size_bytes = 1;
+        3'd2:    size_bytes = 2;
+        3'd3:    size_bytes = 4;
+        3'd5:    size_bytes = 8;
+        default: return 2'd0;
+    endcase
+    if (xsl == 3'b100) begin
+        if (sdtrig_exec_fired(ins)) return 2'd1;  // only an instruction of the trigger's size can fire it
+        if (!(ins.current.insn[14:0] == 15'h0013 || ins.current.insn[14:0] == 15'h2013 ||
+              (ins.current.insn[6:0] == 7'h73 && ins.current.insn[31:20] inside {12'h7A1, 12'h7A3}) ||
+              (ins.current.insn[1:0] == 2'b01 && ins.current.insn[15:13] == 3'b000 && ins.current.insn[11:7] == 5'd0)))
+            return 2'd0;
+        bytes = (ins.current.insn[1:0] == 2'b11) ? 4 : 2;
+        fired = 1'b0;
+    end else begin
+        if (ins.current.insn[6:0] != ((xsl == 3'b010) ? 7'b0100011 : 7'b0000011) || ins.current.insn[14]) return 2'd0;
+        bytes = 1 << ins.current.insn[13:12];
+        fired = sdtrig_bp_taken(ins);
+    end
+    if (bytes == size_bytes) return fired ? 2'd1 : 2'd2;
+    return fired ? 2'd0 : 2'd3;
 endfunction
 
 // textra32/textra64 (tdata3) context matching, sampled when tdata1 arms an icount or mcontrol6 trigger, and on the

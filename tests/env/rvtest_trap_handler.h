@@ -105,7 +105,8 @@
 //      All five GOTO ops relocate the resume address when a test runs with
 //      translation on and has registered a code alias for its code region
 //      (see TSBI_RELOCATE_EPC).
-//    TSBI_ECALL_TEST  (a0=0x73)       — Test ecall path; returns xEPC in a0
+//    TSBI_ECALL_TEST  (a0=0x73)       — Record the ecall in the trap signature and return
+//                                       past it with xEPC in a0
 //    CSR_ACCESS       (a0=CSR opcode) — Execute CSR instruction; rd must be a0
 //    TSBI_LW/LWP4/LD  (a0=load opcode) — Load from physical address a1 into a0
 //    TSBI_SW/SWP4/SD  (a0=store opcode)— Store a2 to physical address a1
@@ -700,7 +701,7 @@
 // Usage in tests:
 //   RVTEST_TSBI_GOTO_MMODE              // switch to M-mode, clobbers a0
 //   RVTEST_TSBI_GOTO_UMODE              // switch to U-mode, clobbers a0
-//   RVTEST_TSBI_ECALL_TEST              // test ecall path, result in a0
+//   RVTEST_TSBI_ECALL_TEST              // ecall recorded in the trap signature, xEPC in a0
 //   RVTEST_TSBI_CSR_ACCESS 0x30002573   // read mstatus into a0
 //
 // CLOBBERS: a0 (operation code / return value), a1 (CSR_ACCESS argument only)
@@ -744,14 +745,14 @@
   .option pop
 .endm
 
-// Test the ecall trap path via T-SBI.
-// After this macro, a0 contains the address of the ecall instruction itself.
-// This verifies that the trap handler correctly entered and returned.
+// Test the ecall trap path via T-SBI. The handler records the ecall in the trap
+// signature and returns past it. After this macro, a0 contains the address of the
+// ecall instruction itself.
 .macro RVTEST_TSBI_ECALL_TEST
   .option push
   .option norvc                                  // ensure consistent code size
   li   a0, TSBI_ECALL_TEST                      // a0 = 0x73 (ECALL_TEST operation code)
-  ecall                                          // trap to handler; handler reads xEPC into a0
+  ecall                                          // trap to handler; handler records it and reads xEPC into a0
   // a0 now contains the address of the ecall instruction above
   .option pop
 .endm
@@ -1346,7 +1347,7 @@ common_\__MODE__\()entry:                       // common entry for all traps in
 //   1. Check if cause is an ecall (causes 8..11) -> if not, go to normal trap sig
 //   2. Dispatch on the caller's a0 (still live — the handler never touches a0/a1):
 //      a. a0 in [1..5] -> GOTO_xMODE (set MPP/MPV, bump mepc, mret)
-//      b. a0 == 0x73   -> ECALL_TEST (return xEPC in a0, bump mepc)
+//      b. a0 == 0x73   -> ECALL_TEST (record trap, return xEPC in a0, bump mepc)
 //      c. a0[6:0]==0x73 && a0[14:12]!=0 -> CSR_ACCESS (execute dynamic CSR instr)
 //      d. Otherwise    -> RESERVED (return -1 in a0)
 //   3. If not an SBI call: fall through to normal trap signature recording
@@ -1386,17 +1387,11 @@ tsbi_\__MODE__\()dispatch:
         //--------------------------------------------------------------
         // T-SBI ECALL_TEST handler (M-mode)
         //
-        // Purpose: Verify that the ecall trap path is functional.
-        // Returns the xEPC value (address of the ecall instruction) in a0.
-        // This lets the test confirm that the handler was entered correctly.
-        //
-        // On return: a0 = address of the ecall instruction that triggered this trap
+        // Records the ecall in the trap signature and returns past it with a0 = mepc.
         //--------------------------------------------------------------
 tsbi_\__MODE__\()ecall_test:
-        csrr    a0, CSR_XEPC                       // a0 = mepc = address of the ecall instruction
-        addi    T3, a0, 4                            // T3 = mepc + 4 (skip past ecall)
-        csrw    CSR_XEPC, T3                         // mepc = mepc + 4
-        j       resto_\__MODE__\()rtn               // restore regs and mret (a0 carries the return value)
+        csrr    a0, CSR_XEPC                       // a0 = mepc = ecall address (the record path keeps a0)
+        j       \__MODE__\()trapsig_ptr_upd       // record the trap and return past the ecall
 
         //--------------------------------------------------------------
         // T-SBI GOTO_xMODE handler (M-mode)
@@ -1538,7 +1533,7 @@ tsbi_\__MODE__\()goto_vu:
 // forwards the rest to the next more privileged handler by making another ecall.
 //
 // LOCAL HANDLING (S-mode can service these directly):
-//   - ECALL_TEST:  return sepc in a0 (sepc = U-mode ecall address)
+//   - ECALL_TEST:  record the trap, return sepc in a0 (sepc = U-mode ecall address)
 //   - GOTO_SMODE:  set sstatus.SPP=1 (return to S-mode via sret)
 //   - GOTO_UMODE:  set sstatus.SPP=0 (return to U-mode via sret)
 //   - CSR_ACCESS for S/U-mode CSRs: execute locally (CSR addr[9:8] != 11)
@@ -1659,12 +1654,10 @@ tsbi_\__MODE__\()reserved:                        // Unrecognized SBI operation
         j       resto_\__MODE__\()rtn              // sret to caller with a0 = -1
   .endif
 
-        //--- ECALL_TEST ---
+        //--- ECALL_TEST: record it like any other exception ---
 tsbi_\__MODE__\()ecall_test:
-        csrr    a0, CSR_XEPC                       // a0 = sepc = U-mode ecall address
-        addi    T3, a0, 4                            // skip ecall
-        csrw    CSR_XEPC, T3                         // sepc += 4
-        j       resto_\__MODE__\()rtn              // sret to caller with a0 = ecall address
+        csrr    a0, CSR_XEPC                       // a0 = sepc = ecall address (the record path keeps a0)
+        j       \__MODE__\()trapsig_ptr_upd       // record the trap and return past the ecall
 
         //--- S-mode GOTO_xMODE dispatch ---
         // sret target:  SPV=0 SPP=1 -> HS    SPV=1 SPP=1 -> VS
@@ -1843,12 +1836,70 @@ tsbi_\__MODE__\()handle_forwarded:
 // It searches the table and jumps to a matching instruction, which is followed by a ret to return to the caller.
 // It expects the intended instruction in a0. The instruction can use a1 and a2,
 // and return a result in a0. The VS handler forwards every such call to HS-mode.
+//
+// CSR instructions are found by a binary search over tsbi_csr_table, whose 32-byte groups (one per
+// CSR) are sorted by CSR address; the few other instructions are in tsbi_instr_table, searched in order.
+//
+// REGISTER STATE: uses T1..T5, which common_Xentry saved and resto_Xrtn restores. Nothing after
+// this point needs xcause (T5).
 //==============================================================================
 
 .ifnc \__MODE__ , V
 tsbi_\__MODE__\()instr_dispatch:
-        LA(     T2, tsbi_instr_table)             // T2 = instruction table base
+        andi    T3, a0, INSN_FIELD_OPCODE            // T3 = opcode
+        li      T4, MATCH_CSRRW & INSN_FIELD_OPCODE  // T4 = SYSTEM opcode
+        bne     T3, T4, tsbi_\__MODE__\()instr_other // load/store -> tsbi_instr_table
+        srli    T3, a0, 12
+        andi    T3, T3, INSN_FIELD_FUNCT3 >> 12   // T3 = funct3
+        beqz    T3, tsbi_\__MODE__\()instr_other  // sfence.vma -> tsbi_instr_table
+        srli    T4, a0, 20                        // T4 = key = CSR address
+        li      T3, CSR_MSTATUS                   // mstatus is the most-used T-SBI CSR: go straight to its group
+        bne     T4, T3, 6f
+        la      T3, tsbi_csr_mstatus
+        j       3f
+6:
+        // Binary search for the CSR's group in [T1, T2); the table is never empty
+        la      T1, tsbi_csr_table                // T1 = lo: first group still in range
+                                                  // (plain la: handler code is norvc and norelax, so LA's nop padding only costs time)
+        la      T2, tsbi_csr_table_end            // T2 = hi: one past the last group in range
 1:
+        sub     T3, T2, T1                        // T3 = range size in bytes (32 per group)
+        srli    T3, T3, 6
+        slli    T3, T3, 5                         // T3 = half the groups in the range, in bytes
+        add     T3, T1, T3                        // T3 = middle group
+        #if (UDB_MXLEN==32)
+          lw      T5, 0(T3)                       // T5 = first instruction of the middle group
+        #else
+          lwu     T5, 0(T3)                       // T5 = first instruction of the middle group
+        #endif
+        srli    T5, T5, 20                        // T5 = its CSR address
+        beq     T5, T4, 3f                        // this CSR: find the instruction in its group
+        bltu    T5, T4, 2f                        // middle CSR below the key: search the upper half
+        mv      T2, T3                            // key below the middle CSR: hi = middle
+        bltu    T1, T2, 1b
+        j       tsbi_instr_not_found              // range empty: CSR is not in the table
+2:
+        addi    T1, T3, 32                        // lo = group after the middle
+        bltu    T1, T2, 1b
+        j       tsbi_instr_not_found              // range empty: CSR is not in the table
+3:
+        mv      T2, T3                            // T2 = first entry of the matching group
+        addi    T1, T3, 32                        // T1 = end of the group
+4:
+        #if (UDB_MXLEN==32)
+          lw      T3, 0(T2)                       // T3 = table instruction
+        #else
+          lwu     T3, 0(T2)                       // T3 = table instruction
+        #endif
+        beq     T3, a0, tsbi_\__MODE__\()instr_found
+        addi    T2, T2, 8                         // skip instruction and ret
+        bltu    T2, T1, 4b
+        j       tsbi_instr_not_found              // CSR is in the table, but not this access
+
+        // Other instructions: search tsbi_instr_table in order
+tsbi_\__MODE__\()instr_other:
+        la      T2, tsbi_instr_table              // T2 = instruction table base
+5:
         #if (UDB_MXLEN==32)
           lw      T3, 0(T2)                       // T3 = table instruction
         #else
@@ -1857,7 +1908,7 @@ tsbi_\__MODE__\()instr_dispatch:
         beq     T3, a0, tsbi_\__MODE__\()instr_found
         beqz    T3, tsbi_instr_not_found
         addi    T2, T2, 8                          // skip instruction and ret
-        j       1b
+        j       5b
 tsbi_\__MODE__\()instr_found:
         SREG    ra, trap_sv_off+0*REGWIDTH(sp)  // save caller's ra
         jalr    ra, T2, 0                        // execute table instruction and return
@@ -1887,7 +1938,15 @@ tsbi_instr_not_found:
         call    rvmodel_io_write_str
         call    rvmodel_halt_fail
 
+// Emit the 32-byte group for one CSR: csrr a0 / csrw a1 / csrs a1 / csrc a1, each followed by ret.
+// The groups must be in ascending CSR-address order for the binary search, so each use checks that
+// its address is above the previous one.
+.set tsbi_csr_prev, -1
 .macro TSBI_CSR_INSTR_TABLE csr_addr
+  .if (\csr_addr) <= tsbi_csr_prev
+        .error "T-SBI CSR table must be in ascending address order: TSBI_CSR_INSTR_TABLE\csr_addr is not above the CSR listed before it (list each CSR once, in address order)"
+  .endif
+  .set tsbi_csr_prev, (\csr_addr)
         .word (\csr_addr << 20) | (0x02573) // csrr a0, csr_addr
         ret
         .word (\csr_addr << 20) | (0x59073) // csrw csr_addr, a1
@@ -1903,81 +1962,34 @@ tsbi_instr_not_found:
 // M-mode and S-mode dispatchers search the table, run a matching instruction, and return.
 // Only CSRs that lower-privilege code might be interested in accessing are needed here.
 // Each instruction must be followed by a ret to return to the dispatcher.
-tsbi_instr_table:
-
-        TSBI_CSR_INSTR_TABLE(0x300) // mstatus
-        //TSBI_CSR_INSTR_TABLE(0x302) // medeleg - shouldn't be changed below M-mode.
-        //TSBI_CSR_INSTR_TABLE(0x303) // mideleg - shouldn't be changed below M-mode.
-        TSBI_CSR_INSTR_TABLE(0x304) // mie
-        //TSBI_CSR_INSTR_TABLE(0x305) // mtvec
-        TSBI_CSR_INSTR_TABLE(0x306) // mcounteren
-        TSBI_CSR_INSTR_TABLE(0x30A) // menvcfg
-        TSBI_CSR_INSTR_TABLE(0x30C) // mstateen0
-        TSBI_CSR_INSTR_TABLE(0x31C) // mstateen0h
-        #if (UDB_MXLEN==32)
-        TSBI_CSR_INSTR_TABLE(0x31A) // menvcfgh
-        #endif
-        TSBI_CSR_INSTR_TABLE(0x344) // mip
-        TSBI_CSR_INSTR_TABLE(0x350) // miselect
-        TSBI_CSR_INSTR_TABLE(0x351) // mireg
-        TSBI_CSR_INSTR_TABLE(0x35c) // mtopei
-        TSBI_CSR_INSTR_TABLE(0x350) // miselect
-        TSBI_CSR_INSTR_TABLE(0x351) // mireg
-        TSBI_CSR_INSTR_TABLE(0x747) // mseccfg
-        TSBI_CSR_INSTR_TABLE(0x320) // mcountinhibit
-        //TSBI_CSR_INSTR_TABLE(0xB00) // mcycle - shouldn't be changed below M-mode
-        //TSBI_CSR_INSTR_TABLE(0xB02) // minstret - shouldn't be changed below M-mode
-        // S-mode dispatch executes these entries locally for U-mode calls.
+//
+// To add a CSR, insert one TSBI_CSR_INSTR_TABLE line at its place in ascending address order
+// (inside #if/#ifdef if it is optional). The assembler stops with an error if a CSR is out of
+// order or listed twice. Only TSBI_CSR_INSTR_TABLE lines belong between tsbi_csr_table and
+// tsbi_csr_table_end; other instructions go in tsbi_instr_table below.
+tsbi_csr_table:
+        // S-mode CSRs. S-mode dispatch executes these locally for U-mode calls.
+#ifdef S_SUPPORTED
         TSBI_CSR_INSTR_TABLE(0x100) // sstatus
         TSBI_CSR_INSTR_TABLE(0x104) // sie
         //TSBI_CSR_INSTR_TABLE(0x105) // stvec
         TSBI_CSR_INSTR_TABLE(0x106) // scounteren
         TSBI_CSR_INSTR_TABLE(0x10A) // senvcfg
         TSBI_CSR_INSTR_TABLE(0x144) // sip
+        #ifdef SSTC_SUPPORTED
         TSBI_CSR_INSTR_TABLE(0x14D) // stimecmp
+        #endif
         #ifdef SSAIA_SUPPORTED
         TSBI_CSR_INSTR_TABLE(0x150) // siselect: IMSIC S-file eip0 via csrind
         TSBI_CSR_INSTR_TABLE(0x151) // sireg
         TSBI_CSR_INSTR_TABLE(0x15C) // stopei
         #endif
-        #if (UDB_MXLEN==32)
+        #if (UDB_MXLEN==32) && defined(SSTC_SUPPORTED)
         TSBI_CSR_INSTR_TABLE(0x15D) // stimecmph
         #endif
         TSBI_CSR_INSTR_TABLE(0x180) // satp
-        TSBI_CSR_INSTR_TABLE(0x150) // siselect
-        TSBI_CSR_INSTR_TABLE(0x151) // sireg
-        TSBI_CSR_INSTR_TABLE(0x15c) // stopei
-        TSBI_CSR_INSTR_TABLE(0x7A0) // tselect
-        TSBI_CSR_INSTR_TABLE(0x7A1) // tdata1
-        TSBI_CSR_INSTR_TABLE(0x7A2) // tdata2
-        TSBI_CSR_INSTR_TABLE(0x7A3) // tdata3
-        TSBI_CSR_INSTR_TABLE(0x7A4) // tinfo
-        TSBI_CSR_INSTR_TABLE(0x7A5) // tcontrol
-        TSBI_CSR_INSTR_TABLE(0x7A8) // mcontext
-        TSBI_CSR_INSTR_TABLE(0x7AA) // mscontext
-        TSBI_CSR_INSTR_TABLE(0x5A8) // scontext
-        TSBI_CSR_INSTR_TABLE(0x6A8) // hcontext
 #ifdef H_SUPPORTED
-        // Hypervisor and VS-mode CSRs
-        TSBI_CSR_INSTR_TABLE(0x600) // hstatus
-        TSBI_CSR_INSTR_TABLE(0x602) // hedeleg
-        TSBI_CSR_INSTR_TABLE(0x603) // hideleg
-        TSBI_CSR_INSTR_TABLE(0x604) // hie
-        TSBI_CSR_INSTR_TABLE(0x605) // htimedelta
-        TSBI_CSR_INSTR_TABLE(0x606) // hcounteren
-        TSBI_CSR_INSTR_TABLE(0x607) // hgeie
-        TSBI_CSR_INSTR_TABLE(0x608) // hvien
-        TSBI_CSR_INSTR_TABLE(0x609) // hvictl
-        TSBI_CSR_INSTR_TABLE(0x60A) // henvcfg
-        TSBI_CSR_INSTR_TABLE(0x60C) // hstateen0
-        TSBI_CSR_INSTR_TABLE(0x643) // htval
-        TSBI_CSR_INSTR_TABLE(0x644) // hip
-        TSBI_CSR_INSTR_TABLE(0x645) // hvip
-        TSBI_CSR_INSTR_TABLE(0x646) // hviprio1
-        TSBI_CSR_INSTR_TABLE(0x647) // hviprio2
-        TSBI_CSR_INSTR_TABLE(0x64A) // htinst
-        TSBI_CSR_INSTR_TABLE(0xE12) // hgeip
-        TSBI_CSR_INSTR_TABLE(0x680) // hgatp
+        // VS-mode CSRs
         TSBI_CSR_INSTR_TABLE(0x200) // vsstatus
         TSBI_CSR_INSTR_TABLE(0x204) // vsie
         TSBI_CSR_INSTR_TABLE(0x205) // vstvec
@@ -1986,48 +1998,42 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x242) // vscause
         TSBI_CSR_INSTR_TABLE(0x243) // vstval
         TSBI_CSR_INSTR_TABLE(0x244) // vsip
-        TSBI_CSR_INSTR_TABLE(0x280) // vsatp
+        #ifdef SSTC_SUPPORTED
         TSBI_CSR_INSTR_TABLE(0x24D) // vstimecmp
+        #endif
         #ifdef SSAIA_SUPPORTED
         TSBI_CSR_INSTR_TABLE(0x250) // vsiselect: IMSIC VS-file eip0 via csrind
         TSBI_CSR_INSTR_TABLE(0x251) // vsireg
         TSBI_CSR_INSTR_TABLE(0x25C) // vstopei
         #endif
-  #if (UDB_MXLEN==32)
+        #if (UDB_MXLEN==32) && defined(SSTC_SUPPORTED)
         TSBI_CSR_INSTR_TABLE(0x25D) // vstimecmph
-        TSBI_CSR_INSTR_TABLE(0x612) // hedelegh
-        TSBI_CSR_INSTR_TABLE(0x615) // htimedeltah
-        TSBI_CSR_INSTR_TABLE(0x618) // hvienh
-        TSBI_CSR_INSTR_TABLE(0x61A) // henvcfgh
-        TSBI_CSR_INSTR_TABLE(0x61C) // hstateen0h
-        TSBI_CSR_INSTR_TABLE(0x655) // hviph
-        TSBI_CSR_INSTR_TABLE(0x656) // hviprio1h
-        TSBI_CSR_INSTR_TABLE(0x657) // hviprio2h
-  #endif
+        #endif
+        TSBI_CSR_INSTR_TABLE(0x280) // vsatp
 #endif // H_SUPPORTED
-        // loads and stores (these must not fault; the recursive trap handler may not save registers correctly)
-        lw a0, 0(a1)
-        ret
-        lw a0, 4(a1)
-        ret
-        sw a2, 0(a1)
-        ret
-        sw a2, 4(a1)
-        ret
-        #if (UDB_MXLEN==64) // additional calls for RV64 only
-                ld a0, 0(a1)
-                ret
-                sd a2, 0(a1)
-                ret
-        #endif  // RV64
-        #ifdef S_SUPPORTED
-                sfence.vma                       // TSBI_SFENCE_VMA
-                ret
-        #endif  // S_SUPPORTED
-        // Sscofpmf performance-monitoring CSRs
+#endif // S_SUPPORTED
+        // M-mode CSRs
+tsbi_csr_mstatus:                                 // dispatcher fast path
+        TSBI_CSR_INSTR_TABLE(0x300) // mstatus
+        //TSBI_CSR_INSTR_TABLE(0x302) // medeleg - shouldn't be changed below M-mode.
+        //TSBI_CSR_INSTR_TABLE(0x303) // mideleg - shouldn't be changed below M-mode.
+        TSBI_CSR_INSTR_TABLE(0x304) // mie
+        //TSBI_CSR_INSTR_TABLE(0x305) // mtvec
+        TSBI_CSR_INSTR_TABLE(0x306) // mcounteren
+        TSBI_CSR_INSTR_TABLE(0x30A) // menvcfg
+        TSBI_CSR_INSTR_TABLE(0x30C) // mstateen0
+        TSBI_CSR_INSTR_TABLE(0x30D) // mstateen1
+        TSBI_CSR_INSTR_TABLE(0x30E) // mstateen2
+        TSBI_CSR_INSTR_TABLE(0x30F) // mstateen3
+        #if (UDB_MXLEN==32)
+        TSBI_CSR_INSTR_TABLE(0x31A) // menvcfgh
+        TSBI_CSR_INSTR_TABLE(0x31C) // mstateen0h
+        TSBI_CSR_INSTR_TABLE(0x31D) // mstateen1h
+        TSBI_CSR_INSTR_TABLE(0x31E) // mstateen2h
+        TSBI_CSR_INSTR_TABLE(0x31F) // mstateen3h
+        #endif
+        TSBI_CSR_INSTR_TABLE(0x320) // mcountinhibit
         #ifdef SSCOFPMF_SUPPORTED
-        TSBI_CSR_INSTR_TABLE(0xB03) // mhpmcounter3
-        TSBI_CSR_INSTR_TABLE(0xDA0) // scountovf
         TSBI_CSR_INSTR_TABLE(0x323) // mhpmevent3
         TSBI_CSR_INSTR_TABLE(0x324) // mhpmevent4
         TSBI_CSR_INSTR_TABLE(0x325) // mhpmevent5
@@ -2057,6 +2063,93 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0x33D) // mhpmevent29
         TSBI_CSR_INSTR_TABLE(0x33E) // mhpmevent30
         TSBI_CSR_INSTR_TABLE(0x33F) // mhpmevent31
+        #endif  // SSCOFPMF_SUPPORTED
+        TSBI_CSR_INSTR_TABLE(0x344) // mip
+        TSBI_CSR_INSTR_TABLE(0x350) // miselect
+        TSBI_CSR_INSTR_TABLE(0x351) // mireg
+        TSBI_CSR_INSTR_TABLE(0x35C) // mtopei
+        TSBI_CSR_INSTR_TABLE(0x5A8) // scontext
+#ifdef H_SUPPORTED
+        // Hypervisor CSRs
+        TSBI_CSR_INSTR_TABLE(0x600) // hstatus
+        TSBI_CSR_INSTR_TABLE(0x602) // hedeleg
+        TSBI_CSR_INSTR_TABLE(0x603) // hideleg
+        TSBI_CSR_INSTR_TABLE(0x604) // hie
+        TSBI_CSR_INSTR_TABLE(0x605) // htimedelta
+        TSBI_CSR_INSTR_TABLE(0x606) // hcounteren
+        TSBI_CSR_INSTR_TABLE(0x607) // hgeie
+        TSBI_CSR_INSTR_TABLE(0x608) // hvien
+        TSBI_CSR_INSTR_TABLE(0x609) // hvictl
+        TSBI_CSR_INSTR_TABLE(0x60A) // henvcfg
+        TSBI_CSR_INSTR_TABLE(0x60C) // hstateen0
+        #if (UDB_MXLEN==32)
+        TSBI_CSR_INSTR_TABLE(0x612) // hedelegh
+        TSBI_CSR_INSTR_TABLE(0x615) // htimedeltah
+        TSBI_CSR_INSTR_TABLE(0x618) // hvienh
+        TSBI_CSR_INSTR_TABLE(0x61A) // henvcfgh
+        TSBI_CSR_INSTR_TABLE(0x61C) // hstateen0h
+        #endif
+        TSBI_CSR_INSTR_TABLE(0x643) // htval
+        TSBI_CSR_INSTR_TABLE(0x644) // hip
+        TSBI_CSR_INSTR_TABLE(0x645) // hvip
+        TSBI_CSR_INSTR_TABLE(0x646) // hviprio1
+        TSBI_CSR_INSTR_TABLE(0x647) // hviprio2
+        TSBI_CSR_INSTR_TABLE(0x64A) // htinst
+        #if (UDB_MXLEN==32)
+        TSBI_CSR_INSTR_TABLE(0x655) // hviph
+        TSBI_CSR_INSTR_TABLE(0x656) // hviprio1h
+        TSBI_CSR_INSTR_TABLE(0x657) // hviprio2h
+        #endif
+        TSBI_CSR_INSTR_TABLE(0x680) // hgatp
+#endif // H_SUPPORTED
+        TSBI_CSR_INSTR_TABLE(0x6A8) // hcontext
+        #if defined(SSCOFPMF_SUPPORTED) && (UDB_MXLEN==32)
+        TSBI_CSR_INSTR_TABLE(0x723) // mhpmevent3h
+        TSBI_CSR_INSTR_TABLE(0x724) // mhpmevent4h
+        TSBI_CSR_INSTR_TABLE(0x725) // mhpmevent5h
+        TSBI_CSR_INSTR_TABLE(0x726) // mhpmevent6h
+        TSBI_CSR_INSTR_TABLE(0x727) // mhpmevent7h
+        TSBI_CSR_INSTR_TABLE(0x728) // mhpmevent8h
+        TSBI_CSR_INSTR_TABLE(0x729) // mhpmevent9h
+        TSBI_CSR_INSTR_TABLE(0x72A) // mhpmevent10h
+        TSBI_CSR_INSTR_TABLE(0x72B) // mhpmevent11h
+        TSBI_CSR_INSTR_TABLE(0x72C) // mhpmevent12h
+        TSBI_CSR_INSTR_TABLE(0x72D) // mhpmevent13h
+        TSBI_CSR_INSTR_TABLE(0x72E) // mhpmevent14h
+        TSBI_CSR_INSTR_TABLE(0x72F) // mhpmevent15h
+        TSBI_CSR_INSTR_TABLE(0x730) // mhpmevent16h
+        TSBI_CSR_INSTR_TABLE(0x731) // mhpmevent17h
+        TSBI_CSR_INSTR_TABLE(0x732) // mhpmevent18h
+        TSBI_CSR_INSTR_TABLE(0x733) // mhpmevent19h
+        TSBI_CSR_INSTR_TABLE(0x734) // mhpmevent20h
+        TSBI_CSR_INSTR_TABLE(0x735) // mhpmevent21h
+        TSBI_CSR_INSTR_TABLE(0x736) // mhpmevent22h
+        TSBI_CSR_INSTR_TABLE(0x737) // mhpmevent23h
+        TSBI_CSR_INSTR_TABLE(0x738) // mhpmevent24h
+        TSBI_CSR_INSTR_TABLE(0x739) // mhpmevent25h
+        TSBI_CSR_INSTR_TABLE(0x73A) // mhpmevent26h
+        TSBI_CSR_INSTR_TABLE(0x73B) // mhpmevent27h
+        TSBI_CSR_INSTR_TABLE(0x73C) // mhpmevent28h
+        TSBI_CSR_INSTR_TABLE(0x73D) // mhpmevent29h
+        TSBI_CSR_INSTR_TABLE(0x73E) // mhpmevent30h
+        TSBI_CSR_INSTR_TABLE(0x73F) // mhpmevent31h
+        #endif
+        TSBI_CSR_INSTR_TABLE(0x747) // mseccfg
+        // Sdtrig CSRs
+        #ifdef SDTRIG_SUPPORTED
+        TSBI_CSR_INSTR_TABLE(0x7A0) // tselect
+        TSBI_CSR_INSTR_TABLE(0x7A1) // tdata1
+        TSBI_CSR_INSTR_TABLE(0x7A2) // tdata2
+        TSBI_CSR_INSTR_TABLE(0x7A3) // tdata3
+        TSBI_CSR_INSTR_TABLE(0x7A4) // tinfo
+        TSBI_CSR_INSTR_TABLE(0x7A5) // tcontrol
+        TSBI_CSR_INSTR_TABLE(0x7A8) // mcontext
+        TSBI_CSR_INSTR_TABLE(0x7AA) // mscontext
+        #endif
+        //TSBI_CSR_INSTR_TABLE(0xB00) // mcycle - shouldn't be changed below M-mode
+        //TSBI_CSR_INSTR_TABLE(0xB02) // minstret - shouldn't be changed below M-mode
+        #ifdef SSCOFPMF_SUPPORTED
+        TSBI_CSR_INSTR_TABLE(0xB03) // mhpmcounter3
         TSBI_CSR_INSTR_TABLE(0xB04) // mhpmcounter4
         TSBI_CSR_INSTR_TABLE(0xB05) // mhpmcounter5
         TSBI_CSR_INSTR_TABLE(0xB06) // mhpmcounter6
@@ -2086,36 +2179,7 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0xB1E) // mhpmcounter30
         TSBI_CSR_INSTR_TABLE(0xB1F) // mhpmcounter31
         #if (UDB_MXLEN==32)
-        TSBI_CSR_INSTR_TABLE(0x723) // mhpmevent3h
         TSBI_CSR_INSTR_TABLE(0xB83) // mhpmcounter3h
-        TSBI_CSR_INSTR_TABLE(0x724) // mhpmevent4h
-        TSBI_CSR_INSTR_TABLE(0x725) // mhpmevent5h
-        TSBI_CSR_INSTR_TABLE(0x726) // mhpmevent6h
-        TSBI_CSR_INSTR_TABLE(0x727) // mhpmevent7h
-        TSBI_CSR_INSTR_TABLE(0x728) // mhpmevent8h
-        TSBI_CSR_INSTR_TABLE(0x729) // mhpmevent9h
-        TSBI_CSR_INSTR_TABLE(0x72A) // mhpmevent10h
-        TSBI_CSR_INSTR_TABLE(0x72B) // mhpmevent11h
-        TSBI_CSR_INSTR_TABLE(0x72C) // mhpmevent12h
-        TSBI_CSR_INSTR_TABLE(0x72D) // mhpmevent13h
-        TSBI_CSR_INSTR_TABLE(0x72E) // mhpmevent14h
-        TSBI_CSR_INSTR_TABLE(0x72F) // mhpmevent15h
-        TSBI_CSR_INSTR_TABLE(0x730) // mhpmevent16h
-        TSBI_CSR_INSTR_TABLE(0x731) // mhpmevent17h
-        TSBI_CSR_INSTR_TABLE(0x732) // mhpmevent18h
-        TSBI_CSR_INSTR_TABLE(0x733) // mhpmevent19h
-        TSBI_CSR_INSTR_TABLE(0x734) // mhpmevent20h
-        TSBI_CSR_INSTR_TABLE(0x735) // mhpmevent21h
-        TSBI_CSR_INSTR_TABLE(0x736) // mhpmevent22h
-        TSBI_CSR_INSTR_TABLE(0x737) // mhpmevent23h
-        TSBI_CSR_INSTR_TABLE(0x738) // mhpmevent24h
-        TSBI_CSR_INSTR_TABLE(0x739) // mhpmevent25h
-        TSBI_CSR_INSTR_TABLE(0x73A) // mhpmevent26h
-        TSBI_CSR_INSTR_TABLE(0x73B) // mhpmevent27h
-        TSBI_CSR_INSTR_TABLE(0x73C) // mhpmevent28h
-        TSBI_CSR_INSTR_TABLE(0x73D) // mhpmevent29h
-        TSBI_CSR_INSTR_TABLE(0x73E) // mhpmevent30h
-        TSBI_CSR_INSTR_TABLE(0x73F) // mhpmevent31h
         TSBI_CSR_INSTR_TABLE(0xB84) // mhpmcounter4h
         TSBI_CSR_INSTR_TABLE(0xB85) // mhpmcounter5h
         TSBI_CSR_INSTR_TABLE(0xB86) // mhpmcounter6h
@@ -2144,8 +2208,35 @@ tsbi_instr_table:
         TSBI_CSR_INSTR_TABLE(0xB9D) // mhpmcounter29h
         TSBI_CSR_INSTR_TABLE(0xB9E) // mhpmcounter30h
         TSBI_CSR_INSTR_TABLE(0xB9F) // mhpmcounter31h
-        #endif  // UDB_MXLEN==32
+        #endif
+        TSBI_CSR_INSTR_TABLE(0xDA0) // scountovf
         #endif  // SSCOFPMF_SUPPORTED
+#ifdef H_SUPPORTED
+        TSBI_CSR_INSTR_TABLE(0xE12) // hgeip
+#endif
+tsbi_csr_table_end:
+
+// Instructions other than CSR accesses, searched in order up to the sentinel.
+tsbi_instr_table:
+        // loads and stores (these must not fault; the recursive trap handler may not save registers correctly)
+        lw a0, 0(a1)
+        ret
+        lw a0, 4(a1)
+        ret
+        sw a2, 0(a1)
+        ret
+        sw a2, 4(a1)
+        ret
+        #if (UDB_MXLEN==64) // additional calls for RV64 only
+                ld a0, 0(a1)
+                ret
+                sd a2, 0(a1)
+                ret
+        #endif  // RV64
+        #ifdef S_SUPPORTED
+                sfence.vma                       // TSBI_SFENCE_VMA
+                ret
+        #endif  // S_SUPPORTED
         .word 0 // sentinel to mark end of table
 
 .endif

@@ -187,6 +187,15 @@ coverpoints:
       - hstatus_vtw_op
       - H_virtinst_wfi_vtw1_tw0
       - vtw_virtinstr
+  - name: cp_wfi_vs_tw_vtw
+    goal: WFI in VS-mode with every mstatus.TW and hstatus.VTW
+    description: |-
+      The full cross of mstatus.TW and hstatus.VTW for VS-mode WFI with MIE = {0/1}: the waiting WFI of cp_wfi_vs (TW = VTW = 0) and the trapping WFIs of cp_wfi_timeout_vs and cp_wfi_timeout_vs_vtw_one.
+    expectation: As cp_wfi_vs, cp_wfi_timeout_vs and cp_wfi_timeout_vs_vtw_one
+    bins: 2 TW * 2 VTW * 2 MIE
+    rules:
+      - mstatus_tw_op
+      - hstatus_vtw_op
   - name: cp_wfi_timeout_vu
     goal: WFI in VU-mode follows mstatus.TW, not hstatus.VTW
     description: |-

@@ -18,10 +18,18 @@ normative_rule_definitions:
     coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
 
   - name: stateen_op
-    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_csr_illegal_accesses}"]
+    coverpoint:
+      [
+        "{Smstateen_cg,Ssstateen_cg}/{cp_csr_illegal_accesses}",
+        "Smstateen_cg/{cp_mstateen0_se0_controls_sstateen0, cp_mstateen_se_controls_sstateen123}",
+      ]
 
   - name: stateen_illegal_state_access
-    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_csr_illegal_accesses}"]
+    coverpoint:
+      [
+        "{Smstateen_cg,Ssstateen_cg}/{cp_csr_illegal_accesses}",
+        "Smstateen_cg/{cp_mstateen0_se0_controls_sstateen0, cp_mstateen_se_controls_sstateen123}",
+      ]
 
   - name: stateen_implicit_state_update
     coverpoint: ["Not tested: either behavior is permitted"]
@@ -39,7 +47,11 @@ normative_rule_definitions:
     coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
 
   - name: stateen_reserved_roz
-    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
+    coverpoint:
+      [
+        "{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}",
+        "Smstateen_cg/cp_mstateen_se_controls_sstateen123",
+      ]
 
   # For every bit in an mstateen CSR that is zero (whether read-only zero or set to
   # zero), the same bit appears as read-only zero in the matching hstateen and sstateen
@@ -62,12 +74,18 @@ normative_rule_definitions:
         "TODO: record the writable mstateen bits before the boot code writes them",
       ]
 
+  # The hstateen half of this rule needs hypervisor tests.
   - name: mstateen_bit_63_op
-    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
+    coverpoint:
+      [
+        "Smstateen_cg/{cp_mstateen0_se0_controls_sstateen0, cp_mstateen_se_controls_sstateen123}",
+      ]
 
   - name: hstateen_bit_63_op
     coverpoint: [""]
 
+  # The mstateen1-3 walks check bit 63 against the configured SE1-SE3 (writable or
+  # read-only zero), and the sstateen1-3 walks check that those CSRs are all zeros.
   - name: mstateen_bit_63_roz
     coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_walking_ones}"]
 
@@ -93,7 +111,8 @@ normative_rule_definitions:
     coverpoint: ["Smstateen_cg/cp_fcsr_ro_zero"]
 
   - name: stateen0_fcsr0_misa_f0_illegal_fpu_instr
-    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_fcsr_lower}"]
+    coverpoint:
+      ["{Smstateen_cg,Ssstateen_cg}/{cp_fcsr_lower, cp_fcsr_fp_instrs}"]
 
   - name: stateen0_jvt_op
     coverpoint: ["Smstateen_cg/cp_jvt_access", "Ssstateen_cg/cp_jvt"]

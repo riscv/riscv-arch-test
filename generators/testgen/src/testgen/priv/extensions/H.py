@@ -16,6 +16,7 @@ from testgen.asm.csr import csr_access_test, gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.FCommon import gen_fcsr_tests
 from testgen.priv.extensions.HCommon import (
     H_HS_CSRS,
     H_VS_CSRS,
@@ -38,6 +39,8 @@ from testgen.priv.extensions.PrivCommon import (
     xstatus_sd_tests,
     xtval_value_tests,
 )
+from testgen.priv.extensions.VCommon import gen_v_tests
+from testgen.priv.extensions.VFCommon import gen_vf_tests
 from testgen.priv.extensions.ZicntrCommon import Counteren, Mode, counteren_walk_tests, htimedelta_tests
 from testgen.priv.registry import add_priv_test_generator
 
@@ -508,4 +511,88 @@ def make_h_zicntr(test_data: TestData) -> list[TestChunk]:
     for mode in modes:
         tc.code.extend(htimedelta_tests(test_data, _ZICNTR_CG, mode))
     test_chunks.append(test_data.end_test_chunk())
+    return test_chunks
+
+
+@add_priv_test_generator(
+    "H",
+    required_extensions=["H", "F"],
+    march_extensions=["F", "D", "Zfa"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
+def make_h_f(test_data: TestData) -> list[TestChunk]:
+    """Generate H_F tests: the floating-point CSRs and instructions in VS and VU modes against vsstatus.FS and sstatus.FS."""
+
+    test_chunks: list[TestChunk] = []
+
+    tc = test_data.begin_test_chunk("F_vs")
+    tc.code.extend(
+        [
+            "RVTEST_TSBI_GOTO_VSMODE",
+            *gen_fcsr_tests(test_data, "VS", "H_F_cg"),
+            "RVTEST_TSBI_GOTO_SMODE",
+        ]
+    )
+    test_chunks.append(test_data.end_test_chunk())
+
+    tc = test_data.begin_test_chunk("F_vu")
+    tc.code.extend(
+        [
+            "RVTEST_TSBI_GOTO_VUMODE",
+            *gen_fcsr_tests(test_data, "VU", "H_F_cg"),
+            "RVTEST_TSBI_GOTO_SMODE",
+        ]
+    )
+    test_chunks.append(test_data.end_test_chunk())
+
+    return test_chunks
+
+
+@add_priv_test_generator(
+    "H",
+    required_extensions=["H", "Zve32x"],
+    extra_defines=[
+        "#define RVTEST_VECTOR",
+        "#define RVTEST_SEW 0",
+        "#define VDSEW 0",
+        "#define BOOT_TO_SMODE",
+    ],
+)
+def make_h_v(test_data: TestData) -> list[TestChunk]:
+    """Generate H_V tests: vector CSRs, vset* behavior, vill, vstart and vsstatus.VS/sstatus.VS in VS and VU modes."""
+    test_chunks: list[TestChunk] = []
+
+    for tc in gen_v_tests(test_data, "VS", "H_V_cg"):
+        tc.code = ["RVTEST_TSBI_GOTO_VSMODE", *tc.code, "RVTEST_TSBI_GOTO_SMODE"]
+        test_chunks.append(tc)
+
+    for tc in gen_v_tests(test_data, "VU", "H_V_cg"):
+        tc.code = ["RVTEST_TSBI_GOTO_VUMODE", *tc.code, "RVTEST_TSBI_GOTO_SMODE"]
+        test_chunks.append(tc)
+
+    return test_chunks
+
+
+@add_priv_test_generator(
+    "H",
+    required_extensions=["H", "Zve32f"],
+    extra_defines=[
+        "#define RVTEST_VECTOR",
+        "#define RVTEST_SEW 0",
+        "#define VDSEW 0",
+        "#define BOOT_TO_SMODE",
+    ],
+)
+def make_h_vf(test_data: TestData) -> list[TestChunk]:
+    """Generate H_VF tests: vector floating-point instructions against vsstatus.FS and sstatus.FS in VS and VU modes."""
+    test_chunks: list[TestChunk] = []
+
+    for tc in gen_vf_tests(test_data, "VS", "H_VF_cg"):
+        tc.code = ["RVTEST_TSBI_GOTO_VSMODE", *tc.code, "RVTEST_TSBI_GOTO_SMODE"]
+        test_chunks.append(tc)
+
+    for tc in gen_vf_tests(test_data, "VU", "H_VF_cg"):
+        tc.code = ["RVTEST_TSBI_GOTO_VUMODE", *tc.code, "RVTEST_TSBI_GOTO_SMODE"]
+        test_chunks.append(tc)
+
     return test_chunks

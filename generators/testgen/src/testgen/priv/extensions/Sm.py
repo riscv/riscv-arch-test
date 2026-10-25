@@ -1219,170 +1219,237 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         "cp_mepc_ialign32_read, cp_mepc_ialign32_mret, cp_sepc_ialign32_read, cp_sepc_ialign32_sret",
         "With xepc[1] = 1, clear misa.C in M-mode.  While IALIGN = 32, mepc[1] and sepc[1] read as 0, and mret and\n"
         "sret return to the masked address: mret in M-mode, sret in M-mode and S-mode, and reads in each mode that\n"
-        "can access the CSR.  After misa.C is set again, xepc[1] reads as 1, because the bit stays writable.  On a\n"
-        "hart whose misa.C is read-only, xepc keeps reading the address written, and the xrets are skipped",
+        "can access the CSR.  After misa.C is set again, xepc[1] reads as 1, because the bit stays writable.  Only\n"
+        "on harts with Zca and a writable misa.C",
     )
     tc.code.extend(_xepc_ialign32_tests(test_data, covergroup))
 
     test_chunks.append(test_data.end_test_chunk())
 
 
-# misa is written only in M-mode; the S-mode and VS-mode cases are reached with the T-SBI GOTO macros.  Each xret case
-# writes xepc after the GOTO that precedes it, because a GOTO from a lower mode can trap to S-mode and write sepc.  The
-# xrets come before the explicit reads, and each read writes xepc again first, because the trace records the masked
-# value of an explicit read, which coverage would then see as xepc.
+# The xepc[1] masking tests run only on harts whose misa.C is writable (UDB_MUTABLE_MISA_C) and that implement Zca, so
+# that clearing misa.C changes IALIGN from 16 to 32.  The static case, xepc[1] writable with Zca and read-only zero
+# without it, is covered by the xepc walks.  misa is written only in M-mode; S-mode and VS-mode are entered with the
+# T-SBI GOTO macros.
+#
+# Control flow while misa.C = 0: the Sm suite is assembled without C, so every instruction is 4 bytes and 4-byte
+# aligned, and no compressed instruction runs while IALIGN = 32.  Each xret returns to a .p2align 2 label: xepc is
+# written with that address + 2, so the xret reaches the label only if it masks xepc[1].
+#
+# Each xret case writes xepc after the GOTO that precedes it, because a GOTO from a lower mode can trap to S-mode and
+# write sepc.  The xrets come before the explicit reads, and each read writes xepc again first, because the trace
+# records the masked value of an explicit read, which coverage would then see as xepc.
+IALIGN32_GATE = "defined(ZCA_SUPPORTED) && defined(UDB_MUTABLE_MISA_C)"
 
 
-def _ialign32_clear_c(c_bit: int, tmp: int) -> list[str]:
-    """Clear misa.C in M-mode; c_bit is 0 if it was cleared, 0b100 if misa.C is read-only."""
+def _clear_misa_c(temp_reg: int) -> list[str]:
+    """Clear misa.C in M-mode, making IALIGN = 32."""
     return [
-        f"LI(x{c_bit}, 0b100)                # misa.C",
+        f"LI(x{temp_reg}, 0b100)             # misa.C",
         ".p2align 2                         # misa.C can be cleared only when the next instruction is 4-byte aligned",
-        f"csrc misa, x{c_bit}                # clear misa.C if it is writable",
-        f"csrr x{tmp}, misa",
-        f"and x{c_bit}, x{tmp}, x{c_bit}    # 0 if misa.C was cleared",
+        f"csrc misa, x{temp_reg}",
     ]
 
 
-def _ialign32_xret(
+def _set_misa_c(temp_reg: int) -> list[str]:
+    """Set misa.C again in M-mode, making IALIGN = 16."""
+    return [f"LI(x{temp_reg}, 0b100)             # misa.C", f"csrs misa, x{temp_reg}"]
+
+
+def _masked_xret_test(
     test_data: TestData,
     covergroup: str,
     coverpoint: str,
     label: str,
-    xret_regs: tuple[str, str, str, str],
-    regs: tuple[int, int, int],
+    *,
+    epc_csr: str,
+    xret: str,
+    status_csr: str,
+    previous_priv_mask: str,
+    previous_ie_mask: str,
+    target_reg: int,
+    value_reg: int,
 ) -> list[str]:
-    """Write xepc = target + 2 and, unless misa.C is read-only, take the xret, which must return to the target."""
-    epc, xret, status, pp_pie = xret_regs
-    c_bit, target, val = regs
-    pp, pie = pp_pie.split()
+    """Write epc_csr = target + 2 and execute xret, which must return to the target because it masks epc_csr[1].
+
+    previous_priv_mask (xPP) is set so that xret returns to the mode it runs in, and previous_ie_mask (xPIE) is
+    cleared so that interrupts stay disabled after it.  The signature records target_pc - target, which is 0.
+    """
     return [
-        f"LA(x{target}, {label}_target)",
-        f"ori x{val}, x{target}, 2",
-        f"csrw {epc}, x{val}                 # {epc}[1] = 1",
-        f"bnez x{c_bit}, {label}_skip    # misa.C is read-only: {xret} would return to the unmasked address",
-        f"LI(x{val}, {pp})",
-        f"csrs {status}, x{val}              # return to the same mode",
-        f"LI(x{val}, {pie})",
-        f"csrc {status}, x{val}              # keep interrupts disabled after the {xret}",
+        f"LA(x{target_reg}, {label}_target)",
+        f"ori x{value_reg}, x{target_reg}, 2",
+        f"csrw {epc_csr}, x{value_reg}          # {epc_csr}[1] = 1",
+        f"LI(x{value_reg}, {previous_priv_mask})",
+        f"csrs {status_csr}, x{value_reg}       # return to the same mode",
+        f"LI(x{value_reg}, {previous_ie_mask})",
+        f"csrc {status_csr}, x{value_reg}       # keep interrupts disabled after the {xret}",
         test_data.add_testcase(label, coverpoint, covergroup),
-        f"{xret}                               # implicit read of {epc}, masked while IALIGN = 32",
+        f"{xret}                               # implicit read of {epc_csr}, masked while IALIGN = 32",
         ".p2align 2",
         f"{label}_target:",
-        f"auipc x{val}, 0",
-        f"sub x{val}, x{val}, x{target}      # 0 when {xret} returned to the masked address",
-        write_sigupd(val, test_data),
-        f"{label}_skip:",
+        f"auipc x{value_reg}, 0",
+        f"sub x{value_reg}, x{value_reg}, x{target_reg}    # 0 when {xret} returned to the masked address",
+        write_sigupd(value_reg, test_data),
     ]
 
 
-def _ialign32_read(
-    test_data: TestData, covergroup: str, coverpoint: str, label: str, epc: str, target: int, val: int
+def _masked_read_test(
+    test_data: TestData,
+    covergroup: str,
+    coverpoint: str,
+    label: str,
+    *,
+    epc_csr: str,
+    target_reg: int,
+    value_reg: int,
 ) -> list[str]:
-    """Write xepc = target + 2 and read it: target while IALIGN = 32, target + 2 if misa.C is read-only."""
+    """Write epc_csr = target + 2 and read it back: the read returns target while IALIGN = 32."""
     return [
-        f"ori x{val}, x{target}, 2",
-        f"csrw {epc}, x{val}                 # {epc}[1] = 1",
+        f"ori x{value_reg}, x{target_reg}, 2",
+        f"csrw {epc_csr}, x{value_reg}          # {epc_csr}[1] = 1",
         test_data.add_testcase(label, coverpoint, covergroup),
-        f"csrr x{val}, {epc}",
-        f"sub x{val}, x{val}, x{target}      # 0 while IALIGN = 32, 2 if misa.C is read-only",
-        write_sigupd(val, test_data),
+        f"csrr x{value_reg}, {epc_csr}",
+        f"sub x{value_reg}, x{value_reg}, x{target_reg}    # 0: bit 1 reads as 0 while IALIGN = 32",
+        write_sigupd(value_reg, test_data),
     ]
 
 
-def _ialign32_writable(
-    test_data: TestData, covergroup: str, coverpoint: str, label: str, epc: str, target: int, val: int
+def _bit1_kept_test(
+    test_data: TestData,
+    covergroup: str,
+    coverpoint: str,
+    label: str,
+    *,
+    epc_csr: str,
+    target_reg: int,
+    value_reg: int,
 ) -> list[str]:
-    """After misa.C is set again, check that xepc[1] stayed writable while it was masked."""
+    """After misa.C is set again, epc_csr reads target + 2: bit 1 stayed writable while it was masked."""
     return [
         test_data.add_testcase(label, coverpoint, covergroup),
-        f"csrr x{val}, {epc}",
-        f"sub x{val}, x{val}, x{target}      # 2: {epc}[1] stayed writable while it was masked",
-        write_sigupd(val, test_data),
+        f"csrr x{value_reg}, {epc_csr}",
+        f"sub x{value_reg}, x{value_reg}, x{target_reg}    # 2: {epc_csr}[1] stayed writable while it was masked",
+        write_sigupd(value_reg, test_data),
     ]
 
 
 def _xepc_ialign32_tests(test_data: TestData, covergroup: str) -> list[str]:
     """mepc and sepc with misa.C = 0: mret in M-mode, sret in M-mode and S-mode, and reads from M-mode and S-mode."""
-    save_mstatus, save_mepc, save_sepc, c_bit, target, val = test_data.int_regs.get_registers(6, exclude_regs=[10, 11])
-    regs = (c_bit, target, val)
-    sepc_regs = ("sepc", "sret", "sstatus", "SSTATUS_SPP SSTATUS_SPIE")
+    saved_mstatus_reg, target_reg, value_reg = test_data.int_regs.get_registers(3)
+
+    def masked_sret(label: str) -> list[str]:
+        return _masked_xret_test(
+            test_data,
+            covergroup,
+            "cp_sepc_ialign32_sret",
+            label,
+            epc_csr="sepc",
+            xret="sret",
+            status_csr="sstatus",
+            previous_priv_mask="SSTATUS_SPP",
+            previous_ie_mask="SSTATUS_SPIE",
+            target_reg=target_reg,
+            value_reg=value_reg,
+        )
+
+    def masked_read(coverpoint: str, label: str, epc_csr: str) -> list[str]:
+        return _masked_read_test(
+            test_data, covergroup, coverpoint, label, epc_csr=epc_csr, target_reg=target_reg, value_reg=value_reg
+        )
+
+    def bit1_kept(coverpoint: str, label: str, epc_csr: str) -> list[str]:
+        return _bit1_kept_test(
+            test_data, covergroup, coverpoint, label, epc_csr=epc_csr, target_reg=target_reg, value_reg=value_reg
+        )
+
     lines = [
-        "#ifdef ZCA_SUPPORTED",
-        f"csrr x{save_mstatus}, mstatus",
-        f"csrr x{save_mepc}, mepc",
-        "#ifdef S_SUPPORTED",
-        f"csrr x{save_sepc}, sepc",
-        "#endif",
-        *_ialign32_clear_c(c_bit, val),
-        *_ialign32_xret(
+        f"#if {IALIGN32_GATE}",
+        f"csrr x{saved_mstatus_reg}, mstatus",
+        *_clear_misa_c(value_reg),
+        *_masked_xret_test(
             test_data,
             covergroup,
             "cp_mepc_ialign32_mret",
             "mepc_mret",
-            ("mepc", "mret", "mstatus", "MSTATUS_MPP MSTATUS_MPIE"),
-            regs,
+            epc_csr="mepc",
+            xret="mret",
+            status_csr="mstatus",
+            previous_priv_mask="MSTATUS_MPP",
+            previous_ie_mask="MSTATUS_MPIE",
+            target_reg=target_reg,
+            value_reg=value_reg,
         ),
-        *_ialign32_read(test_data, covergroup, "cp_mepc_ialign32_read", "mepc_read", "mepc", target, val),
+        *masked_read("cp_mepc_ialign32_read", "mepc_read", "mepc"),
         "#ifdef S_SUPPORTED",
         "# sret in M-mode returns to S-mode (sstatus.SPP = S)",
-        *_ialign32_xret(test_data, covergroup, "cp_sepc_ialign32_sret", "sepc_sret_m", sepc_regs, regs),
+        *masked_sret("sepc_sret_m"),
         "RVTEST_TSBI_GOTO_MMODE",
-        *_ialign32_read(test_data, covergroup, "cp_sepc_ialign32_read", "sepc_read_m", "sepc", target, val),
+        *masked_read("cp_sepc_ialign32_read", "sepc_read_m", "sepc"),
         "RVTEST_TSBI_GOTO_SMODE",
-        *_ialign32_xret(test_data, covergroup, "cp_sepc_ialign32_sret", "sepc_sret_s", sepc_regs, regs),
-        *_ialign32_read(test_data, covergroup, "cp_sepc_ialign32_read", "sepc_read_s", "sepc", target, val),
+        *masked_sret("sepc_sret_s"),
+        *masked_read("cp_sepc_ialign32_read", "sepc_read_s", "sepc"),
         "RVTEST_TSBI_GOTO_MMODE",
         "#endif // S_SUPPORTED",
-        f"LI(x{val}, 0b100)",
-        f"csrs misa, x{val}                  # set misa.C again",
-        *_ialign32_writable(test_data, covergroup, "cp_mepc_ialign32_read", "mepc_writable", "mepc", target, val),
+        *_set_misa_c(value_reg),
+        *bit1_kept("cp_mepc_ialign32_read", "mepc_writable", "mepc"),
         "#ifdef S_SUPPORTED",
-        *_ialign32_writable(test_data, covergroup, "cp_sepc_ialign32_read", "sepc_writable", "sepc", target, val),
-        f"csrw sepc, x{save_sepc}",
+        *bit1_kept("cp_sepc_ialign32_read", "sepc_writable", "sepc"),
         "#endif",
-        f"csrw mstatus, x{save_mstatus}",
-        f"csrw mepc, x{save_mepc}",
-        "#endif // ZCA_SUPPORTED",
+        f"csrw mstatus, x{saved_mstatus_reg}",
+        f"#endif // {IALIGN32_GATE}",
     ]
-    test_data.int_regs.return_registers([save_mstatus, save_mepc, save_sepc, c_bit, target, val])
+    test_data.int_regs.return_registers([saved_mstatus_reg, target_reg, value_reg])
     return lines
 
 
 def _vsepc_ialign32_tests(test_data: TestData) -> list[str]:
     """vsepc with misa.C = 0: sret and a read (as sepc) in VS-mode, and reads of vsepc from M-mode and HS-mode."""
-    save_vsstatus, save_vsepc, c_bit, target, val = test_data.int_regs.get_registers(5, exclude_regs=[10, 11])
-    regs = (c_bit, target, val)
-    return_regs = [save_vsstatus, save_vsepc, c_bit, target, val]
+    saved_vsstatus_reg, target_reg, value_reg = test_data.int_regs.get_registers(3)
+
+    def masked_read(coverpoint: str, label: str, epc_csr: str) -> list[str]:
+        return _masked_read_test(
+            test_data, _H_CSR_CG, coverpoint, label, epc_csr=epc_csr, target_reg=target_reg, value_reg=value_reg
+        )
+
     lines = [
-        "#ifdef ZCA_SUPPORTED",
-        f"csrr x{save_vsstatus}, vsstatus",
-        f"csrr x{save_vsepc}, vsepc",
-        *_ialign32_clear_c(c_bit, val),
+        f"#if {IALIGN32_GATE}",
+        f"csrr x{saved_vsstatus_reg}, vsstatus",
+        *_clear_misa_c(value_reg),
         "RVTEST_TSBI_GOTO_VSMODE",
         "# In VS-mode, sepc and sstatus are vsepc and vsstatus",
-        *_ialign32_xret(
+        *_masked_xret_test(
             test_data,
             _H_CSR_CG,
             "cp_vsepc_ialign32_sret",
             "vsepc_sret_vs",
-            ("sepc", "sret", "sstatus", "SSTATUS_SPP SSTATUS_SPIE"),
-            regs,
+            epc_csr="sepc",
+            xret="sret",
+            status_csr="sstatus",
+            previous_priv_mask="SSTATUS_SPP",
+            previous_ie_mask="SSTATUS_SPIE",
+            target_reg=target_reg,
+            value_reg=value_reg,
         ),
-        *_ialign32_read(test_data, _H_CSR_CG, "cp_vsepc_ialign32_vs_read", "vsepc_read_vs", "sepc", target, val),
+        *masked_read("cp_vsepc_ialign32_vs_read", "vsepc_read_vs", "sepc"),
         "RVTEST_TSBI_GOTO_MMODE",
-        *_ialign32_read(test_data, _H_CSR_CG, "cp_vsepc_ialign32_read", "vsepc_read_m", "vsepc", target, val),
+        *masked_read("cp_vsepc_ialign32_read", "vsepc_read_m", "vsepc"),
         "RVTEST_TSBI_GOTO_SMODE",
-        *_ialign32_read(test_data, _H_CSR_CG, "cp_vsepc_ialign32_read", "vsepc_read_hs", "vsepc", target, val),
+        *masked_read("cp_vsepc_ialign32_read", "vsepc_read_hs", "vsepc"),
         "RVTEST_TSBI_GOTO_MMODE",
-        f"LI(x{val}, 0b100)",
-        f"csrs misa, x{val}                  # set misa.C again",
-        *_ialign32_writable(test_data, _H_CSR_CG, "cp_vsepc_ialign32_read", "vsepc_writable", "vsepc", target, val),
-        f"csrw vsstatus, x{save_vsstatus}",
-        f"csrw vsepc, x{save_vsepc}",
-        "#endif // ZCA_SUPPORTED",
+        *_set_misa_c(value_reg),
+        *_bit1_kept_test(
+            test_data,
+            _H_CSR_CG,
+            "cp_vsepc_ialign32_read",
+            "vsepc_writable",
+            epc_csr="vsepc",
+            target_reg=target_reg,
+            value_reg=value_reg,
+        ),
+        f"csrw vsstatus, x{saved_vsstatus_reg}",
+        f"#endif // {IALIGN32_GATE}",
     ]
-    test_data.int_regs.return_registers(return_regs)
+    test_data.int_regs.return_registers([saved_vsstatus_reg, target_reg, value_reg])
     return lines
 
 

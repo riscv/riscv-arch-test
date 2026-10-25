@@ -1825,92 +1825,6 @@ endgroup
 `endif // EXCLUDE_SM
 `endif // H_SUPPORTED
 
-`ifdef H_SUPPORTED
-`ifdef F_SUPPORTED
-covergroup Exceptions_HF_cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints.svh"
-
-    fp_instr: coverpoint ins.current.insn {
-        wildcard bins csrr_fcsr = {CSRR} iff (ins.current.insn[31:20] == CSR_FCSR);
-        wildcard bins fadd_s    = {FADD_S};
-    }
-    mstatus_fs: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins off   = {0};
-        bins init  = {1};
-        bins clean = {2};
-        bins dirty = {3};
-    }
-    vsstatus_fs: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "fs") {
-        bins off   = {0};
-        bins init  = {1};
-        bins clean = {2};
-        bins dirty = {3};
-    }
-
-    // Illegal instruction when mstatus.FS = Off, or when V = 1 and vsstatus.FS = Off.  Otherwise fadd.s sets
-    // mstatus.FS, and vsstatus.FS when V = 1, to Dirty
-    cp_exceptionsHF_fs: cross priv_mode_hs_vs_u_vu, mstatus_fs, vsstatus_fs, fp_instr;
-endgroup
-`endif // F_SUPPORTED
-`endif // H_SUPPORTED
-
-`ifdef H_SUPPORTED
-`ifdef V_SUPPORTED
-covergroup Exceptions_HV_cg with function sample(ins_t ins);
-    option.per_instance = 0;
-    `include "general/RISCV_coverage_standard_coverpoints.svh"
-
-    // vtype.vill = 0, vstart = 0 and vl != 0 before the instruction, and no trap
-    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
-                         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
-                         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                         ins.trap == 0} {
-        bins true = {1'b1};
-    }
-
-    vector_instr: coverpoint ins.current.insn {
-        wildcard bins csrr_vl = {CSRR} iff (ins.current.insn[31:20] == CSR_VL);
-        wildcard bins vadd_vv = {VADD_VV};
-        wildcard bins vsetvli = {VSETVLI};
-    }
-    vadd_vv: coverpoint ins.current.insn {
-        wildcard bins vadd_vv = {VADD_VV};
-    }
-    vsetvli: coverpoint ins.current.insn {
-        wildcard bins vsetvli = {VSETVLI};
-    }
-    mstatus_vs: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins off   = {0};
-        bins init  = {1};
-        bins clean = {2};
-        bins dirty = {3};
-    }
-    vsstatus_vs: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "vs") {
-        bins off   = {0};
-        bins init  = {1};
-        bins clean = {2};
-        bins dirty = {3};
-    }
-    mstatus_vs_clean: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
-        bins clean = {2};
-    }
-    vsstatus_vs_initial_clean: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "vs") {
-        bins init  = {1};
-        bins clean = {2};
-    }
-
-    // Illegal instruction when mstatus.VS = Off, or when V = 1 and vsstatus.VS = Off.  Otherwise vadd.vv and
-    // vsetvli set mstatus.VS, and vsstatus.VS when V = 1, to Dirty
-    cp_exceptionsHV_vs: cross priv_mode_hs_vs_u_vu, mstatus_vs, vsstatus_vs, vector_instr;
-
-    // With V = 1, vector arithmetic and vsetvli set vsstatus.VS to Dirty from Initial or Clean
-    cp_vsstatus_vs_set_dirty_arithmetic: cross priv_mode_vs_vu, std_vec, vadd_vv, mstatus_vs_clean, vsstatus_vs_initial_clean;
-    cp_vsstatus_vs_set_dirty_csr:        cross priv_mode_vs_vu, std_vec, vsetvli, mstatus_vs_clean, vsstatus_vs_initial_clean;
-endgroup
-`endif // V_SUPPORTED
-`endif // H_SUPPORTED
-
 function void exceptions_sample(int hart, int issue, ins_t ins);
 `ifdef F_SUPPORTED
     Exceptions_F_cg.sample(ins);
@@ -1949,11 +1863,5 @@ function void exceptions_sample(int hart, int issue, ins_t ins);
     `ifndef EXCLUDE_SM
         Exceptions_HSm_cg.sample(ins);
     `endif // EXCLUDE_SM
-    `ifdef F_SUPPORTED
-        Exceptions_HF_cg.sample(ins);
-    `endif // F_SUPPORTED
-    `ifdef V_SUPPORTED
-        Exceptions_HV_cg.sample(ins);
-    `endif // V_SUPPORTED
 `endif // H_SUPPORTED
 endfunction

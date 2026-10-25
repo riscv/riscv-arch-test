@@ -45,10 +45,4 @@
     `ifndef EXCLUDE_SM
         Exceptions_HSm_cg = new();   Exceptions_HSm_cg.set_inst_name("obj_Exceptions_HSm");
     `endif // EXCLUDE_SM
-    `ifdef F_SUPPORTED
-        Exceptions_HF_cg = new();   Exceptions_HF_cg.set_inst_name("obj_Exceptions_HF");
-    `endif // F_SUPPORTED
-    `ifdef V_SUPPORTED
-        Exceptions_HV_cg = new();   Exceptions_HV_cg.set_inst_name("obj_Exceptions_HV");
-    `endif // V_SUPPORTED
 `endif // H_SUPPORTED

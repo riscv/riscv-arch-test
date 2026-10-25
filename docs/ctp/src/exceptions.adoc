@@ -67,16 +67,6 @@ include::{testplansdir}/priv/Exceptions_HSm.adoc[]
 
 include::{testplansdir}/priv/Exceptions_H.adoc[]
 
-==== Exceptions_HF and Exceptions_HV Hypervisor Floating-Point and Vector Exceptions
-
-Exceptions_HF and Exceptions_HV boot to HS-mode.  In HS, VS, U and VU modes, with each combination of mstatus.FS/VS and
-vsstatus.FS/VS, they access fcsr or vl and execute a floating-point or vector instruction that changes state, which raises an
-illegal instruction when either field in effect is Off and otherwise sets both to Dirty.
-
-include::{testplansdir}/priv/Exceptions_HF.adoc[]
-
-include::{testplansdir}/priv/Exceptions_HV.adoc[]
-
 ==== Exceptions Normative Rules
 
 The rules apply to all Exceptions groups.

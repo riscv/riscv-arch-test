@@ -90,8 +90,6 @@ exclude_extensions:
   - H
   - Exceptions_H
   - Exceptions_HSm
-  - Exceptions_HF
-  - Exceptions_HV
   # The same mstatus.MPV bug breaks the mret and mstatus.TVM tests, and every vsstatus bit is
   # writable (https://gitlab.com/qemu-project/qemu/-/work_items/4589).
   - Sm_H

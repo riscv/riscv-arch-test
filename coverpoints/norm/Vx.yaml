@@ -72,18 +72,6 @@ normative_rule_definitions:
         "S_V_cg/cp_sstatus_vs_set_dirty_csr",
       ]
 
-  # When V=1, both csr:vsstatus[vs] and csr:mstatus[vs] are in effect: attempts to execute
-  # any vector instruction, or to access the vector CSRs, raise an illegal-instruction
-  # exception when either field is set to Off.
-  - name: vsstatus_vs_mstatus_vs_op_off
-    coverpoint: ["Exceptions_HV_cg/cp_exceptionsHV_vs"]
-
-  # When the hypervisor extension is present, a vector context status field, csr::[vs], is
-  # added to csr:vsstatus[][10:9]. It is defined analogously to the floating-point context
-  # status field, csr::[fs].
-  - name: vsstatus_vs_sz_acc
-    coverpoint: ["Exceptions_HV_cg/cp_exceptionsHV_vs"]
-
   # Attempts to execute any vector instruction, or to access the vector CSRs, raise
   # an illegal-instruction exception when mstatus.VS is set to Off.
   - name: mstatus_vs_op_off

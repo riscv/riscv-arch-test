@@ -15,8 +15,7 @@ include::norm/H_norm_rules.adoc[]
 
 ==== Hypervisor Exceptions
 
-The hypervisor exception tests are the <<t-Exceptions_H-coverpoints,Exceptions_H>>, <<t-Exceptions_HSm-coverpoints,Exceptions_HSm>>,
-<<t-Exceptions_HF-coverpoints,Exceptions_HF>> and <<t-Exceptions_HV-coverpoints,Exceptions_HV>> groups of the Exceptions suite.
+The hypervisor exception tests are the <<t-Exceptions_H-coverpoints,Exceptions_H>> and <<t-Exceptions_HSm-coverpoints,Exceptions_HSm>> groups of the Exceptions suite.
 
 ==== InterruptsH Hypervisor Interrupts
 

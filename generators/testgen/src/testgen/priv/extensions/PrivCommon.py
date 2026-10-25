@@ -338,11 +338,12 @@ MCAUSE_CODES: dict[str, dict[int, str | None]] = {
         13: "defined(SSCOFPMF_SUPPORTED)",  # local counter overflow
     },
 }
-# scause, and vscause like it, must hold every code 0-31 from Ss1p12 (scause_exception_code_sz).  Before that,
-# they need only hold the codes of the causes that every S-mode hart supports, and those of software check and
-# local counter overflow when Zicfilp, Zicfiss or Sscofpmf adds them.  The H causes need no entry: H requires Ss1p12.
+# scause, and vscause, which must hold the same values (vscause_wlrl), must hold every code 0-31 from Ss1p12
+# (scause_exception_code_sz).  Before that, they need only hold the codes of the causes that every S-mode hart
+# supports, and those of the causes an extension adds: software check (Zicfilp, Zicfiss), local counter overflow
+# (Sscofpmf) and the H causes.
 _SCAUSE_ALWAYS = {"exception": (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 15), "interrupt": (1, 3, 5, 7, 9, 11)}
-_SCAUSE_EXTENSION = {"exception": (18,), "interrupt": (13,)}
+_SCAUSE_EXTENSION = {"exception": (10, 18, 20, 21, 22, 23), "interrupt": (2, 6, 10, 12, 13)}
 
 
 def _scause_gate(kind: str, code: int) -> str | None:

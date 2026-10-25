@@ -46,13 +46,13 @@ def _load_v_zero_one(temp_reg: int) -> list[str]:
 
 
 def _gen_fs_state_affecting_register(test_data: TestData, temp_reg: int, covergroup: str, priv: str) -> list[str]:
-    """cp_vectorfp_xstatus_fs_state_affecting_register: vfmv.f.s with FS=Initial/Clean."""
+    """cp_vectorfp_xstatus_fs_state_affecting_register: vfmv.f.s with FS=Initial/Clean/Dirty."""
     status = STATUS_CSR[priv]
     coverpoint = f"cp_vectorfp_{status}_fs_state_affecting_register"
     lines = [
-        comment_banner(coverpoint, "vfmv.f.s under FS=Initial(1)/Clean(2); should set FS=Dirty"),
+        comment_banner(coverpoint, "vfmv.f.s under FS=Initial(1)/Clean(2)/Dirty(3); should leave FS=Dirty"),
     ]
-    for fs in (1, 2):
+    for fs in (1, 2, 3):
         lines.extend(set_status_fields(temp_reg, priv, fs=3, vs=3))
         lines.extend(_load_v_zero_one(temp_reg))
         lines.extend(set_status_fields(temp_reg, priv, fs=fs, vs=3))
@@ -70,10 +70,10 @@ def _gen_fs_state_affecting_csr(test_data: TestData, temp_reg: int, covergroup: 
         comment_banner(
             coverpoint,
             "vfdiv.vv 1.0/0.0 (DZ), vfadd.vv inf + -inf (NV) and vmflt.vv with a NaN operand (NV)"
-            " under FS=Initial/Clean; must set FS=Dirty",
+            " under FS=Initial/Clean/Dirty; must leave FS=Dirty",
         ),
     ]
-    for fs in (1, 2):
+    for fs in (1, 2, 3):
         for trial in range(3):
             lines.extend(set_status_fields(temp_reg, priv, fs=3, vs=3))
             lines.extend(_load_v_zero_one(temp_reg))
@@ -87,7 +87,7 @@ def _gen_fs_state_affecting_csr(test_data: TestData, temp_reg: int, covergroup: 
             lines.append(gen_status_read_sigupd(temp_reg, test_data, priv))
             lines.append(write_sigupd(None, test_data, "fflags"))
     # vfadd inf + -inf raises NV
-    for fs in (1, 2):
+    for fs in (1, 2, 3):
         lines.extend(set_status_fields(temp_reg, priv, fs=3, vs=3))
         lines.extend(_load_v_zero_one(temp_reg))
         # build +inf in v6 by 1.0/0.0 first under FS=Dirty
@@ -102,7 +102,7 @@ def _gen_fs_state_affecting_csr(test_data: TestData, temp_reg: int, covergroup: 
         lines.append(gen_status_read_sigupd(temp_reg, test_data, priv))
         lines.append(write_sigupd(None, test_data, "fflags"))
     # Mask-producing compare: writes no FP register, only fflags (NV for any NaN operand)
-    for fs in (1, 2):
+    for fs in (1, 2, 3):
         lines.extend(set_status_fields(temp_reg, priv, fs=3, vs=3))
         lines.extend(_load_v_zero_one(temp_reg))
         lines.append(f"LI(x{temp_reg}, 0x7fc00000)  # quiet NaN")
@@ -118,13 +118,15 @@ def _gen_fs_state_affecting_csr(test_data: TestData, temp_reg: int, covergroup: 
 
 
 def _gen_fs_state_nonaffecting(test_data: TestData, temp_reg: int, covergroup: str, priv: str) -> list[str]:
-    """cp_vectorfp_xstatus_fs_state_nonaffecting: vfadd.vv with various vs1/vs2 patterns under FS=Initial/Clean."""
+    """cp_vectorfp_xstatus_fs_state_nonaffecting: vfadd.vv with various vs1/vs2 patterns under FS=Initial/Clean/Dirty."""
     status = STATUS_CSR[priv]
     coverpoint = f"cp_vectorfp_{status}_fs_state_nonaffecting"
     lines = [
-        comment_banner(coverpoint, "vfadd.vv under FS=Initial/Clean across all 4 vs1_zero × vs2_zero combinations"),
+        comment_banner(
+            coverpoint, "vfadd.vv under FS=Initial/Clean/Dirty across all 4 vs1_zero × vs2_zero combinations"
+        ),
     ]
-    for fs in (1, 2):
+    for fs in (1, 2, 3):
         for vs2_reg, vs1_reg, name in _VFADD_PATTERNS:
             lines.extend(set_status_fields(temp_reg, priv, fs=3, vs=3))
             lines.extend(_load_v_zero_one(temp_reg))

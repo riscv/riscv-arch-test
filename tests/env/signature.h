@@ -91,17 +91,21 @@
     2:                                                          ;
 #endif
 
-// TRAP_SIGUPD_ZERO_OK(tempreg, sigreg, offset, instptr, strptr)
-// TRAP_SIGUPD for a field a hart may leave at zero instead of its defined value.
-// xtinst holds either the transformed instruction or zero.
-// The check passes when the DUT value matches the reference or the DUT value is zero.
-// Each pass path executes three instructions. Both compile modes also emit the
-// same number of instructions so the signature and self-check ELFs have identical code layout.
+// TRAP_SIGUPD_ZERO(tempreg, sigreg, offset, zeroreg, instptr, strptr)
+// TRAP_SIGUPD for a trap CSR that may hold zero in place of the reference model's value.
+// In Self Check mode, zero in sigreg also matches when zeroreg is nonzero. Each pass path
+// executes four instructions, so the handler's instruction count does not depend on which
+// legal value the hart wrote. Both compile modes emit the same instructions so the signature
+// and self-check ELFs have identical code layout.
 #ifdef RVTEST_SELFCHECK
-  #define TRAP_SIGUPD_ZERO_OK(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR) \
+  #define TRAP_SIGUPD_ZERO(_TMPREG, _R, _OFF, _ZREG, _INST_PTR, _STR_PTR) \
+    .option push                                                ;\
+    .option norvc                                               ;\
     LREG _TMPREG, _OFF*REGWIDTH(T1)                             ;\
     beq  _TMPREG, _R, 1f                                        ;\
-    beqz _R, 4f                                                 ;\
+    bnez _R, 3f                                                 ;\
+    bnez _ZREG, 2f                                              ;\
+    3:                                                          ;\
     mv   T1, _R                                                 ;\
     mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
     jal  T2, failedtest_trap_x7_x9                              ;\
@@ -110,12 +114,17 @@
     .word CSR_XEPC                                              ;\
     1:                                                          ;\
     nop                                                         ;\
-    4:                                                          ;
+    nop                                                         ;\
+    2:                                                          ;\
+    .option pop
 #else
-  #define TRAP_SIGUPD_ZERO_OK(_TMPREG, _R, _OFF, _INST_PTR, _STR_PTR) \
+  #define TRAP_SIGUPD_ZERO(_TMPREG, _R, _OFF, _ZREG, _INST_PTR, _STR_PTR) \
+    .option push                                                ;\
+    .option norvc                                               ;\
     SREG _R, _OFF*REGWIDTH(T1)                                  ;\
     beq  x0, x0, 1f                                             ;\
-    beqz _R, 4f                                                 ;\
+    nop                                                         ;\
+    nop                                                         ;\
     mv   T1, _R                                                 ;\
     mv   DEFAULT_TEMP_REG, _TMPREG                              ;\
     jal  T2, failedtest_trap_x7_x9                              ;\
@@ -124,7 +133,9 @@
     .word CSR_XEPC                                              ;\
     1:                                                          ;\
     nop                                                         ;\
-    4:                                                          ;
+    nop                                                         ;\
+    2:                                                          ;\
+    .option pop
 #endif
 
 // TRAP_SIGUPD_ADDR(tempreg, sigreg, offset, instptr, strptr)

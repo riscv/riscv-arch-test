@@ -8,7 +8,7 @@
 set -euo pipefail
 
 INSTALL_DIR="${1:?Usage: install-cvw.sh <install-dir>}"
-CVW_COMMIT="e10817c7288a38cdb7ff583e544f2820858d47ef"
+CVW_COMMIT="a23c80585e7229cf39b4d0db2973199ce8dd9b8f"
 VERILATOR_VERSION="v5.052"
 
 # Install Verilator from source

@@ -1,26 +1,146 @@
 # Mapping of normative rules to coverpoints for a test suite
 #
 # Zicclsm (Main Memory Misaligned Accesses) has a single normative rule. It is
-# exercised by every suite that performs misaligned loads and stores to main
-# memory and expects them to complete: the Misalign* suites (scalar integer,
-# compressed, F/D floating point, and vector loads/stores at misaligned
-# addresses), and the misaligned-load/store coverpoints of the exception suites,
-# which check that no address-misaligned exception is raised. In UDB, Zicclsm
-# requires MISALIGNED_LDST=true, which is the parameter those suites key on.
-# The rule excludes AMOs, LR/SC and other Za* accesses, so ExceptionsZaamo,
-# ExceptionsZalrsc and Zama16b are deliberately not listed.
+# exercised by every Zicclsm test that performs misaligned loads and stores to main
+# memory and expects them to complete: the scalar integer, compressed, and F/D floating
+# point loads/stores at misaligned addresses, and the misaligned-load/store coverpoints
+# of the exception suites, which check that no address-misaligned exception is raised.
+# The rule excludes AMOs, LR/SC and other Za* accesses, so Exceptions_Zaamo,
+# Exceptions_Zalrsc and Zama16b are deliberately not listed.
 
 normative_rule_definitions:
   # If the Zicclsm extension is implemented, then misaligned loads and stores to main memory
   # regions with both the coherence and cacheability PMAs must be supported.
   - name: Zicclsm_misaligned_support
-    # Representative coverpoints; also cp_misalign of the other Misalign, MisalignZca, MisalignF and
-    # MisalignD covergroups, cp_misalignv_ls_element_misaligned and cp_misalignv_ls_wholereg_misaligned
+    # Representative coverpoints; also cp_misalign of the other Zicclsm, ZicclsmZca, ZicclsmF and
+    # ZicclsmD covergroups, cp_misalignv_ls_element_misaligned and cp_misalignv_ls_wholereg_misaligned
     # of the other MisalignV covergroups, and cp_load/store_address_misaligned of the Exceptions*
-    # suites, which with MISALIGNED_LDST=true must complete without an address-misaligned exception
+    # suites, which must complete without an address-misaligned exception
     coverpoint:
       [
-        "{Misalign_lw_cg, Misalign_sw_cg}/cp_misalign",
-        "MisalignZca_c_lw_cg/cp_misalign",
+        "{Zicclsm_lw_cg, Zicclsm_sw_cg}/cp_misalign",
+        "ZicclsmZca_c_lw_cg/cp_misalign",
         "MisalignV_vle32_v_cg/cp_misalignv_ls_element_misaligned",
       ]
+
+  # Misaligned loads and stores can be handled in hardware, or via an invisible trap into
+  # the execution environment implementation, or possibly a combination of hardware and
+  # invisible trap depending on address.
+  - name: misaligned_ldst_hw_support
+    # Representative: every Zicclsm covergroup's cp_misalign exercises the same behavior
+    coverpoint:
+      [
+        "{Zicclsm_lw_cg,Zicclsm_sw_cg,Zicclsm_ld_cg,Zicclsm_sd_cg}/{cp_misalign}",
+      ]
+  # Loads and stores whose effective address is not naturally aligned to the
+  # referenced datatype (i.e., the effective address is not divisible by the size of
+  # the access in bytes) have behavior dependent on the EEI.
+  - name: misaligned_ldst_eei_dependent_behavior
+    # Representative: every Zicclsm covergroup's cp_misalign exercises the same behavior
+    coverpoint: ["{Zicclsm_lw_cg,Zicclsm_sw_cg}/{cp_misalign}"]
+  # Loads and stores that are not naturally aligned may either complete execution
+  # successfully or raise an exception.
+  - name: misaligned_ldst_exc_type
+    # Representative: the completes-successfully branch; every Zicclsm covergroup's cp_misalign exercises it
+    coverpoint: ["{Zicclsm_lw_cg,Zicclsm_sw_cg}/{cp_misalign}"]
+  - name: lh_op
+    # LH loads a 16-bit value from memory, then sign-extends to 32-bits before storing
+    # in rd.
+    coverpoint: ["Zicclsm_lh_cg/{cp_misalign}"]
+  - name: lhu_op
+    # LHU loads a 16-bit value from memory but then zero extends to
+    # 32-bits before storing in rd.
+    coverpoint: ["Zicclsm_lhu_cg/{cp_misalign}"]
+  - name: lw_op
+    # The LW instruction loads a 32-bit value from memory into rd.
+    coverpoint: ["Zicclsm_lw_cg/{cp_misalign}"]
+  # The insn:sw[], insn:sh[], and insn:sb[] instructions store 32-bit, 16-bit, and 8-bit
+  # values from the low bits of register rs2 to memory.
+  - name: sw_sh_sb_op
+    coverpoint: ["Zicclsm_sh_cg/{cp_misalign}", "Zicclsm_sw_cg/{cp_misalign}"]
+  - name: lwu_op
+    # The LWU instruction, on the other hand, zero-extends the 32-bit value from
+    # memory for RV64I.
+    coverpoint: ["Zicclsm_lwu_cg/{cp_misalign}"]
+  - name: ld_op_rv64i
+    coverpoint: ["Zicclsm_ld_cg/{cp_misalign}"]
+  - name: sd_sw_sh_sb_op_rv64i
+    coverpoint: ["Zicclsm_sd_cg/{cp_misalign}"]
+  - name: c-lw_op
+    # C.LW loads a 32-bit value from memory into register
+    # rd′. It computes an effective address by adding the
+    # zero-extended offset, scaled by 4, to the base address in register
+    # rs1′. It expands to lw rd′, offset(rs1′).
+    coverpoint: ["ZicclsmZca_c_lw_cg/{cp_misalign}"]
+  - name: c-lwsp_op
+    # C.LWSP loads a 32-bit value from memory into register rd. It computes
+    # an effective address by adding the zero-extended offset, scaled by 4,
+    # to the stack pointer, x2. It expands to lw rd, offset(x2).
+    coverpoint: ["ZicclsmZca_c_lwsp_cg/{cp_misalign}"]
+  - name: c-ld_op
+    # C.LD is an RV64C-only instruction that loads a 64-bit value from
+    # memory into register rd′. It computes an effective
+    # address by adding the zero-extended offset, scaled by 8, to the base
+    # address in register rs1′. It expands to
+    # ld rd′, offset(rs1′).
+    coverpoint: ["ZicclsmZca_c_ld_cg/{cp_misalign}"]
+  - name: c-ldsp_op
+    # C.LDSP is an RV64C-only instruction that loads a 64-bit value
+    # from memory into register rd. It computes its effective address by
+    # adding the zero-extended offset, scaled by 8, to the stack pointer,
+    # x2. It expands to ld rd, offset(x2).
+    coverpoint: ["ZicclsmZca_c_ldsp_cg/{cp_misalign}"]
+  - name: c-sw_op
+    # C.SW stores a 32-bit value in register rs2′ to memory.
+    # It computes an effective address by adding the zero-extended offset,
+    # scaled by 4, to the base address in register rs1′. It
+    # expands to sw rs2′, offset(rs1′).
+    coverpoint: ["ZicclsmZca_c_sw_cg/{cp_misalign}"]
+  - name: c-swsp_op
+    # C.SWSP stores a 32-bit value in register rs2 to memory. It computes an
+    # effective address by adding the zero-extended offset, scaled by 4, to
+    # the stack pointer, x2. It expands to sw rs2, offset(x2).
+    coverpoint: ["ZicclsmZca_c_swsp_cg/{cp_misalign}"]
+  - name: c-sd_op
+    # C.SD is an RV64C-only instruction that stores a 64-bit value in
+    # register rs2′ to memory. It computes an effective
+    # address by adding the zero-extended offset, scaled by 8, to the base
+    # address in register rs1′. It expands to
+    # sd rs2′, offset(rs1′).
+    coverpoint: ["ZicclsmZca_c_sd_cg/{cp_misalign}"]
+  - name: c-sdsp_op
+    # C.SDSP is an RV64C-only instruction that stores a 64-bit value in
+    # register rs2 to memory. It computes an effective address by adding the
+    # zero-extended offset, scaled by 8, to the stack pointer, x2. It
+    # expands to sd rs2, offset(x2).
+    coverpoint: ["ZicclsmZca_c_sdsp_cg/{cp_misalign}"]
+  # Floating-point loads and stores use the same base+offset addressing mode as the
+  # integer base ISAs, with a base address in register rs1 and a 12-bit signed byte
+  # offset. The insn:flw[] instruction loads a single-precision floating-point value from
+  # memory into floating-point register rd. insn:fsw[] stores a single-precision value
+  # from floating-point register rs2 to memory.
+  - name: fsw_flw_op
+    coverpoint:
+      ["ZicclsmF_flw_cg/{cp_misalign}", "ZicclsmF_fsw_cg/{cp_misalign}"]
+  # As described in , the execution environment defines whether misaligned
+  # floating-point loads and stores are handled invisibly or raise a contained or fatal
+  # trap.
+  - name: fp_misaligned
+    # TODO: needs misaligned flq and fsq coverpoints (no Q testplan exists)
+    coverpoint:
+      [
+        "{ZicclsmF_flw_cg,ZicclsmF_fsw_cg,ZicclsmD_fld_cg,ZicclsmD_fsd_cg}/{cp_misalign}",
+      ]
+  # The insn:fld[] instruction loads a double-precision floating-point value from memory
+  # into floating-point register rd
+  - name: fld_op
+    coverpoint: ["ZicclsmD_fld_cg/{cp_misalign}"]
+  # insn:fsd[] stores a double-precision value from the floating-point registers to
+  # memory
+  - name: fsd_op
+    coverpoint: ["ZicclsmD_fsd_cg/{cp_misalign}"]
+  # New 128-bit variants of LOAD-FP and STORE-FP instructions are added, encoded with a
+  # new value for the funct3 width field.
+  - name: fsq_flq_op
+    # TODO: needs misaligned flq and fsq coverpoints (no Q testplan exists)
+    coverpoint: [""]

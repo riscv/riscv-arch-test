@@ -8,4 +8,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Svinval_cg = new(); Svinval_cg.set_inst_name("obj_Svinval");
+`ifndef EXCLUDE_SM
+    Svinval_Sm_cg = new();      Svinval_Sm_cg.set_inst_name("obj_Svinval_Sm");
+`endif
+    Svinval_cg = new();         Svinval_cg.set_inst_name("obj_Svinval");

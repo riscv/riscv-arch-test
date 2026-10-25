@@ -1083,13 +1083,13 @@ def _t_va_all(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> 
     test_chunks.append(end_sv_test(test_data, regs))
 
 
-#: The cross that samples satp accesses in each suite: S-mode accesses in Sv, M-mode accesses in SvSm.
-_SATP_ACCESS_CROSS = {"Sv": "cp_access_s", "SvSm": "cp_access_m"}
+#: The cross and covergroup that sample satp accesses from each mode: S-mode in the Sv group, M-mode in Sv_Sm.
+_SATP_ACCESS_CROSS = {"Smode": ("cp_access_s", "Sv_satp_cg"), "Mmode": ("cp_access_m", "Sv_Sm_satp_cg")}
 
 
-def satp_csr_read(test_data: TestData, name: str, check_reg: int, csr: str = "satp") -> list[str]:
-    suite = test_data.testsuite
-    label = test_data.add_testcase(name, _SATP_ACCESS_CROSS[suite], f"{suite}_satp_cg")
+def satp_csr_read(test_data: TestData, name: str, check_reg: int, csr: str = "satp", mode: str = "Smode") -> list[str]:
+    coverpoint, covergroup = _SATP_ACCESS_CROSS[mode]
+    label = test_data.add_testcase(name, coverpoint, covergroup)
     return [label, gen_csr_read_sigupd(check_reg, (csr, None), test_data)]
 
 
@@ -1106,7 +1106,7 @@ def satp_access_ops(test_data: TestData, mode: str, sources: tuple[int, int, int
     lines = []
     for operation, source in zip(("csrw", "csrs", "csrc"), sources, strict=True):
         lines.append(f"{operation} satp, x{source}")
-        lines.extend(satp_csr_read(test_data, f"{mode[0].lower()}_{operation}", check_reg))
+        lines.extend(satp_csr_read(test_data, f"{mode[0].lower()}_{operation}", check_reg, mode=mode))
     return lines
 
 

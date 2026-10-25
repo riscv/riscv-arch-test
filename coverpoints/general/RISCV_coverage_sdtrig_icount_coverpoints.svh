@@ -53,16 +53,6 @@ fired_zero_pending: coverpoint {sdtrig_icount_count(get_csr_val(ins.hart, ins.is
     type_option.weight = 0;
     bins count_zero_pending_set = {15'b00000000000000_1};
 }
-// count = 1 matched the trap; pending fires after the handler returns
-mret: coverpoint ins.current.insn {
-    type_option.weight = 0;
-    bins mret = {MRET};
-}
-// tdata1 write that arms the pending trigger: it fires before the next instruction
-csrw_tdata1: coverpoint ins.current.insn {
-    type_option.weight = 0;
-    wildcard bins csrw_tdata1 = {CSRW} iff (ins.current.insn[31:20] == CSR_TDATA1);
-}
 icount_count_result: coverpoint sdtrig_icount_outcome(ins, `SDTRIG_ICOUNT_MODE_BIT) {
     type_option.weight = 0;
     bins m_clear_not_counted = {3'd1};
@@ -73,7 +63,7 @@ icount_eq0_result: coverpoint sdtrig_icount_outcome(ins, `SDTRIG_ICOUNT_MODE_BIT
     bins pending_clear_no_fire = {3'd3};
     bins pending_set_fired     = {3'd4};
 }
-`ifdef UDB_ICOUNT_HARDWIRED_1
+`ifdef UDB_SDTRIG_ICOUNT_COUNT_HARDWIRED_1
     // count hard-wired to 1, armed with m/s/u/vs/vu all set: firing clears all five and pending
     armed_hardwired: coverpoint {sdtrig_icount_count(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "tdata1")),
                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "tdata1")[26:25],

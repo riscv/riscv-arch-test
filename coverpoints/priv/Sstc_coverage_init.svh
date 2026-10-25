@@ -9,3 +9,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
     Sstc_cg = new();         Sstc_cg.set_inst_name("obj_Sstc");
+`ifndef EXCLUDE_SM
+    Sstc_Sm_cg = new();      Sstc_Sm_cg.set_inst_name("obj_Sstc_Sm");
+`endif

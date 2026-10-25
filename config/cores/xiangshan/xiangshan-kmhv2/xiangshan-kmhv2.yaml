@@ -189,9 +189,6 @@ params:
   SEI_INTR_IMPL: true
   SSI_INTR_IMPL: true
   STI_INTR_IMPL: true
-  VSEI_INTR_IMPL: true
-  VSSI_INTR_IMPL: true
-  VSTI_INTR_IMPL: true
   TIME_CSR_IMPLEMENTED: true
   HPM_COUNTER_EN:
     [
@@ -298,6 +295,140 @@ params:
       true,
       true,
       true,
+    ]
+  MEDELEG_DELEGATABLE:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      true,
+      true,
+      false,
+      true,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  MIDELEG_DELEGATABLE:
+    [
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
     ]
   SCOUNTENABLE_EN:
     [
@@ -481,9 +612,9 @@ params:
   HSTATEEN_AIA_TYPE: rw
   HSTATEEN_IMSIC_TYPE: rw
   HSTATEEN_CONTEXT_TYPE: rw
-  MCONTEXT_AVAILABLE: true
+  MCONTEXT_IMPLEMENTED: true
   DBG_HCONTEXT_WIDTH: 14
-  HCONTEXT_AVAILABLE: true
+  HCONTEXT_IMPLEMENTED: true
   DBG_SCONTEXT_WIDTH: 32
 
   # ---- Not measurable by the extractor; from the RTL and documentation ----
@@ -571,3 +702,33 @@ params:
   DCSR_STEPIE_TYPE: rw
   DCSR_STOPCOUNT_TYPE: rw
   DCSR_STOPTIME_TYPE: rw
+  # Sdtrig: only mcontrol6 triggers are implemented (sail.json, NewCSR/DebugLevel.scala).
+  SDTRIG_NUM_TRIGGERS: 4
+  SDTRIG_BREAKPOINT_REENTRANCY: Use_interrupt_enables
+  TCONTROL_IMPLEMENTED: false
+  TDATA2_IMPLEMENTED: true
+  TDATA3_IMPLEMENTED: true
+  SDTRIG_M_WRITABLE: true
+  SDTRIG_S_WRITABLE: true
+  SDTRIG_U_WRITABLE: true
+  SDTRIG_VS_WRITABLE: true
+  SDTRIG_VU_WRITABLE: true
+  SCONTEXT_IMPLEMENTED: true
+  SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS: [true, true, true, true]
+  SDTRIG_ICOUNT_SUPPORTED_TRIGGERS: [false, false, false, false]
+  SDTRIG_ITRIGGER_SUPPORTED_TRIGGERS: [false, false, false, false]
+  SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS: [false, false, false, false]
+  SDTRIG_MCONTROL6_MASKMAX6: 1
+  SDTRIG_MAX_CHAIN_LENGTH: 2
+  SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES: [0, 2, 3]
+  SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES: [0]
+  SDTRIG_MCONTROL6_SELECT_WRITABLE: false
+  SDTRIG_MCONTROL6_EXECUTE_WRITABLE: true
+  SDTRIG_MCONTROL6_LOAD_WRITABLE: true
+  SDTRIG_MCONTROL6_STORE_WRITABLE: true
+  SDTRIG_TEXTRA_MHVALUE_LEN: 0
+  SDTRIG_TEXTRA_SVALUE_LEN: 0
+  SDTRIG_TEXTRA_MHSELECT_MCONTEXT_MATCH: false
+  SDTRIG_TEXTRA_MHSELECT_VMID_MATCH: false
+  SDTRIG_TEXTRA_SSELECT_SCONTEXT_MATCH: false
+  SDTRIG_TEXTRA_SSELECT_ASID_MATCH: false

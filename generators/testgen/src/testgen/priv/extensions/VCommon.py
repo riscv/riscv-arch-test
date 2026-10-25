@@ -56,7 +56,7 @@ def _gen_vcsrrswc(test_data: TestData, temp_reg: int, covergroup: str, priv: str
                 continue
             # A write that changes vector state must set xstatus.VS to Dirty, so preset the
             # CSR to a value the operation changes: 0 for csrrs/csrrw of all 1s, 1 for csrrc.
-            for vs in (1, 2):
+            for vs in (1, 2, 3):
                 lines.extend(
                     [
                         f"csrwi {csr}, {1 if op == 'csrrc' else 0}  # preset so {op} changes {csr}",
@@ -113,10 +113,10 @@ def _gen_status_vs_dirty(test_data: TestData, temp_reg: int, covergroup: str, pr
     lines = [
         comment_banner(
             f"cp_{status}_vs_set_dirty_arithmetic",
-            "VS=Initial(1)/Clean(2) -> vadd.vv -> expect Dirty",
+            "VS=Initial(1)/Clean(2)/Dirty(3) -> vadd.vv -> expect Dirty",
         ),
     ]
-    for vs in (1, 2):
+    for vs in (1, 2, 3):
         lines.extend(set_status_fields(temp_reg, priv, vs=3))
         lines.append(_VSET_M1)
         lines.append("vmv.v.i v1, 1")
@@ -126,8 +126,8 @@ def _gen_status_vs_dirty(test_data: TestData, temp_reg: int, covergroup: str, pr
         lines.append("vadd.vv v3, v1, v2")
         lines.append(gen_status_read_sigupd(check_reg, test_data, priv))
 
-    lines.append(comment_banner(f"cp_{status}_vs_set_dirty_csr", "VS=Initial/Clean -> vsetvli -> expect Dirty"))
-    for vs in (1, 2):
+    lines.append(comment_banner(f"cp_{status}_vs_set_dirty_csr", "VS=Initial/Clean/Dirty -> vsetvli -> expect Dirty"))
+    for vs in (1, 2, 3):
         lines.extend(set_status_fields(temp_reg, priv, vs=3))
         lines.extend(set_status_fields(temp_reg, priv, vs=vs))
         lines.append(test_data.add_testcase(f"vsetvli_vs{vs}", f"cp_{status}_vs_set_dirty_csr", covergroup))
@@ -171,6 +171,17 @@ _SEW_VALUES = (("e8", 0), ("e16", 1), ("e32", 2), ("e64", 3))
 _LMUL_VALUES = (("m1", 0), ("m2", 1), ("m4", 2), ("m8", 3), ("mf8", 5), ("mf4", 6), ("mf2", 7))
 
 
+def _min_elen_required(sew: int, lmul_str: str) -> int:
+    """Find the minimum ELEN to support SEW and LMUL"""
+
+    if lmul_str.startswith("mf"):
+        # E.g. ELEN=64 is required for SEW=8, LMUL=mf8
+        return sew * int(lmul_str[-1])
+
+    # For non-fractional, it is just the SEW
+    return sew
+
+
 def _gen_sew_lmul_vsetvl(test_data: TestData, temp_reg: int, covergroup: str, priv: str) -> list[str]:
     """cp_sew_lmul_vsetvl: vsetvl over all (sew, lmul) pairs via rs2."""
     coverpoint = "cp_sew_lmul_vsetvl"
@@ -183,10 +194,19 @@ def _gen_sew_lmul_vsetvl(test_data: TestData, temp_reg: int, covergroup: str, pr
     for sew_name, sew_v in _SEW_VALUES:
         for lmul_name, lmul_v in _LMUL_VALUES:
             vtype = (sew_v << 3) | lmul_v
+            elen_required = _min_elen_required(8 * 2**sew_v, lmul_name)
+            ifdef_required = elen_required >= 64
+            if ifdef_required:
+                lines.append(
+                    f"#if defined(UDB_SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED_NO_UNREQUIRED_SUPPORTED) || UDB_ELEN >= {elen_required}"
+                )
             lines.append(f"LI(x{rs2_reg}, 0x{vtype:02x})  # SEW={sew_name}, LMUL={lmul_name}")
             lines.append(test_data.add_testcase(f"vsetvl_{sew_name}_{lmul_name}", coverpoint, covergroup))
             lines.append(f"vsetvl x{temp_reg}, x{rs1_reg}, x{rs2_reg}")
             lines.extend(_check_vset(temp_reg, check_reg, test_data))
+            if ifdef_required:
+                lines.append("#endif")
+
     test_data.int_regs.return_registers([rs1_reg, rs2_reg, check_reg])
     return lines
 
@@ -200,14 +220,22 @@ def _gen_sew_lmul_vset_i_vli(test_data: TestData, temp_reg: int, covergroup: str
     lines.extend(set_status_fields(temp_reg, priv, vs=3))
     rs1_reg, check_reg = test_data.int_regs.get_registers(2)
     lines.append(f"LI(x{rs1_reg}, 1)  # vl = 1")
-    for sew_name, _ in _SEW_VALUES:
+    for sew_name, sew_v in _SEW_VALUES:
         for lmul_name, _ in _LMUL_VALUES:
+            elen_required = _min_elen_required(8 * 2**sew_v, lmul_name)
+            ifdef_required = elen_required >= 64
+            if ifdef_required:
+                lines.append(
+                    f"#if defined(UDB_SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED_NO_UNREQUIRED_SUPPORTED) || UDB_ELEN >= {elen_required}"
+                )
             lines.append(test_data.add_testcase(f"vsetvli_{sew_name}_{lmul_name}", coverpoint, covergroup))
             lines.append(f"vsetvli x{temp_reg}, x{rs1_reg}, {sew_name}, {lmul_name}, tu, mu")
             lines.extend(_check_vset(temp_reg, check_reg, test_data))
             lines.append(test_data.add_testcase(f"vsetivli_{sew_name}_{lmul_name}", coverpoint, covergroup))
             lines.append(f"vsetivli x{temp_reg}, 1, {sew_name}, {lmul_name}, tu, mu")
             lines.extend(_check_vset(temp_reg, check_reg, test_data))
+            if ifdef_required:
+                lines.append("#endif")
     test_data.int_regs.return_registers([rs1_reg, check_reg])
     return lines
 
@@ -362,6 +390,12 @@ def _gen_vsetvl_i_rd_rs1(test_data: TestData, temp_reg: int, covergroup: str, pr
     # First, ensure vl != vlmax for the new config: load a small vl, then run with rs1=x0 to set vl=vlmax
     for sew_name, sew_v in _SEW_VALUES:
         for lmul_name, lmul_v in _LMUL_VALUES:
+            elen_required = _min_elen_required(8 * 2**sew_v, lmul_name)
+            ifdef_required = elen_required >= 64
+            if ifdef_required:
+                lines.append(
+                    f"#if defined(UDB_SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED_NO_UNREQUIRED_SUPPORTED) || UDB_ELEN >= {elen_required}"
+                )
             # Force vl != vlmax: set vl=1 with the same SEW/LMUL ratio first using vsetivli imm=1
             lines.append(f"vsetivli x{temp_reg}, 1, {sew_name}, {lmul_name}, tu, mu  # set vl=1")
             # vsetvli with rs1=x0, rd!=x0 -> vl=vlmax
@@ -376,6 +410,8 @@ def _gen_vsetvl_i_rd_rs1(test_data: TestData, temp_reg: int, covergroup: str, pr
             lines.append(test_data.add_testcase(f"vsetvl_rdnx0_{sew_name}_{lmul_name}", cp1, covergroup))
             lines.append(f"vsetvl x{temp_reg}, x0, x{rs2_reg}")
             lines.extend(_check_vset(temp_reg, check_reg, test_data))
+            if ifdef_required:
+                lines.append("#endif")
 
     lines.append(comment_banner(cp2, "vsetvli/vsetvl with rs1=x0, rd=x0 -> keep vl unchanged when vlmax matches"))
     # Set vl != 0 via vsetivli, then run rd=x0/rs1=x0 with same SEW/LMUL ratio
@@ -528,7 +564,7 @@ def _gen_vl_walking1s_sew_lmul(
     coverpoint = "cp_vl_walking1s_sew_lmul"
     walk_reg, check_reg = test_data.int_regs.get_registers(2)
     first = True
-    for sew_name, _ in _SEW_VALUES:
+    for sew_name, sew_v in _SEW_VALUES:
         for lmul_name, _ in _LMUL_VALUES:
             tc = test_data.new_test_chunk(test_chunks, "V_vl_walk")
             if first:
@@ -537,6 +573,12 @@ def _gen_vl_walking1s_sew_lmul(
                 )
                 first = False
             tc.code.append(f"# {sew_name}, {lmul_name}")
+            elen_required = _min_elen_required(8 * 2**sew_v, lmul_name)
+            ifdef_required = elen_required >= 64
+            if ifdef_required:
+                tc.code.append(
+                    f"#if defined(UDB_SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED_NO_UNREQUIRED_SUPPORTED) || UDB_ELEN >= {elen_required}"
+                )
             tc.code.extend(set_status_fields(temp_reg, priv, vs=3))
             tc.code.append(f"LI(x{walk_reg}, 1)")
             for i in range(32):
@@ -557,6 +599,8 @@ def _gen_vl_walking1s_sew_lmul(
                 tc.code.append(gen_csr_read_sigupd(check_reg, ("vl", None), test_data))
                 tc.code.append(f"slli x{walk_reg}, x{walk_reg}, 1")
             tc.code.append("#endif")
+            if ifdef_required:
+                tc.code.append("#endif  // Fractional LMUL Support")
     test_data.int_regs.return_registers([walk_reg, check_reg])
 
 

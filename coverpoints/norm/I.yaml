@@ -471,10 +471,10 @@ normative_rule_definitions:
     coverpoint: ["I_fence_cg/cp_custom_fence_reserved"]
   # ECALL
   - name: ecall_enc
-    coverpoint: ["ExceptionsSm_cg/cp_ecall_m"]
+    coverpoint: ["Exceptions_Sm_cg/cp_ecall_m"]
   # EBREAK
   - name: ebreak_enc
-    coverpoint: ["ExceptionsSm_cg/cp_breakpoint"]
+    coverpoint: ["Exceptions_Sm_cg/cp_breakpoint"]
 
   # RV64I
   - name: rv64i_xreg_sz

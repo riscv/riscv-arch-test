@@ -2,16 +2,25 @@
 # Jordan Carlin jcarlin@hmc.edu April 2026
 # CI configuration for Whisper simulator
 
-# SsstrictSm_CSR: Sail 0.16 lacks Smaia and Smrnmi, whose CSRs Whisper implements
-# Smstateen: the -mu configs pass. On the max configs Whisper implements Sscsrind and Ssaia, so
-#   mstateen0.CSRIND, AIA and IMSIC are writable, but Sail does not model those extensions
-#   (https://github.com/riscv/sail-riscv/issues/1134, https://github.com/riscv/sail-riscv/pull/1874).
-# SsstrictS_CSR: Sail traps on siselect/stopi accesses that Whisper permits with mstateen0 enabled.
 ci_enabled: true
-exclude_extensions: "SsstrictSm_CSR,SsstrictS_CSR,Smstateen"
-exclude_configs:
-  - whisper-rv32-max-spike-ref
-  - whisper-rv64-max-spike-ref
+exclude_extensions:
+  # Sail lacks Ssaia/Sscsrind, so expects illegal instead of virtual instruction for their CSRs from VU-mode.
+  - H_vucsr
+  # Max configs: Whisper implements tcontrol while using mstatus.MIE/SIE for breakpoint
+  # reentrancy, which Sail cannot model (it has tcontrol only with Use_tcontrol,
+  # https://github.com/riscv/sail-riscv/issues/2039), so the reference traps on the tcontrol accesses.
+  - SdtrigSm_csr_access_common
+  - SdtrigSm_csr_access_global
+  - SdtrigSm_tcontrol
+  - SdtrigS_csr_access_global
+  # Sail 0.16 lacks Smaia and Smrnmi, whose CSRs Whisper implements
+  - Ssstrict_Sm_CSR
+  # Sail traps on siselect/stopi accesses that Whisper permits with mstateen0 enabled.
+  - Ssstrict_S_CSR
+  # The -mu configs pass. On the max configs Whisper implements Sscsrind and Ssaia, so
+  # mstateen0.CSRIND, AIA and IMSIC are writable, but Sail does not model those extensions
+  # (https://github.com/riscv/sail-riscv/issues/1134, https://github.com/riscv/sail-riscv/pull/1874).
+  - Smstateen
 install_script: ".github/scripts/install-whisper.sh"
 apt_packages: "libboost-program-options-dev"
 shards: 2

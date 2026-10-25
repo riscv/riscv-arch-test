@@ -45,8 +45,13 @@
   },
 
   "csr": {
-    "misa": { "reset": "0x800000000020112f" }, // acdfimv + B (bit 1). Whisper derives misa from the
+    "misa": {
+      "reset": "0x800000000020112f",
+      "mask": "0x4",
+      "poke_mask": "0x4"
+    }, // acdfimv + B (bit 1). Whisper derives misa from the
     // ISA string but always sets S and U, so set it explicitly.
+    // misa.C is writable, so tests can clear it and run with IALIGN = 32 (MUTABLE_MISA_C).
     "vstart": {
       "mask": "0xff",
       "poke_mask": "0xff"
@@ -142,23 +147,63 @@
   "triggers": [
     {
       "reset": [0, 0, 0, "0x1008078"],
-      "mask": ["0xfc00000001ffffff", "0xffffffffffffffff", "0x0", 0],
-      "poke_mask": ["0xfc00000001ffffff", "0xffffffffffffffff", "0x0", 0]
+      "mask": [
+        "0xfc00000001ffffe7",
+        "0xffffffffffffffff",
+        "0xffffffffffffffff",
+        0
+      ],
+      "poke_mask": [
+        "0xfc00000001ffffe7",
+        "0xffffffffffffffff",
+        "0xffffffffffffffff",
+        0
+      ]
     },
     {
       "reset": [0, 0, 0, "0x1008078"],
-      "mask": ["0xfc00000001ffffff", "0xffffffffffffffff", "0x0", 0],
-      "poke_mask": ["0xfc00000001ffffff", "0xffffffffffffffff", "0x0", 0]
+      "mask": [
+        "0xfc00000001ffffe7",
+        "0xffffffffffffffff",
+        "0xffffffffffffffff",
+        0
+      ],
+      "poke_mask": [
+        "0xfc00000001ffffe7",
+        "0xffffffffffffffff",
+        "0xffffffffffffffff",
+        0
+      ]
     },
     {
       "reset": [0, 0, 0, "0x1008078"],
-      "mask": ["0xfc00000001ffffff", "0xffffffffffffffff", "0x0", 0],
-      "poke_mask": ["0xfc00000001ffffff", "0xffffffffffffffff", "0x0", 0]
+      "mask": [
+        "0xfc00000001ffffe7",
+        "0xffffffffffffffff",
+        "0xffffffffffffffff",
+        0
+      ],
+      "poke_mask": [
+        "0xfc00000001ffffe7",
+        "0xffffffffffffffff",
+        "0xffffffffffffffff",
+        0
+      ]
     },
     {
       "reset": [0, 0, 0, "0x1008078"],
-      "mask": ["0xfc00000001ffffff", "0xffffffffffffffff", "0x0", 0],
-      "poke_mask": ["0xfc00000001ffffff", "0xffffffffffffffff", "0x0", 0]
+      "mask": [
+        "0xfc00000001ffffe7",
+        "0xffffffffffffffff",
+        "0xffffffffffffffff",
+        0
+      ],
+      "poke_mask": [
+        "0xfc00000001ffffe7",
+        "0xffffffffffffffff",
+        "0xffffffffffffffff",
+        0
+      ]
     }
   ]
 }

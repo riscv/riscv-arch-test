@@ -226,6 +226,7 @@ def addr_value_tests(test_data: TestData, csr_name: str, covergroup: str) -> lis
         f"csrr x{save_reg}, {csr_name}      # Save CSR",
         "",
         f"# Testcase: {csr_name} = current pc",
+        ".p2align 2    # a 4-byte-aligned pc keeps xtvec.MODE = Direct",
         f"auipc x{walk_reg}, 0",
         test_data.add_testcase("pc", f"cp_{csr_name}_vaddr_pc", covergroup),
         f"csrw {csr_name}, x{walk_reg}    # directly follows the auipc so the value is this csrw's pc - 4",

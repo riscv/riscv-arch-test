@@ -164,6 +164,7 @@ _CSR_ALIASES = {
     "sscratch": 0x140,
     "sepc": 0x141,
     "scause": 0x142,
+    "stval": 0x143,
     "sip": 0x144,
     "stimecmp": 0x14D,
     "stimecmph": 0x15D,

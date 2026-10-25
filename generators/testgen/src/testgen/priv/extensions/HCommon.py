@@ -170,12 +170,14 @@ TWO_STAGE_GATE = f"({ATP_GATE['vsatp']}) && ({ATP_GATE['hgatp']})"
 REPLICA_ATP_GATE = ATP_GATE["vsatp"]
 
 
-def hcsr_tests(test_data: TestData, test_chunks: list[TestChunk], csrs: list[HCsr], covergroup: str) -> None:
+def hcsr_tests(
+    test_data: TestData, test_chunks: list[TestChunk], csrs: list[HCsr], covergroup: str, prefix: str = ""
+) -> None:
     """Access and walk each H CSR in csrs, access the read-only hgeip, and walk hgatp and vsatp with a paged MODE.
 
     The walk writes each bit alone, so CSRs that hold virtual addresses are walked with valid addresses instead.
     """
-    tc = test_data.new_test_chunk(test_chunks, "hcsr_access")
+    tc = test_data.new_test_chunk(test_chunks, f"{prefix}hcsr_access")
     tc.section_header = comment_banner(
         "cp_hcsr_access",
         "Read, write all 1s, write all 0s, set all 1s, clear all 1s and restore each H CSR.  hgeip is read-only,\n"
@@ -227,7 +229,7 @@ def hcsr_tests(test_data: TestData, test_chunks: list[TestChunk], csrs: list[HCs
             test_data.int_regs.return_registers([save_reg, ones_reg, check_reg, mask_reg])
             tc.code.extend(gated(lines, gate))
 
-    tc = test_data.new_test_chunk(test_chunks, "hcsr_walk")
+    tc = test_data.new_test_chunk(test_chunks, f"{prefix}hcsr_walk")
     tc.section_header = comment_banner(
         "cp_hcsrwalk", "Set and clear each bit of each H CSR that holds more than zero and is not an address"
     )
@@ -244,7 +246,9 @@ def hcsr_tests(test_data: TestData, test_chunks: list[TestChunk], csrs: list[HCs
                 maskedwrites=csr.masked,
             )
             tc.code.extend(gated([*csr.setup, *lines, *csr.restore], csr.gate))
-    addr_csr_tests(test_data, test_chunks, {csr.name: (0, {}) for csr in csrs if csr.vaddr}, covergroup, "hcsr_addr")
+    addr_csr_tests(
+        test_data, test_chunks, {csr.name: (0, {}) for csr in csrs if csr.vaddr}, covergroup, f"{prefix}hcsr_addr"
+    )
 
     tc = test_data.new_test_chunk(test_chunks)
     tc.section_header = comment_banner(
@@ -662,13 +666,48 @@ def replica_write(test_data: TestData, rep: Replica, csr: str, value: int | str 
 
 
 def replica_read(
-    test_data: TestData, rep: Replica, csr: str, mask_reg: int, bin_name: str, covergroup: str
+    test_data: TestData,
+    rep: Replica,
+    csr: str,
+    mask_reg: int,
+    bin_name: str,
+    covergroup: str,
+    coverpoint: str = "cp_replica",
 ) -> list[str]:
     """Read csr and check the replica test's bits.  mask_reg already holds rep.mask if there is one."""
     check = test_data.int_regs.get_register()
     lines = [
-        test_data.add_testcase(bin_name, "cp_replica", covergroup),
+        test_data.add_testcase(bin_name, coverpoint, covergroup),
         gen_csr_read_sigupd(check, (csr, rep.mask), test_data, mask_reg if rep.mask is not None else None),
     ]
     test_data.int_regs.return_register(check)
+    return lines
+
+
+def replica_rw_tests(test_data: TestData, covergroup: str, steps: tuple[tuple[int, int, str], ...]) -> list[str]:
+    """Write different values to each S CSR and its VS replica and read both back, in the current mode.
+
+    Each step is (S value index, VS value index, bin name format with {csr}) into Replica.values.  Each pair is
+    saved first and restored after.  The caller sets mideleg and hideleg so sie, sip, vsie and vsip show the bits.
+    """
+    save_s, save_vs, mask_reg, val_reg = test_data.int_regs.get_registers(4)
+    lines = []
+    for rep in REPLICAS:
+        body = [
+            f"csrr x{save_s}, {rep.s}",
+            f"csrr x{save_vs}, {rep.vs}",
+            *([f"LI(x{mask_reg}, {rep.mask:#x})"] if rep.mask else []),
+        ]
+        for s_idx, vs_idx, bin_fmt in steps:
+            body.extend(
+                [
+                    *replica_write(test_data, rep, rep.s, rep.values[s_idx], val_reg),
+                    *replica_write(test_data, rep, rep.vs, rep.values[vs_idx], val_reg),
+                    *replica_read(test_data, rep, rep.s, mask_reg, bin_fmt.format(csr=rep.s), covergroup),
+                    *replica_read(test_data, rep, rep.vs, mask_reg, bin_fmt.format(csr=rep.vs), covergroup),
+                ]
+            )
+        body.extend([f"csrw {rep.s}, x{save_s}", f"csrw {rep.vs}, x{save_vs}"])
+        lines.extend(gated(body, REPLICA_ATP_GATE if rep.s == "satp" else None))
+    test_data.int_regs.return_registers([save_s, save_vs, mask_reg, val_reg])
     return lines

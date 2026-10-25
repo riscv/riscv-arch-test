@@ -1,0 +1,829 @@
+normative_rule_definitions:
+  # When a trap is delegated to S-mode the scause register is written with the trap
+  # cause; the sepc register is written with the virtual address of the instruction
+  # that took the trap; the stval register is written with an exception-specific
+  # datum; the SPP field of mstatus is written with the active privilege mode at the
+  # time of the trap; the SPIE field of mstatus is written with the value of the SIE
+  # field at the time of the trap; and the SIE field of mstatus is cleared.
+  - name: trap_del_s_mode_op
+    coverpoint: ["Interrupts_cg/cp_trigger"]
+
+  # implementations can provide individual read/write bits within csr:medeleg[] and
+  # csr:mideleg[] to indicate that certain exceptions and interrupts should be processed
+  # directly by a lower privilege level.
+  - name: medeleg_mideleg_per_bit_rw
+    coverpoint:
+      ["Interrupts_cg/cp_trigger", "Interrupts_Sm_cg/cp_priority_mideleg"]
+  # setting a bit in csr:medeleg[] or csr:mideleg[] will delegate the corresponding trap,
+  # when occurring in S-mode or U-mode, to the S-mode trap handler.
+  - name: medeleg_mideleg_delegate_op
+    coverpoint:
+      ["Interrupts_cg/cp_trigger", "Interrupts_Sm_cg/cp_priority_mideleg"]
+
+  - name: mideleg_enc_img
+    coverpoint:
+      ["Interrupts_cg/cp_trigger", "Interrupts_Sm_cg/cp_priority_mideleg"]
+  # csr:mideleg[] holds trap delegation bits for individual interrupts, with the layout of
+  # bits matching those in the csr:mip[] register
+  - name: mideleg_enc_txt
+    coverpoint:
+      ["Interrupts_cg/cp_trigger", "Interrupts_Sm_cg/cp_priority_mideleg"]
+
+  # Global interrupt-enable bits, csr::[mie] and csr::[sie], are provided for M-mode and
+  # S-mode respectively.
+  - name: mstatus_mie_sie_exist
+    coverpoint: ["Interrupts_cg/cp_trigger", "Interrupts_Sm_cg/cp_trigger"]
+  # When a hart is executing in privilege mode x, interrupts are globally enabled when
+  # xIE=1 and globally disabled when xIE=0.
+  - name: mstatus_mie_sie_op
+    coverpoint:
+      ["Interrupts_cg/cp_trigger", "Interrupts_Sm_cg/{cp_trigger, cp_wfi_m}"]
+
+  # Interrupts for lower-privilege modes, w&lt;x, are always globally disabled
+  # regardless of the setting of any global wIE bit for the lower-privilege mode.
+  # Interrupts for higher-privilege modes, y&gt;x, are always globally enabled
+  # regardless of the setting of the global yIE bit for the higher-privilege mode.
+  - name: mstatus_xie_intr_en_dis
+    coverpoint:
+      [
+        "Interrupts_cg/cp_trigger",
+        "Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi}",
+        "Interrupts_Sm_cg/cp_priority_levels_{vs, vu}",
+      ]
+
+  # each privilege mode x that can respond to interrupts has a two-level stack of
+  # interrupt-enable bits and privilege modes. xPIE holds the value of the
+  # interrupt-enable bit active prior to the trap, and xPP holds the previous privilege
+  # mode.
+  - name: mstatus_xpie_xpp_op
+    coverpoint:
+      [
+        "Interrupts_cg/cp_trigger",
+        "Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi}",
+      ]
+
+  # When a trap is taken from privilege mode y into privilege mode x, xPIE is set to the
+  # value of xIE; xIE is set to 0; and xPP is set to y.
+  - name: mstatus_xpie_xie_xpp_trap_op
+    coverpoint:
+      [
+        "Interrupts_cg/cp_trigger",
+        "Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi}",
+      ]
+
+  # When csr::[tw]=0, the insn:wfi[] instruction may execute in modes less privileged than
+  # M when not prevented for some other reason. When csr::[tw]=1, then if insn:wfi[] is
+  # executed in any less-privileged mode, and it does not complete within an
+  # implementation-specific, bounded time limit, the insn:wfi[] instruction causes an
+  # illegal-instruction exception.
+  - name: mstatus_tw_op
+    coverpoint:
+      [
+        "Interrupts_cg/{cp_wfi, cp_wfi_vs, cp_wfi_timeout, cp_wfi_timeout_vs, cp_wfi_timeout_vu, cp_wfi_vs_tw_vtw}",
+        "Interrupts_Sm_cg/{cp_wfi, cp_wfi_vs, cp_wfi_timeout, cp_wfi_timeout_vs, cp_wfi_timeout_vu, cp_wfi_vs_tw_vtw}",
+        "Interrupts_Sm_cg/cp_trigger",
+        "Interrupts_Sm_cg/cp_priority_mideleg",
+        "Interrupts_Sm_cg/cp_trigger",
+        "Interrupts_Sm_cg/cp_priority_mideleg",
+      ]
+
+  # When VTW=1 (and assuming mstatus.TW=0), an attempt in VS-mode to execute WFI raises a
+  # virtual-instruction exception if the WFI does not complete within an
+  # implementation-specific, bounded time limit. An implementation may have WFI always raise
+  # a virtual-instruction exception in VS-mode when VTW=1 (and mstatus.TW=0), even if there
+  # are pending globally-disabled interrupts when the instruction is executed.
+  - names: [hstatus_vtw_op, H_virtinst_wfi_vtw1_tw0, vtw_virtinstr]
+    coverpoint:
+      [
+        "Interrupts_cg/{cp_wfi_vs, cp_wfi_timeout_vs, cp_wfi_timeout_vs_vtw_one, cp_wfi_vs_tw_vtw}",
+        "Interrupts_Sm_cg/{cp_wfi_vs, cp_wfi_timeout_vs, cp_wfi_timeout_vs_vtw_one, cp_wfi_vs_tw_vtw}",
+      ]
+
+  # in VU-mode, attempts to execute WFI when mstatus.TW=0
+  - name: H_virtinst_vu_wfi_tw0
+    coverpoint:
+      ["Interrupts_cg/cp_wfi_timeout_vu", "Interrupts_Sm_cg/cp_wfi_timeout_vu"]
+
+  # When S-mode is implemented, then executing WFI in U-mode causes an
+  # illegal-instruction exception, regardless of the value of the TW bit, unless the
+  # instruction completes within an implementation-specific, bounded time limit.
+  - name: mstatus_tw_umode_op
+    coverpoint:
+      [
+        "Interrupts_cg/cp_wfi_timeout",
+        "Interrupts_Sm_cg/{cp_wfi_timeout, cp_wfi_timeout_tw_zero}",
+      ]
+
+  # An implementation may have WFI always raise an illegal-instruction exception in
+  # modes less privileged than M when TW=1, even if there are pending
+  # globally-disabled interrupts when the instruction is executed.
+  - name: mstatus_tw_always_illegal
+    coverpoint:
+      [
+        "Interrupts_cg/cp_wfi_timeout",
+        "Not tested: permission; no test executes WFI below M-mode with TW=1 while an interrupt is pending, so both behaviors pass",
+      ]
+
+  # Interrupt cause number i (as reported in CSR csr:mcause[], &lt;&lt;mcause&gt;&gt;)
+  # corresponds with bit i in both csr:mip[] and csr:mie[]. Bits 15:0 are allocated to
+  # standard interrupt causes only, while bits 16 and above are designated for platform
+  # use.
+  - name: mip_mie_enc_txt
+    coverpoint:
+      ["Interrupts_cg/{cp_enable_one, cp_priority_sip, cp_priority_sie}"]
+  - name: mip_enc_img
+    coverpoint:
+      ["Interrupts_cg/{cp_enable_one, cp_priority_sip, cp_priority_sie}"]
+
+  # When bit i in mip is writable, a pending interrupt i can be cleared by writing 0
+  # to this bit.
+  - name: mip_bits_wr_op
+    coverpoint:
+      ["Interrupts_cg/{cp_trigger_reg_mip_ssip, cp_trigger_reg_mip_seip}"]
+
+  # An interrupt i will trap to M-mode (causing the privilege mode to change to
+  # M-mode) if all of the following are true: (a) either the current privilege mode
+  # is M and the MIE bit in the mstatus register is set, or the current privilege
+  # mode has less privilege than M-mode; (b) bit i is set in both mip and mie; and
+  # (c) if register mideleg exists, bit i is not set in mideleg.
+  - name: intr_mip_mie_op
+    coverpoint:
+      [
+        "Interrupts_cg/{cp_trigger, cp_enable_one, cp_enable_zero}",
+        "Interrupts_Sm_cg/{cp_trigger, cp_enable_one, cp_enable_zero, cp_priority_mideleg}",
+      ]
+
+  # An interrupt i will trap to M-mode (causing the privilege mode to change to
+  # M-mode) if all of the following are true: (a) either the current privilege mode
+  # is M and the MIE bit in the mstatus register is set, or the current privilege
+  # mode has less privilege than M-mode; (b) bit i is set in both mip and mie; and
+  # (c) if register mideleg exists, bit i is not set in mideleg. be evaluated
+  # immediately following the execution of an xRET instruction or an explicit write
+  # to a CSR on which these interrupt trap conditions expressly depend (including
+  # mip, mie, mstatus, and mideleg).
+  - name: intr_mip_mie_xret_csrwr
+    # cp_trigger_tsbi: taken on the xret; cp_priority_sie: taken on the write to sie
+    coverpoint:
+      ["Interrupts_cg/{cp_trigger_tsbi, cp_enable_one_tsbi, cp_priority_sie}"]
+
+  # Interrupts to M-mode take priority over any interrupts to lower privilege modes.
+  - name: intr_m_mode_highest_pri
+    coverpoint:
+      [
+        "Interrupts_Sm_cg/cp_priority_mideleg",
+        "Interrupts_Sm_cg/{cp_priority_mideleg, cp_priority_mideleg_tsbi}",
+      ]
+
+  # Supervisor-level external interrupts are made pending based on the logical-OR of
+  # the software-writable SEIP bit and the signal from the external interrupt
+  # controller.
+  - name: intr_sei_op
+    # Each source alone; the OR of both at once is not tested (see mip_seip_rdcsr)
+    coverpoint:
+      [
+        "Interrupts_cg/{cp_trigger, cp_trigger_reg_mip_seip}",
+        "Interrupts_Sm_cg/{cp_trigger, cp_trigger_reg_mip_seip}",
+      ]
+
+  # Traps never transition from a more-privileged mode to a less-privileged mode.
+  # For example, if M-mode has delegated illegal-instruction exceptions to S-mode,
+  # and M-mode software later executes an illegal instruction, the trap is taken in
+  # M-mode, rather than being delegated to S-mode.
+  - name: trap_never_trans_lower
+    coverpoint: ["Interrupts_Sm_cg/cp_trigger"]
+
+  # traps may be taken horizontally. Using the same example, if M-mode has delegated
+  # illegal-instruction exceptions to S-mode, and S-mode software later executes an
+  # illegal instruction, the trap is taken in S-mode.
+  - name: trap_horiz
+    coverpoint: ["Interrupts_cg/cp_trigger"]
+
+  # Delegated interrupts result in the interrupt being masked at the delegator
+  # privilege level. For example, if the supervisor timer interrupt (STI) is
+  # delegated to S-mode by setting mideleg[5], STIs will not be taken when executing
+  # in M-mode. By contrast, if mideleg[5] is clear, STIs can be taken in any mode
+  # and regardless of current mode will transfer control to M-mode.
+  - name: trap_del_intr_priv_lvl
+    coverpoint:
+      ["Interrupts_Sm_cg/cp_trigger", "Interrupts_Sm_cg/cp_priority_mideleg"]
+
+  # If supervisor mode is implemented, bits csr:mip[seip] and csr:mie[seie] are the
+  # interrupt-pending and interrupt-enable bits for supervisor-level external interrupts.
+  - name: mip_seip_mie_seie_op
+    coverpoint:
+      [
+        "Interrupts_cg/{cp_trigger, cp_enable_one}",
+        "Interrupts_Sm_cg/{cp_trigger, cp_trigger_reg_mip_seip, cp_enable_one}",
+      ]
+
+  # SEIP is writable in mip
+  - name: mip_seip_acc
+    coverpoint:
+      [
+        "Interrupts_cg/cp_trigger_reg_mip_seip",
+        "Interrupts_Sm_cg/cp_trigger_reg_mip_seip",
+      ]
+
+  # When mip is read with a CSR instruction, the value of the SEIP bit returned in
+  # the rd destination register is the logical-OR of the software-writable bit and
+  # the interrupt signal from the interrupt controller
+  - name: mip_seip_rdcsr
+    coverpoint:
+      ["Interrupts_Sm_cg/cp_mip_seip", "Interrupts_Sm_cg/cp_trigger_reg"]
+
+  # the signal from the interrupt controller is not used to calculate the value
+  # written to SEIP. Only the software-writable SEIP bit participates in the
+  # read-modify-write sequence of a CSRRS or CSRRC instruction.
+  - name: mip_seip_wrcsr
+    coverpoint:
+      ["Interrupts_Sm_cg/cp_mip_seip", "Interrupts_Sm_cg/cp_trigger_reg"]
+
+  # If the stimecmp register is not implemented, STIP is writable in mip
+  - name: mip_stip_no_stimecmp_acc
+    coverpoint: ["Interrupts_cg/cp_trigger", "Interrupts_Sm_cg/cp_trigger"]
+
+  # If supervisor mode is implemented, its csr:mip[stip] and csr:mie[stie] are the
+  # interrupt-pending and interrupt-enable bits for supervisor-level timer interrupts.
+  - name: mip_stip_mie_stie_op
+    coverpoint:
+      ["Interrupts_cg/{cp_trigger, cp_trigger_sti_sstc, cp_enable_one_tsbi}"]
+  # may be written by M-mode software to deliver timer interrupts to S-mode.
+  - name: mip_stip_no_stimecmp_mmode_write
+    coverpoint: ["Interrupts_cg/cp_trigger", "Interrupts_Sm_cg/cp_trigger"]
+
+  # reflects the supervisor-level timer interrupt signal resulting from csr:stimecmp[].
+  - name: mip_stip_reflects_stimecmp
+    coverpoint:
+      [
+        "Interrupts_cg/cp_trigger_sti_sstc",
+        "Interrupts_Sm_cg/{cp_trigger_sti_sstc, cp_trigger_sti_sstc_tsbi}",
+      ]
+
+  # This timer interrupt signal is cleared by writing stimecmp with a value greater
+  # than the current time value.
+  - name: mip_stip_stimecmp_clr
+    coverpoint:
+      [
+        "Interrupts_cg/cp_trigger_sti_sstc",
+        "Interrupts_cg/cp_wfi",
+        "Interrupts_Sm_cg/{cp_trigger_sti_sstc, cp_trigger_sti_sstc_tsbi}",
+      ]
+
+  # SSIP is writable in mip
+  - name: mip_ssip_acc
+    coverpoint:
+      [
+        "Interrupts_cg/cp_trigger_reg_mip_ssip",
+        "Interrupts_Sm_cg/{cp_trigger_reg_mip_ssip, cp_trigger_reg_sip_ssip}",
+      ]
+
+  # If supervisor mode is implemented, bits csr:mip[ssip] and csr:mie[ssie] are the
+  # interrupt-pending and interrupt-enable bits for supervisor-level software interrupts.
+  - name: mip_ssip_mie_ssie_op
+    coverpoint:
+      [
+        "Interrupts_cg/{cp_trigger, cp_enable_one}",
+        "Interrupts_Sm_cg/{cp_trigger, cp_trigger_reg_mip_ssip, cp_enable_one}",
+      ]
+
+  # SSIP is writable in mip may also be set to 1 by a platform-specific interrupt
+  # controller.
+  - name: mip_ssip_intr_ctrl
+    coverpoint:
+      [
+        "Interrupts_cg/{cp_trigger_reg_mip_ssip, cp_trigger}",
+        "Interrupts_Sm_cg/cp_trigger",
+      ]
+
+  # The SPP bit indicates the privilege level at which a hart was executing before
+  # entering supervisor mode. When a trap is taken, SPP is set to 0 if the trap originated
+  # from user mode, or 1 otherwise. When an SRET instruction (see ) is executed to return
+  # from the trap handler, the privilege level is set to user mode if the SPP bit is 0, or
+  # supervisor mode if the SPP bit is 1; SPP is then set to 0.
+  - name: sstatus_spp
+    coverpoint: ["Interrupts_cg/cp_trigger"]
+
+  # From the hypervisor branch's InterruptsH and InterruptsHGei
+
+  # Register hvip is an HSXLEN-bit read/write register that a hypervisor can write to
+  # indicate virtual interrupts intended for VS-mode. Bits of hvip that are not writable
+  # are read-only zeros.
+  - name: hvip_sz_op
+    coverpoint: ["Interrupts_cg/{cp_trigger, cp_enable_one, cp_enable_zero}"]
+
+  # The standard portion (bits 15:0) of hvip is formatted as shown in . Bits VSEIP, VSTIP,
+  # and VSSIP of hvip are writable. Setting VSEIP=1 in hvip asserts a VS-level external
+  # interrupt; setting VSTIP asserts a VS-level timer interrupt; and setting VSSIP asserts
+  # a VS-level software interrupt.
+  - name: hvip_acc
+    coverpoint: ["Interrupts_cg/{cp_trigger, cp_enable_one, cp_enable_zero}"]
+
+  # The hip register indicates pending VS-level and hypervisor-specific interrupts
+  - name: hip_op
+    coverpoint: ["Interrupts_cg/{cp_trigger, cp_enable_one, cp_enable_zero}"]
+
+  # hie contains enable bits for the same interrupts
+  - name: hie_op
+    coverpoint: ["Interrupts_cg/{cp_trigger, cp_enable_one, cp_enable_zero}"]
+
+  # An interrupt that has been delegated to HS-mode (using mideleg) is further delegated
+  # to VS-mode if the corresponding hideleg bit is set.
+  - name: hideleg_op
+    coverpoint:
+      [
+        "Interrupts_cg/{cp_trigger, cp_trigger_tsbi, cp_priority_sip_tsbi}",
+        "Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi}",
+        "Interrupts_Sm_cg/{cp_trigger, cp_enable_one}",
+        "Interrupts_Sm_cg/{cp_trigger, cp_priority_mip}",
+        "Interrupts_Sm_cg/{cp_trigger_reg_mip_ssip, cp_trigger_reg_mip_seip}",
+        "Interrupts_Sm_cg/{cp_trigger, cp_trigger_sti_sstc, cp_enable_one}",
+        "Interrupts_Sm_cg/{cp_trigger_tsbi, cp_trigger_reg_mip_ssip, cp_trigger_reg_mip_seip, cp_enable_one_tsbi}",
+        "Interrupts_Sm_cg/cp_trigger",
+        "Interrupts_Sm_cg/cp_priority_mideleg",
+      ]
+
+    # Representative coverpoints; hideleg with each VS-level interrupt pending or enabled, entering
+    # VS and VU
+  # An interrupt i will trap to HS-mode whenever all of the following are true: (a) either
+  # the current operating mode is HS-mode and the SIE bit in the sstatus register is set,
+  # or the current operating mode has less privilege than HS-mode; (b) bit i is set in
+  # both sip and sie, or in both hip and hie; and (c) bit i is not set in hideleg.
+  - name: hideleg_hs
+    coverpoint:
+      [
+        "Interrupts_cg/{cp_trigger, cp_trigger_tsbi, cp_priority_sip}",
+        "Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi, cp_priority_levels_vs, cp_priority_levels_vu}",
+      ]
+
+    # Representative coverpoints; raised in HS-mode with sstatus.SIE, hideleg and hie = 0/1, and
+    # entering VS, VU and U
+  # Bits hip.VSEIP and hie.VSEIE are the interrupt-pending and interrupt-enable bits for
+  # VS-level external interrupts. VSEIP is read-only in hip, and is the logical-OR of
+  # these interrupt sources:
+  - name: hip_vseip_vseie_op
+    coverpoint:
+      [
+        "Interrupts_cg/{cp_trigger, cp_enable_zero, cp_hip_write}",
+        "Interrupts_Sgei_cg/cp_{trigger_vsei_hgeip, hgeip0}",
+      ]
+
+  # Bits csr:hip[vstip] and csr:hie[vstie] are the interrupt-pending and interrupt-enable
+  # bits for VS-level timer interrupts.
+  - name: hip_vstip_vstie_acc_op
+    coverpoint:
+      [
+        "Interrupts_cg/{cp_trigger, cp_enable_zero, cp_hip_write}",
+        "H_hscsr_cg/cp_hcsrwalk",
+      ]
+
+  # csr::[vstip] is read-only in csr:hip[], and is the logical-OR of csr:hvip[vstip] and,
+  # when the ext:sstc[] extension is implemented, the timer interrupt signal resulting
+  # from csr:vstimecmp[].
+  - name: hip_vstip_acc
+    coverpoint: ["Interrupts_cg/{cp_trigger, cp_hip_write}"]
+
+  # Bits hip.VSSIP and hie.VSSIE are the interrupt-pending and interrupt-enable bits for
+  # VS-level software interrupts. VSSIP in hip is an alias (writable) of the same bit in
+  # hvip.
+  - name: hip_vssip_vssie_op
+    coverpoint: ["Interrupts_cg/{cp_trigger, cp_enable_zero, cp_hip_write}"]
+
+  # If bit i of sie is read-only zero, the same bit in register hip may be writable or may
+  # be read-only. When bit i in hip is writable, a pending interrupt i can be cleared by
+  # writing 0 to this bit. If interrupt i can become pending in hip but bit i in hip is
+  # read-only, then either the interrupt can be cleared by clearing bit i of hvip, or the
+  # implementation must provide some other mechanism for clearing the pending interrupt
+  # (which may involve a call to the execution environment).
+  - name: hip_acc
+    coverpoint: ["Interrupts_cg/cp_hip_write"]
+
+  - name: hip_img
+    coverpoint: ["Interrupts_cg/cp_hip_write"]
+
+  # Simultaneous interrupts destined for HS-mode are taken in the order SEI, SSI, STI, SGEI, VSEI, VSSI, VSTI, LCOFI
+  - name: hsint_priority
+    coverpoint:
+      [
+        "Interrupts_cg/cp_priority_{sip, sip_tsbi, sip_split_tsbi, sie, sie_tsbi, sie_split_tsbi}",
+        "Interrupts_Sgei_cg/cp_priority_sgei",
+      ]
+
+  # Bits SGEIP, VSEIP, VSTIP, and VSSIP in mip are aliases for the same bits in hypervisor
+  # CSR hip, while SGEIE, VSEIE, VSTIE, and VSSIE in mie are aliases for the same bits in
+  # hie.
+  - name: mip_mie_alias
+    coverpoint:
+      [
+        "Interrupts_cg/cp_{hie, hie_gilen}",
+        "Interrupts_Sm_cg/cp_{mie, mip, mie_gilen}",
+        "Interrupts_SgeiSm_cg/cp_trigger_sgei",
+        "Interrupts_Sm_cg/cp_{mie, mip, mie_gilen}",
+      ]
+
+  # For each writable bit in sie, the corresponding bit shall be read-only zero in both
+  # hip and hie. Hence, the nonzero bits in sie and hie are always mutually exclusive, and
+  # likewise for sip and hip.
+  - name: sie_hip_hie_mutex
+    coverpoint: ["Interrupts_cg/cp_hip_write", "H_hscsr_cg/cp_hcsrwalk"]
+
+  # The vsip and vsie registers are VSXLEN-bit read/write registers that are VS-mode’s
+  # versions of supervisor CSRs sip and sie, formatted as shown in and respectively. When
+  # V=1, vsip and vsie substitute for the usual sip and sie, so instructions that normally
+  # read or modify sip/sie actually access vsip/vsie instead. However, interrupts directed
+  # to HS-level continue to be indicated in the HS-level sip register, not in vsip, when
+  # V=1.
+  - name: vsip_vsie_sz_acc_op
+    coverpoint: ["Interrupts_cg/cp_{vsip_vsie, sie_vs}"]
+
+    # Representative coverpoints; vsie and vsip through hideleg, and undelegated interrupts on entry
+    # to VS-mode
+  # When bit 10 of hideleg is zero, vsip.SEIP and vsie.SEIE are read-only zeros. Else,
+  # vsip.SEIP and vsie.SEIE are aliases of hip.VSEIP and hie.VSEIE.
+  - name: vsip_vsie_sei
+    coverpoint: ["Interrupts_cg/cp_vsip_vsie"]
+
+  # When bit 6 of hideleg is zero, vsip.STIP and vsie.STIE are read-only zeros. Else,
+  # vsip.STIP and vsie.STIE are aliases of hip.VSTIP and hie.VSTIE.
+  - name: vsip_vsie_sti
+    coverpoint: ["Interrupts_cg/cp_vsip_vsie"]
+
+  # When bit 2 of hideleg is zero, vsip.SSIP and vsie.SSIE are read-only zeros. Else,
+  # vsip.SSIP and vsie.SSIE are aliases of hip.VSSIP and hie.VSSIE.
+  - name: vsip_vsie_ssi
+    coverpoint: ["Interrupts_cg/cp_{vsip_vsie, sie_vs}"]
+
+  # Register hideleg is an HSXLEN-bit read/write register, formatted as shown in
+  # &lt;&lt;norm:hideleg_img&gt;&gt;.
+  - name: hideleg_sz_acc
+    coverpoint: ["H_hscsr_cg/cp_hcsrwalk"]
+
+  # Among bits 15:0 of hideleg, bits 10, 6, and 2 (corresponding to the standard VS-level
+  # interrupts) are writable, and bits 12, 9, 5, and 1 (corresponding to the standard
+  # S-level interrupts) are read-only zeros.
+  - name: hideleg_acc
+    coverpoint: ["H_hscsr_cg/cp_hcsrwalk"]
+
+  - name: hideleg_img
+    coverpoint: ["H_hscsr_cg/cp_hcsrwalk"]
+
+  # hie.SGEIE is writable when guest external interrupts can become pending
+  - names: [hie_acc, hie_img]
+    coverpoint:
+      [
+        "Interrupts_cg/cp_hie_gilen",
+        "Interrupts_Sm_cg/cp_mie_gilen",
+        "H_hscsr_cg/cp_hcsrwalk",
+        "Interrupts_Sm_cg/cp_mie_gilen",
+      ]
+
+  # An interrupt writes zero to htinst
+  - names: [H_trap_xtinst_interrupt, htinst_val]
+    coverpoint:
+      [
+        "Interrupts_cg/cp_trigger_htinst",
+        "Interrupts_Sm_cg/cp_trigger_mtinst",
+        "Interrupts_Sm_cg/cp_trigger_mtinst",
+      ]
+
+  # When a virtual supervisor external interrupt (code 10) is delegated to VS-mode, it is
+  # automatically translated by the machine into a supervisor external interrupt (code 9)
+  # for VS-mode, including the value written to vscause on an interrupt trap. Likewise, a
+  # virtual supervisor timer interrupt (6) is translated into a supervisor timer interrupt
+  # (5) for VS-mode, and a virtual supervisor software interrupt (2) is translated into a
+  # supervisor software interrupt (1) for VS-mode.
+  # When a trap is taken into VS-mode, vsstatus.SPP is set according to the privilege mode of the trap.
+  # Register hstatus and the HS-level sstatus are not modified, and the virtualization mode V remains 1. A
+  # trap into VS-mode also writes fields SPIE and SIE in vsstatus and writes CSRs vsepc, vscause, and vstval.
+  # The trap record of a VS-mode trap holds vsstatus (SPP, SPIE, SIE), vscause, vsip and vstval.
+  - name: H_trap_vs_csrwrites
+    coverpoint:
+      ["Interrupts_cg/cp_trigger_tsbi", "Interrupts_Sm_cg/cp_trigger_tsbi"]
+
+  - name: hideleg_trans
+    coverpoint:
+      [
+        "Interrupts_cg/{cp_trigger_tsbi, cp_priority_sip_tsbi}",
+        "Interrupts_Sm_cg/cp_trigger_tsbi",
+      ]
+
+    # Representative coverpoints; delegated VS-level interrupts taken in VS and VU, and through a
+    # vectored vstvec
+  - name: vstvec_img
+    coverpoint: ["Interrupts_cg/cp_trigger_tsbi (vectored vstvec)"]
+
+  # The vstvec register is a VSXLEN-bit read/write register that is VS-mode’s version of
+  # supervisor register stvec, formatted as shown in . When V=1, vstvec substitutes for
+  # the usual stvec, so instructions that normally read or modify stvec actually access
+  # vstvec instead. When V=0, vstvec does not directly affect the behavior of the machine.
+  - name: vstvec_sz_acc_op
+    coverpoint: ["Interrupts_cg/cp_trigger_tsbi (vectored vstvec)"]
+
+  # Shlcofideleg makes hideleg bit 13 writable; while it is zero, vsip.LCOFIP and vsie.LCOFIE are read-only zero,
+  # and otherwise they alias sip.LCOFIP and sie.LCOFIE
+  - name: vsip_vsie_lcofi
+    coverpoint:
+      [
+        "Interrupts_cg/cp_vsip_vsie (vsie and vsip bit 13 read zero while hideleg bit 13 is zero)",
+        "Interrupts_Shlcofideleg_cg/cp_{vsip_vsie_lcofi, trigger_lcofi_vs}",
+      ]
+
+  # mip holds hip.SGEIP, read from M-mode with a guest external interrupt pending
+  - name: mip_mie_vs
+    coverpoint:
+      [
+        "Interrupts_SgeiSm_cg/cp_trigger_sgei",
+        "Interrupts_Sm_cg/cp_{mie, mip, mie_gilen}",
+      ]
+
+  # Bits hip.SGEIP and hie.SGEIE are the interrupt-pending and interrupt-enable bits for
+  # guest external interrupts at supervisor level (HS-level). SGEIP is read-only in hip,
+  # and is 1 if and only if the bitwise logical-AND of CSRs hgeip and hgeie is nonzero in
+  # any bit. (See .)
+  - name: hip_sgeip_sgeie_acc_op
+    coverpoint:
+      [
+        "Interrupts_Sgei_cg/cp_{trigger_sgei, trigger_sgei_lower, hgeie, hgeip0}",
+        "Interrupts_SgeiSm_cg/cp_trigger_sgei",
+      ]
+
+  # The hgeip register is an HSXLEN-bit read-only register, formatted as shown in
+  # &lt;&lt;hgeipreg&gt;&gt;, that indicates pending guest external interrupts for this
+  # hart.
+  - name: hgeip_sz_acc_op
+    coverpoint: ["Interrupts_Sgei_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
+
+  # The hgeie register is an HSXLEN-bit read/write register, formatted as shown in
+  # &lt;&lt;norm:hgeie_img&gt;&gt;, that contains enable bits for the guest external
+  # interrupts at this hart.
+  - name: hgeie_sz_acc_op
+    coverpoint: ["Interrupts_Sgei_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
+
+  # Register hgeie selects the subset of guest external interrupts that cause a
+  # supervisor-level (HS-level) guest external interrupt. The enable bits in hgeie do not
+  # affect the VS-level external interrupt signal selected from hgeip by hstatus.VGEIN.
+  - name: hgeie_op
+    coverpoint:
+      [
+        "Interrupts_Sgei_cg/cp_{trigger_sgei, trigger_sgei_lower, hgeie, trigger_vsei_hgeip}",
+      ]
+
+  # Guest external interrupt number i corresponds with bit i in both hgeip and hgeie.
+  - name: hgeip_hgeie_fields
+    coverpoint: ["Interrupts_Sgei_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
+
+  # Each bit of hgeip summarizes all pending interrupts directed to one virtual hart, as
+  # collected and reported by an interrupt controller.
+  - name: hgeip_bit_op
+    coverpoint: ["Interrupts_Sgei_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
+
+  # hstatus.VGEIN selects the hgeip bit that drives hip.VSEIP
+  - name: hstatus_vgein_op
+    coverpoint: ["Interrupts_Sgei_cg/cp_{trigger_vsei_hgeip, hgeip0}"]
+
+  # When VGEIN=0, no guest external interrupt source is selected for VS-level external interrupts
+  - name: hstatus_vgein_zero
+    coverpoint: ["Interrupts_Sgei_cg/cp_hgeip0"]
+
+  # When a trap is taken into M-mode, mepc is written with the virtual address of
+  # the instruction that was interrupted or that encountered the exception.
+  # Otherwise, mepc is never written by the implementation, though it may be
+  # explicitly written by software.
+  - name: mepc_op
+    coverpoint: ["Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi}"]
+
+  # When a trap is taken into M-mode, mcause is written with a code indicating the
+  # event that caused the trap. Otherwise, mcause is never written by the
+  # implementation, though it may be explicitly written by software.
+  - name: mcause_op
+    coverpoint: ["Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi}"]
+
+  # The Interrupt bit in the mcause register is set if the trap was caused by an
+  # interrupt.
+  - name: mcause_intr_op
+    coverpoint: ["Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi}"]
+
+  # The Exception Code field contains a code identifying the last exception or
+  # interrupt.
+  - name: mcause_exccode_op
+    coverpoint: ["Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi}"]
+
+  - name: mcause_exccode_enc_img
+    coverpoint: ["Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi}"]
+
+  # By default, all traps at any privilege level are handled in machine mode
+  - name: trap_def_m_mode
+    coverpoint: ["Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi}"]
+
+  # Value|Name|Description === 0 1 ≥2|Direct Vectored ---|All traps set pc to BASE.
+  # Asynchronous interrupts set pc to BASE+4×cause. Reserved ===
+  - name: mtvec_mode_enc
+    coverpoint: ["Interrupts_Sm_cg/cp_trigger"]
+
+  # When MODE=Direct, all traps into machine mode cause the pc to be set to the
+  # address in the BASE field.
+  - name: mtvec_mode_direct_op
+    coverpoint: ["Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi}"]
+
+  # When MODE=Vectored, all synchronous exceptions into machine mode cause the pc to
+  # be set to the address in the BASE field, whereas interrupts cause the pc to be
+  # set to the address in the BASE field plus four times the interrupt cause number.
+  - name: mtvec_mode_vectored_op
+    coverpoint: ["Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi}"]
+
+  # The TW (Timeout Wait) bit is a WARL field that supports intercepting the WFI
+  # instruction (see &lt;&lt;wfi&gt;&gt;).
+  - name: mstatus_tw_warl
+    coverpoint: ["Interrupts_Sm_cg/{cp_wfi_m, cp_wfi_timeout}"]
+
+  - name: mie_enc_img
+    coverpoint: ["Interrupts_Sm_cg/{cp_enable_one, cp_priority_mie}"]
+
+  # The standard portions (bits 15:0) of the csr:mip[] and csr:mie[] registers are
+  # formatted as shown in &lt;&lt;norm:mip_std_enc_img&gt;&gt; and
+  # &lt;&lt;norm:mie_std_enc_img&gt;&gt; respectively.
+  - name: mip_mie_std_enc_txt
+    coverpoint: ["Interrupts_Sm_cg/{cp_trigger, cp_enable_one}"]
+
+  - name: mip_std_enc_img
+    coverpoint: ["Interrupts_Sm_cg/{cp_trigger, cp_priority_mip}"]
+
+  - name: mie_std_enc_img
+    coverpoint: ["Interrupts_Sm_cg/{cp_enable_one, cp_priority_mie}"]
+
+  # If interrupt i can become pending but bit i in mip is read-only, the
+  # implementation must provide some other mechanism for clearing the pending
+  # interrupt.
+  - name: mip_bits_rdonly_op
+    coverpoint: ["Interrupts_Sm_cg/cp_trigger"]
+
+  # Bits csr:mip[meip] and csr:mie[meie] are the interrupt-pending and interrupt-enable
+  # bits for machine-level external interrupts.
+  - name: mip_meip_mie_meie_op
+    coverpoint: ["Interrupts_Sm_cg/{cp_trigger, cp_enable_one, cp_enable_zero}"]
+
+  # MEIP is read-only in mip, and is set and cleared by a platform-specific
+  # interrupt controller.
+  - name: mip_meip_rdonly
+    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk/mip", "Interrupts_Sm_cg/cp_trigger"]
+
+  # Bits csr:mip[mtip] and csr:mie[mtie] are the interrupt-pending and interrupt-enable
+  # bits for machine timer interrupts.
+  - name: mip_mtip_mie_mtie_op
+    coverpoint: ["Interrupts_Sm_cg/{cp_trigger, cp_enable_one, cp_enable_zero}"]
+
+  # MTIP is read-only in the mip register, and is cleared by writing to the
+  # memory-mapped machine-mode timer compare register.
+  - name: mip_mtip_rdonly
+    coverpoint: ["Sm_mcsr_cg/cp_mcsrwalk/mip", "Interrupts_Sm_cg/cp_trigger"]
+
+  # Bits csr:mip[msip] and csr:mie[msie] are the interrupt-pending and interrupt-enable
+  # bits for machine-level software interrupts.
+  - name: mip_msip_mie_msie_op
+    coverpoint: ["Interrupts_Sm_cg/{cp_trigger, cp_enable_one, cp_enable_zero}"]
+
+  # MSIP is read-only in mip, and is written by accesses to memory-mapped control
+  # registers, which are used to provide machine-level interprocessor interrupts.
+  - name: mip_msip_rdonly
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mcsrwalk/mip",
+        "Sm_mcsr_cg/cp_msip",
+        "Interrupts_Sm_cg/cp_trigger",
+      ]
+
+  # A hart's memory-mapped csr:msip[] register is a 32-bit read/write register
+  - name: msip_sz_acc
+    coverpoint: ["Sm_mcsr_cg/cp_msip", "Interrupts_Sm_cg/cp_trigger"]
+
+  # bits 31--1 read as zero and bit 0 contains the MSIP bit.
+  - name: msip_enc
+    coverpoint: ["Sm_mcsr_cg/cp_msip"]
+
+  # When the memory-mapped msip register changes, it is guaranteed to be reflected
+  # in mip.MSIP eventually, but not necessarily immediately.
+  - name: msip_update_max_time
+    coverpoint: ["Sm_mcsr_cg/cp_msip", "Interrupts_Sm_cg/cp_trigger"]
+
+  # A machine timer interrupt becomes pending whenever mtime contains a value greater
+  # than or equal to mtimecmp, treating the values as unsigned integers. The interrupt
+  # remains posted until mtimecmp becomes greater than mtime
+  - name: mtime_intr_pending
+    coverpoint: ["Interrupts_Sm_cg/{cp_trigger, cp_wfi_m}"]
+
+  # The tests raise MTI by writing mtimecmp below mtime (or mtime + delay for WFI) and
+  # clear it by writing mtimecmp above mtime
+  # The interrupt will only be taken if interrupts are enabled and the MTIE bit is set
+  # in the mie register.
+  - name: mtime_intr_taken
+    coverpoint: ["Interrupts_Sm_cg/{cp_trigger, cp_enable_zero, cp_wfi_m}"]
+
+  # If the result of the comparison between mtime and mtimecmp changes, it is
+  # guaranteed to be reflected in MTIP eventually, but not necessarily immediately.
+  - name: mtime_intr_mtip_visibility
+    coverpoint: ["Interrupts_Sm_cg/{cp_trigger, cp_wfi_m}"]
+
+  # cp_trigger raises STI by writing mip.STIP from M-mode (menvcfg.STCE = 0 with Sstc)
+  # If the stimecmp register is implemented, STIP is read-only in mip and reflects the
+  # supervisor-level timer interrupt signal resulting from stimecmp. This timer
+  # interrupt signal is cleared by writing stimecmp with a value greater than the
+  # current time value.
+  - name: mip_stip_stimecmp_acc
+    coverpoint:
+      ["Interrupts_Sm_cg/{cp_write_stip_sstc_csrrs, cp_write_stip_sstc_csrrc}"]
+
+  # These conditions for an interrupt trap to occur must be evaluated in a bounded
+  # amount of time from when an interrupt becomes, or ceases to be, pending in mip,
+  - name: intr_mip_mie_bounded_time
+    coverpoint: ["Interrupts_Sm_cg/{cp_trigger, cp_wfi_m}"]
+
+  # Multiple simultaneous interrupts destined for M-mode are handled in the
+  # following decreasing priority order: MEI, MSI, MTI, SEI, SSI, STI, LCOFI.
+  - name: intr_m_mode_pri
+    coverpoint:
+      [
+        "Interrupts_Sm_cg/{cp_priority_mip, cp_priority_mie, cp_priority_mip_tsbi, cp_priority_mie_tsbi}",
+      ]
+
+  # The Wait for Interrupt instruction (WFI) informs the implementation that the
+  # current hart can be stalled until an interrupt might need servicing.
+  - name: wfi_op
+    coverpoint: ["Interrupts_Sm_cg/{cp_wfi_m, cp_wfi}"]
+
+  - name: wfi_enc_img
+    coverpoint: ["Interrupts_Sm_cg/cp_wfi_m"]
+
+  # WFI is available in all privileged modes
+  - name: wfi_all_privileged_modes
+    coverpoint: ["Interrupts_Sm_cg/{cp_wfi_m, cp_wfi}"]
+
+  # optionally available to U-mode.
+  - name: wfi_opt_u_mode
+    coverpoint: ["Interrupts_Sm_cg/{cp_wfi, cp_wfi_timeout_tw_zero}"]
+
+  # cp_wfi runs in U-mode when S-mode is not implemented; with S-mode, U-mode WFI times out
+  # This instruction may raise an illegal-instruction exception when TW=1 in mstatus.
+  - name: wfi_ill_exc
+    coverpoint: ["Interrupts_Sm_cg/cp_wfi_timeout"]
+
+  # If an enabled interrupt is present or later becomes present while the hart is
+  # stalled, the interrupt trap will be taken on the following instruction, i.e.,
+  # execution resumes in the trap handler and mepc = pc + 4.
+  - name: wfi_mepc_val
+    coverpoint: ["Interrupts_Sm_cg/{cp_wfi_m, cp_wfi}"]
+
+  # mepc is not recorded for interrupts; a wrong mepc returns to the WFI, which has nothing left to wake it
+  # Implementations are permitted to resume execution for any reason, even if an
+  # enabled interrupt has not become pending. Hence, a legal implementation is to
+  # simply implement the WFI instruction as a NOP.
+  - name: wfi_resume_reason
+    coverpoint: ["Interrupts_Sm_cg/{cp_wfi_m, cp_wfi}"]
+
+  # The cp_wfi tests repeat WFI until the interrupt arrives, so an early resume or a NOP passes
+  # The WFI instruction can also be executed when interrupts are disabled.
+  - name: wfi_intr_dis
+    coverpoint: ["Interrupts_Sm_cg/cp_wfi_m"]
+
+  # The operation of WFI must be unaffected by the global interrupt bits in mstatus
+  # (MIE and SIE) and the delegation register mideleg (i.e., the hart must resume if a
+  # locally enabled interrupt becomes pending, even if it has been delegated to a
+  # less-privileged mode), but should honor the individual interrupt enables (e.g,
+  # MTIE) (i.e., implementations should avoid resuming the hart if the interrupt is
+  # pending but not locally enabled).
+  - name: wfi_unaffected_conditions
+    coverpoint: ["Interrupts_Sm_cg/{cp_wfi_m, cp_wfi}"]
+
+  # Covers mstatus.MIE = 0/1 with mideleg = 0; WFI with a delegated interrupt is not tested,
+  # and the "should" on local enables cannot be checked because WFI may resume for any reason
+  # WFI is also required to resume execution for locally enabled interrupts pending at
+  # any privilege level, regardless of the global interrupt enable at each privilege
+  # level.
+  - name: wfi_resume_any_priv
+    coverpoint: ["Interrupts_Sm_cg/{cp_wfi_m, cp_wfi}"]
+
+  # Only the machine timer interrupt wakes WFI in these tests
+  # If the event that causes the hart to resume execution does not cause an interrupt
+  # to be taken, execution will resume at pc + 4
+  - name: wfi_no_intr_pc
+    coverpoint: ["Interrupts_Sm_cg/cp_wfi_m"]
+
+  # M-mode WFI with mstatus.MIE = 0 wakes on the pending timer without taking it
+  # From the hypervisor branch's InterruptsHSm
+  # mideleg bits 10, 6 and 2, and bit 12 when GEILEN > 0, are read-only one; M-mode never takes those interrupts
+  - name: mideleg_acc_H
+    coverpoint:
+      [
+        "Sm_mcsr_cg/cp_mcsrwalk (mideleg bits 10, 6 and 2 read one)",
+        "Interrupts_Sm_cg/cp_trigger (VS-level interrupts are never taken in M-mode)",
+        "Interrupts_SgeiSm_cg/cp_trigger_sgei (bit 12)",
+      ]
+
+  # An interrupt writes zero to mtinst
+  - name: mtinst_val
+    coverpoint: ["Interrupts_Sm_cg/cp_trigger_mtinst"]
+
+  # For bits of mideleg that are zero, the corresponding bits in hideleg, hip and hie are read-only zero
+  - name: mideleg_hroz
+    coverpoint:
+      [
+        "Interrupts_SmShlcofideleg_cg/cp_trigger_lcofi_m (hideleg bit 13 reads zero while mideleg bit 13 is zero)",
+      ]

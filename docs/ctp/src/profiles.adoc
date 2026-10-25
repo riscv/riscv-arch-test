@@ -86,8 +86,8 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |U|User CSRs|<<t-U-coverpoints>>|||x|x|x
 |Zkr|Entropy CSR|<<t-Zkr_S-coverpoints>>|||o|o|o
 |Exceptions|Exceptions|<<t-Exceptions_Sm-coverpoints>>||x|x|x|x
-|InterruptsSm|Machine Interrupts|<<t-InterruptsSm-coverpoints>>||x|x|x|x
-|InterruptsS|Supervisor Interrupts|<<t-InterruptsS-coverpoints>>|||x|x|x
+|Interrupts_Sm|Machine Interrupts|<<t-Interrupts_Sm-coverpoints>>||x|x|x|x
+|Interrupts|Supervisor Interrupts|<<t-Interrupts-coverpoints>>|||x|x|x
 |Sstc|Supervisor Timer Compare|<<t-Sstc-coverpoints>>|||x|x|x
 |Zihpm|Hardware Performance Monitors|<<t-Zihpm-coverpoints>>|o|x|x|x|x
 |EndianSm|Machine Endian|<<t-EndianSm-coverpoints>>|||||
@@ -155,7 +155,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |H|Hypervisor Instructions|<<t-H-coverpoints>>|||o|o|x
 |ExceptionsH|Hypervisor Exceptions|<<t-ExceptionsH-coverpoints>>|||o|o|x
 |ExceptionsHV|Hypervisor Vector Exceptions|<<t-ExceptionsHV-coverpoints>>|||o|o|x
-|InterruptsH|Hypervisor Interrupts|<<t-InterruptsH-coverpoints>>|||o|o|x
+|Interrupts_Sgei|Guest External Interrupts|<<t-Interrupts_Sgei-coverpoints>>|||o|o|x
 |EndianH|Hypervisor Endian|<<t-EndianH-coverpoints>>|||||
 |ZicntrH|Hypervisor Counters|<<t-ZicntrH-coverpoints>>|||o|o|x
 |PMPH|Hypervisor PMP|<<t-PMPH-coverpoints>>|||o|o|x
@@ -167,7 +167,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Shvstvecd|Direct Vectoring|<<t-Shvstvecd-coverpoints>>|||o|o|x
 |Shvstvala|vstval Addresses|<<t-Shvstvala-coverpoints>>|||o|o|x
 |Shtvala|htval Addresses|<<t-Shtvala-coverpoints>>|||o|o|x
-|Shlcofideleg|Counter Overflow Delegation|<<t-Shlcofideleg-coverpoints>>|||o|o|x
+|Shlcofideleg|Counter Overflow Delegation|<<t-Interrupts_Shlcofideleg-coverpoints>>|||||
 |ZkrH|Hypervisor Entropy|<<t-ZkrH-coverpoints>>|||o|o|x
 |SstcH|Hypervisor Supervisor Timer|<<t-SstcH-coverpoints>>|||o|o|x
 |SsstateenH|Hypervisor State Enable|<<t-SsstateenH-coverpoints>>|||o|o|x

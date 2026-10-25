@@ -1,15 +1,12 @@
-
 === Interrupts
 
-Interrupt tests are organized according to the privilege mode or extension supported.  <<t-InterruptsSm-coverpoints,InterruptsSm>> boots to M-mode and exercises interrupts in every supported privilege mode; <<t-InterruptsS-coverpoints,InterruptsS>> boots to S-mode and exercises only the interrupts visible to supervisor software.  The Sstc tests check access to the `stimecmp` register; the timer interrupts that `stimecmp` generates are covered by the `cp_trigger_sti_sstc` and `cp_write_stip_sstc` coverpoints of the Interrupts tests.
+The Interrupts suite has one covergroup per group of tests.  <<t-Interrupts_Sm-coverpoints,Interrupts_Sm>> boots to M-mode and exercises interrupts in every supported privilege mode; <<t-Interrupts-coverpoints,Interrupts>> boots to S-mode and exercises only the interrupts visible to supervisor software.  With the H extension, both cover the VS-level interrupts, including delegation to VS-mode through `hideleg`.  <<t-Interrupts_Sgei-coverpoints,Interrupts_Sgei>> and <<t-Interrupts_SgeiSm-coverpoints,Interrupts_SgeiSm>> cover guest external interrupts, and <<t-Interrupts_Shlcofideleg-coverpoints,Interrupts_Shlcofideleg>> and <<t-Interrupts_SmShlcofideleg-coverpoints,Interrupts_SmShlcofideleg>> cover the Shlcofideleg extension.  The groups whose names end in Sm require Sm, so they are not part of a certificate without Sm, such as RVA23.  The Sstc tests check access to the `stimecmp` register; the timer interrupts that `stimecmp` generates are covered by the `cp_trigger_sti_sstc` and `cp_write_stip_sstc` coverpoints of the Interrupts tests.
 
-==== InterruptsSm Machine-Mode Interrupts
+==== Interrupts_Sm Machine-Mode Interrupts
 
 These tests are run on any configuration with machine mode that supports interrupts.
 
-include::{testplansdir}/priv/InterruptsSm.adoc[]
-
-include::norm/InterruptsSm_norm_rules.adoc[]
+include::{testplansdir}/priv/Interrupts_Sm.adoc[]
 
 TODO: coverpoints will need to ignore bins with mie.msie nonzero:
   # If a system has only one hart, or if a platform standard supports the delivery
@@ -21,13 +18,39 @@ TODO: mip.MSIP update time
   # in mip.MSIP eventually, but not necessarily immediately.
   - name: msip_update_max_time
 
-==== InterruptsS Supervisor-Mode Interrupts
+==== Interrupts Supervisor-Mode Interrupts
 
 These tests are run on any configuration with supervisor mode that supports interrupts. They boot to S-mode and also run in U-mode (and VS/VU-mode when the H extension is supported); `mideleg` keeps its boot value with all supervisor-level interrupts delegated.
 
-include::{testplansdir}/priv/InterruptsS.adoc[]
+include::{testplansdir}/priv/Interrupts.adoc[]
 
-include::norm/InterruptsS_norm_rules.adoc[]
+==== Interrupts_Sgei Guest External Interrupts
+
+These tests are run on any configuration with the H extension and GEILEN > 0.  They boot to S-mode.
+
+include::{testplansdir}/priv/Interrupts_Sgei.adoc[]
+
+==== Interrupts_SgeiSm Machine-Mode Guest External Interrupts
+
+These tests are run on any configuration with machine mode, the H extension and GEILEN > 0.  They boot to M-mode.
+
+include::{testplansdir}/priv/Interrupts_SgeiSm.adoc[]
+
+==== Interrupts_Shlcofideleg Counter Overflow Delegation
+
+These tests are run on any configuration with the H, Sscofpmf and Shlcofideleg extensions.  They boot to S-mode.
+
+include::{testplansdir}/priv/Interrupts_Shlcofideleg.adoc[]
+
+==== Interrupts_SmShlcofideleg Machine-Mode Counter Overflow Delegation
+
+These tests are run on any configuration with machine mode and the H, Sscofpmf and Shlcofideleg extensions.  They boot to M-mode.
+
+include::{testplansdir}/priv/Interrupts_SmShlcofideleg.adoc[]
+
+==== Interrupts Normative Rules
+
+include::norm/Interrupts_norm_rules.adoc[]
 
 ==== Sstc Supervisor Timer Compare
 

@@ -21,9 +21,9 @@ include::{testplansdir}/priv/ExceptionsH.adoc[]
 
 include::{testplansdir}/priv/ExceptionsHV.adoc[]
 
-==== InterruptsH Hypervisor Interrupts
+==== Hypervisor Interrupts
 
-include::{testplansdir}/priv/InterruptsH.adoc[]
+Hypervisor interrupts are tested by the Interrupts suite: the VS-level interrupts and the hypervisor interrupt CSRs by <<t-Interrupts-coverpoints,Interrupts>> and <<t-Interrupts_Sm-coverpoints,Interrupts_Sm>>, and guest external interrupts by <<t-Interrupts_Sgei-coverpoints,Interrupts_Sgei>> and <<t-Interrupts_SgeiSm-coverpoints,Interrupts_SgeiSm>>.
 
 ==== EndianH Hypervisor Endianness
 
@@ -76,7 +76,7 @@ include::{testplansdir}/priv/Shtvala.adoc[]
 
 ==== Shlcofideleg Hypervisor Counter Overflow Delegation
 
-include::{testplansdir}/priv/Shlcofideleg.adoc[]
+Shlcofideleg is tested by <<t-Interrupts_Shlcofideleg-coverpoints,Interrupts_Shlcofideleg>> and <<t-Interrupts_SmShlcofideleg-coverpoints,Interrupts_SmShlcofideleg>> in the Interrupts suite.
 
 ==== ZkrH Hypervisor Entropy Register
 

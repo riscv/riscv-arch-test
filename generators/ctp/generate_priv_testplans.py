@@ -97,8 +97,8 @@ def rule_map(norm_dir: Path, coverage_dir: Path) -> tuple[dict[str, dict[str, li
 
     A rule belongs to the suite whose <suite>_coverage.svh declares the covergroup it names.
     A covergroup that no coverage file declares belongs to the suite its name starts with
-    (<suite>_cg or <suite>_<group>_cg). A rule naming a declared <suite>_<group>_cg also belongs
-    to <suite>_<group>, the test plan for that covergroup.
+    (<suite>_cg or <suite>_<group>_cg). A rule naming a declared <suite>_<group>_cg belongs to
+    <suite>_<group>, the test plan for that covergroup, instead.
     """
     owners = covergroup_suites(coverage_dir)
     out: dict[str, dict[str, list[str]]] = defaultdict(lambda: defaultdict(list))
@@ -118,9 +118,10 @@ def rule_map(norm_dir: Path, coverage_dir: Path) -> tuple[dict[str, dict[str, li
                     sys.exit(f"Error: {f}: {err}")
                 for covergroup, coverpoint in pairs:
                     suite = owners.get(covergroup, covergroup.split("_")[0])
+                    # A <suite>_<group>_cg belongs to the test plan for its group, not to <suite>'s own plan
                     plans = [suite]
                     if covergroup in owners and covergroup != f"{suite}_cg":
-                        plans.append(covergroup.removesuffix("_cg"))
+                        plans = [covergroup.removesuffix("_cg")]
                     for plan in plans:
                         rules = out[plan][coverpoint]
                         rules += [n for n in names if n not in rules]

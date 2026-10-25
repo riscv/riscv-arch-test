@@ -40,16 +40,16 @@ exclude_extensions:
   - PMP_Zalrsc
   # Enable and priority groups for S and U: ACT raises MSI from S- and U-mode, but the CLINT accepts MSIP writes
   # only from M-mode (clint/rtl/ct_clint_func.v#L216).
-  - InterruptsSm_enable_S
-  - InterruptsSm_enable_U
-  - InterruptsSm_priority_mideleg_S
-  - InterruptsSm_priority_mideleg_U
-  - InterruptsSm_priority_mie_S
-  - InterruptsSm_priority_mie_U
-  - InterruptsSm_priority_mip_S
-  - InterruptsSm_priority_mip_U
-  - InterruptsSm_trigger_S
-  - InterruptsSm_trigger_U
+  - Interrupts_Sm_enable_S
+  - Interrupts_Sm_enable_U
+  - Interrupts_Sm_priority_mideleg_S
+  - Interrupts_Sm_priority_mideleg_U
+  - Interrupts_Sm_priority_mie_S
+  - Interrupts_Sm_priority_mie_U
+  - Interrupts_Sm_priority_mip_S
+  - Interrupts_Sm_priority_mip_U
+  - Interrupts_Sm_trigger_S
+  - Interrupts_Sm_trigger_U
   # pmpaddr reads bits 8:0 as 0 in NAPOT mode and keeps bit 9 in OFF mode, against G = 10
   # (pmp/rtl/ct_pmp_regs.v#L520-L522).
   - PMP_Sm_grain

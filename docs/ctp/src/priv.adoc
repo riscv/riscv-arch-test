@@ -6,9 +6,9 @@ Privileged https://drive.google.com/drive/folders/11hTR2Yl48kOMODxhwrSsC-eXYtM_r
 
 The privileged testplan is organized by major categories of behaviors or extensions in the following sections.
 Each of these categories has multiple coverage files with suffixes indicating the circumstances to which they apply.
-For example, <<t-InterruptsSm-coverpoints,InterruptsSm>> applies to any configuration with Zicsr and M-mode, and <<t-InterruptsS-coverpoints,InterruptsS>> applies to any configuration with Zicsr and S-mode.
-Each test boots to the mode in its suffix and then runs in every supported privilege mode at or below that mode: InterruptsSm exercises M-, S-, U-, VS- and VU-mode,
-while InterruptsS boots to S-mode and exercises S-, U-, VS- and VU-mode with `mideleg` left at its boot value, so a delegated interrupt taken in U-mode is checked to arrive in S-mode.
+For example, <<t-Interrupts_Sm-coverpoints,Interrupts_Sm>> applies to any configuration with Zicsr and M-mode, and <<t-Interrupts-coverpoints,Interrupts>> applies to any configuration with Zicsr and S-mode.
+Each test boots to the mode in its suffix and then runs in every supported privilege mode at or below that mode: Interrupts_Sm exercises M-, S-, U-, VS- and VU-mode,
+while Interrupts boots to S-mode and exercises S-, U-, VS- and VU-mode with `mideleg` left at its boot value, so a delegated interrupt taken in U-mode is checked to arrive in S-mode.
 
 [page-layout=landscape]
 <<<

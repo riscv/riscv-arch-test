@@ -1,13 +1,13 @@
 ##################################
 # priv/extensions/InterruptsSm.py
 #
-# InterruptsSm privileged extension test generator.
+# Interrupts privileged test generator: the Interrupts_Sm_cg group, which boots to M-mode.
 # David_Harris@hmc.edu 7 September 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
 
-"""InterruptsSm privileged extension test generator for interrupts relying on M-mode."""
+"""Interrupts test generator for interrupts relying on M-mode (covergroup Interrupts_Sm_cg)."""
 
 from testgen.asm.csr import write_stce
 from testgen.asm.helpers import comment_banner, write_sigupd
@@ -24,6 +24,7 @@ from testgen.priv.extensions.InterruptsCommon import (
     generate_cp_wfi,
     generate_cp_wfi_timeout,
     guard_symbol,
+    int_bit,
     int_coverpoint,
     int_macro,
     label_coverpoint,
@@ -40,7 +41,7 @@ from testgen.priv.registry import add_priv_test_generator
 # Boots to M-mode. mideleg is cleared before each case so every interrupt is enabled by mie alone, except
 # that with H the VS-level interrupts are always delegated: H makes their mideleg bits read-only one.
 SUITE = InterruptSuite(
-    name="InterruptsSm",
+    group="Sm",
     boot="M",
     types=[*machine_ints, *supervisor_ints, *vs_ints],
     # MEI and SEI usually share one PLIC source, so priority pairs raise SEI through mip.SEIP instead
@@ -64,23 +65,28 @@ COVERGROUP = SUITE.covergroup
 def _generate_cp_trigger_sm(
     test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str
 ) -> None:
-    """Trigger each interrupt across mideleg, mtvec.MODE, mstatus.SIE, and mstatus.MIE."""
+    """Trigger each interrupt across mideleg, mtvec.MODE, mstatus.SIE, and mstatus.MIE.
+
+    With H, each VS-level interrupt is also triggered with hideleg delegating it to VS-mode, where vstvec.MODE and
+    vsstatus.SIE take the values of mtvec.MODE and mstatus.SIE.  Only VS-mode (with vsstatus.SIE = 1) and VU-mode
+    take it.
+    """
 
     ######################################
     banner = "cp_trigger / cp_trigger_reg / cp_trigger_sti_sstc"
     ######################################
-    tc = test_data.new_test_chunk(test_chunks, f"trigger_{priv}")
+    tc = test_data.new_test_chunk(test_chunks, suite.split(f"trigger_{priv}"))
     tc.section_header = comment_banner(
         banner,
         f"Trigger each interrupt in {priv} mode with mie=1s x mideleg = zeros/ones x mtvec.MODE=DIRECT/VECTORED"
-        " x mstatus.SIE=0/1 x mstatus.MIE=0/1",
+        " x mstatus.SIE=0/1 x mstatus.MIE=0/1 (x hideleg=0/1 for the VS-level interrupts)",
     )
     tmp_reg = test_data.int_regs.get_register()
 
     for int_type in [*machine_ints, *supervisor_ints, *reg_ints, *sstc_ints, *vs_ints]:
         macro = int_macro[int_type]
         guard = guard_symbol(int_type)
-        for mideleg in [0, -1]:
+        for hideleg, mideleg in [(h, m) for h in ([0, 1] if int_type in vs_ints else [0]) for m in [0, -1]]:
             delegstr = "zeros" if mideleg == 0 else "ones"
             cp = label_coverpoint(suite, int_coverpoint.get(int_type, "cp_trigger"), priv, int_type, mideleg == -1)
             # mideleg only exists with S-mode. Without it the mideleg = zeros cases still run and just
@@ -95,10 +101,24 @@ def _generate_cp_trigger_sm(
                         modecmd = "csrs" if mode == 1 else "csrc"
                         siecmd = "csrs" if sie == 1 else "csrc"
                         miecmd = "csrs" if mie == 1 else "csrc"
+                        vs_target = (
+                            [
+                                f"#ifdef UDB_VSTVEC_MODES_{mode}",
+                                f"LI(x{tmp_reg}, {1 << int_bit[int_type]:#x})",
+                                f"csrw hideleg, x{tmp_reg} # hideleg delegates {int_type} to VS-mode",
+                                f"LI(x{tmp_reg}, 1)",
+                                f"{modecmd} vstvec, x{tmp_reg} # vstvec.mode = {mode}",
+                                f"LI(x{tmp_reg}, 0x22) # SIE, SPIE",
+                                f"{siecmd} vsstatus, x{tmp_reg} # vsstatus.SIE = {sie}",
+                            ]
+                            if hideleg
+                            else []
+                        )
                         tc.code += [
                             f"#ifdef {guard}",
                             *case_open,
                             f"#ifdef UDB_MTVEC_MODES_{mode}",
+                            *vs_target,
                             *write_open,
                             f"LI(x{tmp_reg}, {mideleg})",
                             f"csrw mideleg, x{tmp_reg} # mideleg = {delegstr}",
@@ -129,7 +149,8 @@ def _generate_cp_trigger_sm(
                             f"csrw htinst, x{tmp_reg} # htinst = nonzero",
                             "#endif // H_SUPPORTED",
                             test_data.add_testcase(
-                                f"priv_{priv}_{int_type}_mideleg_{delegstr}_mode_{mode}_sie_{sie}_mie_{mie}",
+                                f"priv_{priv}_{int_type}_mideleg_{delegstr}_mode_{mode}_sie_{sie}_mie_{mie}"
+                                + ("_hideleg" if hideleg else ""),
                                 cp,
                                 COVERGROUP,
                             ),
@@ -138,6 +159,7 @@ def _generate_cp_trigger_sm(
                             f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
                             f"RVTEST_CLR_{macro}_INT_{flavor(priv)} # Clear the interrupt if the handler hasn't done so",
                             *mode_exit(suite, priv),
+                            *(["csrw hideleg, zero # hideleg = 0", "#endif // UDB_VSTVEC_MODES"] if hideleg else []),
                             f"#endif // UDB_MTVEC_MODES_{mode}",
                             *case_close,
                             f"#endif // {guard}",
@@ -162,7 +184,7 @@ def _generate_cp_write_stip_sstc(
     ######################################
     coverpoint = "cp_write_stip_sstc"
     ######################################
-    tc = test_data.new_test_chunk(test_chunks, "write_stip_sstc")
+    tc = test_data.new_test_chunk(test_chunks, suite.split("write_stip_sstc"))
     tc.section_header = comment_banner(
         coverpoint, "With menvcfg.STCE = 1, write stimecmp = 0s/1s x mip.STIP = 0/1 and read STIP back"
     )
@@ -195,6 +217,59 @@ def _generate_cp_write_stip_sstc(
     test_data.int_regs.return_register(tmp_reg)
 
 
+def _generate_cp_mip_seip(test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str) -> None:
+    """mip.SEIP reads the OR of the software SEIP bit and the platform's SEI, and csrrs and csrrc write back only the
+    software bit.
+
+    Needs a platform interrupt controller (RVMODEL_CLR_SEXT_INT_M) that can drop SEI without touching mip.SEIP.
+    With SEI asserted and software SEIP = 0, csrrs and csrrc of mip with rs1 = 0 or SSIP return SEIP = 1.  Once the
+    platform drops SEI, mip.SEIP reads 0: none of the writes set the software bit.
+    """
+
+    ######################################
+    coverpoint = "cp_mip_seip"
+    ######################################
+    tc = test_data.new_test_chunk(test_chunks, suite.split("mip_seip"))
+    tc.section_header = comment_banner(
+        coverpoint, "With the platform asserting SEI and software SEIP = 0, csrrs/csrrc mip with rs1 = 0/SSIP"
+    )
+    tmp_reg, check_reg = test_data.int_regs.get_registers(2)
+
+    tc.code += [
+        "#if defined(UDB_SEI_INTR_IMPL) && defined(UDB_SSI_INTR_IMPL) && defined(RVMODEL_CLR_SEXT_INT_M)",
+        "csrw mideleg, zero # mideleg = zeros",
+        "csrw mie, zero # mie = 0 so SEI and SSI are not taken",
+        f"LI(x{tmp_reg}, MIP_SEIP)",
+        f"csrc mip, x{tmp_reg} # software SEIP = 0",
+        "RVTEST_SET_SEXT_INT_M # the platform asserts SEI",
+        f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
+    ]
+    for op in ("csrrs", "csrrc"):
+        for rs1 in ("zero", "SSIP"):
+            tc.code += [
+                f"LI(x{tmp_reg}, {'MIP_SSIP' if rs1 == 'SSIP' else 0})",
+                test_data.add_testcase(f"{op}_{rs1.lower()}", coverpoint, suite.covergroup),
+                f"{op} x{check_reg}, mip, x{tmp_reg} # SEIP reads 1",
+                f"LI(x{tmp_reg}, MIP_SEIP | MIP_SSIP)",
+                f"and x{check_reg}, x{check_reg}, x{tmp_reg}",
+                write_sigupd(check_reg, test_data),
+                "csrci mip, MIP_SSIP",
+            ]
+    tc.code += [
+        "RVMODEL_CLR_SEXT_INT_M(a0, a1) # the platform drops SEI; software SEIP is untouched",
+        f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
+        f"csrr x{check_reg}, mip",
+        f"LI(x{tmp_reg}, MIP_SEIP)",
+        f"and x{check_reg}, x{check_reg}, x{tmp_reg} # SEIP reads 0: the writes left the software bit clear",
+        write_sigupd(check_reg, test_data),
+        "RVTEST_CLR_SEXT_INT_M",
+        "#endif",
+        "",
+    ]
+
+    test_data.int_regs.return_registers([tmp_reg, check_reg])
+
+
 _COMMON_GENERATORS = [
     _generate_cp_trigger_sm,
     generate_cp_enable,
@@ -205,37 +280,42 @@ _COMMON_GENERATORS = [
 
 # One generator per test mode, each requiring the extension for its mode, so no test file is
 # compiled away entirely on a target without that mode.
-@add_priv_test_generator(SUITE.name, required_extensions=["Sm"], extra_defines=["#define BOOT_TO_MMODE"])
-def make_interruptssm_m(test_data: TestData) -> list[TestChunk]:
-    """InterruptsSm tests that run in M-mode."""
-    generators = _COMMON_GENERATORS + [generate_cp_wfi, _generate_cp_priority_mideleg, _generate_cp_write_stip_sstc]
+@add_priv_test_generator("Interrupts", required_extensions=["Sm"], extra_defines=["#define BOOT_TO_MMODE"])
+def make_interrupts_sm_m(test_data: TestData) -> list[TestChunk]:
+    """Interrupts_Sm tests that run in M-mode."""
+    generators = _COMMON_GENERATORS + [
+        generate_cp_wfi,
+        _generate_cp_priority_mideleg,
+        _generate_cp_write_stip_sstc,
+        _generate_cp_mip_seip,
+    ]
     return emit_interrupts(test_data, SUITE, "M", generators)
 
 
-@add_priv_test_generator(SUITE.name, required_extensions=["Sm", "S"], extra_defines=["#define BOOT_TO_MMODE"])
-def make_interruptssm_s(test_data: TestData) -> list[TestChunk]:
-    """InterruptsSm tests that run in S-mode."""
+@add_priv_test_generator("Interrupts", required_extensions=["Sm", "S"], extra_defines=["#define BOOT_TO_MMODE"])
+def make_interrupts_sm_s(test_data: TestData) -> list[TestChunk]:
+    """Interrupts_Sm tests that run in S-mode."""
     generators = _COMMON_GENERATORS + [generate_cp_wfi, generate_cp_wfi_timeout, _generate_cp_priority_mideleg]
     return emit_interrupts(test_data, SUITE, "S", generators)
 
 
-@add_priv_test_generator(SUITE.name, required_extensions=["Sm", "U"], extra_defines=["#define BOOT_TO_MMODE"])
-def make_interruptssm_u(test_data: TestData) -> list[TestChunk]:
-    """InterruptsSm tests that run in U-mode."""
+@add_priv_test_generator("Interrupts", required_extensions=["Sm", "U"], extra_defines=["#define BOOT_TO_MMODE"])
+def make_interrupts_sm_u(test_data: TestData) -> list[TestChunk]:
+    """Interrupts_Sm tests that run in U-mode."""
     generators = _COMMON_GENERATORS + [generate_cp_wfi, generate_cp_wfi_timeout, _generate_cp_priority_mideleg]
     return emit_interrupts(test_data, SUITE, "U", generators)
 
 
-@add_priv_test_generator(SUITE.name, required_extensions=["Sm", "H"], extra_defines=["#define BOOT_TO_MMODE"])
-def make_interruptssm_vs(test_data: TestData) -> list[TestChunk]:
-    """InterruptsSm tests that run in VS-mode."""
+@add_priv_test_generator("Interrupts", required_extensions=["Sm", "H"], extra_defines=["#define BOOT_TO_MMODE"])
+def make_interrupts_sm_vs(test_data: TestData) -> list[TestChunk]:
+    """Interrupts_Sm tests that run in VS-mode."""
     generators = _COMMON_GENERATORS + [generate_cp_wfi, generate_cp_wfi_timeout, _generate_cp_priority_mideleg]
     return emit_interrupts(test_data, SUITE, "VS", generators)
 
 
-@add_priv_test_generator(SUITE.name, required_extensions=["Sm", "H"], extra_defines=["#define BOOT_TO_MMODE"])
-def make_interruptssm_vu(test_data: TestData) -> list[TestChunk]:
-    """InterruptsSm tests that run in VU-mode."""
+@add_priv_test_generator("Interrupts", required_extensions=["Sm", "H"], extra_defines=["#define BOOT_TO_MMODE"])
+def make_interrupts_sm_vu(test_data: TestData) -> list[TestChunk]:
+    """Interrupts_Sm tests that run in VU-mode."""
     # VU-mode WFI never waits: it raises virtual instruction with TW = 0, so only test the timeout.
     generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout, _generate_cp_priority_mideleg]
     return emit_interrupts(test_data, SUITE, "VU", generators)

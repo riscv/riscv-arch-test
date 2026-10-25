@@ -64,10 +64,10 @@ exclude_extensions:
   - U_F
   # mideleg is applied after the interrupt is picked by cause, so a delegated SEI hides an M-level STI:
   # csr:csr_bsc.sv#L1888-L1936
-  - InterruptsSm_priority_mideleg
+  - Interrupts_Sm_priority_mideleg
   # Once a trigger case sets mie to all ones, the hart takes a supervisor timer interrupt (mcause 5)
   # that Sail does not have pending; seen since the xtval seeding added in #2749, not yet root-caused
-  - InterruptsSm_trigger
+  - Interrupts_Sm_trigger
   # scountovf reads are masked by mcounteren in M mode too: https://github.com/bsc-loca/sargantana/issues/116
   - Sscofpmf_Sm_mcounteren
   # A non-canonical VA gives an access fault and is checked at 41 bits:
@@ -96,39 +96,37 @@ exclude_extensions:
   - Sm_H
   # An interrupt taken from VS or VU into HS sets hstatus.GVA = 1:
   # core:datapath/rtl/datapath.sv#L913 (https://github.com/bsc-loca/sargantana/issues/119)
-  - InterruptsS_enable_VS
-  - InterruptsS_enable_VU
+  - Interrupts_enable_VS
+  - Interrupts_enable_VU
   # With LCOFI and a VS-level interrupt both pending and enabled into HS, LCOFI is taken first, but
   # the VS-level interrupts have the higher priority (SEI, SSI, STI, SGEI, VSEI, VSSI, VSTI, LCOFI):
   # csr:csr_bsc.sv#L1911-L1926 (https://github.com/bsc-loca/sargantana/issues/120). The VS and VU
   # groups also hit the GVA bug (#119).
-  - InterruptsS_priority_sie
-  - InterruptsS_priority_sip
-  - InterruptsS_trigger_VS
-  - InterruptsS_trigger_VU
+  - Interrupts_priority_sie
+  - Interrupts_priority_sip
+  - Interrupts_trigger_VS
+  - Interrupts_trigger_VU
   # WFI in VU-mode with mstatus.TW = 1 raises virtual instruction instead of illegal instruction:
   # csr:csr_bsc.sv#L2536-L2541 (https://github.com/bsc-loca/sargantana/issues/121)
-  - InterruptsS_wfi_timeout_VU
+  - Interrupts_wfi_timeout_VU
   # An interrupt taken into M-mode from VS or VU sets mstatus.GVA = 1, the same bug:
   # csr:csr_bsc.sv#L2145 (https://github.com/bsc-loca/sargantana/issues/119)
-  - InterruptsSm_enable_VS
-  - InterruptsSm_enable_VU
-  - InterruptsSm_priority_mie_VS
-  - InterruptsSm_priority_mie_VU
-  - InterruptsSm_priority_mip_VS
-  - InterruptsSm_priority_mip_VU
-  # Same as InterruptsS_wfi_timeout_VU (https://github.com/bsc-loca/sargantana/issues/121)
-  - InterruptsSm_wfi_timeout_VU
+  - Interrupts_Sm_enable_VS
+  - Interrupts_Sm_enable_VU
+  - Interrupts_Sm_priority_mie_VS
+  - Interrupts_Sm_priority_mie_VU
+  - Interrupts_Sm_priority_mip_VS
+  - Interrupts_Sm_priority_mip_VU
+  # Same as Interrupts_wfi_timeout_VU (https://github.com/bsc-loca/sargantana/issues/121)
+  - Interrupts_Sm_wfi_timeout_VU
   # A VS-level interrupt delegated to VS-mode by hideleg is taken in HS-mode (SIE = 1) and U-mode while
   # V = 0: csr:csr_bsc.sv#L1944-L1947 (https://github.com/bsc-loca/sargantana/issues/122)
-  - InterruptsS_h_trigger
-  - InterruptsS_h_priority
+  - Interrupts_trigger_S
+  - Interrupts_trigger_U
   # Interrupts taken from VS or VU set hstatus.GVA or mstatus.GVA
   # (https://github.com/bsc-loca/sargantana/issues/119)
-  - InterruptsS_h_vs
-  - InterruptsS_h_vu
-  - InterruptsSm_h_mideleg_mip
-  - InterruptsSm_h_priority_levels
+  - Interrupts_h_vs
+  - Interrupts_Sm_h_priority_levels
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler libboost-dev libboost-regex-dev libboost-system-dev"
 install_script: ".github/scripts/install-sargantana.sh"

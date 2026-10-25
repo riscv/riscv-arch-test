@@ -715,14 +715,21 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
         straddle_fetch: coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
             bins page_end = {'hFFE};
         }
+        // The page the fetch straddles out of: a kilopage, or on RV64 a 2 MiB megapage when the address is also at its end
+        straddle_page_fetch: coverpoint (((ins.current.rs1_val + ins.current.imm) & 'h1FFFFF) == 'h1FFFFE) {
+            bins kilopage = {0};
+            `ifdef UDB_MXLEN_64
+                bins megapage = {1};
+            `endif
+        }
         stval_page_boundary_fetch: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.rs1_val + ins.current.imm + 2) {
             bins page_boundary = {1};
         }
         sepc_instr_start: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sepc", "sepc") == ins.current.rs1_val + ins.current.imm) {
             bins instr_start = {1};
         }
-        cp_straddle_exec_s: cross priv_mode_s, jalr, straddle_fetch, ins_page_fault, stval_page_boundary_fetch, sepc_instr_start, mode;
-        cp_straddle_exec_u: cross priv_mode_u, jalr, straddle_fetch, ins_page_fault, stval_page_boundary_fetch, sepc_instr_start, mode;
+        cp_straddle_exec_s: cross priv_mode_s, jalr, straddle_fetch, straddle_page_fetch, ins_page_fault, stval_page_boundary_fetch, sepc_instr_start, mode;
+        cp_straddle_exec_u: cross priv_mode_u, jalr, straddle_fetch, straddle_page_fetch, ins_page_fault, stval_page_boundary_fetch, sepc_instr_start, mode;
     `endif
 
     // A word two bytes below the end of a page whose next page is invalid or execute-only.  A hart that splits the
@@ -738,13 +745,19 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
         straddle: coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
             bins page_end = {'hFFE};
         }
+        straddle_page: coverpoint (((ins.current.rs1_val + ins.current.imm) & 'h1FFFFF) == 'h1FFFFE) {
+            bins kilopage = {0};
+            `ifdef UDB_MXLEN_64
+                bins megapage = {1};
+            `endif
+        }
         stval_page_boundary: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.rs1_val + ins.current.imm + 2) {
             bins page_boundary = {1};
         }
-        cp_straddle_read_s:  cross priv_mode_s, lw, straddle, load_page_fault,  stval_page_boundary, mode;
-        cp_straddle_read_u:  cross priv_mode_u, lw, straddle, load_page_fault,  stval_page_boundary, mode;
-        cp_straddle_write_s: cross priv_mode_s, sw, straddle, store_page_fault, stval_page_boundary, mode;
-        cp_straddle_write_u: cross priv_mode_u, sw, straddle, store_page_fault, stval_page_boundary, mode;
+        cp_straddle_read_s:  cross priv_mode_s, lw, straddle, straddle_page, load_page_fault,  stval_page_boundary, mode;
+        cp_straddle_read_u:  cross priv_mode_u, lw, straddle, straddle_page, load_page_fault,  stval_page_boundary, mode;
+        cp_straddle_write_s: cross priv_mode_s, sw, straddle, straddle_page, store_page_fault, stval_page_boundary, mode;
+        cp_straddle_write_u: cross priv_mode_u, sw, straddle, straddle_page, store_page_fault, stval_page_boundary, mode;
     `endif
     `endif
 endgroup

@@ -9,6 +9,7 @@
 """Generate core PTE, satp, and mstatus virtual-memory tests."""
 
 from collections.abc import Callable, Mapping
+from dataclasses import dataclass
 
 from testgen.asm.csr import gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner, write_sigupd
@@ -1100,30 +1101,82 @@ sv_straddle_next:
   .half 0x0000
 """.strip("\n")
 
-
-def _straddle_va_defs(sv: SvMode) -> tuple[tuple[str, str], ...]:
-    """va_data, the straddle page, and va_next, the page after it, at the same level-0 table."""
-    return (("va_data", sv.data_va), ("va_next", f"{int(sv.data_va, 16) + 0x1000:#x}"))
-
-
-def _straddle_access(sv: SvMode) -> str:
-    """The address of a 32-bit access two bytes below va_next."""
-    return f"{int(sv.data_va, 16) + 0x1000 - _STRADDLE_OFFSET:#x}"
-
-
-def _straddle_mappings(sv: SvMode, user: bool, successor: PteFlags) -> list[str]:
-    """Map va_data to sv_straddle_page as an RWX kilopage and va_next, through the same walk, to sv_straddle_next with
-    ``successor``."""
-    return [
-        *create_page_mapping(sv, leaf_level=0, leaf_flags=PteFlags(user=user), physical_address="sv_straddle_page"),
-        create_leaf_pte(sv, level=0, flags=successor, virtual_address="va_next", physical_address="sv_straddle_next"),
-        "sfence.vma",
-    ]
+# The megapage below sv_straddle_mega_next maps the test image up to the 2 MiB boundary that this padding reaches, so
+# the last halfword of the megapage is the first half of addi x0, x0, 0.  Aligning the data to 2 MiB grows the test
+# image by up to 2 MiB, so only the megapage tests do it, and larger pages, and Sv32's 4 MiB megapages, are not tested.
+_STRADDLE_MEGA_DATA = r"""
+  .half 0x0013              // At least one halfword below the megapage boundary
+  .balignw 0x200000, 0x0013
+sv_straddle_mega_next:
+""".strip("\n")
 
 
-def _t_fetch_straddle(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
-    """Jump to a 32-bit instruction two bytes below the end of an executable kilopage whose successor is invalid or
-    not executable.  The fetch faults on the second half of the instruction, so stval holds the page-boundary address
+@dataclass(frozen=True)
+class _StraddlePage:
+    """The page an access straddles out of, at ``level``, and the page after it."""
+
+    level: int
+    name: str  # used in test names and comments
+    va: str
+    va_next: str
+    pa: str
+    pa_next: str
+    data: str
+
+    def va_defs(self, sv: SvMode) -> tuple[tuple[str, str], ...]:
+        size = 1 << sv.page_offset_bits(self.level)
+        if self.level == 0:
+            base = int(sv.data_va, 16)
+        else:
+            # Two megapages above va_data's, so that it and the next megapage are in va_data's level-1 table
+            base = (int(sv.data_va, 16) & ~(size - 1)) + 2 * size
+        defs = ((self.va, sv.data_va if self.level == 0 else f"{base:#x}"), (self.va_next, f"{base + size:#x}"))
+        return defs if self.va == "va_data" else (("va_data", sv.data_va), *defs)
+
+    def access(self, sv: SvMode) -> str:
+        """The address of a 32-bit access two bytes below va_next."""
+        return f"{int(self.va_defs(sv)[-1][1], 16) - _STRADDLE_OFFSET:#x}"
+
+    def mappings(self, sv: SvMode, user: bool, successor: PteFlags) -> list[str]:
+        """Map va to pa as an RWX page and va_next, through the same walk, to pa_next with ``successor``."""
+        return [
+            *create_page_mapping(
+                sv,
+                leaf_level=self.level,
+                leaf_flags=PteFlags(user=user),
+                virtual_address=self.va,
+                physical_address=self.pa,
+            ),
+            create_leaf_pte(
+                sv, level=self.level, flags=successor, virtual_address=self.va_next, physical_address=self.pa_next
+            ),
+            "sfence.vma",
+        ]
+
+
+_KILOPAGE = _StraddlePage(0, "page", "va_data", "va_next", "sv_straddle_page", "sv_straddle_next", _STRADDLE_DATA)
+_MEGAPAGE = _StraddlePage(
+    1,
+    "megapage",
+    "va_mega",
+    "va_mega_next",
+    "sv_straddle_mega_next - 1",
+    "sv_straddle_mega_next",
+    f"{_STRADDLE_DATA}\n{_STRADDLE_MEGA_DATA}",
+)
+
+
+def _straddle_pages(sv: SvMode) -> tuple[_StraddlePage, ...]:
+    return (_KILOPAGE, _MEGAPAGE) if sv.xlen == 64 else (_KILOPAGE,)
+
+
+def _straddle_test_name(sv: SvMode, kind: str, page: _StraddlePage, mode: str) -> str:
+    return f"{sv.name}_{kind}_straddle_{mode}" if page.level == 0 else f"{sv.name}_{kind}_straddle_{page.name}_{mode}"
+
+
+def _t_fetch_straddle(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode, page: _StraddlePage) -> None:
+    """Jump to a 32-bit instruction two bytes below the end of an executable page whose successor is invalid or not
+    executable.  The fetch faults on the second half of the instruction, so stval holds the page-boundary address
     and sepc the start of the instruction.  Only on Zca harts, where jalr can reach a pc that is not 4-byte aligned.
     """
     for mode in ("Smode", "Umode"):
@@ -1135,9 +1188,9 @@ def _t_fetch_straddle(test_data: TestData, test_chunks: list[TestChunk], sv: SvM
             regs,
             sv,
             mode,
-            f"{sv.name}_fetch_straddle_{mode}",
+            _straddle_test_name(sv, "fetch", page, mode),
             coverpoint=coverpoint,
-            va_defs=_straddle_va_defs(sv),
+            va_defs=page.va_defs(sv),
         )
         enter, leave = mode_switch(mode, "Smode")
         successors = (("invalid (V=0)", PteFlags(user=user, valid=False)), ("RW", PteFlags(user=user, execute=False)))
@@ -1145,14 +1198,14 @@ def _t_fetch_straddle(test_data: TestData, test_chunks: list[TestChunk], sv: SvM
             label = test_data.add_testcase(f"test{number}", coverpoint, PERMISSIONS_CG)
             chunk.code.extend(
                 [
-                    *level_header(sv, 0),
+                    *level_header(sv, page.level),
                     (
-                        f"// Test case {number}: 32-bit instruction at the end of an RWX page, next page {description}"
-                        f" | Test in {mode[0]}-Mode | expected = Instruction page fault at the page boundary"
+                        f"// Test case {number}: 32-bit instruction at the end of an RWX {page.name}, next {page.name}"
+                        f" {description} | Test in {mode[0]}-Mode | expected = Instruction page fault at the {page.name} boundary"
                     ),
-                    *_straddle_mappings(sv, user, successor),
+                    *page.mappings(sv, user, successor),
                     "",
-                    f"LI(x{regs.addr}, {_straddle_access(sv)})",
+                    f"LI(x{regs.addr}, {page.access(sv)})",
                     *enter,
                     label,
                     f"jalr ra, x{regs.addr}, 0",
@@ -1161,16 +1214,16 @@ def _t_fetch_straddle(test_data: TestData, test_chunks: list[TestChunk], sv: SvM
                     "",
                 ]
             )
-        chunk.raw_data.extend(sv_data(sv, regs, (0,), data_region_body=_STRADDLE_DATA))
+        chunk.raw_data.extend(sv_data(sv, regs, (page.level,), data_region_body=page.data))
         chunk.trap_sigupd_count = trap_sigupd_count(len(successors))
         test_chunks.append(end_sv_test(test_data, regs))
 
 
-def _t_load_store_straddle(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
-    """Store and load a word two bytes below the end of an RWX kilopage whose successor is invalid or
-    execute-only.  The hart splits the access into bytes and faults on the first byte in the next page, so stval holds
-    the page-boundary address.  A faulting load leaves rd unchanged; the bytes a faulting store wrote below the
-    boundary may be visible, so memory is not checked.
+def _t_load_store_straddle(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode, page: _StraddlePage) -> None:
+    """Store and load a word two bytes below the end of an RWX page whose successor is invalid or execute-only.  The
+    hart splits the access into bytes and faults on the first byte in the next page, so stval holds the page-boundary
+    address.  A faulting load leaves rd unchanged; the bytes a faulting store wrote below the boundary may be visible,
+    so memory is not checked.
     """
     for mode in ("Smode", "Umode"):
         regs = SvRegs.allocate(test_data)
@@ -1182,9 +1235,9 @@ def _t_load_store_straddle(test_data: TestData, test_chunks: list[TestChunk], sv
             regs,
             sv,
             mode,
-            f"{sv.name}_load_store_straddle_{mode}",
+            _straddle_test_name(sv, "load_store", page, mode),
             coverpoint=", ".join(crosses.values()),
-            va_defs=_straddle_va_defs(sv),
+            va_defs=page.va_defs(sv),
         )
         enter, leave = mode_switch(mode, "Smode")
         value, addr, load = (f"x{reg}" for reg in (regs.value, regs.addr, regs.load))
@@ -1199,14 +1252,14 @@ def _t_load_store_straddle(test_data: TestData, test_chunks: list[TestChunk], sv
             }
             chunk.code.extend(
                 [
-                    *level_header(sv, 0),
+                    *level_header(sv, page.level),
                     (
-                        f"// Test case {number}: word at the end of an RWX page, next page {description}"
-                        f" | Test in {mode[0]}-Mode | expected = Store and load page faults at the page boundary"
+                        f"// Test case {number}: word at the end of an RWX {page.name}, next {page.name} {description}"
+                        f" | Test in {mode[0]}-Mode | expected = Store and load page faults at the {page.name} boundary"
                     ),
-                    *_straddle_mappings(sv, user, successor),
+                    *page.mappings(sv, user, successor),
                     "",
-                    f"LI({addr}, {_straddle_access(sv)})",
+                    f"LI({addr}, {page.access(sv)})",
                     f"addi {value}, {value}, 16",
                     f"mv {load}, {value}",
                     *enter,
@@ -1221,7 +1274,7 @@ def _t_load_store_straddle(test_data: TestData, test_chunks: list[TestChunk], sv
                     "",
                 ]
             )
-        chunk.raw_data.extend(sv_data(sv, regs, (0,), data_region_body=_STRADDLE_DATA))
+        chunk.raw_data.extend(sv_data(sv, regs, (page.level,), data_region_body=page.data))
         chunk.trap_sigupd_count = trap_sigupd_count(2 * len(successors))
         test_chunks.append(end_sv_test(test_data, regs))
 
@@ -1392,13 +1445,15 @@ def make_sv57(test_data: TestData) -> list[TestChunk]:
 
 def _make_fetch_straddle(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
-    _t_fetch_straddle(test_data, test_chunks, sv)
+    for page in _straddle_pages(sv):
+        _t_fetch_straddle(test_data, test_chunks, sv, page)
     return test_chunks
 
 
 def _make_load_store_straddle(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
-    _t_load_store_straddle(test_data, test_chunks, sv)
+    for page in _straddle_pages(sv):
+        _t_load_store_straddle(test_data, test_chunks, sv, page)
     return test_chunks
 
 

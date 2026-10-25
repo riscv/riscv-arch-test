@@ -99,13 +99,16 @@ covergroup Sstvala_cg with function sample(ins_t ins);
     }
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
-        instr_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        instr_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+            iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {1};
         }
-        load_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        load_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+            iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {5};
         }
-        store_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        store_access_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+            iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {7};
         }
         cp_load_access_fault:  cross priv_mode_s_u, loadops,  load_access_fault,  stval_address;
@@ -115,25 +118,64 @@ covergroup Sstvala_cg with function sample(ins_t ins);
 
     // Misaligned loads and stores trap only when the implementation does not perform them
     `ifndef UDB_MISALIGNED_LDST
-        load_misaligned : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        load_misaligned : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+            iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {4};
         }
-        store_misaligned : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        store_misaligned : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+            iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {6};
         }
         cp_load_address_misaligned:  cross priv_mode_s_u, wide_loadops,  load_misaligned,  stval_address;
         cp_store_address_misaligned: cross priv_mode_s_u, wide_storeops, store_misaligned, stval_address;
+        // Each misalignment of words, and of doublewords on RV64: the address offset within the access's natural
+        // alignment.  A halfword can only be misaligned by 1, which the crosses above cover.
+        word_loadops : coverpoint ins.current.insn {
+            type_option.weight = 0;
+            wildcard bins lw  = {LW};
+            `ifdef UDB_MXLEN_64
+                wildcard bins lwu = {LWU};
+            `endif
+        }
+        word_storeops : coverpoint ins.current.insn {
+            type_option.weight = 0;
+            wildcard bins sw = {SW};
+        }
+        word_misalignment : coverpoint (ins.current.rs1_val + ins.current.imm) & 3 {
+            type_option.weight = 0;
+            bins offset[] = {[1:3]};
+        }
+        cp_load_misaligned_word:  cross priv_mode_s_u, word_loadops,  load_misaligned,  word_misalignment, stval_address;
+        cp_store_misaligned_word: cross priv_mode_s_u, word_storeops, store_misaligned, word_misalignment, stval_address;
+        `ifdef UDB_MXLEN_64
+            ld : coverpoint ins.current.insn {
+                type_option.weight = 0;
+                wildcard bins ld = {LD};
+            }
+            sd : coverpoint ins.current.insn {
+                type_option.weight = 0;
+                wildcard bins sd = {SD};
+            }
+            doubleword_misalignment : coverpoint (ins.current.rs1_val + ins.current.imm) & 7 {
+                type_option.weight = 0;
+                bins offset[] = {[1:7]};
+            }
+            cp_load_misaligned_doubleword:  cross priv_mode_s_u, ld, load_misaligned,  doubleword_misalignment, stval_address;
+            cp_store_misaligned_doubleword: cross priv_mode_s_u, sd, store_misaligned, doubleword_misalignment, stval_address;
+        `endif
     `endif
 
     // Misaligned fetches trap only when IALIGN = 32
     `ifndef ZCA_SUPPORTED
-        instr_misaligned : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        instr_misaligned : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+            iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {0};
         }
         cp_instr_adr_misaligned_jalr: cross priv_mode_s_u, jalr, instr_misaligned, stval_target;
     `endif
 
-    illegal_instruction : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+    illegal_instruction : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+            iff (ins.current.csr_wb[CSR_SCAUSE]) {
         bins scause = {2};
     }
     cp_illegal_instruction: cross priv_mode_s_u, illegal, illegal_instruction, stval_insn;
@@ -147,13 +189,16 @@ covergroup Sstvala_cg with function sample(ins_t ins);
         `define SSTVALA_PAGE_FAULTS
     `endif
     `ifdef SSTVALA_PAGE_FAULTS
-        instr_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        instr_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+            iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {12};
         }
-        load_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        load_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+            iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {13};
         }
-        store_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        store_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+            iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {15};
         }
         cp_load_page_fault:  cross priv_mode_s, pf_loadops,  load_page_fault,  stval_address;

@@ -29,13 +29,16 @@ covergroup Shtvala_cg with function sample(ins_t ins);
         jalr : coverpoint ins.current.insn {
             wildcard bins jalr = {JALR};
         }
-        instr_guest_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        instr_guest_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+            iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {20};
         }
-        load_guest_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        load_guest_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+            iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {21};
         }
-        store_guest_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        store_guest_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+            iff (ins.current.csr_wb[CSR_SCAUSE]) {
             bins scause = {23};
         }
         // The access whose guest physical address htval holds (>> 2): the final access, whose address has the

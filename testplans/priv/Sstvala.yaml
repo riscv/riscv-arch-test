@@ -59,6 +59,15 @@ coverpoints:
     bins: "{S, U} x each store wider than a byte x store/AMO address misaligned x stval = address"
     rules:
       - Sstvala_stval_faulting_vaddr
+  - name: |-
+      cp_load_misaligned_word
+      cp_store_misaligned_word
+      cp_load_misaligned_doubleword
+      cp_store_misaligned_doubleword
+    goal: Fault writes VA to stval for each misalignment
+    description: Only without MISALIGNED_LDST.  The misaligned word and (on RV64) doubleword accesses of cp_load_address_misaligned and cp_store_address_misaligned, binned by the address offset within the access's natural alignment.  A halfword can only be misaligned by 1.
+    expectation: stval written with VA for each misalignment
+    bins: "{S, U} x {lw, lwu} or sw x offsets 1-3 x address misaligned x stval = address; {S, U} x ld or sd x offsets 1-7 x address misaligned x stval = address"
   - name: cp_instr_adr_misaligned_jalr
     goal: Fault writes VA to stval
     description: Only without Zca.  In S-mode and U-mode, jalr with each combination of rs1[1:0] and offset[1:0]

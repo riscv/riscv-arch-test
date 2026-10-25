@@ -16,11 +16,11 @@ RVTEST_TSBI_GOTO_UMODE.
 from itertools import product
 
 from testgen.asm.csr import csr_access_test, write_stce
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner, write64_csr, write_sigupd
 from testgen.asm.tsbi import tsbi_call, tsbi_call_or_direct
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.PrivCommon import HTIMEDELTAS, read_time, write64
+from testgen.priv.extensions.PrivCommon import HTIMEDELTAS, read_time
 from testgen.priv.registry import add_priv_test_generator
 
 _CG = "Sstc_cg"
@@ -331,8 +331,8 @@ def _setup_timecmps(test_data: TestData) -> list[str]:
     tmp_reg = test_data.int_regs.get_register()
     lines = [
         *stce_tm(test_data, 1, 1, 1, 1, "supervisor"),
-        *write64("stimecmp", STIMECMP, tmp_reg),
-        *write64("vstimecmp", VSTIMECMP, tmp_reg),
+        *write64_csr("stimecmp", STIMECMP, tmp_reg),
+        *write64_csr("vstimecmp", VSTIMECMP, tmp_reg),
     ]
     test_data.int_regs.return_register(tmp_reg)
     return lines
@@ -394,7 +394,7 @@ def _vs_tests(test_data: TestData) -> list[str]:
         *csr_access_test(test_data, ("stimecmp", None), _CG_H, "cp_vs_stimecmp_accesses"),
         *rv32_only("stimecmph", csr_access_test(test_data, ("stimecmph", None), _CG_H, "cp_vs_stimecmp_accesses")),
         test_data.add_testcase("write_then_read_from_hs", "cp_vs_stimecmp_accesses", _CG_H),
-        *write64("stimecmp", VS_STIMECMP, tmp_reg),
+        *write64_csr("stimecmp", VS_STIMECMP, tmp_reg),
         "RVTEST_TSBI_GOTO_SMODE",
     ]
     for csr in ("vstimecmp", "vstimecmph", "stimecmp", "stimecmph"):
@@ -478,7 +478,7 @@ def _vstip_tests(test_data: TestData) -> list[str]:
             "hip.VSTIP = hvip.VSTIP | (STCE = 1 in both and vstimecmp = 0).  henvcfg.STCE is read-only 0 when\n"
             "menvcfg.STCE = 0",
         ),
-        *write64("htimedelta", 0, tmp_reg),
+        *write64_csr("htimedelta", 0, tmp_reg),
     ]
     for m_stce, h_stce, vstip, compare in product((0, 1), (0, 1), (0, 1), (0, MASK64)):
         if h_stce > m_stce:
@@ -487,7 +487,7 @@ def _vstip_tests(test_data: TestData) -> list[str]:
         lines.extend(
             [
                 *stce_tm(test_data, m_stce, h_stce, 1, 1, "machine"),
-                *write64("vstimecmp", compare, tmp_reg),
+                *write64_csr("vstimecmp", compare, tmp_reg),
                 f"LI(x{tmp_reg}, MIP_VSTIP)",
                 f"{'csrs' if vstip else 'csrc'} hvip, x{tmp_reg}",
                 f"LI(x{expected_reg}, {'MIP_VSTIP' if expected else 0})",
@@ -518,12 +518,12 @@ def _htimedelta_tests(test_data: TestData) -> list[str]:
         "csrw hvip, zero",
     ]
     for delta_name, delta in HTIMEDELTAS.items():
-        lines.extend(write64("htimedelta", delta, tmp_reg))
+        lines.extend(write64_csr("htimedelta", delta, tmp_reg))
         for compare_name, compare in COMPARES.items():
             d, c = delta & MASK64, compare & MASK64
             lines.extend(
                 [
-                    *write64("vstimecmp", c, tmp_reg),
+                    *write64_csr("vstimecmp", c, tmp_reg),
                     *read_time(time_reg, time_hi_reg, tmp_reg),
                     "#if __riscv_xlen == 64",
                     f"LI(x{tmp_reg}, {d:#x})",
@@ -552,7 +552,7 @@ def _htimedelta_tests(test_data: TestData) -> list[str]:
                     *_vstip_check(test_data, expected_reg, time_reg, time_hi_reg),
                 ]
             )
-    lines.extend(write64("htimedelta", 0, tmp_reg))
+    lines.extend(write64_csr("htimedelta", 0, tmp_reg))
     test_data.int_regs.return_registers([time_reg, time_hi_reg, tmp_reg, expected_reg])
     return lines
 
@@ -566,7 +566,7 @@ def _access_tests(test_data: TestData) -> list[str]:
             "Read vstimecmp (and vstimecmph) for each value of menvcfg.STCE, henvcfg.STCE, mcounteren.TM and\n"
             "hcounteren.TM",
         ),
-        *write64("vstimecmp", MASK64, tmp_reg),
+        *write64_csr("vstimecmp", MASK64, tmp_reg),
         *access_cross(test_data, "cp_m_vstimecmp_accessible", _CG_HSM, "m", ["vstimecmp", "vstimecmph"]),
         comment_banner(
             "cp_m_vstimecmp_accesses",

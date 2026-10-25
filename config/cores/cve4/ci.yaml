@@ -6,9 +6,6 @@ ci_enabled: true
 exclude_extensions:
   # cv32e40p-rv32imcf DUT bug - https://github.com/openhwfoundation/cv32e40p/issues/1060
   - Sm_F
-  # mtval is read-only zero, which Sail cannot model.
-  - Sm_mcsr_access
-  - Sm_mcsr_addr
   # Throwing access fault instead of misaligned fault.
   # See https://github.com/openhwfoundation/cv32e40x/issues/1000 and
   # https://github.com/riscv/riscv-arch-test/pull/1710#issuecomment-5444172186

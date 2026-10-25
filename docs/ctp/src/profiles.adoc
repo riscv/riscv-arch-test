@@ -52,7 +52,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zcd|Compressed Double|<<t-Zcd-coverpoints>>|o||x|x|x
 |F|Float|<<t-F-coverpoints>>|o||x|x|x
 |D|Double|<<t-D-coverpoints>>|o||x|x|x
-|ZicsrF|Float CSRs|<<t-ZicsrF-coverpoints>>|o||x|x|x
 |Zfh|Half|<<t-Zfh-coverpoints>>|||o|o|o
 |Zfhmin|Half Converts|<<t-Zfhmin-coverpoints>>|||x|o|x
 |Zfa|Additional Float|<<t-Zfa-coverpoints>>||||x|x
@@ -86,7 +85,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |U|User CSRs|<<t-U-coverpoints>>|||x|x|x
 |Zkr|Entropy CSR|<<t-Zkr_S-coverpoints>>|||o|o|o
 |Exceptions|Exceptions|<<t-Exceptions_Sm-coverpoints>>||x|x|x|x
-|Interrupts_Sm|Machine Interrupts|<<t-Interrupts_Sm-coverpoints>>||x|x|x|x
 |Interrupts|Supervisor Interrupts|<<t-Interrupts-coverpoints>>|||x|x|x
 |Sstc|Supervisor Timer Compare|<<t-Sstc-coverpoints>>|||x|x|x
 |Zihpm|Hardware Performance Monitors|<<t-Zihpm-coverpoints>>|o|x|x|x|x
@@ -155,7 +153,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |H|Hypervisor Instructions|<<t-H-coverpoints>>|||o|o|x
 |ExceptionsH|Hypervisor Exceptions|<<t-ExceptionsH-coverpoints>>|||o|o|x
 |ExceptionsHV|Hypervisor Vector Exceptions|<<t-ExceptionsHV-coverpoints>>|||o|o|x
-|Interrupts_Sgei|Guest External Interrupts|<<t-Interrupts_Sgei-coverpoints>>|||o|o|x
 |EndianH|Hypervisor Endian|<<t-EndianH-coverpoints>>|||||
 |ZicntrH|Hypervisor Counters|<<t-ZicntrH-coverpoints>>|||o|o|x
 |PMPH|Hypervisor PMP|<<t-PMPH-coverpoints>>|||o|o|x

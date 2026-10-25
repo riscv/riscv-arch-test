@@ -2131,10 +2131,10 @@ covergroup Sm_H_mcsr_cg with function sample(ins_t ins);
         misa_c_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "misa", "exts")[2] {
             bins off = {1'b0};
         }
-        vsepc_bit1 : coverpoint ins.prev.csr[CSR_VSEPC][1] {
+        vsepc_bit1 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsepc", "vsepc")[1] {
             bins set = {1'b1};
         }
-        sepc_bit1 : coverpoint ins.prev.csr[CSR_SEPC][1] {
+        sepc_bit1 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sepc", "sepc")[1] {
             bins set = {1'b1};
         }
         cp_vsepc_ialign32_read :    cross priv_mode_m_s, csrr_vsepc,  misa_c_off, vsepc_bit1;

@@ -1934,32 +1934,26 @@ function void exceptions_sample(int hart, int issue, ins_t ins);
     Exceptions_Zc_cg.sample(ins);
 `endif // ZCA_SUPPORTED
 `ifdef EXCEPTIONS_ZICBO_ANY
-  `ifdef S_SUPPORTED
-      Exceptions_ZicboS_cg.sample(ins);
-  `endif // S_SUPPORTED
-  `ifndef EXCLUDE_SM
-      Exceptions_ZicboSm_cg.sample(ins);
-  `endif // EXCLUDE_SM
-  `ifdef U_SUPPORTED
-      Exceptions_ZicboU_cg.sample(ins);
-  `endif // U_SUPPORTED
+    `ifdef S_SUPPORTED
+        Exceptions_ZicboS_cg.sample(ins);
+    `endif // S_SUPPORTED
+    `ifndef EXCLUDE_SM
+        Exceptions_ZicboSm_cg.sample(ins);
+    `endif // EXCLUDE_SM
+    `ifdef U_SUPPORTED
+        Exceptions_ZicboU_cg.sample(ins);
+    `endif // U_SUPPORTED
 `endif // EXCEPTIONS_ZICBO_ANY
 `ifdef H_SUPPORTED
     Exceptions_H_cg.sample(ins);
-`endif // H_SUPPORTED
-`ifdef H_SUPPORTED
-  `ifndef EXCLUDE_SM
-      Exceptions_HSm_cg.sample(ins);
-  `endif // EXCLUDE_SM
-`endif // H_SUPPORTED
-`ifdef H_SUPPORTED
-  `ifdef F_SUPPORTED
-      Exceptions_HF_cg.sample(ins);
-  `endif // F_SUPPORTED
-`endif // H_SUPPORTED
-`ifdef H_SUPPORTED
-  `ifdef V_SUPPORTED
-      Exceptions_HV_cg.sample(ins);
-  `endif // V_SUPPORTED
+    `ifndef EXCLUDE_SM
+        Exceptions_HSm_cg.sample(ins);
+    `endif // EXCLUDE_SM
+    `ifdef F_SUPPORTED
+        Exceptions_HF_cg.sample(ins);
+    `endif // F_SUPPORTED
+    `ifdef V_SUPPORTED
+        Exceptions_HV_cg.sample(ins);
+    `endif // V_SUPPORTED
 `endif // H_SUPPORTED
 endfunction

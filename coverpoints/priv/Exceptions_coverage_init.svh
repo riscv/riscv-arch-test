@@ -30,31 +30,25 @@
     Exceptions_Zc_cg = new();   Exceptions_Zc_cg.set_inst_name("obj_Exceptions_Zc");
 `endif // ZCA_SUPPORTED
 `ifdef EXCEPTIONS_ZICBO_ANY
-  `ifdef S_SUPPORTED
-      Exceptions_ZicboS_cg = new();   Exceptions_ZicboS_cg.set_inst_name("obj_Exceptions_ZicboS");
-  `endif // S_SUPPORTED
-  `ifndef EXCLUDE_SM
-      Exceptions_ZicboSm_cg = new();   Exceptions_ZicboSm_cg.set_inst_name("obj_Exceptions_ZicboSm");
-  `endif // EXCLUDE_SM
-  `ifdef U_SUPPORTED
-      Exceptions_ZicboU_cg = new();   Exceptions_ZicboU_cg.set_inst_name("obj_Exceptions_ZicboU");
-  `endif // U_SUPPORTED
+    `ifdef S_SUPPORTED
+        Exceptions_ZicboS_cg = new();   Exceptions_ZicboS_cg.set_inst_name("obj_Exceptions_ZicboS");
+    `endif // S_SUPPORTED
+    `ifndef EXCLUDE_SM
+        Exceptions_ZicboSm_cg = new();   Exceptions_ZicboSm_cg.set_inst_name("obj_Exceptions_ZicboSm");
+    `endif // EXCLUDE_SM
+    `ifdef U_SUPPORTED
+        Exceptions_ZicboU_cg = new();   Exceptions_ZicboU_cg.set_inst_name("obj_Exceptions_ZicboU");
+    `endif // U_SUPPORTED
 `endif // EXCEPTIONS_ZICBO_ANY
 `ifdef H_SUPPORTED
     Exceptions_H_cg = new();   Exceptions_H_cg.set_inst_name("obj_Exceptions_H");
-`endif // H_SUPPORTED
-`ifdef H_SUPPORTED
-  `ifndef EXCLUDE_SM
-      Exceptions_HSm_cg = new();   Exceptions_HSm_cg.set_inst_name("obj_Exceptions_HSm");
-  `endif // EXCLUDE_SM
-`endif // H_SUPPORTED
-`ifdef H_SUPPORTED
-  `ifdef F_SUPPORTED
-      Exceptions_HF_cg = new();   Exceptions_HF_cg.set_inst_name("obj_Exceptions_HF");
-  `endif // F_SUPPORTED
-`endif // H_SUPPORTED
-`ifdef H_SUPPORTED
-  `ifdef V_SUPPORTED
-      Exceptions_HV_cg = new();   Exceptions_HV_cg.set_inst_name("obj_Exceptions_HV");
-  `endif // V_SUPPORTED
+    `ifndef EXCLUDE_SM
+        Exceptions_HSm_cg = new();   Exceptions_HSm_cg.set_inst_name("obj_Exceptions_HSm");
+    `endif // EXCLUDE_SM
+    `ifdef F_SUPPORTED
+        Exceptions_HF_cg = new();   Exceptions_HF_cg.set_inst_name("obj_Exceptions_HF");
+    `endif // F_SUPPORTED
+    `ifdef V_SUPPORTED
+        Exceptions_HV_cg = new();   Exceptions_HV_cg.set_inst_name("obj_Exceptions_HV");
+    `endif // V_SUPPORTED
 `endif // H_SUPPORTED

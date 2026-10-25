@@ -36,6 +36,20 @@ coverpoints:
     description: Attempt to clear C when subsequent instruction is not a multiple of 2.  C should not change.
     expectation: C should not change
     bins: "1"
+  - name: |-
+      cp_mepc_ialign32_read
+      cp_mepc_ialign32_mret
+    goal: mepc[1] is masked on reads, including mret's, while IALIGN = 32
+    description: Only with Zca and a writable misa.C (MUTABLE_MISA_C).  Clear misa.C, write mepc with bit 1 set, execute mret with mstatus.MPP = M, then read mepc; then set misa.C again and read mepc.
+    expectation: While misa.C = 0, mepc reads with bit 1 clear and mret returns to the masked address; after misa.C is set again, mepc reads with bit 1 set.  Match reference model.
+    bins: "2"
+  - name: |-
+      cp_sepc_ialign32_read
+      cp_sepc_ialign32_sret
+    goal: sepc[1] is masked on reads, including sret's, while IALIGN = 32
+    description: Only with Zca, S and a writable misa.C (MUTABLE_MISA_C).  Clear misa.C in M-mode.  Write sepc with bit 1 set and execute sret with sstatus.SPP = S, from M-mode and then from S-mode (entered with T-SBI); write sepc with bit 1 set again and read it, in M-mode and in S-mode.  Then set misa.C again in M-mode and read sepc.
+    expectation: While misa.C = 0, sepc reads with bit 1 clear and sret returns to the masked address; after misa.C is set again, sepc reads with bit 1 set.  Match reference model.
+    bins: 2 modes * 2
   - name: cp_csrr_insufficient_priv
     goal: Debug registers should be inaccessible from M-mode
     description: Read Debug CSRS 7B0-7BF
@@ -543,6 +557,14 @@ coverpoints:
     bins: "1"
     rules:
       - H_mtval_nrz
+  - name: |-
+      cp_vsepc_ialign32_read
+      cp_vsepc_ialign32_vs_read
+      cp_vsepc_ialign32_sret
+    goal: vsepc[1] is masked on reads, including sret's in VS-mode, while IALIGN = 32
+    description: Only with Zca and a writable misa.C (MUTABLE_MISA_C).  Clear misa.C in M-mode.  In VS-mode (entered with T-SBI), write sepc (vsepc) with bit 1 set, execute sret with sstatus.SPP = S, then write and read sepc.  Write and read vsepc in M-mode and in HS-mode.  Then set misa.C again in M-mode and read vsepc.
+    expectation: While misa.C = 0, vsepc reads with bit 1 clear in every mode and sret returns to the masked address; after misa.C is set again, vsepc reads with bit 1 set.  Match reference model.
+    bins: 2 modes + 1 + 1
   - heading: mstatus.TVM and hstatus.VTVM (Sm_H_tvm_cg)
   - name: cp_tvm_hs
     goal: TVM traps access to satp and hgatp, but not vsatp; VTVM does not affect HS-mode

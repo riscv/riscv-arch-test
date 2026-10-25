@@ -226,6 +226,7 @@ def addr_value_tests(test_data: TestData, csr_name: str, covergroup: str) -> lis
         f"csrr x{save_reg}, {csr_name}      # Save CSR",
         "",
         f"# Testcase: {csr_name} = current pc",
+        ".p2align 2    # a 4-byte-aligned pc keeps xtvec.MODE = Direct",
         f"auipc x{walk_reg}, 0",
         test_data.add_testcase("pc", f"cp_{csr_name}_vaddr_pc", covergroup),
         f"csrw {csr_name}, x{walk_reg}    # directly follows the auipc so the value is this csrw's pc - 4",
@@ -537,3 +538,32 @@ def priv_inst_trap_tests(
         instr = f"{name}    # test {name} instruction"
         lines.extend([test_data.add_testcase(name, coverpoint, covergroup), instr])
     return lines
+
+
+# htimedelta values.  time is far below 2^30 when the tests run.  The negative ones make time + htimedelta
+# wrap modulo 2^64 once time exceeds their magnitude; neg_1 wraps for any time >= 1.  pos_2p32m1 and neg_1
+# make the low-word add carry into the upper word on RV32.
+HTIMEDELTAS = {
+    "zero": 0,
+    "pos_2p30": 1 << 30,
+    "pos_2p32m1": (1 << 32) - 1,
+    "pos_2p60": 1 << 60,
+    "neg_1": -1,
+    "neg_2p30": -(1 << 30),
+    "neg_2p60": -(1 << 60),
+}
+
+
+def read_time(lo: int, hi: int, tmp: int) -> list[str]:
+    """Read time into lo, and on RV32 timeh into hi, reading again if timeh changes between the reads."""
+    return [
+        "#if __riscv_xlen == 64",
+        f"csrr x{lo}, time",
+        "#else",
+        "1:",
+        f"csrr x{hi}, timeh",
+        f"csrr x{lo}, time",
+        f"csrr x{tmp}, timeh",
+        f"bne x{hi}, x{tmp}, 1b    # timeh changed between the reads",
+        "#endif",
+    ]

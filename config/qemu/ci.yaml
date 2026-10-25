@@ -95,6 +95,14 @@ exclude_extensions:
   # The same mstatus.MPV bug breaks the mret and mstatus.TVM tests, and every vsstatus bit is
   # writable (https://gitlab.com/qemu-project/qemu/-/work_items/4589).
   - Sm_H
+  # mstatus.MPV is read-only, so no VS/VU-mode (https://gitlab.com/qemu-project/qemu/-/work_items/4588);
+  # hlvx.wu raises the wrong fault (https://gitlab.com/qemu-project/qemu/-/work_items/4595)
+  - Shtvala
+  - Shvstvala
+  # The same mstatus.MPV and GVA bug: traps from VS and VU report the wrong status
+  # (https://gitlab.com/qemu-project/qemu/-/issues/4620).
+  - Svinval_H
+  - Svinval_SmH
   # With ADUE=1, QEMU sets A/D on a PTE with a reserved Svnapot encoding before raising the page fault
   # (https://gitlab.com/qemu-project/qemu/-/work_items/4636)
   - Svadu_sv39_Svadu_fault

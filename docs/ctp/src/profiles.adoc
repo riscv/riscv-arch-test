@@ -72,6 +72,10 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zicsr|CSR Instructions|<<t-Zicsr-coverpoints>>||x|x|x|x
 |Zicond|Conditional Move|<<t-Zicond-coverpoints>>||||x|x
 |Zifencei|Instruction Fence|<<t-Zifencei-coverpoints>>|o|x|x|x|x
+|Ziccif|Main Memory Instruction Fetch|<<t-Ziccif-coverpoints>>|||x|x|x
+|Ziccrse|Main Memory RsrvEventual|<<t-Ziccrse-coverpoints>>|||x|x|x
+|Ziccamoa|Main Memory AMOArithmetic|<<t-Ziccamoa-coverpoints>>|||x|x|x
+|Ziccamoc|Main Memory AMOCASQ|<<t-Ziccamoc-coverpoints>>||||x|x
 |Zicclsm|Misaligned Loads / Stores|<<t-Zicclsm-normative-rules>>|o|o|x|x|x
 |Zihintpause|Pause Hint|<<t-Zihintpause-coverpoints>>|||x|x|x
 |Zihintntl|Nontemporal Locality Hint|<<t-Zihintntl-coverpoints>>||||x|x
@@ -155,7 +159,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |H|Hypervisor Instructions|<<t-H-coverpoints>>|||o|o|x
 |InterruptsH|Hypervisor Interrupts|<<t-InterruptsH-coverpoints>>|||o|o|x
 |EndianH|Hypervisor Endian|<<t-EndianH-coverpoints>>|||||
-|ZicntrH|Hypervisor Counters|<<t-ZicntrH-coverpoints>>|||o|o|x
 |PMPH|Hypervisor PMP|<<t-PMPH-coverpoints>>|||o|o|x
 |SvH|Hypervisor Virtual Memory|<<t-SvH-coverpoints>>|||o|o|x
 |SvHZicbo|Hypervisor Virtual Memory + CBO|<<t-SvHZicbo-coverpoints>>|||o|o|x
@@ -169,7 +172,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |ZkrH|Hypervisor Entropy|<<t-ZkrH-coverpoints>>|||o|o|x
 |SstcH|Hypervisor Supervisor Timer|<<t-SstcH-coverpoints>>|||o|o|x
 |SsstateenH|Hypervisor State Enable|<<t-SsstateenH-coverpoints>>|||o|o|x
-|SvinvalH|Hypervisor TLB Inval|<<t-SvinvalH-coverpoints>>|||o|o|x
 |SvaduH|Hypervisor TLB Update|<<t-SvaduH-coverpoints>>|||o|o|o
 |ZicfilpH|Hypervisor Landing Pad|<<t-ZicfilpH-coverpoints>>|||o|o|o
 |ZicfissH|Hypervisor Shadow Stack|<<t-ZicfissH-coverpoints>>|||o|o|o
@@ -250,10 +252,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 [%AUTOWIDTH]
 |===
 |Coverage File|Description|RVI20|uController|RVA22S64|RVB23S64|RVA23S64
-|Ziccif|Main memory PMA supports instruction fetch|||x|x|x
-|Ziccrse|Main memory PMA supports RsrvEventual|||x|x|x
-|Ziccamoa|Main memory PMA supports atomics |||x|x|x
-|Ziccamoc|Main memory PMA supports AMOCASQ ||||x|x
 |Zvkt|Constant-time vector crypto|||x|x|x
 |Svvptc|Valid PTEs appear within bounded time without fence||||x|x
 |===
@@ -273,6 +271,3 @@ TODO: Add a mechanism to define memory region PMAs in UDB, and exercise each typ
 
 
 A hart with these features can still be certified if it meets all other requirements; these features are simply not tested.
-
-TODO:
-**** which of the Zicc extensions are tested by regular instructions?

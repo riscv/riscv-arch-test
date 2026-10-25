@@ -94,6 +94,12 @@ exclude_extensions:
   - H
   # Six of the eleven Sm_H tests end in an l2_behav.sv:464 assertion; not yet triaged
   - Sm_H
+  # Wrong htval on a VS-stage PTE fault (https://github.com/bsc-loca/sargantana/issues/123)
+  - Shtvala-
+  - Shtvala_amo
+  - Shtvala_hlsv
+  # VS-stage permission fault reported as a guest-page fault (https://github.com/bsc-loca/sargantana/issues/124)
+  - Shvstvala_page_fault
   # An interrupt taken from VS or VU into HS sets hstatus.GVA = 1:
   # core:datapath/rtl/datapath.sv#L913 (https://github.com/bsc-loca/sargantana/issues/119)
   - InterruptsS_enable_VS

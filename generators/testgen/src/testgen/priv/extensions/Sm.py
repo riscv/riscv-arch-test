@@ -11,7 +11,7 @@
 """Sm privileged extension test generator."""
 
 from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -20,6 +20,7 @@ from testgen.priv.extensions.PrivCommon import (
     S_CSR_SENVCFG,
     S_CSRS,
     S_SSTATUS_MASK,
+    SCAUSE_CODES,
     SV_GATE,
     addr_csr_tests,
     csr_insufficient_priv_tests,
@@ -794,24 +795,17 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     ######################################
     coverpoint = "cp_scause_from_m"
     ######################################
-    # The scause Exception Code is WLRL.  Ss1p12 and later must hold the values 0-31; Ss1p11 need only hold the
-    # supported codes, so codes a 1.11 hart may not support are gated, matching cp_scause_write_exception in S.py
+    # The scause Exception Code is WLRL: write each code it must hold (SCAUSE_CODES, as cp_scause_write_exception)
     save_reg, val_reg, check_reg = test_data.int_regs.get_registers(3)
     tc.code.extend(["", "# Write scause with each guaranteed Exception Code 0-31", f"csrr x{save_reg}, scause # save"])
-    for code in range(32):
-        gated = code in {10, 11, 14} or code >= 16
-        if gated:
-            tc.code.append("#ifdef S1P12P0_OR_LATER_SUPPORTED")
-        tc.code.extend(
-            [
-                test_data.add_testcase(f"scause_{code}", coverpoint, covergroup),
-                f"LI(x{val_reg}, {code})",
-                f"csrw scause, x{val_reg}",
-                gen_csr_read_sigupd(check_reg, ("scause", None), test_data),
-            ]
-        )
-        if gated:
-            tc.code.append("#endif // S1P12P0_OR_LATER_SUPPORTED")
+    for code, gate in sorted(SCAUSE_CODES["exception"].items()):
+        body = [
+            test_data.add_testcase(f"scause_{code}", coverpoint, covergroup),
+            f"LI(x{val_reg}, {code})",
+            f"csrw scause, x{val_reg}",
+            gen_csr_read_sigupd(check_reg, ("scause", None), test_data),
+        ]
+        tc.code.extend(gated(body, gate))
     tc.code.append(f"csrw scause, x{save_reg} # restore")
     test_data.int_regs.return_registers([save_reg, val_reg, check_reg])
     tc.code.append("#endif // S_SUPPORTED")

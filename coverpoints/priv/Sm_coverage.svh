@@ -729,6 +729,8 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
             bins code[] = {[0:9], 12, 13, 15};
             `ifdef S1P12P0_OR_LATER_SUPPORTED
               bins code_ss1p12[] = {10, 11, 14, [16:31]};
+            `elsif SOFTWARE_CHECK_SUPPORTED
+              bins code_18_software_check = {18};
             `endif
         }
         shadow : coverpoint {ins.prev.insn[31:20], ins.current.insn[31:20]} {

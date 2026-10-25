@@ -154,4 +154,56 @@
   `endif
 `endif
 
+// Masks of the implemented interrupts, in mip/mie/mideleg bit positions. The bits of an interrupt
+// that is not implemented are read-only zero, so coverpoints leave them out of these masks.
+`ifdef UDB_MEI_INTR_IMPL
+  `define INTR_MEI 16'h0800
+`else
+  `define INTR_MEI 16'h0000
+`endif
+`ifdef UDB_MTI_INTR_IMPL
+  `define INTR_MTI 16'h0080
+`else
+  `define INTR_MTI 16'h0000
+`endif
+`ifdef UDB_MSI_INTR_IMPL
+  `define INTR_MSI 16'h0008
+`else
+  `define INTR_MSI 16'h0000
+`endif
+`ifdef UDB_SEI_INTR_IMPL
+  `define INTR_SEI 16'h0200
+`else
+  `define INTR_SEI 16'h0000
+`endif
+`ifdef UDB_STI_INTR_IMPL
+  `define INTR_STI 16'h0020
+`else
+  `define INTR_STI 16'h0000
+`endif
+`ifdef UDB_SSI_INTR_IMPL
+  `define INTR_SSI 16'h0002
+`else
+  `define INTR_SSI 16'h0000
+`endif
+`ifdef SSCOFPMF_SUPPORTED
+  `define INTR_LCOFI 16'h2000
+`else
+  `define INTR_LCOFI 16'h0000
+`endif
+// S-level interrupts: SEI, STI, SSI, and LCOFI with Sscofpmf
+`define INTR_S_LEVEL (`INTR_LCOFI | `INTR_SEI | `INTR_STI | `INTR_SSI)
+// Interrupts below M: the S-level ones, plus VSEI, VSTI, and VSSI with H
+`ifdef H_SUPPORTED
+  `define INTR_BELOW_M (`INTR_S_LEVEL | 16'h0444)
+`else
+  `define INTR_BELOW_M `INTR_S_LEVEL
+`endif
+// Every implemented interrupt: MEI, MTI, MSI, plus those below M with S
+`ifdef S_SUPPORTED
+  `define INTR_ALL (`INTR_MEI | `INTR_MTI | `INTR_MSI | `INTR_BELOW_M)
+`else
+  `define INTR_ALL (`INTR_MEI | `INTR_MTI | `INTR_MSI)
+`endif
+
 `endif // DERIVED_CONFIG_SVH

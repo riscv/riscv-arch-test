@@ -112,9 +112,9 @@ include::{testplansdir}/priv/SvinvalH.adoc[]
 
 include::{testplansdir}/priv/SvaduH.adoc[]
 
-==== ZicfilpH Hypervisor Landing Pads
+==== Hypervisor Landing Pads
 
-include::{testplansdir}/priv/ZicfilpH.adoc[]
+The hypervisor landing pad tests are the <<t-Zicfilp_H-coverpoints,Zicfilp_H>> group of the Zicfilp suite.
 
 ==== ZicfissH Hypervisor Shadow Stack
 

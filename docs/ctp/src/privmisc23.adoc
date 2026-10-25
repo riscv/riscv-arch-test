@@ -114,7 +114,7 @@ See <<t-Ssnpm-normative-rules>> for normative rules.
 
 ==== Zicfilp Landing Pads
 
-In Privileged section because it has both unpriv and privileged behaviors.  The common coverpoints are defined once and re-executed by the Zicfilp_U, Zicfilp_Sm and Zicfilp_S groups in their privilege mode; each of those groups adds the coverpoints for its mode's `xPELP` handling.  ZicfilpH covers VS/VU-mode (see <<t-ZicfilpH-coverpoints>>).
+In Privileged section because it has both unpriv and privileged behaviors.  The common coverpoints are defined once and re-executed by the Zicfilp_U, Zicfilp_Sm and Zicfilp_S groups in their privilege mode; each of those groups adds the coverpoints for its mode's `xPELP` handling.  The Zicfilp_H group covers VS-mode and VU-mode.
 
 include::{testplansdir}/priv/Zicfilp_common.adoc[]
 
@@ -129,6 +129,10 @@ include::{testplansdir}/priv/Zicfilp_Sm.adoc[]
 ===== Zicfilp_S Supervisor-Mode Landing Pads
 
 include::{testplansdir}/priv/Zicfilp_S.adoc[]
+
+===== Zicfilp_H Hypervisor Landing Pads
+
+include::{testplansdir}/priv/Zicfilp_H.adoc[]
 
 include::norm/Zicfilp_norm_rules.adoc[]
 

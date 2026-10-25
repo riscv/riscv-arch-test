@@ -12,3 +12,6 @@
 `endif
     Zicfilp_S_cg = new();      Zicfilp_S_cg.set_inst_name("obj_Zicfilp_S");
     Zicfilp_U_cg = new();      Zicfilp_U_cg.set_inst_name("obj_Zicfilp_U");
+`ifdef H_SUPPORTED
+    Zicfilp_H_cg = new();      Zicfilp_H_cg.set_inst_name("obj_Zicfilp_H");
+`endif

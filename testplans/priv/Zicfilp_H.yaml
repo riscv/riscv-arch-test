@@ -1,0 +1,62 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Zicfilp_H
+source: https://docs.google.com/spreadsheets/d/1ED9ontJZP-Dg2MAF-4mkhqKFgpjf6Fp6yeXKuW61FOY/edit?gid=1715431862#gid=1715431862
+notes: |
+  The H group boots to HS-mode and sets the landing pad enables from there: menvcfg.LPE through T-SBI, henvcfg.LPE and
+  senvcfg.LPE directly.  henvcfg.LPE enables landing pads in VS-mode and senvcfg.LPE in VU-mode.  hedeleg = 0, so
+  software-check exceptions are taken in HS-mode unless a test delegates them to VS-mode.  The trap record does not
+  hold SPELP, so the tests observe it through the instruction after the handler returns, which raises a
+  software-check exception exactly when ELP was restored to LP_EXPECTED.  The number of traps is recorded after each
+  case.
+coverpoints:
+  - name: cp_vs_lpe
+    goal: henvcfg.LPE, not menvcfg.LPE, enables landing pads in VS-mode
+    description: |-
+      For each value of henvcfg.LPE and menvcfg.LPE, in VS-mode, with x7[31:12] holding the expected label:
+      jalr, c.jr and c.jalr (Zca) through a register other than x1, x5 and x7 to a non-LPAD instruction, and to an LPAD whose nonzero label does not match x7[31:12].
+    expectation: Software-check exception (cause 18), taken in HS-mode, exactly when henvcfg.LPE = 1, whatever menvcfg.LPE holds.  With henvcfg.LPE = 0, ELP stays NO_LP_EXPECTED and the LPAD executes as a no-op.
+    bins: |-
+      priv_mode VS x henvcfg.LPE {0, 1} x menvcfg.LPE {0, 1} x {jalr, c.jr, c.jalr} x target {not_lpad, lpad_mismatch}
+      = 24 bins (8 without Zca)
+  - name: cp_vu_lpe
+    goal: senvcfg.LPE, not henvcfg.LPE, enables landing pads in VU-mode
+    description: |-
+      For each value of senvcfg.LPE and henvcfg.LPE, in VU-mode, with x7[31:12] holding the expected label:
+      jalr, c.jr and c.jalr (Zca) through a register other than x1, x5 and x7 to a non-LPAD instruction, and to an LPAD whose nonzero label does not match x7[31:12].
+    expectation: Software-check exception (cause 18), taken in HS-mode, exactly when senvcfg.LPE = 1, whatever henvcfg.LPE holds.  With senvcfg.LPE = 0, ELP stays NO_LP_EXPECTED and the LPAD executes as a no-op.
+    bins: |-
+      priv_mode VU x senvcfg.LPE {0, 1} x henvcfg.LPE {0, 1} x {jalr, c.jr, c.jalr} x target {not_lpad, lpad_mismatch}
+      = 24 bins (8 without Zca)
+  - name: cp_trap_entry_spelp
+    goal: A trap from VS-mode or VU-mode saves ELP in vsstatus.SPELP when taken in VS-mode and in sstatus.SPELP when taken in HS-mode
+    description: |-
+      henvcfg.LPE = senvcfg.LPE = 1.  Trap into VS-mode (hedeleg[3] = hedeleg[18] = 1) or into HS-mode (hedeleg = 0), from VS-mode and from VU-mode:
+      - ELP = LP_EXPECTED: jalr through a non-link register to a non-LPAD instruction, which raises a software-check exception.
+      - ELP = NO_LP_EXPECTED: an ebreak that no indirect jump precedes.
+    expectation: The trap saves ELP in the SPELP of the handler's mode and the handler's SRET restores it.  After an LP_EXPECTED trap the next non-LPAD instruction traps again before the LPAD that resumes the test; after a NO_LP_EXPECTED trap the instruction after the ebreak does not trap.
+    bins: |-
+      priv_mode {VS, VU} x LPE of the mode enabled x ELP {lp_expected, no_lp_expected} x handler {HS, VS}
+      = 8 bins
+  - name: cp_vs_sret_spelp
+    goal: SRET executed in VS-mode restores ELP from vsstatus.SPELP and clears it
+    description: |-
+      For each value of henvcfg.LPE, senvcfg.LPE and SPELP, and a return to VS-mode or VU-mode: HS-mode sets sstatus.SPELP to the opposite of SPELP.  In VS-mode, write vsstatus.SPP and vsstatus.SPELP through sstatus, set sepc to a non-LPAD instruction and execute sret.
+    expectation: Software-check exception exactly when vsstatus.SPELP = 1 and the LPE of the new mode (henvcfg.LPE for VS-mode, senvcfg.LPE for VU-mode) is 1.  After an SRET to VS-mode, vsstatus.SPELP reads 0.
+    bins: |-
+      priv_mode VS x sret x new mode {VU, VS} x henvcfg.LPE {0, 1} x senvcfg.LPE {0, 1} x vsstatus.SPELP {0, 1}
+      = 16 bins
+  - name: cp_hs_sret_spelp
+    goal: SRET executed in HS-mode into VS-mode or VU-mode restores ELP from sstatus.SPELP, not vsstatus.SPELP
+    description: |-
+      For each value of henvcfg.LPE, senvcfg.LPE and sstatus.SPELP, and a return to VS-mode or VU-mode: in HS-mode set hstatus.SPV = 1, sstatus.SPP for the new mode, sstatus.SPELP, and vsstatus.SPELP to the opposite value, set sepc to a non-LPAD instruction and execute sret.
+    expectation: Software-check exception exactly when sstatus.SPELP = 1 and the LPE of the new mode (henvcfg.LPE for VS-mode, senvcfg.LPE for VU-mode) is 1.  Back in HS-mode, vsstatus.SPELP is unchanged.
+    bins: |-
+      priv_mode HS x sret x new mode {VU, VS} x henvcfg.LPE {0, 1} x senvcfg.LPE {0, 1} x sstatus.SPELP {0, 1} x vsstatus.SPELP differs
+      = 16 bins
+  - name: cp_vs_sstatus_spelp
+    goal: sstatus.SPELP accessed in VS-mode is vsstatus.SPELP
+    description: In VS-mode, set and then clear sstatus.SPELP with csrrs and csrrc, and read sstatus back.  After each write, HS-mode reads vsstatus.SPELP.
+    expectation: sstatus.SPELP read in VS-mode and vsstatus.SPELP read in HS-mode both hold the value VS-mode wrote.
+    bins: |-
+      priv_mode VS x {csrrs, csrrc} sstatus x rs1 bit 23 (SPELP) set
+      = 2 bins

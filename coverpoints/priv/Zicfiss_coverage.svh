@@ -217,6 +217,7 @@ endgroup
     `define ZICFISS_SSP_BIT2_WRITABLE
 `endif
 
+`ifdef S_SUPPORTED
 covergroup Zicfiss_S_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -326,8 +327,9 @@ covergroup Zicfiss_S_cg with function sample(ins_t ins);
     cp_senvcfg_sse_rdonly0_s:      cross priv_mode_s, senvcfg_csr, menvcfg_sse, sse_bit_write;
 
 endgroup
+`endif
 
-
+`ifdef U_SUPPORTED
 covergroup Zicfiss_U_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -646,6 +648,9 @@ covergroup Zicfiss_U_cg with function sample(ins_t ins);
     cp_ss_instr_inactive_u:        cross priv_mode_u, ss_mop_instr, u_sse_inactive, ssp_state;
 
 endgroup
+`endif
+
+`ifdef H_SUPPORTED
 covergroup Zicfiss_H_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -847,12 +852,19 @@ covergroup Zicfiss_H_cg with function sample(ins_t ins);
     cp_ssamoswap_sse_gating_vu:    cross priv_mode_vu, ssamoswap_instr, vu_sse_inactive, menvcfg_sse;
 
 endgroup
+`endif
 
 function void zicfiss_sample(int hart, int issue, ins_t ins);
     `ifndef EXCLUDE_SM
         Zicfiss_Sm_cg.sample(ins);
     `endif
-    Zicfiss_S_cg.sample(ins);
-    Zicfiss_U_cg.sample(ins);
-    Zicfiss_H_cg.sample(ins);
+    `ifdef S_SUPPORTED
+        Zicfiss_S_cg.sample(ins);
+    `endif
+    `ifdef U_SUPPORTED
+        Zicfiss_U_cg.sample(ins);
+    `endif
+    `ifdef H_SUPPORTED
+        Zicfiss_H_cg.sample(ins);
+    `endif
 endfunction

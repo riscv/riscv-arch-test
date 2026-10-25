@@ -310,7 +310,11 @@ normative_rule_definitions:
   # It is required to hold the values 0–31 (i.e., bits 4–0 must be implemented), but
   # otherwise it is only guaranteed to hold supported exception codes.
   - name: scause_exception_code_sz
-    coverpoint: ["S_scause_cg/cp_scause_write_{interrupt, exception}"]
+    coverpoint:
+      [
+        "S_scause_cg/cp_scause_write_{interrupt, exception}",
+        "Sm_mcsr_cg/cp_scause_from_m",
+      ]
 
   # Interrupt|Exception Code|Description === 1 1 1 1 1 1 1 1 1 1|0 1 2-4 5 6-8 9 10-12
   # 13 14-15 ≥16|Reserved Supervisor software interrupt Reserved Supervisor timer

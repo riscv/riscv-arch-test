@@ -80,6 +80,9 @@ exclude_extensions:
   # (https://gitlab.com/qemu-project/qemu/-/issues/4620). QEMU has further hypervisor bugs
   # filed the same day, 4611 through 4617, so this exclusion will be needed for a while.
   - H
+  # The same mstatus.MPV bug breaks the mret and mstatus.TVM tests, and every vsstatus bit is
+  # writable (https://gitlab.com/qemu-project/qemu/-/work_items/4589).
+  - Sm_H
   # With ADUE=1, QEMU sets A/D on a PTE with a reserved Svnapot encoding before raising the page fault
   # (https://gitlab.com/qemu-project/qemu/-/work_items/4636)
   - Svadu_sv39_Svadu_fault

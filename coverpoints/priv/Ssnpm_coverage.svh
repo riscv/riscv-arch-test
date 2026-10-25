@@ -121,9 +121,8 @@ endgroup
 
 // H group: pointer masking in VS-mode and VU-mode and for HLV, HSV and HLVX.  The accesses run with vsatp = Bare,
 // so masking zero-extends guest physical addresses.  Each address has one tag bit set; the test checks whether
-// the access reached its data.  Pointer masking applies only to RV64.
+// the access reached its data.
 `ifdef H_SUPPORTED
-`ifdef UDB_MXLEN_64
 covergroup Ssnpm_H_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -207,7 +206,6 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     cp_mxr_pmm: cross priv_mode_vs_vu, ld, vsstatus_mxr, applicable_pmm_enabled, tag, vsatp_bare, hgatp_mode;
 
 endgroup
-`endif // UDB_MXLEN_64
 `endif // H_SUPPORTED
 
 function void ssnpm_sample(int hart, int issue, ins_t ins);
@@ -216,8 +214,6 @@ function void ssnpm_sample(int hart, int issue, ins_t ins);
         Ssnpm_Sm_cg.sample(ins);
     `endif
     `ifdef H_SUPPORTED
-        `ifdef UDB_MXLEN_64
-            Ssnpm_H_cg.sample(ins);
-        `endif
+        Ssnpm_H_cg.sample(ins);
     `endif
 endfunction

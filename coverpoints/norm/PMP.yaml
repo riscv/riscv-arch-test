@@ -22,6 +22,9 @@ normative_rule_definitions:
         "PMP_U_cg/{cp_cfg_R, cp_mprv_lw}",
         "PMP_Zalrsc_cg/cp_cfg_RW",
         "PMP_Zca_cg/cp_cfg_R",
+        "PMP_H_cg/{cp_cfg_X,cp_cfg_R,cp_cfg_W}",
+        "PMP_H_hlv_cg/cp_pmp_hlv",
+        "PMP_H_guest_cg/{cp_pmp_amo,cp_pmp_lr}",
       ]
 
   # Attempting to execute a store instruction which accesses a physical address within
@@ -44,6 +47,9 @@ normative_rule_definitions:
         "PMP_Zalrsc_cg/cp_cfg_RW",
         "PMP_Zca_cg/cp_cfg_W",
         "PMP_Zicbo_cg/cp_cbo_zero",
+        "PMP_H_cg/{cp_cfg_X,cp_cfg_R,cp_cfg_W}",
+        "PMP_H_hlv_cg/cp_pmp_hlv",
+        "PMP_H_guest_cg/{cp_pmp_amo,cp_pmp_lr}",
       ]
 
   # When the L bit is set, the R/W/X permissions are enforced for all privilege modes.
@@ -79,6 +85,9 @@ normative_rule_definitions:
       [
         "PMP_S_cg/{cp_cfg_X, cp_cfg_R, cp_mprv_lw, cp_mprv_sw}",
         "PMP_U_cg/{cp_cfg_X, cp_cfg_R, cp_mprv_lw, cp_mprv_sw}",
+        "PMP_H_cg/{cp_cfg_X,cp_cfg_R}",
+        "PMP_H_cg/cp_mprv_lw",
+        "PMP_H_guest_cg/cp_pmp_after_translation",
       ]
 
   # PMP CSRs are only accessible to M-mode.
@@ -87,6 +96,8 @@ normative_rule_definitions:
       [
         "PMP_S_cg/{cp_pmpaddr_access_s, cp_pmpcfg_access_s}",
         "PMP_U_cg/{cp_pmpaddr_access_u, cp_pmpcfg_access_u}",
+        "PMP_H_cg/{cp_pmpaddr_access_vs,cp_pmpcfg_access_vs}",
+        "PMP_H_cg/{cp_pmpaddr_access_vu,cp_pmpcfg_access_vu}",
       ]
 
   # The PMP address registers are CSRs named pmpaddr0-pmpaddr63.
@@ -116,6 +127,9 @@ normative_rule_definitions:
         "PMP_S_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W}",
         "PMP_Sm_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_cfg_L_access_read}",
         "PMP_U_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W}",
+        "PMP_H_cg/{cp_cfg_X,cp_cfg_R,cp_cfg_W}",
+        "PMP_H_hlv_cg/cp_pmp_hlv",
+        "PMP_H_guest_cg/{cp_pmp_amo,cp_pmp_lr}",
       ]
 
   # If a PMP entry matches all bytes of a memory operation, then the L, R, W, and X
@@ -149,6 +163,9 @@ normative_rule_definitions:
         "PMP_S_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W}",
         "PMP_Sm_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W, cp_cfg_A_napot_all}",
         "PMP_U_cg/{cp_cfg_X, cp_cfg_R, cp_cfg_W}",
+        "PMP_H_cg/{cp_cfg_X,cp_cfg_R,cp_cfg_W}",
+        "PMP_H_hlv_cg/cp_pmp_hlv",
+        "PMP_H_guest_cg/{cp_pmp_amo,cp_pmp_lr}",
       ]
 
   # Attempting to fetch an instruction from a PMP region that does not have execute
@@ -161,6 +178,9 @@ normative_rule_definitions:
         "PMP_Sm_cg/{cp_cfg_X, cp_cfg_X0_all, cp_cfg_A_napot_x, cp_cfg_A_tor_x}",
         "PMP_U_cg/{cp_cfg_X, cp_mprv_jalr}",
         "PMP_Zca_cg/{cp_misaligned_napot, cp_misaligned_tor, cp_misaligned_na4}",
+        "PMP_H_cg/{cp_cfg_X,cp_cfg_R,cp_cfg_W}",
+        "PMP_H_hlv_cg/cp_pmp_hlv",
+        "PMP_H_guest_cg/{cp_pmp_amo,cp_pmp_lr}",
       ]
 
   # When A=0, this PMP entry is disabled and matches no addresses.
@@ -360,7 +380,13 @@ normative_rule_definitions:
     # PMPZaamo checks rd after every AMO, and a later AMO's return value shows any write by a
     # faulting one. The PMPSm, PMPS, PMPU, and PMPF store probes do not read memory back.
     # rd is checked after every AMO, and a later AMO's return value shows any write by a faulting one
-    coverpoint: ["PMP_Zaamo_cg/cp_cfg_RW", "PMP_Zaamo_cg/cp_cfg_RW"]
+    coverpoint:
+      [
+        "PMP_Zaamo_cg/cp_cfg_RW",
+        "PMP_Zaamo_cg/cp_cfg_RW",
+        "PMP_H_guest_cg/{cp_pmp_pf_priority,cp_pmp_pt_priority}",
+        "PMP_H_guest_cg/cp_pmp_amo_pf_priority",
+      ]
 
   # Up to 64 PMP entries are supported. Implementations may implement zero, 16, or
   # 64 PMP entries; the lowest-numbered PMP entries must be implemented first.
@@ -519,6 +545,8 @@ normative_rule_definitions:
         "PMP_Sv_cg/pmp0_pte_{noread,nowrite,noexec}_s",
         "PMP_SvZicbo_cg/{cp_PTE_PMP_rw_unset_cbo_s,cp_PTE_PMP_rw_unset_cbo_u}",
         "PMP_Svadu_cg/{Abit_unset_pmpW_unset_exec_s, Abit_unset_pmpW_unset_read_s, Abit_unset_pmpW_unset_write_u, Dbit_unset_pmpW_unset_write_s}",
+        "PMP_H_guest_cg/{cp_pmp_pt,cp_pmp_pt_gpa,cp_pmp_pt_update}",
+        "PMP_H_hlv_cg/cp_pmp_hlv_pt",
       ]
 
   # PMP checks are also applied to page-table accesses for virtual-address translation,
@@ -529,6 +557,8 @@ normative_rule_definitions:
       [
         "PMP_Sv_cg/pmp0_pte_{noread,nowrite,noexec}_s",
         "PMP_SvZicbo_cg/{cp_PTE_PMP_rw_unset_cbo_s,cp_PTE_PMP_rw_unset_cbo_u}",
+        "PMP_H_guest_cg/{cp_pmp_pt,cp_pmp_pt_gpa,cp_pmp_pt_update}",
+        "PMP_H_hlv_cg/cp_pmp_hlv_pt",
       ]
 
   # Implementations with virtual memory are permitted to perform address translations
@@ -571,4 +601,46 @@ normative_rule_definitions:
     coverpoint:
       [
         "PMP_Svadu_cg/{Abit_unset_pmpW_unset_exec_s, Abit_unset_pmpW_unset_read_s, Abit_unset_pmpW_unset_write_u, Dbit_unset_pmpW_unset_write_s}",
+      ]
+
+  # PMP checks the supervisor physical address in every virtualization mode
+  - name: H_pmp
+    coverpoint:
+      [
+        "PMP_H_cg/{cp_cfg_X,cp_cfg_R}",
+        "PMP_H_cg/cp_mprv_lw",
+        "PMP_H_guest_cg/cp_pmp_after_translation",
+      ]
+
+  # Representative coverpoints; also PMP_H_hlv_cg/cp_pmp_hsv
+  # MPRV with MPV = 1 gives M-mode loads and stores VS or VU privilege
+  - name: mstatus_mprv_hypervisor
+    coverpoint: ["PMP_H_cg/{cp_mprv_jalr,cp_mprv_lw,cp_mprv_sw}"]
+
+  # HLV and HSV have VS or VU privilege, so PMP checks them even from M-mode
+  - name: hlsv_priv
+    coverpoint: ["PMP_H_hlv_cg/{cp_pmp_hlv,cp_pmp_hsv}"]
+
+  # HLVX needs both read and execute permission from PMP
+  - name: hlsv_u_op
+    coverpoint: ["PMP_H_hlv_cg/cp_pmp_hlvx"]
+
+  # PMP checks the implicit page-table accesses of both stages
+  - name: H_vm_gstagetrans
+    coverpoint:
+      [
+        "PMP_H_guest_cg/{cp_pmp_pt,cp_pmp_pt_gpa,cp_pmp_pt_update}",
+        "PMP_H_hlv_cg/cp_pmp_hlv_pt",
+      ]
+
+  # With Svadu, PMP checks the A/D update of a VS-stage or G-stage leaf, which writes its page table
+  - names: [henvcfg_adue_op, menvcfg_adue_op]
+    coverpoint: ["PMP_H_guest_cg/cp_pmp_pt_update"]
+
+  # Page and guest-page faults take priority over an access fault on the final address
+  - name: H_exception_priority
+    coverpoint:
+      [
+        "PMP_H_guest_cg/{cp_pmp_pf_priority,cp_pmp_pt_priority}",
+        "PMP_H_guest_cg/cp_pmp_amo_pf_priority",
       ]

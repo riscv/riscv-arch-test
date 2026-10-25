@@ -45,6 +45,16 @@ include::{testplansdir}/priv/PMP_SvZicbo.adoc[]
 
 include::{testplansdir}/priv/PMP_Svadu.adoc[]
 
+==== PMP_H Hypervisor
+
+PMP_H boots to M-mode and checks PMP on accesses from VS and VU modes (including M-mode accesses with MPRV = 1 and
+MPV = 1), on HLV, HLVX and HSV, and under two-stage translation on the final supervisor physical address, on the
+VS-stage and G-stage page-table reads and Svadu A/D updates, on AMOs and LR, and on the priority of page and
+guest-page faults over PMP access faults.  Its coverage is in PMP_H_cg (the VS-mode and VU-mode walks),
+PMP_H_hlv_cg (HLV, HLVX and HSV) and PMP_H_guest_cg (two-stage translation).
+
+include::{testplansdir}/priv/PMP_H.adoc[]
+
 ==== PMP Normative Rules
 
 include::norm/PMP_norm_rules.adoc[]

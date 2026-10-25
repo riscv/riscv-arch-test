@@ -38,9 +38,9 @@ include::{testplansdir}/priv/ZicntrH.adoc[]
 ZicntrH exercises hcounteren for all 32 counters, so no separate ZihpmH suite is needed.
 ====
 
-==== PMPH Hypervisor Physical Memory Protection
+==== Hypervisor Physical Memory Protection
 
-include::{testplansdir}/priv/PMPH.adoc[]
+The hypervisor PMP tests are the <<t-PMP_H-coverpoints,PMP_H>> group of the PMP suite.
 
 ==== SvH Hypervisor 2-Stage Virtual Memory
 

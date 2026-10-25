@@ -6,15 +6,7 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Generate Svinval privilege, TVM and invalidation tests.
-
-In S-mode with Sv39 or Sv32, the SFENCE.W.INVAL, SINVAL.VMA, SFENCE.INVAL.IR sequence must remove a changed leaf.
-The H group boots to HS-mode, and the HS-mode handler takes every trap (hedeleg = 0).  Tests with mstatus.TVM = 1
-are in the SmH group because the HS-mode handler reads satp.  Under two-stage translation, the SFENCE.W.INVAL,
-HINVAL.VVMA or HINVAL.GVMA (or SINVAL.VMA in VS-mode), SFENCE.INVAL.IR sequence must remove a changed VS-stage or
-G-stage leaf (SvHFenceCommon).  The SmH group boots to M-mode and delegates nothing, so the M-mode handler takes
-every trap.
-"""
+"""Generate Svinval privilege, TVM and invalidation tests."""
 
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
@@ -111,7 +103,8 @@ def _s_inval_case(test_data: TestData, sv: SvMode, name: str, rs1: str, rs2: str
     pte, addr, tmp = test_data.int_regs.get_registers(3)
     regs = (pte, addr, tmp)
     lines = [
-        f"// sinval.vma with {name}",
+        "",
+        f"// Testcase: sinval.vma with {name}",
         *create_page_mapping(
             sv,
             leaf_level=0,

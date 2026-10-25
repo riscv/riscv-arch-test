@@ -80,7 +80,8 @@ RVTEST_BEGIN
   LI(x15, SATP64_ASID)
   csrs satp, x15
   sfence.vma
-// sinval.vma with rs1_x0_rs2_x0
+
+// Testcase: sinval.vma with rs1_x0_rs2_x0
   LA(x15, rvtest_Sroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
   LA(x13, rvtest_slvl1_pg_tbl)
   srli x13, x13, 12
@@ -122,7 +123,8 @@ Svinval_cg_cp_sinval_vma_rs1_x0_rs2_x0:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svinval_cg_cp_sinval_vma_rs1_x0_rs2_x0, Svinval_cg_cp_sinval_vma_rs1_x0_rs2_x0_str)
 
-// sinval.vma with rs1_va_rs2_x0
+
+// Testcase: sinval.vma with rs1_va_rs2_x0
   LA(x13, rvtest_Sroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
   LA(x14, rvtest_slvl1_pg_tbl)
   srli x14, x14, 12
@@ -164,7 +166,8 @@ Svinval_cg_cp_sinval_vma_rs1_va_rs2_x0:
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, Svinval_cg_cp_sinval_vma_rs1_va_rs2_x0, Svinval_cg_cp_sinval_vma_rs1_va_rs2_x0_str)
 
-// sinval.vma with rs1_x0_rs2_asid
+
+// Testcase: sinval.vma with rs1_x0_rs2_asid
   LA(x9, rvtest_Sroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
   LA(x13, rvtest_slvl1_pg_tbl)
   srli x13, x13, 12
@@ -210,7 +213,8 @@ Svinval_cg_cp_sinval_vma_rs1_x0_rs2_asid:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Svinval_cg_cp_sinval_vma_rs1_x0_rs2_asid, Svinval_cg_cp_sinval_vma_rs1_x0_rs2_asid_str)
 
-// sinval.vma with rs1_va_rs2_asid
+
+// Testcase: sinval.vma with rs1_va_rs2_asid
   LA(x9, rvtest_Sroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
   LA(x14, rvtest_slvl1_pg_tbl)
   srli x14, x14, 12
@@ -256,7 +260,8 @@ Svinval_cg_cp_sinval_vma_rs1_va_rs2_asid:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Svinval_cg_cp_sinval_vma_rs1_va_rs2_asid, Svinval_cg_cp_sinval_vma_rs1_va_rs2_asid_str)
 
-// sinval.vma with rs1_va_rs2_asidmax
+
+// Testcase: sinval.vma with rs1_va_rs2_asidmax
   LA(x9, rvtest_Sroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
   LA(x6, rvtest_slvl1_pg_tbl)
   srli x6, x6, 12

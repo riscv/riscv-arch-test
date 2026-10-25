@@ -142,7 +142,8 @@ RVTEST_BEGIN
   csrw vsatp, x6
   hfence.gvma
   hfence.vvma
-// hinval_vvma with rs1_x0_rs2_x0
+
+// Testcase: hinval_vvma with rs1_x0_rs2_x0
   LI(x9, HGATP64_VMID)
   csrs hgatp, x9
   LI(x9, SATP64_ASID)
@@ -213,7 +214,8 @@ Svinval_H_cg_cp_hinval_vvma_rs1_x0_rs2_x0:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Svinval_H_cg_cp_hinval_vvma_rs1_x0_rs2_x0, Svinval_H_cg_cp_hinval_vvma_rs1_x0_rs2_x0_str)
 
-// hinval_vvma with rs1_x0_rs2_asid
+
+// Testcase: hinval_vvma with rs1_x0_rs2_asid
   LI(x9, HGATP64_VMID)
   csrs hgatp, x9
   LI(x9, SATP64_ASID)
@@ -288,7 +290,8 @@ Svinval_H_cg_cp_hinval_vvma_rs1_x0_rs2_asid:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Svinval_H_cg_cp_hinval_vvma_rs1_x0_rs2_asid, Svinval_H_cg_cp_hinval_vvma_rs1_x0_rs2_asid_str)
 
-// hinval_vvma with rs1_va_rs2_x0
+
+// Testcase: hinval_vvma with rs1_va_rs2_x0
   LI(x6, HGATP64_VMID)
   csrs hgatp, x6
   LI(x6, SATP64_ASID)
@@ -359,7 +362,8 @@ Svinval_H_cg_cp_hinval_vvma_rs1_va_rs2_x0:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Svinval_H_cg_cp_hinval_vvma_rs1_va_rs2_x0, Svinval_H_cg_cp_hinval_vvma_rs1_va_rs2_x0_str)
 
-// hinval_vvma with rs1_va_rs2_asid
+
+// Testcase: hinval_vvma with rs1_va_rs2_asid
   LI(x9, HGATP64_VMID)
   csrs hgatp, x9
   LI(x9, SATP64_ASID)
@@ -434,7 +438,8 @@ Svinval_H_cg_cp_hinval_vvma_rs1_va_rs2_asid:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Svinval_H_cg_cp_hinval_vvma_rs1_va_rs2_asid, Svinval_H_cg_cp_hinval_vvma_rs1_va_rs2_asid_str)
 
-// hinval_vvma with rs1_va_rs2_asidmax
+
+// Testcase: hinval_vvma with rs1_va_rs2_asidmax
   LI(x13, HGATP64_VMID)
   csrs hgatp, x13
   LI(x13, SATP64_ASID)
@@ -506,7 +511,8 @@ Svinval_H_cg_cp_hinval_vvma_rs1_va_rs2_asidmax:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svinval_H_cg_cp_hinval_vvma_rs1_va_rs2_asidmax, Svinval_H_cg_cp_hinval_vvma_rs1_va_rs2_asidmax_str)
 
-// hinval_gvma with rs1_x0_rs2_x0
+
+// Testcase: hinval_gvma with rs1_x0_rs2_x0
   LI(x8, HGATP64_VMID)
   csrs hgatp, x8
   LI(x8, SATP64_ASID)
@@ -581,7 +587,8 @@ Svinval_H_cg_cp_hinval_gvma_rs1_x0_rs2_x0:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Svinval_H_cg_cp_hinval_gvma_rs1_x0_rs2_x0, Svinval_H_cg_cp_hinval_gvma_rs1_x0_rs2_x0_str)
 
-// hinval_gvma with rs1_x0_rs2_vmid
+
+// Testcase: hinval_gvma with rs1_x0_rs2_vmid
   LI(x8, HGATP64_VMID)
   csrs hgatp, x8
   LI(x8, SATP64_ASID)
@@ -660,7 +667,8 @@ Svinval_H_cg_cp_hinval_gvma_rs1_x0_rs2_vmid:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Svinval_H_cg_cp_hinval_gvma_rs1_x0_rs2_vmid, Svinval_H_cg_cp_hinval_gvma_rs1_x0_rs2_vmid_str)
 
-// hinval_gvma with rs1_gpa_rs2_x0
+
+// Testcase: hinval_gvma with rs1_gpa_rs2_x0
   LI(x8, HGATP64_VMID)
   csrs hgatp, x8
   LI(x8, SATP64_ASID)
@@ -736,7 +744,8 @@ Svinval_H_cg_cp_hinval_gvma_rs1_gpa_rs2_x0:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svinval_H_cg_cp_hinval_gvma_rs1_gpa_rs2_x0, Svinval_H_cg_cp_hinval_gvma_rs1_gpa_rs2_x0_str)
 
-// hinval_gvma with rs1_gpa_rs2_vmid
+
+// Testcase: hinval_gvma with rs1_gpa_rs2_vmid
   LI(x6, HGATP64_VMID)
   csrs hgatp, x6
   LI(x6, SATP64_ASID)
@@ -816,7 +825,8 @@ Svinval_H_cg_cp_hinval_gvma_rs1_gpa_rs2_vmid:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svinval_H_cg_cp_hinval_gvma_rs1_gpa_rs2_vmid, Svinval_H_cg_cp_hinval_gvma_rs1_gpa_rs2_vmid_str)
 
-// hinval_gvma with rs1_gpa_rs2_vmidmax
+
+// Testcase: hinval_gvma with rs1_gpa_rs2_vmidmax
   LI(x15, HGATP64_VMID)
   csrs hgatp, x15
   LI(x15, SATP64_ASID)
@@ -893,7 +903,8 @@ Svinval_H_cg_cp_hinval_gvma_rs1_gpa_rs2_vmidmax:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Svinval_H_cg_cp_hinval_gvma_rs1_gpa_rs2_vmidmax, Svinval_H_cg_cp_hinval_gvma_rs1_gpa_rs2_vmidmax_str)
 
-// sinval_vma with rs1_x0_rs2_x0
+
+// Testcase: sinval_vma with rs1_x0_rs2_x0
   LI(x8, HGATP64_VMID)
   csrs hgatp, x8
   LI(x8, SATP64_ASID)
@@ -964,7 +975,8 @@ Svinval_H_cg_cp_sinval_vma_vs_rs1_x0_rs2_x0:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Svinval_H_cg_cp_sinval_vma_vs_rs1_x0_rs2_x0, Svinval_H_cg_cp_sinval_vma_vs_rs1_x0_rs2_x0_str)
 
-// sinval_vma with rs1_x0_rs2_asid
+
+// Testcase: sinval_vma with rs1_x0_rs2_asid
   LI(x9, HGATP64_VMID)
   csrs hgatp, x9
   LI(x9, SATP64_ASID)
@@ -1039,7 +1051,8 @@ Svinval_H_cg_cp_sinval_vma_vs_rs1_x0_rs2_asid:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Svinval_H_cg_cp_sinval_vma_vs_rs1_x0_rs2_asid, Svinval_H_cg_cp_sinval_vma_vs_rs1_x0_rs2_asid_str)
 
-// sinval_vma with rs1_va_rs2_x0
+
+// Testcase: sinval_vma with rs1_va_rs2_x0
   LI(x15, HGATP64_VMID)
   csrs hgatp, x15
   LI(x15, SATP64_ASID)
@@ -1110,7 +1123,8 @@ Svinval_H_cg_cp_sinval_vma_vs_rs1_va_rs2_x0:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Svinval_H_cg_cp_sinval_vma_vs_rs1_va_rs2_x0, Svinval_H_cg_cp_sinval_vma_vs_rs1_va_rs2_x0_str)
 
-// sinval_vma with rs1_va_rs2_asid
+
+// Testcase: sinval_vma with rs1_va_rs2_asid
   LI(x15, HGATP64_VMID)
   csrs hgatp, x15
   LI(x15, SATP64_ASID)
@@ -1185,7 +1199,8 @@ Svinval_H_cg_cp_sinval_vma_vs_rs1_va_rs2_asid:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svinval_H_cg_cp_sinval_vma_vs_rs1_va_rs2_asid, Svinval_H_cg_cp_sinval_vma_vs_rs1_va_rs2_asid_str)
 
-// sinval_vma with rs1_va_rs2_asidmax
+
+// Testcase: sinval_vma with rs1_va_rs2_asidmax
   LI(x8, HGATP64_VMID)
   csrs hgatp, x8
   LI(x8, SATP64_ASID)

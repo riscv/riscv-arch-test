@@ -48,6 +48,7 @@ from testgen.priv.extensions.VCommon import gen_v_tests
 from testgen.priv.extensions.VFCommon import gen_vf_tests
 from testgen.priv.extensions.ZicntrCommon import (
     counteren_walk_tests,
+    htimedelta_tests,
     instret_exception_tests,
     instret_interrupt_tests,
     instret_retire_tests,
@@ -1836,6 +1837,7 @@ def make_smvf(test_data: TestData) -> list[TestChunk]:
 
 
 _ZICNTR_CG = "Sm_Zicntr_cg"
+_ZICNTR_H_CG = "Sm_Zicntr_H_cg"
 
 
 @add_priv_test_generator(
@@ -2169,5 +2171,32 @@ def make_smh(test_data: TestData) -> list[TestChunk]:
         ]
     )
 
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks
+
+
+@add_priv_test_generator(
+    "Sm",
+    required_extensions=["Sm", "H", "Zicntr"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_sm_zicntr_h(test_data: TestData) -> list[TestChunk]:
+    """Generate tests for Sm_Zicntr_H coverpoints: M-mode counter reads under walking mcounteren, hcounteren and
+    scounteren, and time with each htimedelta."""
+    test_chunks: list[TestChunk] = []
+    tc = test_data.new_test_chunk(test_chunks, "Zicntr_H")
+    tc.code.extend(
+        counteren_walk_tests(
+            test_data,
+            _ZICNTR_H_CG,
+            "cp_mhscounteren_access_m",
+            "Write walking 1s and 0s to mcounteren, hcounteren and scounteren (same value in each).\n"
+            "Read from corresponding counter and counterh in M-mode",
+            csrs=["mcounteren", "hcounteren", "scounteren"],
+            mode="M",
+        )
+    )
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.extend(htimedelta_tests(test_data, _ZICNTR_H_CG, "M"))
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

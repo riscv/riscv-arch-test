@@ -1805,19 +1805,38 @@ normative_rule_definitions:
   # privileged mode.
   - name: mcounteren_op
     # M-mode reads succeed for every mcounteren value
-    coverpoint: ["Sm_Zicntr_cg/cp_mcounteren_access_m"]
+    coverpoint:
+      [
+        "Sm_Zicntr_cg/cp_mcounteren_access_m",
+        "Sm_Zicntr_H_cg/cp_mhscounteren_access_m (M-mode reads succeed for every counter-enable value)",
+      ]
 
   # When the CY, TM, IR, or HPMn bit in the scounteren register is clear, attempts to read the
   # cycle, time, instret, or hpmcountern register while executing in U-mode will cause an
   # illegal-instruction exception.
   - name: scounteren_op
     # M-mode reads succeed for every scounteren value
-    coverpoint: ["Sm_Zicntr_cg/cp_scounteren_access_m"]
+    coverpoint:
+      [
+        "Sm_Zicntr_cg/cp_scounteren_access_m",
+        "Sm_Zicntr_H_cg/cp_mhscounteren_access_m (M-mode reads succeed for every counter-enable value)",
+      ]
+
+  # The counter-enable registers control the availability of the counters to lower
+  # privilege modes.
+  - name: hcounteren_op
+    coverpoint:
+      [
+        "Sm_Zicntr_H_cg/cp_mhscounteren_access_m (M-mode reads succeed for every counter-enable value)",
+      ]
 
   # The counters are accessible from M-mode regardless of the counter-enable registers.
   - name: Zihpm_op_sz_mode_acc_priv
     coverpoint:
-      ["Sm_Zicntr_cg/{cp_mcounteren_access_m, cp_scounteren_access_m}"]
+      [
+        "Sm_Zicntr_cg/{cp_mcounteren_access_m, cp_scounteren_access_m}",
+        "Sm_Zicntr_H_cg/cp_mhscounteren_access_m",
+      ]
 
   # As ECALL and EBREAK cause synchronous exceptions, they are not considered to
   # retire, and should not increment the minstret CSR.
@@ -1980,3 +1999,9 @@ normative_rule_definitions:
   # implicit reads; a nonzero rs1 selects one guest physical address and a nonzero rs2 one VMID
   - names: [hfence-gvma_op]
     coverpoint: ["Sm_H_tvm_cg/cp_hfence"]
+
+  # Reading the time CSR in VS or VU mode returns the sum of the contents of htimedelta
+  # and the actual value of time.
+  - names: [htimedelta_sz_acc_op, htimedeltah_sz_acc_op]
+    coverpoint:
+      ["Sm_Zicntr_H_cg/cp_delta_m (M-mode reads of time ignore htimedelta)"]

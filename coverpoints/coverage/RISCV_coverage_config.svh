@@ -317,9 +317,6 @@
 `ifdef ZICNTR_COVERAGE
   `include "Zicntr_coverage.svh"
 `endif
-`ifdef ZICNTRH_COVERAGE
-  `include "ZicntrH_coverage.svh"
-`endif
 `ifdef ZICOND_COVERAGE
   `include "Zicond_coverage.svh"
 `endif

@@ -111,7 +111,7 @@ normative_rule_definitions:
         "S_Zicntr_cg/cp_mcounteren_access_s",
         "U_Zicntr_cg/cp_mcounteren_access_u",
         "Sm_Zicntr_cg/cp_mcounteren_access_m",
-        "ZicntrH_cg/cp_mcounteren_access_vs",
+        "H_Zicntr_cg/cp_mcounteren_access_vs",
       ]
 
   # The settings in this register only control accessibility. The act of reading or

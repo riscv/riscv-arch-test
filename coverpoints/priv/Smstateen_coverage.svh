@@ -426,117 +426,89 @@ endgroup
 // H group: mstateen controls access from HS-mode, VS-mode and VU-mode, and the hstateen bits it makes
 // read-only zero
 `ifdef H_SUPPORTED
-
-// mstateen0 and hstateen0 SE0, ENVCFG and P1P13 are in the high-half CSRs on RV32
-`ifdef UDB_MXLEN_64
-    `define SMSTATEENH_MSTATEEN0_HI "mstateen0"
-    `define SMSTATEENH_HSTATEEN0_HI "hstateen0"
-`else
-    `define SMSTATEENH_MSTATEEN0_HI "mstateen0h"
-    `define SMSTATEENH_HSTATEEN0_HI "hstateen0h"
-`endif
-
-// A CSR read, the CSRs each mstateen0 bit controls, and mstateen0 and hstateen0 SE0 and ENVCFG before the
-// instruction.  An hstateen0 bit is read-only zero while its mstateen0 bit is 0.
-`define SMSTATEENH_COMMON \
-    csrr : coverpoint ins.current.insn { \
-        wildcard bins csrr = {CSRR}; \
-    } \
-    se0_csrs : coverpoint ins.current.insn[31:20] { \
-        bins sstateen0 = {CSR_SSTATEEN0}; \
-        bins hstateen0 = {CSR_HSTATEEN0}; \
-        `ifdef UDB_MXLEN_32 \
-            bins hstateen0h = {CSR_HSTATEEN0H}; \
-        `endif \
-    } \
-    envcfg_csrs : coverpoint ins.current.insn[31:20] { \
-        bins senvcfg = {CSR_SENVCFG}; \
-        bins henvcfg = {CSR_HENVCFG}; \
-        `ifdef UDB_MXLEN_32 \
-            bins henvcfgh = {CSR_HENVCFGH}; \
-        `endif \
-    } \
-    mstateen0_se0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SMSTATEENH_MSTATEEN0_HI, "se0") { \
-        bins zero = {0}; \
-        bins one  = {1}; \
-    } \
-    hstateen0_se0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SMSTATEENH_HSTATEEN0_HI, "se0") { \
-        bins zero = {0}; \
-        bins one  = {1}; \
-    } \
-    mstateen0_envcfg : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SMSTATEENH_MSTATEEN0_HI, \
-                                              "envcfg") { \
-        bins zero = {0}; \
-        bins one  = {1}; \
-    } \
-    hstateen0_envcfg : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SMSTATEENH_HSTATEEN0_HI, \
-                                              "envcfg") { \
-        bins zero = {0}; \
-        bins one  = {1}; \
-    }
-
-`define SMSTATEENH_ROZ(m, h) \
-    ignore_bins hstateen0_roz = binsof(m) intersect {0} && binsof(h) intersect {1};
-
-// hedelegh exists only on RV32, and mstateen0.P1P13 controls it
-`ifdef UDB_MXLEN_32
-    `ifdef SM1P13P0_OR_LATER_SUPPORTED
-        `define SMSTATEENH_P1P13
-    `endif
-`endif
-`define SMSTATEENH_P1P13_COVERPOINTS \
-    hedelegh : coverpoint ins.current.insn[31:20] { \
-        bins hedelegh = {CSR_HEDELEGH}; \
-    } \
-    mstateen0_p1p13 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0h", "p1p13") { \
-        bins zero = {0}; \
-        bins one  = {1}; \
-    }
-
-// Bit 63 (bit 31 of mstateen1h-3h on RV32) of the mstateen CSR that controls the hstateen CSR the instruction
-// accesses.  Bits 1:0 of the CSR number give N.
-`ifdef UDB_MXLEN_64
-    `define SMSTATEENH_MSTATEEN_SE get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, \
-        int'(CSR_MSTATEEN0) + int'(ins.current.insn[21:20]), "mstateen", "mstateen")[63]
-`else
-    `define SMSTATEENH_MSTATEEN_SE get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, \
-        int'(CSR_MSTATEEN0H) + int'(ins.current.insn[21:20]), "mstateenh", "mstateenh")[31]
-`endif
-
-// A CSR access to sstateen1-3 or hstateen1-3 (and the high halves on RV32)
-`define SMSTATEENH_STATEEN123_COVERPOINTS \
-    stateen123 : coverpoint ins.current.insn[31:20] { \
-        bins sstateen1 = {CSR_SSTATEEN1}; \
-        bins sstateen2 = {CSR_SSTATEEN2}; \
-        bins sstateen3 = {CSR_SSTATEEN3}; \
-        bins hstateen1 = {CSR_HSTATEEN1}; \
-        bins hstateen2 = {CSR_HSTATEEN2}; \
-        bins hstateen3 = {CSR_HSTATEEN3}; \
-        `ifdef UDB_MXLEN_32 \
-            bins hstateen1h = {CSR_HSTATEEN1H}; \
-            bins hstateen2h = {CSR_HSTATEEN2H}; \
-            bins hstateen3h = {CSR_HSTATEEN3H}; \
-        `endif \
-    } \
-    csr_access : coverpoint ins.current.insn { \
-        wildcard bins csrr = {CSRR}; \
-        wildcard bins csrw = {CSRW}; \
-        wildcard bins csrs = {CSRS} iff (ins.current.insn[19:15] != 0); \
-        wildcard bins csrc = {CSRC} iff (ins.current.insn[19:15] != 0); \
-    }
-
 covergroup Smstateen_H_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
-    `SMSTATEENH_COMMON
-    `SMSTATEENH_STATEEN123_COVERPOINTS
 
-    // M-mode: set and clear bit 63 of hstateen1-3 (bit 31 of hstateen1h-3h on RV32) with bit 63 of the matching
-    // mstateen CSR = 0 and 1.  The hstateen bit is writable when the mstateen bit is 1 and reads as zero when it is 0.
+    csrr : coverpoint ins.current.insn {
+        wildcard bins csrr = {CSRR};
+    }
     csrop: coverpoint ins.current.insn {
         wildcard bins csrrs = {CSRRS};
         wildcard bins csrrc = {CSRRC};
     }
+    csr_access : coverpoint ins.current.insn {
+        wildcard bins csrr = {CSRR};
+        wildcard bins csrw = {CSRW};
+        wildcard bins csrs = {CSRS} iff (ins.current.insn[19:15] != 0);
+        wildcard bins csrc = {CSRC} iff (ins.current.insn[19:15] != 0);
+    }
+    // The CSRs that mstateen0.SE0 and mstateen0.ENVCFG control
+    se0_csrs : coverpoint ins.current.insn[31:20] {
+        bins sstateen0 = {CSR_SSTATEEN0};
+        bins hstateen0 = {CSR_HSTATEEN0};
+        `ifdef UDB_MXLEN_32
+            bins hstateen0h = {CSR_HSTATEEN0H};
+        `endif
+    }
+    envcfg_csrs : coverpoint ins.current.insn[31:20] {
+        bins senvcfg = {CSR_SENVCFG};
+        bins henvcfg = {CSR_HENVCFG};
+        `ifdef UDB_MXLEN_32
+            bins henvcfgh = {CSR_HENVCFGH};
+        `endif
+    }
+    // {mstateen0 bit, hstateen0 bit} before the instruction.  The hstateen0 bit is read-only zero while the
+    // mstateen0 bit is 0.  SE0 and ENVCFG are in mstateen0h and hstateen0h on RV32.
+    `ifdef UDB_MXLEN_64
+        se0_state : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0", "se0")[0],
+                                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstateen0", "se0")[0]} {
+    `else
+        se0_state : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0h", "se0")[0],
+                                get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstateen0h", "se0")[0]} {
+    `endif
+        bins mstateen0_zero = {2'b00};
+        bins hstateen0_zero = {2'b10};
+        bins both_one       = {2'b11};
+    }
+    `ifdef UDB_MXLEN_64
+        envcfg_state : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0", "envcfg")[0],
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstateen0", "envcfg")[0]} {
+    `else
+        envcfg_state : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0h", "envcfg")[0],
+                                   get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstateen0h", "envcfg")[0]} {
+    `endif
+        bins mstateen0_zero = {2'b00};
+        bins hstateen0_zero = {2'b10};
+        bins both_one       = {2'b11};
+    }
+    // sstateen1-3 and hstateen1-3 (and the high halves on RV32)
+    stateen123 : coverpoint ins.current.insn[31:20] {
+        bins sstateen1 = {CSR_SSTATEEN1};
+        bins sstateen2 = {CSR_SSTATEEN2};
+        bins sstateen3 = {CSR_SSTATEEN3};
+        bins hstateen1 = {CSR_HSTATEEN1};
+        bins hstateen2 = {CSR_HSTATEEN2};
+        bins hstateen3 = {CSR_HSTATEEN3};
+        `ifdef UDB_MXLEN_32
+            bins hstateen1h = {CSR_HSTATEEN1H};
+            bins hstateen2h = {CSR_HSTATEEN2H};
+            bins hstateen3h = {CSR_HSTATEEN3H};
+        `endif
+    }
+    // Bit 63 (bit 31 of mstateen1h-3h on RV32) of the mstateen CSR that controls the CSR the instruction accesses.
+    // Bits 1:0 of the CSR number give N.
+    `ifdef UDB_MXLEN_64
+        mstateen123_se : coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE,
+                int'(CSR_MSTATEEN0) + int'(ins.current.insn[21:20]), "mstateen", "mstateen")[63] {
+    `else
+        mstateen123_se : coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE,
+                int'(CSR_MSTATEEN0H) + int'(ins.current.insn[21:20]), "mstateenh", "mstateenh")[31] {
+    `endif
+    }
+
+    // M-mode: set and clear bit 63 of hstateen1-3 (bit 31 of hstateen1h-3h on RV32) with bit 63 of the matching
+    // mstateen CSR = 0 and 1.  The hstateen bit is writable when the mstateen bit is 1 and reads as zero when it is 0.
     hstateen123 : coverpoint ins.current.insn[31:20] {
         `ifdef UDB_MXLEN_64
             bins hstateen1 = {CSR_HSTATEEN1};
@@ -551,19 +523,11 @@ covergroup Smstateen_H_cg with function sample(ins_t ins);
     rs1_bit63 : coverpoint ins.current.rs1_val[`UDB_MXLEN-1] {
         bins one = {1};
     }
-    mstateen123_se : coverpoint `SMSTATEENH_MSTATEEN_SE {
-        bins zero = {0};
-        bins one  = {1};
-    }
     cp_m_hstateen123_bit63: cross priv_mode_m, csrop, hstateen123, rs1_bit63, mstateen123_se;
 
     // HS-mode: illegal instruction when the mstateen0 bit is 0
-    cp_hs_mstateen0_se0:    cross priv_mode_hs, csrr, se0_csrs, mstateen0_se0, hstateen0_se0 {
-        `SMSTATEENH_ROZ(mstateen0_se0, hstateen0_se0)
-    }
-    cp_hs_mstateen0_envcfg: cross priv_mode_hs, csrr, envcfg_csrs, mstateen0_envcfg, hstateen0_envcfg {
-        `SMSTATEENH_ROZ(mstateen0_envcfg, hstateen0_envcfg)
-    }
+    cp_hs_mstateen0_se0:    cross priv_mode_hs, csrr, se0_csrs, se0_state;
+    cp_hs_mstateen0_envcfg: cross priv_mode_hs, csrr, envcfg_csrs, envcfg_state;
 
     // Walk hstateen0 (and hstateen0h) with only mstateen0.SE0 set (ENVCFG = 0), then with every bit set
     walking_ones: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
@@ -575,39 +539,44 @@ covergroup Smstateen_H_cg with function sample(ins_t ins);
             bins hstateen0h = {CSR_HSTATEEN0H};
         `endif
     }
-    mstateen0_envcfg_zero : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SMSTATEENH_MSTATEEN0_HI,
-                                                   "envcfg") {
-        bins zero = {0};
-    }
-    mstateen0_envcfg_one : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, `SMSTATEENH_MSTATEEN0_HI,
-                                                  "envcfg") {
-        bins one = {1};
-    }
+    `ifdef UDB_MXLEN_64
+        mstateen0_envcfg_zero : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0", "envcfg")[0] {
+            bins zero = {0};
+        }
+        mstateen0_envcfg_one : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0", "envcfg")[0] {
+            bins one = {1};
+        }
+    `else
+        mstateen0_envcfg_zero : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0h", "envcfg")[0] {
+            bins zero = {0};
+        }
+        mstateen0_envcfg_one : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0h", "envcfg")[0] {
+            bins one = {1};
+        }
+    `endif
     cp_hs_hstateen0_roz:  cross priv_mode_hs, csrop, hstateen0, walking_ones, mstateen0_envcfg_zero;
     cp_hs_hstateen0_walk: cross priv_mode_hs, csrop, hstateen0, walking_ones, mstateen0_envcfg_one;
 
     // VS-mode: illegal instruction when the mstateen0 bit is 0, else virtual instruction for the H CSRs and for the
     // S CSRs when the hstateen0 bit is 0
-    cp_vs_mstateen0_se0:    cross priv_mode_vs, csrr, se0_csrs, mstateen0_se0, hstateen0_se0 {
-        `SMSTATEENH_ROZ(mstateen0_se0, hstateen0_se0)
-    }
-    cp_vs_mstateen0_envcfg: cross priv_mode_vs, csrr, envcfg_csrs, mstateen0_envcfg, hstateen0_envcfg {
-        `SMSTATEENH_ROZ(mstateen0_envcfg, hstateen0_envcfg)
-    }
-    `ifdef SMSTATEENH_P1P13
-        `SMSTATEENH_P1P13_COVERPOINTS
-        cp_vs_mstateen0_p1p13: cross priv_mode_vs, csrr, hedelegh, mstateen0_p1p13;
-    `endif
+    cp_vs_mstateen0_se0:    cross priv_mode_vs, csrr, se0_csrs, se0_state;
+    cp_vs_mstateen0_envcfg: cross priv_mode_vs, csrr, envcfg_csrs, envcfg_state;
 
     // VU-mode: illegal instruction when the mstateen0 bit is 0, else virtual instruction
-    cp_vu_mstateen0_se0:    cross priv_mode_vu, csrr, se0_csrs, mstateen0_se0, hstateen0_se0 {
-        `SMSTATEENH_ROZ(mstateen0_se0, hstateen0_se0)
-    }
-    cp_vu_mstateen0_envcfg: cross priv_mode_vu, csrr, envcfg_csrs, mstateen0_envcfg, hstateen0_envcfg {
-        `SMSTATEENH_ROZ(mstateen0_envcfg, hstateen0_envcfg)
-    }
-    `ifdef SMSTATEENH_P1P13
-        cp_vu_mstateen0_p1p13: cross priv_mode_vu, csrr, hedelegh, mstateen0_p1p13;
+    cp_vu_mstateen0_se0:    cross priv_mode_vu, csrr, se0_csrs, se0_state;
+    cp_vu_mstateen0_envcfg: cross priv_mode_vu, csrr, envcfg_csrs, envcfg_state;
+
+    // mstateen0.P1P13 controls hedelegh, which exists only on RV32 (from Priv 1.13)
+    `ifdef UDB_MXLEN_32
+        `ifdef SM1P13P0_OR_LATER_SUPPORTED
+            hedelegh : coverpoint ins.current.insn[31:20] {
+                bins hedelegh = {CSR_HEDELEGH};
+            }
+            mstateen0_p1p13 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0h", "p1p13")[0] {
+            }
+            cp_vs_mstateen0_p1p13: cross priv_mode_vs, csrr, hedelegh, mstateen0_p1p13;
+            cp_vu_mstateen0_p1p13: cross priv_mode_vu, csrr, hedelegh, mstateen0_p1p13;
+        `endif
     `endif
 
     // Bit 63 of mstateen1-3 controls HS-mode, VS-mode and VU-mode access to sstateen1-3 and hstateen1-3: illegal
@@ -616,7 +585,6 @@ covergroup Smstateen_H_cg with function sample(ins_t ins);
     cp_vs_mstateen123: cross priv_mode_vs, csr_access, stateen123, mstateen123_se;
     cp_vu_mstateen123: cross priv_mode_vu, csr_access, stateen123, mstateen123_se;
 endgroup
-
 `endif
 
 function void smstateen_sample(int hart, int issue, ins_t ins);

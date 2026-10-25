@@ -276,20 +276,25 @@ covergroup H_vscause_cg with function sample(ins_t ins);
         bins b_12_instruction_page_fault = {12};
         bins b_13_load_page_fault = {13};
         bins b_15_store_page_fault = {15};
+        // vscause holds the same codes as scause (vscause_wlrl), which with H include the H causes
+        bins b_10_ecall_vs = {10};
+        bins b_20_instr_guest_page_fault = {20};
+        bins b_21_load_guest_page_fault = {21};
+        bins b_22_virtual_instruction = {22};
+        bins b_23_store_guest_page_fault = {23};
         `ifdef S1P12P0_OR_LATER_SUPPORTED
             // vscause must hold exception codes 0-31
-            bins b_10_ecall_vs = {10};
             bins b_11_ecall_m = {11};
             bins b_14_reserved = {14};
             bins b_16_double_trap = {16};
             bins b_17_reserved = {17};
             bins b_18_software_check = {18};
             bins b_19_hardware_error = {19};
-            bins b_20_instr_guest_page_fault = {20};
-            bins b_21_load_guest_page_fault = {21};
-            bins b_22_virtual_instruction = {22};
-            bins b_23_store_guest_page_fault = {23};
             bins b_31_24_custom[] = {[31:24]};
+        `elsif ZICFILP_SUPPORTED
+            bins b_18_software_check = {18};
+        `elsif ZICFISS_SUPPORTED
+            bins b_18_software_check = {18};
         `endif
     }
     vscause_interrupt_values : coverpoint ins.current.rs1_val[`UDB_MXLEN-2:0] {
@@ -299,18 +304,20 @@ covergroup H_vscause_cg with function sample(ins_t ins);
         bins b_7_machine_timer = {7};
         bins b_9_supervisor_external = {9};
         bins b_11_machine_external = {11};
+        bins b_2_vs_software = {2};
+        bins b_6_vs_timer = {6};
+        bins b_10_vs_external = {10};
+        bins b_12_supervisor_guest_external = {12};
         `ifdef S1P12P0_OR_LATER_SUPPORTED
             bins b_0_reserved = {0};
-            bins b_2_vs_software = {2};
             bins b_4_reserved = {4};
-            bins b_6_vs_timer = {6};
             bins b_8_reserved = {8};
-            bins b_10_vs_external = {10};
-            bins b_12_supervisor_guest_external = {12};
             bins b_13_counter_overflow = {13};
             bins b_14_reserved = {14};
             bins b_15_reserved = {15};
             bins b_31_16_custom[] = {[31:16]};
+        `elsif SSCOFPMF_SUPPORTED
+            bins b_13_counter_overflow = {13};
         `endif
     }
     cp_vscause_write_exception: cross priv_mode_hs, csrrw, vscause, vscause_exception_values, vscause_exception;

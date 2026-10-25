@@ -178,9 +178,6 @@
     `ifdef COVER_SVINVAL
         svinval_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_SVINVALH
-        svinvalh_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_SVNAPOT
         svnapot_sample(hart, issue, ins);
     `endif
@@ -318,9 +315,6 @@
     `endif
     `ifdef COVER_ZICNTR
         zicntr_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZICNTRH
-        zicntrh_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZICOND
         zicond_sample(hart, issue, ins);

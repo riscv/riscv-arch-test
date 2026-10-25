@@ -234,10 +234,6 @@
         `cover_info("//      Svinval - Enabled");
         `include "Svinval_coverage_init.svh"
     `endif
-    `ifdef COVER_SVINVALH
-        `cover_info("//      SvinvalH - Enabled");
-        `include "SvinvalH_coverage_init.svh"
-    `endif
     `ifdef COVER_SVNAPOT
         `cover_info("//      Svnapot - Enabled");
         `include "Svnapot_coverage_init.svh"
@@ -421,10 +417,6 @@
     `ifdef COVER_ZICNTR
         `cover_info("//      Zicntr - Enabled");
         `include "Zicntr_coverage_init.svh"
-    `endif
-    `ifdef COVER_ZICNTRH
-        `cover_info("//      ZicntrH - Enabled");
-        `include "ZicntrH_coverage_init.svh"
     `endif
     `ifdef COVER_ZICOND
         `cover_info("//      Zicond - Enabled");

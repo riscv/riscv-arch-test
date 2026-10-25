@@ -179,9 +179,6 @@
 `ifdef SVINVAL_COVERAGE
   `include "Svinval_coverage.svh"
 `endif
-`ifdef SVINVALH_COVERAGE
-  `include "SvinvalH_coverage.svh"
-`endif
 `ifdef SVNAPOT_COVERAGE
   `include "Svnapot_coverage.svh"
 `endif
@@ -319,9 +316,6 @@
 `endif
 `ifdef ZICNTR_COVERAGE
   `include "Zicntr_coverage.svh"
-`endif
-`ifdef ZICNTRH_COVERAGE
-  `include "ZicntrH_coverage.svh"
 `endif
 `ifdef ZICOND_COVERAGE
   `include "Zicond_coverage.svh"

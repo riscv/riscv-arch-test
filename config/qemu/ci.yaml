@@ -95,6 +95,10 @@ exclude_extensions:
   # hlvx.wu raises the wrong fault (https://gitlab.com/qemu-project/qemu/-/work_items/4595)
   - Shtvala
   - Shvstvala
+  # The same mstatus.MPV and GVA bug: traps from VS and VU report the wrong status
+  # (https://gitlab.com/qemu-project/qemu/-/issues/4620).
+  - Svinval_H
+  - Svinval_SmH
   # With ADUE=1, QEMU sets A/D on a PTE with a reserved Svnapot encoding before raising the page fault
   # (https://gitlab.com/qemu-project/qemu/-/work_items/4636)
   - Svadu_sv39_Svadu_fault

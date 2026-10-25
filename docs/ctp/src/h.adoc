@@ -7,7 +7,7 @@ The Hypervisor Extension adds an H coverage file containing new Hypervisor instr
 
 H boots to HS-mode and tests the hypervisor CSRs and instructions in HS, VS, U and VU modes: CSR access and
 walks, the VS CSR replicas, the hypervisor load/store, fence and trap instructions, and the virtual-instruction
-exceptions.
+exceptions.  The M-mode tests, and the mstatus.TVM tests whose traps are taken in M-mode, are the Sm suite's Sm_H group.
 
 include::{testplansdir}/priv/H.adoc[]
 

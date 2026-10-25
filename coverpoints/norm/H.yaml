@@ -22,7 +22,11 @@ normative_rule_definitions:
     coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hedeleg"]
   # Many bits of hedeleg are required specifically to be writable or zero; bit 0 must be writable if IALIGN=32.
   - names: [hedeleg_bits_required, hedeleg_bit0_ialign32]
-    coverpoint: ["H_hscsr_cg/cp_hcsr_access/hedeleg"]
+    coverpoint:
+      [
+        "H_hscsr_cg/cp_hcsr_access/hedeleg",
+        "Sm_H_mcsr_cg/cp_hcsr_access/hedeleg",
+      ]
   - name: hedeleg_img
     coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/hedeleg"]
   # Register hideleg is an HSXLEN-bit read/write register, formatted as shown in
@@ -298,7 +302,7 @@ normative_rule_definitions:
   # translation, the first stage of two-stage translation for guest virtual addresses (see
   # ).
   - name: vsatp_sz_acc_op
-    # Representative coverpoints
+    # Representative coverpoints; also Sm_H_mcsr_cg/{cp_atpwalk1, cp_atpwalk0}/vsatp
     coverpoint:
       [
         "H_hscsr_cg/cp_hcsr_access_zero/vsatp",
@@ -522,7 +526,13 @@ normative_rule_definitions:
 
   # The least-significant VMID bits are implemented first; VMIDMAX is 7 for Sv32x4 and 14 otherwise
   - names: [hgatp_vmid_lsbs]
-    coverpoint: ["H_hscsr_cg/cp_atpwalk1/hgatp", "H_hscsr_cg/cp_atpwalk0/hgatp"]
+    coverpoint:
+      [
+        "H_hscsr_cg/cp_atpwalk1/hgatp",
+        "H_hscsr_cg/cp_atpwalk0/hgatp",
+        "Sm_H_mcsr_cg/cp_atpwalk1/hgatp",
+        "Sm_H_mcsr_cg/cp_atpwalk0/hgatp",
+      ]
 
   # An implementation that supports only the defined paged schemes and Bare may make hgatp.PPN[1:0] read-only zero
   - names: [hgatp_ppn_acc]

@@ -2487,6 +2487,11 @@ function void sm_sample(int hart, int issue, ins_t ins);
             Sm_H_tvm_cg.sample(ins);
             Sm_H_inst_cg.sample(ins);
         `endif
+        `ifdef H_SUPPORTED
+            Sm_H_mcsr_cg.sample(ins);
+            Sm_H_tvm_cg.sample(ins);
+            Sm_H_inst_cg.sample(ins);
+        `endif
     `endif
     //$display("Sm_sample: PC = %h (%s) misa %b rs1 %b, misa_c0 %b, pc_1 %b",
     //    ins.current.pc_rdata, ins.current.disass, ins.current.insn[31:20] == CSR_MISA, ins.current.rs1_val[25:0],

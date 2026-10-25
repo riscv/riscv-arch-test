@@ -248,13 +248,6 @@ coverpoints:
     description: Execute sret in VS-mode with cross-product of sstatus.SPP / SPIE  / hstatus.VTSR. After the sret, a read of mscratch traps and the trap record shows the mode reached. Then check sstatus.SPP, SIE, SPIE in VS-mode.
     expectation: Goes to appropriate mode, or virtual-instruction exception if VTSR=1.
     bins: 2 SPP * 2 SPIE * 2 VTSR
-  - name: |-
-      cp_vsepc_ialign32_read
-      cp_vsepc_ialign32_sret
-    goal: In VS-mode, vsepc[1] is masked on reads, including sret's, while IALIGN = 32
-    description: Only with Zca.  In VS-mode, clear misa.C through T-SBI, write sepc (vsepc) with bit 1 set, execute sret with sstatus.SPP = S, then read sepc; then set misa.C again and read sepc.  When misa.C is read-only, the sret is skipped.
-    expectation: While misa.C = 0, vsepc reads with bit 1 clear and sret returns to the masked address; after misa.C is set again, vsepc reads with bit 1 set.  Match reference model.
-    bins: "2"
   - heading: Not tested
   - goal: hstatus.VSBE sets the endianness of VS-mode accesses
     status: Not tested

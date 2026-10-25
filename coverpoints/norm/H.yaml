@@ -268,7 +268,7 @@ normative_rule_definitions:
         "H_hscsr_cg/cp_hcsr_access/vsepc",
         "H_hscsr_cg/{cp_vsepc_vaddr_walk1, cp_vsepc_vaddr_walk0, cp_vsepc_vaddr_pc, cp_vsepc_vaddr_scratch}",
         "H_vscsr_cg/cp_replica/sepc",
-        "H_vscsr_cg/{cp_vsepc_ialign32_read, cp_vsepc_ialign32_sret}",
+        "Sm_H_mcsr_cg/{cp_vsepc_ialign32_read, cp_vsepc_ialign32_vs_read, cp_vsepc_ialign32_sret}",
       ]
   # vsepc is a WARL register that must be able to hold the same set of values that sepc
   # can hold.

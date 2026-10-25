@@ -2015,7 +2015,6 @@ tsbi_csr_table:
         // M-mode CSRs
 tsbi_csr_mstatus:                                 // dispatcher fast path
         TSBI_CSR_INSTR_TABLE(0x300) // mstatus
-        TSBI_CSR_INSTR_TABLE(0x301) // misa: S-mode and VS-mode tests change IALIGN by clearing misa.C
         //TSBI_CSR_INSTR_TABLE(0x302) // medeleg - shouldn't be changed below M-mode.
         //TSBI_CSR_INSTR_TABLE(0x303) // mideleg - shouldn't be changed below M-mode.
         TSBI_CSR_INSTR_TABLE(0x304) // mie

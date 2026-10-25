@@ -283,24 +283,6 @@ covergroup S_scsr_cg with function sample(ins_t ins);
         }
     `endif
 
-    // sepc[1] is masked on reads, including sret's, while misa.C = 0 makes IALIGN = 32
-    `ifdef ZCA_SUPPORTED
-        csrr_sepc : coverpoint ins.current.insn {
-            wildcard bins csrr_sepc = {CSRRS} iff (ins.current.insn[31:20] == CSR_SEPC && ins.current.insn[19:15] == 0);
-        }
-        sret_insn : coverpoint ins.current.insn {
-            wildcard bins sret = {SRET};
-        }
-        misa_c_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "misa", "exts")[2] {
-            bins off = {1'b0};
-        }
-        sepc_bit1 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sepc", "sepc")[1] {
-            bins set = {1'b1};
-        }
-        cp_sepc_ialign32_read : cross priv_mode_s, csrr_sepc, misa_c_off, sepc_bit1;
-        cp_sepc_ialign32_sret : cross priv_mode_s, sret_insn, misa_c_off, sepc_bit1;
-    `endif
-
     // Valid virtual address walks: stvec, sepc, and stval must hold every canonical virtual address.
     // Canonical addresses have bits XLEN-1:VALEN-1 equal, so bit VALEN-2 is the msb walked on its own
     // (31 for Sv32, where VALEN = XLEN).

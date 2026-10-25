@@ -449,25 +449,6 @@ covergroup H_vscsr_cg with function sample(ins_t ins);
         `endif
         cp_scountinhibit_vs:    cross priv_mode_vs, scountinhibit, csraccesses, menvcfg_cde;
     `endif
-
-    // vsepc[1] is masked on reads, including sret's in VS-mode, while misa.C = 0 makes IALIGN = 32
-    `ifdef ZCA_SUPPORTED
-        csrr_sepc : coverpoint ins.current.insn {
-            wildcard bins csrr_sepc = {CSRRS} iff (ins.current.insn[31:20] == CSR_SEPC && ins.current.insn[19:15] == 0);
-        }
-        sret_insn : coverpoint ins.current.insn {
-            wildcard bins sret = {SRET};
-        }
-        misa_c_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "misa", "exts")[2] {
-            bins off = {1'b0};
-        }
-        // In VS-mode the trace records vsepc accesses under sepc
-        vsepc_bit1 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sepc", "sepc")[1] {
-            bins set = {1'b1};
-        }
-        cp_vsepc_ialign32_read : cross priv_mode_vs, csrr_sepc, misa_c_off, vsepc_bit1;
-        cp_vsepc_ialign32_sret : cross priv_mode_vs, sret_insn, misa_c_off, vsepc_bit1;
-    `endif
 endgroup
 
 // vsstatus.SD is read-only and summarizes FS, VS and XS.  VS-mode writes it through sstatus, as S_sstatus_cg.

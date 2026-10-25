@@ -132,9 +132,6 @@ are:
 |===
 | Register | Notes
 | `mstatus` | TW must be controllable.
-| `misa` | If C is writable, writes to it must take effect, so that tests of `sepc` and `vsepc` can clear C to run with
-IALIGN=32; C may also be read-only.  Other fields are not changed because required RVA23 features are not turned
-off during testing.
 | `mcounteren` | All fields not hardwired to 0 must be controllable to allow testing of counter access from lower privilege modes.
 | `mcountinhibit` | All fields not hardwired to 0 must be controllable to allow testing of counter behavior from lower privilege modes.
 | `mip` | Interrupts are controlled with RVMODEL macros.  SEIP, STIP, and SSIP may be controlled with T-SBI accesses to `mip`.
@@ -176,6 +173,7 @@ dynamically changed. XS, SDT, MBE, SBE, UBE, and SXL
 are out of scope for RVA23.  TSR and TVM are problematic when trapping to supervisor
 mode for RVA23 because they enter a trap loop on their own `sret` at the end of the handler.
 | `mie` | SEIE, STIE, SSIE, LCOFIE, and SGEIE are controlled from `sie` or `hie`.
+| `misa` | Not tested because required RVA23 features are not turned off during testing.
 | `mvendorid` | Does not affect the behavior of lower privilege modes.
 | `marchid` | Does not affect the behavior of lower privilege modes.
 | `mimpid` | Does not affect the behavior of lower privilege modes.

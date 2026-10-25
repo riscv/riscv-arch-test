@@ -25,7 +25,6 @@ from testgen.priv.extensions.PrivCommon import (
     csr_ro_write_tests,
     priv_inst_trap_tests,
     xcause_write_tests,
-    xepc_ialign32_tests,
     xstatus_sd_tests,
     xtval_value_tests,
 )
@@ -301,13 +300,6 @@ def make_s(test_data: TestData) -> list[TestChunk]:
     )
 
     _generate_scsr_tests(test_data, test_chunks)
-    tc = test_data.new_test_chunk(test_chunks, "sepc")
-    tc.section_header = comment_banner(
-        "cp_sepc_ialign32_read, cp_sepc_ialign32_sret",
-        "With sepc[1] = 1, clear misa.C through T-SBI.  While IALIGN = 32, sepc[1] reads as 0, and sret returns to\n"
-        "the masked address",
-    )
-    tc.code.extend(xepc_ialign32_tests(test_data, "S_scsr_cg", "S", "sepc"))
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks
 

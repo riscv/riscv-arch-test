@@ -24,38 +24,40 @@ def _mcsr_tests(test_data: TestData) -> list[str]:
     """mie and mip bits for the VS-level interrupts and SGEI, seen from M-mode."""
     tmp_reg, check_reg = test_data.int_regs.get_registers(2)
     lines = [
-        comment_banner("cp_mie", "With hie = 0x444, read mie"),
-        "csrw mie, zero",
-        f"LI(x{tmp_reg}, MIP_VS_MASK)",
-        f"csrw hie, x{tmp_reg}",
-        test_data.add_testcase("hie_444", "cp_mie", _CG),
-        f"csrr x{check_reg}, mie",
-        write_sigupd(check_reg, test_data),
         comment_banner(
-            "cp_mie_gilen",
-            "With hie = 0x1444, read mie.  SGEIE is writable when GEILEN > 0; otherwise mideleg[12] and so SGEIE\n"
-            "are implementation-defined, and the case is skipped",
+            "cp_mie_mip",
+            "With hie = 0x444, hie = 0x1444 (if GEILEN > 0) and hvip = 0x444, read mie and the VS-level and SGEI\n"
+            "bits of mip, and hip after the hvip write.  SGEIE is writable when GEILEN > 0; otherwise mideleg[12]\n"
+            "and so SGEIE are implementation-defined",
         ),
-        "#if UDB_NUM_EXTERNAL_GUEST_INTERRUPTS >= 1",
-        f"LI(x{tmp_reg}, MIP_HS_MASK)",
-        f"csrw hie, x{tmp_reg}",
-        test_data.add_testcase("hie_1444", "cp_mie_gilen", _CG),
-        f"csrr x{check_reg}, mie",
-        write_sigupd(check_reg, test_data),
-        "#endif",
-        "csrw hie, zero",
-        comment_banner("cp_mip", "With hvip = 0x444, read the VS-level and SGEI bits of mip, and hip"),
-        f"LI(x{tmp_reg}, MIP_VS_MASK)",
-        f"csrw hvip, x{tmp_reg}",
-        f"LI(x{tmp_reg}, MIP_HS_MASK)",
-        test_data.add_testcase("hvip_444", "cp_mip", _CG),
-        f"csrr x{check_reg}, mip",
-        f"and x{check_reg}, x{check_reg}, x{tmp_reg}",
-        write_sigupd(check_reg, test_data),
-        f"csrr x{check_reg}, hip",
-        write_sigupd(check_reg, test_data),
+        "csrw mie, zero",
         "csrw hvip, zero",
     ]
+    for name, csr, value, guard in (
+        ("hie_444", "hie", "MIP_VS_MASK", None),
+        ("hie_1444", "hie", "MIP_HS_MASK", "UDB_NUM_EXTERNAL_GUEST_INTERRUPTS >= 1"),
+        ("hvip_444", "hvip", "MIP_VS_MASK", None),
+    ):
+        lines.extend(
+            [
+                *([f"#if {guard}"] if guard else []),
+                "csrw hie, zero",
+                f"LI(x{tmp_reg}, {value})",
+                f"csrw {csr}, x{tmp_reg}",
+                f"LI(x{tmp_reg}, MIP_HS_MASK)",
+                test_data.add_testcase(f"{name}_mie", "cp_mie_mip", _CG),
+                f"csrr x{check_reg}, mie",
+                f"and x{check_reg}, x{check_reg}, x{tmp_reg}",
+                write_sigupd(check_reg, test_data),
+                test_data.add_testcase(f"{name}_mip", "cp_mie_mip", _CG),
+                f"csrr x{check_reg}, mip",
+                f"and x{check_reg}, x{check_reg}, x{tmp_reg}",
+                write_sigupd(check_reg, test_data),
+                *([f"csrr x{check_reg}, hip", write_sigupd(check_reg, test_data)] if csr == "hvip" else []),
+                *(["#endif"] if guard else []),
+            ]
+        )
+    lines.extend(["csrw hie, zero", "csrw hvip, zero"])
     test_data.int_regs.return_registers([tmp_reg, check_reg])
     return lines
 
@@ -63,7 +65,7 @@ def _mcsr_tests(test_data: TestData) -> list[str]:
 def _priority_level_tests(test_data: TestData, mode: str) -> list[str]:
     """Enter VS or VU mode with interrupts pending for two or three of M-mode (MSI), HS-mode (SSI, delegated by
     mideleg) and VS-mode (VSSI, delegated by hideleg).  They are taken in the order M, HS, VS."""
-    coverpoint = f"cp_priority_levels_{mode.lower()}"
+    coverpoint = "cp_priority_levels"
     tmp_reg = test_data.int_regs.get_register()
     levels = {
         "m": ("MSI", "MSW", "UDB_MSI_INTR_IMPL"),
@@ -94,7 +96,7 @@ def _priority_level_tests(test_data: TestData, mode: str) -> list[str]:
                 f"csrw mie, x{tmp_reg}",
                 *[f"RVTEST_SET_{levels[level][1]}_INT_M" for level in combo],
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
-                test_data.add_testcase("_".join(combo), coverpoint, _CG),
+                test_data.add_testcase("_".join([mode.lower(), *combo]), coverpoint, _CG),
                 f"RVTEST_TSBI_GOTO_{mode}MODE",
                 f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})",
                 "RVTEST_TSBI_GOTO_MMODE",

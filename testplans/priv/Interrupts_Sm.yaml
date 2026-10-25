@@ -237,28 +237,13 @@ coverpoints:
     description: The cp_trigger cases in M-mode with mstatus.MIE = 1 and mideleg = 0 preload mtinst with a nonzero value; the trap record checks mtinst
     expectation: mtinst = 0 after each interrupt taken into M-mode
     bins: 10 int
-  - name: cp_mie
-    goal: mie.VS*IE bits are alias of hie
-    description: With hie = 0x444, read mie.
-    expectation: "0x444"
-    bins: "1"
-  - name: cp_mip
-    goal: mip.VS*IP bits are alias of hip
-    description: With hvip = 0x444, read mip and hip. Note that hip depends on hvip.
-    expectation: "0x444"
-    bins: "1"
-  - name: cp_mie_gilen
-    goal: mie.SGEIE is alias of hie
-    description: If GEILEN > 0, with hie = 0x1444, read mie.
-    expectation: "0x1444"
-    bins: "1"
-  - name: cp_priority_levels_vs
-    goal: M-level, then HS-level, then VS-level interrupts are taken from VS-mode
-    description: "Boots to M-mode: with mstatus.MIE = 0, mideleg.SSI = 1, hideleg.VSSI = 1, mie.MSIE = mie.SSIE = mie.VSSIE = 1 and vsstatus.SIE = 1, raise {MSI+SSI, MSI+VSSI, SSI+VSSI, MSI+SSI+VSSI} and change to VS-mode"
+  - name: cp_mie_mip
+    goal: mie.VS*IE and mie.SGEIE are aliases of hie, and mip.VS*IP reflect hvip
+    description: With {hie = 0x444, hie = 0x1444 if GEILEN > 0, hvip = 0x444}, read mie and mip (and hip after the hvip write)
+    expectation: mie = hie; mip.VS*IP = hip = hvip
+    bins: 3 setups (2 if GEILEN = 0) * 2 CSRs
+  - name: cp_priority_levels
+    goal: M-level, then HS-level, then VS-level interrupts are taken from VS-mode and VU-mode
+    description: "Boots to M-mode: with mstatus.MIE = 0, mideleg.SSI = 1, hideleg.VSSI = 1, mie.MSIE = mie.SSIE = mie.VSSIE = 1 and vsstatus.SIE = 1, raise {MSI+SSI, MSI+VSSI, SSI+VSSI, MSI+SSI+VSSI} and change to {VS, VU} mode"
     expectation: M-mode takes MSI, then HS-mode takes SSI, then VS-mode takes VSSI
-    bins: 4 (combinations with MSI or SSI only where that interrupt is implemented)
-  - name: cp_priority_levels_vu
-    goal: M-level, then HS-level, then VS-level interrupts are taken from VU-mode
-    description: "Boots to M-mode: with mstatus.MIE = 0, mideleg.SSI = 1, hideleg.VSSI = 1, mie.MSIE = mie.SSIE = mie.VSSIE = 1 and vsstatus.SIE = 1, raise {MSI+SSI, MSI+VSSI, SSI+VSSI, MSI+SSI+VSSI} and change to VU-mode"
-    expectation: M-mode takes MSI, then HS-mode takes SSI, then VS-mode takes VSSI
-    bins: 4 (combinations with MSI or SSI only where that interrupt is implemented)
+    bins: 4 combinations * 2 modes (combinations with MSI or SSI only where that interrupt is implemented)

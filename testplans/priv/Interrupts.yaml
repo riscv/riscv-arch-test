@@ -103,6 +103,8 @@ coverpoints:
       With H, repeat each pair with hideleg delegating each nonempty subset of its VS-level members to VS-mode, with vsstatus.SIE = 1
     expectation: highest priority pending interrupt will fire.  An interrupt delegated to VS-mode is taken only in VS and VU modes, after the interrupts that go to HS-mode.
     bins: (21 pairs + 21 delegated) * 4 priv
+    rules:
+      - s_interrupt_priority
   - name: cp_priority_sie
     goal: Priority of enabled interrupts
     description: |-
@@ -185,15 +187,10 @@ coverpoints:
     expectation: 0x0004 and 0x0000 in both hip and hvip.
     bins: "2"
   - name: cp_hie
-    goal: hie.VS*IE bits are alias of mie
-    description: With mie = 0x444, read hie
-    expectation: "0x444"
-    bins: "1"
-  - name: cp_hie_gilen
-    goal: hie.SGEIE is alias of mie
-    description: If GEILEN > 0, with mie = 0x1444, read hie
-    expectation: "0x1444"
-    bins: "1"
+    goal: hie.VS*IE and hie.SGEIE are aliases of mie
+    description: With mie = {0x444, 0x1444 if GEILEN > 0}, read hie
+    expectation: hie = mie
+    bins: 2 (1 if GEILEN = 0)
   - name: cp_vsip_vsie
     goal: vsie and vsip are aliases of hie and hip in the delegated bits
     description: |-

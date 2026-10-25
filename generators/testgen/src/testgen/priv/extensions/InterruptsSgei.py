@@ -283,13 +283,13 @@ def _sgei_tests(test_data: TestData) -> list[str]:
     lines.extend(
         [
             comment_banner(
-                "cp_hgeip0",
+                "cp_trigger_vsei_hgeip",
                 "With hgeip = hgeie = every implemented bit and hstatus.VGEIN = 0, hip.SGEIP = 1 and hip.VSEIP = 0",
             ),
             f"LI(x{tmp_reg}, HSTATUS_VGEIN)",
             f"csrc hstatus, x{tmp_reg}",
             *all_gei("SET"),
-            *check("vgein_0", "cp_hgeip0", -1),
+            *check("vgein_0", "cp_trigger_vsei_hgeip", -1),
             *all_gei("CLR"),
             "csrw hgeie, zero",
             "#endif // RVTEST_SGEI_INTR_IMPL",

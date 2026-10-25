@@ -49,19 +49,15 @@ def _hcsr_tests(test_data: TestData) -> list[str]:
         )
     lines.extend(
         [
-            comment_banner("cp_hie", "With mie = 0x444, read hie"),
+            comment_banner("cp_hie", "With mie = 0x444 and 0x1444 (if GEILEN > 0), read hie"),
             "RVTEST_TSBI_CSR_WRITE(CSR_MIE, MIP_VS_MASK)",
             test_data.add_testcase("mie_444", "cp_hie", _CG),
             f"csrr x{tmp_reg}, hie",
             write_sigupd(tmp_reg, test_data),
-            comment_banner(
-                "cp_hie_gilen",
-                "With mie = 0x1444, read hie.  SGEIE is writable when GEILEN > 0; otherwise mideleg[12] and so\n"
-                "SGEIE are implementation-defined, and the case is skipped",
-            ),
+            # SGEIE is writable when GEILEN > 0; otherwise mideleg[12] and so SGEIE are implementation-defined
             "#if UDB_NUM_EXTERNAL_GUEST_INTERRUPTS >= 1",
             "RVTEST_TSBI_CSR_WRITE(CSR_MIE, MIP_HS_MASK)",
-            test_data.add_testcase("mie_1444", "cp_hie_gilen", _CG),
+            test_data.add_testcase("mie_1444", "cp_hie", _CG),
             f"csrr x{tmp_reg}, hie",
             write_sigupd(tmp_reg, test_data),
             "#endif",

@@ -603,8 +603,12 @@ covergroup Interrupts_cg with function sample(ins_t ins);
             bins ones  = {16'hFFFF};
             bins zeros = {0};
         }
+        // mie written 0x444, or 0x1444 when GEILEN > 0 (SGEIE is implementation-defined otherwise)
         mie_444: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mie")[12:0] {
             bins vs = {13'h0444};
+            `ifndef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_0
+                bins sgei_vs = {13'h1444};
+            `endif
         }
         vsstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "vsstatus")[1] {
             // autofill 0/1
@@ -618,15 +622,8 @@ covergroup Interrupts_cg with function sample(ins_t ins);
 
         // Only hip.VSSIP is writable, and it is an alias of hvip.VSSIP
         cp_hip_write:   cross priv_mode_hs, csrrw, csr_hip, hip_write;
-        // hie is a view of mie
+        // hie is a view of mie, including SGEIE when GEILEN > 0
         cp_hie:         cross priv_mode_hs, csrr, csr_hie, mie_444;
-        // hie.SGEIE is an alias of mie.SGEIE, which is writable when GEILEN > 0 and implementation-defined otherwise
-        `ifndef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_0
-            mie_1444: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mie")[12:0] {
-                bins sgei_vs = {13'h1444};
-            }
-            cp_hie_gilen:   cross priv_mode_hs, csrr, csr_hie, mie_1444;
-        `endif
         // vsie and vsip: reads and writes for each combination of hideleg.VS*I
         cp_vsip_vsie:   cross priv_mode_hs, csr_rw, csr_vsie_vsip, hideleg_vs;
         // In VS-mode, sip is vsip: it shows hvip.VSSIP when delegated and never the HS-level sip.SSIP
@@ -941,6 +938,16 @@ covergroup Interrupts_Sm_cg with function sample(ins_t ins);
             wildcard bins vssip_vs = {17'b1_??0?000?000?010?};
         `endif
     }
+    // mtvec.MODE, or vstvec.MODE for an interrupt delegated to VS-mode
+    sm_trigger_tvec: coverpoint (`SM_TO_VS ? get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vstvec", "vstvec")[1:0] :
+                                             get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mtvec", "mode")[1:0]) {
+        `ifdef UDB_MTVEC_MODES_0
+            bins direct = {2'b00};
+        `endif
+        `ifdef UDB_MTVEC_MODES_1
+            bins vector = {2'b01};
+        `endif
+    }
     sm_trigger_sie: coverpoint (`SM_TO_VS ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "vsstatus")[1] :
                                             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0]) {
         bins zero = {0};
@@ -1090,7 +1097,7 @@ covergroup Interrupts_Sm_cg with function sample(ins_t ins);
 
     // main coverpoints
 
-    cp_trigger:                 cross priv_mode_interrupts, mip_walking_deleg, mstatus_mie, sm_trigger_sie, mideleg_both, mie_ones, mtvec_both {
+    cp_trigger:                 cross priv_mode_interrupts, mip_walking_deleg, mstatus_mie, sm_trigger_sie, mideleg_both, mie_ones, sm_trigger_tvec {
         // MSI and MTI are the only interrupts with no pending bit reachable below M: they cannot be
         // delegated, so once pending they are enabled regardless of mstatus.MIE and are taken on the
         // mret out of the T-SBI handler that set them, before any S/U instruction retires.
@@ -1139,7 +1146,7 @@ covergroup Interrupts_Sm_cg with function sample(ins_t ins);
         cp_trigger_mtinst:      cross priv_mode_m, mip_walking, mstatus_mie_one, mideleg_zeros, mtinst_nonzero;
     `endif
     `ifdef U_SUPPORTED
-        cp_trigger_tsbi:        cross priv_mode_m, mret_insn, mstatus_mpv_mpp, mip_walking_deleg, mstatus_mpie, sm_trigger_sie, mideleg_both, mie_ones, mtvec_both {
+        cp_trigger_tsbi:        cross priv_mode_m, mret_insn, mstatus_mpv_mpp, mip_walking_deleg, mstatus_mpie, sm_trigger_sie, mideleg_both, mie_ones, sm_trigger_tvec {
             `ifdef H_SUPPORTED
                 // HS writes hvip itself, so its VS-level interrupts never sit pending across an mret
                 ignore_bins hs_writes_hvip = binsof(mstatus_mpv_mpp.S_mode) &&
@@ -1305,30 +1312,22 @@ covergroup Interrupts_Sm_cg with function sample(ins_t ins);
         csrr: coverpoint ins.current.insn {
             wildcard bins csrr = {CSRR};
         }
-        csr_mie: coverpoint ins.current.insn[31:20] {
+        csr_mie_mip: coverpoint ins.current.insn[31:20] {
             bins mie = {CSR_MIE};
-        }
-        csr_mip_read: coverpoint ins.current.insn[31:20] {
             bins mip = {CSR_MIP};
         }
-        hie_444: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "hie")[12:0] {
-            bins vs = {13'h0444};
+        // {hvip.VS*IP == 0x444, hie[12:0]}: hie = 0x444, hie = 0x1444 (SGEIE is writable when GEILEN > 0 and
+        // implementation-defined otherwise), or hvip = 0x444 with hie = 0
+        alias_setup: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "hvip")[15:0] & 16'h0444) == 16'h0444,
+                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "hie")[12:0]} {
+            bins hie_444  = {14'h0444};
+            `ifndef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_0
+                bins hie_1444 = {14'h1444};
+            `endif
+            bins hvip_444 = {14'h2000};
         }
-        hvip_444: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "hvip")[10],
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "hvip")[6],
-                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "hvip")[2]} {
-            bins all = {3'b111};
-        }
-        // mie.VS*IE are aliases of hie.VS*IE, and mip.VS*IP reflect hvip
-        cp_mie:         cross priv_mode_m, csrr, csr_mie, hie_444;
-        cp_mip:         cross priv_mode_m, csrr, csr_mip_read, hvip_444;
-        // hie.SGEIE is writable when GEILEN > 0 and implementation-defined otherwise
-        `ifndef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_0
-            hie_1444: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "hie")[12:0] {
-                bins sgei_vs = {13'h1444};
-            }
-            cp_mie_gilen:   cross priv_mode_m, csrr, csr_mie, hie_1444;
-        `endif
+        // mie.VS*IE and mie.SGEIE are aliases of hie, and mip.VS*IP reflect hvip
+        cp_mie_mip:     cross priv_mode_m, csrr, csr_mie_mip, alias_setup;
 
         // Enter VS or VU mode with two or three of MSI (M-level), SSI (delegated to HS-mode by mideleg) and VSSI
         // (delegated to VS-mode by hideleg) pending and enabled, sampled at the T-SBI call: an ecall with
@@ -1336,10 +1335,8 @@ covergroup Interrupts_Sm_cg with function sample(ins_t ins);
         ecall: coverpoint ins.current.insn {
             bins ecall = {ECALL};
         }
-        tsbi_goto_vs: coverpoint ins.prev.x_wdata[10] {
+        tsbi_goto_vs_vu: coverpoint ins.prev.x_wdata[10] {
             bins goto_vs = {4};
-        }
-        tsbi_goto_vu: coverpoint ins.prev.x_wdata[10] {
             bins goto_vu = {5};
         }
         mip_levels: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "mip")[3], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "mip")[1],
@@ -1371,10 +1368,8 @@ covergroup Interrupts_Sm_cg with function sample(ins_t ins);
         vsstatus_sie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "vsstatus")[1] {
             bins one = {1};
         }
-        cp_priority_levels_vs: cross priv_mode_m, ecall, tsbi_goto_vs, mip_levels, mie_levels, mideleg_ssi, hideleg_vssi,
+        cp_priority_levels:    cross priv_mode_m, ecall, tsbi_goto_vs_vu, mip_levels, mie_levels, mideleg_ssi, hideleg_vssi,
                                      mstatus_mie_zero, vsstatus_sie_one;
-        cp_priority_levels_vu: cross priv_mode_m, ecall, tsbi_goto_vu, mip_levels, mie_levels, mideleg_ssi, hideleg_vssi,
-                                     mstatus_mie_zero;
     `endif
 
 endgroup
@@ -1479,28 +1474,28 @@ covergroup Interrupts_Sgei_cg with function sample(ins_t ins);
     cp_hgeie: cross priv_mode_hs, csrr, hip, hgeie_bit, hgeip_vs_hgeie;
 
     // hstatus.VGEIN = i selects hgeip bit i into hip.VSEIP, whatever hgeie holds
+    // VGEIN = 0 selects no guest external interrupt: hip.VSEIP = 0 with every implemented hgeip bit set
     vgein : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hstatus")[17:12] {
-        bins b[] = {[1:`UDB_NUM_EXTERNAL_GUEST_INTERRUPTS]};
-    }
-    vgein_zero : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hstatus")[17:12] {
         bins zero = {0};
+        bins b[] = {[1:`UDB_NUM_EXTERNAL_GUEST_INTERRUPTS]};
     }
     hgeip_vs_vgein : coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeip", "hgeip") == 0 ? 0 :
                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeip", "hgeip") == (1 << get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hstatus")[17:12]) ? 1 :
                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeip", "hgeip")[get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hstatus")[17:12]] ? 3 : 2) {
         bins none   = {0};
         bins i      = {1};
-        // With GEILEN = 1 there is no implemented bit other than i, so "others" is the same case as "none"
-        `ifndef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_1
-            bins others = {2};
-        `endif
+        bins others = {2};
     }
     hgeie_vgein : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeie", "hgeie")[get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hstatus")[17:12]];
-    hgeip_nonzero : coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgeip", "hgeip") != 0) {
-        bins nonzero = {1};
+    // With VGEIN = 0, hgeip bit 0 is read-only zero, so every pending bit is one of the "others"
+    cp_trigger_vsei_hgeip: cross priv_mode_hs, csrr, hip, vgein, hgeip_vs_vgein, hgeie_vgein {
+        ignore_bins vgein_zero = binsof(vgein.zero) && (binsof(hgeip_vs_vgein.none) || binsof(hgeip_vs_vgein.i) ||
+                                                        binsof(hgeie_vgein) intersect {1});
+        // With GEILEN = 1 there is no implemented bit other than i, so "others" is the same case as "none"
+        `ifdef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_1
+            ignore_bins no_others = !binsof(vgein.zero) && binsof(hgeip_vs_vgein.others);
+        `endif
     }
-    cp_trigger_vsei_hgeip: cross priv_mode_hs, csrr, hip, vgein, hgeip_vs_vgein, hgeie_vgein;
-    cp_hgeip0:             cross priv_mode_hs, csrr, hip, vgein_zero, hgeip_nonzero, sgei_pending;
 endgroup
 
 `ifndef EXCLUDE_SM

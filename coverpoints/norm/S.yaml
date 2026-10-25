@@ -151,12 +151,22 @@ normative_rule_definitions:
   # and must also be evaluated immediately following the execution of an SRET
   # instruction or an explicit write to a CSR on which these interrupt trap
   # conditions expressly depend (including sip, sie and sstatus).
+  # The _tsbi crosses take the interrupt right after the xret that makes it takeable; cp_priority_sie
+  # takes it on the write to sie; cp_trigger raises it and waits a bounded time.
   - name: sie_sip_strap_time_constraint
-    coverpoint: ["TODO"]
+    coverpoint:
+      [
+        "Interrupts_cg/{cp_trigger, cp_trigger_tsbi, cp_enable_one_tsbi, cp_priority_sie}",
+      ]
 
   # Interrupts to S-mode take priority over any interrupts to lower privilege modes.
+  # HS-mode takes an undelegated interrupt before one delegated to VS-mode, from VS and VU modes
   - name: s_interrupt_priority
-    coverpoint: ["TODO: move to hypervisor VS interrupts"]
+    coverpoint:
+      [
+        "Interrupts_cg/cp_priority_sip_tsbi (pairs with one VS-level member delegated by hideleg)",
+        "Interrupts_Sm_cg/cp_priority_levels",
+      ]
 
   # Each individual bit in register sip may be writable or may be read-only.
   - name: sip_acc

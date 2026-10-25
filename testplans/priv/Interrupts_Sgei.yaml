@@ -27,11 +27,8 @@ coverpoints:
     bins: GEILEN * 3
   - name: cp_trigger_vsei_hgeip
     goal: trigger HS-mode VSEI with HGEIP
-    description: "With sstatus.SIE = 0, hvip = 0, hideleg = 0, hie = 0, for i in 1...GEILEN: hgeip = {0, 1 in i, 1 in all writable bits except i}, hgeie[i] = {0/1}, hstatus.VGEIN = i"
-    expectation: hip.VSEIP = hgeip[i] independent of hgeie
-    bins: GEILEN * 3 * 2
-  - name: cp_hgeip0
-    goal: no VSEI selected when VGEIN = 0
-    description: With sstatus.SIE = 0, hvip = 0, hideleg = 0, hie = 0, hgeip = hgeie = 1s in all writable bits, hstatus.VGEIN = 0
-    expectation: hip.SGEIP = 1, hip.VSEIP = 0
-    bins: "1"
+    description: |-
+      With sstatus.SIE = 0, hvip = 0, hideleg = 0, hie = 0, for i in 1...GEILEN: hgeip = {0, 1 in i, 1 in all writable bits except i}, hgeie[i] = {0/1}, hstatus.VGEIN = i
+      Also VGEIN = 0 with hgeip = hgeie = 1s in all writable bits
+    expectation: hip.VSEIP = hgeip[i] independent of hgeie.  With VGEIN = 0, hip.VSEIP = 0 and hip.SGEIP = 1.
+    bins: GEILEN * 3 * 2 + 1

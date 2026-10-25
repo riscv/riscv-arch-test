@@ -352,7 +352,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Interrupts_cg/{cp_trigger, cp_trigger_tsbi, cp_priority_sip}",
-        "Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi, cp_priority_levels_vs, cp_priority_levels_vu}",
+        "Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi, cp_priority_levels}",
       ]
 
     # Representative coverpoints; raised in HS-mode with sstatus.SIE, hideleg and hie = 0/1, and
@@ -364,7 +364,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Interrupts_cg/{cp_trigger, cp_enable_zero, cp_hip_write}",
-        "Interrupts_Sgei_cg/cp_{trigger_vsei_hgeip, hgeip0}",
+        "Interrupts_Sgei_cg/cp_trigger_vsei_hgeip",
       ]
 
   # Bits csr:hip[vstip] and csr:hie[vstie] are the interrupt-pending and interrupt-enable
@@ -414,10 +414,9 @@ normative_rule_definitions:
   - name: mip_mie_alias
     coverpoint:
       [
-        "Interrupts_cg/cp_{hie, hie_gilen}",
-        "Interrupts_Sm_cg/cp_{mie, mip, mie_gilen}",
+        "Interrupts_cg/cp_hie",
+        "Interrupts_Sm_cg/cp_mie_mip",
         "Interrupts_SgeiSm_cg/cp_trigger_sgei",
-        "Interrupts_Sm_cg/cp_{mie, mip, mie_gilen}",
       ]
 
   # For each writable bit in sie, the corresponding bit shall be read-only zero in both
@@ -470,10 +469,9 @@ normative_rule_definitions:
   - names: [hie_acc, hie_img]
     coverpoint:
       [
-        "Interrupts_cg/cp_hie_gilen",
-        "Interrupts_Sm_cg/cp_mie_gilen",
+        "Interrupts_cg/cp_hie",
+        "Interrupts_Sm_cg/cp_mie_mip",
         "H_hscsr_cg/cp_hcsrwalk",
-        "Interrupts_Sm_cg/cp_mie_gilen",
       ]
 
   # An interrupt writes zero to htinst
@@ -530,10 +528,7 @@ normative_rule_definitions:
   # mip holds hip.SGEIP, read from M-mode with a guest external interrupt pending
   - name: mip_mie_vs
     coverpoint:
-      [
-        "Interrupts_SgeiSm_cg/cp_trigger_sgei",
-        "Interrupts_Sm_cg/cp_{mie, mip, mie_gilen}",
-      ]
+      ["Interrupts_SgeiSm_cg/cp_trigger_sgei", "Interrupts_Sm_cg/cp_mie_mip"]
 
   # Bits hip.SGEIP and hie.SGEIE are the interrupt-pending and interrupt-enable bits for
   # guest external interrupts at supervisor level (HS-level). SGEIP is read-only in hip,
@@ -542,7 +537,7 @@ normative_rule_definitions:
   - name: hip_sgeip_sgeie_acc_op
     coverpoint:
       [
-        "Interrupts_Sgei_cg/cp_{trigger_sgei, trigger_sgei_lower, hgeie, hgeip0}",
+        "Interrupts_Sgei_cg/cp_{trigger_sgei, trigger_sgei_lower, hgeie}",
         "Interrupts_SgeiSm_cg/cp_trigger_sgei",
       ]
 
@@ -550,13 +545,13 @@ normative_rule_definitions:
   # &lt;&lt;hgeipreg&gt;&gt;, that indicates pending guest external interrupts for this
   # hart.
   - name: hgeip_sz_acc_op
-    coverpoint: ["Interrupts_Sgei_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
+    coverpoint: ["Interrupts_Sgei_cg/cp_{trigger_sgei, hgeie}"]
 
   # The hgeie register is an HSXLEN-bit read/write register, formatted as shown in
   # &lt;&lt;norm:hgeie_img&gt;&gt;, that contains enable bits for the guest external
   # interrupts at this hart.
   - name: hgeie_sz_acc_op
-    coverpoint: ["Interrupts_Sgei_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
+    coverpoint: ["Interrupts_Sgei_cg/cp_{trigger_sgei, hgeie}"]
 
   # Register hgeie selects the subset of guest external interrupts that cause a
   # supervisor-level (HS-level) guest external interrupt. The enable bits in hgeie do not
@@ -569,20 +564,20 @@ normative_rule_definitions:
 
   # Guest external interrupt number i corresponds with bit i in both hgeip and hgeie.
   - name: hgeip_hgeie_fields
-    coverpoint: ["Interrupts_Sgei_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
+    coverpoint: ["Interrupts_Sgei_cg/cp_{trigger_sgei, hgeie}"]
 
   # Each bit of hgeip summarizes all pending interrupts directed to one virtual hart, as
   # collected and reported by an interrupt controller.
   - name: hgeip_bit_op
-    coverpoint: ["Interrupts_Sgei_cg/cp_{trigger_sgei, hgeie, hgeip0}"]
+    coverpoint: ["Interrupts_Sgei_cg/cp_{trigger_sgei, hgeie}"]
 
   # hstatus.VGEIN selects the hgeip bit that drives hip.VSEIP
   - name: hstatus_vgein_op
-    coverpoint: ["Interrupts_Sgei_cg/cp_{trigger_vsei_hgeip, hgeip0}"]
+    coverpoint: ["Interrupts_Sgei_cg/cp_trigger_vsei_hgeip"]
 
   # When VGEIN=0, no guest external interrupt source is selected for VS-level external interrupts
   - name: hstatus_vgein_zero
-    coverpoint: ["Interrupts_Sgei_cg/cp_hgeip0"]
+    coverpoint: ["Interrupts_Sgei_cg/cp_trigger_vsei_hgeip"]
 
   # When a trap is taken into M-mode, mepc is written with the virtual address of
   # the instruction that was interrupted or that encountered the exception.

@@ -817,32 +817,32 @@ covergroup H_Zicntr_cg with function sample(ins_t ins);
     }
 
     // The enable bit of the accessed counter in each counter-enable register
-    mcounteren_bit: coverpoint ins.current.csr[CSR_MCOUNTEREN][ins.current.insn[24:20]] {
+    mcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[ins.current.insn[24:20]] {
         bins disabled = {0};
         bins enabled  = {1};
     }
-    hcounteren_bit: coverpoint ins.current.csr[CSR_HCOUNTEREN][ins.current.insn[24:20]] {
+    hcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[ins.current.insn[24:20]] {
         bins disabled = {0};
         bins enabled  = {1};
     }
-    scounteren_bit: coverpoint ins.current.csr[CSR_SCOUNTEREN][ins.current.insn[24:20]] {
+    scounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[ins.current.insn[24:20]] {
         bins disabled = {0};
         bins enabled  = {1};
     }
     // The same bits held while another counter-enable register is walked
-    mcounteren_one: coverpoint ins.current.csr[CSR_MCOUNTEREN][ins.current.insn[24:20]] {
+    mcounteren_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[ins.current.insn[24:20]] {
         bins one = {1};
     }
-    hcounteren_one: coverpoint ins.current.csr[CSR_HCOUNTEREN][ins.current.insn[24:20]] {
+    hcounteren_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[ins.current.insn[24:20]] {
         bins one = {1};
     }
-    hcounteren_zero: coverpoint ins.current.csr[CSR_HCOUNTEREN][ins.current.insn[24:20]] {
+    hcounteren_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[ins.current.insn[24:20]] {
         bins zero = {0};
     }
-    scounteren_one: coverpoint ins.current.csr[CSR_SCOUNTEREN][ins.current.insn[24:20]] {
+    scounteren_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[ins.current.insn[24:20]] {
         bins one = {1};
     }
-    scounteren_zero: coverpoint ins.current.csr[CSR_SCOUNTEREN][ins.current.insn[24:20]] {
+    scounteren_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[ins.current.insn[24:20]] {
         bins zero = {0};
     }
 
@@ -859,9 +859,9 @@ covergroup H_Zicntr_cg with function sample(ins_t ins);
         `endif
     }
     `ifdef UDB_MXLEN_64
-        htimedelta: coverpoint ins.current.csr[CSR_HTIMEDELTA] {
+        htimedelta: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedelta", "htimedelta") {
     `else
-        htimedelta: coverpoint {ins.current.csr[CSR_HTIMEDELTAH][31:0], ins.current.csr[CSR_HTIMEDELTA][31:0]} {
+        htimedelta: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedeltah", "htimedeltah")[31:0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedelta", "htimedelta")[31:0]} {
     `endif
         bins zero       = {64'h0000000000000000};
         bins pos_2p30   = {64'h0000000040000000};

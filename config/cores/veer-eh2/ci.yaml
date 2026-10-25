@@ -5,9 +5,13 @@
 ci_enabled: true
 
 # chipsalliance/Cores-VeeR-EH2 @ a7203d02:
-#   Sm_mcsr_cntr  minstret bits 31:8 advance by 0x41 per carry: https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/design/dec/eh2_dec_tlu_ctl.sv#L1338
-#   Zifencei  The testbench instruction memory ignores stores: https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/testbench/tb_top.sv#L1011
-exclude_extensions: "Sm_mcsr_cntr,Zifencei"
+exclude_extensions:
+  # minstret bits 31:8 advance by 0x41 per carry:
+  # https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/design/dec/eh2_dec_tlu_ctl.sv#L1338
+  - Sm_mcsr_cntr
+  # The testbench instruction memory ignores stores:
+  # https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/testbench/tb_top.sv#L1011
+  - Zifencei
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-veer-eh2.sh"

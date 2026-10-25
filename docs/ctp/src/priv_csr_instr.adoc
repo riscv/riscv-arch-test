@@ -17,6 +17,7 @@ where they should throw an Illegal Instruction exception if not implemented.
 These test CSRs and privileged instructions in machine mode.
 The Sm suite also contains the Sm_F, Sm_V, and Sm_VF tests of the floating-point and vector CSRs and `mstatus.FS`/`mstatus.VS`, which run only when F, Zve32x, or Zve32f is also supported.
 The Sm_Zicntr group runs when Zicntr is also supported. It reads `cycle`, `time`, `instret` and `hpmcounter[31:3]` from M-mode under walking `mcounteren` and `scounteren` values, and checks `instret` across retiring instructions, exceptions and interrupts.
+The Sm_H group runs when H is also supported. It tests the hypervisor CSRs and instructions from M-mode, `mret` with `mstatus.MPV`, and the `mstatus.TVM` tests of HS-mode and VS-mode, whose traps are taken in M-mode because the HS-mode trap handler reads `satp` and `hgatp`.
 
 include::{testplansdir}/priv/Sm.adoc[]
 

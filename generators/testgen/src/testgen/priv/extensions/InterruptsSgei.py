@@ -208,6 +208,8 @@ def _sgei_tests(test_data: TestData) -> list[str]:
             "first, then SGEI, VSEI, VSSI and VSTI",
         )
     )
+    # Guest external interrupt 1 is enabled in hgeie, so raising it makes SGEI pending
+    lines.extend(["csrw hideleg, zero", f"LI(x{tmp_reg}, 2)", f"csrw hgeie, x{tmp_reg}"])
     for s_int in [None, *S_INTS]:
         coverpoint = "cp_priority_sgei"
         lines.extend(

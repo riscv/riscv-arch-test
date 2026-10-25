@@ -77,20 +77,8 @@ covergroup Svinval_Sm_cg with function sample(ins_t ins);
 
 // H tests need the hypervisor extension, so their covergroups are only in a configuration with H
 `ifdef H_SUPPORTED
-// Two-stage translation, for the invalidation tests
-`ifdef UDB_MXLEN_64
-    `ifdef UDB_SV39X4_TRANSLATION
-        `ifdef UDB_SV39_VSMODE_TRANSLATION
-            `define SVINVAL_H_TWO_STAGE
-        `endif
-    `endif
-`else
-    `ifdef UDB_SV32X4_TRANSLATION
-        `ifdef UDB_SV32_VSMODE_TRANSLATION
-            `define SVINVAL_H_TWO_STAGE
-        `endif
-    `endif
-`endif
+// H_TWO_STAGE: two-stage translation, for the invalidation tests
+`include "general/RISCV_coverage_hypervisor.svh"
 
 // Svinval instructions in HS, VS, U and VU modes with mstatus.TVM = 0 and hstatus.VTVM = 0, 1, and
 // invalidation of changed VS-stage and G-stage leaves.
@@ -120,7 +108,7 @@ covergroup Svinval_H_cg with function sample(ins_t ins);
     // The SFENCE.W.INVAL, HINVAL.VVMA or HINVAL.GVMA (or SINVAL.VMA in VS-mode), SFENCE.INVAL.IR sequence after a
     // VS-stage or G-stage leaf change, with x0 or a register in rs1 and rs2.  The test checks that the next guest
     // access uses the new leaf.
-    `ifdef SVINVAL_H_TWO_STAGE
+    `ifdef H_TWO_STAGE
         hinval_vvma : coverpoint ins.current.insn {
             wildcard bins hinval_vvma = {HINVAL_VVMA};
         }

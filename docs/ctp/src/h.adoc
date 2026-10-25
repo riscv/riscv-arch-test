@@ -54,25 +54,37 @@ include::{testplansdir}/priv/SvHZicbo.adoc[]
 
 include::{testplansdir}/priv/Shcounterenw.adoc[]
 
+include::norm/Shcounterenw_norm_rules.adoc[]
+
 ==== Shvsatpa Virtual Memory Modes Supported
 
 include::{testplansdir}/priv/Shvsatpa.adoc[]
+
+include::norm/Shvsatpa_norm_rules.adoc[]
 
 ==== Shgatpa Virtual Memory x4 Modes Supported
 
 include::{testplansdir}/priv/Shgatpa.adoc[]
 
+include::norm/Shgatpa_norm_rules.adoc[]
+
 ==== Shvstvecd VS-Mode Direct Vectors
 
 include::{testplansdir}/priv/Shvstvecd.adoc[]
+
+include::norm/Shvstvecd_norm_rules.adoc[]
 
 ==== Shvstvala VS-Mode Trap Address
 
 include::{testplansdir}/priv/Shvstvala.adoc[]
 
+include::norm/Shvstvala_norm_rules.adoc[]
+
 ==== Shtvala HS-Mode Trap Address
 
 include::{testplansdir}/priv/Shtvala.adoc[]
+
+include::norm/Shtvala_norm_rules.adoc[]
 
 ==== Shlcofideleg Hypervisor Counter Overflow Delegation
 

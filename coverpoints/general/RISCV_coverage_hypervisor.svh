@@ -14,17 +14,14 @@
 `define RISCV_COVERAGE_HYPERVISOR_SVH
 
 // H_TWO_STAGE: Sv39x4 and VS-stage Sv39 (RV64) or Sv32x4 and VS-stage Sv32 (RV32), as TWO_STAGE_GATE in HCommon.py
-`ifdef UDB_MXLEN_64
-    `ifdef UDB_SV39_VSMODE_TRANSLATION
-        `ifdef UDB_SV39X4_TRANSLATION
-            `define H_TWO_STAGE
-        `endif
+`ifdef UDB_SV39_VSMODE_TRANSLATION
+    `ifdef UDB_SV39X4_TRANSLATION
+        `define H_TWO_STAGE
     `endif
-`else
-    `ifdef UDB_SV32_VSMODE_TRANSLATION
-        `ifdef UDB_SV32X4_TRANSLATION
-            `define H_TWO_STAGE
-        `endif
+`endif
+`ifdef UDB_SV32_VSMODE_TRANSLATION
+    `ifdef UDB_SV32X4_TRANSLATION
+        `define H_TWO_STAGE
     `endif
 `endif
 

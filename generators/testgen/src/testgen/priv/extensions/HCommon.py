@@ -497,6 +497,17 @@ def guest_page_fault_tests(test_data: TestData, covergroup: str) -> list[str]:
 GuestFault = tuple[str, str, str, Callable[[SvMode], int]]
 
 
+def _guest_access(instr: str, rd: int, addr_reg: int) -> str:
+    """instr accessing the address in addr_reg: a jalr to it, or a load, store, LR or AMO with data register rd."""
+    if instr == "jalr":
+        return f"jalr x1, 0(x{addr_reg})"
+    if instr.startswith("amo"):
+        return f"{instr} x{rd}, x{rd}, (x{addr_reg})"
+    if instr.startswith("lr."):
+        return f"{instr} x{rd}, (x{addr_reg})"
+    return f"{instr} x{rd}, 0(x{addr_reg})"
+
+
 def guest_fault_tests(
     test_data: TestData,
     covergroup: str,
@@ -527,7 +538,7 @@ def guest_fault_tests(
                     *per_xlen(lambda _, vs, va=address: [f"LI(x{addr_reg}, {va(vs):#x})"]),
                     f"RVTEST_TSBI_CSR_WRITE(CSR_{tval_csr.upper()}, {random_int(32, signed=False):#x})",
                     test_data.add_testcase(f"{mode}_{bin_name}", coverpoint, covergroup),
-                    f"jalr x1, 0(x{addr_reg})" if instr == "jalr" else f"{instr} x{rd}, 0(x{addr_reg})",
+                    _guest_access(instr, rd, addr_reg),
                 ]
             )
         lines.extend(["RVTEST_TSBI_GOTO_SMODE", write_sigupd(rd, test_data)])

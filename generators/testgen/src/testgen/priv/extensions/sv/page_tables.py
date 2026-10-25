@@ -140,8 +140,7 @@ def guest_table_data() -> list[str]:
         "#if __riscv_xlen == 32",
         *lower_table_data(SV32X4, VS_SV32),
         "#else",
-        *table_data(SV39X4.page_table_label(1)),
-        *table_data(VS_SV39.page_table_label(1)),
+        *lower_table_data(SV39X4, VS_SV39),
         "#endif",
     ]
 

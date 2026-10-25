@@ -388,7 +388,8 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
         f"WFI until the timer interrupt in {priv} mode with {status['csr']}.{status['field']} = 0/1",
     )
     if priv == "U":
-        tc.code.append("#ifndef S_SUPPORTED // U-mode WFI only waits when S-mode is not implemented")
+        # With S-mode, U-mode WFI traps after a bounded time; without it, WFI_U_MODE says whether it is legal at all
+        tc.code.append("#if !defined(S_SUPPORTED) && defined(UDB_WFI_U_MODE) // U-mode WFI waits only without S")
     count_reg, tmp_reg = test_data.int_regs.get_registers(2)
 
     # mstatus.TW only affects modes below M, so sweep it in M-mode where it must not matter
@@ -453,7 +454,7 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
 
     test_data.int_regs.return_registers([count_reg, tmp_reg])
     if priv == "U":
-        tc.code.append("#endif // S_SUPPORTED")
+        tc.code.append("#endif // !S_SUPPORTED && UDB_WFI_U_MODE")
 
 
 def _write_vtw(reg: int, vtw: bool, boot: str) -> list[str]:

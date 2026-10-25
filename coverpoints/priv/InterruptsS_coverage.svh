@@ -65,12 +65,29 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         `endif
     }
 
-    // S-level interrupt bits: SEI, STI, SSI, and LCOFI with Sscofpmf
-    `ifdef SSCOFPMF_SUPPORTED
-        `define INTS_NOH_MASK 16'h2222
+    // S-level interrupt bits this config implements: SEI, STI, SSI, and LCOFI with Sscofpmf.
+    // The sip, sie, and mideleg bits of an interrupt that is not implemented are read-only zero.
+    `ifdef UDB_SEI_INTR_IMPL
+        `define INTS_SEI 16'h0200
     `else
-        `define INTS_NOH_MASK 16'h0222
+        `define INTS_SEI 16'h0000
     `endif
+    `ifdef UDB_STI_INTR_IMPL
+        `define INTS_STI 16'h0020
+    `else
+        `define INTS_STI 16'h0000
+    `endif
+    `ifdef UDB_SSI_INTR_IMPL
+        `define INTS_SSI 16'h0002
+    `else
+        `define INTS_SSI 16'h0000
+    `endif
+    `ifdef SSCOFPMF_SUPPORTED
+        `define INTS_LCOFI 16'h2000
+    `else
+        `define INTS_LCOFI 16'h0000
+    `endif
+    `define INTS_NOH_MASK (`INTS_LCOFI | `INTS_SEI | `INTS_STI | `INTS_SSI)
 
     // Interrupt bits this config supports below M: the S-level bits, plus VSEI, VSTI, and VSSI with H
     `ifdef H_SUPPORTED
@@ -93,18 +110,29 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     }
 
     sie_stie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "stie")[0] {
-        // autofill 0/1
+        bins zero = {1'b0};
+        `ifdef UDB_STI_INTR_IMPL
+            bins one = {1'b1}; // STIE is read-only zero without STI
+        `endif
     }
-    sie_stie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "stie")[0] {
-        bins one = {1'b1};
-    }
+    `ifdef UDB_STI_INTR_IMPL
+        sie_stie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "stie")[0] {
+            bins one = {1'b1};
+        }
+    `endif
 
     // Exactly one interrupt in INTS_MASK enabled. M-level enables are not touched by writes to sie
     // or hie, so they are masked off.
     walking_sie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")[15:0] & `INTS_MASK) {
-        bins seie = {16'h0200};
-        bins stie = {16'h0020};
-        bins ssie = {16'h0002};
+        `ifdef UDB_SEI_INTR_IMPL
+            bins seie = {16'h0200};
+        `endif
+        `ifdef UDB_STI_INTR_IMPL
+            bins stie = {16'h0020};
+        `endif
+        `ifdef UDB_SSI_INTR_IMPL
+            bins ssie = {16'h0002};
+        `endif
         `ifdef SSCOFPMF_SUPPORTED
             bins lcofie = {16'h2000};
         `endif
@@ -119,9 +147,15 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     // is one-hot. The bin names the single interrupt left disabled. As in sie_ones, the VS enables
     // are in hie rather than sie, so they are masked off.
     walking_sie_zero: coverpoint ((~get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")[15:0]) & `INTS_NOH_MASK) {
-        bins seie = {16'h0200};
-        bins stie = {16'h0020};
-        bins ssie = {16'h0002};
+        `ifdef UDB_SEI_INTR_IMPL
+            bins seie = {16'h0200};
+        `endif
+        `ifdef UDB_STI_INTR_IMPL
+            bins stie = {16'h0020};
+        `endif
+        `ifdef UDB_SSI_INTR_IMPL
+            bins ssie = {16'h0002};
+        `endif
         `ifdef SSCOFPMF_SUPPORTED
             bins lcofie = {16'h2000};
         `endif
@@ -161,9 +195,15 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     // One interrupt in INTS_MASK pending at a time. M-level bits are masked off: the tests neither
     // raise nor depend on them.
     sip_walking: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mip")[15:0] & `INTS_MASK) {
-        bins seip = {16'h0200};
-        bins stip = {16'h0020};
-        bins ssip = {16'h0002};
+        `ifdef UDB_SEI_INTR_IMPL
+            bins seip = {16'h0200};
+        `endif
+        `ifdef UDB_STI_INTR_IMPL
+            bins stip = {16'h0020};
+        `endif
+        `ifdef UDB_SSI_INTR_IMPL
+            bins ssip = {16'h0002};
+        `endif
         `ifdef SSCOFPMF_SUPPORTED
             bins lcofip = {16'h2000};
         `endif
@@ -322,7 +362,9 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         // when Sstc is implemented, and SSI and SEI through the platform interrupt controller.
         // U has no sip or stimecmp access, so it reaches only the interrupt controller.
         // U cannot reach stimecmp or mip.STIP, so U-mode STI is raised through T-SBI (cp_trigger_tsbi)
-        ignore_bins u_sti_tsbi = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} && binsof(sip_walking.stip);
+        `ifdef UDB_STI_INTR_IMPL
+            ignore_bins u_sti_tsbi = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} && binsof(sip_walking.stip);
+        `endif
         `ifdef SSCOFPMF_SUPPORTED
             // U has no sip, so U-mode LCOFI is raised through T-SBI and recorded by cp_trigger_tsbi
             ignore_bins u_lcofi_tsbi = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} && binsof(sip_walking.lcofip);
@@ -335,10 +377,12 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
                                        (binsof(sip_walking.vseip) || binsof(sip_walking.vstip) || binsof(sip_walking.vssip));
         `endif
         `ifndef SSTC_SUPPORTED
-            // Without Sstc, STI is raised only by an M-mode write to mip.STIP. With SIE = 0 it stays
-            // pending in S and is recorded here; with SIE = 1 it is taken on the mret.
-            ignore_bins s_sti_tsbi = binsof(priv_mode_interrupts.S_mode) && binsof(sip_walking.stip) &&
-                                     binsof(sstatus_sie) intersect {1};
+            `ifdef UDB_STI_INTR_IMPL
+                // Without Sstc, STI is raised only by an M-mode write to mip.STIP. With SIE = 0 it stays
+                // pending in S and is recorded here; with SIE = 1 it is taken on the mret.
+                ignore_bins s_sti_tsbi = binsof(priv_mode_interrupts.S_mode) && binsof(sip_walking.stip) &&
+                                         binsof(sstatus_sie) intersect {1};
+            `endif
         `endif
     }
     // Every S-level interrupt has a T-SBI path: mip.STIP, mip.SSIP, mip.SEIP, and mip.LCOFIP are
@@ -354,9 +398,13 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     // mip is an M CSR, so S and U write it through T-SBI and the write is recorded in M.
     // S writes sip.SSIP directly; U writes it through T-SBI, which the S handler services itself.
     // Whether the write fires the interrupt in each mode is cp_trigger/cp_trigger_tsbi.
-    cp_trigger_reg_mip_ssip:    cross csrrs, csr_mip, rs1_ssip, sstatus_sie, mideleg_s_ones, sie_ones, stvec_both;
-    cp_trigger_reg_mip_seip:    cross csrrs, csr_mip, rs1_seip, sstatus_sie, mideleg_s_ones, sie_ones, stvec_both;
-    cp_trigger_reg_sip_ssip:    cross csrrs_csrrsi, csr_sip, rs1_ssip, sstatus_sie, mideleg_s_ones, sie_ones, stvec_both;
+    `ifdef UDB_SSI_INTR_IMPL
+        cp_trigger_reg_mip_ssip: cross csrrs, csr_mip, rs1_ssip, sstatus_sie, mideleg_s_ones, sie_ones, stvec_both;
+        cp_trigger_reg_sip_ssip: cross csrrs_csrrsi, csr_sip, rs1_ssip, sstatus_sie, mideleg_s_ones, sie_ones, stvec_both;
+    `endif
+    `ifdef UDB_SEI_INTR_IMPL
+        cp_trigger_reg_mip_seip: cross csrrs, csr_mip, rs1_seip, sstatus_sie, mideleg_s_ones, sie_ones, stvec_both;
+    `endif
 
     `ifdef SSTC_SUPPORTED
         cp_trigger_sti_sstc:    cross priv_mode_interrupts, menvcfg_stce, sstatus_sie, sie_ones, mideleg_s_ones, stvec_both, stimecmp_max_min {
@@ -373,7 +421,9 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     cp_enable_one:              cross priv_mode_interrupts, mideleg_s_ones, sstatus_sie_one, walking_sie_one, sip_matches_sie_one {
         // STI and LCOFI are raised through T-SBI by RVTEST_SET_STIME_INT and RVTEST_SET_LCOFI_INT,
         // so with their enable set they are taken on the xret and covered by cp_enable_one_tsbi
-        ignore_bins sti_tsbi = binsof(walking_sie_one.stie); // taken on the T-SBI xret: cp_enable_one_tsbi
+        `ifdef UDB_STI_INTR_IMPL
+            ignore_bins sti_tsbi = binsof(walking_sie_one.stie); // taken on the T-SBI xret: cp_enable_one_tsbi
+        `endif
         `ifdef SSCOFPMF_SUPPORTED
             ignore_bins lcofi_tsbi = binsof(walking_sie_one.lcofie); // taken on the T-SBI xret: cp_enable_one_tsbi
         `endif
@@ -387,7 +437,12 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     // runs with SIE = 0.
     cp_enable_one_tsbi:         cross tsbi_return, mideleg_s_ones, sstatus_sie_on_return_one, walking_sie_one, sip_matches_sie_one {
         // SSI and SEI come from the platform interrupt controller, written from the test mode itself
-        ignore_bins platform = binsof(walking_sie_one.ssie) || binsof(walking_sie_one.seie);
+        `ifdef UDB_SSI_INTR_IMPL
+            ignore_bins platform_ssi = binsof(walking_sie_one.ssie);
+        `endif
+        `ifdef UDB_SEI_INTR_IMPL
+            ignore_bins platform_sei = binsof(walking_sie_one.seie);
+        `endif
         `ifdef H_SUPPORTED
             // S writes hvip directly, so its VS-level interrupts are taken in S (cp_enable_one)
             ignore_bins s_writes_hvip = binsof(tsbi_return.S_mode) &&
@@ -448,6 +503,10 @@ endgroup
 
 `undef INTS_MASK
 `undef INTS_NOH_MASK
+`undef INTS_SEI
+`undef INTS_STI
+`undef INTS_SSI
+`undef INTS_LCOFI
 `undef S_SPV
 `undef S_SRET_TO
 `undef ONE_CSR_PAIR

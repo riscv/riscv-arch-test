@@ -35,14 +35,19 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         `endif
     }
     mstatus_tw: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tw")[0] {
-        // autofill 0/1
+        bins zero = {0};
+        `ifdef U_SUPPORTED
+            bins one = {1}; // TW is read-only zero without a mode below M
+        `endif
     }
     mstatus_tw_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tw")[0] {
         bins zero = {0}; // WFI is permitted outside M mode
     }
-    mstatus_tw_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tw")[0] {
-        bins one = {1}; // WFI outside M mode traps after the implementation-defined timeout
-    }
+    `ifdef U_SUPPORTED
+        mstatus_tw_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tw")[0] {
+            bins one = {1}; // WFI outside M mode traps after the implementation-defined timeout
+        }
+    `endif
     `ifdef H_SUPPORTED
         // hstatus.VTW: with mstatus.TW = 0, VS-mode WFI raises virtual instruction after a bounded time when set
         hstatus_vtw: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtw")[0] {
@@ -71,20 +76,71 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         `endif
     }
 
+    // Each interrupt this config implements. The mip, mie, and mideleg bits of an interrupt that is
+    // not implemented are read-only zero, so they are left out of the masks below.
+    `ifdef UDB_MEI_INTR_IMPL
+        `define SM_MEI 16'h0800
+    `else
+        `define SM_MEI 16'h0000
+    `endif
+    `ifdef UDB_MTI_INTR_IMPL
+        `define SM_MTI 16'h0080
+    `else
+        `define SM_MTI 16'h0000
+    `endif
+    `ifdef UDB_MSI_INTR_IMPL
+        `define SM_MSI 16'h0008
+    `else
+        `define SM_MSI 16'h0000
+    `endif
+    `ifdef UDB_SEI_INTR_IMPL
+        `define SM_SEI 16'h0200
+    `else
+        `define SM_SEI 16'h0000
+    `endif
+    `ifdef UDB_STI_INTR_IMPL
+        `define SM_STI 16'h0020
+    `else
+        `define SM_STI 16'h0000
+    `endif
+    `ifdef UDB_SSI_INTR_IMPL
+        `define SM_SSI 16'h0002
+    `else
+        `define SM_SSI 16'h0000
+    `endif
+    `ifdef SSCOFPMF_SUPPORTED
+        `define SM_LCOFI 16'h2000
+    `else
+        `define SM_LCOFI 16'h0000
+    `endif
+
+    // Interrupt bits the mideleg pair coverpoints use: SEI, STI, SSI, and LCOFI with Sscofpmf.
+    // H hardwires mideleg bits 12, 10, 6, and 2 to 1, and Sail does not let M-level interrupts
+    // (MEI, MTI, MSI) be delegated, so both are left out.
+    `define SM_NOH_MASK (`SM_LCOFI | `SM_SEI | `SM_STI | `SM_SSI)
+
+    // Interrupt bits this config supports: MEI, MTI, MSI, plus the S, Sscofpmf, and H interrupts
+    `ifdef S_SUPPORTED
+        `ifdef H_SUPPORTED
+            `define SM_INT_MASK (`SM_MEI | `SM_MTI | `SM_MSI | `SM_NOH_MASK | 16'h0444)
+        `else
+            `define SM_INT_MASK (`SM_MEI | `SM_MTI | `SM_MSI | `SM_NOH_MASK)
+        `endif
+    `else
+        `define SM_INT_MASK (`SM_MEI | `SM_MTI | `SM_MSI)
+    `endif
+
     // mideleg written all 0s or all 1s in every delegable field.
     // mideleg does not exist without S, so it becomes a trivial always-hit bin that leaves the
     // crosses below intact.
     `ifdef S_SUPPORTED
-        mideleg_both: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "mideleg")[15:0] {
-            // Sail does not let M-level interrupts be delegated (mideleg MEI, MTI, and MSI stay 0),
-            // so bits 11, 7, and 3 are don't care in ones.
-            `ifdef SSCOFPMF_SUPPORTED
-                wildcard bins ones  = {16'b??1???1???1???1?}; // LCOFI, SEI, STI, SSI delegated
-                wildcard bins zeros = {16'b??0?0?0?0?0?0?0?};
-            `else
-                wildcard bins ones  = {16'b??????1???1???1?}; // SEI, STI, SSI delegated
-                wildcard bins zeros = {16'b????0?0?0?0?0?0?};
-            `endif
+        // Sail does not let M-level interrupts be delegated (mideleg MEI, MTI, and MSI stay 0),
+        // so bits 11, 7, and 3 are don't care in ones.
+        mideleg_both: coverpoint
+            (((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "mideleg")[15:0] & `SM_NOH_MASK) == `SM_NOH_MASK) ? 2'd1 :
+             ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "mideleg")[15:0] & (`SM_NOH_MASK | 16'h0888)) == 16'h0) ? 2'd0 : 2'd2) {
+            bins ones  = {2'd1}; // every implemented S-level interrupt (LCOFI, SEI, STI, SSI) delegated
+            bins zeros = {2'd0};
         }
     `else
         mideleg_both: coverpoint 1'b1 {
@@ -105,26 +161,6 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         }
     `endif
 
-    // Interrupt bits the mideleg pair coverpoints use: SEI, STI, SSI, and LCOFI with Sscofpmf.
-    // H hardwires mideleg bits 12, 10, 6, and 2 to 1, and Sail does not let M-level interrupts
-    // (MEI, MTI, MSI) be delegated, so both are left out.
-    `ifdef SSCOFPMF_SUPPORTED
-        `define SM_NOH_MASK 16'h2222
-    `else
-        `define SM_NOH_MASK 16'h0222
-    `endif
-
-    // Interrupt bits this config supports: MEI, MTI, MSI, plus the S, Sscofpmf, and H interrupts
-    `ifdef S_SUPPORTED
-        `ifdef H_SUPPORTED
-            `define SM_INT_MASK (16'h0888 | `SM_NOH_MASK | 16'h0444)
-        `else
-            `define SM_INT_MASK (16'h0888 | `SM_NOH_MASK)
-        `endif
-    `else
-        `define SM_INT_MASK 16'h0888
-    `endif
-
     // mideleg delegates exactly one interrupt of the pending mip pair and nothing else.
     // x & -x keeps the lowest set bit; x & (x-1) clears it, leaving the higher bit of the pair.
     `ifdef S_SUPPORTED
@@ -138,46 +174,46 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         }
     `endif
 
-    // mie written all 1s: reduction AND over every enable bit the config supports
-    mie_ones: coverpoint (&{get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "meie")[0],  // MEIE
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")[0],   // MTIE
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "msie")[0]    // MSIE
-                            `ifdef S_SUPPORTED
-                                , get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "seie")[0]  // SEIE
-                                , get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "stie")[0]  // STIE
-                                , get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "ssie")[0]  // SSIE
-                            `endif
-                            `ifdef SSCOFPMF_SUPPORTED
-                                , get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "lcofie")[0] // LCOFIE
-                            `endif
-                            `ifdef H_SUPPORTED
-                                , get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "vgeie")[0] // VSEIE
-                                , get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "vstie")[0]  // VSTIE
-                                , get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "vssie")[0]  // VSSIE
-                            `endif
-                            }) {
+    // mie written all 1s: every enable bit the config supports is set
+    mie_ones: coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")[15:0] & `SM_INT_MASK) == `SM_INT_MASK) {
         bins ones = {1'b1};
     }
 
-
     mie_mtie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")[0] {
-         // autofill 0/1
+        bins zero = {1'b0};
+        `ifdef UDB_MTI_INTR_IMPL
+            bins one = {1'b1}; // MTIE is read-only zero without MTI
+        `endif
     }
 
-    mie_mtie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")[0] {
-         bins one = {1'b1};
-    }
+    `ifdef UDB_MTI_INTR_IMPL
+        mie_mtie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")[0] {
+            bins one = {1'b1};
+        }
+    `endif
 
     // Exactly one interrupt enabled. Each bin requires mie[15:0] to contain exactly one supported
     // interrupt-enable bit and no other set bits.
     walking_mie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")[15:0] {
-        bins meie = {16'h0800};
-        bins mtie = {16'h0080};
-        bins msie = {16'h0008};
+        `ifdef UDB_MEI_INTR_IMPL
+            bins meie = {16'h0800};
+        `endif
+        `ifdef UDB_MTI_INTR_IMPL
+            bins mtie = {16'h0080};
+        `endif
+        `ifdef UDB_MSI_INTR_IMPL
+            bins msie = {16'h0008};
+        `endif
         `ifdef S_SUPPORTED
-            bins seie = {16'h0200};
-            bins stie = {16'h0020};
-            bins ssie = {16'h0002};
+            `ifdef UDB_SEI_INTR_IMPL
+                bins seie = {16'h0200};
+            `endif
+            `ifdef UDB_STI_INTR_IMPL
+                bins stie = {16'h0020};
+            `endif
+            `ifdef UDB_SSI_INTR_IMPL
+                bins ssie = {16'h0002};
+            `endif
         `endif
         `ifdef SSCOFPMF_SUPPORTED
             bins lcofie = {16'h2000};
@@ -192,13 +228,25 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     // Every interrupt enabled except one: the complement of mie, masked to the bits this config
     // supports, is one-hot. The bin names the single interrupt left disabled.
     walking_mie_zero: coverpoint ((~get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")[15:0]) & `SM_INT_MASK) {
-        bins meie = {16'h0800};
-        bins mtie = {16'h0080};
-        bins msie = {16'h0008};
+        `ifdef UDB_MEI_INTR_IMPL
+            bins meie = {16'h0800};
+        `endif
+        `ifdef UDB_MTI_INTR_IMPL
+            bins mtie = {16'h0080};
+        `endif
+        `ifdef UDB_MSI_INTR_IMPL
+            bins msie = {16'h0008};
+        `endif
         `ifdef S_SUPPORTED
-            bins seie = {16'h0200};
-            bins stie = {16'h0020};
-            bins ssie = {16'h0002};
+            `ifdef UDB_SEI_INTR_IMPL
+                bins seie = {16'h0200};
+            `endif
+            `ifdef UDB_STI_INTR_IMPL
+                bins stie = {16'h0020};
+            `endif
+            `ifdef UDB_SSI_INTR_IMPL
+                bins ssie = {16'h0002};
+            `endif
         `endif
         `ifdef SSCOFPMF_SUPPORTED
             bins lcofie = {16'h2000};
@@ -232,13 +280,25 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     // One interrupt pending at a time. Bits 15:14, 12, 8, 4, and 0 are don't care because they are
     // either tied to zero or driven by the platform (SGEIP) rather than by the test.
     mip_walking: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mip")[15:0] {
-        wildcard bins meip = {16'b??0?100?000?000?};
-        wildcard bins mtip = {16'b??0?000?100?000?};
-        wildcard bins msip = {16'b??0?000?000?100?};
+        `ifdef UDB_MEI_INTR_IMPL
+            wildcard bins meip = {16'b??0?100?000?000?};
+        `endif
+        `ifdef UDB_MTI_INTR_IMPL
+            wildcard bins mtip = {16'b??0?000?100?000?};
+        `endif
+        `ifdef UDB_MSI_INTR_IMPL
+            wildcard bins msip = {16'b??0?000?000?100?};
+        `endif
         `ifdef S_SUPPORTED
-            wildcard bins seip = {16'b??0?001?000?000?};
-            wildcard bins stip = {16'b??0?000?001?000?};
-            wildcard bins ssip = {16'b??0?000?000?001?};
+            `ifdef UDB_SEI_INTR_IMPL
+                wildcard bins seip = {16'b??0?001?000?000?};
+            `endif
+            `ifdef UDB_STI_INTR_IMPL
+                wildcard bins stip = {16'b??0?000?001?000?};
+            `endif
+            `ifdef UDB_SSI_INTR_IMPL
+                wildcard bins ssip = {16'b??0?000?000?001?};
+            `endif
         `endif
         `ifdef SSCOFPMF_SUPPORTED
             wildcard bins lcofip = {16'b??1?000?000?000?};
@@ -266,24 +326,8 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         }
     `endif
 
-    // Every interrupt pending at once: reduction AND over every pending bit the config supports
-    mip_all_ones: coverpoint (&{get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "meip")[0],  // MEIP
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")[0],   // MTIP
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "msip")[0]    // MSIP
-                            `ifdef S_SUPPORTED
-                                , get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "seip")[0]  // SEIP
-                                , get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "stip")[0]  // STIP
-                                , get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "ssip")[0]  // SSIP
-                            `endif
-                            `ifdef SSCOFPMF_SUPPORTED
-                                , get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "lcofip")[0] // LCOFIP
-                            `endif
-                            `ifdef H_SUPPORTED
-                                , get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "vgeip")[0] // VSEIP
-                                , get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "vstip")[0]  // VSTIP
-                                , get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "vssip")[0]  // VSSIP
-                            `endif
-                            }) {
+    // Every interrupt pending at once: every pending bit the config supports is set
+    mip_all_ones: coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mip")[15:0] & `SM_INT_MASK) == `SM_INT_MASK) {
         bins ones = {1'b1};
     }
 
@@ -322,9 +366,11 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
             bins seip = {'h200};
         }
         // sip.SSIP is read-only zero unless SSI is delegated
-        mideleg_ssi_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "ssip")[0] {
-            bins one = {1'b1};
-        }
+        `ifdef UDB_SSI_INTR_IMPL
+            mideleg_ssi_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mideleg", "ssip")[0] {
+                bins one = {1'b1};
+            }
+        `endif
     `endif
 
     // Building blocks for the Sstc crosses, which check writes to mip.STIP
@@ -431,8 +477,10 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
             `endif
             // Same for STI: sip.STIP is read-only and U cannot reach stimecmp, so every U-mode STI
             // is raised from M and taken on the mret, whatever mideleg says. VS and VU likewise.
-            ignore_bins u_cannot_raise_sti = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} &&
-                                             binsof(mip_walking.stip);
+            `ifdef UDB_STI_INTR_IMPL
+                ignore_bins u_cannot_raise_sti = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} &&
+                                                 binsof(mip_walking.stip);
+            `endif
         `endif
         `ifdef H_SUPPORTED
             // The VS-level interrupts are raised through hvip, which only M and HS can write. Below HS
@@ -463,9 +511,13 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     // read-write, so cp_trigger_reg_sip_ssip is an ordinary S-mode csrrs with no T-SBI involved,
     // which is why it drops the mstatus.MIE dimension and requires mideleg.SSI.
     `ifdef S_SUPPORTED
-        cp_trigger_reg_mip_ssip: cross csrrs_csrrsi, csr_mip, rs1_ssip, mstatus_mie, mstatus_sie, mideleg_both, mie_ones, mtvec_both;
-        cp_trigger_reg_mip_seip: cross csrrs, csr_mip, rs1_seip, mstatus_mie, mstatus_sie, mideleg_both, mie_ones, mtvec_both;
-        cp_trigger_reg_sip_ssip: cross csrrs_csrrsi, csr_sip, rs1_ssip, mstatus_sie, mideleg_ssi_one, mie_ones, mtvec_both;
+        `ifdef UDB_SSI_INTR_IMPL
+            cp_trigger_reg_mip_ssip: cross csrrs_csrrsi, csr_mip, rs1_ssip, mstatus_mie, mstatus_sie, mideleg_both, mie_ones, mtvec_both;
+            cp_trigger_reg_sip_ssip: cross csrrs_csrrsi, csr_sip, rs1_ssip, mstatus_sie, mideleg_ssi_one, mie_ones, mtvec_both;
+        `endif
+        `ifdef UDB_SEI_INTR_IMPL
+            cp_trigger_reg_mip_seip: cross csrrs, csr_mip, rs1_seip, mstatus_mie, mstatus_sie, mideleg_both, mie_ones, mtvec_both;
+        `endif
     `endif
     `ifdef SSTC_SUPPORTED
         cp_trigger_sti_sstc:    cross priv_mode_interrupts, menvcfg_stce, mstatus_mie, mstatus_sie, mie_ones, mideleg_both, mtvec_both, stimecmp_max_min {
@@ -524,17 +576,25 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         }
         cp_priority_mideleg_tsbi:   cross priv_mode_m, mret_insn, mstatus_mpv_mpp, mie_ones, mip_pairs_noh, mideleg_one_of_mip_pair;
     `endif
-    cp_wfi_m:                   cross priv_mode_m, mstatus_mie, mstatus_tw, wfi, mideleg_zeros;
+    // cp_wfi_m and cp_wfi wait for the machine timer, so they need MTI
+    `ifdef UDB_MTI_INTR_IMPL
+        cp_wfi_m:               cross priv_mode_m, mstatus_mie, mstatus_tw, wfi, mideleg_zeros;
+    `endif
 
     // WFI with TW = 0 is exercised in the most privileged mode below M that this config implements.
     // The mode is selected with a macro rather than an `ifdef inside the cross argument list: on a hart
     // with neither S nor U (cv32e20 implements Sm and no lower mode) the inline form leaves a cross with
     // no privilege axis at all, which still elaborates and fills from M-mode WFIs -- a silent duplicate
     // of cp_wfi_m reporting coverage for a mode the hart does not have. Dropping the coverpoint is right.
-    `ifdef S_SUPPORTED
-        `define SM_WFI_PRIV priv_mode_s
-    `elsif U_SUPPORTED
-        `define SM_WFI_PRIV priv_mode_u
+    // Without S, U-mode WFI only waits when WFI_U_MODE allows it; otherwise it traps at once.
+    `ifdef UDB_MTI_INTR_IMPL
+        `ifdef S_SUPPORTED
+            `define SM_WFI_PRIV priv_mode_s
+        `elsif U_SUPPORTED
+            `ifdef UDB_WFI_U_MODE
+                `define SM_WFI_PRIV priv_mode_u
+            `endif
+        `endif
     `endif
     `ifdef SM_WFI_PRIV
         cp_wfi:                 cross `SM_WFI_PRIV, mstatus_mie, mie_mtie_one, mstatus_tw_zero, wfi, mideleg_zeros;
@@ -574,6 +634,13 @@ endgroup
 
 `undef SM_INT_MASK
 `undef SM_NOH_MASK
+`undef SM_MEI
+`undef SM_MTI
+`undef SM_MSI
+`undef SM_SEI
+`undef SM_STI
+`undef SM_SSI
+`undef SM_LCOFI
 `ifdef SM_MPV
     `undef SM_MPV
 `endif

@@ -308,8 +308,20 @@
 `ifdef ZICBOZ_COVERAGE
   `include "Zicboz_coverage.svh"
 `endif
+`ifdef ZICCAMOA_COVERAGE
+  `include "Ziccamoa_coverage.svh"
+`endif
+`ifdef ZICCAMOC_COVERAGE
+  `include "Ziccamoc_coverage.svh"
+`endif
+`ifdef ZICCIF_COVERAGE
+  `include "Ziccif_coverage.svh"
+`endif
 `ifdef ZICCLSM_COVERAGE
   `include "Zicclsm_coverage.svh"
+`endif
+`ifdef ZICCRSE_COVERAGE
+  `include "Ziccrse_coverage.svh"
 `endif
 `ifdef ZICFILP_COVERAGE
   `include "Zicfilp_coverage.svh"

@@ -36,6 +36,20 @@ coverpoints:
     description: Attempt to clear C when subsequent instruction is not a multiple of 2.  C should not change.
     expectation: C should not change
     bins: "1"
+  - name: |-
+      cp_mepc_ialign32_read
+      cp_mepc_ialign32_mret
+    goal: mepc[1] is masked on reads, including mret's, while IALIGN = 32
+    description: Only with Zca and a writable misa.C (MUTABLE_MISA_C).  Clear misa.C, write mepc with bit 1 set, execute mret with mstatus.MPP = M, then read mepc; then set misa.C again and read mepc.
+    expectation: While misa.C = 0, mepc reads with bit 1 clear and mret returns to the masked address; after misa.C is set again, mepc reads with bit 1 set.  Match reference model.
+    bins: "2"
+  - name: |-
+      cp_sepc_ialign32_read
+      cp_sepc_ialign32_sret
+    goal: sepc[1] is masked on reads, including sret's, while IALIGN = 32
+    description: Only with Zca, S and a writable misa.C (MUTABLE_MISA_C).  Clear misa.C in M-mode.  Write sepc with bit 1 set and execute sret with sstatus.SPP = S, from M-mode and then from S-mode (entered with T-SBI); write sepc with bit 1 set again and read it, in M-mode and in S-mode.  Then set misa.C again in M-mode and read sepc.
+    expectation: While misa.C = 0, sepc reads with bit 1 clear and sret returns to the masked address; after misa.C is set again, sepc reads with bit 1 set.  Match reference model.
+    bins: 2 modes * 2
   - name: cp_csrr_insufficient_priv
     goal: Debug registers should be inaccessible from M-mode
     description: Read Debug CSRS 7B0-7BF
@@ -95,7 +109,11 @@ coverpoints:
     rules:
       - sepc should be pointing two instructions ahead.
   - name: cp_scsr_from_m
-    description: "If S supported, read/write/set/clear each S-mode CSR: sstatus, scause, sie, stvec, scounteren, senvcfg, sscratch, sip.  sepc and stval are not tested because it is hard to express what values are legal."
+    description: "If S supported, read/write/set/clear each S-mode CSR: sstatus, sie, stvec, scounteren, senvcfg, sscratch, sepc, stval, sip.  stvec is WARL with complex legal values, so only MODE[1], which must read 0, is checked.  scause is tested in cp_scause_from_m."
+  - name: cp_scause_from_m
+    description: "If S supported, write scause from M-mode with each Exception Code 0-9, 12, 13 and 15 and read it back.  If Ss1p12 or later is supported, also write codes 10, 11, 14 and 16-31; otherwise also write 18 if Zicfilp or Zicfiss is supported and 10 and 20-23 if H is supported."
+    expectation: The Exception Code is WLRL.  Ss1p12 and later must hold the values 0-31, so each reads back as written.  Ss1p11 need only hold the codes of supported causes, such as software check (18) with Zicfilp or Zicfiss and the H causes (10 and 20-23) with H.
+    bins: 13, plus 1 with Zicfilp or Zicfiss and 5 with H (32 on Ss1p12 or later)
   - name: cp_satp_from_m
     description: If S is supported, read satp with mstatus.TVM=0/1
     expectation: shouldn't trap on either TVM.  Value is not predictable.
@@ -539,6 +557,14 @@ coverpoints:
     bins: "1"
     rules:
       - H_mtval_nrz
+  - name: |-
+      cp_vsepc_ialign32_read
+      cp_vsepc_ialign32_vs_read
+      cp_vsepc_ialign32_sret
+    goal: vsepc[1] is masked on reads, including sret's in VS-mode, while IALIGN = 32
+    description: Only with Zca and a writable misa.C (MUTABLE_MISA_C).  Clear misa.C in M-mode.  In VS-mode (entered with T-SBI), write sepc (vsepc) with bit 1 set, execute sret with sstatus.SPP = S, then write and read sepc.  Write and read vsepc in M-mode and in HS-mode.  Then set misa.C again in M-mode and read vsepc.
+    expectation: While misa.C = 0, vsepc reads with bit 1 clear in every mode and sret returns to the masked address; after misa.C is set again, vsepc reads with bit 1 set.  Match reference model.
+    bins: 2 modes + 1 + 1
   - heading: mstatus.TVM and hstatus.VTVM (Sm_H_tvm_cg)
   - name: cp_tvm_hs
     goal: TVM traps access to satp and hgatp, but not vsatp; VTVM does not affect HS-mode

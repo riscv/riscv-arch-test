@@ -21,6 +21,30 @@
     `endif
 `endif
 
+// scause must hold every code 0-31 from Ss1p12; before that, only the codes of supported causes
+`ifdef S1P12P0_OR_LATER_SUPPORTED
+    `define SCAUSE_HOLDS_SOFTWARE_CHECK
+    `define SCAUSE_HOLDS_COUNTER_OVERFLOW
+`endif
+`ifdef SOFTWARE_CHECK_SUPPORTED
+    `ifndef SCAUSE_HOLDS_SOFTWARE_CHECK
+        `define SCAUSE_HOLDS_SOFTWARE_CHECK
+    `endif
+`endif
+`ifdef SSCOFPMF_SUPPORTED
+    `ifndef SCAUSE_HOLDS_COUNTER_OVERFLOW
+        `define SCAUSE_HOLDS_COUNTER_OVERFLOW
+    `endif
+`endif
+`ifdef S1P12P0_OR_LATER_SUPPORTED
+    `define SCAUSE_HOLDS_H_CAUSES
+`endif
+`ifdef H_SUPPORTED
+    `ifndef SCAUSE_HOLDS_H_CAUSES
+        `define SCAUSE_HOLDS_H_CAUSES
+    `endif
+`endif
+
 covergroup S_scause_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
@@ -54,19 +78,23 @@ covergroup S_scause_cg with function sample(ins_t ins);
         bins b_15_store_page_fault = {15};
         `ifdef S1P12P0_OR_LATER_SUPPORTED
             // Exception code is required to hold the values 0-31 in Ss1p12 or higher.
-            bins b_10_ecall_vs = {10}; // only can be triggered in hardware if H supported but scause must be able to hold 0-31
             bins b_11_ecall_m = {11}; // never delegated to S mode but scause must be able to hold 0-31
             bins b_14_reserved = {14};
             bins b_16_double_trap = {16}; // never delegated to S mode
             bins b_17_reserved = {17};
-            bins b_18_software_check = {18}; // only can be triggered in hardware if SOFTWARE_CHECK_SUPPORTED but scause must be able to hold 0-31
             bins b_19_hardware_error = {19}; // scause must be able to hold 0-31
-            // These can only be triggered in hardware if H supported, but scause must be able to hold 0-31
+            bins b_31_24_custom[] = {[24:31]}; // scause must be able to hold 0-31
+        `endif
+        `ifdef SCAUSE_HOLDS_SOFTWARE_CHECK
+            bins b_18_software_check = {18}; // Zicfilp or Zicfiss, or any code 0-31 in Ss1p12 or higher
+        `endif
+        `ifdef SCAUSE_HOLDS_H_CAUSES
+            // H, or any code 0-31 in Ss1p12 or higher
+            bins b_10_ecall_vs = {10};
             bins b_20_instr_guest_page_fault = {20};
             bins b_21_load_guest_page_fault = {21};
             bins b_22_virtual_instruction = {22};
             bins b_23_store_guest_page_fault = {23};
-            bins b_31_24_custom[] = {[24:31]}; // scause must be able to hold 0-31
         `endif
         //bins b_47_32_reserved = {[47:32]};
         //bins b_63_48_custom = {[63:48]};
@@ -82,16 +110,21 @@ covergroup S_scause_cg with function sample(ins_t ins);
         `ifdef S1P12P0_OR_LATER_SUPPORTED
             // scause Exception Code required to hold the values 0-31
             bins b_0_reserved = {0};
-            bins b_2_vs_software = {2};
             bins b_4_reserved = {4};
-            bins b_6_vs_timer = {6};
             bins b_8_reserved = {8};
-            bins b_10_vs_external = {10};
-            bins b_12_supervisor_guest_external = {12};
-            bins b_13_counter_overflow = {13};
             bins b_14_reserved = {14};
             bins b_15_reserved = {15};
             bins b_31_16_custom[] = {[31:16]}; // designated for platform use
+        `endif
+        `ifdef SCAUSE_HOLDS_COUNTER_OVERFLOW
+            bins b_13_counter_overflow = {13}; // Sscofpmf, or any code 0-31 in Ss1p12 or higher
+        `endif
+        `ifdef SCAUSE_HOLDS_H_CAUSES
+            // H, or any code 0-31 in Ss1p12 or higher
+            bins b_2_vs_software = {2};
+            bins b_6_vs_timer = {6};
+            bins b_10_vs_external = {10};
+            bins b_12_supervisor_guest_external = {12};
         `endif
     }
 

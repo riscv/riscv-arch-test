@@ -78,7 +78,7 @@ include::norm/Svbare_norm_rules.adoc[]
 
 ==== Svinval Memory Management Unit Table Invalidation
 
-The Svinval extension defines instructions to update memory management tables for virtual memory and optionally for PMP. Their effect is system-dependent, so these tests simply check that the instructions run.
+The Svinval extension defines instructions to update memory management tables for virtual memory and optionally for PMP. These tests check that the instructions run, and, with Sv39 or Sv32, that the SFENCE.W.INVAL, SINVAL.VMA, SFENCE.INVAL.IR sequence removes a changed leaf. A hart that caches no translations passes the invalidation test.
 
 include::{testplansdir}/priv/Svinval.adoc[]
 

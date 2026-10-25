@@ -26,6 +26,31 @@ covergroup Svinval_cg with function sample(ins_t ins);
     cp_svinval : cross cp_instr, priv_mode_s_u, cp_tvm {
         // each instruction executed in S and U mode with TVM clear
     }
+
+    // The SFENCE.W.INVAL, SINVAL.VMA, SFENCE.INVAL.IR sequence in S-mode after a leaf change, with x0 or a register
+    // in rs1 and rs2.  The test checks that the next access uses the new leaf.
+    `ifdef SV39_SUPPORTED
+        `define SVINVAL_S_PAGED
+    `elsif SV32_SUPPORTED
+        `define SVINVAL_S_PAGED
+    `endif
+    `ifdef SVINVAL_S_PAGED
+        sinval_vma : coverpoint ins.current.insn {
+            wildcard bins sinval_vma = {SINVAL_VMA};
+        }
+        rs1 : coverpoint ins.current.insn[19:15] {
+            bins x0       = {0};
+            bins register = {[1:31]};
+        }
+        rs2 : coverpoint ins.current.insn[24:20] {
+            bins x0       = {0};
+            bins register = {[1:31]};
+        }
+        satp_paged : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "satp", "mode") {
+            bins paged = {[1:15]};
+        }
+        cp_sinval_vma : cross priv_mode_s, sinval_vma, satp_paged, rs1, rs2;
+    `endif
  endgroup
 
 // Sm tests are not part of a certificate without Sm (EXCLUDE_SM), so neither is their covergroup

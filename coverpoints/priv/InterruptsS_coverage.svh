@@ -437,6 +437,11 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         cp_wfi_timeout_vs:          cross priv_mode_vs, sstatus_sie, sie_stie, mstatus_tw_one, hstatus_vtw, wfi;
         cp_wfi_timeout_vs_vtw_one:  cross priv_mode_vs, sstatus_sie, sie_stie, mstatus_tw_zero, hstatus_vtw_one, wfi;
         cp_wfi_timeout_vu:          cross priv_mode_vu, sstatus_sie, sie_stie, mstatus_tw, hstatus_vtw, wfi;
+        // Every TW and VTW in VS-mode: the WFI waits with TW = VTW = 0 (cp_wfi_vs, which needs Sstc) and times
+        // out otherwise
+        `ifdef SSTC_SUPPORTED
+            cp_wfi_vs_tw_vtw:       cross priv_mode_vs, sstatus_sie, mstatus_tw, hstatus_vtw, wfi;
+        `endif
     `endif
 
 endgroup

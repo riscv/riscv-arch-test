@@ -405,7 +405,7 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
                 *(write_stce(test_data, True, boot) if wfi["stce"] else []),
                 f"LI(x{tmp_reg}, 0x200000)",
                 tsbi_call_or_direct(f"{twcmd} mstatus, x{tmp_reg} # mstatus.TW = {tw}", boot),
-                *(_write_vtw(tmp_reg, 0, boot) if priv == "VS" else []),
+                *(_write_vtw(tmp_reg, False, boot) if priv == "VS" else []),
                 f"LI(x{tmp_reg}, {status['mask']:#x})",
                 f"{enablecmd} {status['csr']}, x{tmp_reg} # {status['csr']}.{status['field']} = {enable}",
                 f"LI(x{tmp_reg}, {ie_mask:#x})",
@@ -456,11 +456,11 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
         tc.code.append("#endif // S_SUPPORTED")
 
 
-def _write_vtw(reg: int, vtw: int, boot: str) -> list[str]:
+def _write_vtw(reg: int, vtw: bool, boot: str) -> list[str]:
     """Set or clear hstatus.VTW from the boot mode."""
     return [
         f"LI(x{reg}, HSTATUS_VTW)",
-        tsbi_call_or_direct(f"{'csrs' if vtw else 'csrc'} hstatus, x{reg} # hstatus.VTW = {vtw}", boot),
+        tsbi_call_or_direct(f"{'csrs' if vtw else 'csrc'} hstatus, x{reg} # hstatus.VTW = {int(vtw)}", boot),
     ]
 
 
@@ -472,12 +472,12 @@ def _write_vtw(reg: int, vtw: int, boot: str) -> list[str]:
 _WFI_TIMEOUT_CASES = {
     "S": [(1, None, "cp_wfi_timeout")],
     "U": [(1, None, "cp_wfi_timeout"), (0, None, "cp_wfi_timeout_tw_zero")],
-    "VS": [(1, 0, "cp_wfi_timeout_vs"), (1, 1, "cp_wfi_timeout_vs"), (0, 1, "cp_wfi_timeout_vs_vtw_one")],
+    "VS": [(1, False, "cp_wfi_timeout_vs"), (1, True, "cp_wfi_timeout_vs"), (0, True, "cp_wfi_timeout_vs_vtw_one")],
     "VU": [
-        (1, 0, "cp_wfi_timeout_vu"),
-        (1, 1, "cp_wfi_timeout_vu"),
-        (0, 0, "cp_wfi_timeout_vu"),
-        (0, 1, "cp_wfi_timeout_vu"),
+        (1, False, "cp_wfi_timeout_vu"),
+        (1, True, "cp_wfi_timeout_vu"),
+        (0, False, "cp_wfi_timeout_vu"),
+        (0, True, "cp_wfi_timeout_vu"),
     ],
 }
 
@@ -503,7 +503,7 @@ def generate_cp_wfi_timeout(
         twcmd = "csrs" if tw == 1 else "csrc"
         # U-mode WFI only times out with TW = 0 when S-mode exists
         guard = priv == "U" and tw == 0
-        vtw_name = "" if vtw is None else f"_vtw_{vtw}"
+        vtw_name = "" if vtw is None else f"_vtw_{int(vtw)}"
         for enable in [0, 1]:
             for ie in [0, 1]:
                 enablecmd = "csrs" if enable == 1 else "csrc"
@@ -524,7 +524,7 @@ def generate_cp_wfi_timeout(
                     *mode_enter(suite, priv),
                     "wfi # nothing is pending, so this times out and traps",
                     *mode_exit(suite, priv),
-                    *([] if vtw is None else _write_vtw(tmp_reg, 0, suite.boot)),
+                    *([] if vtw is None else _write_vtw(tmp_reg, False, suite.boot)),
                     *(["#endif // S_SUPPORTED"] if guard else []),
                     "",
                 ]

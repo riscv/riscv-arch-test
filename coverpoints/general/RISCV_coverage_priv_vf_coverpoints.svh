@@ -9,7 +9,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   Vector floating-point coverpoints common to Sm_VF_cg, S_VF_cg and U_VF_cg
+//   Vector floating-point coverpoints common to Sm_VF_cg, S_VF_cg, H_VF_cg and U_VF_cg
 //   Coverpoints that name mstatus/sstatus stay in each covergroup.
 //
 ///////////////////////////////////////////

@@ -4,18 +4,33 @@
 # Sm machine mode privileged extension test generator.
 # Also generates the Sm_F, Sm_V and Sm_VF groups, run only when F, Zve32x or Zve32f is also supported.
 # Also generates the Sm_Zicntr group, run only when Zicntr is also supported.
+# Also generates the Sm_H group, run only when H is also supported.
 # jcarlin@hmc.edu Jan 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
 """Sm privileged extension test generator."""
 
-from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd, gen_csr_write_sigupd
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd
+from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.FCommon import gen_fcsr_tests
+from testgen.priv.extensions.HCommon import (
+    H_HS_CSRS,
+    H_M_CSRS,
+    H_VS_CSRS,
+    REPLICA_ATP_GATE,
+    REPLICAS,
+    guest_page_fault_tests,
+    hcsr_tests,
+    hlv_tests,
+    replica_read,
+    replica_rw_tests,
+    replica_write,
+    sret_tests,
+)
 from testgen.priv.extensions.PrivCommon import (
     S_CSR_SENVCFG,
     S_CSRS,
@@ -24,6 +39,8 @@ from testgen.priv.extensions.PrivCommon import (
     addr_csr_tests,
     csr_insufficient_priv_tests,
     csr_ro_write_tests,
+    xcause_write_tests,
+    xstatus_sd_tests,
     xtval_value_tests,
 )
 from testgen.priv.extensions.VCommon import gen_v_tests
@@ -65,154 +82,6 @@ def _gen_misa_dependencies(
     ]
     test_data.int_regs.return_registers([r1, rmask, rfail, rorig])
     return "\n".join(lines)
-
-
-def _generate_mcause_tests(test_data: TestData) -> list[str]:
-    """Generate tests for mcause CSR."""
-    covergroup = "Sm_mcause_cg"
-    save_reg, check_reg, temp_reg = test_data.int_regs.get_registers(3)
-
-    lines = [
-        f"csrr x{save_reg}, mcause     # save CSR before testing it",
-        comment_banner(
-            "cp_mcause_write_exception",
-            "with interrupt = 0: test writing each exception cause",
-        ),
-    ]
-
-    ######################################
-    coverpoint = "cp_mcause_write_exception"
-    ######################################
-
-    gated_exceptions = [
-        (10, "#ifdef H_SUPPORTED"),  # ecall from VS-mode
-        (14, "RESERVED"),
-        (16, "#ifdef SSDBLTRP_SUPPORTED"),  # Double trap, written to mcause only by Ssdbltrp
-        (17, "RESERVED"),
-        (18, "#if defined(ZICFILP_SUPPORTED) || defined(ZICFISS_SUPPORTED)"),  # software check
-        (19, "#ifdef SM1P13P0_OR_LATER_SUPPORTED"),  # hardware error
-        (20, "#ifdef H_SUPPORTED"),  # instruction guest-page fault
-        (21, "#ifdef H_SUPPORTED"),  # load guest-page fault
-        (22, "#ifdef H_SUPPORTED"),  # virtual instruction
-        (23, "#ifdef H_SUPPORTED"),  # store guest-page fault
-    ]
-
-    for i in range(24):
-        gated = next((g for g in gated_exceptions if g[0] == i), None)
-        if gated is not None and gated[1] == "RESERVED":
-            lines.append(f"\n# Exception cause {i} is reserved")
-        else:
-            if gated is not None:
-                lines.append(f"{gated[1]}")
-            lines.extend(
-                [
-                    "",
-                    f"# Testcase: set mcause to exception cause {i}",
-                    f"LI(x{check_reg}, {i})",
-                    test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
-                    gen_csr_write_sigupd(check_reg, "mcause", test_data),
-                ]
-            )
-            if gated is not None:
-                lines.append("#endif")
-
-    lines.extend(
-        [
-            comment_banner(
-                "cp_mcause_write_interrupt",
-                "with interrupt = 1: test writing each interrupt cause",
-            ),
-            "",
-            f"SET_MSB(x{temp_reg})  # set x{temp_reg} to have msb = 1 for interrupt tests",
-        ]
-    )
-
-    ######################################
-    coverpoint = "cp_mcause_write_interrupt"
-    ######################################
-    gated_interrupts = {
-        2: "#ifdef H_SUPPORTED",  # VS software interrupt
-        6: "#ifdef H_SUPPORTED",  # VS timer interrupt
-        10: "#ifdef H_SUPPORTED",  # VS external interrupt
-        12: "#ifdef H_SUPPORTED",  # S guest external interrupt
-        13: "#ifdef SSCOFPMF_SUPPORTED",  # local counter overflow interrupt
-    }
-
-    for i in range(14):
-        if i in {0, 4, 8}:  # skip reserved causes
-            continue
-        guard = gated_interrupts.get(i)
-        if guard is not None:
-            lines.append(guard)
-        lines.extend(
-            [
-                "",
-                f"# interrupt cause {i}",
-                f"LI(x{check_reg}, {i})",
-                f"or x{check_reg}, x{check_reg}, x{temp_reg}          # set interrupt bit",
-                test_data.add_testcase(f"b_{i}", coverpoint, covergroup),
-                gen_csr_write_sigupd(check_reg, "mcause", test_data),
-            ]
-        )
-        if guard is not None:
-            lines.append("#endif")
-
-    lines.append(f"\ncsrw mcause, x{save_reg}       # restore CSR")
-
-    test_data.int_regs.return_registers([save_reg, check_reg, temp_reg])
-    return lines
-
-
-def _generate_mstatus_sd_tests(test_data: TestData) -> list[str]:
-    """Generate mstatus SD field write tests."""
-    ######################################
-    covergroup = "Sm_mstatus_cg"
-    coverpoint = "cp_mstatus_sd_write"
-    ######################################
-    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5)
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "Write all combinations of mstatus.SD = {0/1}, FS/XS/VS = {00, 01, 10, 11}\n"
-            "mstatus.SD is read-only, so nothing should happen",
-        ),
-        "",
-        f"SET_MSB(x{reg1}) # put a 1 in the msb of x{reg1} (XLEN-1)",
-        f"csrr x{save_reg}, mstatus        # read and save mstatus",
-        f"{INDENT}# set up x{reg3} with mstatus except SD, FS, XS, VS cleared",
-        f"not x{reg2}, x{reg1}              # x{reg2} has all but msb set",
-        f"and x{reg3}, x{save_reg}, x{reg2} # clear SD bit",
-        f"LI(x{reg2}, 0x1E600)              # x{reg2} has all FS, XS, VS bits set (bits [14:13], [16:15], [10:9], respectively)",
-        f"not x{reg2}, x{reg2}              # x{reg2} has all but FS, XS, VS bits set",
-        f"and x{reg3}, x{reg3}, x{reg2}     # clear FS, XS, VS bits",
-    ]
-
-    for sd in (0, 1):
-        for fs in range(4):
-            for xs in range(4):
-                for vs in range(4):
-                    binname = f"sd_{sd}_fs_{fs:02b}_xs_{xs:02b}_vs_{vs:02b}"
-                    fields = fs << 13 | xs << 15 | vs << 9
-                    test_lines = [
-                        "",
-                        f"# fs = {fs:02b} xs = {xs:02b} vs = {vs:02b}",
-                        f"LI(x{check_reg}, 0x{fields:08x})",
-                    ]
-                    if sd == 1:
-                        test_lines.append(f"or x{check_reg}, x{check_reg}, x{reg1}      # set SD bit")
-                    test_lines.extend(
-                        [
-                            f"or x{check_reg}, x{check_reg}, x{reg3}   # value to write to mstatus with SD/FS/XS/VS bits set/clear",
-                            test_data.add_testcase(binname, coverpoint, covergroup),
-                            gen_csr_write_sigupd(check_reg, "mstatus", test_data),
-                        ]
-                    )
-                    lines.extend(test_lines)
-
-    lines.append(f"\ncsrw mstatus, x{save_reg}    # restore CSR")
-    test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
-    return lines
 
 
 def _generate_priv_inst_tests(test_data: TestData) -> list[str]:
@@ -1631,11 +1500,11 @@ def make_sm(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
 
     tc = test_data.begin_test_chunk("mcause")
-    tc.code.extend(_generate_mcause_tests(test_data))
+    tc.code.extend(xcause_write_tests(test_data, "mcause", "Sm_mcause_cg"))
     test_chunks.append(test_data.end_test_chunk())
 
     tc = test_data.begin_test_chunk("mstatus_sd")
-    tc.code.extend(_generate_mstatus_sd_tests(test_data))
+    tc.code.extend(xstatus_sd_tests(test_data, "mstatus", "Sm_mstatus_cg", "cp_mstatus_sd_write"))
     test_chunks.append(test_data.end_test_chunk())
 
     tc = test_data.begin_test_chunk("inst")
@@ -1750,6 +1619,282 @@ def make_zicntrsm(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(instret_retire_tests(test_data, _ZICNTR_CG, "M"))
     tc.code.extend(instret_exception_tests(test_data, _ZICNTR_CG, "M"))
     tc.code.extend(instret_interrupt_tests(test_data, _ZICNTR_CG, "M"))
+
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks
+
+
+_H_CSR_CG = "Sm_H_mcsr_cg"
+_H_TVM_CG = "Sm_H_tvm_cg"
+_H_INST_CG = "Sm_H_inst_cg"
+
+
+def _h_replica_tests(test_data: TestData) -> list[str]:
+    """Write different values to each S CSR and its VS replica, then read both back."""
+    val_reg = test_data.int_regs.get_register()
+    lines = [
+        comment_banner("cp_replica", "Write different values to each S CSR and its VS replica, then read both"),
+        f"LI(x{val_reg}, MIP_S_MASK)",
+        f"csrw mideleg, x{val_reg}    # sie and sip show only delegated interrupts",
+        f"LI(x{val_reg}, MIP_VS_MASK)",
+        f"csrw hideleg, x{val_reg}    # vsie and vsip show only delegated interrupts",
+    ]
+    test_data.int_regs.return_register(val_reg)
+    # Boot delegates nothing
+    return [
+        *lines,
+        *replica_rw_tests(test_data, _H_CSR_CG, ((0, 1, "{csr}"),)),
+        "csrw mideleg, zero",
+        "csrw hideleg, zero",
+    ]
+
+
+def _h_replica_vs_tests(test_data: TestData) -> list[str]:
+    """In VS-mode, write each S CSR name, which reaches its VS replica; M-mode checks that the S CSR keeps its value."""
+    save_s, save_vs, mask_reg, val_reg = test_data.int_regs.get_registers(4)
+    lines = [
+        comment_banner(
+            "cp_replica_vs",
+            "M-mode writes different values to an S CSR and its VS replica.  VS-mode reads the S CSR name,\n"
+            "writes a new value and reads it back, which reaches the replica.  VS-mode ecalls go to M-mode, so\n"
+            "M-mode checks that the S CSR keeps its value and the replica holds the new one.  vsatp stays Bare\n"
+            "while VS-mode runs; satp holds a paged value, which VS-mode ignores",
+        ),
+        f"LI(x{val_reg}, MIP_S_MASK)",
+        f"csrw mideleg, x{val_reg}",
+        f"LI(x{val_reg}, MIP_VS_MASK)",
+        f"csrw hideleg, x{val_reg}",
+    ]
+    for rep in REPLICAS:
+        satp = rep.s == "satp"
+        s_init, vs_init, vs_new = ("rvtest_Sroot_pg_tbl", None, None) if satp else rep.values[0:2] + rep.values[3:4]
+        body = [
+            f"csrr x{save_s}, {rep.s}",
+            f"csrr x{save_vs}, {rep.vs}",
+            *([f"LI(x{mask_reg}, {rep.mask:#x})"] if rep.mask else []),
+            *replica_write(test_data, rep, rep.s, s_init, val_reg),
+            *replica_write(test_data, rep, rep.vs, vs_init, val_reg),
+            "RVTEST_TSBI_GOTO_VSMODE",
+            *replica_read(test_data, rep, rep.s, mask_reg, f"{rep.s}_init", _H_CSR_CG, "cp_replica_vs"),
+            *replica_write(test_data, rep, rep.s, vs_new, val_reg),
+            *replica_read(test_data, rep, rep.s, mask_reg, rep.s, _H_CSR_CG, "cp_replica_vs"),
+            "RVTEST_TSBI_GOTO_MMODE",
+            *replica_read(test_data, rep, rep.s, mask_reg, f"{rep.s}_m", _H_CSR_CG, "cp_replica_vs"),
+            *replica_read(test_data, rep, rep.vs, mask_reg, f"{rep.vs}_m", _H_CSR_CG, "cp_replica_vs"),
+            f"csrw {rep.s}, x{save_s}",
+            f"csrw {rep.vs}, x{save_vs}",
+        ]
+        lines.extend(gated(body, REPLICA_ATP_GATE if satp else None))
+    lines.extend(["csrw mideleg, zero", "csrw hideleg, zero"])
+    test_data.int_regs.return_registers([save_s, save_vs, mask_reg, val_reg])
+    return lines
+
+
+def _h_mtvala_tests(test_data: TestData) -> list[str]:
+    """With H, mtval is not read-only zero."""
+    save_reg, check_reg = test_data.int_regs.get_registers(2)
+    lines = [
+        comment_banner("cp_mtvala", "Write all 1s to mtval; it must not read back as zero"),
+        f"csrr x{save_reg}, mtval",
+        f"LI(x{check_reg}, -1)",
+        test_data.add_testcase("ones", "cp_mtvala", _H_CSR_CG),
+        f"csrw mtval, x{check_reg}",
+        f"csrr x{check_reg}, mtval",
+        f"snez x{check_reg}, x{check_reg}",
+        write_sigupd(check_reg, test_data),
+        f"csrw mtval, x{save_reg}",
+    ]
+    test_data.int_regs.return_registers([save_reg, check_reg])
+    return lines
+
+
+def _h_tvm_tests(test_data: TestData) -> list[str]:
+    """satp, hgatp and vsatp accesses and fences in each mode with mstatus.TVM and hstatus.VTVM."""
+    temp_reg, rd = test_data.int_regs.get_registers(2)
+
+    def tvm_bits(tvm: int, vtvm: int | None = None) -> list[str]:
+        """Write mstatus.TVM and, unless vtvm is None, hstatus.VTVM from M-mode."""
+        lines = [f"LI(x{temp_reg}, MSTATUS_TVM)", f"{'csrs' if tvm else 'csrc'} mstatus, x{temp_reg}"]
+        if vtvm is not None:
+            lines.extend([f"LI(x{temp_reg}, HSTATUS_VTVM)", f"{'csrs' if vtvm else 'csrc'} hstatus, x{temp_reg}"])
+        return lines
+
+    lines = [
+        comment_banner(
+            "cp_tvm_hs",
+            "Read and write satp, hgatp and vsatp in HS-mode with mstatus.TVM = 0, 1 and hstatus.VTVM = 0, 1.\n"
+            "TVM = 1 traps satp and hgatp accesses but not vsatp accesses; VTVM does not affect HS-mode",
+        )
+    ]
+    for tvm in (0, 1):
+        for vtvm in (0, 1):
+            lines.extend([*tvm_bits(tvm, vtvm), "RVTEST_TSBI_GOTO_SMODE"])
+            for csr in ("satp", "hgatp", "vsatp"):
+                lines.extend(
+                    [
+                        f"LI(x{rd}, 42)",
+                        test_data.add_testcase(f"{csr}_read_tvm{tvm}_vtvm{vtvm}", "cp_tvm_hs", _H_TVM_CG),
+                        f"csrr x{rd}, {csr}",
+                        write_sigupd(rd, test_data),
+                        test_data.add_testcase(f"{csr}_write_tvm{tvm}_vtvm{vtvm}", "cp_tvm_hs", _H_TVM_CG),
+                        f"csrw {csr}, zero",
+                    ]
+                )
+            lines.append("RVTEST_TSBI_GOTO_MMODE")
+
+    lines.append(
+        comment_banner(
+            "cp_tvm_vs",
+            "Read and write satp in VS-mode with mstatus.TVM = 0, 1 and hstatus.VTVM = 0, 1.\n"
+            "VTVM = 1 raises virtual instruction; TVM does not affect VS-mode",
+        )
+    )
+    for tvm in (0, 1):
+        for vtvm in (0, 1):
+            lines.extend(
+                [
+                    *tvm_bits(tvm, vtvm),
+                    "RVTEST_TSBI_GOTO_VSMODE",
+                    f"LI(x{rd}, 42)",
+                    test_data.add_testcase(f"satp_read_tvm{tvm}_vtvm{vtvm}", "cp_tvm_vs", _H_TVM_CG),
+                    f"csrr x{rd}, satp",
+                    write_sigupd(rd, test_data),
+                    test_data.add_testcase(f"satp_write_tvm{tvm}_vtvm{vtvm}", "cp_tvm_vs", _H_TVM_CG),
+                    "csrw satp, zero",
+                    "RVTEST_TSBI_GOTO_MMODE",
+                ]
+            )
+
+    lines.append(
+        comment_banner(
+            "cp_hfence, cp_sfence",
+            "Execute hfence.vvma, hfence.gvma and sfence.vma in M, HS, VS, U and VU modes with\n"
+            "mstatus.TVM = 0, 1 and hstatus.VTVM = 0, 1",
+        )
+    )
+    for tvm in (0, 1):
+        for vtvm in (0, 1):
+            lines.extend(tvm_bits(tvm, vtvm))
+            for mode in ("m", "s", "vs", "u", "vu"):
+                suffix = f"{mode}_tvm{tvm}_vtvm{vtvm}"
+                lines.extend(
+                    [
+                        *([] if mode == "m" else [f"RVTEST_TSBI_GOTO_{mode.upper()}MODE"]),
+                        test_data.add_testcase(f"hfence_vvma_{suffix}", "cp_hfence", _H_TVM_CG),
+                        "hfence.vvma",
+                        test_data.add_testcase(f"hfence_gvma_{suffix}", "cp_hfence", _H_TVM_CG),
+                        "hfence.gvma",
+                        test_data.add_testcase(f"sfence_vma_{suffix}", "cp_sfence", _H_TVM_CG),
+                        "sfence.vma",
+                        *([] if mode == "m" else ["RVTEST_TSBI_GOTO_MMODE"]),
+                    ]
+                )
+    lines.extend(tvm_bits(0, 0))
+    test_data.int_regs.return_registers([temp_reg, rd])
+    return lines
+
+
+def _h_mret_tests(test_data: TestData) -> list[str]:
+    """mret from M-mode.  In a lower mode, a read of mscratch traps and the trap record shows the mode."""
+    save_reg, save_h_reg, mpv_reg, temp_reg, rd = test_data.int_regs.get_registers(5)
+    lines = [
+        comment_banner(
+            "cp_mret_m",
+            "Execute mret with mstatus.MPP = {M, S, U}, MPV = {0, 1} and MPIE = {0, 1}.  With MPP = M, V stays 0",
+        ),
+        f"csrr x{save_reg}, mstatus",
+        "#if __riscv_xlen == 64",
+        f"LI(x{mpv_reg}, MSTATUS_MPV)",
+        "#else",
+        f"csrr x{save_h_reg}, mstatush",
+        f"LI(x{mpv_reg}, MSTATUSH_MPV)",
+        "#endif",
+    ]
+    for mpp, mpp_bits in ((3, "MPP_MMODE"), (1, "MPP_SMODE"), (0, None)):
+        for mpv in (0, 1):
+            for mpie in (0, 1):
+                name = f"mpp{mpp}_mpv{mpv}_mpie{mpie}"
+                bits = " | ".join(bit for bit in (mpp_bits, "MSTATUS_MPIE" if mpie else None) if bit) or "0"
+                mpv_op = "csrs" if mpv else "csrc"
+                lines.extend(
+                    [
+                        f"LI(x{temp_reg}, MSTATUS_MPP | MSTATUS_MPIE)",
+                        f"csrc mstatus, x{temp_reg}",
+                        f"LI(x{temp_reg}, {bits})",
+                        f"csrs mstatus, x{temp_reg}",
+                        "#if __riscv_xlen == 64",
+                        f"{mpv_op} mstatus, x{mpv_reg}",
+                        "#else",
+                        f"{mpv_op} mstatush, x{mpv_reg}",
+                        "#endif",
+                        f"LA(x{temp_reg}, 1f)",
+                        f"csrw mepc, x{temp_reg}",
+                        test_data.add_testcase(name, "cp_mret_m", _H_INST_CG),
+                        "mret",
+                        "1:",
+                    ]
+                )
+                if mpp != 3:
+                    lines.extend(
+                        [
+                            f"LI(x{rd}, 42)",
+                            test_data.add_testcase(f"{name}_mode", "cp_mret_m", _H_INST_CG),
+                            f"csrr x{rd}, mscratch",
+                            write_sigupd(rd, test_data),
+                            "RVTEST_TSBI_GOTO_MMODE",
+                        ]
+                    )
+                lines.extend(
+                    [
+                        test_data.add_testcase(f"{name}_mstatus", "cp_mret_m", _H_INST_CG),
+                        gen_csr_read_sigupd(rd, ("mstatus", None), test_data),
+                        "#if __riscv_xlen == 32",
+                        test_data.add_testcase(f"{name}_mstatush", "cp_mret_m", _H_INST_CG),
+                        gen_csr_read_sigupd(rd, ("mstatush", None), test_data),
+                        "#endif",
+                    ]
+                )
+    lines.extend([f"csrw mstatus, x{save_reg}", "#if __riscv_xlen == 32", f"csrw mstatush, x{save_h_reg}", "#endif"])
+    test_data.int_regs.return_registers([save_reg, save_h_reg, mpv_reg, temp_reg, rd])
+    return lines
+
+
+@add_priv_test_generator(
+    "Sm",
+    required_extensions=["Sm", "H"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_smh(test_data: TestData) -> list[TestChunk]:
+    """Generate Sm_H tests: the hypervisor CSRs and instructions from M-mode, and mstatus.TVM below M-mode."""
+    test_chunks: list[TestChunk] = []
+    hcsr_tests(test_data, test_chunks, [*H_M_CSRS, *H_HS_CSRS, *H_VS_CSRS], _H_CSR_CG, prefix="H_")
+
+    tc = test_data.new_test_chunk(test_chunks, "H_replica")
+    tc.code.extend([*_h_replica_tests(test_data), *_h_replica_vs_tests(test_data), *_h_mtvala_tests(test_data)])
+
+    tc = test_data.new_test_chunk(test_chunks, "H_tvm")
+    tc.code.extend(_h_tvm_tests(test_data))
+
+    tc = test_data.new_test_chunk(test_chunks, "H_inst")
+    tc.code.extend(
+        [
+            *hlv_tests(test_data, tc, _H_INST_CG, ("m",)),
+            *_h_mret_tests(test_data),
+            *sret_tests(test_data, _H_INST_CG, "cp_sret_m", "m"),
+        ]
+    )
+
+    tc = test_data.new_test_chunk(test_chunks, "H_trap")
+    tc.code.extend(
+        [
+            comment_banner(
+                "cp_guest_page_fault",
+                "In M-mode, hlv.w and hsv.w raise guest-page faults on the final translation and on an\n"
+                "implicit VS-stage access; the trap records hold mtval2 and mtinst",
+            ),
+            *guest_page_fault_tests(test_data, _H_INST_CG),
+        ]
+    )
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

@@ -605,7 +605,7 @@ covergroup InterruptsSm_h_cg with function sample(ins_t ins);
     write_zero : coverpoint ins.current.rs1_val {
         bins zero = {0};
     }
-    hvip_all : coverpoint {ins.prev.csr[CSR_HVIP][10], ins.prev.csr[CSR_HVIP][6], ins.prev.csr[CSR_HVIP][2]} {
+    hvip_all : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "hvip")[10], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "hvip")[6], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "hvip")[2]} {
         bins all = {3'b111};
     }
 
@@ -622,7 +622,7 @@ covergroup InterruptsSm_h_cg with function sample(ins_t ins);
     mip : coverpoint ins.current.insn[31:20] {
         bins mip = {CSR_MIP};
     }
-    hie_vs : coverpoint ins.prev.csr[CSR_HIE][12:0] {
+    hie_vs : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "hie")[12:0] {
         bins vs = {13'h0444};
     }
     cp_mie: cross priv_mode_m, csrr, mie, hie_vs;
@@ -630,17 +630,17 @@ covergroup InterruptsSm_h_cg with function sample(ins_t ins);
 
     // hie.SGEIE is writable when GEILEN > 0 and implementation-defined otherwise
     `ifndef UDB_NUM_EXTERNAL_GUEST_INTERRUPTS_0
-        hie_sgei_vs : coverpoint ins.prev.csr[CSR_HIE][12:0] {
+        hie_sgei_vs : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "hie")[12:0] {
             bins sgei_vs = {13'h1444};
         }
         cp_mie_gilen: cross priv_mode_m, csrr, mie, hie_sgei_vs;
     `endif
 
     // VS-level interrupts pending and enabled in mie are not taken in M-mode
-    mie_vs : coverpoint ins.prev.csr[CSR_MIE][12:0] {
+    mie_vs : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mie")[12:0] {
         bins vs = {13'h0444};
     }
-    hideleg_none : coverpoint {ins.prev.csr[CSR_HIDELEG][10], ins.prev.csr[CSR_HIDELEG][6], ins.prev.csr[CSR_HIDELEG][2]} {
+    hideleg_none : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "hideleg")[10], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "hideleg")[6], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "hideleg")[2]} {
         bins none = {3'b000};
     }
     cp_nohint_m: cross priv_mode_m, set_mie, mie_vs, hvip_all, hideleg_none;
@@ -653,12 +653,12 @@ covergroup InterruptsSm_h_cg with function sample(ins_t ins);
     tsbi_goto_vu : coverpoint ins.prev.x_wdata[10] {
         bins goto_vu = {5};
     }
-    mideleg_s : coverpoint {ins.prev.csr[CSR_MIDELEG][9], ins.prev.csr[CSR_MIDELEG][5], ins.prev.csr[CSR_MIDELEG][1]} {
+    mideleg_s : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mideleg", "mideleg")[9], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mideleg", "mideleg")[5], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mideleg", "mideleg")[1]} {
         bins zeros = {3'b000};
         bins ones  = {3'b111};
     }
-    mip_pending : coverpoint {ins.prev.csr[CSR_MIP][11], ins.prev.csr[CSR_MIP][9], ins.prev.csr[CSR_MIP][7],
-                              ins.prev.csr[CSR_MIP][5], ins.prev.csr[CSR_MIP][3], ins.prev.csr[CSR_MIP][1]} {
+    mip_pending : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "mip")[11], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "mip")[9], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "mip")[7],
+                              get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "mip")[5], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "mip")[3], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "mip")[1]} {
         bins mei = {6'b100000};
         bins sei = {6'b010000};
         bins mti = {6'b001000};
@@ -666,11 +666,11 @@ covergroup InterruptsSm_h_cg with function sample(ins_t ins);
         bins msi = {6'b000010};
         bins ssi = {6'b000001};
     }
-    mie_ones : coverpoint {ins.prev.csr[CSR_MIE][11], ins.prev.csr[CSR_MIE][9], ins.prev.csr[CSR_MIE][7],
-                           ins.prev.csr[CSR_MIE][5], ins.prev.csr[CSR_MIE][3], ins.prev.csr[CSR_MIE][1]} {
+    mie_ones : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mie")[11], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mie")[9], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mie")[7],
+                           get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mie")[5], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mie")[3], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mie")[1]} {
         bins ones = {6'b111111};
     }
-    mstatus_mie_zero : coverpoint ins.prev.csr[CSR_MSTATUS][3] {
+    mstatus_mie_zero : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mstatus")[3] {
         bins zero = {0};
     }
     cp_mideleg_mip_vs: cross priv_mode_m, ecall, tsbi_goto_vs, mideleg_s, mip_pending, mie_ones, mstatus_mie_zero;
@@ -678,7 +678,7 @@ covergroup InterruptsSm_h_cg with function sample(ins_t ins);
 
     // Enter VS or VU mode with two or three of MSI (M-level), SSI (delegated to HS-mode by mideleg) and VSSI
     // (delegated to VS-mode by hideleg) pending and enabled, sampled at the T-SBI call
-    mip_levels : coverpoint {ins.prev.csr[CSR_MIP][3], ins.prev.csr[CSR_MIP][1], ins.prev.csr[CSR_HVIP][2]} {
+    mip_levels : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "mip")[3], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mip", "mip")[1], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hvip", "hvip")[2]} {
         `ifdef UDB_MSI_INTR_IMPL
             `ifdef UDB_SSI_INTR_IMPL
                 bins m_hs    = {3'b110};
@@ -690,16 +690,16 @@ covergroup InterruptsSm_h_cg with function sample(ins_t ins);
             bins hs_vs = {3'b011};
         `endif
     }
-    mie_levels : coverpoint {ins.prev.csr[CSR_MIE][3], ins.prev.csr[CSR_MIE][1], ins.prev.csr[CSR_MIE][2]} {
+    mie_levels : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mie")[3], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mie")[1], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mie")[2]} {
         bins all = {3'b111};
     }
-    mideleg_ssi : coverpoint {ins.prev.csr[CSR_MIDELEG][3], ins.prev.csr[CSR_MIDELEG][1]} {
+    mideleg_ssi : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mideleg", "mideleg")[3], get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mideleg", "mideleg")[1]} {
         bins hs = {2'b01};
     }
-    hideleg_vssi : coverpoint ins.prev.csr[CSR_HIDELEG][2] {
+    hideleg_vssi : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "hideleg")[2] {
         bins vs = {1};
     }
-    vsstatus_sie_one : coverpoint ins.prev.csr[CSR_VSSTATUS][1] {
+    vsstatus_sie_one : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "vsstatus")[1] {
         bins one = {1};
     }
     cp_priority_levels_vs: cross priv_mode_m, ecall, tsbi_goto_vs, mip_levels, mie_levels, mideleg_ssi, hideleg_vssi,
@@ -708,10 +708,10 @@ covergroup InterruptsSm_h_cg with function sample(ins_t ins);
                                  mstatus_mie_zero;
 
     // Each interrupt taken into M-mode with mtinst nonzero
-    mtinst_nonzero : coverpoint (ins.prev.csr[CSR_MTINST] != 0) {
+    mtinst_nonzero : coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mtinst", "mtinst") != 0) {
         bins nonzero = {1};
     }
-    int_enabled : coverpoint ins.prev.csr[CSR_MIE][13:0] {
+    int_enabled : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mie", "mie")[13:0] {
         bins ssi = {14'h0002};
         bins msi = {14'h0008};
         bins sti = {14'h0020};

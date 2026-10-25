@@ -1125,11 +1125,9 @@ class _StraddlePage:
 
     def va_defs(self, sv: SvMode) -> tuple[tuple[str, str], ...]:
         size = 1 << sv.page_offset_bits(self.level)
-        if self.level == 0:
-            base = int(sv.data_va, 16)
-        else:
-            # Two megapages above va_data's, so that it and the next megapage are in va_data's level-1 table
-            base = (int(sv.data_va, 16) & ~(size - 1)) + 2 * size
+        data = int(sv.data_va, 16)
+        # A megapage two above va_data's, so that it and the next megapage are in va_data's level-1 table
+        base = data if self.level == 0 else (data & ~(size - 1)) + 2 * size
         defs = ((self.va, sv.data_va if self.level == 0 else f"{base:#x}"), (self.va_next, f"{base + size:#x}"))
         return defs if self.va == "va_data" else (("va_data", sv.data_va), *defs)
 

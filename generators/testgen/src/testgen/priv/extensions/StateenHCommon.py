@@ -50,6 +50,9 @@ CSR_GATES = {
     "hedelegh": "__riscv_xlen == 32 && defined(SM1P13P0_OR_LATER_SUPPORTED)",
 }
 
+# CSR operands for names that LLVM does not know
+CSR_OPERANDS = {"hedelegh": "CSR_HEDELEGH"}
+
 
 def hstateen0_bit(test_data: TestData, bit: tuple[str, str], value: int) -> list[str]:
     """Set (value 1) or clear (value 0) a bit of hstateen0 from HS-mode."""
@@ -131,7 +134,7 @@ def read_csrs(
                 [
                     f"LI(x{rd}, 42)",
                     test_data.add_testcase(f"{csr}_{suffix}", coverpoint, covergroup),
-                    f"csrr x{rd}, {csr}",
+                    f"csrr x{rd}, {CSR_OPERANDS.get(csr, csr)}",
                     write_sigupd(rd, test_data),
                 ],
                 CSR_GATES.get(csr),

@@ -170,7 +170,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Shlcofideleg|Counter Overflow Delegation|<<t-Shlcofideleg-coverpoints>>|||o|o|x
 |ZkrH|Hypervisor Entropy|<<t-ZkrH-coverpoints>>|||o|o|x
 |SstcH|Hypervisor Supervisor Timer|<<t-SstcH-coverpoints>>|||o|o|x
-|SsstateenH|Hypervisor State Enable|<<t-SsstateenH-coverpoints>>|||o|o|x
+|Ssstateen_H|Hypervisor State Enable|<<t-Ssstateen_H-coverpoints>>|||o|o|x
 |SvinvalH|Hypervisor TLB Inval|<<t-SvinvalH-coverpoints>>|||o|o|x
 |SvaduH|Hypervisor TLB Update|<<t-SvaduH-coverpoints>>|||o|o|o
 |ZicfilpH|Hypervisor Landing Pad|<<t-ZicfilpH-coverpoints>>|||o|o|o

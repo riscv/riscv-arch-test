@@ -29,6 +29,10 @@ include::norm/Sscofpmf_norm_rules.adoc[]
 
 include::{testplansdir}/priv/Ssstateen.adoc[]
 
+===== Ssstateen_H Hypervisor
+
+include::{testplansdir}/priv/Ssstateen_H.adoc[]
+
 include::norm/Ssstateen_norm_rules.adoc[]
 
 The normative rules that apply to every level of stateen CSR are listed with Smstateen (see <<t-Smstateen-normative-rules>>).

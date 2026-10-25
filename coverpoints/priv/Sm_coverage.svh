@@ -710,15 +710,32 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         scsrname : coverpoint ins.current.insn[31:20] {
             bins sstatus       = {CSR_SSTATUS};
             bins sie           = {CSR_SIE};
-            // bins stvec         = {CSR_STVEC}; // warl field has complex write restrictions and is not easy to test
+            bins stvec         = {CSR_STVEC}; // WARL; the signature checks only MODE[1], which must read 0
             bins scounteren    = {CSR_SCOUNTEREN};
             bins sscratch      = {CSR_SSCRATCH};
             bins sepc          = {CSR_SEPC};
-            // bins scause        = {CSR_SCAUSE}; // WLRL field; tested with cp_scause_write_*
+            // bins scause        = {CSR_SCAUSE}; // WLRL field; tested with cp_scause_from_m
             bins stval         = {CSR_STVAL};
             bins sip           = {CSR_SIP};
             `ifdef S1P12P0_OR_LATER_SUPPORTED
               bins senvcfg       = {CSR_SENVCFG};
+            `endif
+        }
+        scause_csr : coverpoint ins.current.insn[31:20] {
+            bins scause = {CSR_SCAUSE};
+        }
+        // the scause Exception Code is WLRL; Ss1p12 and later must hold the values 0-31, Ss1p11 only the supported codes
+        scause_wlrl_values : coverpoint ins.current.rs1_val {
+            bins code[] = {[0:9], 12, 13, 15};
+            `ifdef S1P12P0_OR_LATER_SUPPORTED
+              bins code_ss1p12[] = {10, 11, 14, [16:31]};
+            `else
+              `ifdef SOFTWARE_CHECK_SUPPORTED
+                bins code_18_software_check = {18};
+              `endif
+              `ifdef H_SUPPORTED
+                bins code_h[] = {10, [20:23]};
+              `endif
             `endif
         }
         shadow : coverpoint {ins.prev.insn[31:20], ins.current.insn[31:20]} {
@@ -766,6 +783,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         }
 
         cp_scsr_from_m :            cross priv_mode_m, scsrname, csraccesses;
+        cp_scause_from_m :          cross priv_mode_m, csrrw, scause_csr, scause_wlrl_values;
         cp_satp_from_m :            cross priv_mode_m, csrr, satp, mstatus_tvm;
         cp_satp_from_s :            cross priv_mode_s, csrr, satp, mstatus_tvm;
         cp_shadow :                 cross priv_mode_m, shadow, csrw_prev, rs1_prev, csrr;

@@ -95,7 +95,11 @@ coverpoints:
     rules:
       - sepc should be pointing two instructions ahead.
   - name: cp_scsr_from_m
-    description: "If S supported, read/write/set/clear each S-mode CSR: sstatus, scause, sie, stvec, scounteren, senvcfg, sscratch, sip.  sepc and stval are not tested because it is hard to express what values are legal."
+    description: "If S supported, read/write/set/clear each S-mode CSR: sstatus, sie, stvec, scounteren, senvcfg, sscratch, sepc, stval, sip.  stvec is WARL with complex legal values, so only MODE[1], which must read 0, is checked.  scause is tested in cp_scause_from_m."
+  - name: cp_scause_from_m
+    description: "If S supported, write scause from M-mode with each Exception Code 0-9, 12, 13 and 15 and read it back.  If Ss1p12 or later is supported, also write codes 10, 11, 14 and 16-31; otherwise also write 18 if Zicfilp or Zicfiss is supported and 10 and 20-23 if H is supported."
+    expectation: The Exception Code is WLRL.  Ss1p12 and later must hold the values 0-31, so each reads back as written.  Ss1p11 need only hold the codes of supported causes, such as software check (18) with Zicfilp or Zicfiss and the H causes (10 and 20-23) with H.
+    bins: 13, plus 1 with Zicfilp or Zicfiss and 5 with H (32 on Ss1p12 or later)
   - name: cp_satp_from_m
     description: If S is supported, read satp with mstatus.TVM=0/1
     expectation: shouldn't trap on either TVM.  Value is not predictable.

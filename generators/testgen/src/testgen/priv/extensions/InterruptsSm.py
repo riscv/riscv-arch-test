@@ -16,6 +16,7 @@ from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.InterruptsCommon import (
     InterruptSuite,
     emit_interrupts,
+    flavor,
     generate_cp_enable,
     generate_cp_priority,
     generate_cp_priority_enable,
@@ -32,16 +33,18 @@ from testgen.priv.extensions.InterruptsCommon import (
     reg_ints,
     sstc_ints,
     supervisor_ints,
+    vs_ints,
 )
 from testgen.priv.registry import add_priv_test_generator
 
-# Boots to M-mode. mideleg is cleared before each case so every interrupt is enabled by mie alone.
+# Boots to M-mode. mideleg is cleared before each case so every interrupt is enabled by mie alone, except
+# that with H the VS-level interrupts are always delegated: H makes their mideleg bits read-only one.
 SUITE = InterruptSuite(
     name="InterruptsSm",
     boot="M",
-    types=[*machine_ints, *supervisor_ints],
+    types=[*machine_ints, *supervisor_ints, *vs_ints],
     # MEI and SEI usually share one PLIC source, so priority pairs raise SEI through mip.SEIP instead
-    priority_types=["MEI", "MTI", "MSI", "MIP_SEIP", "STI", "SSI", "LCOFI"],
+    priority_types=["MEI", "MTI", "MSI", "MIP_SEIP", "STI", "SSI", "LCOFI", *vs_ints],
     ip="mip",
     ie="mie",
     status={"csr": "mstatus", "mask": 0x88, "field": "MIE"},
@@ -74,7 +77,7 @@ def _generate_cp_trigger_sm(
     )
     tmp_reg = test_data.int_regs.get_register()
 
-    for int_type in [*machine_ints, *supervisor_ints, *reg_ints, *sstc_ints]:
+    for int_type in [*machine_ints, *supervisor_ints, *reg_ints, *sstc_ints, *vs_ints]:
         macro = int_macro[int_type]
         guard = guard_symbol(int_type)
         for mideleg in [0, -1]:
@@ -131,9 +134,9 @@ def _generate_cp_trigger_sm(
                                 COVERGROUP,
                             ),
                             *mode_enter(suite, priv),
-                            f"RVTEST_SET_{macro}_INT_{priv} # Set the interrupt",
+                            f"RVTEST_SET_{macro}_INT_{flavor(priv)} # Set the interrupt",
                             f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
-                            f"RVTEST_CLR_{macro}_INT_{priv} # Clear the interrupt if the handler hasn't done so",
+                            f"RVTEST_CLR_{macro}_INT_{flavor(priv)} # Clear the interrupt if the handler hasn't done so",
                             *mode_exit(suite, priv),
                             f"#endif // UDB_MTVEC_MODES_{mode}",
                             *case_close,
@@ -197,7 +200,6 @@ _COMMON_GENERATORS = [
     generate_cp_enable,
     generate_cp_priority_pending,
     generate_cp_priority_enable,
-    generate_cp_wfi,
 ]
 
 
@@ -206,19 +208,34 @@ _COMMON_GENERATORS = [
 @add_priv_test_generator(SUITE.name, required_extensions=["Sm"], extra_defines=["#define BOOT_TO_MMODE"])
 def make_interruptssm_m(test_data: TestData) -> list[TestChunk]:
     """InterruptsSm tests that run in M-mode."""
-    generators = _COMMON_GENERATORS + [_generate_cp_priority_mideleg, _generate_cp_write_stip_sstc]
+    generators = _COMMON_GENERATORS + [generate_cp_wfi, _generate_cp_priority_mideleg, _generate_cp_write_stip_sstc]
     return emit_interrupts(test_data, SUITE, "M", generators)
 
 
 @add_priv_test_generator(SUITE.name, required_extensions=["Sm", "S"], extra_defines=["#define BOOT_TO_MMODE"])
 def make_interruptssm_s(test_data: TestData) -> list[TestChunk]:
     """InterruptsSm tests that run in S-mode."""
-    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout, _generate_cp_priority_mideleg]
+    generators = _COMMON_GENERATORS + [generate_cp_wfi, generate_cp_wfi_timeout, _generate_cp_priority_mideleg]
     return emit_interrupts(test_data, SUITE, "S", generators)
 
 
 @add_priv_test_generator(SUITE.name, required_extensions=["Sm", "U"], extra_defines=["#define BOOT_TO_MMODE"])
 def make_interruptssm_u(test_data: TestData) -> list[TestChunk]:
     """InterruptsSm tests that run in U-mode."""
-    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout, _generate_cp_priority_mideleg]
+    generators = _COMMON_GENERATORS + [generate_cp_wfi, generate_cp_wfi_timeout, _generate_cp_priority_mideleg]
     return emit_interrupts(test_data, SUITE, "U", generators)
+
+
+@add_priv_test_generator(SUITE.name, required_extensions=["Sm", "H"], extra_defines=["#define BOOT_TO_MMODE"])
+def make_interruptssm_vs(test_data: TestData) -> list[TestChunk]:
+    """InterruptsSm tests that run in VS-mode."""
+    generators = _COMMON_GENERATORS + [generate_cp_wfi, generate_cp_wfi_timeout, _generate_cp_priority_mideleg]
+    return emit_interrupts(test_data, SUITE, "VS", generators)
+
+
+@add_priv_test_generator(SUITE.name, required_extensions=["Sm", "H"], extra_defines=["#define BOOT_TO_MMODE"])
+def make_interruptssm_vu(test_data: TestData) -> list[TestChunk]:
+    """InterruptsSm tests that run in VU-mode."""
+    # VU-mode WFI never waits: it raises virtual instruction with TW = 0, so only test the timeout.
+    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout, _generate_cp_priority_mideleg]
+    return emit_interrupts(test_data, SUITE, "VU", generators)

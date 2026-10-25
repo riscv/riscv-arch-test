@@ -35,6 +35,7 @@ from testgen.priv.extensions.PrivCommon import (
     S_CSR_SENVCFG,
     S_CSRS,
     S_SSTATUS_MASK,
+    SCAUSE_CODES,
     SV_GATE,
     addr_csr_tests,
     csr_insufficient_priv_tests,
@@ -806,6 +807,23 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.extend(["", "#ifdef S1P12P0_OR_LATER_SUPPORTED"])
     tc.code.extend(csr_access_test(test_data, S_CSR_SENVCFG, covergroup, coverpoint))
     tc.code.extend(["", "#endif // S1P12P0_OR_LATER_SUPPORTED"])
+
+    ######################################
+    coverpoint = "cp_scause_from_m"
+    ######################################
+    # The scause Exception Code is WLRL: write each code it must hold (SCAUSE_CODES, as cp_scause_write_exception)
+    save_reg, val_reg, check_reg = test_data.int_regs.get_registers(3)
+    tc.code.extend(["", "# Write scause with each guaranteed Exception Code 0-31", f"csrr x{save_reg}, scause # save"])
+    for code, gate in sorted(SCAUSE_CODES["exception"].items()):
+        body = [
+            f"LI(x{val_reg}, {code})",
+            test_data.add_testcase(f"scause_{code}", coverpoint, covergroup),
+            f"csrw scause, x{val_reg}",
+            gen_csr_read_sigupd(check_reg, ("scause", None), test_data),
+        ]
+        tc.code.extend(gated(body, gate))
+    tc.code.append(f"csrw scause, x{save_reg} # restore")
+    test_data.int_regs.return_registers([save_reg, val_reg, check_reg])
     tc.code.append("#endif // S_SUPPORTED")
 
     ######################################
@@ -1193,7 +1211,250 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     test_data.int_regs.return_registers([r_msip, r_msipaddr])
     tc.code.append("#endif // SM1P13P0_OR_LATER_SUPPORTED")
 
+    ######################################
+    # cp_mepc_ialign32_read, cp_mepc_ialign32_mret
+    ######################################
+
+    tc = test_data.new_test_chunk(test_chunks, "misa")
+    tc.section_header = comment_banner(
+        "cp_mepc_ialign32_read, cp_mepc_ialign32_mret, cp_sepc_ialign32_read, cp_sepc_ialign32_sret",
+        "With xepc[1] = 1, clear misa.C in M-mode.  While IALIGN = 32, mepc[1] and sepc[1] read as 0, and mret and\n"
+        "sret return to the masked address: mret in M-mode, sret in M-mode and S-mode, and reads in each mode that\n"
+        "can access the CSR.  After misa.C is set again, xepc[1] reads as 1, because the bit stays writable.  Only\n"
+        "on harts with Zca and a writable misa.C",
+    )
+    tc.code.extend(_xepc_ialign32_tests(test_data, covergroup))
+
     test_chunks.append(test_data.end_test_chunk())
+
+
+# The xepc[1] masking tests run only on harts whose misa.C is writable (UDB_MUTABLE_MISA_C) and that implement Zca, so
+# that clearing misa.C changes IALIGN from 16 to 32.  The static case, xepc[1] writable with Zca and read-only zero
+# without it, is covered by the xepc walks.  misa is written only in M-mode; S-mode and VS-mode are entered with the
+# T-SBI GOTO macros.
+#
+# Control flow while misa.C = 0: the Sm suite is assembled without C, so every instruction is 4 bytes and 4-byte
+# aligned, and no compressed instruction runs while IALIGN = 32.  Each xret returns to a .p2align 2 label: xepc is
+# written with that address + 2, so the xret reaches the label only if it masks xepc[1].
+#
+# Each xret case writes xepc after the GOTO that precedes it, because a GOTO from a lower mode can trap to S-mode and
+# write sepc.  The xrets come before the explicit reads, and each read writes xepc again first, because the trace
+# records the masked value of an explicit read, which coverage would then see as xepc.
+IALIGN32_GATE = "defined(ZCA_SUPPORTED) && defined(UDB_MUTABLE_MISA_C)"
+
+
+def _clear_misa_c(temp_reg: int) -> list[str]:
+    """Clear misa.C in M-mode, making IALIGN = 32."""
+    return [
+        f"LI(x{temp_reg}, 0b100)             # misa.C",
+        ".p2align 2                         # misa.C can be cleared only when the next instruction is 4-byte aligned",
+        f"csrc misa, x{temp_reg}",
+    ]
+
+
+def _set_misa_c(temp_reg: int) -> list[str]:
+    """Set misa.C again in M-mode, making IALIGN = 16."""
+    return [
+        f"LI(x{temp_reg}, 0b100)             # misa.C",
+        f"csrs misa, x{temp_reg}",
+    ]
+
+
+def _masked_xret_test(
+    test_data: TestData,
+    covergroup: str,
+    coverpoint: str,
+    label: str,
+    *,
+    epc_csr: str,
+    xret: str,
+    status_csr: str,
+    previous_priv_mask: str,
+    previous_ie_mask: str,
+    target_reg: int,
+    value_reg: int,
+) -> list[str]:
+    """Write epc_csr = target + 2 and execute xret, which must return to the target because it masks epc_csr[1].
+
+    previous_priv_mask (xPP) is set so that xret returns to the mode it runs in, and previous_ie_mask (xPIE) is
+    cleared so that interrupts stay disabled after it.  The signature records target_pc - target, which is 0.
+    """
+    return [
+        f"LA(x{target_reg}, {label}_target)",
+        f"ori x{value_reg}, x{target_reg}, 2",
+        f"csrw {epc_csr}, x{value_reg}          # {epc_csr}[1] = 1",
+        f"LI(x{value_reg}, {previous_priv_mask})",
+        f"csrs {status_csr}, x{value_reg}       # return to the same mode",
+        f"LI(x{value_reg}, {previous_ie_mask})",
+        f"csrc {status_csr}, x{value_reg}       # keep interrupts disabled after the {xret}",
+        test_data.add_testcase(label, coverpoint, covergroup),
+        f"{xret}                               # implicit read of {epc_csr}, masked while IALIGN = 32",
+        ".p2align 2",
+        f"{label}_target:",
+        f"auipc x{value_reg}, 0",
+        f"sub x{value_reg}, x{value_reg}, x{target_reg}    # 0 when {xret} returned to the masked address",
+        write_sigupd(value_reg, test_data),
+    ]
+
+
+def _masked_read_test(
+    test_data: TestData,
+    covergroup: str,
+    coverpoint: str,
+    label: str,
+    *,
+    epc_csr: str,
+    target_reg: int,
+    value_reg: int,
+) -> list[str]:
+    """Write epc_csr = target + 2 and read it back: the read returns target while IALIGN = 32."""
+    return [
+        f"ori x{value_reg}, x{target_reg}, 2",
+        f"csrw {epc_csr}, x{value_reg}          # {epc_csr}[1] = 1",
+        test_data.add_testcase(label, coverpoint, covergroup),
+        f"csrr x{value_reg}, {epc_csr}",
+        f"sub x{value_reg}, x{value_reg}, x{target_reg}    # 0: bit 1 reads as 0 while IALIGN = 32",
+        write_sigupd(value_reg, test_data),
+    ]
+
+
+def _bit1_kept_test(
+    test_data: TestData,
+    covergroup: str,
+    coverpoint: str,
+    label: str,
+    *,
+    epc_csr: str,
+    target_reg: int,
+    value_reg: int,
+) -> list[str]:
+    """After misa.C is set again, epc_csr reads target + 2: bit 1 stayed writable while it was masked."""
+    return [
+        test_data.add_testcase(label, coverpoint, covergroup),
+        f"csrr x{value_reg}, {epc_csr}",
+        f"sub x{value_reg}, x{value_reg}, x{target_reg}    # 2: {epc_csr}[1] stayed writable while it was masked",
+        write_sigupd(value_reg, test_data),
+    ]
+
+
+def _xepc_ialign32_tests(test_data: TestData, covergroup: str) -> list[str]:
+    """mepc and sepc with misa.C = 0: mret in M-mode, sret in M-mode and S-mode, and reads from M-mode and S-mode."""
+    saved_mstatus_reg, target_reg, value_reg = test_data.int_regs.get_registers(3)
+
+    def masked_sret(label: str) -> list[str]:
+        return _masked_xret_test(
+            test_data,
+            covergroup,
+            "cp_sepc_ialign32_sret",
+            label,
+            epc_csr="sepc",
+            xret="sret",
+            status_csr="sstatus",
+            previous_priv_mask="SSTATUS_SPP",
+            previous_ie_mask="SSTATUS_SPIE",
+            target_reg=target_reg,
+            value_reg=value_reg,
+        )
+
+    def masked_read(coverpoint: str, label: str, epc_csr: str) -> list[str]:
+        return _masked_read_test(
+            test_data, covergroup, coverpoint, label, epc_csr=epc_csr, target_reg=target_reg, value_reg=value_reg
+        )
+
+    def bit1_kept(coverpoint: str, label: str, epc_csr: str) -> list[str]:
+        return _bit1_kept_test(
+            test_data, covergroup, coverpoint, label, epc_csr=epc_csr, target_reg=target_reg, value_reg=value_reg
+        )
+
+    lines = [
+        f"#if {IALIGN32_GATE}",
+        f"csrr x{saved_mstatus_reg}, mstatus",
+        *_clear_misa_c(value_reg),
+        *_masked_xret_test(
+            test_data,
+            covergroup,
+            "cp_mepc_ialign32_mret",
+            "mepc_mret",
+            epc_csr="mepc",
+            xret="mret",
+            status_csr="mstatus",
+            previous_priv_mask="MSTATUS_MPP",
+            previous_ie_mask="MSTATUS_MPIE",
+            target_reg=target_reg,
+            value_reg=value_reg,
+        ),
+        *masked_read("cp_mepc_ialign32_read", "mepc_read", "mepc"),
+        "#ifdef S_SUPPORTED",
+        "# sret in M-mode returns to S-mode (sstatus.SPP = S)",
+        *masked_sret("sepc_sret_m"),
+        "RVTEST_TSBI_GOTO_MMODE",
+        *masked_read("cp_sepc_ialign32_read", "sepc_read_m", "sepc"),
+        "RVTEST_TSBI_GOTO_SMODE",
+        *masked_sret("sepc_sret_s"),
+        *masked_read("cp_sepc_ialign32_read", "sepc_read_s", "sepc"),
+        "RVTEST_TSBI_GOTO_MMODE",
+        "#endif // S_SUPPORTED",
+        *_set_misa_c(value_reg),
+        *bit1_kept("cp_mepc_ialign32_read", "mepc_writable", "mepc"),
+        "#ifdef S_SUPPORTED",
+        *bit1_kept("cp_sepc_ialign32_read", "sepc_writable", "sepc"),
+        "#endif",
+        f"csrw mstatus, x{saved_mstatus_reg}",
+        f"#endif // {IALIGN32_GATE}",
+    ]
+    test_data.int_regs.return_registers([saved_mstatus_reg, target_reg, value_reg])
+    return lines
+
+
+def _vsepc_ialign32_tests(test_data: TestData) -> list[str]:
+    """vsepc with misa.C = 0: sret and a read (as sepc) in VS-mode, and reads of vsepc from M-mode and HS-mode."""
+    saved_vsstatus_reg, target_reg, value_reg = test_data.int_regs.get_registers(3)
+
+    def masked_read(coverpoint: str, label: str, epc_csr: str) -> list[str]:
+        return _masked_read_test(
+            test_data, _H_CSR_CG, coverpoint, label, epc_csr=epc_csr, target_reg=target_reg, value_reg=value_reg
+        )
+
+    lines = [
+        f"#if {IALIGN32_GATE}",
+        f"csrr x{saved_vsstatus_reg}, vsstatus",
+        *_clear_misa_c(value_reg),
+        "RVTEST_TSBI_GOTO_VSMODE",
+        "# In VS-mode, sepc and sstatus are vsepc and vsstatus",
+        *_masked_xret_test(
+            test_data,
+            _H_CSR_CG,
+            "cp_vsepc_ialign32_sret",
+            "vsepc_sret_vs",
+            epc_csr="sepc",
+            xret="sret",
+            status_csr="sstatus",
+            previous_priv_mask="SSTATUS_SPP",
+            previous_ie_mask="SSTATUS_SPIE",
+            target_reg=target_reg,
+            value_reg=value_reg,
+        ),
+        *masked_read("cp_vsepc_ialign32_vs_read", "vsepc_read_vs", "sepc"),
+        "RVTEST_TSBI_GOTO_MMODE",
+        *masked_read("cp_vsepc_ialign32_read", "vsepc_read_m", "vsepc"),
+        "RVTEST_TSBI_GOTO_SMODE",
+        *masked_read("cp_vsepc_ialign32_read", "vsepc_read_hs", "vsepc"),
+        "RVTEST_TSBI_GOTO_MMODE",
+        *_set_misa_c(value_reg),
+        *_bit1_kept_test(
+            test_data,
+            _H_CSR_CG,
+            "cp_vsepc_ialign32_read",
+            "vsepc_writable",
+            epc_csr="vsepc",
+            target_reg=target_reg,
+            value_reg=value_reg,
+        ),
+        f"csrw vsstatus, x{saved_vsstatus_reg}",
+        f"#endif // {IALIGN32_GATE}",
+    ]
+    test_data.int_regs.return_registers([saved_vsstatus_reg, target_reg, value_reg])
+    return lines
 
 
 def _generate_mcsr_cntr_tests(test_data: TestData) -> list[str]:
@@ -1895,6 +2156,18 @@ def make_smh(test_data: TestData) -> list[TestChunk]:
                 "implicit VS-stage access; the trap records hold mtval2 and mtinst",
             ),
             *guest_page_fault_tests(test_data, _H_INST_CG),
+        ]
+    )
+
+    tc = test_data.new_test_chunk(test_chunks, "H_vsepc")
+    tc.code.extend(
+        [
+            comment_banner(
+                "cp_vsepc_ialign32_read, cp_vsepc_ialign32_vs_read, cp_vsepc_ialign32_sret",
+                "With vsepc[1] = 1, clear misa.C in M-mode.  While IALIGN = 32, vsepc[1] reads as 0 from M-mode, HS-mode\n"
+                "and VS-mode (as sepc), and sret in VS-mode returns to the masked address",
+            ),
+            *_vsepc_ialign32_tests(test_data),
         ]
     )
 

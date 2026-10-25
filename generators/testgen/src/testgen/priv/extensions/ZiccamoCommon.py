@@ -34,7 +34,8 @@ _AMO_OPS = ["swap", "add", "and", "or", "xor", "min", "max", "minu", "maxu"]
 AMO_ARITHMETIC: list[tuple[str, int, str | None]] = [
     *[(f"amo{op}.w", 4, None) for op in _AMO_OPS],
     *[(f"amo{op}.d", 8, _RV64) for op in _AMO_OPS],
-    *[(f"amo{op}.{w}", s, _ZABHA) for w, s in (("b", 1), ("h", 2)) for op in _AMO_OPS],
+    *[(f"amo{op}.h", 2, _ZABHA) for op in _AMO_OPS],
+    *[(f"amo{op}.b", 1, _ZABHA) for op in _AMO_OPS],
 ]
 # The compare-and-swap AMOs added at the AMOCASW, AMOCASD and AMOCASQ levels, with their Zabha forms
 AMO_CAS: list[tuple[str, int, str | None]] = [

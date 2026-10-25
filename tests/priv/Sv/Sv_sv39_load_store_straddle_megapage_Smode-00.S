@@ -10,9 +10,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'Sv39']
-# params:
-#   MISALIGNED_LDST: true
-#   MISALIGNED_SPLIT_STRATEGY: sequential_bytes
+# # # no param constraints
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -137,10 +135,10 @@ rvtest_slvl1_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_vm_permissions_cg_cp_straddle_write_s_test1_store_str: .string "\"test: 9; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_store\""
-Sv_vm_permissions_cg_cp_straddle_read_s_test1_load_str: .string "\"test: 10; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_load\""
-Sv_vm_permissions_cg_cp_straddle_write_s_test2_store_str: .string "\"test: 11; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_store\""
-Sv_vm_permissions_cg_cp_straddle_read_s_test2_load_str: .string "\"test: 12; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_load\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_store_str: .string "\"test: 526; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_store\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_load_str: .string "\"test: 527; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_load\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_store_str: .string "\"test: 528; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_store\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_load_str: .string "\"test: 529; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_load\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

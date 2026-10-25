@@ -1218,10 +1218,11 @@ def _t_fetch_straddle(test_data: TestData, test_chunks: list[TestChunk], sv: SvM
 
 
 def _t_load_store_straddle(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode, page: _StraddlePage) -> None:
-    """Store and load a word two bytes below the end of an RWX page whose successor is invalid or execute-only.  The
-    hart splits the access into bytes and faults on the first byte in the next page, so stval holds the page-boundary
-    address.  A faulting load leaves rd unchanged; the bytes a faulting store wrote below the boundary may be visible,
-    so memory is not checked.
+    """Store and load a word two bytes below the end of an RWX page whose successor is invalid or execute-only.  A hart
+    that performs misaligned accesses faults on the part of the access in the next page, however it splits the access,
+    so stval holds the page-boundary address.  A hart that does not perform them raises address-misaligned instead,
+    which the reference model predicts from its configuration.  A faulting load leaves rd unchanged; the bytes a
+    faulting store wrote below the boundary may be visible, so memory is not checked.
     """
     for mode in ("Smode", "Umode"):
         regs = SvRegs.allocate(test_data)
@@ -1398,6 +1399,8 @@ def _make_sv(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     _t_va_all(test_data, test_chunks, sv)
     _t_satp_access(test_data, test_chunks, sv)
     _t_nleaf_pte_reserved(test_data, test_chunks, sv)
+    for page in _straddle_pages(sv):
+        _t_load_store_straddle(test_data, test_chunks, sv, page)
     return test_chunks
 
 
@@ -1448,13 +1451,6 @@ def _make_fetch_straddle(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     return test_chunks
 
 
-def _make_load_store_straddle(test_data: TestData, sv: SvMode) -> list[TestChunk]:
-    test_chunks: list[TestChunk] = []
-    for page in _straddle_pages(sv):
-        _t_load_store_straddle(test_data, test_chunks, sv, page)
-    return test_chunks
-
-
 # Fetches that straddle a page boundary need IALIGN = 16, so that jalr can reach the last two bytes of a page.
 
 
@@ -1496,52 +1492,3 @@ def make_sv48_fetch_straddle(test_data: TestData) -> list[TestChunk]:
 )
 def make_sv57_fetch_straddle(test_data: TestData) -> list[TestChunk]:
     return _make_fetch_straddle(test_data, SV57)
-
-
-# Loads and stores that straddle a page boundary: the hart performs the misaligned access byte by byte in main memory
-# and faults on the first byte in the next page, so stval holds the page-boundary address.
-_STRADDLE_PARAMS = ["MISALIGNED_LDST: true", "MISALIGNED_SPLIT_STRATEGY: sequential_bytes"]
-
-
-@add_priv_test_generator(
-    "Sv",
-    required_extensions=["Sv32"],
-    march_extensions=[],
-    extra_defines=["#define BOOT_TO_SMODE"],
-    params=_STRADDLE_PARAMS,
-)
-def make_sv32_load_store_straddle(test_data: TestData) -> list[TestChunk]:
-    return _make_load_store_straddle(test_data, SV32)
-
-
-@add_priv_test_generator(
-    "Sv",
-    required_extensions=["Sv39"],
-    march_extensions=[],
-    extra_defines=["#define BOOT_TO_SMODE"],
-    params=_STRADDLE_PARAMS,
-)
-def make_sv39_load_store_straddle(test_data: TestData) -> list[TestChunk]:
-    return _make_load_store_straddle(test_data, SV39)
-
-
-@add_priv_test_generator(
-    "Sv",
-    required_extensions=["Sv48"],
-    march_extensions=[],
-    extra_defines=["#define BOOT_TO_SMODE"],
-    params=_STRADDLE_PARAMS,
-)
-def make_sv48_load_store_straddle(test_data: TestData) -> list[TestChunk]:
-    return _make_load_store_straddle(test_data, SV48)
-
-
-@add_priv_test_generator(
-    "Sv",
-    required_extensions=["Sv57"],
-    march_extensions=[],
-    extra_defines=["#define BOOT_TO_SMODE"],
-    params=_STRADDLE_PARAMS,
-)
-def make_sv57_load_store_straddle(test_data: TestData) -> list[TestChunk]:
-    return _make_load_store_straddle(test_data, SV57)

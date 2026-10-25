@@ -10,9 +10,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'Sv57']
-# params:
-#   MISALIGNED_LDST: true
-#   MISALIGNED_SPLIT_STRATEGY: sequential_bytes
+# # # no param constraints
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -60,7 +58,7 @@ RVTEST_BEGIN
   SATP_SETUP_RV64(sv57) // Enable address translation.
   sfence.vma
 
-  LI(x9, 0x800) // Test signature initialization
+  LI(x14, 0x800) // Test signature initialization
 
 
 // 4KB page at level 0
@@ -74,19 +72,19 @@ RVTEST_BEGIN
   PTE_SETUP_SV57(sv_straddle_next, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_next, LEVEL0)
   sfence.vma
 
-  LI(x13, 0x7028500403ffe)
-  addi x9, x9, 16
-  mv x8, x9
+  LI(x8, 0x7028500403ffe)
+  addi x14, x14, 16
+  mv x15, x14
   RVTEST_TSBI_GOTO_UMODE
 Sv_vm_permissions_cg_cp_straddle_write_u_test1_store:
-  sw x9, 0(x13)
+  sw x14, 0(x8)
   nop
 Sv_vm_permissions_cg_cp_straddle_read_u_test1_load:
-  lw x8, 0(x13)
+  lw x15, 0(x8)
   nop
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_vm_permissions_cg_cp_straddle_read_u_test1_load, Sv_vm_permissions_cg_cp_straddle_read_u_test1_load_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_vm_permissions_cg_cp_straddle_read_u_test1_load, Sv_vm_permissions_cg_cp_straddle_read_u_test1_load_str)
 
 
 // 4KB page at level 0
@@ -100,19 +98,19 @@ Sv_vm_permissions_cg_cp_straddle_read_u_test1_load:
   PTE_SETUP_SV57(sv_straddle_next, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_next, LEVEL0)
   sfence.vma
 
-  LI(x13, 0x7028500403ffe)
-  addi x9, x9, 16
-  mv x8, x9
+  LI(x8, 0x7028500403ffe)
+  addi x14, x14, 16
+  mv x15, x14
   RVTEST_TSBI_GOTO_UMODE
 Sv_vm_permissions_cg_cp_straddle_write_u_test2_store:
-  sw x9, 0(x13)
+  sw x14, 0(x8)
   nop
 Sv_vm_permissions_cg_cp_straddle_read_u_test2_load:
-  lw x8, 0(x13)
+  lw x15, 0(x8)
   nop
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_vm_permissions_cg_cp_straddle_read_u_test2_load, Sv_vm_permissions_cg_cp_straddle_read_u_test2_load_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_vm_permissions_cg_cp_straddle_read_u_test2_load, Sv_vm_permissions_cg_cp_straddle_read_u_test2_load_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -149,10 +147,10 @@ rvtest_slvl3_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_vm_permissions_cg_cp_straddle_write_u_test1_store_str: .string "\"test: 5; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_u; bin: test1_store\""
-Sv_vm_permissions_cg_cp_straddle_read_u_test1_load_str: .string "\"test: 6; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_u; bin: test1_load\""
-Sv_vm_permissions_cg_cp_straddle_write_u_test2_store_str: .string "\"test: 7; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_u; bin: test2_store\""
-Sv_vm_permissions_cg_cp_straddle_read_u_test2_load_str: .string "\"test: 8; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_u; bin: test2_load\""
+Sv_vm_permissions_cg_cp_straddle_write_u_test1_store_str: .string "\"test: 855; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_u; bin: test1_store\""
+Sv_vm_permissions_cg_cp_straddle_read_u_test1_load_str: .string "\"test: 856; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_u; bin: test1_load\""
+Sv_vm_permissions_cg_cp_straddle_write_u_test2_store_str: .string "\"test: 857; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_u; bin: test2_store\""
+Sv_vm_permissions_cg_cp_straddle_read_u_test2_load_str: .string "\"test: 858; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_u; bin: test2_load\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

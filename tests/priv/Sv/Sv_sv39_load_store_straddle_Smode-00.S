@@ -10,9 +10,7 @@
 
 ##### START_TEST_CONFIG #####
 # REQUIRED_EXTENSIONS: ['I', 'Sv39']
-# params:
-#   MISALIGNED_LDST: true
-#   MISALIGNED_SPLIT_STRATEGY: sequential_bytes
+# # # no param constraints
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
@@ -72,14 +70,14 @@ RVTEST_BEGIN
   PTE_SETUP_SV39(sv_straddle_next, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_next, LEVEL0)
   sfence.vma
 
-  LI(x13, 0x140802ffe)
+  LI(x15, 0x140802ffe)
   addi x14, x14, 16
   mv x8, x14
 Sv_vm_permissions_cg_cp_straddle_write_s_test1_store:
-  sw x14, 0(x13)
+  sw x14, 0(x15)
   nop
 Sv_vm_permissions_cg_cp_straddle_read_s_test1_load:
-  lw x8, 0(x13)
+  lw x8, 0(x15)
   nop
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_vm_permissions_cg_cp_straddle_read_s_test1_load, Sv_vm_permissions_cg_cp_straddle_read_s_test1_load_str)
@@ -94,14 +92,14 @@ Sv_vm_permissions_cg_cp_straddle_read_s_test1_load:
   PTE_SETUP_SV39(sv_straddle_next, (PTE_D | PTE_A | PTE_X | PTE_V), va_next, LEVEL0)
   sfence.vma
 
-  LI(x13, 0x140802ffe)
+  LI(x15, 0x140802ffe)
   addi x14, x14, 16
   mv x8, x14
 Sv_vm_permissions_cg_cp_straddle_write_s_test2_store:
-  sw x14, 0(x13)
+  sw x14, 0(x15)
   nop
 Sv_vm_permissions_cg_cp_straddle_read_s_test2_load:
-  lw x8, 0(x13)
+  lw x8, 0(x15)
   nop
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_vm_permissions_cg_cp_straddle_read_s_test2_load, Sv_vm_permissions_cg_cp_straddle_read_s_test2_load_str)
@@ -135,10 +133,10 @@ rvtest_slvl1_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_vm_permissions_cg_cp_straddle_write_s_test1_store_str: .string "\"test: 1; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_store\""
-Sv_vm_permissions_cg_cp_straddle_read_s_test1_load_str: .string "\"test: 2; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_load\""
-Sv_vm_permissions_cg_cp_straddle_write_s_test2_store_str: .string "\"test: 3; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_store\""
-Sv_vm_permissions_cg_cp_straddle_read_s_test2_load_str: .string "\"test: 4; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_load\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_store_str: .string "\"test: 518; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_store\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_load_str: .string "\"test: 519; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_load\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_store_str: .string "\"test: 520; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_store\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_load_str: .string "\"test: 521; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_load\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -589,7 +589,7 @@ normative_rule_definitions:
   # If stval is written with a nonzero value when a misaligned load or store causes
   # an access-fault, page-fault, or hardware-error exception, then stval will
   # contain the virtual address of the portion of the access that caused the fault.
-  # A word at the end of a page whose next page faults, on harts that split it into bytes.
+  # A word at the end of a page whose next page faults: a hart that performs misaligned accesses faults on the part in the next page.
   - name: stval_op_load_store_fault
     coverpoint: ["Sv_vm_permissions_cg/cp_straddle_{read,write}_{s,u}"]
 

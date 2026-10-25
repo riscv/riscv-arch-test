@@ -732,10 +732,10 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
         cp_straddle_exec_u: cross priv_mode_u, jalr, straddle_fetch, straddle_page_fetch, ins_page_fault, stval_page_boundary_fetch, sepc_instr_start, mode;
     `endif
 
-    // A word two bytes below the end of a page whose next page is invalid or execute-only.  A hart that splits the
-    // access into bytes faults on the first byte in the next page, so stval holds the page-boundary address.
+    // A word two bytes below the end of a page whose next page is invalid or execute-only.  A hart that performs
+    // misaligned accesses faults on the part in the next page, however it splits the access, so stval holds the
+    // page-boundary address.  Other harts raise an address-misaligned exception.
     `ifdef UDB_MISALIGNED_LDST
-    `ifdef UDB_MISALIGNED_SPLIT_STRATEGY_SEQUENTIAL_BYTES
         lw: coverpoint ins.current.insn {
             wildcard bins lw = {LW};
         }
@@ -758,7 +758,6 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
         cp_straddle_read_u:  cross priv_mode_u, lw, straddle, straddle_page, load_page_fault,  stval_page_boundary, mode;
         cp_straddle_write_s: cross priv_mode_s, sw, straddle, straddle_page, store_page_fault, stval_page_boundary, mode;
         cp_straddle_write_u: cross priv_mode_u, sw, straddle, straddle_page, store_page_fault, stval_page_boundary, mode;
-    `endif
     `endif
 endgroup
 

@@ -742,7 +742,7 @@ coverpoints:
       - "[norm:stval_faulting_address_variable_instr]"
   - name: cp_straddle_read_s
     goal: Verify a misaligned load that straddles into an invalid or execute-only page faults on its second part from S-mode
-    description: "Harts with MISALIGNED_LDST and MISALIGNED_SPLIT_STRATEGY = sequential_bytes, S-mode: va_data is an RWX 4 KiB page with PTE.U=0; the next page is first invalid (V=0) and then execute-only. Load (lw) from va_data + 0xFFE, which spans the page boundary. On RV64, repeat at the end of an RWX 2 MiB megapage whose next megapage is invalid or execute-only."
+    description: "S-mode: va_data is an RWX 4 KiB page with PTE.U=0; the next page is first invalid (V=0) and then execute-only. Load (lw) from va_data + 0xFFE, which spans the page boundary. On RV64, repeat at the end of an RWX 2 MiB megapage whose next megapage is invalid or execute-only. The coverpoints need MISALIGNED_LDST; harts that do not perform misaligned accesses run the test and raise an address-misaligned exception instead."
     expectation: Load page fault (scause = 13); stval = the page or megapage boundary, the first byte of the faulting part. A faulting load leaves rd unchanged.
     bins: |-
       lw x straddle x straddle_page {kilopage, megapage on RV64} x load_page_fault x stval_page_boundary x mode {S-mode}
@@ -752,7 +752,7 @@ coverpoints:
       - "[norm:stval_op_load_store_fault]"
   - name: cp_straddle_read_u
     goal: Verify a misaligned load that straddles into an invalid or execute-only page faults on its second part from U-mode
-    description: "Harts with MISALIGNED_LDST and MISALIGNED_SPLIT_STRATEGY = sequential_bytes, U-mode: va_data is an RWX 4 KiB page with PTE.U=1; the next page is first invalid (V=0) and then execute-only. Load (lw) from va_data + 0xFFE, which spans the page boundary. On RV64, repeat at the end of an RWX 2 MiB megapage whose next megapage is invalid or execute-only."
+    description: "U-mode: va_data is an RWX 4 KiB page with PTE.U=1; the next page is first invalid (V=0) and then execute-only. Load (lw) from va_data + 0xFFE, which spans the page boundary. On RV64, repeat at the end of an RWX 2 MiB megapage whose next megapage is invalid or execute-only. The coverpoints need MISALIGNED_LDST; harts that do not perform misaligned accesses run the test and raise an address-misaligned exception instead."
     expectation: Load page fault (scause = 13); stval = the page or megapage boundary, the first byte of the faulting part. A faulting load leaves rd unchanged.
     bins: |-
       lw x straddle x straddle_page {kilopage, megapage on RV64} x load_page_fault x stval_page_boundary x mode {U-mode}
@@ -762,7 +762,7 @@ coverpoints:
       - "[norm:stval_op_load_store_fault]"
   - name: cp_straddle_write_s
     goal: Verify a misaligned store that straddles into an invalid or execute-only page faults on its second part from S-mode
-    description: "Harts with MISALIGNED_LDST and MISALIGNED_SPLIT_STRATEGY = sequential_bytes, S-mode: va_data is an RWX 4 KiB page with PTE.U=0; the next page is first invalid (V=0) and then execute-only. Store (sw) to va_data + 0xFFE, which spans the page boundary. On RV64, repeat at the end of an RWX 2 MiB megapage whose next megapage is invalid or execute-only."
+    description: "S-mode: va_data is an RWX 4 KiB page with PTE.U=0; the next page is first invalid (V=0) and then execute-only. Store (sw) to va_data + 0xFFE, which spans the page boundary. On RV64, repeat at the end of an RWX 2 MiB megapage whose next megapage is invalid or execute-only. The coverpoints need MISALIGNED_LDST; harts that do not perform misaligned accesses run the test and raise an address-misaligned exception instead."
     expectation: Store/AMO page fault (scause = 15); stval = the page or megapage boundary, the first byte of the faulting part.
     bins: |-
       sw x straddle x straddle_page {kilopage, megapage on RV64} x store_page_fault x stval_page_boundary x mode {S-mode}
@@ -772,7 +772,7 @@ coverpoints:
       - "[norm:stval_op_load_store_fault]"
   - name: cp_straddle_write_u
     goal: Verify a misaligned store that straddles into an invalid or execute-only page faults on its second part from U-mode
-    description: "Harts with MISALIGNED_LDST and MISALIGNED_SPLIT_STRATEGY = sequential_bytes, U-mode: va_data is an RWX 4 KiB page with PTE.U=1; the next page is first invalid (V=0) and then execute-only. Store (sw) to va_data + 0xFFE, which spans the page boundary. On RV64, repeat at the end of an RWX 2 MiB megapage whose next megapage is invalid or execute-only."
+    description: "U-mode: va_data is an RWX 4 KiB page with PTE.U=1; the next page is first invalid (V=0) and then execute-only. Store (sw) to va_data + 0xFFE, which spans the page boundary. On RV64, repeat at the end of an RWX 2 MiB megapage whose next megapage is invalid or execute-only. The coverpoints need MISALIGNED_LDST; harts that do not perform misaligned accesses run the test and raise an address-misaligned exception instead."
     expectation: Store/AMO page fault (scause = 15); stval = the page or megapage boundary, the first byte of the faulting part.
     bins: |-
       sw x straddle x straddle_page {kilopage, megapage on RV64} x store_page_fault x stval_page_boundary x mode {U-mode}

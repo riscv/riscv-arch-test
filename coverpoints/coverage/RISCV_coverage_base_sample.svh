@@ -178,6 +178,9 @@
     `ifdef COVER_SVPBMT
         svpbmt_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SVVPTC
+        svvptc_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_U
         u_sample(hart, issue, ins);
     `endif

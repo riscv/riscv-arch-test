@@ -179,6 +179,9 @@
 `ifdef SVPBMT_COVERAGE
   `include "Svpbmt_coverage.svh"
 `endif
+`ifdef SVVPTC_COVERAGE
+  `include "Svvptc_coverage.svh"
+`endif
 `ifdef U_COVERAGE
   `include "U_coverage.svh"
 `endif

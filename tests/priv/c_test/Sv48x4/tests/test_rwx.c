@@ -1,0 +1,1 @@
+../../Sv39x4/tests/test_rwx.c

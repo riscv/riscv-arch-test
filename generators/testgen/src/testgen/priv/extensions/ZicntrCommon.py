@@ -279,6 +279,7 @@ def _instret_wait_case(test_data: TestData, covergroup: str, name: str, mode: Mo
     csr = "instret" if mode == "U" else "minstret"
     r_before, r_after, r_diff = test_data.int_regs.get_registers(3)
     r_count, r_addr = test_data.int_regs.get_registers(2)
+    r_wait = test_data.int_regs.get_register()
 
     trip = [
         f"LREG x{r_after}, 0(x{r_addr})  # trap count now",
@@ -296,6 +297,9 @@ def _instret_wait_case(test_data: TestData, covergroup: str, name: str, mode: Mo
         # Read the trap count after the T-SBI ecalls above, so only the timer interrupt can change it from here
         f"LA(x{r_addr}, rvtest_trap_count)",
         f"LREG x{r_count}, 0(x{r_addr})  # trap count before waiting",
+        f"LA(x{r_addr}, rvtest_mip_clear_wait_insts)",
+        f"LREG x{r_wait}, 0(x{r_addr})  # MIP-clear wait insts before the window",
+        f"LA(x{r_addr}, rvtest_trap_count)",
         f"LI(x{r_diff}, 0)  # tally of instructions retired by the loop",
         *(["csrsi mstatus, 8  # MIE = 1"] if mode == "M" else []),
         test_data.add_testcase(f"{csr}_{name}", f"cp_instret_{name}", covergroup),
@@ -306,14 +310,18 @@ def _instret_wait_case(test_data: TestData, covergroup: str, name: str, mode: Mo
         "j 1b",
         "2:",
         f"csrr x{r_after}, {csr}",
-        f"sub x{r_after}, x{r_after}, x{r_diff}  # remove the timing-dependent part",
+        f"sub x{r_after}, x{r_after}, x{r_diff}  # remove the WFI-loop trips",
+        f"LA(x{r_addr}, rvtest_mip_clear_wait_insts)",
+        f"LREG x{r_diff}, 0(x{r_addr})",
+        f"sub x{r_diff}, x{r_diff}, x{r_wait}  # MIP-clear wait retired in the handler",
+        f"sub x{r_after}, x{r_after}, x{r_diff}",
         f"sub x{r_diff}, x{r_after}, x{r_before}",
         write_sigupd(r_diff, test_data),
         *(["csrci mstatus, 8  # MIE = 0"] if mode == "M" else []),
         f"RVTEST_CLR_MTIME_INT_{mode}",
         "",
     ]
-    test_data.int_regs.return_registers([r_before, r_after, r_diff, r_count, r_addr])
+    test_data.int_regs.return_registers([r_before, r_after, r_diff, r_count, r_addr, r_wait])
     return lines
 
 

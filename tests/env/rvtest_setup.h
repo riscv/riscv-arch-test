@@ -378,7 +378,35 @@
   // clearing an interrupt source, poll mip until the pending bit reads 0, for at most
   // RVMODEL_INTERRUPT_LATENCY iterations, so the interrupt is not taken again
   // when the test next enables it. The _SU flavor reads mip through T-SBI.
+  //
+  // The poll length is implementation-defined. When Zicntr is present, the M-mode
+  // wait accumulates its retired-instruction count into rvtest_mip_clear_wait_insts
+  // so a minstret/instret SIGUPD can subtract it the same way WFI tests subtract
+  // 5*trips. Uses only a0-a2 (Mclr_* already saves those). The start value is
+  // stored in rvtest_mip_clear_wait_stamp. The SU wait does not account: it runs
+  // in S/U where csrr instret/minstret is illegal unless counteren.IR is set.
+  .macro RVTEST_WAIT_MIP_CLEAR_ACCUM_WAIT_INSTS csr
+#ifdef ZICNTR_SUPPORTED
+    csrr a0, \csr
+    LA(a1, rvtest_mip_clear_wait_stamp)
+    SREG a0, 0(a1)
+#endif
+  .endm
+  .macro RVTEST_WAIT_MIP_CLEAR_FINISH_WAIT_INSTS csr
+#ifdef ZICNTR_SUPPORTED
+    csrr a0, \csr
+    LA(a1, rvtest_mip_clear_wait_stamp)
+    LREG a2, 0(a1)
+    sub a0, a0, a2
+    LA(a1, rvtest_mip_clear_wait_insts)
+    LREG a2, 0(a1)
+    add a2, a2, a0
+    SREG a2, 0(a1)
+#endif
+  .endm
+
   .macro RVTEST_WAIT_MIP_CLEAR_M mask
+    RVTEST_WAIT_MIP_CLEAR_ACCUM_WAIT_INSTS minstret
     LA(a2, RVMODEL_INTERRUPT_LATENCY)
     1:
     csrr a0, mip
@@ -388,6 +416,7 @@
     addi a2, a2, -1
     j 1b
     2:
+    RVTEST_WAIT_MIP_CLEAR_FINISH_WAIT_INSTS minstret
   .endm
 
   .macro RVTEST_WAIT_MIP_CLEAR_SU mask
@@ -1005,6 +1034,15 @@
   .p2align 3
   .global rvtest_trap_count
   rvtest_trap_count:
+    .dword 0
+
+  // Retired instructions spent in RVTEST_WAIT_MIP_CLEAR_*, accumulated across
+  // every clear in the run. Not a trap count. Zicntr coverpoints snapshot this
+  // before a measured window and subtract the delta from minstret/instret.
+  .global rvtest_mip_clear_wait_insts
+  rvtest_mip_clear_wait_insts:
+    .dword 0
+  rvtest_mip_clear_wait_stamp:
     .dword 0
 
   .p2align 4

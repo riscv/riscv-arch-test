@@ -47,6 +47,15 @@
   },
 
   "csr": {
+    // misa.C is writable, so tests can clear it and run with IALIGN = 32 (MUTABLE_MISA_C).  Giving misa a
+
+    // mask also needs its reset value, which is otherwise taken from the ISA string.
+
+    "misa": {
+      "reset": "0x80000000003411af",
+      "mask": "0x4",
+      "poke_mask": "0x4"
+    },
     "time": { "exists": "false" }, // Exercise M-mode emulation of time reads from S-mode and U-mode.
     "vstart": {
       "mask": "0xff",

@@ -2,11 +2,23 @@
 suite: Sstvecd
 source: https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=435052299#gid=435052299
 coverpoints:
-  - name: cp_stvec_mode
-    goal: Check stvec.MODE can hold 0 and stvec.BASE can hold any valid address
-    description: In S-mode with virtual memory disabled, write stvec.MODE = direct and walking 1s to stvec.BASE.
-    expectation: Match reference model
-    bins: 2*XLEN-4
+  - heading: Following tests are done in S-mode
+  - name: |-
+      cp_stvec_vaddr_pc
+      cp_stvec_vaddr_scratch
+    goal: Check stvec.MODE can be 0 and when it is, stvec.BASE can hold valid 4-byte aligned addresses
+    description: Write stvec = two physical addresses with MODE = Direct, the current pc and the scratch area, and read it back.  They are valid even when address translation is off.
+    expectation: stvec gets value written
+    bins: "2"
     rules:
       - Sstvecd_stvec_mode_direct
+      - Sstvecd_stvec_base_aligned_address
+  - name: |-
+      cp_stvec_vaddr_walk1
+      cp_stvec_vaddr_walk0
+    goal: stvec.BASE holds every valid 4-byte-aligned virtual address when stvec.MODE = Direct
+    description: Write a walking 1 (0s in the msbs) and a walking 0 (1s in the msbs) through bits 2 to VALEN-2 of stvec (bit 31 on RV32) with MODE = Direct, and read it back.  Canonical addresses have bits XLEN-1:VALEN-1 equal, so only bits up to VALEN-2 are walked; an invalid address may legally be converted.  VALEN is set by the largest of Sv39, Sv48 and Sv57 that satp supports; the walk needs Sv32 or Sv39.
+    expectation: stvec gets value written
+    bins: 2 x walked bits (30 on RV32, 36/45/54 for Sv39/Sv48/Sv57)
+    rules:
       - Sstvecd_stvec_base_aligned_address

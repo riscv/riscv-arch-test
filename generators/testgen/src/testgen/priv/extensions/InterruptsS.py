@@ -15,6 +15,7 @@ from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.InterruptsCommon import (
     InterruptSuite,
     emit_interrupts,
+    flavor,
     generate_cp_enable,
     generate_cp_priority_enable,
     generate_cp_priority_pending,
@@ -29,21 +30,25 @@ from testgen.priv.extensions.InterruptsCommon import (
     reg_ints,
     sstc_ints,
     supervisor_ints,
+    vs_ints,
+    write_ie,
 )
 from testgen.priv.registry import add_priv_test_generator
 
-# Boots to S-mode, which requires S and therefore U.
+# Boots to S-mode, which requires S and therefore U. With H, the tests also run in VS and VU modes and raise
+# the VS-level interrupts, whose enables are in hie.
 SUITE = InterruptSuite(
     name="InterruptsS",
     boot="S",
-    types=[*supervisor_ints],
-    priority_types=["SEI", "STI", "SSI", "LCOFI"],
+    types=[*supervisor_ints, *vs_ints],
+    priority_types=["SEI", "STI", "SSI", "LCOFI", *vs_ints],
     ip="sip",
     ie="sie",
     status={"csr": "sstatus", "mask": 0x22, "field": "SIE"},
     # cp_wfi: wake on the Sstc supervisor timer, enabled by sie.STIE, pending in sip.STIP
     wfi={"guard": "SSTC_SUPPORTED", "timer": "SSTC", "ie": ("STIE", 0x20), "ip": ("sip", "STIP", 0x20), "stce": True},
     deleg=[],
+    hie=True,
 )
 COVERGROUP = SUITE.covergroup
 
@@ -57,13 +62,14 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
     tc = test_data.new_test_chunk(test_chunks, f"trigger_{priv}")
     tc.section_header = comment_banner(
         banner,
-        f"Trigger each interrupt in {priv} mode with sie=1s x stvec.MODE=DIRECT/VECTORED x sstatus.SIE=0/1",
+        f"Trigger each interrupt in {priv} mode with sie=1s (and hie=1s with H) x stvec.MODE=DIRECT/VECTORED"
+        " x sstatus.SIE=0/1",
     )
     tmp_reg = test_data.int_regs.get_register()
 
-    for int_type in [*supervisor_ints, *reg_ints, *sstc_ints]:
-        if priv == "U" and int_type == "SSTC_STCE0":
-            # Arming Sstc from U mode goes through T-SBI.  This suite boots to S mode with
+    for int_type in [*supervisor_ints, *reg_ints, *sstc_ints, *vs_ints]:
+        if priv in ("U", "VS", "VU") and int_type == "SSTC_STCE0":
+            # Arming Sstc from U mode (or VS or VU mode) goes through T-SBI.  This suite boots to S mode with
             # medeleg delegating U-mode ecalls, so the S-mode handler services the request and
             # executes the stimecmp write at S privilege.  That access is illegal while
             # menvcfg.STCE = 0, and the trap fires inside the handler after it has swapped
@@ -83,7 +89,7 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                     f"#ifdef {guard}",
                     f"#ifdef UDB_STVEC_MODES_{mode}",
                     f"LI(x{tmp_reg}, -1)",
-                    f"csrw sie, x{tmp_reg} # sie = 1s",
+                    *write_ie(suite, tmp_reg, "1s"),
                     f"LI(x{tmp_reg}, 1)",
                     f"{modecmd} stvec, x{tmp_reg} # stvec.mode = {mode}",
                     f"LI(x{tmp_reg}, 0x22) # SIE, SPIE",
@@ -91,15 +97,22 @@ def _generate_cp_trigger_s(test_data: TestData, test_chunks: list[TestChunk], su
                     # Leave a nonzero stval so the trap handler's stval == 0 check sees the interrupt write it
                     f"auipc x{tmp_reg}, 0 # nonzero valid address",
                     f"csrw stval, x{tmp_reg} # stval = nonzero",
+                    # Likewise htval and htinst, which an interrupt taken into HS-mode must also zero.
+                    # htinst gets a transformed load, lw x1, 0(x0).
+                    "#ifdef H_SUPPORTED",
+                    f"csrw htval, x{tmp_reg} # htval = nonzero",
+                    f"LI(x{tmp_reg}, 0x2083) # transformed lw x1, 0(x0)",
+                    f"csrw htinst, x{tmp_reg} # htinst = nonzero",
+                    "#endif // H_SUPPORTED",
                     test_data.add_testcase(
                         f"priv_{priv}_{int_type}_mode_{mode}_enable_{enable}",
                         cp,
                         COVERGROUP,
                     ),
                     *mode_enter(suite, priv),
-                    f"RVTEST_SET_{macro}_INT_{priv} # Set the interrupt",
+                    f"RVTEST_SET_{macro}_INT_{flavor(priv)} # Set the interrupt",
                     f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg}) # Wait for interrupt to fire",
-                    f"RVTEST_CLR_{macro}_INT_{priv} # Clear the interrupt if the handler hasn't done so",
+                    f"RVTEST_CLR_{macro}_INT_{flavor(priv)} # Clear the interrupt if the handler hasn't done so",
                     *mode_exit(suite, priv),
                     f"#endif // UDB_STVEC_MODES_{mode}",
                     f"#endif // {guard}",
@@ -130,3 +143,18 @@ def make_interruptss_u(test_data: TestData) -> list[TestChunk]:
     # U-mode WFI traps after a bounded time when S-mode is implemented, so only test the timeout.
     generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout]
     return emit_interrupts(test_data, SUITE, "U", generators)
+
+
+@add_priv_test_generator(SUITE.name, required_extensions=["H"], extra_defines=["#define BOOT_TO_SMODE"])
+def make_interruptss_vs(test_data: TestData) -> list[TestChunk]:
+    """InterruptsS tests that run in VS-mode."""
+    generators = _COMMON_GENERATORS + [generate_cp_wfi, generate_cp_wfi_timeout]
+    return emit_interrupts(test_data, SUITE, "VS", generators)
+
+
+@add_priv_test_generator(SUITE.name, required_extensions=["H"], extra_defines=["#define BOOT_TO_SMODE"])
+def make_interruptss_vu(test_data: TestData) -> list[TestChunk]:
+    """InterruptsS tests that run in VU-mode."""
+    # VU-mode WFI never waits: it raises virtual instruction with TW = 0, so only test the timeout.
+    generators = _COMMON_GENERATORS + [generate_cp_wfi_timeout]
+    return emit_interrupts(test_data, SUITE, "VU", generators)

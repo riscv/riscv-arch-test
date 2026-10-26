@@ -123,7 +123,11 @@ normative_rule_definitions:
   # the time CSR in VS or VU mode returns the sum of the contents of htimedelta and the
   # actual value of time.
   - name: htimedelta_sz_acc_op
-    coverpoint: ["H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/htimedelta"]
+    coverpoint:
+      [
+        "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/htimedelta",
+        "H_Zicntr_cg/{cp_delta_hs, cp_delta_vs, cp_delta_u, cp_delta_vu}",
+      ]
   # The htval register is an HSXLEN-bit read/write register formatted as shown in . When a
   # trap is taken into HS-mode, htval is written with additional exception-specific
   # information, alongside stval, to assist software in handling the trap.
@@ -197,6 +201,7 @@ normative_rule_definitions:
         "H_hscsr_cg/{cp_hcsr_access, cp_hcsrwalk}/htimedeltah",
         "H_vscsr_cg/cp_illegalupper/htimedeltah",
         "H_vucsr_cg/cp_csr_insufficient_priv",
+        "H_Zicntr_cg/{cp_delta_hs, cp_delta_vs, cp_delta_u, cp_delta_vu}",
       ]
 
   # The VS CSRs can be accessed as themselves only from M-mode or HS-mode.
@@ -268,6 +273,7 @@ normative_rule_definitions:
         "H_hscsr_cg/cp_hcsr_access/vsepc",
         "H_hscsr_cg/{cp_vsepc_vaddr_walk1, cp_vsepc_vaddr_walk0, cp_vsepc_vaddr_pc, cp_vsepc_vaddr_scratch}",
         "H_vscsr_cg/cp_replica/sepc",
+        "Sm_H_mcsr_cg/{cp_vsepc_ialign32_read, cp_vsepc_ialign32_vs_read, cp_vsepc_ialign32_sret}",
       ]
   # vsepc is a WARL register that must be able to hold the same set of values that sepc
   # can hold.
@@ -423,7 +429,7 @@ normative_rule_definitions:
         "H_inst_cg/cp_hlv",
         "H_inst_cg/cp_hlvx",
         "H_inst_cg/cp_hsv",
-        "ExceptionsH_cg/cp_loadstore_priv",
+        "Exceptions_H_cg/cp_loadstore_priv",
       ]
 
   # hfence.vvma and hfence.gvma execute in HS-mode with mstatus.TVM = 0, raise virtual instruction in VS-mode and
@@ -455,7 +461,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "H_inst_cg/cp_sret_illegal",
-        "ExceptionsH_cg/cp_virtual_instr_vu_sfence_vma",
+        "Exceptions_H_cg/cp_virtual_instr_vu_sfence_vma",
       ]
 
   # sret from HS-mode uses SPV
@@ -520,8 +526,8 @@ normative_rule_definitions:
       [
         "H_vscsr_cg/cp_hcsr_virtualinstructionfault",
         "H_vucsr_cg/cp_csr_insufficient_priv",
-        "ZicntrH_cg/cp_hcounteren_access_vs",
-        "ZicntrH_cg/cp_hcounteren_access_vu",
+        "H_Zicntr_cg/cp_hcounteren_access_vs",
+        "H_Zicntr_cg/cp_hcounteren_access_vu",
       ]
 
   # The least-significant VMID bits are implemented first; VMIDMAX is 7 for Sv32x4 and 14 otherwise
@@ -659,4 +665,69 @@ normative_rule_definitions:
     coverpoint:
       [
         "Not tested: vsstatus.SDT after sret belongs to SsdbltrpH, which has no tests yet",
+      ]
+
+  # With V = 1, a counter whose hcounteren bit is clear raises virtual instruction if its mcounteren bit is set
+  - names:
+      [
+        hcounteren_op,
+        hcounteren_set_op,
+        H_virtinst_vs_nonhighctr_h0_m1,
+        H_virtinst_vs32_highctr_h0_m1,
+      ]
+    coverpoint:
+      [
+        "H_Zicntr_cg/cp_hcounteren_access_vs",
+        "H_Zicntr_cg/cp_hcounteren_access_vu",
+        "H_Zicntr_cg/cp_mcounteren_access_vs_h0",
+        "H_Zicntr_cg/cp_mcounteren_access_vu_hs0",
+      ]
+
+  # In VU-mode, a counter is readable only when its hcounteren and scounteren bits are set
+  - names:
+      [
+        hcounteren_scounteren_vu_op,
+        H_virtinst_vu_nonhighctr_h0_s0_m1,
+        H_virtinst_vu32_highctr_h0_s0_m1,
+      ]
+    coverpoint:
+      [
+        "H_Zicntr_cg/cp_hcounteren_access_vu",
+        "H_Zicntr_cg/cp_scounteren_access_vu",
+        "H_Zicntr_cg/cp_mcounteren_access_vu",
+        "H_Zicntr_cg/cp_mcounteren_access_vu_hs0",
+      ]
+
+  # A counter whose mcounteren bit is clear raises illegal instruction below M-mode, whatever hcounteren and
+  # scounteren hold
+  - name: mcounteren_clr_ill_inst_exc
+    coverpoint:
+      [
+        "H_Zicntr_cg/cp_mcounteren_access_vs",
+        "H_Zicntr_cg/cp_mcounteren_access_vs_h0",
+        "H_Zicntr_cg/cp_mcounteren_access_vu",
+        "H_Zicntr_cg/cp_mcounteren_access_vu_hs0",
+      ]
+
+  # A counter whose mcounteren bit is set is accessible in HS-mode
+  - name: mcounteren_set_nxt_priv
+    coverpoint: ["H_Zicntr_cg/cp_scounteren_access_hs"]
+
+  # A counter whose scounteren bit is clear raises illegal instruction in U-mode
+  - name: scounteren_op
+    coverpoint:
+      [
+        "H_Zicntr_cg/cp_scounteren_access_u",
+        "H_Zicntr_cg/cp_scounteren_access_hs (HS-mode reads ignore scounteren)",
+      ]
+
+  # If the time CSR is implemented, htimedelta (and htimedeltah for XLEN=32) must be
+  # implemented.
+  - name: time_htimedelta_req
+    coverpoint:
+      [
+        "H_Zicntr_cg/cp_delta_hs",
+        "H_Zicntr_cg/cp_delta_vs",
+        "H_Zicntr_cg/cp_delta_u",
+        "H_Zicntr_cg/cp_delta_vu",
       ]

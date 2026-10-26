@@ -80,7 +80,12 @@ def gen_rwx_mprv(test_data: TestData, case: str, coverpoint: Cross, bits: str, *
     """
 
     def arm(value: str, set_mpv: bool) -> str:
-        lines = ["LI(t0, (1 << 17) | (3 << 11))", "csrc mstatus, t0", f"LI(t0, {value})", "csrs mstatus, t0"]
+        lines = [
+            "LI(t0, (1 << 17) | (3 << 11))",
+            "csrc mstatus, t0",
+            f"LI(t0, {value})",
+            "csrs mstatus, t0",
+        ]
         if mpv:
             op = "csrs" if set_mpv else "csrc"
             lines.extend(

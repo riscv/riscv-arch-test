@@ -83,8 +83,8 @@ def _generate_cp_trigger_sm(
     tmp_reg = test_data.int_regs.get_register()
 
     int_types = [*machine_ints, *supervisor_ints, *reg_ints, *sstc_ints, *vs_ints]
-    # The VS-level cases add more code, so split lower modes after ten of the sixteen types.
-    split_after = 10
+    # The VS-level cases add more code; S-mode also needs an earlier boundary to balance its interrupt paths.
+    split_after = 8 if priv == "S" else 10
     for index, int_type in enumerate(int_types):
         if priv != "M" and index == split_after:
             tc = test_data.new_test_chunk(test_chunks, suite.split(f"trigger_{priv}_2"))

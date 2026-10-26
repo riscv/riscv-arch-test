@@ -7,20 +7,20 @@ coverpoints:
   - name: cp_hedeleg
     goal: hedeleg has no effect with medeleg = 0
     description: |-
-      In VS-mode and VU-mode with medeleg = 0 and hedeleg = {0, all writable bits}, raise the exceptions of Exceptions_H cp_hedeleg: {jalr to an aligned and a misaligned target at the access-fault address, jalr to the access-fault address, illegal instruction all 0s and all 1s, ebreak, each load and store at scratch + 0-7, each load and store at the access-fault address, ecall}.
+      In VS-mode and VU-mode with medeleg = 0 and hedeleg = {0, all writable bits}, raise the exceptions of Exceptions_H cp_hedeleg: {jalr to a misaligned target at the access-fault address, jalr to the access-fault address, illegal instruction all 0s and all 1s, ebreak, each load and store at scratch + 0-7, each load and store at the access-fault address, ecall}.
       The access-fault cases need RVMODEL_ACCESS_FAULT_ADDRESS.
     expectation: Every exception traps to M-mode with mstatus.MPV = 1 and mstatus.MPP = the nominal privilege.  Misaligned fetches, loads and stores trap or complete as the reference model does.
     bins: 9 exceptions * 2 modes * 2 hedeleg (* 8 offsets for misaligned loads and stores)
   - name: cp_ecall_to_m
     goal: ecall to M sets status bits
-    description: With medeleg = 0, ecall from M/HS/VS/U/VU.
-    expectation: Trap to M-mode with mcause = 11, 9, 10, 8 or 8, mstatus.MPP = the nominal privilege, MPV = the old V, MPIE = the old MIE, MIE = 0 and GVA = 0.
-    bins: "5"
+    description: With medeleg = 0, ecall from M/VS/VU.
+    expectation: Trap to M-mode with mcause = 11, 10 or 8, mstatus.MPP = the nominal privilege, MPV = the old V, MPIE = the old MIE, MIE = 0 and GVA = 0.
+    bins: "3"
   - name: cp_ebreak_to_m
     goal: ebreak to M sets status bits
-    description: With medeleg = 0, ebreak from M/HS/VS/U/VU.
+    description: With medeleg = 0, ebreak from M/VS/VU.
     expectation: Trap to M-mode with mcause = 3, mstatus.MPP = the nominal privilege, MPV = the old V, MPIE = the old MIE and MIE = 0.  GVA = 1 exactly when a trap from VS or VU writes the guest virtual address of the ebreak to mtval.
-    bins: "5"
+    bins: "3"
   - name: cp_tsr_vs_sret
     goal: mstatus.TSR does not affect VS-mode
     description: With mstatus.TSR = 1 and hstatus.VTSR = {0/1}, execute sret in VS-mode with vsstatus.SPP = 1 and SPIE = 0

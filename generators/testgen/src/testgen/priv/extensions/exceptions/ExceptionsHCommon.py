@@ -6,14 +6,13 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Shared test generation for the hypervisor exception suites (the H, HSm, HF and HV groups of the Exceptions suite).
+"""Shared test generation for the H and HSm groups of the Exceptions suite.
 
 Modes are named as the T-SBI GOTO macros name them: m, s (HS), vs, u and vu.
 """
 
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
 
-from testgen.asm.csr import gen_csr_read_sigupd
 from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.data.state import TestData
 from testgen.priv.extensions.exceptions.ExceptionsCommon import DELEGATED_FAULT_KINDS, generate_delegated_fault_tests
@@ -241,68 +240,4 @@ def xtinst_exception_tests(test_data: TestData, covergroup: str, home: str) -> l
         body.append(f"RVTEST_TSBI_GOTO_{home.upper()}MODE")
         lines.extend(gated(body, gate))
     test_data.int_regs.return_registers([addr_reg, data_reg, rd, rand_reg, temp_reg])
-    return lines
-
-
-def xstatus_tests(
-    test_data: TestData,
-    field: str,
-    body: Callable[[str, int], list[str]],
-    check: Callable[[int], list[str]] | None = None,
-) -> list[str]:
-    """Run body in HS, VS, U and VU with each mstatus.<field> and vsstatus.<field>; record both, then run check.
-
-    A hart may report the field Dirty imprecisely, or not track dirtiness and read Initial and Clean as Dirty.
-    Unless the UDB configuration says it tracks dirtiness precisely and supports Initial and Clean, a field written
-    Initial or Clean that the body did not dirty is recorded only as not Off.
-    """
-    mask = f"MSTATUS_{field}"
-    shift = 13 if field == "FS" else 9
-    precise = (
-        f"defined(UDB_HW_MSTATUS_{field}_DIRTY_UPDATE_PRECISE) && "
-        f"defined(UDB_MSTATUS_{field}_LEGAL_VALUES_1) && defined(UDB_MSTATUS_{field}_LEGAL_VALUES_2)"
-    )
-    temp_reg, rd = test_data.int_regs.get_registers(2)
-
-    def record(csr: str, written: int, dirtied: bool) -> list[str]:
-        """Record csr.<field>, set to written before body; dirtied says whether body must have set it Dirty."""
-        exact = gen_csr_read_sigupd(rd, (csr, 3 << shift), test_data, temp_reg)
-        if written in (0, 3) or dirtied:
-            return [exact]
-        return [
-            f"#if {precise}",
-            exact,
-            "#else",
-            f"csrr x{rd}, {csr}",
-            f"and x{rd}, x{rd}, x{temp_reg}",
-            f"seqz x{rd}, x{rd}  # 0: {field} is not Off",
-            write_sigupd(rd, test_data),
-            "#endif",
-        ]
-
-    lines = []
-    for mode in ("s", "vs", "u", "vu"):
-        for mval in range(4):
-            for vsval in range(4):
-                virtual = mode in ("vs", "vu")
-                # body runs to completion, setting the fields in effect to Dirty, unless one of them is Off
-                ran = mval != 0 and (vsval != 0 or not virtual)
-                lines.extend(
-                    [
-                        f"RVTEST_TSBI_CSR_CLEAR(CSR_MSTATUS, {mask})",
-                        *([f"RVTEST_TSBI_CSR_SET(CSR_MSTATUS, {mval << shift:#x})"] if mval else []),
-                        f"LI(x{temp_reg}, {mask})",
-                        f"csrc vsstatus, x{temp_reg}",
-                        f"LI(x{temp_reg}, {vsval << shift:#x})",
-                        f"csrs vsstatus, x{temp_reg}",
-                        *([f"RVTEST_TSBI_GOTO_{mode.upper()}MODE"] if mode != "s" else []),
-                        *body(f"{mode}_m{mval}_vs{vsval}", rd),
-                        *(["RVTEST_TSBI_GOTO_SMODE"] if mode != "s" else []),
-                        f"LI(x{temp_reg}, {mask})",
-                        *record("sstatus", mval, ran),
-                        *record("vsstatus", vsval, ran and virtual),
-                        *(check(rd) if check else []),
-                    ]
-                )
-    test_data.int_regs.return_registers([temp_reg, rd])
     return lines

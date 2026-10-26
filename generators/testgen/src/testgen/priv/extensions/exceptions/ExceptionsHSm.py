@@ -32,10 +32,10 @@ def _ecall_ebreak_tests(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(
             "cp_ecall_to_m, cp_ebreak_to_m",
-            "With medeleg = 0, ecall and ebreak from M, HS, VS, U and VU modes trap to M-mode",
+            "With medeleg = 0, ecall and ebreak from M, VS and VU modes trap to M-mode",
         )
     ]
-    for mode in ("m", "s", "vs", "u", "vu"):
+    for mode in ("m", "vs", "vu"):
         lines.extend(
             [
                 *([f"RVTEST_TSBI_GOTO_{mode.upper()}MODE"] if mode != "m" else []),

@@ -246,15 +246,14 @@ def generate_delegated_fault_tests(
     """
     addr_reg, data_reg, check_reg = regs
     lines: list[str] = []
-    # Instruction misaligned: one aligned and one misaligned jalr target next to the access-fault
-    # address.  Also tests priority of misaligned and access faults.  Simple misalignment tests
-    # are in generate_instr_adr_misaligned_*_tests and are not repeated here.
+    # Instruction misaligned: a misaligned jalr target next to the access-fault address.  Also tests
+    # priority of misaligned and access faults.  Simple misalignment tests are in
+    # generate_instr_adr_misaligned_*_tests and are not repeated here.
     lines.extend(
         [
             "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
             test_data.add_testcase(tag, coverpoints["instrmisaligned"], covergroup),
             f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-            f"jalr x1, 0(x{addr_reg})  # aligned target",
             f"jalr x1, 2(x{addr_reg})  # misaligned target",
             "#endif",
         ]

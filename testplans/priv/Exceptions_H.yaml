@@ -19,7 +19,7 @@ coverpoints:
       cp_hedeleg_ecall
     goal: Delegation to HS or VS
     description: |-
-      In VS-mode and VU-mode, attempt {jalr to an aligned and a misaligned target at the access-fault address, jalr to the access-fault address, illegal instruction all 0s and all 1s, ebreak, each load and store at scratch + 0-7, each load and store at the access-fault address, ecall} with medeleg as set by the boot, crossed with hedeleg = {0, each of bits 0-8 alone, all writable bits}.
+      In VS-mode and VU-mode, attempt {jalr to a misaligned target at the access-fault address, jalr to the access-fault address, illegal instruction all 0s and all 1s, ebreak, each load and store at scratch + 0-7, each load and store at the access-fault address, ecall} with medeleg as set by the boot, crossed with hedeleg = {0, each of bits 0-8 alone, all writable bits}.
       hedeleg bit 0 is a bin only when IALIGN = 32; bits 16 and 20-23 are read-only 0.  The access-fault cases need RVMODEL_ACCESS_FAULT_ADDRESS.
     expectation: |-
       An exception goes to VS-mode when its bit is set in both medeleg and hedeleg, and otherwise to HS-mode.  An ecall from VS-mode always goes to HS-mode (hedeleg[10] is read-only 0).  Misaligned fetches, loads and stores trap or complete as the reference model does.

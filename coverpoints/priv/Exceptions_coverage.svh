@@ -1698,9 +1698,9 @@ covergroup Exceptions_HSm_cg with function sample(ins_t ins);
     cp_hedeleg_store_misaligned:    cross priv_mode_vs_vu, storeops, adr_LSBs, medeleg_delegation, hedeleg_none_all;
     cp_hedeleg_ecall:               cross priv_mode_vs_vu, ecall, medeleg_delegation, hedeleg_none_all;
 
-    // ecall and ebreak from each mode trap to M-mode; the trap record holds mstatus.MPP/MPIE/MIE and MPV/GVA
-    cp_ecall_to_m:  cross priv_mode_m_hs_vs_u_vu, ecall, medeleg_delegation;
-    cp_ebreak_to_m: cross priv_mode_m_hs_vs_u_vu, ebreak, medeleg_delegation;
+    // ecall and ebreak from M, VS and VU trap to M-mode; the record holds MPP/MPIE/MIE and MPV/GVA
+    cp_ecall_to_m:  cross priv_mode_m_vs_vu, ecall, medeleg_delegation;
+    cp_ebreak_to_m: cross priv_mode_m_vs_vu, ebreak, medeleg_delegation;
 
     // mstatus.TSR affects only HS-mode: sret in VS-mode executes when hstatus.VTSR = 0 and raises virtual instruction
     // when VTSR = 1

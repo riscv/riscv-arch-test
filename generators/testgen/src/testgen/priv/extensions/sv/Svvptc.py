@@ -64,7 +64,8 @@ def _retry_after_valid(
     test_data: TestData,
     mode: str,
     number: int,
-    regs: tuple[int, int, int, int],
+    sv_regs: SvRegs,
+    accesses: tuple[tuple[str, str, tuple[str, ...]], ...],
     invalid: list[str],
     valid: str,
     address: list[str],
@@ -75,15 +76,16 @@ def _retry_after_valid(
         test_data: Test generation state.
         mode: Privilege mode of the accesses, "Smode" or "Umode".
         number: Test case number for labels.
-        regs: Address, store value, result and delay registers.
+        sv_regs: Registers for the address, store value, result and delay counter.
+        accesses: Access kinds from _accesses().
         invalid: Page-table setup with V=0 in the PTE under test.
         valid: Store of the same PTE with V=1.
         address: Code that builds the virtual address in the address register.
     """
-    addr_reg, value_reg, result_reg, delay_reg = regs
+    value_reg, result_reg, delay_reg = sv_regs.value, sv_regs.result, sv_regs.load
     enter, leave = mode_switch(mode, "Smode")
     lines = []
-    for access, fault, retry in _accesses(addr_reg, value_reg, result_reg):
+    for access, fault, retry in accesses:
         label = test_data.add_testcase(f"test{number}_{access}", f"cp_{access}", f"{test_data.testsuite}_cg")
         lines.extend(
             [
@@ -117,60 +119,44 @@ def _make_svvptc_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
     chunk = begin_sv_test(
         test_data, sv_regs, sv, mode, f"{sv.name}_{mode}", coverpoint="cp_load, cp_store, cp_fetch", sig_init=""
     )
-    # The scratch register builds the address and is not live across a PTE_SETUP macro.
-    addr_reg, value_reg, result_reg, delay_reg = sv_regs.addr, sv_regs.value, sv_regs.result, sv_regs.load
-    regs = (addr_reg, value_reg, result_reg, delay_reg)
     umode = mode == "Umode"
     leaf = PteFlags(user=umode)
-    number = 0
-    chunk.code.append(f"LI(x{value_reg}, 0x800) // Value for the stores")
+    chunk.code.append(f"LI(x{sv_regs.value}, 0x800) // Value for the stores")
 
-    def address(level: int) -> list[str]:
-        return virtual_address(sv, "va_data", level, destination=addr_reg, scratch=sv_regs.scratch)
+    # Each case is (description, V=0 page-table setup, V=1 PTE store, level of the accessed address).
+    cases = [
+        (
+            f"{sv.page_names[level]} page, leaf PTE at level {level}",
+            create_page_mapping(sv, leaf_level=level, leaf_flags=PteFlags(valid=False, user=umode)),
+            create_leaf_pte(sv, level=level, flags=leaf),
+            level,
+        )
+        for level in sv.levels_desc
+    ] + [
+        (
+            f"4KB page, non-leaf PTE at level {level}",
+            create_page_mapping(sv, leaf_level=0, leaf_flags=leaf, walk_overrides={level: "0"}),
+            create_nonleaf_pte(sv, level=level, flags=PteFlags.nonleaf()),
+            0,
+        )
+        for level in range(sv.levels - 1, 0, -1)
+    ]
 
-    for level in sv.levels_desc:
-        number += 1
+    accesses = _accesses(sv_regs.addr, sv_regs.value, sv_regs.result)
+    for number, (description, invalid, valid, level) in enumerate(cases, 1):
+        # The scratch register builds the address and is not live across a PTE_SETUP macro.
+        address = virtual_address(sv, "va_data", level, destination=sv_regs.addr, scratch=sv_regs.scratch)
         chunk.code.extend(
             [
                 "",
-                f"// Test case {number}: {sv.page_names[level]} page, leaf PTE at level {level} changes from V=0 to V=1",
-                *_retry_after_valid(
-                    test_data,
-                    mode,
-                    number,
-                    regs,
-                    create_page_mapping(sv, leaf_level=level, leaf_flags=PteFlags(valid=False, user=umode)),
-                    create_leaf_pte(sv, level=level, flags=leaf),
-                    address(level),
-                ),
+                f"// Test case {number}: {description} changes from V=0 to V=1",
+                *_retry_after_valid(test_data, mode, number, sv_regs, accesses, invalid, valid, address),
             ]
         )
 
-    for level in range(sv.levels - 1, 0, -1):
-        number += 1
-        chunk.code.extend(
-            [
-                "",
-                f"// Test case {number}: 4KB page, non-leaf PTE at level {level} changes from V=0 to V=1",
-                *_retry_after_valid(
-                    test_data,
-                    mode,
-                    number,
-                    regs,
-                    create_page_mapping(sv, leaf_level=0, leaf_flags=leaf, walk_overrides={level: "0"}),
-                    create_nonleaf_pte(sv, level=level, flags=PteFlags.nonleaf()),
-                    address(0),
-                ),
-            ]
-        )
-
-    chunk.raw_data.extend(sv_data(sv, sv_regs, data_region_body=_data_region(value_reg, result_reg)))
-    chunk.trap_sigupd_count = trap_sigupd_count(number * len(_accesses(addr_reg, value_reg, result_reg)))
+    chunk.raw_data.extend(sv_data(sv, sv_regs, data_region_body=_data_region(sv_regs.value, sv_regs.result)))
+    chunk.trap_sigupd_count = trap_sigupd_count(len(cases) * len(accesses))
     return end_sv_test(test_data, sv_regs)
-
-
-def _make_svvptc(test_data: TestData, sv: SvMode) -> list[TestChunk]:
-    return [_make_svvptc_mode(test_data, sv, mode) for mode in ("Smode", "Umode")]
 
 
 @add_priv_test_generator(
@@ -180,7 +166,7 @@ def _make_svvptc(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svvptc_sv32(test_data: TestData) -> list[TestChunk]:
-    return _make_svvptc(test_data, SV32)
+    return [_make_svvptc_mode(test_data, SV32, mode) for mode in ("Smode", "Umode")]
 
 
 @add_priv_test_generator(
@@ -190,7 +176,7 @@ def make_svvptc_sv32(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svvptc_sv39(test_data: TestData) -> list[TestChunk]:
-    return _make_svvptc(test_data, SV39)
+    return [_make_svvptc_mode(test_data, SV39, mode) for mode in ("Smode", "Umode")]
 
 
 @add_priv_test_generator(
@@ -200,7 +186,7 @@ def make_svvptc_sv39(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svvptc_sv48(test_data: TestData) -> list[TestChunk]:
-    return _make_svvptc(test_data, SV48)
+    return [_make_svvptc_mode(test_data, SV48, mode) for mode in ("Smode", "Umode")]
 
 
 @add_priv_test_generator(
@@ -210,4 +196,4 @@ def make_svvptc_sv48(test_data: TestData) -> list[TestChunk]:
     extra_defines=["#define BOOT_TO_SMODE"],
 )
 def make_svvptc_sv57(test_data: TestData) -> list[TestChunk]:
-    return _make_svvptc(test_data, SV57)
+    return [_make_svvptc_mode(test_data, SV57, mode) for mode in ("Smode", "Umode")]

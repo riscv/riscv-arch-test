@@ -675,8 +675,8 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
     }
     cp_elp_async_interrupt: cross priv_mode_hs, sret, hs_new_mode, spelp_set_before, new_mode_lpe_enabled, vssi_pending;
 
-    // A software-check exception delegated to VS-mode (hedeleg[18] = 1) at the non-LPAD target of an ELP-setting
-    // jalr: vscause, vstval and vsstatus.SPELP = LP_EXPECTED
+    // A software-check exception delegated to VS-mode (hedeleg[18] = 1) at the target of an ELP-setting indirect jump:
+    // vscause, vstval and vsstatus.SPELP = LP_EXPECTED
     vs_sw_check_exc: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "code")
                      iff (ins.current.csr_wb[CSR_VSCAUSE]) {
         bins software_check = {SOFTWARE_CHECK};
@@ -691,7 +691,7 @@ covergroup Zicfilp_H_cg with function sample(ins_t ins);
     vsspelp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vsstatus", "spelp") {
         bins lp_expected = {1};
     }
-    cp_vs_trap_delivery: cross priv_mode_vs_vu, mode_lpe_enabled, vs_sw_check_exc, vstval_lpad, vsspelp;
+    cp_vs_trap_delivery: cross priv_mode_vs_vu, mode_lpe_enabled, lp_branch_prev, lp_target, vs_sw_check_exc, vstval_lpad, vsspelp;
 
 endgroup
 `endif

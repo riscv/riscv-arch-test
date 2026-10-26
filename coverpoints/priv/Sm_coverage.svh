@@ -2291,6 +2291,60 @@ covergroup Sm_H_inst_cg with function sample(ins_t ins);
 
     cp_mret_m:  cross priv_mode_m, mret, old_mpp, old_mpv, old_mpie;
     cp_sret_m:  cross priv_mode_m, sret, old_spp, old_spv, old_spie;
+
+    `ifdef ZICFILP_SUPPORTED
+        // mret with MPV = 1 to VS-mode or VU-mode sets ELP = MPELP only if the landing pad enable of the new mode
+        // (henvcfg.LPE for VS-mode, senvcfg.LPE for VU-mode) is 1
+        `ifdef UDB_MXLEN_64
+            mret_virt_mode : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpv")[0],
+                                         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
+        `else
+            mret_virt_mode : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpv")[0],
+                                         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
+        `endif
+            bins vu = {3'b100};
+            bins vs = {3'b101};
+        }
+        henvcfg_lpe_before : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "lpe") {
+            bins disabled = {0};
+            bins enabled  = {1};
+        }
+        senvcfg_lpe_before : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "lpe") {
+            bins disabled = {0};
+            bins enabled  = {1};
+        }
+        `ifdef UDB_MXLEN_64
+            old_mpelp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpelp") {
+        `else
+            old_mpelp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpelp") {
+        `endif
+            bins no_lp_expected = {0};
+            bins lp_expected    = {1};
+        }
+        cp_mret_mpelp_virt: cross priv_mode_m, mret, mret_virt_mode, henvcfg_lpe_before, senvcfg_lpe_before, old_mpelp;
+
+        // A trap from VS-mode or VU-mode into M-mode saves ELP in MPELP: a software-check exception at the non-LPAD
+        // target of an ELP-setting jalr (LP_EXPECTED) or an ebreak (NO_LP_EXPECTED)
+        virt_lpe_enabled : coverpoint ((ins.prev.mode == 2'b01) ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "lpe")
+                                                                : get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "lpe")) {
+            bins enabled = {1};
+        }
+        // {software-check exception, ebreak, MPELP after the trap}
+        `ifdef UDB_MXLEN_64
+            m_trap_elp : coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == SOFTWARE_CHECK),
+                                     (ins.current.insn == EBREAK),
+                                     get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mpelp")[0]}
+        `else
+            m_trap_elp : coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcause", "code") == SOFTWARE_CHECK),
+                                     (ins.current.insn == EBREAK),
+                                     get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatush", "mpelp")[0]}
+        `endif
+                         iff (ins.current.csr_wb[CSR_MCAUSE]) {
+            bins lp_expected    = {3'b101};
+            bins no_lp_expected = {3'b010};
+        }
+        cp_trap_mpelp_virt: cross priv_mode_vs_vu, virt_lpe_enabled, m_trap_elp;
+    `endif
 endgroup
 `endif
 

@@ -105,8 +105,8 @@ coverpoints:
   - name: cp_vs_trap_delivery
     goal: A software-check exception delegated to VS-mode reports its cause in vscause and vstval and saves ELP in vsstatus.SPELP
     description: |-
-      hedeleg[18] = 1, henvcfg.LPE = senvcfg.LPE = 1.  From VS-mode and VU-mode, jalr through a register other than x1, x5 and x7 to a non-LPAD instruction.  (The same cases as cp_trap_entry_spelp with the VS-mode handler.)
-    expectation: Software-check exception taken in VS-mode with vscause = 18, vstval = 2 when the hart reports the landing pad fault code in stval and 0 otherwise, and vsstatus.SPELP = LP_EXPECTED.
+      hedeleg[18] = 1, with henvcfg.LPE = 1 in VS-mode or senvcfg.LPE = 1 in VU-mode, and x7[31:12] holding the expected label.  From VS-mode and VU-mode, jalr, c.jr and c.jalr (Zca) through a register other than x1, x5 and x7 to a non-LPAD instruction, and to an LPAD whose nonzero label does not match x7[31:12].  Record the trap count after each case.
+    expectation: Software-check exception taken in VS-mode with vscause = 18, vstval = 2 when the hart reports the landing pad fault code in stval and 0 otherwise, and vsstatus.SPELP = LP_EXPECTED.  The VS-mode handler's SRET restores ELP, so the next non-LPAD instruction traps again before the LPAD.
     bins: |-
-      priv_mode {VS, VU} x LPE of the mode enabled x vscause software check x vstval x vsstatus.SPELP = 1
-      = 2 bins
+      priv_mode {VS, VU} x LPE of the mode enabled x {jalr, c.jr, c.jalr} x target {not_lpad, lpad_mismatch} x vscause software check x vstval x vsstatus.SPELP = 1
+      = 12 bins (4 without Zca)

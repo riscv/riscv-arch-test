@@ -617,6 +617,25 @@ coverpoints:
     description: Execute sret in machine mode with cross-product of mstatus.SPP / hstatus.SPV / SPIE.  After the sret, a read of mscratch traps and the trap record shows the mode reached.  Then check mstatus.SPP, SIE, SPIE and hstatus.SPV.
     expectation: Goes to appropriate mode
     bins: 2 SPP * 2 SPV * 2 SPIE
+  - name: cp_trap_mpelp_virt
+    goal: A trap from VS-mode or VU-mode into M-mode saves ELP in MPELP (Zicfilp)
+    description: |-
+      With Zicfilp, medeleg[3] = medeleg[18] = 0.  With henvcfg.LPE = 1 in VS-mode or senvcfg.LPE = 1 in VU-mode:
+      - ELP = LP_EXPECTED: jalr through a register other than x1, x5 and x7 to a non-LPAD instruction, which raises a software-check exception.
+      - ELP = NO_LP_EXPECTED: an ebreak that no indirect jump precedes.
+      Record the trap count afterwards.
+    expectation: The trap saves ELP in MPELP and sets MPV.  The handler's mret restores ELP, so after the LP_EXPECTED trap the next non-LPAD instruction traps again before the LPAD; after the ebreak the next instruction does not trap.
+    bins: |-
+      priv_mode {VS, VU} x LPE of the mode enabled x ELP {lp_expected, no_lp_expected}
+      = 4 bins
+  - name: cp_mret_mpelp_virt
+    goal: mret to VS-mode or VU-mode restores ELP from MPELP using the landing pad enable of the new mode (Zicfilp)
+    description: |-
+      With Zicfilp, for each value of henvcfg.LPE, senvcfg.LPE and MPELP: execute mret with MPV = 1 and MPP = S (VS-mode) or U (VU-mode) to a non-LPAD instruction.  menvcfg.LPE holds the opposite of the new mode's enable.  Record the trap count afterwards.
+    expectation: Software-check exception, taken in M-mode, exactly when MPELP = 1 and the new mode's enable (henvcfg.LPE for VS-mode, senvcfg.LPE for VU-mode) is 1.
+    bins: |-
+      priv_mode M x mret x new mode {VU, VS} x henvcfg.LPE {0, 1} x senvcfg.LPE {0, 1} x MPELP {0, 1}
+      = 16 bins
   - heading: Not tested
   - goal: misa.H enables the hypervisor extension
     description: With MUTABLE_MISA_H, clear misa.H, check that hypervisor CSRs and instructions raise illegal instruction, and set it again.

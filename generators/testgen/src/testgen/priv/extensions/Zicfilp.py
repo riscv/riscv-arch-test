@@ -888,6 +888,57 @@ def _h_enable_tests(test_data: TestData, mode: _VMode) -> TestChunk:
     return test_data.end_test_chunk()
 
 
+def _h_vs_delivery_tests(test_data: TestData, mode: _VMode) -> TestChunk:
+    """Software-check exceptions from VS-mode or VU-mode delegated to VS-mode."""
+    coverpoint = "cp_vs_trap_delivery"
+    jump_reg, save_reg, temp_reg = test_data.int_regs.get_registers(3)
+    tc = test_data.begin_test_chunk(_split(_H_CG))
+    lines = [
+        comment_banner(
+            f"{coverpoint} ({mode}-mode)",
+            f"hedeleg[18] = 1 and the landing pad enable of {mode}-mode set.  In {mode}-mode, jalr, c.jr and c.jalr\n"
+            "through a non-link register to a non-LPAD instruction and to an LPAD whose label does not match\n"
+            "x7[31:12].  Each raises a software-check exception taken in VS-mode, which saves ELP in vsstatus.SPELP.\n"
+            "The VS-mode handler's SRET restores it, so the next non-LPAD instruction traps again before the lpad.",
+        ),
+        f"LI(x{temp_reg}, 1 << CAUSE_SOFTWARE_CHECK_FAULT)",
+        f"csrs hedeleg, x{temp_reg}",
+        *set_lpe("S", "VS" if mode == "VS" else "U", temp_reg, True),
+        f"RVTEST_TSBI_GOTO_{mode}MODE",
+    ]
+    for kind in JUMP_KINDS:
+        body: list[str] = []
+        for dest, target in _H_TARGETS.items():
+            body.extend(
+                [
+                    _X7_LABEL,
+                    *jump_to_target(
+                        test_data,
+                        kind,
+                        jump_reg,
+                        0,
+                        [target],
+                        f"{mode.lower()}_{kind}_{dest}",
+                        coverpoint,
+                        _H_CG,
+                        save_reg,
+                    ),
+                    *_check_trap_count(test_data, temp_reg),
+                ]
+            )
+        lines.extend(_guard_if_compressed(kind, body))
+    lines.extend(
+        [
+            "RVTEST_TSBI_GOTO_SMODE",
+            "csrw hedeleg, zero",
+            *set_lpe("S", "VS" if mode == "VS" else "U", temp_reg, False),
+        ]
+    )
+    tc.code.extend(lines)
+    test_data.int_regs.return_registers([jump_reg, save_reg, temp_reg])
+    return test_data.end_test_chunk()
+
+
 def _h_trap_entry_tests(test_data: TestData) -> TestChunk:
     """Traps from VS and VU-mode into VS-mode and HS-mode with ELP = LP_EXPECTED and NO_LP_EXPECTED."""
     coverpoint = "cp_trap_entry_spelp"
@@ -1085,7 +1136,7 @@ def _h_async_interrupt_tests(test_data: TestData) -> TestChunk:
             "from it restores ELP and the target raises a software-check exception.  A hart that does not save ELP on\n"
             "interrupts takes one trap instead of two.",
         ),
-        f"csrrci x{sie_reg}, sstatus, SSTATUS_SIE # the interrupt must not be taken in HS-mode",
+        f"csrr x{sie_reg}, sstatus",
         *set_lpe("S", "VS", temp_reg, True),
         *set_lpe("S", "U", temp_reg, True),
     ]
@@ -1095,6 +1146,7 @@ def _h_async_interrupt_tests(test_data: TestData) -> TestChunk:
         lines.extend(
             [
                 "",
+                "csrci sstatus, SSTATUS_SIE # the interrupt must not be taken in HS-mode (T-SBI calls may set SIE)",
                 f"{'csrsi' if handler == 'vs' else 'csrci'} hideleg, 1 << 2 # hideleg.VSSI",
                 "csrsi hie, 1 << 2  # hie.VSSIE",
                 "csrsi hvip, 1 << 2 # hvip.VSSIP: pending, but not taken in HS-mode",
@@ -1180,6 +1232,8 @@ def make_zicfilph(test_data: TestData) -> list[TestChunk]:
         _h_enable_tests(test_data, "VS"),
         _h_enable_tests(test_data, "VU"),
         _h_trap_entry_tests(test_data),
+        _h_vs_delivery_tests(test_data, "VS"),
+        _h_vs_delivery_tests(test_data, "VU"),
         _h_sret_tests(test_data, from_vs=True),
         _h_sret_tests(test_data, from_vs=False),
         _h_sstatus_alias_tests(test_data),

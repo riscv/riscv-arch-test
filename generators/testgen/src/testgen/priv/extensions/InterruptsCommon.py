@@ -259,7 +259,13 @@ def _priority_label(suite: InterruptSuite, coverpoint: str, priv: str, pair: lis
 
 
 def generate_cp_priority(
-    test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str, vary: str
+    test_data: TestData,
+    test_chunks: list[TestChunk],
+    suite: InterruptSuite,
+    priv: str,
+    vary: str,
+    *,
+    split_at: int | None = None,
 ) -> None:
     """Raise pairs of interrupts so the higher priority one is taken first.
 
@@ -275,11 +281,12 @@ def generate_cp_priority(
     ######################################
     coverpoint = f"cp_priority_{csr}"
     ######################################
-    tc = test_data.new_test_chunk(test_chunks, suite.split(f"priority_{csr}_{priv}"))
-    tc.section_header = comment_banner(
-        coverpoint,
-        f"Priority of pairs of interrupts distinguished by {csr} in {priv} mode that are otherwise enabled and pending",
+    split_name = f"priority_{csr}_{priv}"
+    title = (
+        f"Priority of pairs of interrupts distinguished by {csr} in {priv} mode that are otherwise enabled and pending"
     )
+    tc = test_data.new_test_chunk(test_chunks, suite.split(split_name))
+    tc.section_header = comment_banner(coverpoint, title)
     tmp_reg, check_reg = test_data.int_regs.get_registers(2)
 
     types = suite.priority_types
@@ -294,7 +301,10 @@ def generate_cp_priority(
     for int_type in types:
         if int_bit[int_type] in supervisor_bits:
             delegatable.append(int_type)
-    for first, second in combinations(types, 2):
+    for index, (first, second) in enumerate(combinations(types, 2)):
+        if split_at is not None and index == split_at:
+            tc = test_data.new_test_chunk(test_chunks, suite.split(f"{split_name}_2"))
+            tc.section_header = comment_banner(coverpoint, title)
         pair = [first, second]
         # ie: everything is pending and only the pair is enabled; otherwise only the pair is pending
         raised = types if vary == "ie" else pair

@@ -19,7 +19,6 @@ from testgen.priv.extensions.InterruptsCommon import (
     flavor,
     generate_cp_enable,
     generate_cp_priority,
-    generate_cp_priority_enable,
     generate_cp_priority_pending,
     generate_cp_wfi,
     generate_cp_wfi_timeout,
@@ -76,14 +75,20 @@ def _generate_cp_trigger_sm(
     banner = "cp_trigger / cp_trigger_reg / cp_trigger_sti_sstc"
     ######################################
     tc = test_data.new_test_chunk(test_chunks, suite.split(f"trigger_{priv}"))
-    tc.section_header = comment_banner(
-        banner,
+    title = (
         f"Trigger each interrupt in {priv} mode with mie=1s x mideleg = zeros/ones x mtvec.MODE=DIRECT/VECTORED"
-        " x mstatus.SIE=0/1 x mstatus.MIE=0/1 (x hideleg=0/1 for the VS-level interrupts)",
+        " x mstatus.SIE=0/1 x mstatus.MIE=0/1 (x hideleg=0/1 for the VS-level interrupts)"
     )
+    tc.section_header = comment_banner(banner, title)
     tmp_reg = test_data.int_regs.get_register()
 
-    for int_type in [*machine_ints, *supervisor_ints, *reg_ints, *sstc_ints, *vs_ints]:
+    int_types = [*machine_ints, *supervisor_ints, *reg_ints, *sstc_ints, *vs_ints]
+    # The VS-level cases add more code, so split lower modes after ten of the sixteen types.
+    split_after = 10
+    for index, int_type in enumerate(int_types):
+        if priv != "M" and index == split_after:
+            tc = test_data.new_test_chunk(test_chunks, suite.split(f"trigger_{priv}_2"))
+            tc.section_header = comment_banner(banner, title)
         macro = int_macro[int_type]
         guard = guard_symbol(int_type)
         for hideleg, mideleg in [(h, m) for h in ([0, 1] if int_type in vs_ints else [0]) for m in [0, -1]]:
@@ -174,6 +179,13 @@ def _generate_cp_priority_mideleg(
 ) -> None:
     """Priority of delegated interrupts: pair pending and enabled, one of them delegated."""
     generate_cp_priority(test_data, test_chunks, suite, priv, "mideleg")
+
+
+def _generate_cp_priority_mie_sm(
+    test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str
+) -> None:
+    """Split lower-mode InterruptsSm mie-priority pairs across two files."""
+    generate_cp_priority(test_data, test_chunks, suite, priv, "ie", split_at=22 if priv != "M" else None)
 
 
 def _generate_cp_write_stip_sstc(
@@ -274,7 +286,7 @@ _COMMON_GENERATORS = [
     _generate_cp_trigger_sm,
     generate_cp_enable,
     generate_cp_priority_pending,
-    generate_cp_priority_enable,
+    _generate_cp_priority_mie_sm,
 ]
 
 

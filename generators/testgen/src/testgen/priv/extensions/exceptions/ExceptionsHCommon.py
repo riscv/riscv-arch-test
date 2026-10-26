@@ -1,7 +1,7 @@
 ##################################
 # priv/extensions/exceptions/ExceptionsHCommon.py
 #
-# Shared test generation for the hypervisor exception suites.
+# Shared test generation for the H and HSm groups of the Exceptions suite.
 # David_Harris@hmc.edu 24 September 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################

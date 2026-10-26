@@ -183,7 +183,7 @@ Sv_H_vsstage_cg_cp_vsatp_napot_sv39_superpage_lvl2_exec:
   LA(x14, svh_napot)
   srli x14, x14, 12
   slli x14, x14, 10
-  LI(x13, PTE_N | (0 << 10) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  LI(x13, PTE_N | (1 << 10) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
   or x14, x14, x13
   SREG x14, 0(x6)
   hfence.vvma
@@ -195,16 +195,16 @@ Sv_H_vsstage_cg_cp_vsatp_napot_sv39_superpage_lvl2_exec:
   add x13, x13, x8
   LI(x8, 0x13c)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn0_store:
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn1_store:
   sw x8, 8(x13)
   LI(x8, -1)
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn0_load:
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn1_load:
   lw x8, 8(x13)
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn0_exec:
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn1_exec:
   jalr ra, 0(x13)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn0_load, Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn0_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn1_load, Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn1_load_str)
 
   LA(x8, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
   LA(x13, rvtest_vlvl1_pg_tbl)
@@ -224,7 +224,7 @@ Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn0_exec:
   LA(x13, svh_napot)
   srli x13, x13, 12
   slli x13, x13, 10
-  LI(x14, PTE_N | (1 << 10) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  LI(x14, PTE_N | (2 << 10) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
   or x13, x13, x14
   SREG x13, 0(x8)
   hfence.vvma
@@ -236,16 +236,16 @@ Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn0_exec:
   add x9, x9, x8
   LI(x8, 0x13f)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn1_store:
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn2_store:
   sw x8, 8(x9)
   LI(x8, -1)
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn1_load:
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn2_load:
   lw x8, 8(x9)
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn1_exec:
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn2_exec:
   jalr ra, 0(x9)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn1_load, Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn2_load, Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn2_load_str)
 
   LA(x15, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
   LA(x9, rvtest_vlvl1_pg_tbl)
@@ -265,7 +265,7 @@ Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn1_exec:
   LA(x9, svh_napot)
   srli x9, x9, 12
   slli x9, x9, 10
-  LI(x6, PTE_N | (2 << 10) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  LI(x6, PTE_N | (4 << 10) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
   or x9, x9, x6
   SREG x9, 0(x15)
   hfence.vvma
@@ -277,16 +277,16 @@ Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn1_exec:
   add x13, x13, x6
   LI(x6, 0x142)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn2_store:
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn4_store:
   sw x6, 8(x13)
   LI(x6, -1)
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn2_load:
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn4_load:
   lw x6, 8(x13)
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn2_exec:
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn4_exec:
   jalr ra, 0(x13)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn2_load, Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn2_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn4_load, Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn4_load_str)
 
   LA(x8, rvtest_Vroot_pg_tbl + (((0x140802000) >> 30) & 0x1ff) * 8)
   LA(x6, rvtest_vlvl1_pg_tbl)
@@ -306,7 +306,7 @@ Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn2_exec:
   LA(x6, svh_napot)
   srli x6, x6, 12
   slli x6, x6, 10
-  LI(x13, PTE_N | (4 << 10) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  LI(x13, PTE_N | (0 << 10) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
   or x6, x6, x13
   SREG x6, 0(x8)
   hfence.vvma
@@ -318,16 +318,16 @@ Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn2_exec:
   add x15, x15, x8
   LI(x8, 0x145)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn4_store:
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn0_store:
   sw x8, 8(x15)
   LI(x8, -1)
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn4_load:
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn0_load:
   lw x8, 8(x15)
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn4_exec:
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn0_exec:
   jalr ra, 0(x15)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn4_load, Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn4_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn0_load, Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn0_load_str)
 
 // Identity map the test image in both stages
   LA(x8, rvtest_code_begin)
@@ -475,7 +475,7 @@ Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_superpage_lvl2_exec:
   LA(x6, svh_napot)
   srli x6, x6, 12
   slli x6, x6, 10
-  LI(x9, PTE_N | (0 << 10) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  LI(x9, PTE_N | (1 << 10) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
   or x6, x6, x9
   SREG x6, 0(x15)
   hfence.vvma
@@ -487,16 +487,16 @@ Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_superpage_lvl2_exec:
   add x15, x15, x13
   LI(x13, 0x14e)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn0_store:
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn1_store:
   sw x13, 8(x15)
   LI(x13, -1)
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn0_load:
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn1_load:
   lw x13, 8(x15)
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn0_exec:
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn1_exec:
   jalr ra, 0(x15)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn0_load, Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn0_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn1_load, Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn1_load_str)
 
   LA(x6, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
   LA(x15, rvtest_hlvl1_pg_tbl)
@@ -516,7 +516,7 @@ Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn0_exec:
   LA(x15, svh_napot)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x8, PTE_N | (1 << 10) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  LI(x8, PTE_N | (2 << 10) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
   or x15, x15, x8
   SREG x15, 0(x6)
   hfence.vvma
@@ -528,16 +528,16 @@ Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn0_exec:
   add x14, x14, x8
   LI(x8, 0x151)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn1_store:
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn2_store:
   sw x8, 8(x14)
   LI(x8, -1)
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn1_load:
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn2_load:
   lw x8, 8(x14)
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn1_exec:
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn2_exec:
   jalr ra, 0(x14)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn1_load, Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn1_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn2_load, Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn2_load_str)
 
   LA(x9, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
   LA(x8, rvtest_hlvl1_pg_tbl)
@@ -557,7 +557,7 @@ Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn1_exec:
   LA(x8, svh_napot)
   srli x8, x8, 12
   slli x8, x8, 10
-  LI(x14, PTE_N | (2 << 10) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  LI(x14, PTE_N | (4 << 10) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
   or x8, x8, x14
   SREG x8, 0(x9)
   hfence.vvma
@@ -569,16 +569,16 @@ Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn1_exec:
   add x8, x8, x6
   LI(x6, 0x154)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn2_store:
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn4_store:
   sw x6, 8(x8)
   LI(x6, -1)
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn2_load:
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn4_load:
   lw x6, 8(x8)
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn2_exec:
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn4_exec:
   jalr ra, 0(x8)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn2_load, Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn2_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn4_load, Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn4_load_str)
 
   LA(x14, rvtest_Hroot_pg_tbl + (((0x2C0802000) >> 30) & 0x7ff) * 8)
   LA(x8, rvtest_hlvl1_pg_tbl)
@@ -598,7 +598,7 @@ Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn2_exec:
   LA(x8, svh_napot)
   srli x8, x8, 12
   slli x8, x8, 10
-  LI(x15, PTE_N | (4 << 10) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  LI(x15, PTE_N | (0 << 10) | PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
   or x8, x8, x15
   SREG x8, 0(x14)
   hfence.vvma
@@ -610,16 +610,16 @@ Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn2_exec:
   add x9, x9, x6
   LI(x6, 0x157)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn4_store:
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn0_store:
   sw x6, 8(x9)
   LI(x6, -1)
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn4_load:
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn0_load:
   lw x6, 8(x9)
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn4_exec:
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn0_exec:
   jalr ra, 0(x9)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn4_load, Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn4_load_str)
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn0_load, Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn0_load_str)
 
   csrw vsatp, zero
   csrw hgatp, zero
@@ -762,36 +762,36 @@ Sv_H_vsstage_cg_cp_vsatp_napot_sv39_superpage_lvl1_exec_str: .string "\"test: 57
 Sv_H_vsstage_cg_cp_vsatp_napot_sv39_superpage_lvl2_store_str: .string "\"test: 58; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_superpage_lvl2_store\""
 Sv_H_vsstage_cg_cp_vsatp_napot_sv39_superpage_lvl2_load_str: .string "\"test: 59; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_superpage_lvl2_load\""
 Sv_H_vsstage_cg_cp_vsatp_napot_sv39_superpage_lvl2_exec_str: .string "\"test: 60; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_superpage_lvl2_exec\""
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn0_store_str: .string "\"test: 61; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn0_store\""
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn0_load_str: .string "\"test: 62; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn0_load\""
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn0_exec_str: .string "\"test: 63; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn0_exec\""
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn1_store_str: .string "\"test: 64; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn1_store\""
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn1_load_str: .string "\"test: 65; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn1_load\""
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn1_exec_str: .string "\"test: 66; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn1_exec\""
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn2_store_str: .string "\"test: 67; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn2_store\""
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn2_load_str: .string "\"test: 68; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn2_load\""
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn2_exec_str: .string "\"test: 69; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn2_exec\""
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn4_store_str: .string "\"test: 70; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn4_store\""
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn4_load_str: .string "\"test: 71; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn4_load\""
-Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn4_exec_str: .string "\"test: 72; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn4_exec\""
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn1_store_str: .string "\"test: 61; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn1_store\""
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn1_load_str: .string "\"test: 62; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn1_load\""
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn1_exec_str: .string "\"test: 63; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn1_exec\""
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn2_store_str: .string "\"test: 64; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn2_store\""
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn2_load_str: .string "\"test: 65; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn2_load\""
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn2_exec_str: .string "\"test: 66; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn2_exec\""
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn4_store_str: .string "\"test: 67; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn4_store\""
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn4_load_str: .string "\"test: 68; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn4_load\""
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn4_exec_str: .string "\"test: 69; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn4_exec\""
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn0_store_str: .string "\"test: 70; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn0_store\""
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn0_load_str: .string "\"test: 71; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn0_load\""
+Sv_H_vsstage_cg_cp_vsatp_napot_sv39_ppn0_exec_str: .string "\"test: 72; cg: Sv_H_vsstage_cg; cp: cp_vsatp_napot; bin: sv39_ppn0_exec\""
 Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_superpage_lvl1_store_str: .string "\"test: 73; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_superpage_lvl1_store\""
 Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_superpage_lvl1_load_str: .string "\"test: 74; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_superpage_lvl1_load\""
 Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_superpage_lvl1_exec_str: .string "\"test: 75; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_superpage_lvl1_exec\""
 Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_superpage_lvl2_store_str: .string "\"test: 76; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_superpage_lvl2_store\""
 Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_superpage_lvl2_load_str: .string "\"test: 77; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_superpage_lvl2_load\""
 Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_superpage_lvl2_exec_str: .string "\"test: 78; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_superpage_lvl2_exec\""
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn0_store_str: .string "\"test: 79; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn0_store\""
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn0_load_str: .string "\"test: 80; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn0_load\""
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn0_exec_str: .string "\"test: 81; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn0_exec\""
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn1_store_str: .string "\"test: 82; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn1_store\""
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn1_load_str: .string "\"test: 83; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn1_load\""
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn1_exec_str: .string "\"test: 84; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn1_exec\""
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn2_store_str: .string "\"test: 85; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn2_store\""
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn2_load_str: .string "\"test: 86; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn2_load\""
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn2_exec_str: .string "\"test: 87; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn2_exec\""
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn4_store_str: .string "\"test: 88; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn4_store\""
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn4_load_str: .string "\"test: 89; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn4_load\""
-Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn4_exec_str: .string "\"test: 90; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn4_exec\""
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn1_store_str: .string "\"test: 79; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn1_store\""
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn1_load_str: .string "\"test: 80; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn1_load\""
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn1_exec_str: .string "\"test: 81; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn1_exec\""
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn2_store_str: .string "\"test: 82; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn2_store\""
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn2_load_str: .string "\"test: 83; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn2_load\""
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn2_exec_str: .string "\"test: 84; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn2_exec\""
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn4_store_str: .string "\"test: 85; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn4_store\""
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn4_load_str: .string "\"test: 86; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn4_load\""
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn4_exec_str: .string "\"test: 87; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn4_exec\""
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn0_store_str: .string "\"test: 88; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn0_store\""
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn0_load_str: .string "\"test: 89; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn0_load\""
+Sv_H_gstage_cg_cp_hgatp_napot_sv39x4_ppn0_exec_str: .string "\"test: 90; cg: Sv_H_gstage_cg; cp: cp_hgatp_napot; bin: sv39x4_ppn0_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

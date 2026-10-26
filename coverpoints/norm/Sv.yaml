@@ -1026,11 +1026,6 @@ normative_rule_definitions:
   - name: sfence_vma_v1
     coverpoint: ["Sv_H_fence_cg/cp_sfence_vma_vs"]
 
-  # PMP applies to the supervisor physical address of a CBO from VS-mode or VU-mode: a cache-block
-  # management instruction needs read or write permission, and cbo.zero needs write permission
-  - names: [H_pmp, pmp_cbm_fault, pmp_store_fault]
-    coverpoint: ["Sv_HZicboSm_cg/cp_pmp"]
-
   # MPRV with MPV = 1 translates M-mode loads and stores through both stages, where vsstatus.SUM replaces the
   # HS-level SUM and the HS-level MXR covers both stages
   - name: mstatus_mprv_hypervisor

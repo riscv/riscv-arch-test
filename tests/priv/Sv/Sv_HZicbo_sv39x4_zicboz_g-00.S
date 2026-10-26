@@ -173,7 +173,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_valid_cbo_zero:
   lw x13, 0(x15)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_valid_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_valid_cbo_zero_str)
-// VS-mode, sv39x4 level 2, v0: store guest-page fault
+// VS-mode, sv39x4 level 2, v0: store guest-page fault: PTE.V unset
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -201,7 +201,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_v0_cbo_zero:
   lw x8, 0(x14)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_v0_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_v0_cbo_zero_str)
-// VS-mode, sv39x4 level 2, w: store guest-page fault: W without R is reserved
+// VS-mode, sv39x4 level 2, wx: store guest-page fault: Reserved W+X without R
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -209,7 +209,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_v0_cbo_zero:
   LA(x14, svhzicbo_data)
   srli x14, x14, 30
   slli x14, x14, 28
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
+  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
   or x14, x14, x8
   SREG x14, 0(x6)
   hfence.gvma
@@ -223,13 +223,13 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_v0_cbo_zero:
   LI(x14, 0x0C0B0000)
   sw x14, 0(x8)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_zero:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_zero:
   cbo.zero (x9)
   RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_zero_str)
-// VS-mode, sv39x4 level 2, wx: store guest-page fault: W without R is reserved
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_zero_str)
+// VS-mode, sv39x4 level 2, w: store guest-page fault: Reserved W without R
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -237,7 +237,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_zero:
   LA(x15, svhzicbo_data)
   srli x15, x15, 30
   slli x15, x15, 28
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
   or x15, x15, x6
   SREG x15, 0(x13)
   hfence.gvma
@@ -251,13 +251,13 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_zero:
   LI(x13, 0x0C0B0000)
   sw x13, 0(x15)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_zero:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_zero:
   cbo.zero (x9)
   RVTEST_TSBI_GOTO_SMODE
   lw x13, 0(x15)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_zero_str)
-// VS-mode, sv39x4 level 2, rx: store guest-page fault
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_zero_str)
+// VS-mode, sv39x4 level 2, rx: store guest-page fault: RX permissions
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -285,7 +285,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_rx_cbo_zero:
   lw x15, 0(x14)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_rx_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_rx_cbo_zero_str)
-// VS-mode, sv39x4 level 2, x: store guest-page fault
+// VS-mode, sv39x4 level 2, x: store guest-page fault: Execute-only page
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -313,7 +313,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_x_cbo_zero:
   lw x8, 0(x6)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_x_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_x_cbo_zero_str)
-// VS-mode, sv39x4 level 2, a0: store guest-page fault
+// VS-mode, sv39x4 level 2, a0: store guest-page fault: PTE.A unset
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -341,7 +341,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_a0_cbo_zero:
   lw x13, 0(x15)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_a0_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_a0_cbo_zero_str)
-// VS-mode, sv39x4 level 2, d0: store guest-page fault
+// VS-mode, sv39x4 level 2, d0: store guest-page fault: PTE.D unset
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -474,7 +474,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_valid_cbo_zero:
   lw x14, 0(x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_valid_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_valid_cbo_zero_str)
-// VS-mode, sv39x4 level 1, v0: store guest-page fault
+// VS-mode, sv39x4 level 1, v0: store guest-page fault: PTE.V unset
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -509,7 +509,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_v0_cbo_zero:
   lw x6, 0(x15)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_v0_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_v0_cbo_zero_str)
-// VS-mode, sv39x4 level 1, w: store guest-page fault: W without R is reserved
+// VS-mode, sv39x4 level 1, wx: store guest-page fault: Reserved W+X without R
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -524,7 +524,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_v0_cbo_zero:
   LA(x13, svhzicbo_data)
   srli x13, x13, 21
   slli x13, x13, 19
-  LI(x15, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
   or x13, x13, x15
   SREG x13, 0(x8)
   hfence.gvma
@@ -538,13 +538,13 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_v0_cbo_zero:
   LI(x14, 0x0C0B0000)
   sw x14, 0(x6)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_zero:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_zero:
   cbo.zero (x9)
   RVTEST_TSBI_GOTO_SMODE
   lw x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_zero_str)
-// VS-mode, sv39x4 level 1, wx: store guest-page fault: W without R is reserved
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_zero_str)
+// VS-mode, sv39x4 level 1, w: store guest-page fault: Reserved W without R
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -559,7 +559,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_zero:
   LA(x14, svhzicbo_data)
   srli x14, x14, 21
   slli x14, x14, 19
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
   or x14, x14, x13
   SREG x14, 0(x8)
   hfence.gvma
@@ -573,13 +573,13 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_zero:
   LI(x6, 0x0C0B0000)
   sw x6, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_zero:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_zero:
   cbo.zero (x9)
   RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x13)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_zero_str)
-// VS-mode, sv39x4 level 1, rx: store guest-page fault
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_zero_str)
+// VS-mode, sv39x4 level 1, rx: store guest-page fault: RX permissions
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -614,7 +614,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_rx_cbo_zero:
   lw x13, 0(x8)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_rx_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_rx_cbo_zero_str)
-// VS-mode, sv39x4 level 1, x: store guest-page fault
+// VS-mode, sv39x4 level 1, x: store guest-page fault: Execute-only page
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -649,7 +649,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_x_cbo_zero:
   lw x8, 0(x14)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_x_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_x_cbo_zero_str)
-// VS-mode, sv39x4 level 1, a0: store guest-page fault
+// VS-mode, sv39x4 level 1, a0: store guest-page fault: PTE.A unset
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -684,7 +684,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_a0_cbo_zero:
   lw x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_a0_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_a0_cbo_zero_str)
-// VS-mode, sv39x4 level 1, d0: store guest-page fault
+// VS-mode, sv39x4 level 1, d0: store guest-page fault: PTE.D unset
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -957,7 +957,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_valid_cbo_zero:
   lw x6, 0(x14)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_valid_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_valid_cbo_zero_str)
-// VS-mode, sv39x4 level 0, v0: store guest-page fault
+// VS-mode, sv39x4 level 0, v0: store guest-page fault: PTE.V unset
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -999,7 +999,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_v0_cbo_zero:
   lw x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_v0_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_v0_cbo_zero_str)
-// VS-mode, sv39x4 level 0, w: store guest-page fault: W without R is reserved
+// VS-mode, sv39x4 level 0, wx: store guest-page fault: Reserved W+X without R
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -1021,7 +1021,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_v0_cbo_zero:
   LA(x6, svhzicbo_data)
   srli x6, x6, 12
   slli x6, x6, 10
-  LI(x15, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
   or x6, x6, x15
   SREG x6, 0(x14)
   hfence.gvma
@@ -1035,13 +1035,13 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_v0_cbo_zero:
   LI(x15, 0x0C0B0000)
   sw x15, 0(x13)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_zero:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_zero:
   cbo.zero (x9)
   RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x13)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_zero_str)
-// VS-mode, sv39x4 level 0, wx: store guest-page fault: W without R is reserved
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_zero_str)
+// VS-mode, sv39x4 level 0, w: store guest-page fault: Reserved W without R
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -1063,7 +1063,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_zero:
   LA(x8, svhzicbo_data)
   srli x8, x8, 12
   slli x8, x8, 10
-  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
   or x8, x8, x15
   SREG x8, 0(x13)
   hfence.gvma
@@ -1077,13 +1077,13 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_zero:
   LI(x6, 0x0C0B0000)
   sw x6, 0(x8)
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_zero:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_zero:
   cbo.zero (x9)
   RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x8)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_zero_str)
-// VS-mode, sv39x4 level 0, rx: store guest-page fault
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_zero_str)
+// VS-mode, sv39x4 level 0, rx: store guest-page fault: RX permissions
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -1125,7 +1125,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_rx_cbo_zero:
   lw x15, 0(x6)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_rx_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_rx_cbo_zero_str)
-// VS-mode, sv39x4 level 0, x: store guest-page fault
+// VS-mode, sv39x4 level 0, x: store guest-page fault: Execute-only page
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -1167,7 +1167,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_x_cbo_zero:
   lw x8, 0(x15)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_x_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_x_cbo_zero_str)
-// VS-mode, sv39x4 level 0, a0: store guest-page fault
+// VS-mode, sv39x4 level 0, a0: store guest-page fault: PTE.A unset
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -1209,7 +1209,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_a0_cbo_zero:
   lw x8, 0(x15)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_a0_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_a0_cbo_zero_str)
-// VS-mode, sv39x4 level 0, d0: store guest-page fault
+// VS-mode, sv39x4 level 0, d0: store guest-page fault: PTE.D unset
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -1722,7 +1722,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_valid_cbo_zero:
   lw x14, 0(x8)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_valid_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_valid_cbo_zero_str)
-// VU-mode, sv39x4 level 2, v0: store guest-page fault
+// VU-mode, sv39x4 level 2, v0: store guest-page fault: PTE.V unset
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -1750,7 +1750,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_v0_cbo_zero:
   lw x8, 0(x15)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_v0_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_v0_cbo_zero_str)
-// VU-mode, sv39x4 level 2, w: store guest-page fault: W without R is reserved
+// VU-mode, sv39x4 level 2, wx: store guest-page fault: Reserved W+X without R
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -1758,7 +1758,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_v0_cbo_zero:
   LA(x8, svhzicbo_data)
   srli x8, x8, 30
   slli x8, x8, 28
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
   or x8, x8, x6
   SREG x8, 0(x15)
   hfence.gvma
@@ -1772,13 +1772,13 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_v0_cbo_zero:
   LI(x8, 0x0C0B0000)
   sw x8, 0(x14)
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_zero:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_zero:
   cbo.zero (x9)
   RVTEST_TSBI_GOTO_SMODE
   lw x8, 0(x14)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_zero_str)
-// VU-mode, sv39x4 level 2, wx: store guest-page fault: W without R is reserved
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_zero_str)
+// VU-mode, sv39x4 level 2, w: store guest-page fault: Reserved W without R
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -1786,7 +1786,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_zero:
   LA(x6, svhzicbo_data)
   srli x6, x6, 30
   slli x6, x6, 28
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
   or x6, x6, x13
   SREG x6, 0(x14)
   hfence.gvma
@@ -1800,13 +1800,13 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_zero:
   LI(x13, 0x0C0B0000)
   sw x13, 0(x6)
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_zero:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_zero:
   cbo.zero (x9)
   RVTEST_TSBI_GOTO_SMODE
   lw x13, 0(x6)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_zero_str)
-// VU-mode, sv39x4 level 2, rx: store guest-page fault
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_zero_str)
+// VU-mode, sv39x4 level 2, rx: store guest-page fault: RX permissions
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -1834,7 +1834,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_rx_cbo_zero:
   lw x6, 0(x13)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_rx_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_rx_cbo_zero_str)
-// VU-mode, sv39x4 level 2, x: store guest-page fault
+// VU-mode, sv39x4 level 2, x: store guest-page fault: Execute-only page
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -1862,7 +1862,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_x_cbo_zero:
   lw x8, 0(x6)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_x_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_x_cbo_zero_str)
-// VU-mode, sv39x4 level 2, a0: store guest-page fault
+// VU-mode, sv39x4 level 2, a0: store guest-page fault: PTE.A unset
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -1890,7 +1890,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_a0_cbo_zero:
   lw x13, 0(x6)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_a0_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_a0_cbo_zero_str)
-// VU-mode, sv39x4 level 2, d0: store guest-page fault
+// VU-mode, sv39x4 level 2, d0: store guest-page fault: PTE.D unset
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -2023,7 +2023,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_valid_cbo_zero:
   lw x13, 0(x14)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_valid_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_valid_cbo_zero_str)
-// VU-mode, sv39x4 level 1, v0: store guest-page fault
+// VU-mode, sv39x4 level 1, v0: store guest-page fault: PTE.V unset
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -2058,7 +2058,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_v0_cbo_zero:
   lw x6, 0(x15)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_v0_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_v0_cbo_zero_str)
-// VU-mode, sv39x4 level 1, w: store guest-page fault: W without R is reserved
+// VU-mode, sv39x4 level 1, wx: store guest-page fault: Reserved W+X without R
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -2073,7 +2073,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_v0_cbo_zero:
   LA(x14, svhzicbo_data)
   srli x14, x14, 21
   slli x14, x14, 19
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
   or x14, x14, x6
   SREG x14, 0(x13)
   hfence.gvma
@@ -2087,13 +2087,13 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_v0_cbo_zero:
   LI(x8, 0x0C0B0000)
   sw x8, 0(x15)
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_zero:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_zero:
   cbo.zero (x9)
   RVTEST_TSBI_GOTO_SMODE
   lw x8, 0(x15)
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_zero_str)
-// VU-mode, sv39x4 level 1, wx: store guest-page fault: W without R is reserved
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_zero_str)
+// VU-mode, sv39x4 level 1, w: store guest-page fault: Reserved W without R
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -2108,7 +2108,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_zero:
   LA(x13, svhzicbo_data)
   srli x13, x13, 21
   slli x13, x13, 19
-  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
   or x13, x13, x14
   SREG x13, 0(x6)
   hfence.gvma
@@ -2122,13 +2122,13 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_zero:
   LI(x13, 0x0C0B0000)
   sw x13, 0(x15)
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_zero:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_zero:
   cbo.zero (x9)
   RVTEST_TSBI_GOTO_SMODE
   lw x13, 0(x15)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_zero_str)
-// VU-mode, sv39x4 level 1, rx: store guest-page fault
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_zero_str)
+// VU-mode, sv39x4 level 1, rx: store guest-page fault: RX permissions
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -2163,7 +2163,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_rx_cbo_zero:
   lw x6, 0(x8)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_rx_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_rx_cbo_zero_str)
-// VU-mode, sv39x4 level 1, x: store guest-page fault
+// VU-mode, sv39x4 level 1, x: store guest-page fault: Execute-only page
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -2198,7 +2198,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_x_cbo_zero:
   lw x15, 0(x13)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_x_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_x_cbo_zero_str)
-// VU-mode, sv39x4 level 1, a0: store guest-page fault
+// VU-mode, sv39x4 level 1, a0: store guest-page fault: PTE.A unset
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -2233,7 +2233,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_a0_cbo_zero:
   lw x13, 0(x6)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_a0_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_a0_cbo_zero_str)
-// VU-mode, sv39x4 level 1, d0: store guest-page fault
+// VU-mode, sv39x4 level 1, d0: store guest-page fault: PTE.D unset
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -2506,7 +2506,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_valid_cbo_zero:
   lw x6, 0(x15)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_valid_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_valid_cbo_zero_str)
-// VU-mode, sv39x4 level 0, v0: store guest-page fault
+// VU-mode, sv39x4 level 0, v0: store guest-page fault: PTE.V unset
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -2548,7 +2548,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_v0_cbo_zero:
   lw x6, 0(x14)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_v0_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_v0_cbo_zero_str)
-// VU-mode, sv39x4 level 0, w: store guest-page fault: W without R is reserved
+// VU-mode, sv39x4 level 0, wx: store guest-page fault: Reserved W+X without R
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -2570,7 +2570,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_v0_cbo_zero:
   LA(x6, svhzicbo_data)
   srli x6, x6, 12
   slli x6, x6, 10
-  LI(x14, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
   or x6, x6, x14
   SREG x6, 0(x13)
   hfence.gvma
@@ -2584,13 +2584,13 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_v0_cbo_zero:
   LI(x15, 0x0C0B0000)
   sw x15, 0(x8)
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_zero:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_zero:
   cbo.zero (x9)
   RVTEST_TSBI_GOTO_SMODE
   lw x15, 0(x8)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_zero_str)
-// VU-mode, sv39x4 level 0, wx: store guest-page fault: W without R is reserved
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_zero_str)
+// VU-mode, sv39x4 level 0, w: store guest-page fault: Reserved W without R
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -2612,7 +2612,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_zero:
   LA(x15, svhzicbo_data)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
   or x15, x15, x13
   SREG x15, 0(x6)
   hfence.gvma
@@ -2626,13 +2626,13 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_zero:
   LI(x6, 0x0C0B0000)
   sw x6, 0(x14)
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_zero:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_zero:
   cbo.zero (x9)
   RVTEST_TSBI_GOTO_SMODE
   lw x6, 0(x14)
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_zero_str)
-// VU-mode, sv39x4 level 0, rx: store guest-page fault
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_zero_str)
+// VU-mode, sv39x4 level 0, rx: store guest-page fault: RX permissions
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -2674,7 +2674,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_rx_cbo_zero:
   lw x15, 0(x8)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_rx_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_rx_cbo_zero_str)
-// VU-mode, sv39x4 level 0, x: store guest-page fault
+// VU-mode, sv39x4 level 0, x: store guest-page fault: Execute-only page
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -2716,7 +2716,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_x_cbo_zero:
   lw x15, 0(x13)
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_x_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_x_cbo_zero_str)
-// VU-mode, sv39x4 level 0, a0: store guest-page fault
+// VU-mode, sv39x4 level 0, a0: store guest-page fault: PTE.A unset
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -2758,7 +2758,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_a0_cbo_zero:
   lw x14, 0(x6)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_a0_cbo_zero, Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_a0_cbo_zero_str)
-// VU-mode, sv39x4 level 0, d0: store guest-page fault
+// VU-mode, sv39x4 level 0, d0: store guest-page fault: PTE.D unset
   LA(x8, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x14, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x14, 0(x8)
@@ -3187,8 +3187,8 @@ rvtest_vlvl1_pg_tbl:
 // Testcase strings
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_valid_cbo_zero_str: .string "\"test: 90; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_valid_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_v0_cbo_zero_str: .string "\"test: 91; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_v0_cbo.zero\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_zero_str: .string "\"test: 92; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_w_cbo.zero\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_zero_str: .string "\"test: 93; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_wx_cbo.zero\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_zero_str: .string "\"test: 92; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_wx_cbo.zero\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_zero_str: .string "\"test: 93; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_w_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_rx_cbo_zero_str: .string "\"test: 94; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_rx_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_x_cbo_zero_str: .string "\"test: 95; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_x_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_a0_cbo_zero_str: .string "\"test: 96; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_a0_cbo.zero\""
@@ -3198,8 +3198,8 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_u0_cbo_zero_str: .string "\"test: 99; cg: Sv_
 Sv_HZicbo_cg_cp_g_pa_vs_sv39x4_l2_leaf_access_fault_cbo_zero_str: .string "\"test: 100; cg: Sv_HZicbo_cg; cp: cp_g_pa; bin: vs_sv39x4_l2_leaf_access_fault_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_valid_cbo_zero_str: .string "\"test: 101; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_valid_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_v0_cbo_zero_str: .string "\"test: 102; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_v0_cbo.zero\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_zero_str: .string "\"test: 103; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_w_cbo.zero\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_zero_str: .string "\"test: 104; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_wx_cbo.zero\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_zero_str: .string "\"test: 103; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_wx_cbo.zero\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_zero_str: .string "\"test: 104; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_w_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_rx_cbo_zero_str: .string "\"test: 105; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_rx_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_x_cbo_zero_str: .string "\"test: 106; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_x_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_a0_cbo_zero_str: .string "\"test: 107; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_a0_cbo.zero\""
@@ -3212,8 +3212,8 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_u0_cbo_zero_str: .string "\"test: 113; cg: Sv
 Sv_HZicbo_cg_cp_g_pa_vs_sv39x4_l1_leaf_access_fault_cbo_zero_str: .string "\"test: 114; cg: Sv_HZicbo_cg; cp: cp_g_pa; bin: vs_sv39x4_l1_leaf_access_fault_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_valid_cbo_zero_str: .string "\"test: 115; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_valid_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_v0_cbo_zero_str: .string "\"test: 116; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_v0_cbo.zero\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_zero_str: .string "\"test: 117; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_w_cbo.zero\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_zero_str: .string "\"test: 118; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_wx_cbo.zero\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_zero_str: .string "\"test: 117; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_wx_cbo.zero\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_zero_str: .string "\"test: 118; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_w_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_rx_cbo_zero_str: .string "\"test: 119; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_rx_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_x_cbo_zero_str: .string "\"test: 120; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_x_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_a0_cbo_zero_str: .string "\"test: 121; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_a0_cbo.zero\""
@@ -3228,8 +3228,8 @@ Sv_HZicbo_cg_cp_g_pa_vs_sv39x4_l1_nonleaf_access_fault_cbo_zero_str: .string "\"
 Sv_HZicbo_cg_cp_g_pa_vs_sv39x4_l0_nonleaf_access_fault_cbo_zero_str: .string "\"test: 130; cg: Sv_HZicbo_cg; cp: cp_g_pa; bin: vs_sv39x4_l0_nonleaf_access_fault_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_valid_cbo_zero_str: .string "\"test: 131; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_valid_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_v0_cbo_zero_str: .string "\"test: 132; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_v0_cbo.zero\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_zero_str: .string "\"test: 133; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_w_cbo.zero\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_zero_str: .string "\"test: 134; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_wx_cbo.zero\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_zero_str: .string "\"test: 133; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_wx_cbo.zero\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_zero_str: .string "\"test: 134; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_w_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_rx_cbo_zero_str: .string "\"test: 135; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_rx_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_x_cbo_zero_str: .string "\"test: 136; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_x_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_a0_cbo_zero_str: .string "\"test: 137; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_a0_cbo.zero\""
@@ -3239,8 +3239,8 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_u0_cbo_zero_str: .string "\"test: 140; cg: Sv
 Sv_HZicbo_cg_cp_g_pa_vu_sv39x4_l2_leaf_access_fault_cbo_zero_str: .string "\"test: 141; cg: Sv_HZicbo_cg; cp: cp_g_pa; bin: vu_sv39x4_l2_leaf_access_fault_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_valid_cbo_zero_str: .string "\"test: 142; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_valid_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_v0_cbo_zero_str: .string "\"test: 143; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_v0_cbo.zero\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_zero_str: .string "\"test: 144; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_w_cbo.zero\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_zero_str: .string "\"test: 145; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_wx_cbo.zero\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_zero_str: .string "\"test: 144; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_wx_cbo.zero\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_zero_str: .string "\"test: 145; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_w_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_rx_cbo_zero_str: .string "\"test: 146; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_rx_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_x_cbo_zero_str: .string "\"test: 147; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_x_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_a0_cbo_zero_str: .string "\"test: 148; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_a0_cbo.zero\""
@@ -3253,8 +3253,8 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_u0_cbo_zero_str: .string "\"test: 154; cg: Sv
 Sv_HZicbo_cg_cp_g_pa_vu_sv39x4_l1_leaf_access_fault_cbo_zero_str: .string "\"test: 155; cg: Sv_HZicbo_cg; cp: cp_g_pa; bin: vu_sv39x4_l1_leaf_access_fault_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_valid_cbo_zero_str: .string "\"test: 156; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_valid_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_v0_cbo_zero_str: .string "\"test: 157; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_v0_cbo.zero\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_zero_str: .string "\"test: 158; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_w_cbo.zero\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_zero_str: .string "\"test: 159; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_wx_cbo.zero\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_zero_str: .string "\"test: 158; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_wx_cbo.zero\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_zero_str: .string "\"test: 159; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_w_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_rx_cbo_zero_str: .string "\"test: 160; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_rx_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_x_cbo_zero_str: .string "\"test: 161; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_x_cbo.zero\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_a0_cbo_zero_str: .string "\"test: 162; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_a0_cbo.zero\""

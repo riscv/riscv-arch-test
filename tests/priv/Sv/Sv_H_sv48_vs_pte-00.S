@@ -261,7 +261,7 @@ Sv_H_vsstage_cg_cp_vsatp_perm_rsw1_exec:
   LA(x9, svh_page)
   srli x9, x9, 12
   slli x9, x9, 10
-  LI(x14, (2 << 8) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  LI(x14, (1 << 9) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
   or x9, x9, x14
   SREG x9, 0(x13)
   hfence.vvma
@@ -305,7 +305,7 @@ Sv_H_vsstage_cg_cp_vsatp_perm_rsw2_exec:
   LA(x15, svh_page)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x6, (3 << 8) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  LI(x6, (1 << 9) | (1 << 8) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
   or x15, x15, x6
   SREG x15, 0(x9)
   hfence.vvma

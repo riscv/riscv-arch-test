@@ -9,20 +9,23 @@
 """Sv HZicbo group: cache-block management and zero instructions from VS-mode and VU-mode.
 
 The group boots to HS-mode with hedeleg clear, so the HS-mode handler takes every guest trap.  It checks the
-henvcfg CBO enables and the fault that each VS-stage and G-stage PTE gives a CBO; The HZicboSm group checks PMP on the
-final address.  A CBO faults like a store.  A cache-block management instruction needs read or write permission
-and never checks D; cbo.zero needs write permission and checks D (cmo.adoc).  Boot leaves menvcfg.ADUE = 0,
-which makes henvcfg.ADUE read-only zero, so a clear A or needed D bit raises a fault (Svade behavior).
+henvcfg CBO enables and the fault that each VS-stage and G-stage PTE gives a CBO; the PMP suite's HSvZicbo group
+checks PMP on the final address.  A CBO faults like a store.  A cache-block management instruction needs read or
+write permission and never checks D; cbo.zero needs write permission and checks D (cmo.adoc).  Boot leaves
+menvcfg.ADUE = 0, which makes henvcfg.ADUE read-only zero, so a clear A or needed D bit raises a fault (Svade
+behavior).
 """
 
+import itertools
 from collections.abc import Callable, Mapping
-from dataclasses import replace
 from typing import NamedTuple
 
 from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.tsbi import tsbi_call
+from testgen.data.random import random_int
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.exceptions.ExceptionsZicboCommon import cbo_henvcfg_helper
+from testgen.priv.extensions.exceptions.ExceptionsZicboCommon import CBO_FIELDS, cbo_test
 from testgen.priv.extensions.sv.access import virtual_address
 from testgen.priv.extensions.sv.generate import guest_translation_setup, guest_translation_teardown
 from testgen.priv.extensions.sv.page_tables import (
@@ -37,6 +40,7 @@ from testgen.priv.extensions.sv.page_tables import (
     guest_table_data,
     write_pte,
 )
+from testgen.priv.extensions.sv.SvZicbo import cbo_leaves
 from testgen.priv.registry import add_priv_test_generator
 
 _ENVCFG_CG = "Sv_HZicbo_envcfg_cg"
@@ -172,17 +176,12 @@ def _leaf_cases(
     """The cases that both stages share: each permission of the leaf at ``level`` (``flags`` when valid), a pointer in
     place of a kilopage leaf, reserved bits in the non-leaf PTE above, and a misaligned superpage.  ``prefix``
     precedes each case's page-table writes."""
-    zero = c.family == "zicboz"
-    reserved = f"{fault}: W without R is reserved"
     leaves = [
         ("valid", "no fault", flags),
-        ("v0", fault, replace(flags, valid=False)),
-        ("w", reserved, replace(flags, read=False, execute=False)),
-        ("wx", reserved, replace(flags, read=False)),
-        ("rx", fault if zero else "no fault: a load is permitted", replace(flags, write=False)),
-        *([("x", fault, replace(flags, read=False, write=False))] if zero else []),
-        ("a0", fault, replace(flags, accessed=False)),
-        ("d0", fault if zero else "no fault: D is not checked", replace(flags, dirty=False)),
+        *(
+            (leaf.name, f"{fault if leaf.faults else 'no fault'}: {leaf.description}", leaf.flags)
+            for leaf in cbo_leaves(c.family, flags)
+        ),
     ]
     if level == 0:
         pointer = PteFlags.nonleaf(*(["PTE_U"] if flags.user else []))
@@ -390,7 +389,7 @@ def make_chunk(
     senvcfg; boot enables them in menvcfg.
     """
     name, title, description, cases = section
-    group = covergroup.removeprefix("Sv_").removesuffix("_cg")
+    group = covergroup.split("_", 1)[1].removesuffix("_cg")
     tc = test_data.begin_test_chunk(f"{group}_{g.name}_{family}_{name}")
     tc.section_header = comment_banner(title, f"{description}, for {', '.join(OPS[family])} from VS and VU")
     chunk = Chunk(family, g, vs, covergroup, home, test_data.int_regs.get_register())
@@ -422,12 +421,67 @@ def _make_svhzicbo(test_data: TestData, g: SvMode, vs: SvMode, family: str) -> l
     ]
 
 
+def _henvcfg_cases(test_data: TestData, field: str, mode: str) -> list[str]:
+    """Execute ``field``'s instructions in VS-mode or VU-mode for each value of menvcfg, henvcfg and, in VU-mode,
+    senvcfg.  Runs from HS-mode, with vsatp and hgatp Bare; menvcfg is written through T-SBI.
+
+    A field that menvcfg disables raises an illegal-instruction exception; otherwise one that henvcfg, or
+    senvcfg in VU-mode, disables raises a virtual-instruction exception (cmo.adoc, "CSR controls").  When
+    cbo.inval is enabled and any of the CBIE fields is 01, it performs a flush (hypervisor.adoc, henvcfg CBIE),
+    so a load after it returns the data stored before it.
+    """
+    cfg = CBO_FIELDS[field]
+    field_mask = ((1 << len(cfg.bins[0])) - 1) << cfg.shift
+    csrs = ["menvcfg", "henvcfg", *(["senvcfg"] if mode == "VU" else [])]
+    coverpoint = f"cp_{field}_{mode.lower()}"
+    addr_reg, cfg_reg, mask_reg, val_reg = test_data.int_regs.get_registers(4)
+    lines = [
+        comment_banner(
+            coverpoint,
+            f"Exercise {', '.join(cfg.instrs)} in {mode}-mode across {', '.join(f'{csr}.{field}' for csr in csrs)}",
+        ),
+        f"#ifdef {cfg.guard}",
+        f"LA(x{addr_reg}, scratch)",
+        f"LI(x{mask_reg}, {field_mask:#x})  # {field} field mask",
+    ]
+    for values in itertools.product(cfg.bins, repeat=len(csrs)):
+        for csr, value in zip(csrs, values, strict=True):
+            clear, set_ = f"csrc {csr}, x{mask_reg}", f"csrs {csr}, x{cfg_reg}"
+            lines.append(tsbi_call(clear) if csr == "menvcfg" else clear)
+            if int(value, 2):
+                lines.extend(
+                    [f"LI(x{cfg_reg}, {int(value, 2) << cfg.shift:#x})", tsbi_call(set_) if csr == "menvcfg" else set_]
+                )
+        lines.append(f"RVTEST_TSBI_GOTO_{mode}MODE")
+        tag = "_".join(f"{csr}.{field}{value}" for csr, value in zip(csrs, values, strict=True))
+        flush = field == "cbie" and "00" not in values and "01" in values
+        for instr in cfg.instrs:
+            name = f"{instr}_{tag}"
+            if flush:
+                lines.extend(
+                    [
+                        f"LI(x{val_reg}, {random_int(32, signed=False):#x})",
+                        f"sw x{val_reg}, 0(x{addr_reg})",
+                        test_data.add_testcase(name, coverpoint, _ENVCFG_CG),
+                        f"{instr}    0(x{addr_reg})",
+                        f"lw x{val_reg}, 0(x{addr_reg})",
+                        write_sigupd(val_reg, test_data),
+                    ]
+                )
+            else:
+                lines.extend(cbo_test(instr, name, coverpoint, _ENVCFG_CG, addr_reg, val_reg, test_data))
+        lines.append("RVTEST_TSBI_GOTO_SMODE")
+    lines.append(f"#endif // {cfg.guard}")
+    test_data.int_regs.return_registers([addr_reg, cfg_reg, mask_reg, val_reg])
+    return lines
+
+
 def _make_henvcfg(test_data: TestData, family: str) -> list[TestChunk]:
     """The family's CBOs in VS-mode and VU-mode across the menvcfg, henvcfg and senvcfg enables."""
     tc = test_data.begin_test_chunk(f"HZicbo_{family}_henvcfg")
     for field in _FIELDS[family]:
         for mode in ("VS", "VU"):
-            tc.code.extend(cbo_henvcfg_helper(test_data, _ENVCFG_CG, field, mode=mode))
+            tc.code.extend(_henvcfg_cases(test_data, field, mode))
     return [test_data.end_test_chunk()]
 
 

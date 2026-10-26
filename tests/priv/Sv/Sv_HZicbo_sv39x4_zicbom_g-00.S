@@ -171,7 +171,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_valid_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_valid_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VS-mode, sv39x4 level 2, v0: store guest-page fault
+// VS-mode, sv39x4 level 2, v0: store guest-page fault: PTE.V unset
   LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x6, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x9)
@@ -197,7 +197,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_v0_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_v0_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VS-mode, sv39x4 level 2, w: store guest-page fault: W without R is reserved
+// VS-mode, sv39x4 level 2, wx: store guest-page fault: Reserved W+X without R
   LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x6, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x9)
@@ -205,7 +205,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_v0_cbo_inval:
   LA(x8, svhzicbo_data)
   srli x8, x8, 30
   slli x8, x8, 28
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
   or x8, x8, x6
   SREG x8, 0(x13)
   hfence.gvma
@@ -216,14 +216,14 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_v0_cbo_inval:
   srli x13, x13, 34
   add x14, x14, x13
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_clean:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_clean:
   cbo.clean (x14)
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_flush:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_flush:
   cbo.flush (x14)
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_inval:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VS-mode, sv39x4 level 2, wx: store guest-page fault: W without R is reserved
+// VS-mode, sv39x4 level 2, w: store guest-page fault: Reserved W without R
   LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x6, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x9)
@@ -231,7 +231,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_inval:
   LA(x6, svhzicbo_data)
   srli x6, x6, 30
   slli x6, x6, 28
-  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
   or x6, x6, x15
   SREG x6, 0(x9)
   hfence.gvma
@@ -242,14 +242,14 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_inval:
   srli x6, x6, 34
   add x14, x14, x6
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_clean:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_clean:
   cbo.clean (x14)
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_flush:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_flush:
   cbo.flush (x14)
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_inval:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VS-mode, sv39x4 level 2, rx: no fault: a load is permitted
+// VS-mode, sv39x4 level 2, rx: no fault: RX permissions
   LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x6, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x9)
@@ -275,7 +275,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_rx_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_rx_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VS-mode, sv39x4 level 2, a0: store guest-page fault
+// VS-mode, sv39x4 level 2, a0: store guest-page fault: PTE.A unset
   LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x6, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x9)
@@ -301,7 +301,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_a0_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_a0_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VS-mode, sv39x4 level 2, d0: no fault: D is not checked
+// VS-mode, sv39x4 level 2, d0: no fault: PTE.D unset
   LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x6, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x9)
@@ -436,7 +436,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_valid_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_valid_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VS-mode, sv39x4 level 1, v0: store guest-page fault
+// VS-mode, sv39x4 level 1, v0: store guest-page fault: PTE.V unset
   LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x6, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x9)
@@ -469,7 +469,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_v0_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_v0_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VS-mode, sv39x4 level 1, w: store guest-page fault: W without R is reserved
+// VS-mode, sv39x4 level 1, wx: store guest-page fault: Reserved W+X without R
   LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x6, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x9)
@@ -484,7 +484,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_v0_cbo_inval:
   LA(x13, svhzicbo_data)
   srli x13, x13, 21
   slli x13, x13, 19
-  LI(x15, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
   or x13, x13, x15
   SREG x13, 0(x9)
   hfence.gvma
@@ -495,14 +495,14 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_v0_cbo_inval:
   srli x6, x6, 43
   add x14, x14, x6
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_clean:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_clean:
   cbo.clean (x14)
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_flush:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_flush:
   cbo.flush (x14)
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_inval:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VS-mode, sv39x4 level 1, wx: store guest-page fault: W without R is reserved
+// VS-mode, sv39x4 level 1, w: store guest-page fault: Reserved W without R
   LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x6, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x9)
@@ -517,7 +517,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_inval:
   LA(x15, svhzicbo_data)
   srli x15, x15, 21
   slli x15, x15, 19
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
   or x15, x15, x9
   SREG x15, 0(x8)
   hfence.gvma
@@ -528,14 +528,14 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_inval:
   srli x8, x8, 43
   add x14, x14, x8
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_clean:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_clean:
   cbo.clean (x14)
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_flush:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_flush:
   cbo.flush (x14)
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_inval:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VS-mode, sv39x4 level 1, rx: no fault: a load is permitted
+// VS-mode, sv39x4 level 1, rx: no fault: RX permissions
   LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x6, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x9)
@@ -568,7 +568,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_rx_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_rx_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VS-mode, sv39x4 level 1, a0: store guest-page fault
+// VS-mode, sv39x4 level 1, a0: store guest-page fault: PTE.A unset
   LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x6, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x9)
@@ -601,7 +601,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_a0_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_a0_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VS-mode, sv39x4 level 1, d0: no fault: D is not checked
+// VS-mode, sv39x4 level 1, d0: no fault: PTE.D unset
   LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x6, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x9)
@@ -870,7 +870,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_valid_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_valid_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VS-mode, sv39x4 level 0, v0: store guest-page fault
+// VS-mode, sv39x4 level 0, v0: store guest-page fault: PTE.V unset
   LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x6, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x9)
@@ -910,7 +910,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_v0_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_v0_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VS-mode, sv39x4 level 0, w: store guest-page fault: W without R is reserved
+// VS-mode, sv39x4 level 0, wx: store guest-page fault: Reserved W+X without R
   LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x6, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x9)
@@ -932,7 +932,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_v0_cbo_inval:
   LA(x9, svhzicbo_data)
   srli x9, x9, 12
   slli x9, x9, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
+  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
   or x9, x9, x8
   SREG x9, 0(x13)
   hfence.gvma
@@ -943,14 +943,14 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_v0_cbo_inval:
   srli x15, x15, 52
   add x14, x14, x15
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_clean:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_clean:
   cbo.clean (x14)
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_flush:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_flush:
   cbo.flush (x14)
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_inval:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VS-mode, sv39x4 level 0, wx: store guest-page fault: W without R is reserved
+// VS-mode, sv39x4 level 0, w: store guest-page fault: Reserved W without R
   LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x6, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x9)
@@ -972,7 +972,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_inval:
   LA(x9, svhzicbo_data)
   srli x9, x9, 12
   slli x9, x9, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
   or x9, x9, x6
   SREG x9, 0(x8)
   hfence.gvma
@@ -983,14 +983,14 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_inval:
   srli x15, x15, 52
   add x14, x14, x15
   RVTEST_TSBI_GOTO_VSMODE
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_clean:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_clean:
   cbo.clean (x14)
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_flush:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_flush:
   cbo.flush (x14)
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_inval:
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VS-mode, sv39x4 level 0, rx: no fault: a load is permitted
+// VS-mode, sv39x4 level 0, rx: no fault: RX permissions
   LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x6, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x9)
@@ -1030,7 +1030,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_rx_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_rx_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VS-mode, sv39x4 level 0, a0: store guest-page fault
+// VS-mode, sv39x4 level 0, a0: store guest-page fault: PTE.A unset
   LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x6, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x9)
@@ -1070,7 +1070,7 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_a0_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_a0_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VS-mode, sv39x4 level 0, d0: no fault: D is not checked
+// VS-mode, sv39x4 level 0, d0: no fault: PTE.D unset
   LA(x9, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x6, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x9)
@@ -1569,7 +1569,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_valid_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_valid_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VU-mode, sv39x4 level 2, v0: store guest-page fault
+// VU-mode, sv39x4 level 2, v0: store guest-page fault: PTE.V unset
   LA(x6, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x13, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x13, 0(x6)
@@ -1595,7 +1595,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_v0_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_v0_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VU-mode, sv39x4 level 2, w: store guest-page fault: W without R is reserved
+// VU-mode, sv39x4 level 2, wx: store guest-page fault: Reserved W+X without R
   LA(x6, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x13, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x13, 0(x6)
@@ -1603,7 +1603,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_v0_cbo_inval:
   LA(x8, svhzicbo_data)
   srli x8, x8, 30
   slli x8, x8, 28
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
   or x8, x8, x9
   SREG x8, 0(x15)
   hfence.gvma
@@ -1614,14 +1614,14 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_v0_cbo_inval:
   srli x8, x8, 34
   add x14, x14, x8
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_clean:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_clean:
   cbo.clean (x14)
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_flush:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_flush:
   cbo.flush (x14)
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_inval:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VU-mode, sv39x4 level 2, wx: store guest-page fault: W without R is reserved
+// VU-mode, sv39x4 level 2, w: store guest-page fault: Reserved W without R
   LA(x6, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x13, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x13, 0(x6)
@@ -1629,7 +1629,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_inval:
   LA(x9, svhzicbo_data)
   srli x9, x9, 30
   slli x9, x9, 28
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
   or x9, x9, x6
   SREG x9, 0(x8)
   hfence.gvma
@@ -1640,14 +1640,14 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_inval:
   srli x15, x15, 34
   add x14, x14, x15
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_clean:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_clean:
   cbo.clean (x14)
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_flush:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_flush:
   cbo.flush (x14)
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_inval:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VU-mode, sv39x4 level 2, rx: no fault: a load is permitted
+// VU-mode, sv39x4 level 2, rx: no fault: RX permissions
   LA(x6, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x13, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x13, 0(x6)
@@ -1673,7 +1673,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_rx_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_rx_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VU-mode, sv39x4 level 2, a0: store guest-page fault
+// VU-mode, sv39x4 level 2, a0: store guest-page fault: PTE.A unset
   LA(x6, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x13, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x13, 0(x6)
@@ -1699,7 +1699,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_a0_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_a0_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VU-mode, sv39x4 level 2, d0: no fault: D is not checked
+// VU-mode, sv39x4 level 2, d0: no fault: PTE.D unset
   LA(x6, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x13, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x13, 0(x6)
@@ -1834,7 +1834,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_valid_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_valid_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VU-mode, sv39x4 level 1, v0: store guest-page fault
+// VU-mode, sv39x4 level 1, v0: store guest-page fault: PTE.V unset
   LA(x6, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x13, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x13, 0(x6)
@@ -1867,7 +1867,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_v0_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_v0_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VU-mode, sv39x4 level 1, w: store guest-page fault: W without R is reserved
+// VU-mode, sv39x4 level 1, wx: store guest-page fault: Reserved W+X without R
   LA(x6, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x13, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x13, 0(x6)
@@ -1882,7 +1882,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_v0_cbo_inval:
   LA(x15, svhzicbo_data)
   srli x15, x15, 21
   slli x15, x15, 19
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
+  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
   or x15, x15, x8
   SREG x15, 0(x13)
   hfence.gvma
@@ -1893,14 +1893,14 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_v0_cbo_inval:
   srli x13, x13, 43
   add x14, x14, x13
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_clean:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_clean:
   cbo.clean (x14)
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_flush:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_flush:
   cbo.flush (x14)
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_inval:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VU-mode, sv39x4 level 1, wx: store guest-page fault: W without R is reserved
+// VU-mode, sv39x4 level 1, w: store guest-page fault: Reserved W without R
   LA(x6, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x13, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x13, 0(x6)
@@ -1915,7 +1915,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_inval:
   LA(x15, svhzicbo_data)
   srli x15, x15, 21
   slli x15, x15, 19
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
   or x15, x15, x13
   SREG x15, 0(x9)
   hfence.gvma
@@ -1926,14 +1926,14 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_inval:
   srli x9, x9, 43
   add x14, x14, x9
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_clean:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_clean:
   cbo.clean (x14)
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_flush:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_flush:
   cbo.flush (x14)
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_inval:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VU-mode, sv39x4 level 1, rx: no fault: a load is permitted
+// VU-mode, sv39x4 level 1, rx: no fault: RX permissions
   LA(x6, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x13, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x13, 0(x6)
@@ -1966,7 +1966,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_rx_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_rx_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VU-mode, sv39x4 level 1, a0: store guest-page fault
+// VU-mode, sv39x4 level 1, a0: store guest-page fault: PTE.A unset
   LA(x6, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x13, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x13, 0(x6)
@@ -1999,7 +1999,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_a0_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_a0_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VU-mode, sv39x4 level 1, d0: no fault: D is not checked
+// VU-mode, sv39x4 level 1, d0: no fault: PTE.D unset
   LA(x6, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x13, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x13, 0(x6)
@@ -2268,7 +2268,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_valid_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_valid_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VU-mode, sv39x4 level 0, v0: store guest-page fault
+// VU-mode, sv39x4 level 0, v0: store guest-page fault: PTE.V unset
   LA(x6, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x13, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x13, 0(x6)
@@ -2308,7 +2308,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_v0_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_v0_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VU-mode, sv39x4 level 0, w: store guest-page fault: W without R is reserved
+// VU-mode, sv39x4 level 0, wx: store guest-page fault: Reserved W+X without R
   LA(x6, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x13, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x13, 0(x6)
@@ -2330,7 +2330,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_v0_cbo_inval:
   LA(x8, svhzicbo_data)
   srli x8, x8, 12
   slli x8, x8, 10
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
   or x8, x8, x13
   SREG x8, 0(x9)
   hfence.gvma
@@ -2341,14 +2341,14 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_v0_cbo_inval:
   srli x15, x15, 52
   add x14, x14, x15
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_clean:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_clean:
   cbo.clean (x14)
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_flush:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_flush:
   cbo.flush (x14)
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_inval:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VU-mode, sv39x4 level 0, wx: store guest-page fault: W without R is reserved
+// VU-mode, sv39x4 level 0, w: store guest-page fault: Reserved W without R
   LA(x6, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x13, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x13, 0(x6)
@@ -2370,7 +2370,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_inval:
   LA(x15, svhzicbo_data)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_V)
+  LI(x8, PTE_D | PTE_A | PTE_U | PTE_W | PTE_V)
   or x15, x15, x8
   SREG x15, 0(x9)
   hfence.gvma
@@ -2381,14 +2381,14 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_inval:
   srli x15, x15, 52
   add x14, x14, x15
   RVTEST_TSBI_GOTO_VUMODE
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_clean:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_clean:
   cbo.clean (x14)
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_flush:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_flush:
   cbo.flush (x14)
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_inval:
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VU-mode, sv39x4 level 0, rx: no fault: a load is permitted
+// VU-mode, sv39x4 level 0, rx: no fault: RX permissions
   LA(x6, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x13, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x13, 0(x6)
@@ -2428,7 +2428,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_rx_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_rx_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VU-mode, sv39x4 level 0, a0: store guest-page fault
+// VU-mode, sv39x4 level 0, a0: store guest-page fault: PTE.A unset
   LA(x6, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x13, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x13, 0(x6)
@@ -2468,7 +2468,7 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_a0_cbo_flush:
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_a0_cbo_inval:
   cbo.inval (x14)
   RVTEST_TSBI_GOTO_SMODE
-// VU-mode, sv39x4 level 0, d0: no fault: D is not checked
+// VU-mode, sv39x4 level 0, d0: no fault: PTE.D unset
   LA(x6, rvtest_Vroot_pg_tbl + (((0x2C0802000) >> 30) & 0x1ff) * 8)
   LI(x13, (((0x2C0802000) >> 30) << 28) | (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x13, 0(x6)
@@ -2889,12 +2889,12 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_valid_cbo_inval_str: .string "\"test: 252; cg
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_v0_cbo_clean_str: .string "\"test: 253; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_v0_cbo.clean\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_v0_cbo_flush_str: .string "\"test: 254; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_v0_cbo.flush\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_v0_cbo_inval_str: .string "\"test: 255; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_v0_cbo.inval\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_clean_str: .string "\"test: 256; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_w_cbo.clean\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_flush_str: .string "\"test: 257; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_w_cbo.flush\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_inval_str: .string "\"test: 258; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_w_cbo.inval\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_clean_str: .string "\"test: 259; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_wx_cbo.clean\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_flush_str: .string "\"test: 260; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_wx_cbo.flush\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_inval_str: .string "\"test: 261; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_wx_cbo.inval\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_clean_str: .string "\"test: 256; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_wx_cbo.clean\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_flush_str: .string "\"test: 257; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_wx_cbo.flush\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_wx_cbo_inval_str: .string "\"test: 258; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_wx_cbo.inval\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_clean_str: .string "\"test: 259; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_w_cbo.clean\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_flush_str: .string "\"test: 260; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_w_cbo.flush\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_w_cbo_inval_str: .string "\"test: 261; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_w_cbo.inval\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_rx_cbo_clean_str: .string "\"test: 262; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_rx_cbo.clean\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_rx_cbo_flush_str: .string "\"test: 263; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_rx_cbo.flush\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l2_rx_cbo_inval_str: .string "\"test: 264; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l2_rx_cbo.inval\""
@@ -2919,12 +2919,12 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_valid_cbo_inval_str: .string "\"test: 282; cg
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_v0_cbo_clean_str: .string "\"test: 283; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_v0_cbo.clean\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_v0_cbo_flush_str: .string "\"test: 284; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_v0_cbo.flush\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_v0_cbo_inval_str: .string "\"test: 285; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_v0_cbo.inval\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_clean_str: .string "\"test: 286; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_w_cbo.clean\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_flush_str: .string "\"test: 287; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_w_cbo.flush\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_inval_str: .string "\"test: 288; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_w_cbo.inval\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_clean_str: .string "\"test: 289; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_wx_cbo.clean\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_flush_str: .string "\"test: 290; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_wx_cbo.flush\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_inval_str: .string "\"test: 291; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_wx_cbo.inval\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_clean_str: .string "\"test: 286; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_wx_cbo.clean\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_flush_str: .string "\"test: 287; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_wx_cbo.flush\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_wx_cbo_inval_str: .string "\"test: 288; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_wx_cbo.inval\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_clean_str: .string "\"test: 289; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_w_cbo.clean\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_flush_str: .string "\"test: 290; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_w_cbo.flush\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_w_cbo_inval_str: .string "\"test: 291; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_w_cbo.inval\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_rx_cbo_clean_str: .string "\"test: 292; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_rx_cbo.clean\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_rx_cbo_flush_str: .string "\"test: 293; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_rx_cbo.flush\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l1_rx_cbo_inval_str: .string "\"test: 294; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l1_rx_cbo.inval\""
@@ -2958,12 +2958,12 @@ Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_valid_cbo_inval_str: .string "\"test: 321; cg
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_v0_cbo_clean_str: .string "\"test: 322; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_v0_cbo.clean\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_v0_cbo_flush_str: .string "\"test: 323; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_v0_cbo.flush\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_v0_cbo_inval_str: .string "\"test: 324; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_v0_cbo.inval\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_clean_str: .string "\"test: 325; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_w_cbo.clean\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_flush_str: .string "\"test: 326; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_w_cbo.flush\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_inval_str: .string "\"test: 327; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_w_cbo.inval\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_clean_str: .string "\"test: 328; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_wx_cbo.clean\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_flush_str: .string "\"test: 329; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_wx_cbo.flush\""
-Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_inval_str: .string "\"test: 330; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_wx_cbo.inval\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_clean_str: .string "\"test: 325; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_wx_cbo.clean\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_flush_str: .string "\"test: 326; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_wx_cbo.flush\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_wx_cbo_inval_str: .string "\"test: 327; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_wx_cbo.inval\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_clean_str: .string "\"test: 328; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_w_cbo.clean\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_flush_str: .string "\"test: 329; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_w_cbo.flush\""
+Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_w_cbo_inval_str: .string "\"test: 330; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_w_cbo.inval\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_rx_cbo_clean_str: .string "\"test: 331; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_rx_cbo.clean\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_rx_cbo_flush_str: .string "\"test: 332; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_rx_cbo.flush\""
 Sv_HZicbo_cg_cp_g_pte_vs_sv39x4_l0_rx_cbo_inval_str: .string "\"test: 333; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vs_sv39x4_l0_rx_cbo.inval\""
@@ -3003,12 +3003,12 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_valid_cbo_inval_str: .string "\"test: 366; cg
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_v0_cbo_clean_str: .string "\"test: 367; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_v0_cbo.clean\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_v0_cbo_flush_str: .string "\"test: 368; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_v0_cbo.flush\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_v0_cbo_inval_str: .string "\"test: 369; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_v0_cbo.inval\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_clean_str: .string "\"test: 370; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_w_cbo.clean\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_flush_str: .string "\"test: 371; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_w_cbo.flush\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_inval_str: .string "\"test: 372; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_w_cbo.inval\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_clean_str: .string "\"test: 373; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_wx_cbo.clean\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_flush_str: .string "\"test: 374; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_wx_cbo.flush\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_inval_str: .string "\"test: 375; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_wx_cbo.inval\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_clean_str: .string "\"test: 370; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_wx_cbo.clean\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_flush_str: .string "\"test: 371; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_wx_cbo.flush\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_wx_cbo_inval_str: .string "\"test: 372; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_wx_cbo.inval\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_clean_str: .string "\"test: 373; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_w_cbo.clean\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_flush_str: .string "\"test: 374; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_w_cbo.flush\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_w_cbo_inval_str: .string "\"test: 375; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_w_cbo.inval\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_rx_cbo_clean_str: .string "\"test: 376; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_rx_cbo.clean\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_rx_cbo_flush_str: .string "\"test: 377; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_rx_cbo.flush\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l2_rx_cbo_inval_str: .string "\"test: 378; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l2_rx_cbo.inval\""
@@ -3033,12 +3033,12 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_valid_cbo_inval_str: .string "\"test: 396; cg
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_v0_cbo_clean_str: .string "\"test: 397; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_v0_cbo.clean\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_v0_cbo_flush_str: .string "\"test: 398; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_v0_cbo.flush\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_v0_cbo_inval_str: .string "\"test: 399; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_v0_cbo.inval\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_clean_str: .string "\"test: 400; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_w_cbo.clean\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_flush_str: .string "\"test: 401; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_w_cbo.flush\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_inval_str: .string "\"test: 402; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_w_cbo.inval\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_clean_str: .string "\"test: 403; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_wx_cbo.clean\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_flush_str: .string "\"test: 404; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_wx_cbo.flush\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_inval_str: .string "\"test: 405; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_wx_cbo.inval\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_clean_str: .string "\"test: 400; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_wx_cbo.clean\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_flush_str: .string "\"test: 401; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_wx_cbo.flush\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_wx_cbo_inval_str: .string "\"test: 402; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_wx_cbo.inval\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_clean_str: .string "\"test: 403; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_w_cbo.clean\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_flush_str: .string "\"test: 404; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_w_cbo.flush\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_w_cbo_inval_str: .string "\"test: 405; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_w_cbo.inval\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_rx_cbo_clean_str: .string "\"test: 406; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_rx_cbo.clean\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_rx_cbo_flush_str: .string "\"test: 407; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_rx_cbo.flush\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l1_rx_cbo_inval_str: .string "\"test: 408; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l1_rx_cbo.inval\""
@@ -3072,12 +3072,12 @@ Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_valid_cbo_inval_str: .string "\"test: 435; cg
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_v0_cbo_clean_str: .string "\"test: 436; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_v0_cbo.clean\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_v0_cbo_flush_str: .string "\"test: 437; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_v0_cbo.flush\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_v0_cbo_inval_str: .string "\"test: 438; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_v0_cbo.inval\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_clean_str: .string "\"test: 439; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_w_cbo.clean\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_flush_str: .string "\"test: 440; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_w_cbo.flush\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_inval_str: .string "\"test: 441; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_w_cbo.inval\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_clean_str: .string "\"test: 442; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_wx_cbo.clean\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_flush_str: .string "\"test: 443; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_wx_cbo.flush\""
-Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_inval_str: .string "\"test: 444; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_wx_cbo.inval\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_clean_str: .string "\"test: 439; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_wx_cbo.clean\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_flush_str: .string "\"test: 440; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_wx_cbo.flush\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_wx_cbo_inval_str: .string "\"test: 441; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_wx_cbo.inval\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_clean_str: .string "\"test: 442; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_w_cbo.clean\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_flush_str: .string "\"test: 443; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_w_cbo.flush\""
+Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_w_cbo_inval_str: .string "\"test: 444; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_w_cbo.inval\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_rx_cbo_clean_str: .string "\"test: 445; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_rx_cbo.clean\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_rx_cbo_flush_str: .string "\"test: 446; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_rx_cbo.flush\""
 Sv_HZicbo_cg_cp_g_pte_vu_sv39x4_l0_rx_cbo_inval_str: .string "\"test: 447; cg: Sv_HZicbo_cg; cp: cp_g_pte; bin: vu_sv39x4_l0_rx_cbo.inval\""

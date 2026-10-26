@@ -2608,18 +2608,6 @@ endgroup
 `endif // EXCLUDE_SM
 
 `ifdef SV_HZICBO_ANY
-// Guest virtual addresses of the HZicbo and HZicboSm cases: VS-stage cases use VS_SV39/VS_SV32 data_va, and
-// G-stage cases SV39X4/SV32X4 data_va through a VS-stage identity superpage.
-`ifdef UDB_MXLEN_64
-  `define SVHZICBO_GVA_SUPERPAGE(addr) addr[63:30]
-  `define SVHZICBO_VS_SUPERPAGE 5
-  `define SVHZICBO_G_SUPERPAGE 11
-`else
-  `define SVHZICBO_GVA_SUPERPAGE(addr) addr[31:22]
-  `define SVHZICBO_VS_SUPERPAGE 'h241
-  `define SVHZICBO_G_SUPERPAGE 'h341
-`endif
-
 // HZicbo group: cache-block operations from VS-mode and VU-mode, the henvcfg enables, and each VS-stage and G-stage
 // PTE under two-stage translation
 covergroup Sv_HZicbo_cg with function sample(ins_t ins);
@@ -2642,12 +2630,23 @@ covergroup Sv_HZicbo_cg with function sample(ins_t ins);
   hgatp_paged: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hgatp", "mode") {
     bins paged = {[1:15]};
   }
-  vs_stage: coverpoint `SVHZICBO_GVA_SUPERPAGE(ins.current.rs1_val) {
-    bins vs = {`SVHZICBO_VS_SUPERPAGE};
-  }
-  g_stage: coverpoint `SVHZICBO_GVA_SUPERPAGE(ins.current.rs1_val) {
-    bins g = {`SVHZICBO_G_SUPERPAGE};
-  }
+  // The superpage of the guest virtual address: VS-stage cases use VS_SV39/VS_SV32 data_va, and G-stage cases
+  // SV39X4/SV32X4 data_va through a VS-stage identity superpage
+  `ifdef UDB_MXLEN_64
+    vs_stage: coverpoint ins.current.rs1_val[63:30] {
+      bins vs = {5};
+    }
+    g_stage: coverpoint ins.current.rs1_val[63:30] {
+      bins g = {11};
+    }
+  `else
+    vs_stage: coverpoint ins.current.rs1_val[31:22] {
+      bins vs = {'h241};
+    }
+    g_stage: coverpoint ins.current.rs1_val[31:22] {
+      bins g = {'h341};
+    }
+  `endif
 
   // The trap the CBO takes, from the scause the trace shows it writing
   vs_pte_outcome: coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
@@ -2759,66 +2758,6 @@ covergroup Sv_HZicbo_envcfg_cg with function sample(ins_t ins);
   `endif
 endgroup
 
-// HZicboSm group: PMP on the final address of cache-block operations from VS-mode and VU-mode
-`ifndef EXCLUDE_SM
-// The HZicboSm tests need a NAPOT PMP entry the size of the 4 KiB test page (a grain of at most 4 KiB) below
-// the background entry
-`ifdef UDB_PMP_NAPOT_SUPPORTED
-  `ifdef UDB_PMP_GRANULARITY_2
-    `define SV_HZICBOSM_PMP
-  `elsif UDB_PMP_GRANULARITY_3
-    `define SV_HZICBOSM_PMP
-  `elsif UDB_PMP_GRANULARITY_4
-    `define SV_HZICBOSM_PMP
-  `elsif UDB_PMP_GRANULARITY_5
-    `define SV_HZICBOSM_PMP
-  `elsif UDB_PMP_GRANULARITY_6
-    `define SV_HZICBOSM_PMP
-  `elsif UDB_PMP_GRANULARITY_7
-    `define SV_HZICBOSM_PMP
-  `elsif UDB_PMP_GRANULARITY_8
-    `define SV_HZICBOSM_PMP
-  `elsif UDB_PMP_GRANULARITY_9
-    `define SV_HZICBOSM_PMP
-  `elsif UDB_PMP_GRANULARITY_10
-    `define SV_HZICBOSM_PMP
-  `endif
-  `ifdef UDB_NUM_PMP_ENTRIES_0
-    `undef SV_HZICBOSM_PMP
-  `elsif UDB_NUM_PMP_ENTRIES_1
-    `undef SV_HZICBOSM_PMP
-  `endif
-`endif
-
-`ifdef SV_HZICBOSM_PMP
-covergroup Sv_HZicboSm_cg with function sample(ins_t ins);
-  option.per_instance = 0;
-  `include "general/RISCV_coverage_standard_coverpoints.svh"
-
-  cbo: coverpoint ins.current.insn {
-    `ifdef ZICBOM_SUPPORTED
-      wildcard bins clean = {CBO_CLEAN};
-      wildcard bins flush = {CBO_FLUSH};
-      wildcard bins inval = {CBO_INVAL};
-    `endif
-    `ifdef ZICBOZ_SUPPORTED
-      wildcard bins zero = {CBO_ZERO};
-    `endif
-  }
-  stage: coverpoint `SVHZICBO_GVA_SUPERPAGE(ins.current.rs1_val) {
-    bins vs = {`SVHZICBO_VS_SUPERPAGE};
-    bins g  = {`SVHZICBO_G_SUPERPAGE};
-  }
-  // PMP entry 0 covers the test page with no permissions, or with read permission only
-  pmp_xwr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "pmpcfg0", "pmpcfg0")[7:0] {
-    bins none = {8'b00011000};
-    bins r    = {8'b00011001};
-  }
-
-  cp_pmp: cross priv_mode_vs_vu, cbo, stage, pmp_xwr;
-endgroup
-`endif // SV_HZICBOSM_PMP
-`endif // EXCLUDE_SM
 `endif // SV_HZICBO_ANY
 
 `endif // H_SUPPORTED
@@ -2867,11 +2806,6 @@ function void sv_sample(int hart, int issue, ins_t ins);
     `ifdef SV_HZICBO_ANY
         Sv_HZicbo_cg.sample(ins);
         Sv_HZicbo_envcfg_cg.sample(ins);
-        `ifndef EXCLUDE_SM
-            `ifdef SV_HZICBOSM_PMP
-                Sv_HZicboSm_cg.sample(ins);
-            `endif // SV_HZICBOSM_PMP
-        `endif // EXCLUDE_SM
     `endif // SV_HZICBO_ANY
 `endif // H_SUPPORTED
 endfunction

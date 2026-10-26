@@ -21,7 +21,11 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.access import virtual_address
-from testgen.priv.extensions.sv.generate import guest_translation_setup, guest_translation_teardown
+from testgen.priv.extensions.sv.generate import (
+    guest_translation_setup,
+    guest_translation_teardown,
+    identity_map_image,
+)
 from testgen.priv.extensions.sv.page_tables import (
     SV32X4,
     SV39X4,
@@ -40,7 +44,7 @@ from testgen.priv.extensions.sv.page_tables import (
     lower_table_data,
     write_pte,
 )
-from testgen.priv.extensions.sv.Sv import PAGE_PERMS
+from testgen.priv.extensions.sv.Sv import PAGE_PERMS, PTE_RESERVED_BITS, PTE_RSW
 from testgen.priv.extensions.sv.SvHFenceCommon import (
     HFENCE_GVMA,
     HFENCE_VVMA,
@@ -48,6 +52,8 @@ from testgen.priv.extensions.sv.SvHFenceCommon import (
     SFENCE_VMA_VS,
     fence_chunk,
 )
+from testgen.priv.extensions.sv.Svnapot import NAPOT_64K_PPN, NAPOT_RESERVED_PPNS
+from testgen.priv.extensions.sv.Svpbmt import PBMT_ENCODINGS
 from testgen.priv.registry import add_priv_test_generator
 
 # Guest accesses: a store and a load of the word at offset 8 of the test page, and a fetch of the ret at
@@ -261,11 +267,8 @@ def read_pte(
 ) -> list[str]:
     """Check the PTE at ``level`` of ``mode``'s tables that maps ``va``, whose A and D bits the hardware may set."""
     reg = test_data.int_regs.get_register()
-    size = mode.xlen // 8
-    mask = (1 << mode.index_bits(level)) - 1
-    offset = f"((({va}) >> {mode.page_offset_bits(level)}) & {mask:#x}) * {size}"
     lines = [
-        f"LA(x{reg}, {mode.page_table_label(level)} + {offset})",
+        f"LA(x{reg}, {mode.pte_address(level, va)})",
         test_data.add_testcase(name, coverpoint, covergroup),
         f"LREG x{reg}, 0(x{reg})",
         write_sigupd(reg, test_data),
@@ -320,12 +323,6 @@ def perm_flags(perm: str, user: bool) -> PteFlags:
     return PteFlags(user=user, read="r" in perm, write="w" in perm, execute="x" in perm)
 
 
-def address_width(mode: SvMode) -> int:
-    """The width of the addresses that ``mode`` translates: virtual addresses, or guest physical addresses for x4."""
-    top = mode.levels - 1
-    return mode.page_offset_bits(top) + mode.index_bits(top)
-
-
 ###########################
 # VS-stage translation (hgatp = Bare)
 ###########################
@@ -371,10 +368,10 @@ def _pte_format_cases(xlen: int, user: bool) -> list[tuple[str, PteExpression]]:
     cases: list[tuple[str, PteExpression]] = [
         ("invalid", PteFlags(valid=False, user=user)),
         ("nonleaf_lvl0", PteFlags(user=user, read=False, write=False, execute=False, accessed=False, dirty=False)),
-        *((f"rsw{rsw}", PteFlags(user=user, extra=(f"({rsw} << 8)",))) for rsw in (1, 2, 3)),
+        *((f"rsw{number}", PteFlags(user=user, extra=(rsw,))) for number, (rsw, _) in enumerate(PTE_RSW, start=1)),
     ]
     if xlen == 64:
-        cases.extend((f"reserved_{bit}", PteFlags(user=user, extra=(f"(1 << {bit})",))) for bit in range(54, 61))
+        cases.extend((f"reserved_{bit}", PteFlags(user=user, extra=(f"(1 << {bit})",))) for bit in PTE_RESERVED_BITS)
         cases.append(("reserved_all", PteFlags(user=user, extra=("(0x7f << 54)",))))
     return cases
 
@@ -409,11 +406,11 @@ def _t_vs_pte(test_data: TestData, test_chunks: list[TestChunk], vs: SvMode) -> 
         code.extend(menvcfg_bits(64, adue=0, pbmte=1))
         pbmt_cases: list[str] = []
         for pbmte in (0, 1):
-            for pbmt in (1, 2, 3):
+            for pbmt, (pbmt_bits, _, _) in enumerate(PBMT_ENCODINGS, start=1):
                 setup = [
                     *svpbmt_flush(reg),
                     *henvcfg_bits(64, reg, adue=0, pbmte=pbmte),
-                    *map_test_page(test_data, None, vs, vs_flags=PteFlags(extra=(f"({pbmt} << 61)",))),
+                    *map_test_page(test_data, None, vs, vs_flags=PteFlags(extra=(pbmt_bits,))),
                 ]
                 pbmt_cases.extend(
                     guest_access(test_data, VS_CG, "cp_vsatp_pbmt", f"pbmte{pbmte}_pbmt{pbmt}", "VS", va, setup=setup)
@@ -517,11 +514,11 @@ def _t_g_pte(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -> No
         reg = test_data.int_regs.get_register()
         pbmt_cases: list[str] = []
         for pbmte in (0, 1):
-            for pbmt in (1, 2, 3):
+            for pbmt, (pbmt_bits, _, _) in enumerate(PBMT_ENCODINGS, start=1):
                 setup = [
                     *svpbmt_flush(reg),
                     *menvcfg_bits(64, adue=0, pbmte=pbmte),
-                    *map_test_page(test_data, g, None, g_flags=PteFlags(user=True, extra=(f"({pbmt} << 61)",))),
+                    *map_test_page(test_data, g, None, g_flags=PteFlags(user=True, extra=(pbmt_bits,))),
                 ]
                 name = f"pbmte{pbmte}_pbmt{pbmt}"
                 pbmt_cases.extend(guest_access(test_data, G_CG, "cp_hgatp_pbmt", name, "VS", va, setup=setup))
@@ -543,7 +540,7 @@ def _t_gpa_width(test_data: TestData, test_chunks: list[TestChunk], g: SvMode) -
     the lowest root-table index bit if that is higher, because the address is mapped by a root-table leaf.
     """
     top = g.levels - 1
-    width = address_width(g)
+    width = g.va_bits
     first_bit = max(37, g.page_offset_bits(top))
     chunk = begin_chunk(
         test_data,
@@ -963,7 +960,7 @@ def _t_hedeleg(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs:
 
 def _t_canonical(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode, mode: str) -> None:
     """A guest virtual address that is not sign-extended from the VS-stage mode's top bit page-faults."""
-    width = address_width(vs)
+    width = vs.va_bits
     chunk = begin_chunk(
         test_data,
         f"H_{g.name}_canonical_{mode.lower()}",
@@ -987,7 +984,7 @@ def _t_canonical(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, v
 
 def _t_gpa_wide(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode) -> None:
     """A VS-stage PPN that makes a guest physical address wider than the G-stage mode allows guest-page-faults."""
-    width = address_width(g)
+    width = g.va_bits
     chunk = begin_chunk(
         test_data,
         f"H_{g.name}_gpa_wide",
@@ -1152,8 +1149,7 @@ def _napot_leaves(
     return lines
 
 
-# PTE.N with PPN[3:0] = 1000 encodes a 64 KiB NAPOT page
-NAPOT_BITS = ("PTE_N", "(1 << 13)")
+NAPOT_BITS = ("PTE_N", NAPOT_64K_PPN)
 
 
 def _t_napot(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode, mode: str) -> None:
@@ -1214,7 +1210,7 @@ def _t_napot_reserved(test_data: TestData, test_chunks: list[TestChunk], g: SvMo
             ),
             *(
                 (f"{stage.name}_ppn{ppn}", 0, PteFlags(user=user, extra=("PTE_N", f"({ppn} << 10)")), "svh_napot")
-                for ppn in (0, 1, 2, 4)
+                for ppn in NAPOT_RESERVED_PPNS
             ),
         ]
         for name, level, flags, target in cases:
@@ -1309,20 +1305,7 @@ def _t_atp_mode(test_data: TestData, test_chunks: list[TestChunk]) -> None:
     # The VS-stage identity maps the test image for Sv39 (gigapages) and for Sv48 and Sv57 (the terapage or
     # petapage at root index 0), so VS-mode keeps running whatever MODE it selects.
     regs = (save, val, check)
-    code.append("// Identity map the test image in the VS-stage")
-    for label in ("rvtest_code_begin", "rvtest_data_begin", "rvtest_sig_end"):
-        code.extend(
-            write_pte(
-                VS_SV39,
-                level=2,
-                flags=PteFlags(),
-                virtual_address=label,
-                physical_address=label,
-                regs=regs,
-                va_is_label=True,
-                superpage=True,
-            )
-        )
+    code.extend(["// Identity map the test image in the VS-stage", *identity_map_image(((VS_SV39, PteFlags()),), regs)])
     code.extend(
         [
             *write_pte(
@@ -1439,7 +1422,7 @@ def _two_stage_tests(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChu
     for mode in ("VS", "VU"):
         _t_canonical(test_data, test_chunks, g, vs, mode)
     # A VS-stage PPN reaches guest physical address bit 55, beyond Sv39x4 and Sv48x4 but not Sv57x4
-    if address_width(g) <= 55:
+    if g.va_bits <= 55:
         _t_gpa_wide(test_data, test_chunks, g, vs)
     return test_chunks
 

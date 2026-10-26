@@ -91,7 +91,7 @@ exclude_extensions:
   - Sv_H
   - Sv_HSm
   - Sv_HZicbo
-  - Sv_HZicboSm
+  - PMP_HSvZicbo
   - Exceptions_H
   - Exceptions_HSm
   # The same mstatus.MPV bug breaks the mret and mstatus.TVM tests, and every vsstatus bit is

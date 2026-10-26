@@ -66,10 +66,6 @@ include::{testplansdir}/priv/Sv_HSm.adoc[]
 
 include::{testplansdir}/priv/Sv_HZicbo.adoc[]
 
-===== Sv_HZicboSm Hypervisor VirtMem + CBOM/CBOZ with PMP
-
-include::{testplansdir}/priv/Sv_HZicboSm.adoc[]
-
 ===== Sv Normative Rules
 
 The rules apply to all Sv groups.

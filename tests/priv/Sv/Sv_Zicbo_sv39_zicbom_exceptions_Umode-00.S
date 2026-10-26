@@ -153,7 +153,7 @@ Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test3_inval:
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test3_inval, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test3_inval_str)
 #endif
 
-  // Test case 4: RX permissions | Test in U-Mode | expected = Store page fault
+  // Test case 4: RX permissions | Test in U-Mode | expected = No fault
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
@@ -181,63 +181,7 @@ Sv_Zicbo_cg_cp_PTE_r_set_w_unset_zicbom_u_test4_inval:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_PTE_r_set_w_unset_zicbom_u_test4_inval, Sv_Zicbo_cg_cp_PTE_r_set_w_unset_zicbom_u_test4_inval_str)
 
-  // Test case 5: Supervisor page from U-Mode | Test in U-Mode | expected = Store page fault
-  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
-  sfence.vma
-
-  LI(x9, (va_data >> 30) << 30)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 34
-  srli x8, x8, 34
-  add x9, x9, x8
-  RVTEST_TSBI_GOTO_UMODE
-  addi x15, x15, 16
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test5_clean:
-  cbo.clean (x9)
-  addi x15, x15, 4
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test5_flush:
-  cbo.flush (x9)
-  addi x14, x15, 4
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test5_inval:
-  cbo.inval (x9)
-  addi x13, x15, 4
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test5_clean, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test5_clean_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test5_flush, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test5_flush_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test5_inval, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test5_inval_str)
-
-  // Test case 6: Execute-only page | Test in U-Mode | expected = Store page fault
-  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL2)
-  sfence.vma
-
-  LI(x9, (va_data >> 30) << 30)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 34
-  srli x8, x8, 34
-  add x9, x9, x8
-  RVTEST_TSBI_GOTO_UMODE
-  addi x15, x15, 16
-Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test6_clean:
-  cbo.clean (x9)
-  addi x15, x15, 4
-Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test6_flush:
-  cbo.flush (x9)
-  addi x14, x15, 4
-Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test6_inval:
-  cbo.inval (x9)
-  addi x13, x15, 4
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test6_clean, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test6_clean_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test6_flush, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test6_flush_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test6_inval, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test6_inval_str)
-
-  // Test case 7: PTE.A unset | Test in U-Mode | expected = Store page fault
+  // Test case 5: PTE.A unset | Test in U-Mode | expected = Store page fault
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
@@ -248,24 +192,24 @@ Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test6_inval:
   add x9, x9, x8
   RVTEST_TSBI_GOTO_UMODE
   addi x15, x15, 16
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test7_clean:
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test5_clean:
   cbo.clean (x9)
   addi x15, x15, 4
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test7_flush:
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test5_flush:
   cbo.flush (x9)
   addi x14, x15, 4
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test7_inval:
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test5_inval:
   cbo.inval (x9)
   addi x13, x15, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test7_clean, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test7_clean_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test5_clean, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test5_clean_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test7_flush, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test7_flush_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test5_flush, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test5_flush_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test7_inval, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test7_inval_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test5_inval, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test5_inval_str)
 
-  // Test case 8: PTE.D unset | Test in U-Mode | expected = No fault
+  // Test case 6: PTE.D unset | Test in U-Mode | expected = No fault
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
   sfence.vma
 
@@ -276,22 +220,78 @@ Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test7_inval:
   add x9, x9, x8
   RVTEST_TSBI_GOTO_UMODE
   addi x15, x15, 16
-Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test8_clean:
+Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test6_clean:
   cbo.clean (x9)
   addi x15, x15, 4
-Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test8_flush:
+Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test6_flush:
   cbo.flush (x9)
   addi x14, x15, 4
-Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test8_inval:
+Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test6_inval:
   cbo.inval (x9)
   addi x13, x15, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test8_clean, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test8_clean_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test6_clean, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test6_clean_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test8_flush, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test8_flush_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test6_flush, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test6_flush_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test8_inval, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test8_inval_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test6_inval, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test6_inval_str)
+
+  // Test case 7: Supervisor page from U-Mode | Test in U-Mode | expected = Store page fault
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
+  sfence.vma
+
+  LI(x9, (va_data >> 30) << 30)
+  LA(x8, rvtest_data_1)
+  slli x8, x8, 34
+  srli x8, x8, 34
+  add x9, x9, x8
+  RVTEST_TSBI_GOTO_UMODE
+  addi x15, x15, 16
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test7_clean:
+  cbo.clean (x9)
+  addi x15, x15, 4
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test7_flush:
+  cbo.flush (x9)
+  addi x14, x15, 4
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test7_inval:
+  cbo.inval (x9)
+  addi x13, x15, 4
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test7_clean, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test7_clean_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test7_flush, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test7_flush_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test7_inval, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test7_inval_str)
+
+  // Test case 8: Execute-only page | Test in U-Mode | expected = Store page fault
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL2)
+  sfence.vma
+
+  LI(x9, (va_data >> 30) << 30)
+  LA(x8, rvtest_data_1)
+  slli x8, x8, 34
+  srli x8, x8, 34
+  add x9, x9, x8
+  RVTEST_TSBI_GOTO_UMODE
+  addi x15, x15, 16
+Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test8_clean:
+  cbo.clean (x9)
+  addi x15, x15, 4
+Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test8_flush:
+  cbo.flush (x9)
+  addi x14, x15, 4
+Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test8_inval:
+  cbo.inval (x9)
+  addi x13, x15, 4
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test8_clean, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test8_clean_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test8_flush, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test8_flush_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test8_inval, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test8_inval_str)
 
   // Test case 9: Misaligned superpage | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
@@ -442,7 +442,7 @@ Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test13_inval:
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test13_inval, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test13_inval_str)
 #endif
 
-  // Test case 14: RX permissions | Test in U-Mode | expected = Store page fault
+  // Test case 14: RX permissions | Test in U-Mode | expected = No fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -471,65 +471,7 @@ Sv_Zicbo_cg_cp_PTE_r_set_w_unset_zicbom_u_test14_inval:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_PTE_r_set_w_unset_zicbom_u_test14_inval, Sv_Zicbo_cg_cp_PTE_r_set_w_unset_zicbom_u_test14_inval_str)
 
-  // Test case 15: Supervisor page from U-Mode | Test in U-Mode | expected = Store page fault
-  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
-  sfence.vma
-
-  LI(x9, (va_data >> 21) << 21)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 43
-  srli x8, x8, 43
-  add x9, x9, x8
-  RVTEST_TSBI_GOTO_UMODE
-  addi x15, x15, 16
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test15_clean:
-  cbo.clean (x9)
-  addi x15, x15, 4
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test15_flush:
-  cbo.flush (x9)
-  addi x14, x15, 4
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test15_inval:
-  cbo.inval (x9)
-  addi x13, x15, 4
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test15_clean, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test15_clean_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test15_flush, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test15_flush_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test15_inval, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test15_inval_str)
-
-  // Test case 16: Execute-only page | Test in U-Mode | expected = Store page fault
-  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL1)
-  sfence.vma
-
-  LI(x9, (va_data >> 21) << 21)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 43
-  srli x8, x8, 43
-  add x9, x9, x8
-  RVTEST_TSBI_GOTO_UMODE
-  addi x15, x15, 16
-Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test16_clean:
-  cbo.clean (x9)
-  addi x15, x15, 4
-Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test16_flush:
-  cbo.flush (x9)
-  addi x14, x15, 4
-Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test16_inval:
-  cbo.inval (x9)
-  addi x13, x15, 4
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test16_clean, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test16_clean_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test16_flush, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test16_flush_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test16_inval, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test16_inval_str)
-
-  // Test case 17: PTE.A unset | Test in U-Mode | expected = Store page fault
+  // Test case 15: PTE.A unset | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -541,24 +483,24 @@ Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test16_inval:
   add x9, x9, x8
   RVTEST_TSBI_GOTO_UMODE
   addi x15, x15, 16
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test17_clean:
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test15_clean:
   cbo.clean (x9)
   addi x15, x15, 4
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test17_flush:
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test15_flush:
   cbo.flush (x9)
   addi x14, x15, 4
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test17_inval:
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test15_inval:
   cbo.inval (x9)
   addi x13, x15, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test17_clean, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test17_clean_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test15_clean, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test15_clean_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test17_flush, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test17_flush_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test15_flush, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test15_flush_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test17_inval, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test17_inval_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test15_inval, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test15_inval_str)
 
-  // Test case 18: PTE.D unset | Test in U-Mode | expected = No fault
+  // Test case 16: PTE.D unset | Test in U-Mode | expected = No fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
   sfence.vma
@@ -570,22 +512,80 @@ Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test17_inval:
   add x9, x9, x8
   RVTEST_TSBI_GOTO_UMODE
   addi x15, x15, 16
-Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test18_clean:
+Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test16_clean:
   cbo.clean (x9)
   addi x15, x15, 4
-Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test18_flush:
+Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test16_flush:
   cbo.flush (x9)
   addi x14, x15, 4
-Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test18_inval:
+Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test16_inval:
   cbo.inval (x9)
   addi x13, x15, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test18_clean, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test18_clean_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test16_clean, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test16_clean_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test18_flush, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test18_flush_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test16_flush, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test16_flush_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test18_inval, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test18_inval_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test16_inval, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test16_inval_str)
+
+  // Test case 17: Supervisor page from U-Mode | Test in U-Mode | expected = Store page fault
+  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
+  sfence.vma
+
+  LI(x9, (va_data >> 21) << 21)
+  LA(x8, rvtest_data_1)
+  slli x8, x8, 43
+  srli x8, x8, 43
+  add x9, x9, x8
+  RVTEST_TSBI_GOTO_UMODE
+  addi x15, x15, 16
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test17_clean:
+  cbo.clean (x9)
+  addi x15, x15, 4
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test17_flush:
+  cbo.flush (x9)
+  addi x14, x15, 4
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test17_inval:
+  cbo.inval (x9)
+  addi x13, x15, 4
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test17_clean, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test17_clean_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test17_flush, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test17_flush_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test17_inval, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test17_inval_str)
+
+  // Test case 18: Execute-only page | Test in U-Mode | expected = Store page fault
+  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL1)
+  sfence.vma
+
+  LI(x9, (va_data >> 21) << 21)
+  LA(x8, rvtest_data_1)
+  slli x8, x8, 43
+  srli x8, x8, 43
+  add x9, x9, x8
+  RVTEST_TSBI_GOTO_UMODE
+  addi x15, x15, 16
+Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test18_clean:
+  cbo.clean (x9)
+  addi x15, x15, 4
+Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test18_flush:
+  cbo.flush (x9)
+  addi x14, x15, 4
+Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test18_inval:
+  cbo.inval (x9)
+  addi x13, x15, 4
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test18_clean, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test18_clean_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test18_flush, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test18_flush_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test18_inval, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test18_inval_str)
 
   // Test case 19: Misaligned superpage | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -865,7 +865,7 @@ Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test27_inval:
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test27_inval, Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test27_inval_str)
 #endif
 
-  // Test case 28: RX permissions | Test in U-Mode | expected = Store page fault
+  // Test case 28: RX permissions | Test in U-Mode | expected = No fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_R | PTE_V), va_data, LEVEL0)
@@ -895,67 +895,7 @@ Sv_Zicbo_cg_cp_PTE_r_set_w_unset_zicbom_u_test28_inval:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_PTE_r_set_w_unset_zicbom_u_test28_inval, Sv_Zicbo_cg_cp_PTE_r_set_w_unset_zicbom_u_test28_inval_str)
 
-  // Test case 29: Supervisor page from U-Mode | Test in U-Mode | expected = Store page fault
-  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
-  sfence.vma
-
-  LI(x9, (va_data >> 12) << 12)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 52
-  srli x8, x8, 52
-  add x9, x9, x8
-  RVTEST_TSBI_GOTO_UMODE
-  addi x15, x15, 16
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test29_clean:
-  cbo.clean (x9)
-  addi x15, x15, 4
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test29_flush:
-  cbo.flush (x9)
-  addi x14, x15, 4
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test29_inval:
-  cbo.inval (x9)
-  addi x13, x15, 4
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test29_clean, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test29_clean_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test29_flush, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test29_flush_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test29_inval, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test29_inval_str)
-
-  // Test case 30: Execute-only page | Test in U-Mode | expected = Store page fault
-  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL0)
-  sfence.vma
-
-  LI(x9, (va_data >> 12) << 12)
-  LA(x8, rvtest_data_1)
-  slli x8, x8, 52
-  srli x8, x8, 52
-  add x9, x9, x8
-  RVTEST_TSBI_GOTO_UMODE
-  addi x15, x15, 16
-Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test30_clean:
-  cbo.clean (x9)
-  addi x15, x15, 4
-Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test30_flush:
-  cbo.flush (x9)
-  addi x14, x15, 4
-Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test30_inval:
-  cbo.inval (x9)
-  addi x13, x15, 4
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test30_clean, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test30_clean_str)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test30_flush, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test30_flush_str)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test30_inval, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test30_inval_str)
-
-  // Test case 31: PTE.A unset | Test in U-Mode | expected = Store page fault
+  // Test case 29: PTE.A unset | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
@@ -968,24 +908,24 @@ Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test30_inval:
   add x9, x9, x8
   RVTEST_TSBI_GOTO_UMODE
   addi x15, x15, 16
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test31_clean:
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test29_clean:
   cbo.clean (x9)
   addi x15, x15, 4
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test31_flush:
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test29_flush:
   cbo.flush (x9)
   addi x14, x15, 4
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test31_inval:
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test29_inval:
   cbo.inval (x9)
   addi x13, x15, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test31_clean, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test31_clean_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test29_clean, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test29_clean_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test31_flush, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test31_flush_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test29_flush, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test29_flush_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test31_inval, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test31_inval_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test29_inval, Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test29_inval_str)
 
-  // Test case 32: PTE.D unset | Test in U-Mode | expected = No fault
+  // Test case 30: PTE.D unset | Test in U-Mode | expected = No fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV39(rvtest_data_1, (PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
@@ -998,22 +938,82 @@ Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test31_inval:
   add x9, x9, x8
   RVTEST_TSBI_GOTO_UMODE
   addi x15, x15, 16
-Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test32_clean:
+Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test30_clean:
   cbo.clean (x9)
   addi x15, x15, 4
-Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test32_flush:
+Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test30_flush:
   cbo.flush (x9)
   addi x14, x15, 4
-Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test32_inval:
+Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test30_inval:
   cbo.inval (x9)
   addi x13, x15, 4
   RVTEST_TSBI_GOTO_SMODE
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test32_clean, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test32_clean_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test30_clean, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test30_clean_str)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test32_flush, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test32_flush_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test30_flush, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test30_flush_str)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test32_inval, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test32_inval_str)
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test30_inval, Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test30_inval_str)
+
+  // Test case 31: Supervisor page from U-Mode | Test in U-Mode | expected = Store page fault
+  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
+  PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
+  PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+  sfence.vma
+
+  LI(x9, (va_data >> 12) << 12)
+  LA(x8, rvtest_data_1)
+  slli x8, x8, 52
+  srli x8, x8, 52
+  add x9, x9, x8
+  RVTEST_TSBI_GOTO_UMODE
+  addi x15, x15, 16
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test31_clean:
+  cbo.clean (x9)
+  addi x15, x15, 4
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test31_flush:
+  cbo.flush (x9)
+  addi x14, x15, 4
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test31_inval:
+  cbo.inval (x9)
+  addi x13, x15, 4
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test31_clean, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test31_clean_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test31_flush, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test31_flush_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test31_inval, Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test31_inval_str)
+
+  // Test case 32: Execute-only page | Test in U-Mode | expected = Store page fault
+  PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
+  PTE_SETUP_SV39(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
+  PTE_SETUP_SV39(rvtest_data_1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_data, LEVEL0)
+  sfence.vma
+
+  LI(x9, (va_data >> 12) << 12)
+  LA(x8, rvtest_data_1)
+  slli x8, x8, 52
+  srli x8, x8, 52
+  add x9, x9, x8
+  RVTEST_TSBI_GOTO_UMODE
+  addi x15, x15, 16
+Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test32_clean:
+  cbo.clean (x9)
+  addi x15, x15, 4
+Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test32_flush:
+  cbo.flush (x9)
+  addi x14, x15, 4
+Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test32_inval:
+  cbo.inval (x9)
+  addi x13, x15, 4
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test32_clean, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test32_clean_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test32_flush, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test32_flush_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test32_inval, Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test32_inval_str)
 
   // Test case 33: Pointer encoding (V only) in the leaf | Test in U-Mode | expected = Store page fault
   PTE_SETUP_SV39(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -1248,18 +1248,18 @@ Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test3_inval_str: .string "\"test: 132; cg: Sv_Z
 Sv_Zicbo_cg_cp_PTE_r_set_w_unset_zicbom_u_test4_clean_str: .string "\"test: 133; cg: Sv_Zicbo_cg; cp: cp_PTE_r_set_w_unset_zicbom_u; bin: test4_clean\""
 Sv_Zicbo_cg_cp_PTE_r_set_w_unset_zicbom_u_test4_flush_str: .string "\"test: 134; cg: Sv_Zicbo_cg; cp: cp_PTE_r_set_w_unset_zicbom_u; bin: test4_flush\""
 Sv_Zicbo_cg_cp_PTE_r_set_w_unset_zicbom_u_test4_inval_str: .string "\"test: 135; cg: Sv_Zicbo_cg; cp: cp_PTE_r_set_w_unset_zicbom_u; bin: test4_inval\""
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test5_clean_str: .string "\"test: 136; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test5_clean\""
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test5_flush_str: .string "\"test: 137; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test5_flush\""
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test5_inval_str: .string "\"test: 138; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test5_inval\""
-Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test6_clean_str: .string "\"test: 139; cg: Sv_Zicbo_cg; cp: cp_PTE_rw_unset_zicbom_u; bin: test6_clean\""
-Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test6_flush_str: .string "\"test: 140; cg: Sv_Zicbo_cg; cp: cp_PTE_rw_unset_zicbom_u; bin: test6_flush\""
-Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test6_inval_str: .string "\"test: 141; cg: Sv_Zicbo_cg; cp: cp_PTE_rw_unset_zicbom_u; bin: test6_inval\""
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test7_clean_str: .string "\"test: 142; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test7_clean\""
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test7_flush_str: .string "\"test: 143; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test7_flush\""
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test7_inval_str: .string "\"test: 144; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test7_inval\""
-Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test8_clean_str: .string "\"test: 145; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicbom_u; bin: test8_clean\""
-Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test8_flush_str: .string "\"test: 146; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicbom_u; bin: test8_flush\""
-Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test8_inval_str: .string "\"test: 147; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicbom_u; bin: test8_inval\""
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test5_clean_str: .string "\"test: 136; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test5_clean\""
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test5_flush_str: .string "\"test: 137; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test5_flush\""
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test5_inval_str: .string "\"test: 138; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test5_inval\""
+Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test6_clean_str: .string "\"test: 139; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicbom_u; bin: test6_clean\""
+Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test6_flush_str: .string "\"test: 140; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicbom_u; bin: test6_flush\""
+Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test6_inval_str: .string "\"test: 141; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicbom_u; bin: test6_inval\""
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test7_clean_str: .string "\"test: 142; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test7_clean\""
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test7_flush_str: .string "\"test: 143; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test7_flush\""
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test7_inval_str: .string "\"test: 144; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test7_inval\""
+Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test8_clean_str: .string "\"test: 145; cg: Sv_Zicbo_cg; cp: cp_PTE_rw_unset_zicbom_u; bin: test8_clean\""
+Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test8_flush_str: .string "\"test: 146; cg: Sv_Zicbo_cg; cp: cp_PTE_rw_unset_zicbom_u; bin: test8_flush\""
+Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test8_inval_str: .string "\"test: 147; cg: Sv_Zicbo_cg; cp: cp_PTE_rw_unset_zicbom_u; bin: test8_inval\""
 Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test9_clean_str: .string "\"test: 148; cg: Sv_Zicbo_cg; cp: cp_misaligned_page_cbo_u; bin: test9_clean\""
 Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test9_flush_str: .string "\"test: 149; cg: Sv_Zicbo_cg; cp: cp_misaligned_page_cbo_u; bin: test9_flush\""
 Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test9_inval_str: .string "\"test: 150; cg: Sv_Zicbo_cg; cp: cp_misaligned_page_cbo_u; bin: test9_inval\""
@@ -1278,18 +1278,18 @@ Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test13_inval_str: .string "\"test: 162; cg: Sv_
 Sv_Zicbo_cg_cp_PTE_r_set_w_unset_zicbom_u_test14_clean_str: .string "\"test: 163; cg: Sv_Zicbo_cg; cp: cp_PTE_r_set_w_unset_zicbom_u; bin: test14_clean\""
 Sv_Zicbo_cg_cp_PTE_r_set_w_unset_zicbom_u_test14_flush_str: .string "\"test: 164; cg: Sv_Zicbo_cg; cp: cp_PTE_r_set_w_unset_zicbom_u; bin: test14_flush\""
 Sv_Zicbo_cg_cp_PTE_r_set_w_unset_zicbom_u_test14_inval_str: .string "\"test: 165; cg: Sv_Zicbo_cg; cp: cp_PTE_r_set_w_unset_zicbom_u; bin: test14_inval\""
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test15_clean_str: .string "\"test: 166; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test15_clean\""
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test15_flush_str: .string "\"test: 167; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test15_flush\""
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test15_inval_str: .string "\"test: 168; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test15_inval\""
-Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test16_clean_str: .string "\"test: 169; cg: Sv_Zicbo_cg; cp: cp_PTE_rw_unset_zicbom_u; bin: test16_clean\""
-Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test16_flush_str: .string "\"test: 170; cg: Sv_Zicbo_cg; cp: cp_PTE_rw_unset_zicbom_u; bin: test16_flush\""
-Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test16_inval_str: .string "\"test: 171; cg: Sv_Zicbo_cg; cp: cp_PTE_rw_unset_zicbom_u; bin: test16_inval\""
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test17_clean_str: .string "\"test: 172; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test17_clean\""
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test17_flush_str: .string "\"test: 173; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test17_flush\""
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test17_inval_str: .string "\"test: 174; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test17_inval\""
-Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test18_clean_str: .string "\"test: 175; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicbom_u; bin: test18_clean\""
-Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test18_flush_str: .string "\"test: 176; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicbom_u; bin: test18_flush\""
-Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test18_inval_str: .string "\"test: 177; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicbom_u; bin: test18_inval\""
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test15_clean_str: .string "\"test: 166; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test15_clean\""
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test15_flush_str: .string "\"test: 167; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test15_flush\""
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test15_inval_str: .string "\"test: 168; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test15_inval\""
+Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test16_clean_str: .string "\"test: 169; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicbom_u; bin: test16_clean\""
+Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test16_flush_str: .string "\"test: 170; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicbom_u; bin: test16_flush\""
+Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test16_inval_str: .string "\"test: 171; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicbom_u; bin: test16_inval\""
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test17_clean_str: .string "\"test: 172; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test17_clean\""
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test17_flush_str: .string "\"test: 173; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test17_flush\""
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test17_inval_str: .string "\"test: 174; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test17_inval\""
+Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test18_clean_str: .string "\"test: 175; cg: Sv_Zicbo_cg; cp: cp_PTE_rw_unset_zicbom_u; bin: test18_clean\""
+Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test18_flush_str: .string "\"test: 176; cg: Sv_Zicbo_cg; cp: cp_PTE_rw_unset_zicbom_u; bin: test18_flush\""
+Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test18_inval_str: .string "\"test: 177; cg: Sv_Zicbo_cg; cp: cp_PTE_rw_unset_zicbom_u; bin: test18_inval\""
 Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test19_clean_str: .string "\"test: 178; cg: Sv_Zicbo_cg; cp: cp_misaligned_page_cbo_u; bin: test19_clean\""
 Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test19_flush_str: .string "\"test: 179; cg: Sv_Zicbo_cg; cp: cp_misaligned_page_cbo_u; bin: test19_flush\""
 Sv_Zicbo_cg_cp_misaligned_page_cbo_u_test19_inval_str: .string "\"test: 180; cg: Sv_Zicbo_cg; cp: cp_misaligned_page_cbo_u; bin: test19_inval\""
@@ -1320,18 +1320,18 @@ Sv_Zicbo_cg_cp_PTE_res_rwx_cbo_u_test27_inval_str: .string "\"test: 204; cg: Sv_
 Sv_Zicbo_cg_cp_PTE_r_set_w_unset_zicbom_u_test28_clean_str: .string "\"test: 205; cg: Sv_Zicbo_cg; cp: cp_PTE_r_set_w_unset_zicbom_u; bin: test28_clean\""
 Sv_Zicbo_cg_cp_PTE_r_set_w_unset_zicbom_u_test28_flush_str: .string "\"test: 206; cg: Sv_Zicbo_cg; cp: cp_PTE_r_set_w_unset_zicbom_u; bin: test28_flush\""
 Sv_Zicbo_cg_cp_PTE_r_set_w_unset_zicbom_u_test28_inval_str: .string "\"test: 207; cg: Sv_Zicbo_cg; cp: cp_PTE_r_set_w_unset_zicbom_u; bin: test28_inval\""
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test29_clean_str: .string "\"test: 208; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test29_clean\""
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test29_flush_str: .string "\"test: 209; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test29_flush\""
-Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test29_inval_str: .string "\"test: 210; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test29_inval\""
-Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test30_clean_str: .string "\"test: 211; cg: Sv_Zicbo_cg; cp: cp_PTE_rw_unset_zicbom_u; bin: test30_clean\""
-Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test30_flush_str: .string "\"test: 212; cg: Sv_Zicbo_cg; cp: cp_PTE_rw_unset_zicbom_u; bin: test30_flush\""
-Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test30_inval_str: .string "\"test: 213; cg: Sv_Zicbo_cg; cp: cp_PTE_rw_unset_zicbom_u; bin: test30_inval\""
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test31_clean_str: .string "\"test: 214; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test31_clean\""
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test31_flush_str: .string "\"test: 215; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test31_flush\""
-Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test31_inval_str: .string "\"test: 216; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test31_inval\""
-Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test32_clean_str: .string "\"test: 217; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicbom_u; bin: test32_clean\""
-Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test32_flush_str: .string "\"test: 218; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicbom_u; bin: test32_flush\""
-Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test32_inval_str: .string "\"test: 219; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicbom_u; bin: test32_inval\""
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test29_clean_str: .string "\"test: 208; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test29_clean\""
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test29_flush_str: .string "\"test: 209; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test29_flush\""
+Sv_Zicbo_cg_cp_Abit_unset_cbo_u_test29_inval_str: .string "\"test: 210; cg: Sv_Zicbo_cg; cp: cp_Abit_unset_cbo_u; bin: test29_inval\""
+Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test30_clean_str: .string "\"test: 211; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicbom_u; bin: test30_clean\""
+Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test30_flush_str: .string "\"test: 212; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicbom_u; bin: test30_flush\""
+Sv_Zicbo_cg_cp_Dbit_unset_zicbom_u_test30_inval_str: .string "\"test: 213; cg: Sv_Zicbo_cg; cp: cp_Dbit_unset_zicbom_u; bin: test30_inval\""
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test31_clean_str: .string "\"test: 214; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test31_clean\""
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test31_flush_str: .string "\"test: 215; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test31_flush\""
+Sv_Zicbo_cg_cp_spage_rwx_cbo_u_test31_inval_str: .string "\"test: 216; cg: Sv_Zicbo_cg; cp: cp_spage_rwx_cbo_u; bin: test31_inval\""
+Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test32_clean_str: .string "\"test: 217; cg: Sv_Zicbo_cg; cp: cp_PTE_rw_unset_zicbom_u; bin: test32_clean\""
+Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test32_flush_str: .string "\"test: 218; cg: Sv_Zicbo_cg; cp: cp_PTE_rw_unset_zicbom_u; bin: test32_flush\""
+Sv_Zicbo_cg_cp_PTE_rw_unset_zicbom_u_test32_inval_str: .string "\"test: 219; cg: Sv_Zicbo_cg; cp: cp_PTE_rw_unset_zicbom_u; bin: test32_inval\""
 Sv_Zicbo_cg_cp_PTE_nonleaf_lvl0_cbo_u_test33_clean_str: .string "\"test: 220; cg: Sv_Zicbo_cg; cp: cp_PTE_nonleaf_lvl0_cbo_u; bin: test33_clean\""
 Sv_Zicbo_cg_cp_PTE_nonleaf_lvl0_cbo_u_test33_flush_str: .string "\"test: 221; cg: Sv_Zicbo_cg; cp: cp_PTE_nonleaf_lvl0_cbo_u; bin: test33_flush\""
 Sv_Zicbo_cg_cp_PTE_nonleaf_lvl0_cbo_u_test33_inval_str: .string "\"test: 222; cg: Sv_Zicbo_cg; cp: cp_PTE_nonleaf_lvl0_cbo_u; bin: test33_inval\""

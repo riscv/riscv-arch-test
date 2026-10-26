@@ -36,6 +36,9 @@
 `ifdef PMP_COVER_SVZICBO
     PMP_SvZicbo_cg = new();    PMP_SvZicbo_cg.set_inst_name("obj_PMP_SvZicbo");
 `endif
+`ifdef PMP_COVER_HSVZICBO
+    PMP_HSvZicbo_cg = new();    PMP_HSvZicbo_cg.set_inst_name("obj_PMP_HSvZicbo");
+`endif
 `ifdef SVADU_SUPPORTED
     PMP_Svadu_cg = new();    PMP_Svadu_cg.set_inst_name("obj_PMP_Svadu");
 `endif

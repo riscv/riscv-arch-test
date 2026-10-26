@@ -2,7 +2,7 @@
 suite: Sv_HZicbo
 source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=2005939128#gid=2005939128
 notes: |-
-  Sv_HZicbo boots to HS-mode with hedeleg clear, so every trap from VS-mode and VU-mode is taken in HS-mode and read from scause. PMP on the final address of a CBO is checked in Sv_HZicboSm (cp_pmp), which boots to M-mode.
+  Sv_HZicbo boots to HS-mode with hedeleg clear, so every trap from VS-mode and VU-mode is taken in HS-mode and read from scause. PMP on the final address of a CBO is checked in the PMP suite's PMP_HSvZicbo group (cp_pmp), which boots to M-mode.
   - The cp_vs_* and cp_g_* files need Sv39x4 and VS-stage Sv39 (RV64) or Sv32x4 and VS-stage Sv32 (RV32). Each case writes the PTEs, executes hfence.gvma and hfence.vvma, and runs the family's CBOs (cbo.clean, cbo.flush and cbo.inval with Zicbom, cbo.zero with Zicboz) once in VS-mode and once in VU-mode. HS-mode checks what cbo.zero wrote.
   - VS-stage cases use a guest virtual address in a VS-stage mapping over the G-stage identity map. G-stage cases use a G-stage mapping reached through a VS-stage identity superpage. Every level of each stage holds the leaf in turn.
   - A CBO faults like a store: a store/AMO page fault, guest-page fault or access fault. A cache-block management instruction needs read or write permission and never checks D. cbo.zero needs write permission and checks D (cmo.adoc cbm_access, cbz_access). Boot leaves menvcfg.ADUE = 0, which makes henvcfg.ADUE read-only zero, so a clear A bit, or a clear D bit for cbo.zero, raises a fault (Svade behavior).

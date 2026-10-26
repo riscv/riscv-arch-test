@@ -1,26 +1,20 @@
 ##################################
-# priv/extensions/sv/SvHZicboSm.py
+# priv/extensions/pmp/HSvZicbo.py
 #
-# Sv HZicboSm group: PMP on cache-block operations under two-stage address translation.
+# PMP HSvZicbo group: PMP on cache-block operations under two-stage address translation.
 # David_Harris@hmc.edu 29 September 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Sv HZicboSm group: PMP on the final address of cache-block operations from VS-mode and VU-mode.
+"""PMP HSvZicbo group: PMP on the final address of cache-block operations from VS-mode and VU-mode.
 
-The group boots to M-mode, which programs PMP, and delegates nothing, so the M-mode handler takes every trap.
+The group boots to M-mode, which programs PMP, and delegates nothing, so the M-mode handler takes every trap.  The
+guest translation and CBO cases come from the Sv HZicbo group.
 """
 
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.pmp.helpers import (
-    cfg_byte,
-    cfg_shift,
-    napot_mask_defines,
-    set_pmpaddr,
-    set_pmpcfg,
-    zero_pmp_regs,
-)
+from testgen.priv.extensions.pmp import helpers as pmp
 from testgen.priv.extensions.sv.page_tables import SV32X4, SV39X4, VS_SV32, VS_SV39, PteFlags, SvMode
 from testgen.priv.extensions.sv.SvHZicbo import DATA, Chunk, case, make_chunk, mapping, vs_identity
 from testgen.priv.registry import add_priv_test_generator
@@ -35,9 +29,9 @@ def _pmp_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
     lines = []
     for xwr in ("000", "001"):
         region = [
-            *zero_pmp_regs(),
-            *set_pmpaddr("napot", 0, DATA),
-            *set_pmpcfg(0, cfg_byte(f"0{xwr}", "napot", cfg_shift(0))),
+            *pmp.zero_pmp_regs(),
+            *pmp.set_pmpaddr("napot", 0, DATA),
+            *pmp.set_pmpcfg(0, pmp.cfg_byte(f"0{xwr}", "napot", pmp.cfg_shift(0))),
             "sfence.vma",
         ]
         expected = "store access fault" if c.family == "zicboz" or xwr == "000" else "no fault: reads are allowed"
@@ -49,20 +43,20 @@ def _pmp_cases(test_data: TestData, c: Chunk, mode: str) -> list[str]:
                 *case(test_data, c, mode, f"pmp{xwr}", "cp_pmp", expected, g_ptes, stage=c.g, level=0),
             ]
         )
-    return [*lines, *zero_pmp_regs()]
+    return [*lines, *pmp.zero_pmp_regs()]
 
 
-def _make_svhzicbosm(test_data: TestData, g: SvMode, vs: SvMode, family: str) -> list[TestChunk]:
+def _make_hsvzicbo(test_data: TestData, g: SvMode, vs: SvMode, family: str) -> list[TestChunk]:
     return [
         make_chunk(
             test_data,
             family,
             g,
             vs,
-            covergroup="Sv_HZicboSm_cg",
+            covergroup="PMP_HSvZicbo_cg",
             home="M",
             section=("pmp", "cp_pmp", "PMP denies the test page, then allows only reads", _pmp_cases),
-            setup=(*napot_mask_defines(12), "RVTEST_PMP_SET_BACKGROUND x4"),
+            setup=(*pmp.napot_mask_defines(12), "RVTEST_PMP_SET_BACKGROUND x4"),
         )
     ]
 
@@ -77,40 +71,40 @@ _PARAMS = [
 
 
 @add_priv_test_generator(
-    "Sv",
+    "PMP",
     required_extensions=["Sm", "H", "Zicbom"],
     extra_defines=["#define BOOT_TO_MMODE"],
     params=[*_PARAMS, "SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
 )
-def make_svhzicbosm_sv39x4_zicbom(test_data: TestData) -> list[TestChunk]:
-    return _make_svhzicbosm(test_data, SV39X4, VS_SV39, "zicbom")
+def make_hsvzicbo_sv39x4_zicbom(test_data: TestData) -> list[TestChunk]:
+    return _make_hsvzicbo(test_data, SV39X4, VS_SV39, "zicbom")
 
 
 @add_priv_test_generator(
-    "Sv",
+    "PMP",
     required_extensions=["Sm", "H", "Zicboz"],
     extra_defines=["#define BOOT_TO_MMODE"],
     params=[*_PARAMS, "SV39X4_TRANSLATION: true", "SV39_VSMODE_TRANSLATION: true"],
 )
-def make_svhzicbosm_sv39x4_zicboz(test_data: TestData) -> list[TestChunk]:
-    return _make_svhzicbosm(test_data, SV39X4, VS_SV39, "zicboz")
+def make_hsvzicbo_sv39x4_zicboz(test_data: TestData) -> list[TestChunk]:
+    return _make_hsvzicbo(test_data, SV39X4, VS_SV39, "zicboz")
 
 
 @add_priv_test_generator(
-    "Sv",
+    "PMP",
     required_extensions=["Sm", "H", "Zicbom"],
     extra_defines=["#define BOOT_TO_MMODE"],
     params=[*_PARAMS, "SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
 )
-def make_svhzicbosm_sv32x4_zicbom(test_data: TestData) -> list[TestChunk]:
-    return _make_svhzicbosm(test_data, SV32X4, VS_SV32, "zicbom")
+def make_hsvzicbo_sv32x4_zicbom(test_data: TestData) -> list[TestChunk]:
+    return _make_hsvzicbo(test_data, SV32X4, VS_SV32, "zicbom")
 
 
 @add_priv_test_generator(
-    "Sv",
+    "PMP",
     required_extensions=["Sm", "H", "Zicboz"],
     extra_defines=["#define BOOT_TO_MMODE"],
     params=[*_PARAMS, "SV32X4_TRANSLATION: true", "SV32_VSMODE_TRANSLATION: true"],
 )
-def make_svhzicbosm_sv32x4_zicboz(test_data: TestData) -> list[TestChunk]:
-    return _make_svhzicbosm(test_data, SV32X4, VS_SV32, "zicboz")
+def make_hsvzicbo_sv32x4_zicboz(test_data: TestData) -> list[TestChunk]:
+    return _make_hsvzicbo(test_data, SV32X4, VS_SV32, "zicboz")

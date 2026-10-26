@@ -589,6 +589,13 @@ def _t_pte_reserved_rwx(test_data: TestData, test_chunks: list[TestChunk], sv: S
         test_chunks.append(end_sv_test(test_data, regs))
 
 
+# The RSW encodings of a leaf, which the hart ignores
+PTE_RSW = (("(1 << 8)", "RSW=01"), ("(1 << 9)", "RSW=10"), ("(1 << 9) | (1 << 8)", "RSW=11"))
+
+# The reserved bits 60:54 of an RV64 PTE
+PTE_RESERVED_BITS = range(54, 61)
+
+
 def _t_pte_rsw(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
     va_defs = (("va_data", "0x04007000"),) if sv.xlen == 32 else None
     for mode in ("Smode", "Umode"):
@@ -598,11 +605,7 @@ def _t_pte_rsw(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) ->
         )
         number = 0
         for level in sv.levels_desc:
-            for rsw, description in (
-                ("(1 << 8)", "RSW=01"),
-                ("(1 << 9)", "RSW=10"),
-                ("(1 << 9) | (1 << 8)", "RSW=11"),
-            ):
+            for rsw, description in PTE_RSW:
                 number += 1
                 permissions = PteFlags(user=mode == "Umode", extra=(rsw,))
                 chunk.code.extend(
@@ -649,7 +652,7 @@ def _t_pte_reserved_field(test_data: TestData, test_chunks: list[TestChunk], sv:
         coverpoint=cross_names(crosses),
         code_prefix=("#ifdef S1P12P0_OR_LATER_SUPPORTED", ""),
     )
-    for number, bit in enumerate(range(54, 61), start=1):
+    for number, bit in enumerate(PTE_RESERVED_BITS, start=1):
         permissions = PteFlags(extra=(f"(1 << {bit})",))
         chunk.code.extend(
             [

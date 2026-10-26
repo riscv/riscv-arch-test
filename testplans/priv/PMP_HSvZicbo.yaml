@@ -1,10 +1,10 @@
 # yaml-language-server: $schema=testplan.schema.json
-suite: Sv_HZicboSm
+suite: PMP_HSvZicbo
 notes: |
-  Sv_HZicboSm boots to M-mode, which programs PMP, and delegates nothing, so every trap is taken in M-mode.
+  PMP_HSvZicbo boots to M-mode, which programs PMP, and delegates nothing, so every trap is taken in M-mode.
   It runs with Sv39x4 and VS-stage Sv39 on RV64, or Sv32x4 and VS-stage Sv32 on RV32, and needs at least two PMP
   entries, NAPOT support and a PMP granularity of at most 4 KiB.  PMP entry 0 is a NAPOT region covering the
-  4 KiB test page; the last entry is the background region.  The other Sv_HZicbo cases are in Sv_HZicbo.
+  4 KiB test page; the last entry is the background region.  The guest translation and other CBO cases are in the Sv suite's Sv_HZicbo group.
 coverpoints:
   - name: cp_pmp
     goal: PMP checks the final supervisor physical address of a CBO from VS-mode and VU-mode

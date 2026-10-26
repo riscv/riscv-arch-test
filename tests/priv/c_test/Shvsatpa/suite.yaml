@@ -1,0 +1,31 @@
+# Directory-level test unit manifest for the Shvsatpa suite.
+#
+# Covers vsatp.MODE: probing which VS-stage translation modes the hart
+# supports, WARL filtering of unsupported modes, VS-mode behaviour,
+# transparency of the VS stage, and the ASID field constraints.
+#
+# The whole directory is one test: every file listed in SOURCES plus the
+# RUNTIME sources are compiled and linked into a single ELF. The unit boots
+# itself through the runtime's entry.S, so the ACT4 C runtime
+# (tests/env/c_test_start.S) is not linked in.
+#
+# Assertion-based self-checking: the runtime prints the RVCP-SUMMARY line the
+# harness parses, so there is no reference-model signature to compare against.
+
+REQUIRED_EXTENSIONS: ["I", "S", "H", "Shvsatpa"]
+FORBIDDEN_EXTENSIONS: []
+MARCH: rv${XLEN}imach_zicsr_zifencei
+NEEDS_SIGNATURE: False
+MIN_HARTS: 1
+
+SOURCES:
+  - main.c
+  # tests/test_register.c textually includes the other tests/test_*.c files.
+  - tests/test_register.c
+
+RUNTIME: [base, vm, hyp]
+LINKER_SCRIPT: kernel.ld
+
+EXTRA_CFLAGS:
+  - -DENABLE_HYP
+  - -I{c_common}/hyp

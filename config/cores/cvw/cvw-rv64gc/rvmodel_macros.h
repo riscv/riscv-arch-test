@@ -18,8 +18,8 @@
 
 // Custom RVMODEL_BOOT_TO_MMODE overrides default RVTEST_BOOT_TO_MMODE
 // if defined.  For most DUTs, the default should work and this macro
-// should not be defined.  If no M-mode or CSRs are implemented, define this
-// macro as blank to bypass the boot process.  If a nonconforming
+// should not be defined.  If the DUT has no standard M-mode CSRs, do not
+// define STANDARD_SM_SUPPORTED.  If a nonconforming
 // M-mode is implemented, define this macro to set up the necessary
 // state in a fashion similar to RVTEST_BOOT_TO_MMODE.
 //#define RVMODEL_BOOT_TO_MMODE
@@ -101,7 +101,7 @@
 
 // Wally's mtime advances one tick per core clock, and the code between arming
 // mtimecmp and reaching the lower privilege mode (three CLINT stores plus
-// RVTEST_GOTO_LOWER_MODE) can take well over 100 cycles on a pipelined core
+// T-SBI mode switch) can take well over 100 cycles on a pipelined core
 // with caches.  With a delay of 100 the timer interrupt fires while still in
 // M-mode with MIE=1, so the trap records MPP=M instead of MPP=U/S.
 #define RVMODEL_TIMER_INT_SOON_DELAY 10000

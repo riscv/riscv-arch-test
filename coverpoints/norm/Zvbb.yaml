@@ -95,7 +95,7 @@ normative_rule_definitions:
   # ignored.
   - name: vrol_op
     coverpoint:
-      ["Zvbb16_vrol_vv_cg/cp_vs1_edges", "Zvbb16_vrol_vx_cg}/cp_rs1_edges"]
+      ["Zvbb16_vrol_vv_cg/cp_vs1_edges", "Zvbb16_vrol_vx_cg/cp_rs1_edges"]
 
   # The elements in vs2 are rotated right by the rotate amount specified by either the
   # corresponding elements of vs1 (vector-vector), integer register rs1 (vector-scalar), or

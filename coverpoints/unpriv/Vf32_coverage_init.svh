@@ -78,6 +78,7 @@
     Vf32_vfwadd_vv_cg = new(); Vf32_vfwadd_vv_cg.set_inst_name("obj_Vf32_vfwadd_vv");
     Vf32_vfwadd_wf_cg = new(); Vf32_vfwadd_wf_cg.set_inst_name("obj_Vf32_vfwadd_wf");
     Vf32_vfwadd_wv_cg = new(); Vf32_vfwadd_wv_cg.set_inst_name("obj_Vf32_vfwadd_wv");
+    Vf32_vfwcvt_f_f_v_cg = new(); Vf32_vfwcvt_f_f_v_cg.set_inst_name("obj_Vf32_vfwcvt_f_f_v");
     Vf32_vfwcvt_f_x_v_cg = new(); Vf32_vfwcvt_f_x_v_cg.set_inst_name("obj_Vf32_vfwcvt_f_x_v");
     Vf32_vfwcvt_f_xu_v_cg = new(); Vf32_vfwcvt_f_xu_v_cg.set_inst_name("obj_Vf32_vfwcvt_f_xu_v");
     Vf32_vfwcvt_rtz_x_f_v_cg = new(); Vf32_vfwcvt_rtz_x_f_v_cg.set_inst_name("obj_Vf32_vfwcvt_rtz_x_f_v");

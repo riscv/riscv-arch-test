@@ -21,13 +21,13 @@
 # Global ARGs - declared before any FROM so they are overridable across all stages.
 # Each stage that uses them must redeclare them with a bare ARG (no default) to bring them into scope.
 ARG RISCV_TOOLCHAIN_PREFIX=/opt/riscv
-ARG SAIL_VERSION=0.14.1
+ARG SAIL_VERSION=0.16
 ARG RISCV_TOOLCHAIN_VERSION=2026.08.27
 
 # Stage 1: build riscv-gnu-toolchain
 #
 # LDFLAGS=-static ensures no shared-lib dependencies survive into the final image.
-FROM ubuntu:26.04@sha256:da6fc2be547864451aa253836dd926da33623312df4a9a243e35dc877c378a78 AS toolchain-builder
+FROM ubuntu:26.04@sha256:c098726dd9b9733f3e885f8de0ef375206a311b0a317eadc40d347b1115fb944 AS toolchain-builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG RISCV_TOOLCHAIN_PREFIX
@@ -99,7 +99,7 @@ RUN git clone --depth 1 --branch "${RISCV_TOOLCHAIN_VERSION}" https://github.com
 #
 # HOME=/home/shared is used so all caches (mise, uv, udb, etc.) land in a single directory that is copied to the final
 # image.
-FROM ubuntu:26.04@sha256:da6fc2be547864451aa253836dd926da33623312df4a9a243e35dc877c378a78 AS mise-fetcher
+FROM ubuntu:26.04@sha256:c098726dd9b9733f3e885f8de0ef375206a311b0a317eadc40d347b1115fb944 AS mise-fetcher
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -122,9 +122,10 @@ RUN curl -fsSL https://mise.jdx.dev/install.sh | sh
 # mise and bundler need .mise.toml and the Gemfile(s); uv needs .python-version / pyproject.toml / uv.lock.
 COPY \
   .mise.toml \
-  framework/src/act/data/Gemfile framework/src/act/data/Gemfile.lock \
   .python-version pyproject.toml uv.lock README.md \
   /act4/
+# Must be at `deps.bundler.dir` from .mise.toml, otherwise `mise deps` silently skips installing the gems
+COPY framework/src/act/data/Gemfile framework/src/act/data/Gemfile.lock /act4/framework/src/act/data/
 # Copy files of other workspace members
 COPY framework/pyproject.toml /act4/framework/pyproject.toml
 COPY framework/src/act/__init__.py /act4/framework/src/act/__init__.py
@@ -144,7 +145,7 @@ RUN cd /act4 \
 RUN chmod -R 777 /act4 /home/shared
 
 # Stage 3: final runtime image
-FROM ubuntu:26.04@sha256:da6fc2be547864451aa253836dd926da33623312df4a9a243e35dc877c378a78 AS act4-build
+FROM ubuntu:26.04@sha256:c098726dd9b9733f3e885f8de0ef375206a311b0a317eadc40d347b1115fb944 AS act4-build
 
 LABEL description="RISC-V Architectural Certification Tests (ACT4) build env"
 LABEL org.opencontainers.image.source="https://github.com/riscv/riscv-arch-test"

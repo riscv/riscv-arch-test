@@ -12,6 +12,8 @@ from testgen.data.state import TestData, return_testcase_registers
 from testgen.data.test_chunk import TestChunk
 from testgen.formatters import format_single_testcase
 from testgen.instructions.params import generate_random_params
+from testgen.instructions.vector import get_base_lmul
+from testgen.instructions.vector_params import generate_random_vector_params
 
 
 @add_coverpoint_generator("cp_fd")
@@ -25,12 +27,22 @@ def make_fd(instr_name: str, instr_type: str, coverpoint: str, test_data: TestDa
     else:
         raise ValueError(f"Unknown cp_fd coverpoint variant: {coverpoint} for {instr_name}")
 
+    is_vector = instr_name.lower().startswith("v")
+    if is_vector:
+        assert test_data.config.sew is not None, "SEW must be set for vector tests"
+        lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
+    else:
+        lmul = 1  # Placeholder to keep the type-checker happy
+
     test_chunks: list[TestChunk] = []
 
     # Generate tests
     for fd in fd_regs:
         test_data.float_regs.consume_registers([fd])
-        params = generate_random_params(test_data, instr_type, fd=fd)
+        if is_vector:
+            params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, fd=fd)
+        else:
+            params = generate_random_params(test_data, instr_type, fd=fd)
         desc = f"{coverpoint} (Test destination fd = f{fd})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{fd}", coverpoint)
         test_chunks.append(tc)
@@ -50,12 +62,22 @@ def make_fs1(instr_name: str, instr_type: str, coverpoint: str, test_data: TestD
     else:
         raise ValueError(f"Unknown cp_fs1 coverpoint variant: {coverpoint} for {instr_name}")
 
+    is_vector = instr_name.lower().startswith("v")
+    if is_vector:
+        assert test_data.config.sew is not None, "SEW must be set for vector tests"
+        lmul = get_base_lmul(instr_name, instr_type, test_data.config.sew)
+    else:
+        lmul = 1  # Placeholder to keep the type-checker happy
+
     test_chunks: list[TestChunk] = []
 
     # Generate tests
     for fs1 in fs1_regs:
         test_data.float_regs.consume_registers([fs1])
-        params = generate_random_params(test_data, instr_type, fs1=fs1)
+        if is_vector:
+            params = generate_random_vector_params(test_data, instr_name, instr_type, lmul, fs1=fs1)
+        else:
+            params = generate_random_params(test_data, instr_type, fs1=fs1)
         desc = f"{coverpoint} (Test source fs1 = f{fs1})"
         tc = format_single_testcase(instr_name, instr_type, test_data, params, desc, f"b{fs1}", coverpoint)
         test_chunks.append(tc)

@@ -171,5 +171,6 @@ function void zcf_sample(int hart, int issue, ins_t ins);
             Zcf_c_fswsp_cg.sample(ins);
         end
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

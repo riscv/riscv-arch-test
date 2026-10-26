@@ -10,8 +10,8 @@ import random
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
-    get_lmul_flag,
     handle_parameter_exclusions,
+    index_register_safety,
     load_test_vtype,
     load_vec_regs,
     prep_mask_v,
@@ -25,7 +25,7 @@ from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig,
 from testgen.instructions.vector import parse_vector_instruction_info
 
 
-def unordered_index_element_generator(element_count: int, sew: int) -> list[int]:
+def unordered_index_element_generator(element_count: int, sew: int, _register: str) -> list[int]:
     # vlmax can take on values of any power of two, from 1 to the power of two exceeding element_count
     # All items in the generated list from [0, vlmax) must be unique mod 2*vlmax for all possible vlmaxes
     # LIMITATIONS: For SEW=8, unique indices are not guaranteed
@@ -49,23 +49,25 @@ def unordered_index_element_generator(element_count: int, sew: int) -> list[int]
 vsux_config = InstructionTypeConfig(
     required_params={"vs3", "rs1", "vs2"},
     instruction_class=["store", "indexed"],
-    vector_data=VectorTypeConfig(random_element_generator=unordered_index_element_generator),
+    vector_data=VectorTypeConfig(random_element_generator=unordered_index_element_generator, index_register="vs2"),
 )
 
 vsox_config = InstructionTypeConfig(
-    required_params={"vs3", "rs1", "vs2"}, instruction_class=["store", "indexed"], vector_data=VectorTypeConfig()
+    required_params={"vs3", "rs1", "vs2"},
+    instruction_class=["store", "indexed"],
+    vector_data=VectorTypeConfig(index_register="vs2"),
 )
 
 vsuxseg_config = InstructionTypeConfig(
     required_params={"vs3", "rs1", "vs2"},
     instruction_class=["store", "indexed", "segmented"],
-    vector_data=VectorTypeConfig(random_element_generator=unordered_index_element_generator),
+    vector_data=VectorTypeConfig(random_element_generator=unordered_index_element_generator, index_register="vs2"),
 )
 
 vsoxseg_config = InstructionTypeConfig(
     required_params={"vs3", "rs1", "vs2"},
     instruction_class=["store", "indexed", "segmented"],
-    vector_data=VectorTypeConfig(),
+    vector_data=VectorTypeConfig(index_register="vs2"),
 )
 
 
@@ -141,7 +143,7 @@ def format_vsxseg_like_type(
     if params.maskval:
         setup.extend(prep_mask_v(params.maskval, test_data, params))
 
-    reload_register = random.choice(list(test_data.vec_regs.free_registers(int(max(params.lmul, 1)), segments)))
+    reload_register = random.choice(test_data.vec_regs.free_registers(int(max(params.lmul, 1)), segments))
     params.vd = reload_register
     params.vd_val_pointer = "NOT_A_LABEL"  # Placeholder value that should NOT end up in generated code
     test_data.vec_regs.allocate_operand("vd", reload_register, int(max(params.lmul, 1)) * segments)
@@ -152,58 +154,13 @@ def format_vsxseg_like_type(
         VectorLoad(reg="vd", segments=segments, no_fractional_load=True, only_setup_tail=True),
     ]
 
-    # Coverage workaround: It only checks for vs2_edges at SEW, not at the correct EEW, so
-    # if the label is zero_emul8 or random_within_2vlmax, it needs special handling
-    if params.vs2_val_pointer.startswith("vs2_edge_random_within_2vlmax_ls"):
-        # FIXME: We are required load at wrong sew to make coverage happy
-        to_load.append(VectorLoad(reg="vs2"))
-    elif params.vs2_val_pointer.startswith("vs2_edge_zero_emul8_ls"):
-        # FIXME: Coverage requires a load at vlmax here as the entire register must be zero
-        to_load.append(VectorLoad(reg="vs2", lmul=max(index_emul, 1), sew=index_eew, vl="vlmax"))
-    else:
-        to_load.append(VectorLoad(reg="vs2", lmul=index_emul, sew=index_eew))
+    to_load.append(VectorLoad(reg="vs2", lmul=index_emul, sew=index_eew))
 
     load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
     setup.extend(load_code)
 
     if not params.ignore_vector_safety:
-        # Ensure that the data in vs2 is within the range [0, 2*vlmax) and sew-aligned
-        setup.extend(
-            [
-                "# Ensure that the data in vs2 is within the range [0, 2*vlmax) and sew-aligned",
-                f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, ta, ma",
-                f"add x{params.temp_reg}, x{params.temp_reg}, x{params.temp_reg}",
-            ]
-        )
-        if params.vs2_val_pointer == "vs2_edge_random_within_2vlmax_ls":
-            # FIXME: Coverage workaround
-            temp_reg2 = test_data.int_regs.get_register(exclude_regs=[0])
-            setup.append(f"vsetvli x{temp_reg2}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, tu, mu")
-            test_data.int_regs.return_register(temp_reg2)
-        elif params.vl == "vlmax":
-            temp_reg2 = test_data.int_regs.get_register(exclude_regs=[0])
-            setup.append(f"vsetvli x{temp_reg2}, x0, e{index_eew}, m{get_lmul_flag(index_emul)}, tu, mu")
-            test_data.int_regs.return_register(temp_reg2)
-        elif params.vl == "random":
-            setup.append(f"vsetvli x0, {random_vl_reg}, e{index_eew}, m{get_lmul_flag(index_emul)}, tu, mu")
-        else:
-            assert isinstance(params.vl, int)
-            setup.append(f"vsetivli x0, {params.vl}, e{index_eew}, m{get_lmul_flag(index_emul)}, tu, mu")
-        # Construct a factor that shifts an index so that the correct alignment is read
-        # This will not overflow the specified space as the vlmax calculation implicitly
-        # takes into account SEW
-        index_alignment_factor = params.sew // 8 * segments
-        # Turn this into a bit shift for the nearest power of 2
-        index_alignment_shift = index_alignment_factor.bit_length() - 1
-        if 2**index_alignment_shift < index_alignment_factor:
-            index_alignment_shift += 1
-
-        setup.extend(
-            [
-                f"vremu.vx v{params.vs2}, v{params.vs2}, x{params.temp_reg}",
-                f"vsll.vi v{params.vs2}, v{params.vs2}, {index_alignment_shift}",
-            ]
-        )
+        setup.extend(index_register_safety(params.vs2, index_eew, segments, random_vl_reg, test_data, params))
 
     setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer})")
     setup.append(load_test_vtype(params, random_vl_reg))
@@ -214,24 +171,20 @@ def format_vsxseg_like_type(
 
     equivalent_load = "vl" + instr_str[2:]
     if params.maskval:
-        test = [
-            f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}, v0.t",
-            f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}, v0.t",
-        ]
+        test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}, v0.t"]
+        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}, v0.t"
     else:
-        test = [
-            f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}",
-            f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}",
-        ]
+        test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}"]
+        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}"
 
     # We no longer need vs2. This allows us to have enough registers for length SIGUPD where the maximum number of
     # registers (25) are required by the test section
     test_data.vec_regs.deallocate_operand("vs2")
 
     if params.vector_suite == "length":
-        check = [*write_sigupd_v_len(test_data, params, params.lmul, segments=segments)]
+        check = [read_back, *write_sigupd_v_len(test_data, params, params.lmul, segments=segments)]
     else:
-        check = [*write_sigupd_v(test_data, params)]
+        check = [read_back, *write_sigupd_v(test_data, params)]
 
     # This can only be released after sigupd
     if params.maskval:

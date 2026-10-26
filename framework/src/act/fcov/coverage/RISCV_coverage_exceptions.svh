@@ -22,7 +22,7 @@
 
 function bit is_load_fault(int hart, int issue);
   `XLEN_BITS cause = get_csr_val(hart, issue, `SAMPLE_AFTER, "mcause", "mcause");
-  if (cause == LOAD_ACCESS_FAULT || cause == LOAD_PAGE_FAULT) begin
+  if (cause == `UDB_MXLEN'(LOAD_ACCESS_FAULT) || cause == `UDB_MXLEN'(LOAD_PAGE_FAULT)) begin
     return 1;
   end
   return 0;
@@ -30,7 +30,7 @@ endfunction
 
 function bit is_store_fault(int hart, int issue);
   `XLEN_BITS cause = get_csr_val(hart, issue, `SAMPLE_AFTER, "mcause", "mcause");
-  if (cause == STORE_AMO_ACCESS_FAULT || cause == STORE_AMO_PAGE_FAULT) begin
+  if (cause == `UDB_MXLEN'(STORE_AMO_ACCESS_FAULT) || cause == `UDB_MXLEN'(STORE_AMO_PAGE_FAULT)) begin
     return 1;
   end
   return 0;

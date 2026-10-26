@@ -19,7 +19,7 @@ RESERVED_FENCES = [
     ("fence_nonzerors1", ".word 0x0331000f    # fence with nonzero rs1 behaves normally", False),
     ("fence_nonzerord", ".word 0x0330008f    # fence with nonzero rd behaves normally", True),
     ("fence_fm", ".word 0x1330000f    # fence with reserved fm behaves as fence with fm = 0000", False),
-    ("fence_tso_r_r", ".word 0x8110000f    # fence.TSO with R,R rather than RW behaves as fence", False),
+    ("fence_tso_w_w", ".word 0x8110000f    # fm = 1000 with pred = succ = W is reserved and behaves as fence", False),
 ]
 
 HINT_FENCES = [

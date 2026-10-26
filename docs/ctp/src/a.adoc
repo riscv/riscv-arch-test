@@ -3,7 +3,7 @@
 
 The A extension is subdivided into Zaamo and Zalrsc.
 
-This section exercises unprivileged tests that will not trap.  Privileged tests are in other sections, such as ExceptionsZaamo.
+This section exercises unprivileged tests that will not trap.  Privileged tests are in other sections, such as Exceptions_Zaamo.
 
 ==== Zaamo Atomic Memory Operations Extension
 
@@ -27,7 +27,7 @@ include::{testplansdir}/Zaamo.adoc[]
 include::norm/Zaamo_norm_rules.adoc[]
 
 [NOTE]
-This test suite is unprivileged and does not perform misaligned accesses. The MISALIGNED_AMO parameter affects the expected results of ExceptionsZaamo/cp_amo_address_misaligned (<<t-ExceptionsZaamo-coverpoints>>).
+This test suite is unprivileged and does not perform misaligned accesses. The MISALIGNED_AMO parameter affects the expected results of Exceptions_Zaamo/cp_amo_address_misaligned (<<t-Exceptions_Zaamo-coverpoints>>).
 
 ==== Zalrsc Load-Reserved / Store-Conditional Extension
 
@@ -40,6 +40,7 @@ include::{testplansdir}/Zalrsc.adoc[]
 [[t-Zalrsc-coverpoint-definitions]]
 .Zalrsc Coverpoint Definitions
 [cols="2, 1, 4" options=header]
+[%autowidth]
 |===
 |Coverpoint|Bins|Definition
 3+^|cp_custom_lr coverpoints
@@ -60,4 +61,4 @@ The spec imposes no requirements on reservation set form, including alignment, N
 
 TODO: On implementations that support the C extension, compressed forms of the
 I instructions permitted inside constrained LR/SC sequences, as
-described in <<sec:lrscseq>>, are also permitted.
+described in https://riscv.github.io/riscv-isa-manual/snapshot/spec/index.html#sec:lrscseq[the ISA manual], are also permitted.

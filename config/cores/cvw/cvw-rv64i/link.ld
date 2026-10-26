@@ -1,0 +1,1 @@
+../cvw-rv64gc/link.ld

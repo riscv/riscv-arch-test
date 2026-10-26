@@ -12,11 +12,7 @@
 Generate ASCIIDoc tables from parameter YAML files.
 
 Usage:
-  generate_param_table.py [--yaml PATH] [--out PATH]
-
-Defaults:
-    yaml: coverpoints/param
-    out:  docs/ctp/build/generated/param/
+  generate_param_table.py --yaml DIR --out DIR
 
 The script generates:
   - One .adoc file per YAML in coverpoints/param with parameter tables
@@ -36,70 +32,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from ruamel.yaml import YAML, YAMLError
-
-
-def parse_malformed_yaml(text: str) -> dict[str, Any]:
-    """Parse malformed YAML with -name: instead of - name:."""
-    result = {"parameter_definitions": []}
-
-    lines = text.splitlines()
-    current_param: dict[str, Any] = {}
-
-    for line in lines:
-        stripped = line.strip()
-
-        # Skip comments and empty lines
-        if not stripped or stripped.startswith("#"):
-            continue
-
-        # Check for parameter_definitions start
-        if "parameter_definitions:" in stripped:
-            continue
-
-        # Check for new parameter (-name:)
-        if stripped.startswith(("-name:", "- name:")):
-            # Save previous parameter
-            if current_param:
-                result["parameter_definitions"].append(current_param)
-
-            # Start new parameter
-            name_part = stripped.split(":", 1)[1].strip() if ":" in stripped else ""
-            current_param = {"name": name_part}
-
-        # Check for other fields
-        elif stripped.startswith("coverpoint:"):
-            value = stripped.split(":", 1)[1].strip() if ":" in stripped else ""
-            try:
-                yaml_parser = YAML(typ="safe", pure=True)
-                current_param["coverpoint"] = yaml_parser.load(value) if value else []
-            except YAMLError:
-                current_param["coverpoint"] = [value] if value else []
-
-        elif stripped.startswith("effect:"):
-            value = stripped.split(":", 1)[1].strip() if ":" in stripped else ""
-            try:
-                yaml_parser = YAML(typ="safe", pure=True)
-                current_param["effect"] = yaml_parser.load(value) if value else []
-            except YAMLError:
-                current_param["effect"] = [value] if value else []
-
-    # Save last parameter
-    if current_param:
-        result["parameter_definitions"].append(current_param)
-
-    return result
-
-
-def load_yaml(path: Path) -> dict[str, Any]:
-    """Load YAML file with fallback for malformed files."""
-    text = path.read_text(encoding="utf-8")
-    yaml_parser = YAML(typ="safe", pure=True)
-    try:
-        return yaml_parser.load(text)
-    except YAMLError:
-        # Try to parse malformed YAML by fixing common issues
-        return parse_malformed_yaml(text)
+from ruamel.yaml import YAML
 
 
 def _ensure_udb_installed() -> Path:
@@ -189,42 +122,23 @@ def extract_extensions(exts_str: str) -> list[str]:
 
 
 def parse_input_yaml(yaml_path: Path) -> list[dict[str, Any]]:
-    """Parse input YAML and extract parameter entries."""
-    data = load_yaml(yaml_path)
+    """Parameter entries of a coverpoints/param YAML file."""
+    data = YAML(typ="safe", pure=True).load(yaml_path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict) or set(data) != {"parameter_definitions"}:
+        sys.exit(f"Error: {yaml_path}: expected a single 'parameter_definitions' key")
     entries = []
-
-    if not isinstance(data, dict):
-        return entries
-
-    param_defs = data.get("parameter_definitions", [])
-    if not isinstance(param_defs, list):
-        return entries
-
-    for item in param_defs:
-        if not isinstance(item, dict):
-            continue
-
-        # Handle both "name" and "-name" (malformed YAML)
-        name = item.get("name") or item.get("-name")
-        if not name:
-            continue
-
-        # Extract coverpoint - can be list or string
-        coverpoint = item.get("coverpoint", [])
-        if isinstance(coverpoint, str):
-            coverpoint = [coverpoint]
-        elif not isinstance(coverpoint, list):
-            coverpoint = []
-
-        # Extract effect - can be list or string
-        effect = item.get("effect", [])
-        if isinstance(effect, str):
-            effect = [effect]
-        elif not isinstance(effect, list):
-            effect = []
-
-        entries.append({"name": name.strip(), "coverpoint": coverpoint, "effect": effect})
-
+    for i, item in enumerate(data["parameter_definitions"] or []):
+        where = f"{yaml_path}: entry {i + 1}"
+        if not isinstance(item, dict) or set(item) != {"name", "coverpoint", "effect"}:
+            sys.exit(f"Error: {where}: expected 'name', 'coverpoint' and 'effect'")
+        if not isinstance(item["name"], str) or not item["name"].strip():
+            sys.exit(f"Error: {where}: 'name' must be a non-empty string")
+        for key in ("coverpoint", "effect"):
+            if not isinstance(item[key], list) or not all(isinstance(x, str) for x in item[key]):
+                sys.exit(f"Error: {where} ({item['name']}): '{key}' must be a list of strings")
+        entries.append({"name": item["name"].strip(), "coverpoint": item["coverpoint"], "effect": item["effect"]})
+    if not entries:
+        sys.exit(f"Error: {yaml_path}: no parameter entries")
     return entries
 
 
@@ -265,10 +179,7 @@ def make_param_table(
     for entry in entries:
         param_name = entry["name"]
 
-        # Get description from UDB
-        description = ""
-        if param_name in udb_params:
-            description = udb_params[param_name].get("description", "")
+        description = udb_params[param_name]["description"]
 
         # Format coverpoint list
         coverpoint_str = ", ".join(entry["coverpoint"]) if entry["coverpoint"] else ""
@@ -411,119 +322,29 @@ def make_summary_tables(all_input_files: list[Path], udb_params: dict[str, dict[
 
 def main() -> None:
     p = argparse.ArgumentParser(description="Generate ASCIIDoc tables from parameter YAML files")
-    p.add_argument("--yaml", default="coverpoints/param", help="Path to directory containing input YAML files")
-    p.add_argument("--out", default="docs/ctp/build/generated/param/", help="Output directory for ASCIIDoc files")
-    p.add_argument("--norm-dir", default=None, help="Path to norm rules directory (for placeholder generation)")
+    p.add_argument("--yaml", required=True, type=Path, help="directory of parameter YAML files")
+    p.add_argument("--out", required=True, type=Path, help="output directory for the AsciiDoc tables")
     args = p.parse_args()
 
-    # Resolve paths relative to script directory if needed
-    script_dir = Path(__file__).resolve().parent
+    yaml_files = sorted(args.yaml.glob("*.yaml"))
+    if not yaml_files:
+        sys.exit(f"Error: no YAML files in {args.yaml}")
 
-    yaml_path = Path(args.yaml)
-    if not yaml_path.exists():
-        alt = script_dir.parent.parent / args.yaml
-        if alt.exists():
-            yaml_path = alt
-        else:
-            print(f"Error: YAML directory not found: {args.yaml} or {alt}", file=sys.stderr)
-            sys.exit(2)
-
-    out_path = Path(args.out)
-
-    # Load UDB parameters via the udb gem CLI
     print("Loading UDB parameters via 'udb list parameters'...")
     udb_params = load_udb_params()
     print(f"Loaded {len(udb_params)} UDB parameters")
 
-    # Find all input YAML files
-    if yaml_path.is_dir():
-        yaml_files = sorted(list(yaml_path.glob("*.yaml")) + list(yaml_path.glob("*.yml")))
-    else:
-        yaml_files = [yaml_path]
+    entries_by_file = {f: parse_input_yaml(f) for f in yaml_files}
+    unknown = [
+        f"{f}: {e['name']}" for f, entries in entries_by_file.items() for e in entries if e["name"] not in udb_params
+    ]
+    if unknown:
+        sys.exit("Error: parameters not defined in UDB:\n  " + "\n  ".join(unknown))
 
-    if not yaml_files:
-        print(f"No YAML files found in: {yaml_path}", file=sys.stderr)
-        sys.exit(2)
+    for yaml_file, entries in entries_by_file.items():
+        make_param_table(entries, udb_params, args.out / f"{yaml_file.stem}_parameters.adoc", yaml_file.stem)
 
-    print(f"Processing {len(yaml_files)} input YAML files")
-
-    # Process each input YAML file
-    for yaml_file in yaml_files:
-        entries = parse_input_yaml(yaml_file)
-
-        if not entries:
-            print(f"  Warning: No parameter entries found in {yaml_file.name}", file=sys.stderr)
-            continue
-
-        base = yaml_file.stem
-        outpath = out_path / f"{base}_parameters.adoc"
-        make_param_table(entries, udb_params, outpath, base)
-
-    # Also produce a placeholder .adoc for any extension that has a norm adoc
-    # but lacks a corresponding input YAML in the provided yaml source directory.
-    # We treat files named "<base>_norm_rules.adoc" in the norm directory as extensions.
-
-    # Resolve norm directory
-    if args.norm_dir:
-        norm_dir = Path(args.norm_dir)
-        if not norm_dir.exists():
-            print(f"Error: specified norm directory does not exist: {norm_dir}", file=sys.stderr)
-            sys.exit(2)
-    else:
-        script_dir = Path(__file__).resolve().parent
-        repo_root_candidate = script_dir.parent.parent
-        norm_dir_candidates = [
-            repo_root_candidate / "docs" / "ctp" / "build" / "generated" / "norm",
-            (Path.cwd() / "build" / "generated" / "norm"),
-        ]
-        norm_dir = None
-        for cand in norm_dir_candidates:
-            if cand.exists():
-                norm_dir = cand
-                break
-
-    if norm_dir is None:
-        print("Warning: norm directory not found; skipping placeholder generation", file=sys.stderr)
-    else:
-        # Collect base names from norm files
-        norm_bases: set[str] = set()
-        for f in norm_dir.glob("*_norm_rules.adoc"):
-            name = f.name
-            if name.endswith("_norm_rules.adoc"):
-                base = name[: -len("_norm_rules.adoc")]
-                if base:
-                    norm_bases.add(base)
-
-        # Collect bases that already have YAML inputs
-        yaml_bases: set[str] = set()
-        for yf in yaml_files:
-            yaml_bases.add(yf.stem)
-
-        # Determine which bases are missing YAML
-        missing_bases = sorted(b for b in norm_bases if b not in yaml_bases)
-
-        # Common header
-        argv_abs = [str(Path(arg).resolve()) if Path(arg).exists() else arg for arg in sys.argv]
-        command_line = " ".join(argv_abs)
-        gen_date = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
-
-        for base in missing_bases:
-            outpath = out_path / f"{base}_parameters.adoc"
-            lines = [
-                "// WARNING: This file was automatically generated.",
-                "// Do not modify by hand.",
-                f"// Generation command: {command_line}",
-                f"// Generation date: {gen_date}",
-                f'// Note: No corresponding input YAML found in "{yaml_path}"; generating placeholder.',
-                "",
-                "*UDB Parameters:* None.",
-                "",
-            ]
-            outpath.parent.mkdir(parents=True, exist_ok=True)
-            outpath.write_text("\n".join(lines), encoding="utf-8")
-
-    # Generate summary
-    summary_path = out_path / "summary.adoc"
+    summary_path = args.out / "summary.adoc"
     make_summary_tables(yaml_files, udb_params, summary_path)
     print(f"Generated summary: {summary_path}")
 

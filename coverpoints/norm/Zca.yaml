@@ -5,9 +5,11 @@ normative_rule_definitions:
   - name: C_dep_Zca
     coverpoint: ["Definition, checked through UDB"]
   - name: Zca_offsets_mul2
+    # Representative: offsets that are multiples of 2 but not 4, for jumps and branches
     coverpoint:
       [
-        "Zca_c_beqz_cg/cp_offset, Zca_c_bnez_cg/cp_offset, Zca_c_j_cg/cp_offset, Zca_c_jal_cg/cp_offset, Zca_c_jalr_cg/cp_offset, Zca_c_jr_cg/cp_offset",
+        "Zca_c_j_cg/{cp_imm_edges_c_jal}",
+        "Zca_c_beqz_cg/{cp_imm_edges_c_branch}",
       ]
   - name: Zca_regs8
     # Use a representative coverpoint; applies to others too
@@ -21,7 +23,7 @@ normative_rule_definitions:
   - name: c-addi4spn_op
     coverpoint: ["Zca_c_addi4spn_cg/{cp_imm_mul_addi4spn}"]
   - name: c-addi_nop
-    coverpoint: ["Zca_c_nop_cg/{cp_asm_count_nop}"]
+    coverpoint: ["Zca_c_nop_cg/{cp_asm_count_nop, cp_c_hint_nop}"]
   - name: c-addi_op
     coverpoint: ["Zca_c_addi_cg/{cp_rs1_nx0, cr_rs1_imm_edges_6bit_n0}"]
   - name: c-addiw_op
@@ -79,14 +81,8 @@ normative_rule_definitions:
     coverpoint: ["Zca_c_slli_cg/{cp_rs1_nx0, cr_rs1_imm_edges_c}"]
   - name: c-slli_shamt5
     coverpoint: ["Zca_c_slli_cg/{cp_uimm_n0}"]
-  # insn:c.srai[] is defined analogously to insn:c.srli[], but instead performs an
-  # arithmetic right shift. It expands to insn:srai[rd′,rd′,shamt].
   - name: c-srai_op
-    coverpoint:
-      [
-        "Zca_c_srai_cg/{cp_rs1_p, cr_rs1_imm_edges_c}",
-        "N/A custom hints not certified",
-      ]
+    coverpoint: ["Zca_c_srai_cg/{cp_rs1_p, cr_rs1_imm_edges_c}"]
   - name: c-srli_op
     coverpoint: ["Zca_c_srli_cg/{cp_rs1_p, cr_rs1_imm_edges_c}"]
   - name: c-srli_shamt5

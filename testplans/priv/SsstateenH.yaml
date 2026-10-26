@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: SsstateenH
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=311784014#gid=311784014
+notes: |
+  Develop this after baseline state enable tests
+coverpoints: []

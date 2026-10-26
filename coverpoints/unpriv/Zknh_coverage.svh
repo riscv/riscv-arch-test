@@ -1199,5 +1199,6 @@ function void zknh_sample(int hart, int issue, ins_t ins);
             Zknh_sha512sum1_cg.sample(ins);
         end
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

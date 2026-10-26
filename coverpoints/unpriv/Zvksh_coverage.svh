@@ -673,12 +673,13 @@ function void zvksh_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
-        "vsm3c.vi"     : begin
-            Zvksh_vsm3c_vi_cg.sample(ins);
-        end
-        "vsm3me.vv"     : begin
-            Zvksh_vsm3me_vv_cg.sample(ins);
-        end
+            "vsm3c.vi"     : begin
+                Zvksh_vsm3c_vi_cg.sample(ins);
+            end
+            "vsm3me.vv"     : begin
+                Zvksh_vsm3me_vv_cg.sample(ins);
+            end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

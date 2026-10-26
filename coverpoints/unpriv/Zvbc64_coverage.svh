@@ -778,18 +778,19 @@ function void zvbc64_sample(int hart, int issue, ins_t ins);
     if (get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vsew") == 3 ||
         get_csr_val(hart, issue, `SAMPLE_BEFORE, "vtype", "vill") == 1) begin
         case (traceDataQ[hart][issue][0].inst_name)
-        "vclmul.vv"     : begin
-            Zvbc64_vclmul_vv_cg.sample(ins);
-        end
-        "vclmul.vx"     : begin
-            Zvbc64_vclmul_vx_cg.sample(ins);
-        end
-        "vclmulh.vv"     : begin
-            Zvbc64_vclmulh_vv_cg.sample(ins);
-        end
-        "vclmulh.vx"     : begin
-            Zvbc64_vclmulh_vx_cg.sample(ins);
-        end
+            "vclmul.vv"     : begin
+                Zvbc64_vclmul_vv_cg.sample(ins);
+            end
+            "vclmul.vx"     : begin
+                Zvbc64_vclmul_vx_cg.sample(ins);
+            end
+            "vclmulh.vv"     : begin
+                Zvbc64_vclmulh_vv_cg.sample(ins);
+            end
+            "vclmulh.vx"     : begin
+                Zvbc64_vclmulh_vx_cg.sample(ins);
+            end
+            default: ; // a case needs at least one item, and some configurations select none
         endcase
     end
 endfunction

@@ -34,7 +34,7 @@
 
     vl_nonzero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
         //Any value between max and 1
-        bins target = {[64'h10000:64'h1]};
+        bins target = {[64'h1:64'h10000]};
     }
 
     mask_enabled: coverpoint ins.current.insn[25] {
@@ -425,11 +425,11 @@
     }
 
     vs2_reg_unaligned_lmul_4: coverpoint ins.current.insn[24:20] {
-        wildcard bins range = {[5'b???01: 5'b???11]};
+        wildcard bins range = {5'b???01, 5'b???10, 5'b???11};
     }
 
     vs2_reg_unaligned_lmul_8: coverpoint ins.current.insn[24:20] {
-        wildcard bins range = {[5'b??001: 5'b??111]};
+        wildcard bins range = {5'b??001, 5'b??010, 5'b??011, 5'b??100, 5'b??101, 5'b??110, 5'b??111};
     }
 
     vs1_reg_unaligned_lmul_2: coverpoint ins.current.insn[19:15] {
@@ -437,11 +437,11 @@
     }
 
     vs1_reg_unaligned_lmul_4: coverpoint ins.current.insn[19:15] {
-        wildcard bins range = {[5'b???01: 5'b???11]};
+        wildcard bins range = {5'b???01, 5'b???10, 5'b???11};
     }
 
     vs1_reg_unaligned_lmul_8: coverpoint ins.current.insn[19:15] {
-        wildcard bins range = {[5'b??001: 5'b??111]};
+        wildcard bins range = {5'b??001, 5'b??010, 5'b??011, 5'b??100, 5'b??101, 5'b??110, 5'b??111};
     }
 
     vd_reg_unaligned_lmul_2: coverpoint ins.current.insn[11:7] {
@@ -449,11 +449,11 @@
     }
 
     vd_reg_unaligned_lmul_4: coverpoint ins.current.insn[11:7] {
-        wildcard bins range = {[5'b???01: 5'b???11]};
+        wildcard bins range = {5'b???01, 5'b???10, 5'b???11};
     }
 
     vd_reg_unaligned_lmul_8: coverpoint ins.current.insn[11:7] {
-        wildcard bins range = {[5'b??001: 5'b??111]};
+        wildcard bins range = {5'b??001, 5'b??010, 5'b??011, 5'b??100, 5'b??101, 5'b??110, 5'b??111};
     }
 
     vs2_vd_overlap_lmul1: coverpoint (ins.current.insn[24:21] == ins.current.insn[11:8]) {

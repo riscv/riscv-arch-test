@@ -311,5 +311,6 @@ function void zalrsc_sample(int hart, int issue, ins_t ins);
             Zalrsc_sc_d_cg.sample(ins);
         end
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

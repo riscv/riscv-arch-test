@@ -97,6 +97,8 @@ def generate_all_tests(
     else:
         for ext in extensions.split(","):
             ext = ext.strip()
+            if not ext:
+                continue
             if ext in available_unpriv_extensions:
                 unpriv_ext_list.append(ext)
             elif ext in available_priv_extensions:
@@ -127,6 +129,7 @@ def generate_all_tests(
                 tasks.append(UnprivTask(xlen, E_ext, testsuite, testplan_dir, output_test_dir, is_vector))
 
     tasks.extend(PrivTask(testsuite, output_test_dir) for testsuite in sorted(priv_ext_list))
+    tasks.sort(key=lambda task: 0 if isinstance(task, UnprivTask) and task.is_vector else 1)
 
     # Generate all tests in parallel
     with ProcessPoolExecutor(max_workers=jobs) as executor:

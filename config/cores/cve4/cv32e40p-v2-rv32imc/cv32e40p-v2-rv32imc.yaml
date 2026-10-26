@@ -79,7 +79,7 @@ params:
   MEI_INTR_IMPL: true
   MSI_INTR_IMPL: true
   MTI_INTR_IMPL: true
-  WFI_FINITE: true
+  WFI_FINITE: false
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true # ASSUMED — exceptions_interrupts.rst § "Exceptions and Interrupts": "core sets mepc to the current program counter" implies synchronous precision
   MARCHID_IMPLEMENTED: true # VERIFIED — control_status_registers.rst § "Machine Architecture ID (marchid)": CSR (0xF12) implemented
   MIMPID_IMPLEMENTED: true # VERIFIED — control_status_registers.rst § "Machine Implementation ID (mimpid)": CSR (0xF13) implemented; core_versions.rst § "cv32e40p_v1.0.0": returns 0x0, deliberate version encoding for this config

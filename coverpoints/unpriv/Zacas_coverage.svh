@@ -449,9 +449,189 @@ covergroup Zacas_amocas_q_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 `endif
+`ifdef ZABHA_SUPPORTED
+covergroup ZacasZabha_amocas_b_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cmp_rd_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
+        // Compare assignments of all 31 registers excluding x0
+        ignore_bins x0 = {x0};
+    }
+
+    cmp_rd_rs1_rs2_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
+        // Compare assignments of all registers excluding x0
+        ignore_bins x0 = {x0};
+    }
+
+    cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
+        // Compare assignments of all registers
+    }
+
+    cmp_rs1_rs2_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
+        // Compare assignments of all 31 registers excluding x0
+        ignore_bins x0 = {x0};
+    }
+
+    cp_align_byte : coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] iff (ins.trap == 0) {
+    }
+
+    cp_asm_count : coverpoint ins.ins_str == "amocas.b"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
+        // RD register assignment
+    }
+
+    cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
+        // RS1 register assignment (excluding x0)
+        ignore_bins x0 = {x0};
+    }
+
+    cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
+        // RS2 register assignment
+    }
+
+    cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
+        `ifdef UDB_MXLEN_32
+            bins zero     = {0};
+            bins one      = {32'b00000000000000000000000000000001};
+            bins two      = {32'b00000000000000000000000000000010};
+            bins min      = {32'b10000000000000000000000000000000};
+            bins minp1    = {32'b10000000000000000000000000000001};
+            bins max      = {32'b01111111111111111111111111111111};
+            bins maxm1    = {32'b01111111111111111111111111111110};
+            bins ones     = {32'b11111111111111111111111111111111};
+            bins onesm1   = {32'b11111111111111111111111111111110};
+            bins walkodd  = {32'b10101010101010101010101010101010};
+            bins walkeven = {32'b01010101010101010101010101010101};
+            wildcard bins random = {32'b01???????????????????????????010};
+        `else
+            bins zero     = {0};
+            bins one      = {64'b0000000000000000000000000000000000000000000000000000000000000001};
+            bins two      = {64'b0000000000000000000000000000000000000000000000000000000000000010};
+            bins min      = {64'b1000000000000000000000000000000000000000000000000000000000000000};
+            bins minp1    = {64'b1000000000000000000000000000000000000000000000000000000000000001};
+            bins Wmax     = {64'b0000000000000000000000000000000011111111111111111111111111111111};
+            bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
+            bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
+            bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
+            bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
+            bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
+            bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
+            bins onesm1   = {64'b1111111111111111111111111111111111111111111111111111111111111110};
+            bins walkodd  = {64'b1010101010101010101010101010101010101010101010101010101010101010};
+            bins walkeven = {64'b0101010101010101010101010101010101010101010101010101010101010101};
+            wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
+        `endif
+    }
+
+endgroup
+// ---------------------
+covergroup ZacasZabha_amocas_h_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    cmp_rd_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.trap == 0 )  {
+        // Compare assignments of all 31 registers excluding x0
+        ignore_bins x0 = {x0};
+    }
+
+    cmp_rd_rs1_rs2_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs1 & ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
+        // Compare assignments of all registers excluding x0
+        ignore_bins x0 = {x0};
+    }
+
+    cmp_rd_rs2 : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.current.rd == ins.current.rs2 & ins.trap == 0 )  {
+        // Compare assignments of all registers
+    }
+
+    cmp_rs1_rs2_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1)  iff (ins.current.rs1 == ins.current.rs2 & ins.trap == 0 )  {
+        // Compare assignments of all 31 registers excluding x0
+        ignore_bins x0 = {x0};
+    }
+
+    cp_align_hword : coverpoint {ins.current.rs1_val + ins.current.imm}[2:1] iff (ins.trap == 0) {
+    }
+
+    cp_asm_count : coverpoint ins.ins_str == "amocas.h"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_custom_aqrl : coverpoint ins.current.insn[26:25]  iff (ins.trap == 0 )  {
+    // All four combinations of acquire and release are legal on an AMO
+    }
+
+    cp_rd : coverpoint ins.get_gpr_reg(ins.current.rd)  iff (ins.trap == 0 )  {
+        // RD register assignment
+    }
+
+    cp_rs1_nx0 : coverpoint ins.get_gpr_reg(ins.current.rs1) iff (ins.trap == 0) {
+        // RS1 register assignment (excluding x0)
+        ignore_bins x0 = {x0};
+    }
+
+    cp_rs2 : coverpoint ins.get_gpr_reg(ins.current.rs2)  iff (ins.trap == 0 )  {
+        // RS2 register assignment
+    }
+
+    cp_rs2_edges : coverpoint unsigned'(ins.current.rs2_val)  iff (ins.trap == 0 )  {
+        `ifdef UDB_MXLEN_32
+            bins zero     = {0};
+            bins one      = {32'b00000000000000000000000000000001};
+            bins two      = {32'b00000000000000000000000000000010};
+            bins min      = {32'b10000000000000000000000000000000};
+            bins minp1    = {32'b10000000000000000000000000000001};
+            bins max      = {32'b01111111111111111111111111111111};
+            bins maxm1    = {32'b01111111111111111111111111111110};
+            bins ones     = {32'b11111111111111111111111111111111};
+            bins onesm1   = {32'b11111111111111111111111111111110};
+            bins walkodd  = {32'b10101010101010101010101010101010};
+            bins walkeven = {32'b01010101010101010101010101010101};
+            wildcard bins random = {32'b01???????????????????????????010};
+        `else
+            bins zero     = {0};
+            bins one      = {64'b0000000000000000000000000000000000000000000000000000000000000001};
+            bins two      = {64'b0000000000000000000000000000000000000000000000000000000000000010};
+            bins min      = {64'b1000000000000000000000000000000000000000000000000000000000000000};
+            bins minp1    = {64'b1000000000000000000000000000000000000000000000000000000000000001};
+            bins Wmax     = {64'b0000000000000000000000000000000011111111111111111111111111111111};
+            bins Wmaxm1   = {64'b0000000000000000000000000000000011111111111111111111111111111110};
+            bins Wmaxp1   = {64'b0000000000000000000000000000000100000000000000000000000000000000};
+            bins Wmaxp2   = {64'b0000000000000000000000000000000100000000000000000000000000000001};
+            bins W80      = {64'b0000000000000000000000000000000010000000000000000000000000000000};
+            bins W7F      = {64'b0000000000000000000000000000000001111111111111111111111111111111};
+            bins max      = {64'b0111111111111111111111111111111111111111111111111111111111111111};
+            bins maxm1    = {64'b0111111111111111111111111111111111111111111111111111111111111110};
+            bins ones     = {64'b1111111111111111111111111111111111111111111111111111111111111111};
+            bins onesm1   = {64'b1111111111111111111111111111111111111111111111111111111111111110};
+            bins walkodd  = {64'b1010101010101010101010101010101010101010101010101010101010101010};
+            bins walkeven = {64'b0101010101010101010101010101010101010101010101010101010101010101};
+            wildcard bins random = {64'b01???????????????????????????????????????????????????????????010};
+        `endif
+    }
+
+endgroup
+// ---------------------
+`endif
 function void zacas_sample(int hart, int issue, ins_t ins);
 
     case (traceDataQ[hart][issue][0].inst_name)
+`ifdef ZABHA_SUPPORTED
+        "amocas.b"     : begin
+            ZacasZabha_amocas_b_cg.sample(ins);
+        end
+`endif
+`ifdef ZABHA_SUPPORTED
+        "amocas.h"     : begin
+            ZacasZabha_amocas_h_cg.sample(ins);
+        end
+`endif
         "amocas.w"     : begin
             Zacas_amocas_w_cg.sample(ins);
         end
@@ -468,5 +648,6 @@ function void zacas_sample(int hart, int issue, ins_t ins);
             Zacas_amocas_q_cg.sample(ins);
         end
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

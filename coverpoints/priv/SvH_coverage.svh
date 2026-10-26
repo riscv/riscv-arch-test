@@ -499,6 +499,6 @@ covergroup SvH_cg with function sample(ins_t ins);
 
 endgroup
 
-function void vmh_sample(int hart, int issue, ins_t ins);
+function void svh_sample(int hart, int issue, ins_t ins);
     SvH_cg.sample(ins);
 endfunction

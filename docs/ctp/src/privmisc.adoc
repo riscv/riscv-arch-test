@@ -3,21 +3,13 @@
 
 ==== Sm1p13 Machine Mode 1.13
 
-[[t-Sm1p13-coverpoints]]
-.Sm1p13 Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/10NX0T4MgueqA4p7JNg4whCq2k3YZ9R73UCV88MtcIUA/edit?gid=294808438#gid=294808438[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/Sm1p13.adoc[]
 
 include::norm/Sm1p13_norm_rules.adoc[]
 
 ==== Smstateen Machine State Enable
 
-[[t-Smstateen-coverpoints]]
-.Smstateen Coverpoints
-,===
-https://docs.google.com/spreadsheets/d/1zm67nLKLn_tszDTzJQ9BIMOB7wuiskcuj3Mql4TOciA/edit?gid=1207083655#gid=1207083655[Google Sheet Testplan]
-,===
+include::{testplansdir}/priv/Smstateen.adoc[]
 
 include::norm/Smstateen_norm_rules.adoc[]
 
@@ -28,6 +20,9 @@ include::norm/Smstateen_norm_rules.adoc[]
 //,===
 //include::{testplansdir}/Smcsrind.adoc[]
 //,===
+No test plan yet.
+
+include::norm/Smcsrind_norm_rules.adoc[]
 
 ==== Sscsrind Supervisor-Mode Indirect CSR Access
 
@@ -52,6 +47,9 @@ include::norm/Smstateen_norm_rules.adoc[]
 //,===
 //include::{testplansdir}/Smrnmi.adoc[]
 //,===
+No test plan yet.
+
+include::norm/Smrnmi_norm_rules.adoc[]
 
 ==== Ssrnmi Supervisor-Mode Resumable Non-Maskable Interrupts
 
@@ -76,6 +74,9 @@ include::norm/Smstateen_norm_rules.adoc[]
 //,===
 //include::{testplansdir}/Smcdeleg.adoc[]
 //,===
+No test plan yet.
+
+include::norm/Smcdeleg_norm_rules.adoc[]
 
 ==== Ssccfg Counter Delegation
 
@@ -92,6 +93,9 @@ include::norm/Smstateen_norm_rules.adoc[]
 //,===
 //include::{testplansdir}/Smdbltrp.adoc[]
 //,===
+No test plan yet.
+
+include::norm/Smdbltrp_norm_rules.adoc[]
 
 ==== Ssdbltrp Supervisor Double Traps
 
@@ -100,6 +104,9 @@ include::norm/Smstateen_norm_rules.adoc[]
 //,===
 //include::{testplansdir}/Ssdbltrp.adoc[]
 //,===
+No test plan yet.
+
+include::norm/Ssdbltrp_norm_rules.adoc[]
 
 ==== Smctr Control Transfer Records
 
@@ -116,6 +123,9 @@ include::norm/Smstateen_norm_rules.adoc[]
 //,===
 //include::{testplansdir}/Ssqosid.adoc[]
 //,===
+No test plan yet.
+
+include::norm/Ssqosid_norm_rules.adoc[]
 
 TODO: This text is here to prevent Asciidoctor from rendering strangely after an empty table.
 Delete it when table is populated.

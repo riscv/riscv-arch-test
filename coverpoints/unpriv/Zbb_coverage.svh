@@ -2560,5 +2560,6 @@ function void zbb_sample(int hart, int issue, ins_t ins);
             Zbb_rorw_cg.sample(ins);
         end
 `endif
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

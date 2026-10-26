@@ -53,7 +53,7 @@ covergroup Zama16b_cg with function sample(ins_t ins);
             wildcard bins amominu_b = {AMOMINU_B};
         `endif // ZABHA_SUPPORTED
     }
-    offset_1byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) {
+    offset_1byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & `UDB_MXLEN'(4'hF)) {
         type_option.weight = 0;
         bins offsets[] = {[0:15]};
     }
@@ -83,7 +83,7 @@ covergroup Zama16b_cg with function sample(ins_t ins);
             wildcard bins amominu_h = {AMOMINU_H};
         `endif // ZABHA_SUPPORTED
     }
-    offset_2byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) {
+    offset_2byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & `UDB_MXLEN'(4'hF)) {
         type_option.weight = 0;
         bins offsets[] = {[0:14]};
     }
@@ -118,7 +118,7 @@ covergroup Zama16b_cg with function sample(ins_t ins);
             `endif // ZACAS_SUPPORTED
         `endif // ZAAMO_SUPPORTED
     }
-    offset_4byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) {
+    offset_4byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & `UDB_MXLEN'(4'hF)) {
         type_option.weight = 0;
         bins offsets[] = {[0:12]};
     }
@@ -156,7 +156,7 @@ covergroup Zama16b_cg with function sample(ins_t ins);
             `endif // ZACAS_SUPPORTED
         `endif // ZAAMO_SUPPORTED
     }
-    offset_8byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) {
+    offset_8byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & `UDB_MXLEN'(4'hF)) {
         type_option.weight = 0;
         bins offsets[] = {[0:8]};
     }
@@ -171,7 +171,7 @@ covergroup Zama16b_cg with function sample(ins_t ins);
                 type_option.weight = 0;
                 wildcard bins amocas_q = {AMOCAS_Q};
             }
-            offset_16byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & 4'hF) {
+            offset_16byte: coverpoint ((ins.current.rs1_val + ins.current.imm) & `UDB_MXLEN'(4'hF)) {
                 type_option.weight = 0;
                 bins offsets[] = {[0:0]};
             }

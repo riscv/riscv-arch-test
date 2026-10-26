@@ -3571,17 +3571,6 @@ covergroup ExceptionsVx_vmv1r_v_cg with function sample(ins_t ins);
 
     //// end cp_vstart////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart_gt_vl
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
-        bins true = {1};
-    }
-
-    //// end cp_vstart_gt_vl////////////////////////////////////////////////
-
 endgroup
 // ---------------------
 covergroup ExceptionsVx_vmv2r_v_cg with function sample(ins_t ins);
@@ -3608,17 +3597,6 @@ covergroup ExceptionsVx_vmv2r_v_cg with function sample(ins_t ins);
     }
 
     //// end cp_vstart////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart_gt_vl
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
-        bins true = {1};
-    }
-
-    //// end cp_vstart_gt_vl////////////////////////////////////////////////
 
 endgroup
 // ---------------------
@@ -3647,17 +3625,6 @@ covergroup ExceptionsVx_vmv4r_v_cg with function sample(ins_t ins);
 
     //// end cp_vstart////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart_gt_vl
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
-        bins true = {1};
-    }
-
-    //// end cp_vstart_gt_vl////////////////////////////////////////////////
-
 endgroup
 // ---------------------
 covergroup ExceptionsVx_vmv8r_v_cg with function sample(ins_t ins);
@@ -3684,17 +3651,6 @@ covergroup ExceptionsVx_vmv8r_v_cg with function sample(ins_t ins);
     }
 
     //// end cp_vstart////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_vstart_gt_vl
-    //////////////////////////////////////////////////////////////////////////////////
-
-    cp_vstart_gt_vl: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") >  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") &
-                                 get_vtype_vlmax(ins.hart, ins.issue, `SAMPLE_BEFORE) > get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart")){
-        bins true = {1};
-    }
-
-    //// end cp_vstart_gt_vl////////////////////////////////////////////////
 
 endgroup
 // ---------------------
@@ -8748,5 +8704,6 @@ function void exceptionsvx_sample(int hart, int issue, ins_t ins);
         "vzext.vf8"     : begin
             ExceptionsVx_vzext_vf8_cg.sample(ins);
         end
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

@@ -9,7 +9,7 @@
 """CSR test utilities for privileged test generation."""
 
 from testgen.asm.helpers import write_sigupd
-from testgen.asm.tsbi import tsbi_call
+from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 
@@ -48,6 +48,27 @@ def gen_csr_read_sigupd(check_reg: int, csr: tuple, test_data: TestData, mask_re
             f"and x{check_reg}, x{check_reg}, x{mask_reg}    # keep only masked bits {mask:#x}\n"
             + write_sigupd(check_reg, test_data)
         )
+
+
+def gen_csr_read_sigupd_in_mode(
+    check_reg: int, csr: tuple, test_data: TestData, mode: str, mask_reg: int | None = None
+) -> str:
+    """
+    Like gen_csr_read_sigupd, for code running in mode ("M", "S", "U", ...).
+
+    Reads the CSR directly when mode may access it, and otherwise through a T-SBI call.
+    """
+    csr_name, mask = csr
+    read = f"csrr x{check_reg}, {csr_name}"
+    tsbi_read = tsbi_call_or_direct(read, mode)
+    if tsbi_read == read:
+        return gen_csr_read_sigupd(check_reg, csr, test_data, mask_reg)
+    lines = [tsbi_read]
+    if mask is not None:
+        assert mask_reg is not None, "mask_reg must be provided when csr mask is not None"
+        lines.append(f"and x{check_reg}, x{check_reg}, x{mask_reg}    # keep only masked bits {mask:#x}")
+    lines.append(write_sigupd(check_reg, test_data))
+    return "\n".join(lines)
 
 
 def gen_csr_write_sigupd(check_reg: int, csr_name: str, test_data: TestData) -> str:
@@ -457,17 +478,14 @@ def write_stce(test_data: TestData, enable: bool, priv: str) -> list[str]:
     op = "csrs" if enable else "csrc"
     reg = test_data.int_regs.get_register()
 
-    def m_csr(instr: str) -> str:
-        return instr if priv == "M" else tsbi_call(instr)
-
     lines = [
         f"# {'Enable' if enable else 'Disable'} menvcfg.STCE{'' if priv == 'M' else ' via T-SBI'}",
         "#if __riscv_xlen == 64",
         f"LI(x{reg}, MENVCFG_STCE)",
-        m_csr(f"{op} menvcfg, x{reg}"),
+        tsbi_call_or_direct(f"{op} menvcfg, x{reg}", priv),
         "#else",
         f"LI(x{reg}, MENVCFGH_STCE)",
-        m_csr(f"{op} menvcfgh, x{reg}"),
+        tsbi_call_or_direct(f"{op} menvcfgh, x{reg}", priv),
         "#endif",
     ]
     test_data.int_regs.return_register(reg)

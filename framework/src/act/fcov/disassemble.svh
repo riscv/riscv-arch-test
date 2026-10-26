@@ -55,7 +55,9 @@ function string disassemble (logic [31:0] instrRaw);
   automatic bit        [5:0]  uimm     = instr[25:20];
   automatic bit        [1:0]  bs       = instr[31:30];
   automatic bit        [4:0]  uimm5    = instr[19:15];
+  automatic bit        [5:0]  uimm6_v  = {instr[26], instr[19:15]};
   automatic bit signed [4:0]  imm5     = instr[19:15];
+  automatic int cimm5 = (instr[24:20] == 0) ? -1 : instr[24:20];
 
   // Compressed immediates
   automatic bit signed [5:0]  immCIType     = {instr[12], instr[6:2]};
@@ -72,7 +74,7 @@ function string disassemble (logic [31:0] instrRaw);
   automatic bit signed [8:0]  immCBType     = {instr[12], instr[6:5], instr[2], instr[11:10], instr[4:3], 1'b0};
   automatic bit        [5:0]  immCBpType    = {instr[12], instr[6:2]};
   automatic bit signed [11:0] immCJType     = {instr[12], instr[8], instr[10:9], instr[6], instr[7], instr[2], instr[11], instr[5:3], 1'b0};
-  automatic bit        [8:0]  immCSSType    = {instr[8:7], instr[12:9], 2'b0};
+  automatic bit        [7:0]  immCSSType    = {instr[8:7], instr[12:9], 2'b0};
 
   // Other fields
   automatic bit     [2:0] frm  = instr[14:12];
@@ -101,8 +103,6 @@ function string disassemble (logic [31:0] instrRaw);
     NTL_PALL:$sformat(decoded, "ntl.pall");
     NTL_P1:  $sformat(decoded, "ntl.p1");
     NTL_S1:  $sformat(decoded, "ntl.s1");
-  `endif
-  `ifdef ZIHINTNTLZCA_COVERAGE
     C_NTL_ALL: $sformat(decoded, "c.ntl.all");
     C_NTL_PALL: $sformat(decoded, "c.ntl.pall");
     C_NTL_P1: $sformat(decoded, "c.ntl.p1");
@@ -293,6 +293,9 @@ function string disassemble (logic [31:0] instrRaw);
     CSRRCI: $sformat(decoded, "csrrci %s, %0d, %0d", rd, csr, rs1Bits);
     // Zifencei Extension
     FENCE_I: $sformat(decoded, "fence.i");
+    // Zibi Extension
+    BEQI: $sformat(decoded, "beqi %s, %0d, %0d", rs1, cimm5, immBType);
+    BNEI: $sformat(decoded, "bnei %s, %0d, %0d", rs1, cimm5, immBType);
     // M Extension
     MUL:    $sformat(decoded, "mul %s, %s, %s", rd, rs1, rs2);
     MULH:   $sformat(decoded, "mulh %s, %s, %s", rd, rs1, rs2);
@@ -1437,7 +1440,7 @@ function string disassemble (logic [31:0] instrRaw);
     VROL_VX:     $sformat(decoded, "vrol.vx %s, %s, %s%s", vd, vs2, rs1, vm);
     VROR_VV:     $sformat(decoded, "vror.vv %s, %s, %s%s", vd, vs2, vs1, vm);
     VROR_VX:     $sformat(decoded, "vror.vx %s, %s, %s%s", vd, vs2, rs1, vm);
-    VROR_VI:     $sformat(decoded, "vror.vi %s, %s, %0d%s", vd, vs2, uimm5, vm);
+    VROR_VI:     $sformat(decoded, "vror.vi %s, %s, %0d%s", vd, vs2, uimm6_v, vm);
     VWSLL_VV:    $sformat(decoded, "vwsll.vv %s, %s, %s%s", vd, vs2, vs1, vm);
     VWSLL_VX:    $sformat(decoded, "vwsll.vx %s, %s, %s%s", vd, vs2, rs1, vm);
     VWSLL_VI:    $sformat(decoded, "vwsll.vi %s, %s, %0d%s", vd, vs2, uimm5, vm);

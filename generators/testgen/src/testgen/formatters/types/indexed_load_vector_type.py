@@ -8,8 +8,8 @@
 
 from testgen.asm.vector_helpers import (
     VectorLoad,
-    get_lmul_flag,
     handle_parameter_exclusions,
+    index_register_safety,
     load_test_vtype,
     load_vec_regs,
     prep_mask_v,
@@ -22,27 +22,27 @@ from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig,
 from testgen.instructions.vector import parse_vector_instruction_info
 
 vlux_config = InstructionTypeConfig(
-    required_params={"vd", "rs1", "vs2"}, instruction_class=["load", "indexed"], vector_data=VectorTypeConfig()
+    required_params={"vd", "rs1", "vs2"},
+    instruction_class=["load", "indexed"],
+    vector_data=VectorTypeConfig(index_register="vs2"),
 )
 
 vlox_config = InstructionTypeConfig(
-    required_params={"vd", "rs1", "vs2"}, instruction_class=["load", "indexed"], vector_data=VectorTypeConfig()
+    required_params={"vd", "rs1", "vs2"},
+    instruction_class=["load", "indexed"],
+    vector_data=VectorTypeConfig(index_register="vs2"),
 )
 
 vluxseg_config = InstructionTypeConfig(
     required_params={"vd", "rs1", "vs2"},
     instruction_class=["load", "indexed", "segmented"],
-    vector_data=VectorTypeConfig(
-        overlap_constraints={("vd", "vs2")},
-    ),
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, index_register="vs2"),
 )
 
 vloxseg_config = InstructionTypeConfig(
     required_params={"vd", "rs1", "vs2"},
     instruction_class=["load", "indexed", "segmented"],
-    vector_data=VectorTypeConfig(
-        overlap_constraints={("vd", "vs2")},
-    ),
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, index_register="vs2"),
 )
 
 
@@ -120,51 +120,14 @@ def format_vlxseg_like_type(
         VectorLoad(reg="vd", vl=vd_vl, no_fractional_load=True, segments=segments),
     ]
 
-    # Coverage workaround: It only checks for vs2_edges at SEW, not at the correct EEW, so
-    # if the label is zero_emul8 or random_within_2vlmax, it needs special handling
-    if params.vs2_val_pointer.startswith("vs2_edge_random_within_2vlmax_ls"):
-        # FIXME: We are required load at wrong sew to make coverage happy
-        to_load.append(VectorLoad(reg="vs2"))
-    elif params.vs2_val_pointer.startswith("vs2_edge_zero_emul8_ls"):
-        # FIXME: Coverage requires a load at vlmax here as the entire register must be zero
-        to_load.append(VectorLoad(reg="vs2", lmul=max(index_emul, 1), sew=index_eew, vl="vlmax"))
-    else:
-        to_load.append(VectorLoad(reg="vs2", lmul=index_emul, sew=index_eew))
+    to_load.append(VectorLoad(reg="vs2", lmul=index_emul, sew=index_eew))
 
     load_code, random_vl_reg = load_vec_regs(to_load, params, test_data)
     setup.extend(load_code)
 
     # Ensure that the data in vs2 is within the range [0, 2*vlmax) and sew-aligned
     if not params.ignore_vector_safety:
-        setup.extend(
-            [
-                "# Ensure that the data in vs2 is within the range [0, 2*vlmax) and sew-aligned",
-                f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, ta, ma",
-                f"add x{params.temp_reg}, x{params.temp_reg}, x{params.temp_reg}",
-            ]
-        )
-        if params.vs2_val_pointer == "vs2_edge_random_within_2vlmax_ls":
-            # FIXME: Coverage workaround
-            temp_reg2 = test_data.int_regs.get_register(exclude_regs=[0])
-            setup.append(f"vsetvli x{temp_reg2}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, tu, mu")
-            test_data.int_regs.return_register(temp_reg2)
-        elif params.vl == "vlmax":
-            temp_reg2 = test_data.int_regs.get_register(exclude_regs=[0])
-            setup.append(f"vsetvli x{temp_reg2}, x0, e{index_eew}, m{get_lmul_flag(index_emul)}, tu, mu")
-            test_data.int_regs.return_register(temp_reg2)
-        elif params.vl == "random":
-            setup.append(f"vsetvli x0, {random_vl_reg}, e{index_eew}, m{get_lmul_flag(index_emul)}, tu, mu")
-        else:
-            assert isinstance(params.vl, int)
-            setup.append(f"vsetivli x0, {params.vl}, e{index_eew}, m{get_lmul_flag(index_emul)}, tu, mu")
-        # Construct a factor that masks off the correct bits to align load to the SEW
-        sew_alignment_factor = -params.sew // 8
-        setup.extend(
-            [
-                f"vremu.vx v{params.vs2}, v{params.vs2}, x{params.temp_reg}",
-                f"vand.vi v{params.vs2}, v{params.vs2}, {sew_alignment_factor}",
-            ]
-        )
+        setup.extend(index_register_safety(params.vs2, index_eew, segments, random_vl_reg, test_data, params))
 
     setup.append(f"LA (x{params.rs1}, {params.rs1val_pointer})")
     setup.append(load_test_vtype(params, random_vl_reg))

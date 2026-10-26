@@ -387,5 +387,6 @@ function void zihpm_sample(int hart, int issue, ins_t ins);
         "csrrs"     : begin
             Zihpm_csrrs_cg.sample(ins);
         end
+        default: ; // a case needs at least one item, and some configurations select none
     endcase
 endfunction

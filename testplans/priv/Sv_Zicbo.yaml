@@ -85,26 +85,12 @@ coverpoints:
     bins: |-
       PTE_r_set_w_unset_upage_d x PageType_d x cbo_ins x mode {U-mode}
       = 7 bins on RV64, 2 on RV32
-  - name: cp_PTE_rw_unset_zicbom_s
-    goal: Verify Zicbom CBOs raise a store/AMO page fault with R=0 and W=0 from S-mode
-    description: "S-mode: execute-only leaf PTE with PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute cbo.clean, cbo.flush and cbo.inval on va_data."
-    expectation: Store/AMO page fault (scause = 15).
-    bins: |-
-      PTE_x_spage_d x PageType_d x store_page_fault x cbo_ins x mode {S-mode}
-      = 7 bins on RV64, 2 on RV32
-    id: cbm_unperm_fault
+  - goal: Zicbom CBOs on an execute-only page
+    status: Not tested
+    notes: |-
+      Not tested because the outcome is UNSPECIFIED. When a page permits instruction fetch but neither loads nor stores, cmo.adoc (the paragraph after cbm_access) lets the implementation either perform cbo.clean/flush/inval or raise a store page fault, so a test has no single expected result.
     rules:
-      - "[norm:cbm_unperm_fault]"
-  - name: cp_PTE_rw_unset_zicbom_u
-    goal: Verify Zicbom CBOs raise a store/AMO page fault with R=0 and W=0 from U-mode
-    description: "U-mode: execute-only leaf PTE with PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute cbo.clean, cbo.flush and cbo.inval on va_data."
-    expectation: Store/AMO page fault (scause = 15).
-    bins: |-
-      PTE_x_upage_d x PageType_d x store_page_fault x cbo_ins x mode {U-mode}
-      = 7 bins on RV64, 2 on RV32
-    id: cbm_unperm_fault
-    rules:
-      - "[norm:cbm_unperm_fault]"
+      - cbm_access
   - name: cp_PTE_w_unset_zicboz_s
     goal: Verify cbo.zero raises a store/AMO page fault with W=0 from S-mode
     description: "S-mode: RX leaf PTE (W=0) with PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode), with sstatus.SUM=0 and SUM=1. Execute cbo.zero on va_data."
@@ -132,6 +118,9 @@ coverpoints:
     bins: |-
       PTE_spage_d x PageType_d x store_page_fault x cbo_ins x mode {U-mode}
       = 14 bins on RV64, 4 on RV32
+    id: cbm_unperm_fault
+    rules:
+      - "[norm:cbm_unperm_fault]"
   - name: cp_upage_sumunset_cbo_s
     goal: Verify an S-mode CBO to a user page (U=1) raises a store/AMO page fault when sstatus.SUM=0
     description: "S-mode with sstatus.SUM=0: user RWX leaf PTE (U=1), at every page-table level (4 KiB page and each superpage size of the Sv mode). Execute the CBOs on va_data."
@@ -139,6 +128,9 @@ coverpoints:
     bins: |-
       PTE_upage_d x PageType_d x store_page_fault x cbo_ins x sum_sstatus x mode {S-mode}
       = 14 bins on RV64, 4 on RV32
+    id: cbm_unperm_fault
+    rules:
+      - "[norm:cbm_unperm_fault]"
   - name: cp_Abit_unset_cbo_s
     goal: Verify a CBO through a PTE with A=0 raises a store/AMO page fault from S-mode (no hardware A update)
     description: "S-mode: leaf PTE with A=0 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode); menvcfg.ADUE=0. Execute the CBOs on va_data."

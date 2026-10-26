@@ -134,19 +134,26 @@ include::norm/Zicfilp_norm_rules.adoc[]
 
 ==== Zicfiss Shadow Stack
 
-In Privileged section because it has both unpriv and privileged behaviors.  ZicfissU holds the instruction-behavior coverpoints, which ZicfissS and ZicfissH re-run in their own modes; ZicfissS and ZicfissSm add the supervisor and machine gating coverpoints.  ZicfissH covers VS/VU-mode (see <<t-ZicfissH-coverpoints>>).
+In Privileged section because it has both unpriv and privileged behaviors.  The Zicfiss suite has one group per privilege mode: Zicfiss_U, Zicfiss_S, Zicfiss_Sm and Zicfiss_H.  Zicfiss_U holds the instruction-behavior coverpoints, which Zicfiss_S and Zicfiss_H re-run in their own modes; Zicfiss_S and Zicfiss_Sm add the supervisor and machine gating coverpoints.  Zicfiss_H covers VS/VU-mode.  Zicfiss_U also covers vector accesses to a shadow stack page when Zve32x is implemented.
+The Zicfiss_Sm tests require Sm, so they are not part of a certificate without Sm, such as RVA23.
 
-===== ZicfissU User-Mode Shadow Stack
+include::{testplansdir}/priv/Zicfiss_common.adoc[]
 
-include::{testplansdir}/priv/ZicfissU.adoc[]
+===== Zicfiss_U User-Mode Shadow Stack
 
-===== ZicfissS Supervisor-Mode Shadow Stack
+include::{testplansdir}/priv/Zicfiss_U.adoc[]
 
-include::{testplansdir}/priv/ZicfissS.adoc[]
+===== Zicfiss_S Supervisor-Mode Shadow Stack
 
-===== ZicfissSm Machine-Mode Shadow Stack
+include::{testplansdir}/priv/Zicfiss_S.adoc[]
 
-include::{testplansdir}/priv/ZicfissSm.adoc[]
+===== Zicfiss_Sm Machine-Mode Shadow Stack
+
+include::{testplansdir}/priv/Zicfiss_Sm.adoc[]
+
+===== Zicfiss_H Hypervisor Shadow Stack
+
+include::{testplansdir}/priv/Zicfiss_H.adoc[]
 
 include::norm/Zicfiss_norm_rules.adoc[]
 

@@ -320,6 +320,9 @@
 `ifdef ZICFILP_COVERAGE
   `include "Zicfilp_coverage.svh"
 `endif
+`ifdef ZICFISS_COVERAGE
+  `include "Zicfiss_coverage.svh"
+`endif
 `ifdef ZICNTR_COVERAGE
   `include "Zicntr_coverage.svh"
 `endif

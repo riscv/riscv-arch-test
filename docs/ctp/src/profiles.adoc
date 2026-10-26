@@ -174,7 +174,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |SsstateenH|Hypervisor State Enable|<<t-SsstateenH-coverpoints>>|||o|o|x
 |SvaduH|Hypervisor TLB Update|<<t-SvaduH-coverpoints>>|||o|o|o
 |ZicfilpH|Hypervisor Landing Pad|<<t-ZicfilpH-coverpoints>>|||o|o|o
-|ZicfissH|Hypervisor Shadow Stack|<<t-ZicfissH-coverpoints>>|||o|o|o
 8+^|Miscellaneous RV{A/B}23 Extensions
 |Ss1p13|Supervisor 1p13|<<t-Ss1p13-coverpoints>>||||x|x
 |Ssnpm|Pointer Masking|<<t-Ssnpm-coverpoints>>||||x|x
@@ -183,9 +182,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zabha|Subword Atomics|<<t-Zabha-coverpoints>>||||o|o
 |Zama16b|Main memory PMA supports misaligned atomics within 16-byte regions|<<t-Zama16b-coverpoints>>|||||x
 |Zicfilp|Landing Pads|<<t-Zicfilp_common-coverpoints>>||||o|o
-|ZicfissU|User Shadow Stack|<<t-ZicfissU-coverpoints>>||||o|o
-|ZicfissS|Supervisor Shadow Stack|<<t-ZicfissS-coverpoints>>||||o|o
-|ZicfissSm|Machine Shadow Stack|<<t-ZicfissSm-coverpoints>>||||o|o
+|Zicfiss|Shadow Stack|<<t-Zicfiss_common-coverpoints>>||||o|o
 |Zfbfmin|BF16 Convert|<<t-Zfbfmin-coverpoints>>||||o|o
 |Zimop|Maybe-Ops|<<t-Zimop-coverpoints>>||||x|x
 |Zcmop|Compressed Maybe-Ops|<<t-Zcmop-coverpoints>>||||x|x

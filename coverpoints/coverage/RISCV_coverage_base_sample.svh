@@ -319,6 +319,9 @@
     `ifdef COVER_ZICFILP
         zicfilp_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_ZICFISS
+        zicfiss_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_ZICNTR
         zicntr_sample(hart, issue, ins);
     `endif

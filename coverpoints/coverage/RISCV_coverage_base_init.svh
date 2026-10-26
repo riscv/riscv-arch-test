@@ -422,6 +422,10 @@
         `cover_info("//      Zicfilp - Enabled");
         `include "Zicfilp_coverage_init.svh"
     `endif
+    `ifdef COVER_ZICFISS
+        `cover_info("//      Zicfiss - Enabled");
+        `include "Zicfiss_coverage_init.svh"
+    `endif
     `ifdef COVER_ZICNTR
         `cover_info("//      Zicntr - Enabled");
         `include "Zicntr_coverage_init.svh"

@@ -7,8 +7,9 @@
     // was generated during a write to its corresponding `mhpmevent`
     // CSR (which could change the monitored event).
     "hpmcounter_increments_in_self_hpmevent_write": false,
-    // The precision of the HPM counter, upto 64 bits.
-    "hpmcounter_width_bits": 64,
+    // The precision of the HPM counter, upto 64 bits. CV32E20 builds
+    // mhpmcounter3..12 with MHPMCounterWidth = 40.
+    "hpmcounter_width_bits": 40,
     // The width of the `mhpmevent` CSRs, upto 64 bits, if Sscofpmf is
     // not supported.  On RV32 without Sscofpmf, this can be upto 32,
     // since the `mhpmeventh` CSRs are not accessible.
@@ -22,12 +23,14 @@
       // This bits in this value control whether the corresponding
       // bits of the CSR are writable.  Note that bit 1 cannot be written
       // to as it is read-only zero.
-      "writable_bits": { "len": 32, "value": "0xFFFF_FFFD" }
+      // CV32E20 implements bits 0 and 2..12 (mcycle, minstret, mhpmcounter3..12).
+      "writable_bits": { "len": 32, "value": "0x0000_1FFD" }
     },
     "writable_fiom": true,
+    // CV32E20 implements mhpmcounter3..12 (MHPMCounterNum = 10); the others are read-only zero.
     "writable_hpm_counters": {
       "len": 32,
-      "value": "0xFFFF_FFFF"
+      "value": "0x0000_1FF8"
     },
     // The top 29 bits control whether the corresponding bits of `scounteren`
     // that control HPM counters are read-only zero. CV32E20 has no S-mode,
@@ -289,9 +292,10 @@
     ]
   },
   "platform": {
+    // cve2_pkg: CSR_MVENDORID_VALUE = 0x602, CSR_MARCHID_VALUE = 35, CSR_MIMPID_VALUE = 0.
     "vendorid": 1538,
-    "archid": 36,
-    "impid": 256,
+    "archid": 35,
+    "impid": 0,
     "hartid": 0,
     // Cache block size, specified as a power of 2.
     "cache_block_size_exp": 6,

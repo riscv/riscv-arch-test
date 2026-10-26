@@ -57,7 +57,6 @@
 // If RVMODEL_ACCESS_FAULT_ADDRESS is not defined, no access faults are tested
 
 ##### MTIME #####
-// If RVMODEL_MTIME_ADDRESS is not defined, no machine timer interrupts are tested
 
 #ifdef RVTEST_EMULATE_TIME_CSR
   #ifndef RVMODEL_MTIME_ADDRESS
@@ -72,10 +71,6 @@
   #ifndef RVMODEL_MTIMECMP_ADDRESS
     #error "RVMODEL_MTIMECMP_ADDRESS not defined. Make sure to define it in rvmodel_macros.h."
   #endif
-#endif
-
-#ifndef RVMODEL_MAX_CYCLES_PER_TIMER_TICK
-  #define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 #endif
 
 // Interrupt macros are used only by the trap handler and privileged tests, which need a
@@ -99,8 +94,10 @@
   #error "UDB_MEI_INTR_IMPL is set but RVMODEL_SET_MEXT_INT is not defined. Define it in rvmodel_macros.h."
 #endif
 
-#if defined(UDB_MTI_INTR_IMPL) && !defined(RVMODEL_MTIMECMP_ADDRESS)
-  #error "UDB_MTI_INTR_IMPL is set but RVMODEL_MTIMECMP_ADDRESS is not defined. Define it in rvmodel_macros.h."
+// Machine timer interrupts are armed by writing mtimecmp relative to mtime, so they need
+// RVMODEL_MTIME_ADDRESS, which in turn requires RVMODEL_MTIMECMP_ADDRESS (checked above).
+#if defined(UDB_MTI_INTR_IMPL) && !defined(RVMODEL_MTIME_ADDRESS)
+  #error "UDB_MTI_INTR_IMPL is set but RVMODEL_MTIME_ADDRESS is not defined. Define it in rvmodel_macros.h."
 #endif
 
 #if defined(UDB_MSI_INTR_IMPL) && !defined(RVMODEL_MSIP_ADDRESS) && !defined(RVMODEL_SET_MSW_INT)
@@ -129,9 +126,18 @@
   #ifndef RVMODEL_CLR_MSW_INT_M
     #define RVMODEL_CLR_MSW_INT_M RVMODEL_CLR_MSW_INT
   #endif
+
+  #ifndef RVMODEL_SET_MSW_INT_M
+    #define RVMODEL_SET_MSW_INT_M RVMODEL_SET_MSW_INT
+  #endif
 #endif
 
 ##### Supervisor Interrupts #####
+// Sstc timer interrupts are armed relative to the time CSR (Zicntr), or to mtime without Zicntr.
+#if defined(SSTC_SUPPORTED) && !defined(ZICNTR_SUPPORTED) && !defined(RVMODEL_MTIME_ADDRESS)
+  #error "Sstc is implemented without Zicntr, so RVMODEL_MTIME_ADDRESS is needed to read the time. Define it in rvmodel_macros.h."
+#endif
+
 #ifdef S_SUPPORTED
   // RVMODEL_SET_SEXT_INT / RVMODEL_CLR_SEXT_INT are optional: platforms without a supervisor
   // external interrupt controller leave them undefined and the trap handler uses mip.SEIP.
@@ -156,9 +162,36 @@
       #define RVMODEL_CLR_SSW_INT_M RVMODEL_CLR_SSW_INT
     #endif
   #endif
+
+  #ifndef RVMODEL_SET_SSW_INT_M
+    #ifdef RVMODEL_SET_SSW_INT
+      #define RVMODEL_SET_SSW_INT_M RVMODEL_SET_SSW_INT
+    #endif
+  #endif
 #endif
 
 #endif // STANDARD_SM_SUPPORTED || S_SUPPORTED
+
+##### Guest External Interrupts #####
+// RVTEST_SGEI_INTR_IMPL (H with GEILEN > 0, derived_config.h) says guest interrupt files exist.
+// hgeip is read-only, so the platform must provide a way to raise and clear each hgeip bit.
+#if defined(RVTEST_SGEI_INTR_IMPL) && !defined(RVMODEL_SET_GUEST_EXT_INT)
+  #error "H is implemented with NUM_EXTERNAL_GUEST_INTERRUPTS (GEILEN) > 0 but RVMODEL_SET_GUEST_EXT_INT is not defined. Define it in rvmodel_macros.h, or set GEILEN to 0 if the platform has no guest interrupt files."
+#endif
+
+#ifdef RVMODEL_SET_GUEST_EXT_INT
+  #ifndef RVMODEL_CLR_GUEST_EXT_INT
+    #error "RVMODEL_SET_GUEST_EXT_INT is defined but RVMODEL_CLR_GUEST_EXT_INT is not. Define both in rvmodel_macros.h."
+  #endif
+
+  #ifndef RVMODEL_CLR_GUEST_EXT_INT_M
+    #define RVMODEL_CLR_GUEST_EXT_INT_M RVMODEL_CLR_GUEST_EXT_INT
+  #endif
+
+  #ifndef RVMODEL_SET_GUEST_EXT_INT_M
+    #define RVMODEL_SET_GUEST_EXT_INT_M RVMODEL_SET_GUEST_EXT_INT
+  #endif
+#endif
 
 ##### Sscofpmf #####
 #ifdef SSCOFPMF_SUPPORTED
@@ -192,4 +225,10 @@
   #if UDB_NUM_USABLE_PMP_ENTRIES < 8
     #error "DUTs with fewer than 8 usable PMP entries are not currently supported by ACTs. Please report this as an issue on the riscv/riscv-arch-test repository."
   #endif
+#endif
+
+// Generated vector tests size their data and signature regions for VLEN <= RVTEST_VLEN_MAX.
+// Larger VLENs are legal but not yet supported.
+#if defined(RVTEST_VLEN_MAX) && (UDB_VLEN > RVTEST_VLEN_MAX)
+    #error "UDB_VLEN exceeds RVTEST_VLEN_MAX, the largest VLEN the vector tests currently support. Please open an issue at https://github.com/riscv/riscv-arch-test/issues with your VLEN so that support can be prioritized."
 #endif

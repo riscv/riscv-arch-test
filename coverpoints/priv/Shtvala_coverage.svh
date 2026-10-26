@@ -1,0 +1,143 @@
+///////////////////////////////////////////
+//
+// RISC-V Architectural Functional Coverage Covergroups
+//
+// Shtvala: guest-page faults from VS-mode and VU-mode write htval with the faulting guest physical address.
+// Written: David_Harris@hmc.edu 24 September 2026
+//
+// Copyright (C) 2026 Harvey Mudd College
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+`define COVER_SHTVALA
+
+`include "general/RISCV_coverage_hypervisor.svh"
+
+covergroup Shtvala_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    `ifdef H_TWO_STAGE
+        lw : coverpoint ins.current.insn {
+            wildcard bins lw = {LW};
+        }
+        sw : coverpoint ins.current.insn {
+            wildcard bins sw = {SW};
+        }
+        jalr : coverpoint ins.current.insn {
+            wildcard bins jalr = {JALR};
+        }
+        instr_guest_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+            iff (ins.current.csr_wb[CSR_SCAUSE]) {
+            bins scause = {20};
+        }
+        load_guest_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+            iff (ins.current.csr_wb[CSR_SCAUSE]) {
+            bins scause = {21};
+        }
+        store_guest_page_fault : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code")
+            iff (ins.current.csr_wb[CSR_SCAUSE]) {
+            bins scause = {23};
+        }
+        // The access whose guest physical address htval holds (>> 2): the final access, whose address has the
+        // page offset of the virtual address, or the implicit read of a VS-stage PTE, after which htinst holds a
+        // pseudoinstruction.  The test sets htval to a random value before each trap.
+        htval_gpa : coverpoint {
+            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") == (`UDB_MXLEN == 64 ? 'h3000 : 'h2000),
+            ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") << 2) & 'hFFF) ==
+                ((ins.current.rs1_val + ins.current.imm) & 'hFFF)
+        } {
+            bins final_gpa    = {2'b01};
+            bins implicit_gpa = {2'b10};
+        }
+
+        hlv_w : coverpoint ins.current.insn {
+            wildcard bins hlv_w = {HLV_W};
+        }
+        hsv_w : coverpoint ins.current.insn {
+            wildcard bins hsv_w = {HSV_W};
+        }
+        hlvx_wu : coverpoint ins.current.insn {
+            wildcard bins hlvx_wu = {HLVX_WU};
+        }
+        // As htval_gpa, for HLV, HSV, AMOs and LR, whose address is rs1 alone
+        htval_gpa_hlsv : coverpoint {
+            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") == (`UDB_MXLEN == 64 ? 'h3000 : 'h2000),
+            ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") << 2) & 'hFFF) ==
+                (ins.current.rs1_val & 'hFFF)
+        } {
+            bins final_gpa    = {2'b01};
+            bins implicit_gpa = {2'b10};
+        }
+
+        hstatus_hu: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hu")[0] {
+            bins on = {1};
+        }
+
+        cp_load_guest_page_fault:  cross priv_mode_vs_vu, lw,   load_guest_page_fault,  htval_gpa;
+        cp_store_guest_page_fault: cross priv_mode_vs_vu, sw,   store_guest_page_fault, htval_gpa;
+        cp_instr_guest_page_fault: cross priv_mode_vs_vu, jalr, instr_guest_page_fault, htval_gpa;
+        // HLV and HSV from HS-mode and U-mode (hstatus.HU = 1)
+        cp_hlv_guest_page_fault:   cross priv_mode_s_u, hlv_w, load_guest_page_fault,  htval_gpa_hlsv, hstatus_hu;
+        cp_hlvx_guest_page_fault:  cross priv_mode_s_u, hlvx_wu, load_guest_page_fault, htval_gpa_hlsv, hstatus_hu;
+        cp_hsv_guest_page_fault:   cross priv_mode_s_u, hsv_w, store_guest_page_fault, htval_gpa_hlsv, hstatus_hu;
+
+        `ifdef ZAAMO_SUPPORTED
+            amoswap_w : coverpoint ins.current.insn {
+                wildcard bins amoswap_w = {AMOSWAP_W};
+            }
+            cp_amo_guest_page_fault: cross priv_mode_vs_vu, amoswap_w, store_guest_page_fault, htval_gpa_hlsv;
+        `endif
+        `ifdef ZALRSC_SUPPORTED
+            lr_w : coverpoint ins.current.insn {
+                wildcard bins lr_w = {LR_W};
+            }
+            cp_lr_guest_page_fault:  cross priv_mode_vs_vu, lr_w, load_guest_page_fault, htval_gpa_hlsv;
+        `endif
+
+        // A 32-bit instruction two bytes below the end of a page, which IALIGN = 16 allows.  The fetch faults on its
+        // second half: htval holds the guest physical address of the page boundary.  As straddle and
+        // htval_page_boundary below, which only harts that perform misaligned accesses compile.
+        `ifdef ZCA_SUPPORTED
+            straddle_fetch : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
+                bins page_end = {'hFFE};
+            }
+            htval_page_boundary_fetch : coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") << 2) & 'hFFF) {
+                bins page_boundary = {0};
+            }
+            cp_instr_straddle_guest_page_fault: cross priv_mode_vs_vu, jalr, instr_guest_page_fault, straddle_fetch,
+                                                      htval_page_boundary_fetch;
+        `endif
+
+        // A hart that performs misaligned accesses faults on the part in the next page, however it splits the access.
+        // Other harts raise an address-misaligned exception.
+        `ifdef UDB_MISALIGNED_LDST
+            // A word two bytes below the end of a page, which continues into the next page
+            straddle : coverpoint ((ins.current.rs1_val + ins.current.imm) & 'hFFF) {
+                bins page_end = {'hFFE};
+            }
+            // As straddle, for HLV and HSV, whose address is rs1 alone: their disassembly has no immediate operand, so
+            // ins.current.imm is not set for them
+            straddle_hlsv : coverpoint (ins.current.rs1_val & 'hFFF) {
+                bins page_end = {'hFFE};
+            }
+            // htval holds the guest physical address of the page boundary, where the faulting part begins.  The
+            // test sets htval to a random value before each trap.
+            htval_page_boundary : coverpoint ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") << 2) & 'hFFF) {
+                bins page_boundary = {0};
+            }
+
+            cp_load_straddle_guest_page_fault:  cross priv_mode_vs_vu, lw, load_guest_page_fault, straddle, htval_page_boundary;
+            cp_store_straddle_guest_page_fault: cross priv_mode_vs_vu, sw, store_guest_page_fault, straddle, htval_page_boundary;
+            // HLV and HSV from HS-mode and U-mode (hstatus.HU = 1)
+            cp_hlv_straddle_guest_page_fault:   cross priv_mode_s_u, hlv_w, load_guest_page_fault, straddle_hlsv, htval_page_boundary, hstatus_hu;
+            cp_hsv_straddle_guest_page_fault:   cross priv_mode_s_u, hsv_w, store_guest_page_fault, straddle_hlsv, htval_page_boundary, hstatus_hu;
+        `endif
+    `endif
+endgroup
+
+function void shtvala_sample(int hart, int issue, ins_t ins);
+    Shtvala_cg.sample(ins);
+endfunction

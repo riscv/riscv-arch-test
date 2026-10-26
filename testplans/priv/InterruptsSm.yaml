@@ -26,8 +26,10 @@ setup:
         write mtvec.MODE = {00, 01} if each supported
       S: Same as Sm
       U: Same as Sm
-      VS: "***"
-      VU: "***"
+      VS: |-
+        Same as Sm
+        mideleg.VS*I are read-only 1 and hideleg boots with 0s, so VS-level interrupts trap to HS
+      VU: Same as VS
     - step: trigger_interrupts <type>
       Sm: |-
         RVTEST_SET_<type>_INT_<priv>
@@ -165,6 +167,43 @@ coverpoints:
       - mstatus_tw_umode_op
       - MSTATUS_TW_TIME_LIMIT
       - MSTATUS_TW_ALWAYS_ILLEGAL
+  - name: cp_wfi_vs
+    goal: WFI waits in VS-mode until timer interrupt
+    description: |-
+      As cp_wfi, in VS-mode, with mstatus.TW = 0 and hstatus.VTW = 0
+    expectation: Wait for timer interrupt.  mstatus.MIE does not affect results.
+    bins: 2 MIE
+    rules:
+      - hstatus_vtw_op
+  - name: |-
+      cp_wfi_timeout_vs
+      cp_wfi_timeout_vs_vtw_one
+    goal: WFI in VS-mode follows mstatus.TW and hstatus.VTW
+    description: |-
+      As cp_wfi_timeout, in VS-mode, with (mstatus.TW, hstatus.VTW) = (1, 0), (1, 1), (0, 1)
+    expectation: TW = 1 raises illegal instruction.  TW = 0, VTW = 1 raises virtual instruction.  Either may instead complete within a bounded time.
+    bins: 3 TW/VTW * 2 MIE * 2 mie.MTIE
+    rules:
+      - hstatus_vtw_op
+      - H_virtinst_wfi_vtw1_tw0
+      - vtw_virtinstr
+  - name: cp_wfi_vs_tw_vtw
+    goal: WFI in VS-mode with every mstatus.TW and hstatus.VTW
+    description: |-
+      The full cross of mstatus.TW and hstatus.VTW for VS-mode WFI with MIE = {0/1}: the waiting WFI of cp_wfi_vs (TW = VTW = 0) and the trapping WFIs of cp_wfi_timeout_vs and cp_wfi_timeout_vs_vtw_one.
+    expectation: As cp_wfi_vs, cp_wfi_timeout_vs and cp_wfi_timeout_vs_vtw_one
+    bins: 2 TW * 2 VTW * 2 MIE
+    rules:
+      - mstatus_tw_op
+      - hstatus_vtw_op
+  - name: cp_wfi_timeout_vu
+    goal: WFI in VU-mode follows mstatus.TW, not hstatus.VTW
+    description: |-
+      As cp_wfi_timeout, in VU-mode, with mstatus.TW = {0/1} and hstatus.VTW = {0/1}
+    expectation: TW = 1 raises illegal instruction (or completes within a bounded time).  TW = 0 raises virtual instruction whatever VTW is.
+    bins: 2 TW * 2 VTW * 2 MIE * 2 mie.MTIE
+    rules:
+      - H_virtinst_vu_wfi_tw0
   - name: cp_write_stip_sstc
     goal: test STIP writability when SSTC supported
     description: |-

@@ -635,7 +635,7 @@
     "H": {
       "mutable_misa": true,
       "supported": true,
-      "geilen": 6,
+      "geilen": 0,
       // Whether an implicit access to a VS-stage PTE sets the D bit of a writable G-stage PTE
       "implicit_vs_pte_access_sets_gstage_d": false,
       "guest_page_fault_writes_htval": true,
@@ -1045,13 +1045,13 @@
         // corresponding exception is supported by the trigger.
         // Triggers for reserved exceptions are not supported.  This
         // value is ignored when `etrigger` is not supported.
-        "supported_exceptions": { "len": "xlen", "value": "0" }
+        "supported_exceptions": { "len": "xlen", "value": "0xFDBFFF" }
       },
       "hcontext": { "supported": true },
       // Triggers
       "icount": {
         "supported": true,
-        "count_hardwired_one": false,
+        "count_hardwired_one": true,
         // Whether a `tdata1` write to an `icount` trigger with
         // `count`=1 also makes it pending when that write's instruction
         // matches the trigger.
@@ -1063,7 +1063,7 @@
         // corresponding interrupt is supported by the trigger.
         // Triggers for reserved interrupts are not supported.  This
         // value is ignored when `itrigger` is not supported.
-        "supported_interrupts": { "len": "xlen", "value": "0" }
+        "supported_interrupts": { "len": "xlen", "value": "0x3EEE" }
       },
       "mcontrol6": {
         "supported": true,
@@ -1083,29 +1083,29 @@
         "mhselect": {
           // Values 1, 4 and 5, match on `mcontext`. Requires the
           // `mcontext` CSR. Values 1 and 5 also require H.
-          "mcontext_match": true,
+          "mcontext_match": false,
           // Values 2 and 6, match on the VMID in `hgatp`. Requires H.
-          "vmid_match": true
+          "vmid_match": false
         },
         "sselect": {
           // Value 1, match on `scontext`. Requires S and the `scontext`
           // CSR.
-          "scontext_match": true,
+          "scontext_match": false,
           // Value 2, match on the ASID in `satp` or `vsatp`. Requires S.
-          "asid_match": true
+          "asid_match": false
         },
         // The number of implemented `mhvalue` and `svalue` bits. Bits
         // above these are read only zero. At most 6 and 16 on RV32,
         // 13 and 32 on RV64.
-        "mhvalue_len": 13,
-        "svalue_len": 32
+        "mhvalue_len": 0,
+        "svalue_len": 0
       },
       // CSRs
       "mcontext": { "supported": true },
       // The number of supported triggers.  This has to be
       // non-negative, and greater than 0 if Sdtrig is supported.
       // The model does not support more than 16 triggers.
-      "num_triggers": 16,
+      "num_triggers": 4,
       "scontext": { "supported": true }
     },
     "Smdbltrp": { "supported": true },

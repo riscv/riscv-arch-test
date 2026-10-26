@@ -3,7 +3,25 @@
 
 ==== Sscofpmf Counter filtering
 
-include::{testplansdir}/priv/Sscofpmf.adoc[]
+The Sscofpmf suite has one covergroup per privilege mode the tests run in: Sscofpmf_Sm_cg (M-mode), Sscofpmf_S_cg (S-mode) and Sscofpmf_U_cg (U-mode).
+The setup table applies to all three.
+The Sscofpmf_Sm tests require Sm, so they are not part of a certificate without Sm, such as RVA23.
+
+include::{testplansdir}/priv/Sscofpmf_common.adoc[]
+
+===== Sscofpmf_Sm
+
+include::{testplansdir}/priv/Sscofpmf_Sm.adoc[]
+
+===== Sscofpmf_S
+
+include::{testplansdir}/priv/Sscofpmf_S.adoc[]
+
+===== Sscofpmf_U
+
+include::{testplansdir}/priv/Sscofpmf_U.adoc[]
+
+===== Sscofpmf Normative Rules
 
 include::norm/Sscofpmf_norm_rules.adoc[]
 
@@ -11,7 +29,9 @@ include::norm/Sscofpmf_norm_rules.adoc[]
 
 include::{testplansdir}/priv/Ssstateen.adoc[]
 
-The same normative rules apply to Ssstateen as to Smstateen (see <<t-Smstateen-normative-rules>>).
+include::norm/Ssstateen_norm_rules.adoc[]
+
+The normative rules that apply to every level of stateen CSR are listed with Smstateen (see <<t-Smstateen-normative-rules>>).
 
 ==== Ssu64xl 64-bit User Mode
 
@@ -54,8 +74,13 @@ include::norm/Ss1p13_norm_rules.adoc[]
 
 ==== Ssnpm Pointer Masking
 
+===== Ssnpm
+
 include::{testplansdir}/priv/Ssnpm.adoc[]
-include::{testplansdir}/priv/SsnpmSm.adoc[]
+
+===== Ssnpm_Sm
+
+include::{testplansdir}/priv/Ssnpm_Sm.adoc[]
 
 include::norm/Ssnpm_norm_rules.adoc[]
 
@@ -63,10 +88,21 @@ include::norm/Zpm_norm_rules.adoc[]
 
 ==== Smnpm Pointer Masking
 
-include::{testplansdir}/priv/SmnpmS.adoc[]
-include::{testplansdir}/priv/SmnpmSSm.adoc[]
-include::{testplansdir}/priv/SmnpmU.adoc[]
-include::{testplansdir}/priv/SmnpmUSm.adoc[]
+===== Smnpm_S
+
+include::{testplansdir}/priv/Smnpm_S.adoc[]
+
+===== Smnpm_SSm
+
+include::{testplansdir}/priv/Smnpm_SSm.adoc[]
+
+===== Smnpm_U
+
+include::{testplansdir}/priv/Smnpm_U.adoc[]
+
+===== Smnpm_USm
+
+include::{testplansdir}/priv/Smnpm_USm.adoc[]
 
 See <<t-Ssnpm-normative-rules>> for normative rules.
 
@@ -78,21 +114,21 @@ See <<t-Ssnpm-normative-rules>> for normative rules.
 
 ==== Zicfilp Landing Pads
 
-In Privileged section because it has both unpriv and privileged behaviors.  The common coverpoints are defined once and re-executed by the ZicfilpU, ZicfilpSm and ZicfilpS suites in their privilege mode; each of those suites adds the coverpoints for its mode's `xPELP` handling.  ZicfilpH covers VS/VU-mode (see <<t-ZicfilpH-coverpoints>>).
+In Privileged section because it has both unpriv and privileged behaviors.  The common coverpoints are defined once and re-executed by the Zicfilp_U, Zicfilp_Sm and Zicfilp_S groups in their privilege mode; each of those groups adds the coverpoints for its mode's `xPELP` handling.  ZicfilpH covers VS/VU-mode (see <<t-ZicfilpH-coverpoints>>).
 
-include::{testplansdir}/priv/Zicfilp_common_reference.adoc[]
+include::{testplansdir}/priv/Zicfilp_common.adoc[]
 
-===== ZicfilpU User-Mode Landing Pads
+===== Zicfilp_U User-Mode Landing Pads
 
-include::{testplansdir}/priv/ZicfilpU.adoc[]
+include::{testplansdir}/priv/Zicfilp_U.adoc[]
 
-===== ZicfilpSm Machine-Mode Landing Pads
+===== Zicfilp_Sm Machine-Mode Landing Pads
 
-include::{testplansdir}/priv/ZicfilpSm.adoc[]
+include::{testplansdir}/priv/Zicfilp_Sm.adoc[]
 
-===== ZicfilpS Supervisor-Mode Landing Pads
+===== Zicfilp_S Supervisor-Mode Landing Pads
 
-include::{testplansdir}/priv/ZicfilpS.adoc[]
+include::{testplansdir}/priv/Zicfilp_S.adoc[]
 
 include::norm/Zicfilp_norm_rules.adoc[]
 
@@ -116,20 +152,28 @@ include::norm/Zicfiss_norm_rules.adoc[]
 
 ==== Zawrs Wait on Reservation Set
 
+The Zawrs suite has one covergroup per privilege mode the tests run in: Zawrs_Sm_cg (M-mode), Zawrs_S_cg (S-mode) and Zawrs_U_cg (U-mode).
 Waits until timer interrupt or timeout on a single hart that cannot modify the reservation set.  Tests behave differently in
-different privilege modes, so a suite is defined for each.
+different privilege modes, so a group is defined for each.
+The Zawrs_Sm tests require Sm, so they are not part of a certificate without Sm, such as RVA23.
 
-include::{testplansdir}/priv/ZawrsSm.adoc[]
+include::{testplansdir}/priv/Zawrs_common.adoc[]
 
-include::{testplansdir}/priv/ZawrsS.adoc[]
+===== Zawrs_Sm
 
-include::{testplansdir}/priv/ZawrsU.adoc[]
+include::{testplansdir}/priv/Zawrs_Sm.adoc[]
 
-include::norm/ZawrsSm_norm_rules.adoc[]
+===== Zawrs_S
 
-include::norm/ZawrsS_norm_rules.adoc[]
+include::{testplansdir}/priv/Zawrs_S.adoc[]
 
-include::norm/ZawrsU_norm_rules.adoc[]
+===== Zawrs_U
+
+include::{testplansdir}/priv/Zawrs_U.adoc[]
+
+===== Zawrs Normative Rules
+
+include::norm/Zawrs_norm_rules.adoc[]
 
 These tests require support for MTI and/or STI interrupts.
 Note that these tests can have race conditions of timeouts, timer interrupts, and spontaneous resumption, and thus may be fussy on different implementations.
@@ -137,7 +181,7 @@ Note that these tests can have race conditions of timeouts, timer interrupts, an
 
 ==== Zama16b Misaligned Atomics
 
-Misaligned atomics are supported by the Misaligned Atomicity Granularity.  They are also exercised via ExceptionsZaamo.
+Misaligned atomics are supported by the Misaligned Atomicity Granularity.  They are also exercised via Exceptions_Zaamo.
 
 include::{testplansdir}/priv/Zama16b.adoc[]
 
@@ -153,23 +197,145 @@ include::{testplansdir}/priv/SdtrigSm.adoc[]
 
 include::norm/SdtrigSm_norm_rules.adoc[]
 
-As of 7/24/26, Sdtrig is partially implemented.  Only the mcontrol6 covergroup is fully developed. Coverpoints are incomplete and are in a draft PR.
-Sail does not yet support Sdtrig, so the tests are exercised by running whisper against spike.  QEMU and Imperas do not yet match spike and some issues
-have been filed and are tracked https://docs.google.com/spreadsheets/d/1EuG4LV1TQDx4wTzYDWEAvq0fwaWjNuxenwDARZmrN-E/edit?gid=0#gid=0[here].
-Run with `make whisper-rv64-max-spike-ref EXTENSIONS=SdtrigSm`.
+As of 10/22/26, the SdtrigSm, SdtrigS and SdtrigU tests and coverpoints exercise the `mcontrol6`, `icount`, `itrigger` and `etrigger` trigger types, `textra`,
+access to the trigger registers, and address matching on scalar, compressed, atomic, vector, cache-block and translated accesses.
 
-An initial set of parameters for Sdtrig is proposed for https://github.com/riscv/riscv-unified-db/pull/2069[UDB].
+Most Sdtrig features are optional, so the tests take every DUT-specific fact from the Sdtrig parameters of the DUT's https://github.com/riscv/riscv-unified-db[UDB] configuration.
+`SDTRIG_NUM_TRIGGERS` gives the number of triggers; the tests exercise up to 16 of them.
+For each trigger, `SDTRIG_<TYPE>_SUPPORTED_TRIGGERS` says whether it supports each type (`mcontrol6`, `icount`, `itrigger`, `etrigger`).
+Other parameters give the writable `tdata1` fields (`SDTRIG_MCONTROL6_{SELECT,EXECUTE,LOAD,STORE}_WRITABLE`, `SDTRIG_{M,S,U,VS,VU}_WRITABLE`), the legal `mcontrol6` `match` and `size` values, `maskmax6` and the maximum chain length, the interrupts and exceptions `itrigger` and `etrigger` can select, the `icount` options, the `textra` context matches and value widths, and which optional CSRs (`tcontrol`, `tdata2`, `tdata3`, `mcontext`, `scontext`, `hcontext`) exist.
+A test is generated only for values the DUT supports, so a hart with fewer features is still tested, and every absent optional CSR is checked to raise an illegal-instruction exception.
+Sail 0.16, the reference model, accepts mcontrol6 sizes only up to XLEN bits, so larger sizes are not tested. TODO: change this when Sail supports larger sizes in the next release.
 
-Most Sdtrig features are optional, so defining what to test requires many parameters.  UDB_SDTRIG_NUM_TRIGGERS define how many triggers exist.
-For each trigger, each type (mcontrol6, icount, itrigger, etrigger) is optionally supported. Many of the fields in `tdata1` for each type are optional.
-
-`uncertainen` and `uncertain` are vague and implementation-specific and is thus not tested.  `hit` varies based on timing and is
+`uncertainen` and `uncertain` are vague and implementation-specific and are thus not tested.  `hit` varies based on timing and is
 optional and difficult to check so is presently not tested. Only `action`=0 is tested because the others depend on Sdext or trace or
 implementation-specific external triggers.
-`dmode` is not tested in Sdtrig because it depends on Sdext. `hcontext` is not tested because it depends on Hypervisor.  Non-maskable interrupts
+`dmode` is not tested in Sdtrig because it depends on Sdext. `hcontext` depends on the Hypervisor extension, so the Access tests touch it only on configurations that implement it.  Non-maskable interrupts
 are not tested because they are not part of RVA23.
 
-`mcontrol` has been replaced by `mcontrol6`.  It is deprecated and not tested.  `mscontext` is only for backward compatibility with Sdtrig 0.13 and is not tested.
+`mcontrol` has been replaced by `mcontrol6`, so it is deprecated and not tested.  `mscontext` is only for backward compatibility with Sdtrig 0.13 and is not tested.
+
+===== Trigger Re-entrancy and What Can Be Tested
+
+A trigger with `action`=0 raises a breakpoint exception.
+If that exception is taken while the hart is already in a trap handler, it overwrites `xepc` and `xcause`, and the hart cannot return from the original trap.
+Sdtrig gives harts two ways to prevent this:
+
+. *Interrupt enables.* No trigger with `action`=0 matches or fires in M-mode while `mstatus`.MIE=0.
+If `medeleg`[3]=1, none matches or fires in S-mode while `sstatus`.SIE=0, and the same rule applies in VS-mode with `hedeleg`[3] and `vsstatus`.SIE.
+. *tcontrol.* No trigger with `action`=0 matches or fires in M-mode while `tcontrol`.MTE=0.
+A trap into M-mode copies MTE to MPTE and clears MTE, and `mret` copies MPTE back to MTE.
+`medeleg`[3] is read-only zero.
+
+Taking a trap clears MIE, SIE or MTE, depending on the method and the mode the trap enters.
+This decides what the tests can observe, and it affects the two kinds of trigger differently:
+
+* *mcontrol6 and icount* fire synchronously in the mode that is executing.
+The test controls the enable bits there, so it can make the trigger fire or not.
+* *etrigger and itrigger* fire just before the first instruction of the trap handler.
+By then the trap has already cleared the enable bit of the mode it entered.
+
+The table below shows when an `action`=0 trigger can fire.
+For mcontrol6 and icount, the column is the mode the trigger matches in.
+For etrigger and itrigger, it is the mode the trap is taken from, which the trigger's `m`/`s`/`u` bits select.
+VS-mode and VU-mode behave like S-mode and U-mode, with `hedeleg`[3] and `vsstatus`.SIE in place of `medeleg`[3] and `sstatus`.SIE.
+
+[cols="2,3,3,3" options=header]
+|===
+|Trigger
+|M-mode +
+(either method)
+|S/U-mode, `medeleg`[3]=0 +
+(either method; breakpoint taken to M)
+|S/U-mode, `medeleg`[3]=1 +
+(interrupt enables only; breakpoint taken to S)
+
+|mcontrol6, icount
+|Fires when MIE=1 (interrupt enables) or MTE=1 (tcontrol); suppressed otherwise
+|Always fires
+|S: fires when SIE=1, suppressed when SIE=0. U: always fires.
+
+|etrigger, itrigger
+|Never fires, because the trap is handled in M and has cleared MIE or MTE
+|Fires if the exception or interrupt is delegated to S; never fires if it is handled in M
+|Never fires, because the trap into S has cleared SIE
+|===
+
+Every cell is a constraint of the specification, not of the test suite.
+The specification states the "never fires" cells directly:
+"Both options prevent etrigger and itrigger from having any effect on exceptions and interrupts that are handled in M-mode."
+The consequences for the tests are:
+
+* *mcontrol6 and icount* can be tested firing and suppressed in every mode under both methods.
+The tests set MIE=1 to arm the trigger in M-mode, and also MTE=1 when the DUT's UDB configuration sets `SDTRIG_BREAKPOINT_REENTRANCY` to `Use_tcontrol`, with `mie`=0 so that no interrupt is taken.
+They set SIE=1 to arm it in S-mode when `medeleg`[3]=1.
+They exercise `medeleg`[3]=1 to check breakpoints taken to S.
+* *etrigger and itrigger* can be shown to fire only for an exception or interrupt that is raised in S or U and delegated to S, while `medeleg`[3]=0.
+** In every other case, the tests can only check that the trigger stays silent.
+This includes `tdata1`.m=1, a cause that is not delegated, an M-level interrupt, and an etrigger on the breakpoint exception itself.
+** A hart without S-mode handles every trap in M.
+On such a hart, etrigger and itrigger with `action`=0 never fire, under either method.
+* Some expected outcomes depend on the method the hart implements.
+An example is an exception delegated to S while `medeleg`[3] has its boot value of 1: under interrupt enables the trigger is suppressed, but under tcontrol `medeleg`[3] reads 0 and the trigger fires into M.
+The tests therefore name bins by stimulus rather than by expected outcome.
+The reference model is configured with the DUT's method.
+In this repository, the Spike and Whisper configurations without S-mode use tcontrol.
+The other Spike, Whisper and Sail configurations use interrupt enables, and so does Imperas, whose configurations set `tcontrol_undefined=T`.
+* The specification says harts _should_ implement one of the two methods, so a hart may implement neither.
+On such a hart, a trigger that fires in an M-mode trap handler overwrites `mepc` and `mcause`, and the test cannot recover.
+The tests assume one of the two methods.
+
+The three suites start in different modes.
+SdtrigSm boots to M-mode and can change `medeleg`.
+SdtrigS and SdtrigU boot to S-mode and U-mode, and keep the boot value of `medeleg`[3]: 1 on a hart that uses interrupt enables, and read-only 0 on a hart that uses tcontrol.
+The exception is their breakpoint-delegation test, which switches to M-mode to clear and then set `medeleg`[3] and fires mcontrol6 and icount triggers each way.
+SdtrigSm arms its M-mode triggers with MIE=1, and with MTE=1 when `SDTRIG_BREAKPOINT_REENTRANCY` is `Use_tcontrol`.
+SdtrigS arms its triggers with SIE=1.
+SdtrigSm reaches S-mode and U-mode only in the etrigger and itrigger tests, which clear `medeleg`[3] first.
+The tables below show what each suite then exercises.
+
+.Exercised on a hart that uses interrupt enables
+[cols="2,3,3,3" options=header]
+|===
+|Trigger |SdtrigSm |SdtrigS |SdtrigU
+
+|mcontrol6, icount
+|Fires in M-mode; breakpoint taken from M to M
+|Fires in S-mode; breakpoint taken from S to M (`medeleg`[3]=0) and from S to S (`medeleg`[3]=1)
+|Fires in U-mode; breakpoint taken to M (`medeleg`[3]=0) and to S (`medeleg`[3]=1); to M if there is no S-mode
+
+|etrigger, itrigger
+|Raised in M-mode: suppressed.
+Raised in S-mode or U-mode with `medeleg`[3]=0: fires into M if delegated to S, suppressed if handled in M.
+|Suppressed: handled in S with SIE=0 and `medeleg`[3]=1, or handled in M
+|Suppressed, as for SdtrigS
+|===
+
+.Exercised on a hart that uses tcontrol
+[cols="2,3,3,3" options=header]
+|===
+|Trigger |SdtrigSm |SdtrigS |SdtrigU
+
+|mcontrol6, icount
+|Fires in M-mode, where the tests set MTE; breakpoint taken from M to M
+|Fires in S-mode; breakpoint taken from S to M
+|Fires in U-mode; breakpoint taken from U to M
+
+|etrigger, itrigger
+|As on a hart that uses interrupt enables
+|Fires into M if delegated to S; suppressed if handled in M
+|As for SdtrigS; suppressed on a hart without S-mode
+|===
+
+So the outcome differs between the two kinds of hart in four of the six cells.
+Each kind of hart leaves some cases unexercised, but none of these gaps comes from the specification:
+
+* SdtrigS and SdtrigU (`cp_breakpoint_delegate_s/u`) fire mcontrol6 and icount triggers in S-mode and U-mode with `medeleg`[3]=0 and with `medeleg`[3]=1, so on a hart that uses interrupt enables a breakpoint is also taken from S or U to M.
+* The tests read the reentrancy method from `SDTRIG_BREAKPOINT_REENTRANCY` and whether `tcontrol` exists from `TCONTROL_IMPLEMENTED`.
+The `tcontrol` tests check that a trap into M-mode copies MTE to MPTE and clears MTE and that `mret` copies MPTE to MTE on every hart with `tcontrol`, and that MTE gates M-mode triggers on a hart that uses `tcontrol` for reentrancy.
+* On a hart that uses interrupt enables, etrigger and itrigger never fire in SdtrigS or SdtrigU, because those suites keep `medeleg`[3]=1 for these tests.
+They fire only in SdtrigSm, which clears `medeleg`[3] first.
+SdtrigS and SdtrigU could clear `medeleg`[3] from M-mode, as their breakpoint-delegation test does.
 
 ===== SdtrigS
 

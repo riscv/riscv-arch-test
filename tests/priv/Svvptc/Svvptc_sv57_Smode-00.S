@@ -34,8 +34,6 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 
-main:
-
 // Virtual addresses for code and test regions
 
 // Virtual address of rvtest_data_1
@@ -52,78 +50,79 @@ main:
 // accessible, so the code is mapped again at va_rvtest_code_begin. Registering
 // that alias lets RVTEST_TSBI_GOTO_* resume in the mapping the mode it switches
 // to can fetch from.
+// SAVE_AREA_SETUP takes the M-mode save area in a0 and clobbers t0 and t1.
   LA(a0, Mtramptbl_sv)
   SAVE_AREA_SETUP(va_rvtest_code_begin, rvtest_code_begin, code, LEVEL4)
 
   SATP_SETUP_RV64(sv57) // Enable address translation.
   sfence.vma
 
-  LI(x9, 0x800) // Value for the stores
+  LI(x8, 0x800) // Value for the stores
 
 // Test case 1: 256TB page, leaf PTE at level 4 changes from V=0 to V=1
 // Load: page fault on V=0, then retry after setting V=1 without SFENCE.VMA
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL4)
   sfence.vma
-  LI(x8, (va_data >> 48) << 48)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 16
-  srli x13, x13, 16
-  add x8, x8, x13
-  addi x9, x9, 16
-  lw x13, 20(x8)
+  LI(x9, (va_data >> 48) << 48)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 16
+  srli x6, x6, 16
+  add x9, x9, x6
+  addi x8, x8, 16
+  lw x15, 20(x9)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_load_test1_load:
-  lw x13, 20(x8)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_load_test1_load, Svvptc_cg_cp_load_test1_load_str)
+  lw x15, 20(x9)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_load_test1_load, Svvptc_cg_cp_load_test1_load_str)
 
 // Store: page fault on V=0, then retry after setting V=1 without SFENCE.VMA
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL4)
   sfence.vma
-  LI(x8, (va_data >> 48) << 48)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 16
-  srli x13, x13, 16
-  add x8, x8, x13
-  addi x9, x9, 16
-  sw x9, 20(x8)
+  LI(x9, (va_data >> 48) << 48)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 16
+  srli x6, x6, 16
+  add x9, x9, x6
+  addi x8, x8, 16
+  sw x8, 20(x9)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_store_test1_store:
-  sw x9, 20(x8)
-  lw x13, 20(x8)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_store_test1_store, Svvptc_cg_cp_store_test1_store_str)
+  sw x8, 20(x9)
+  lw x15, 20(x9)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_store_test1_store, Svvptc_cg_cp_store_test1_store_str)
 
 // Fetch: page fault on V=0, then retry after setting V=1 without SFENCE.VMA
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL4)
   sfence.vma
-  LI(x8, (va_data >> 48) << 48)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 16
-  srli x13, x13, 16
-  add x8, x8, x13
-  addi x9, x9, 16
-  jalr ra, x8, 0
+  LI(x9, (va_data >> 48) << 48)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 16
+  srli x6, x6, 16
+  add x9, x9, x6
+  addi x8, x8, 16
+  jalr ra, x9, 0
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL4)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_fetch_test1_fetch:
-  jalr ra, x8, 0
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_fetch_test1_fetch, Svvptc_cg_cp_fetch_test1_fetch_str)
+  jalr ra, x9, 0
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_fetch_test1_fetch, Svvptc_cg_cp_fetch_test1_fetch_str)
 
 
 // Test case 2: 512GB page, leaf PTE at level 3 changes from V=0 to V=1
@@ -131,68 +130,68 @@ Svvptc_cg_cp_fetch_test1_fetch:
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL3)
   sfence.vma
-  LI(x8, (va_data >> 39) << 39)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 25
-  srli x13, x13, 25
-  add x8, x8, x13
-  addi x9, x9, 16
-  lw x13, 20(x8)
+  LI(x9, (va_data >> 39) << 39)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 25
+  srli x6, x6, 25
+  add x9, x9, x6
+  addi x8, x8, 16
+  lw x15, 20(x9)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_load_test2_load:
-  lw x13, 20(x8)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_load_test2_load, Svvptc_cg_cp_load_test2_load_str)
+  lw x15, 20(x9)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_load_test2_load, Svvptc_cg_cp_load_test2_load_str)
 
 // Store: page fault on V=0, then retry after setting V=1 without SFENCE.VMA
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL3)
   sfence.vma
-  LI(x8, (va_data >> 39) << 39)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 25
-  srli x13, x13, 25
-  add x8, x8, x13
-  addi x9, x9, 16
-  sw x9, 20(x8)
+  LI(x9, (va_data >> 39) << 39)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 25
+  srli x6, x6, 25
+  add x9, x9, x6
+  addi x8, x8, 16
+  sw x8, 20(x9)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_store_test2_store:
-  sw x9, 20(x8)
-  lw x13, 20(x8)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_store_test2_store, Svvptc_cg_cp_store_test2_store_str)
+  sw x8, 20(x9)
+  lw x15, 20(x9)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_store_test2_store, Svvptc_cg_cp_store_test2_store_str)
 
 // Fetch: page fault on V=0, then retry after setting V=1 without SFENCE.VMA
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL3)
   sfence.vma
-  LI(x8, (va_data >> 39) << 39)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 25
-  srli x13, x13, 25
-  add x8, x8, x13
-  addi x9, x9, 16
-  jalr ra, x8, 0
+  LI(x9, (va_data >> 39) << 39)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 25
+  srli x6, x6, 25
+  add x9, x9, x6
+  addi x8, x8, 16
+  jalr ra, x9, 0
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL3)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_fetch_test2_fetch:
-  jalr ra, x8, 0
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_fetch_test2_fetch, Svvptc_cg_cp_fetch_test2_fetch_str)
+  jalr ra, x9, 0
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_fetch_test2_fetch, Svvptc_cg_cp_fetch_test2_fetch_str)
 
 
 // Test case 3: 1GB page, leaf PTE at level 2 changes from V=0 to V=1
@@ -201,70 +200,70 @@ Svvptc_cg_cp_fetch_test2_fetch:
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
   sfence.vma
-  LI(x8, (va_data >> 30) << 30)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 34
-  srli x13, x13, 34
-  add x8, x8, x13
-  addi x9, x9, 16
-  lw x13, 20(x8)
+  LI(x9, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x9, x9, x6
+  addi x8, x8, 16
+  lw x15, 20(x9)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_load_test3_load:
-  lw x13, 20(x8)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_load_test3_load, Svvptc_cg_cp_load_test3_load_str)
+  lw x15, 20(x9)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_load_test3_load, Svvptc_cg_cp_load_test3_load_str)
 
 // Store: page fault on V=0, then retry after setting V=1 without SFENCE.VMA
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
   sfence.vma
-  LI(x8, (va_data >> 30) << 30)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 34
-  srli x13, x13, 34
-  add x8, x8, x13
-  addi x9, x9, 16
-  sw x9, 20(x8)
+  LI(x9, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x9, x9, x6
+  addi x8, x8, 16
+  sw x8, 20(x9)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_store_test3_store:
-  sw x9, 20(x8)
-  lw x13, 20(x8)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_store_test3_store, Svvptc_cg_cp_store_test3_store_str)
+  sw x8, 20(x9)
+  lw x15, 20(x9)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_store_test3_store, Svvptc_cg_cp_store_test3_store_str)
 
 // Fetch: page fault on V=0, then retry after setting V=1 without SFENCE.VMA
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL2)
   sfence.vma
-  LI(x8, (va_data >> 30) << 30)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 34
-  srli x13, x13, 34
-  add x8, x8, x13
-  addi x9, x9, 16
-  jalr ra, x8, 0
+  LI(x9, (va_data >> 30) << 30)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 34
+  srli x6, x6, 34
+  add x9, x9, x6
+  addi x8, x8, 16
+  jalr ra, x9, 0
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL2)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_fetch_test3_fetch:
-  jalr ra, x8, 0
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_fetch_test3_fetch, Svvptc_cg_cp_fetch_test3_fetch_str)
+  jalr ra, x9, 0
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_fetch_test3_fetch, Svvptc_cg_cp_fetch_test3_fetch_str)
 
 
 // Test case 4: 2MB page, leaf PTE at level 1 changes from V=0 to V=1
@@ -274,23 +273,23 @@ Svvptc_cg_cp_fetch_test3_fetch:
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
-  LI(x8, (va_data >> 21) << 21)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 43
-  srli x13, x13, 43
-  add x8, x8, x13
-  addi x9, x9, 16
-  lw x13, 20(x8)
+  LI(x9, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x9, x9, x6
+  addi x8, x8, 16
+  lw x15, 20(x9)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_load_test4_load:
-  lw x13, 20(x8)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_load_test4_load, Svvptc_cg_cp_load_test4_load_str)
+  lw x15, 20(x9)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_load_test4_load, Svvptc_cg_cp_load_test4_load_str)
 
 // Store: page fault on V=0, then retry after setting V=1 without SFENCE.VMA
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -298,24 +297,24 @@ Svvptc_cg_cp_load_test4_load:
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
-  LI(x8, (va_data >> 21) << 21)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 43
-  srli x13, x13, 43
-  add x8, x8, x13
-  addi x9, x9, 16
-  sw x9, 20(x8)
+  LI(x9, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x9, x9, x6
+  addi x8, x8, 16
+  sw x8, 20(x9)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_store_test4_store:
-  sw x9, 20(x8)
-  lw x13, 20(x8)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_store_test4_store, Svvptc_cg_cp_store_test4_store_str)
+  sw x8, 20(x9)
+  lw x15, 20(x9)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_store_test4_store, Svvptc_cg_cp_store_test4_store_str)
 
 // Fetch: page fault on V=0, then retry after setting V=1 without SFENCE.VMA
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -323,23 +322,23 @@ Svvptc_cg_cp_store_test4_store:
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL1)
   sfence.vma
-  LI(x8, (va_data >> 21) << 21)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 43
-  srli x13, x13, 43
-  add x8, x8, x13
-  addi x9, x9, 16
-  jalr ra, x8, 0
+  LI(x9, (va_data >> 21) << 21)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 43
+  srli x6, x6, 43
+  add x9, x9, x6
+  addi x8, x8, 16
+  jalr ra, x9, 0
   SUPERPAGE_PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL1)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_fetch_test4_fetch:
-  jalr ra, x8, 0
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_fetch_test4_fetch, Svvptc_cg_cp_fetch_test4_fetch_str)
+  jalr ra, x9, 0
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_fetch_test4_fetch, Svvptc_cg_cp_fetch_test4_fetch_str)
 
 
 // Test case 5: 4KB page, leaf PTE at level 0 changes from V=0 to V=1
@@ -350,23 +349,23 @@ Svvptc_cg_cp_fetch_test4_fetch:
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL0)
   sfence.vma
-  LI(x8, (va_data >> 12) << 12)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 52
-  srli x13, x13, 52
-  add x8, x8, x13
-  addi x9, x9, 16
-  lw x13, 20(x8)
+  LI(x9, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x9, x9, x6
+  addi x8, x8, 16
+  lw x15, 20(x9)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_load_test5_load:
-  lw x13, 20(x8)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_load_test5_load, Svvptc_cg_cp_load_test5_load_str)
+  lw x15, 20(x9)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_load_test5_load, Svvptc_cg_cp_load_test5_load_str)
 
 // Store: page fault on V=0, then retry after setting V=1 without SFENCE.VMA
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -375,24 +374,24 @@ Svvptc_cg_cp_load_test5_load:
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL0)
   sfence.vma
-  LI(x8, (va_data >> 12) << 12)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 52
-  srli x13, x13, 52
-  add x8, x8, x13
-  addi x9, x9, 16
-  sw x9, 20(x8)
+  LI(x9, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x9, x9, x6
+  addi x8, x8, 16
+  sw x8, 20(x9)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_store_test5_store:
-  sw x9, 20(x8)
-  lw x13, 20(x8)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_store_test5_store, Svvptc_cg_cp_store_test5_store_str)
+  sw x8, 20(x9)
+  lw x15, 20(x9)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_store_test5_store, Svvptc_cg_cp_store_test5_store_str)
 
 // Fetch: page fault on V=0, then retry after setting V=1 without SFENCE.VMA
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -401,23 +400,23 @@ Svvptc_cg_cp_store_test5_store:
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL0)
   sfence.vma
-  LI(x8, (va_data >> 12) << 12)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 52
-  srli x13, x13, 52
-  add x8, x8, x13
-  addi x9, x9, 16
-  jalr ra, x8, 0
+  LI(x9, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x9, x9, x6
+  addi x8, x8, 16
+  jalr ra, x9, 0
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_fetch_test5_fetch:
-  jalr ra, x8, 0
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_fetch_test5_fetch, Svvptc_cg_cp_fetch_test5_fetch_str)
+  jalr ra, x9, 0
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_fetch_test5_fetch, Svvptc_cg_cp_fetch_test5_fetch_str)
 
 
 // Test case 6: 4KB page, non-leaf PTE at level 4 changes from V=0 to V=1
@@ -428,23 +427,23 @@ Svvptc_cg_cp_fetch_test5_fetch:
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
-  LI(x8, (va_data >> 12) << 12)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 52
-  srli x13, x13, 52
-  add x8, x8, x13
-  addi x9, x9, 16
-  lw x13, 20(x8)
+  LI(x9, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x9, x9, x6
+  addi x8, x8, 16
+  lw x15, 20(x9)
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_load_test6_load:
-  lw x13, 20(x8)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_load_test6_load, Svvptc_cg_cp_load_test6_load_str)
+  lw x15, 20(x9)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_load_test6_load, Svvptc_cg_cp_load_test6_load_str)
 
 // Store: page fault on V=0, then retry after setting V=1 without SFENCE.VMA
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (0), va_data, LEVEL4)
@@ -453,24 +452,24 @@ Svvptc_cg_cp_load_test6_load:
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
-  LI(x8, (va_data >> 12) << 12)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 52
-  srli x13, x13, 52
-  add x8, x8, x13
-  addi x9, x9, 16
-  sw x9, 20(x8)
+  LI(x9, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x9, x9, x6
+  addi x8, x8, 16
+  sw x8, 20(x9)
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_store_test6_store:
-  sw x9, 20(x8)
-  lw x13, 20(x8)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_store_test6_store, Svvptc_cg_cp_store_test6_store_str)
+  sw x8, 20(x9)
+  lw x15, 20(x9)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_store_test6_store, Svvptc_cg_cp_store_test6_store_str)
 
 // Fetch: page fault on V=0, then retry after setting V=1 without SFENCE.VMA
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (0), va_data, LEVEL4)
@@ -479,23 +478,23 @@ Svvptc_cg_cp_store_test6_store:
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
-  LI(x8, (va_data >> 12) << 12)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 52
-  srli x13, x13, 52
-  add x8, x8, x13
-  addi x9, x9, 16
-  jalr ra, x8, 0
+  LI(x9, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x9, x9, x6
+  addi x8, x8, 16
+  jalr ra, x9, 0
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_fetch_test6_fetch:
-  jalr ra, x8, 0
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_fetch_test6_fetch, Svvptc_cg_cp_fetch_test6_fetch_str)
+  jalr ra, x9, 0
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_fetch_test6_fetch, Svvptc_cg_cp_fetch_test6_fetch_str)
 
 
 // Test case 7: 4KB page, non-leaf PTE at level 3 changes from V=0 to V=1
@@ -506,23 +505,23 @@ Svvptc_cg_cp_fetch_test6_fetch:
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
-  LI(x8, (va_data >> 12) << 12)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 52
-  srli x13, x13, 52
-  add x8, x8, x13
-  addi x9, x9, 16
-  lw x13, 20(x8)
+  LI(x9, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x9, x9, x6
+  addi x8, x8, 16
+  lw x15, 20(x9)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_load_test7_load:
-  lw x13, 20(x8)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_load_test7_load, Svvptc_cg_cp_load_test7_load_str)
+  lw x15, 20(x9)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_load_test7_load, Svvptc_cg_cp_load_test7_load_str)
 
 // Store: page fault on V=0, then retry after setting V=1 without SFENCE.VMA
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -531,24 +530,24 @@ Svvptc_cg_cp_load_test7_load:
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
-  LI(x8, (va_data >> 12) << 12)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 52
-  srli x13, x13, 52
-  add x8, x8, x13
-  addi x9, x9, 16
-  sw x9, 20(x8)
+  LI(x9, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x9, x9, x6
+  addi x8, x8, 16
+  sw x8, 20(x9)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_store_test7_store:
-  sw x9, 20(x8)
-  lw x13, 20(x8)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_store_test7_store, Svvptc_cg_cp_store_test7_store_str)
+  sw x8, 20(x9)
+  lw x15, 20(x9)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_store_test7_store, Svvptc_cg_cp_store_test7_store_str)
 
 // Fetch: page fault on V=0, then retry after setting V=1 without SFENCE.VMA
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -557,23 +556,23 @@ Svvptc_cg_cp_store_test7_store:
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
-  LI(x8, (va_data >> 12) << 12)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 52
-  srli x13, x13, 52
-  add x8, x8, x13
-  addi x9, x9, 16
-  jalr ra, x8, 0
+  LI(x9, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x9, x9, x6
+  addi x8, x8, 16
+  jalr ra, x9, 0
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_fetch_test7_fetch:
-  jalr ra, x8, 0
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_fetch_test7_fetch, Svvptc_cg_cp_fetch_test7_fetch_str)
+  jalr ra, x9, 0
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_fetch_test7_fetch, Svvptc_cg_cp_fetch_test7_fetch_str)
 
 
 // Test case 8: 4KB page, non-leaf PTE at level 2 changes from V=0 to V=1
@@ -584,23 +583,23 @@ Svvptc_cg_cp_fetch_test7_fetch:
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
-  LI(x8, (va_data >> 12) << 12)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 52
-  srli x13, x13, 52
-  add x8, x8, x13
-  addi x9, x9, 16
-  lw x13, 20(x8)
+  LI(x9, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x9, x9, x6
+  addi x8, x8, 16
+  lw x15, 20(x9)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_load_test8_load:
-  lw x13, 20(x8)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_load_test8_load, Svvptc_cg_cp_load_test8_load_str)
+  lw x15, 20(x9)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_load_test8_load, Svvptc_cg_cp_load_test8_load_str)
 
 // Store: page fault on V=0, then retry after setting V=1 without SFENCE.VMA
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -609,24 +608,24 @@ Svvptc_cg_cp_load_test8_load:
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
-  LI(x8, (va_data >> 12) << 12)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 52
-  srli x13, x13, 52
-  add x8, x8, x13
-  addi x9, x9, 16
-  sw x9, 20(x8)
+  LI(x9, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x9, x9, x6
+  addi x8, x8, 16
+  sw x8, 20(x9)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_store_test8_store:
-  sw x9, 20(x8)
-  lw x13, 20(x8)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_store_test8_store, Svvptc_cg_cp_store_test8_store_str)
+  sw x8, 20(x9)
+  lw x15, 20(x9)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_store_test8_store, Svvptc_cg_cp_store_test8_store_str)
 
 // Fetch: page fault on V=0, then retry after setting V=1 without SFENCE.VMA
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -635,23 +634,23 @@ Svvptc_cg_cp_store_test8_store:
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
-  LI(x8, (va_data >> 12) << 12)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 52
-  srli x13, x13, 52
-  add x8, x8, x13
-  addi x9, x9, 16
-  jalr ra, x8, 0
+  LI(x9, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x9, x9, x6
+  addi x8, x8, 16
+  jalr ra, x9, 0
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_fetch_test8_fetch:
-  jalr ra, x8, 0
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_fetch_test8_fetch, Svvptc_cg_cp_fetch_test8_fetch_str)
+  jalr ra, x9, 0
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_fetch_test8_fetch, Svvptc_cg_cp_fetch_test8_fetch_str)
 
 
 // Test case 9: 4KB page, non-leaf PTE at level 1 changes from V=0 to V=1
@@ -662,23 +661,23 @@ Svvptc_cg_cp_fetch_test8_fetch:
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (0), va_data, LEVEL1)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
-  LI(x8, (va_data >> 12) << 12)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 52
-  srli x13, x13, 52
-  add x8, x8, x13
-  addi x9, x9, 16
-  lw x13, 20(x8)
+  LI(x9, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x9, x9, x6
+  addi x8, x8, 16
+  lw x15, 20(x9)
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_load_test9_load:
-  lw x13, 20(x8)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_load_test9_load, Svvptc_cg_cp_load_test9_load_str)
+  lw x15, 20(x9)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_load_test9_load, Svvptc_cg_cp_load_test9_load_str)
 
 // Store: page fault on V=0, then retry after setting V=1 without SFENCE.VMA
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -687,24 +686,24 @@ Svvptc_cg_cp_load_test9_load:
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (0), va_data, LEVEL1)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
-  LI(x8, (va_data >> 12) << 12)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 52
-  srli x13, x13, 52
-  add x8, x8, x13
-  addi x9, x9, 16
-  sw x9, 20(x8)
+  LI(x9, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x9, x9, x6
+  addi x8, x8, 16
+  sw x8, 20(x9)
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_store_test9_store:
-  sw x9, 20(x8)
-  lw x13, 20(x8)
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_store_test9_store, Svvptc_cg_cp_store_test9_store_str)
+  sw x8, 20(x9)
+  lw x15, 20(x9)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_store_test9_store, Svvptc_cg_cp_store_test9_store_str)
 
 // Fetch: page fault on V=0, then retry after setting V=1 without SFENCE.VMA
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
@@ -713,23 +712,23 @@ Svvptc_cg_cp_store_test9_store:
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (0), va_data, LEVEL1)
   PTE_SETUP_SV57(rvtest_data_1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   sfence.vma
-  LI(x8, (va_data >> 12) << 12)
-  LA(x13, rvtest_data_1)
-  slli x13, x13, 52
-  srli x13, x13, 52
-  add x8, x8, x13
-  addi x9, x9, 16
-  jalr ra, x8, 0
+  LI(x9, (va_data >> 12) << 12)
+  LA(x6, rvtest_data_1)
+  slli x6, x6, 52
+  srli x6, x6, 52
+  add x9, x9, x6
+  addi x8, x8, 16
+  jalr ra, x9, 0
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  LI(x15, 4096)
+  LI(x13, 4096)
 1:
-  addi x15, x15, -1
-  bnez x15, 1b
-  LI(x13, 0)
+  addi x13, x13, -1
+  bnez x13, 1b
+  LI(x15, 0)
 Svvptc_cg_cp_fetch_test9_fetch:
-  jalr ra, x8, 0
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Svvptc_cg_cp_fetch_test9_fetch, Svvptc_cg_cp_fetch_test9_fetch_str)
+  jalr ra, x9, 0
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Svvptc_cg_cp_fetch_test9_fetch, Svvptc_cg_cp_fetch_test9_fetch_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -745,7 +744,7 @@ RVTEST_DATA_BEGIN
   .p2align 12
 rvtest_data_1:
   nop
-  addi x13, x9, 4
+  addi x15, x8, 4
   jr ra
   nop
   .word 0xbeefcaf1

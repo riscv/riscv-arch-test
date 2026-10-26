@@ -20,12 +20,15 @@ from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig,
 
 vvsr_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
-    vector_data=VectorTypeConfig(scalar_regs={"vd", "vs1"}),
+    vector_data=VectorTypeConfig(scalar_regs={"vd", "vs1"}, require_zero_vstart=True),
 )
 wvwsr_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
     vector_data=VectorTypeConfig(
-        overlap_constraints={("vs2", "vs1")}, scalar_regs={"vd", "vs1"}, widened_regs={"vd", "vs1"}
+        overlap_constraints={("vs2", "vs1")},
+        scalar_regs={"vd", "vs1"},
+        widened_regs={"vd", "vs1"},
+        require_zero_vstart=True,
     ),
 )
 

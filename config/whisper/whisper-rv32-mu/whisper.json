@@ -45,8 +45,9 @@
   },
 
   "csr": {
-    "misa": { "reset": "0x4030112f" }, // acdfimuv + B (bit 1). Whisper derives misa from the
+    "misa": { "reset": "0x4030112f", "mask": "0x4", "poke_mask": "0x4" }, // acdfimuv + B (bit 1). Whisper derives misa from the
     // ISA string but always sets S and U, so set it explicitly.
+    // misa.C is writable, so tests can clear it and run with IALIGN = 32 (MUTABLE_MISA_C).
     "vstart": {
       "mask": "0xff",
       "poke_mask": "0xff"
@@ -132,5 +133,36 @@
     "update_whole_mask": true
   },
 
-  "wfi_timeout": 0
+  "wfi_timeout": 0,
+  "trigger_use_tcontrol": true, // no S-mode, so tcontrol.mte gates M-mode triggers
+  "trigger_types": [
+    "none",
+    "disabled",
+    "mcontrol6",
+    "icount",
+    "itrigger",
+    "etrigger"
+  ],
+  "triggers": [
+    {
+      "reset": [0, 0, 0, "0x1008078"],
+      "mask": ["0xfdffffef", "0xffffffff", "0xffffffff", 0],
+      "poke_mask": ["0xfdffffef", "0xffffffff", "0xffffffff", 0]
+    },
+    {
+      "reset": [0, 0, 0, "0x1008078"],
+      "mask": ["0xfdffffef", "0xffffffff", "0xffffffff", 0],
+      "poke_mask": ["0xfdffffef", "0xffffffff", "0xffffffff", 0]
+    },
+    {
+      "reset": [0, 0, 0, "0x1008078"],
+      "mask": ["0xfdffffef", "0xffffffff", "0xffffffff", 0],
+      "poke_mask": ["0xfdffffef", "0xffffffff", "0xffffffff", 0]
+    },
+    {
+      "reset": [0, 0, 0, "0x1008078"],
+      "mask": ["0xfdffffef", "0xffffffff", "0xffffffff", 0],
+      "poke_mask": ["0xfdffffef", "0xffffffff", "0xffffffff", 0]
+    }
+  ]
 }

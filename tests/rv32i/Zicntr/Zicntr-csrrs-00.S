@@ -33,6 +33,8 @@ RVTEST_BEGIN
 // cp_cntr
 /////////////////////////////////
 
+#if (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_0) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_0))))
+
 # Testcase: cp_cntr (cycle)
 # Read two consecutive times to check if counter increments
   csrrs x15, cycle, x0
@@ -50,6 +52,10 @@ Zicntr_csrrs_cg_cp_cntr_cycle:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Zicntr_csrrs_cg_cp_cntr_cycle, Zicntr_csrrs_cg_cp_cntr_cycle_str)
 
+#endif
+
+#if (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_1) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_1))))
+
 # Testcase: cp_cntr (time)
 # Loop until time increments, or fail if it does not
   csrrs x15, time, x0 # read time initial value
@@ -64,6 +70,10 @@ Zicntr_csrrs_cg_cp_cntr_time:
   slti x15, x15, 1 # set fail code if difference < 1
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Zicntr_csrrs_cg_cp_cntr_time, Zicntr_csrrs_cg_cp_cntr_time_str)
+
+#endif
+
+#if (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_2) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_2))))
 
 # Testcase: cp_cntr (instret)
 # Read two consecutive times to check if counter increments
@@ -81,7 +91,11 @@ Zicntr_csrrs_cg_cp_cntr_instret:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Zicntr_csrrs_cg_cp_cntr_instret, Zicntr_csrrs_cg_cp_cntr_instret_str)
 
+#endif
+
 #if __riscv_xlen == 32
+
+#if (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_0) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_0))))
 
 # Testcase: cp_cntr (cycleh)
 # Read two consecutive times to check if counter increments
@@ -99,6 +113,10 @@ Zicntr_csrrs_cg_cp_cntr_cycleh:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Zicntr_csrrs_cg_cp_cntr_cycleh, Zicntr_csrrs_cg_cp_cntr_cycleh_str)
 
+#endif
+
+#if (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_1) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_1))))
+
 # Testcase: cp_cntr (timeh)
 # Read two consecutive times to check if counter increments
   csrrs x15, timeh, x0
@@ -115,6 +133,10 @@ Zicntr_csrrs_cg_cp_cntr_timeh:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Zicntr_csrrs_cg_cp_cntr_timeh, Zicntr_csrrs_cg_cp_cntr_timeh_str)
 
+#endif
+
+#if (!defined(U_SUPPORTED) || (defined(UDB_MCOUNTENABLE_EN_2) && (!defined(S_SUPPORTED) || defined(UDB_SCOUNTENABLE_EN_2))))
+
 # Testcase: cp_cntr (instreth)
 # Read two consecutive times to check if counter increments
   csrrs x15, instreth, x0
@@ -130,6 +152,8 @@ Zicntr_csrrs_cg_cp_cntr_instreth:
   sub x15, x27, x15 # compute difference
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Zicntr_csrrs_cg_cp_cntr_instreth, Zicntr_csrrs_cg_cp_cntr_instreth_str)
+
+#endif
 
 #endif
 

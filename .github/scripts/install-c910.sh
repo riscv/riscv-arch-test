@@ -10,7 +10,7 @@ set -euo pipefail
 INSTALL_DIR="${1:?Usage: install-c910.sh <install-dir>}"
 C910_REPO="https://github.com/T-head-Semi/openc910.git"
 C910_COMMIT="b91c90914c19f114d35c8f6b73408eb241ed847c"
-VERILATOR_VERSION="v5.036"
+VERILATOR_VERSION="v5.052"
 
 mkdir -p "$INSTALL_DIR/bin"
 

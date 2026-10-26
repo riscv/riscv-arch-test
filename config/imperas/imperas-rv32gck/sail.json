@@ -1045,13 +1045,13 @@
         // corresponding exception is supported by the trigger.
         // Triggers for reserved exceptions are not supported.  This
         // value is ignored when `etrigger` is not supported.
-        "supported_exceptions": { "len": "xlen", "value": "0" }
+        "supported_exceptions": { "len": "xlen", "value": "0xCBBFF" }
       },
       "hcontext": { "supported": false },
       // Triggers
       "icount": {
         "supported": true,
-        "count_hardwired_one": false,
+        "count_hardwired_one": true,
         // Whether a `tdata1` write to an `icount` trigger with
         // `count`=1 also makes it pending when that write's instruction
         // matches the trigger.
@@ -1063,7 +1063,7 @@
         // corresponding interrupt is supported by the trigger.
         // Triggers for reserved interrupts are not supported.  This
         // value is ignored when `itrigger` is not supported.
-        "supported_interrupts": { "len": "xlen", "value": "0" }
+        "supported_interrupts": { "len": "xlen", "value": "0x2AAA" }
       },
       "mcontrol6": {
         "supported": true,
@@ -1105,7 +1105,7 @@
       // The number of supported triggers.  This has to be
       // non-negative, and greater than 0 if Sdtrig is supported.
       // The model does not support more than 16 triggers.
-      "num_triggers": 16,
+      "num_triggers": 4,
       "scontext": { "supported": true }
     },
     "Smdbltrp": { "supported": true },

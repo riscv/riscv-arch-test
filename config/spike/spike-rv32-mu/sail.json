@@ -1041,14 +1041,14 @@
       // . `No_reentrancy_support`: no specific support for reentrancy
       // Note: `Use_tcontrol` hardwires medeleg[3] to 0, which breaks the
       // `sbreak` test in `riscv-tests`.
-      "breakpoint_reentrancy": "Use_interrupt_enables",
+      "breakpoint_reentrancy": "Use_tcontrol",
       "etrigger": {
         "supported": true,
         // A bit set to 1 in this value specifies that the
         // corresponding exception is supported by the trigger.
         // Triggers for reserved exceptions are not supported.  This
         // value is ignored when `etrigger` is not supported.
-        "supported_exceptions": { "len": "xlen", "value": "0" }
+        "supported_exceptions": { "len": "xlen", "value": "0xDBBFF" }
       },
       "hcontext": { "supported": false },
       // Triggers
@@ -1066,7 +1066,7 @@
         // corresponding interrupt is supported by the trigger.
         // Triggers for reserved interrupts are not supported.  This
         // value is ignored when `itrigger` is not supported.
-        "supported_interrupts": { "len": "xlen", "value": "0" }
+        "supported_interrupts": { "len": "xlen", "value": "0x3EEE" }
       },
       "mcontrol6": {
         "supported": true,
@@ -1086,7 +1086,7 @@
         "mhselect": {
           // Values 1, 4 and 5, match on `mcontext`. Requires the
           // `mcontext` CSR. Values 1 and 5 also require H.
-          "mcontext_match": false,
+          "mcontext_match": true,
           // Values 2 and 6, match on the VMID in `hgatp`. Requires H.
           "vmid_match": false
         },
@@ -1101,14 +1101,14 @@
         // above these are read only zero. At most 6 and 16 on RV32,
         // 13 and 32 on RV64.
         "mhvalue_len": 6,
-        "svalue_len": 16
+        "svalue_len": 0
       },
       // CSRs
-      "mcontext": { "supported": false },
+      "mcontext": { "supported": true },
       // The number of supported triggers.  This has to be
       // non-negative, and greater than 0 if Sdtrig is supported.
       // The model does not support more than 16 triggers.
-      "num_triggers": 16,
+      "num_triggers": 4,
       "scontext": { "supported": false }
     },
     // The double trap extensions are not enabled by default because

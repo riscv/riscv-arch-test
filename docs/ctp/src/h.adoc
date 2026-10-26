@@ -3,47 +3,42 @@
 
 The Hypervisor Extension adds an H coverage file containing new Hypervisor instructions, and additional coverage files related to exceptions, interrupts, endian, and virtual memory.
 
-[[t-H-normative-rules]]
-.Hypervisor Normative Rules
-***
-
 ==== H Hypervisor CSRs and Instructions
+
+H boots to HS-mode and tests the hypervisor CSRs and instructions in HS, VS, U and VU modes: CSR access and
+walks, the VS CSR replicas, the hypervisor load/store, fence and trap instructions, and the virtual-instruction
+exceptions.  The M-mode tests, and the mstatus.TVM tests whose traps are taken in M-mode, are the Sm suite's Sm_H group.
+
+The H suite also contains the H_F, H_V, and H_VF tests.  They repeat the S_F, S_V, and S_VF tests from VS-mode and VU-mode, and cross
+vsstatus.FS and vsstatus.VS with the HS-level sstatus.FS and sstatus.VS.  They run when F, Zve32x, or Zve32f is also supported.
 
 include::{testplansdir}/priv/H.adoc[]
 
-==== ExceptionsH Hypervisor Exceptions
+include::norm/H_norm_rules.adoc[]
 
-include::{testplansdir}/priv/ExceptionsH.adoc[]
+==== Hypervisor Exceptions
 
-==== ExceptionsHV Hypervisor Vector Exceptions
-
-include::{testplansdir}/priv/ExceptionsHV.adoc[]
+The hypervisor exception tests are the <<t-Exceptions_H-coverpoints,Exceptions_H>> and <<t-Exceptions_HSm-coverpoints,Exceptions_HSm>> groups of the Exceptions suite.
 
 ==== InterruptsH Hypervisor Interrupts
 
 include::{testplansdir}/priv/InterruptsH.adoc[]
 
-==== HV Hypervisor Vector CSRs
-
-[[t-HV-coverpoints]]
-.HV Coverpoints
-,===
-***[Google Sheet Testplan]
-,===
-
-
 ==== EndianH Hypervisor Endianness
 
 include::{testplansdir}/priv/EndianH.adoc[]
 
-==== ZicntrH Hypervisor Counters
+==== H_Zicntr and Sm_Zicntr_H Hypervisor Counters
 
-include::{testplansdir}/priv/ZicntrH.adoc[]
+These are the Zicntr groups of the H and Sm suites, and run only when Zicntr and H are supported.
+Sm_Zicntr_H reads every counter from M-mode while walking mcounteren, hcounteren and scounteren together, and reads
+time with each htimedelta.  H_Zicntr checks counter access from HS, VS, U and VU modes against
+mcounteren, hcounteren and scounteren, and time with htimedelta in each mode.  H_Zicntr exercises hcounteren for all
+32 counters, so no separate ZihpmH suite is needed.
 
-[NOTE]
-====
-ZicntrH exercises hcounteren for all 32 counters, so no separate ZihpmH suite is needed.
-====
+include::{testplansdir}/priv/Sm_Zicntr_H.adoc[]
+
+include::{testplansdir}/priv/H_Zicntr.adoc[]
 
 ==== PMPH Hypervisor Physical Memory Protection
 
@@ -61,25 +56,37 @@ include::{testplansdir}/priv/SvHZicbo.adoc[]
 
 include::{testplansdir}/priv/Shcounterenw.adoc[]
 
+include::norm/Shcounterenw_norm_rules.adoc[]
+
 ==== Shvsatpa Virtual Memory Modes Supported
 
 include::{testplansdir}/priv/Shvsatpa.adoc[]
+
+include::norm/Shvsatpa_norm_rules.adoc[]
 
 ==== Shgatpa Virtual Memory x4 Modes Supported
 
 include::{testplansdir}/priv/Shgatpa.adoc[]
 
+include::norm/Shgatpa_norm_rules.adoc[]
+
 ==== Shvstvecd VS-Mode Direct Vectors
 
 include::{testplansdir}/priv/Shvstvecd.adoc[]
+
+include::norm/Shvstvecd_norm_rules.adoc[]
 
 ==== Shvstvala VS-Mode Trap Address
 
 include::{testplansdir}/priv/Shvstvala.adoc[]
 
+include::norm/Shvstvala_norm_rules.adoc[]
+
 ==== Shtvala HS-Mode Trap Address
 
 include::{testplansdir}/priv/Shtvala.adoc[]
+
+include::norm/Shtvala_norm_rules.adoc[]
 
 ==== Shlcofideleg Hypervisor Counter Overflow Delegation
 
@@ -111,9 +118,9 @@ include::{testplansdir}/priv/SscfgH.adoc[]
 
 include::{testplansdir}/priv/SmctrH.adoc[]
 
-==== SvinvalH Hypervisor Memory Management Table Invalidation
+==== Svinval Hypervisor Memory Management Table Invalidation
 
-include::{testplansdir}/priv/SvinvalH.adoc[]
+The hypervisor TLB invalidation tests are the H and SmH groups of the Svinval suite: see <<t-Svinval_H-coverpoints>> and <<t-Svinval_SmH-coverpoints>>.
 
 ==== SvaduH Hypervisor Hardware Page Table A/D Updates
 

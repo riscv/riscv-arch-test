@@ -15,7 +15,7 @@ from pathlib import Path
 import pyjson5
 
 from act.build_types import COVERAGE_STEP_TIMEOUT_SECONDS, BuildTask, PythonAction, SubprocessAction, SymlinkAction
-from act.config import Config, CoverageSimulator, RefModelType, spike_isa_string
+from act.config import Config, CoverageSimulator, RefModelType
 from act.coverreport import generate_report, merge_summaries
 from act.parse_test_constraints import TestMetadata
 from act.sail_to_rvvi import sailLog2Trace
@@ -100,13 +100,6 @@ def _ref_model_sig_cmd(
             cmd.append("--trace")
             cmd.extend(["--trace-output", str(sig_trace_file)])
         cmd.extend(["--config", str(sail_config_path)])
-        cmd.extend(config.ref_model_type.signature_flags(sig_file, xlen // 8))
-        cmd.append(str(sig_elf))
-        return cmd
-    if config.ref_model_type == RefModelType.SPIKE:
-        cmd = [str(config.ref_model_exe), f"--isa={spike_isa_string(xlen)}"]
-        if debug:
-            cmd.extend(["-l", "--log-commits", f"--log={sig_trace_file}"])
         cmd.extend(config.ref_model_type.signature_flags(sig_file, xlen // 8))
         cmd.append(str(sig_elf))
         return cmd
@@ -568,7 +561,7 @@ def gen_coverage_tasks(
 # Top-level build plan construction
 # ---------------------------------------------------------------------------
 
-_COVERAGE_GROUPS_WITHOUT_COVERPOINTS = frozenset({Path("priv/H")})
+_COVERAGE_GROUPS_WITHOUT_COVERPOINTS: frozenset[Path] = frozenset()
 
 
 def generate_build_plan(
@@ -613,7 +606,7 @@ def generate_build_plan(
     udb_headers = tuple(sorted(p.absolute() for p in (config_wkdir / "env").iterdir() if p.suffix == ".h"))
     compile_inputs = (*env_files, *dut_headers, *udb_headers, config.linker_script.absolute())
 
-    # Sail config affects reference model output (Spike has no equivalent file).
+    # Sail config affects reference model output.
     ref_model_inputs: tuple[Path, ...] = ()
     # sail_macros.h is included by every test, so the platform defines are needed
     # whatever the reference model is; only the model's own inputs are Sail-specific.

@@ -12,7 +12,7 @@ from testgen.asm.helpers import write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk, trap_sigupd_count
 from testgen.priv.extensions.sv.access import mode_switch, virtual_address
-from testgen.priv.extensions.sv.generate import begin_sv_test, sv_data
+from testgen.priv.extensions.sv.generate import SvRegs, begin_sv_test, end_sv_test, sv_data
 from testgen.priv.extensions.sv.page_tables import (
     SV32,
     SV39,
@@ -113,11 +113,12 @@ def _retry_after_valid(
 
 
 def _make_svvptc_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
+    sv_regs = SvRegs.allocate(test_data)
     chunk = begin_sv_test(
-        test_data, sv, mode, f"{sv.name}_{mode}", coverpoint="cp_load, cp_store, cp_fetch", sig_init=""
+        test_data, sv_regs, sv, mode, f"{sv.name}_{mode}", coverpoint="cp_load, cp_store, cp_fetch", sig_init=""
     )
-    # The PTE_SETUP macros clobber t0 and t1. The result register also builds the address, before each access.
-    addr_reg, value_reg, result_reg, delay_reg = test_data.int_regs.get_registers(4, exclude_regs=[5, 6])
+    # The scratch register builds the address and is not live across a PTE_SETUP macro.
+    addr_reg, value_reg, result_reg, delay_reg = sv_regs.addr, sv_regs.value, sv_regs.result, sv_regs.load
     regs = (addr_reg, value_reg, result_reg, delay_reg)
     umode = mode == "Umode"
     leaf = PteFlags(user=umode)
@@ -125,7 +126,7 @@ def _make_svvptc_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
     chunk.code.append(f"LI(x{value_reg}, 0x800) // Value for the stores")
 
     def address(level: int) -> list[str]:
-        return virtual_address(sv, "va_data", level, destination=f"x{addr_reg}", scratch=f"x{result_reg}")
+        return virtual_address(sv, "va_data", level, destination=addr_reg, scratch=sv_regs.scratch)
 
     for level in sv.levels_desc:
         number += 1
@@ -163,10 +164,9 @@ def _make_svvptc_mode(test_data: TestData, sv: SvMode, mode: str) -> TestChunk:
             ]
         )
 
-    test_data.int_regs.return_registers(list(regs))
-    chunk.raw_data.extend(sv_data(sv, data_region_body=_data_region(value_reg, result_reg)))
+    chunk.raw_data.extend(sv_data(sv, sv_regs, data_region_body=_data_region(value_reg, result_reg)))
     chunk.trap_sigupd_count = trap_sigupd_count(number * len(_accesses(addr_reg, value_reg, result_reg)))
-    return test_data.end_test_chunk()
+    return end_sv_test(test_data, sv_regs)
 
 
 def _make_svvptc(test_data: TestData, sv: SvMode) -> list[TestChunk]:

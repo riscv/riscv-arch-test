@@ -1183,6 +1183,12 @@ covergroup Exceptions_ZicboU_cg with function sample(ins_t ins);
                 bins inval = {2'b11};
             }
         `endif
+        `ifdef S1P12P0_OR_LATER_SUPPORTED
+            senvcfg_cbie_enabled: coverpoint ins.current.csr[CSR_SENVCFG][5:4] {
+                bins flush = {2'b01};
+                bins inval = {2'b11};
+            }
+        `endif
     `endif
     `ifdef ZICBOZ_SUPPORTED
         cbo_zero: coverpoint ins.current.insn {
@@ -1219,7 +1225,11 @@ covergroup Exceptions_ZicboU_cg with function sample(ins_t ins);
     `ifdef SM1P12P0_OR_LATER_SUPPORTED
         `ifdef ZICBOM_SUPPORTED
             cp_cbie:  cross cbo_inval,      menvcfg_cbie,  priv_mode_u;
-            cp_cbo_inval_data: cross cbo_inval, menvcfg_cbie_enabled, priv_mode_u;
+            `ifdef S1P12P0_OR_LATER_SUPPORTED
+                cp_cbo_inval_data: cross cbo_inval, menvcfg_cbie_enabled, senvcfg_cbie_enabled, priv_mode_u;
+            `else
+                cp_cbo_inval_data: cross cbo_inval, menvcfg_cbie_enabled, priv_mode_u;
+            `endif
             cp_cbcfe: cross cbo_flushclean, menvcfg_cbcfe, priv_mode_u;
         `endif
         `ifdef ZICBOZ_SUPPORTED

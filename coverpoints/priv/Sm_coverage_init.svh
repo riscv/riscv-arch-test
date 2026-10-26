@@ -23,6 +23,9 @@
 `endif
 `ifdef ZICNTR_SUPPORTED
     Sm_Zicntr_cg = new();    Sm_Zicntr_cg.set_inst_name("obj_Sm_Zicntr");
+`ifdef H_SUPPORTED
+    Sm_Zicntr_H_cg = new();  Sm_Zicntr_H_cg.set_inst_name("obj_Sm_Zicntr_H");
+`endif
 `endif
 `ifdef H_SUPPORTED
     Sm_H_mcsr_cg = new();    Sm_H_mcsr_cg.set_inst_name("obj_Sm_H_mcsr");

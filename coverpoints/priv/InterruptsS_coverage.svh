@@ -39,6 +39,21 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     mstatus_tw_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tw")[0] {
         bins one = {1}; // WFI in S/U traps after the implementation-defined timeout
     }
+    mstatus_tw: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tw")[0] {
+        // autofill 0/1
+    }
+    `ifdef H_SUPPORTED
+        // hstatus.VTW: with mstatus.TW = 0, VS-mode WFI raises virtual instruction after a bounded time when set
+        hstatus_vtw: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtw")[0] {
+            // autofill 0/1
+        }
+        hstatus_vtw_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtw")[0] {
+            bins zero = {0};
+        }
+        hstatus_vtw_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtw")[0] {
+            bins one = {1};
+        }
+    `endif
 
     // Privilege modes below M this config implements
     priv_mode_interrupts: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
@@ -130,6 +145,19 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         bins pairs[] = {[0:$]} with ($countones(item) == 2 && (item & ~`INTS_MASK) == 0);
     }
 
+    // With H a pair can be split between sie (S-level and LCOFI) and hie (VS-level). Only a T-SBI
+    // write of mie enables both at once, so S-mode tests take split pairs on the mret, and S-mode's
+    // direct crosses below cover the pairs held in one CSR. Without H every pair is in one CSR.
+    `define ONE_CSR_PAIR(item) ((item & `INTS_NOH_MASK) == 0 || (item & 16'h0444) == 0)
+    sie_pairs_one_csr: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")[15:0] & `INTS_MASK) {
+        bins pairs[] = {[0:$]} with ($countones(item) == 2 && (item & ~`INTS_MASK) == 0 && `ONE_CSR_PAIR(item));
+    }
+    `ifdef H_SUPPORTED
+        sie_pairs_split: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")[15:0] & `INTS_MASK) {
+            bins pairs[] = {[0:$]} with ($countones(item) == 2 && (item & ~`INTS_MASK) == 0 && !`ONE_CSR_PAIR(item));
+        }
+    `endif
+
     // One interrupt in INTS_MASK pending at a time. M-level bits are masked off: the tests neither
     // raise nor depend on them.
     sip_walking: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mip")[15:0] & `INTS_MASK) {
@@ -150,6 +178,15 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     sip_pairs: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mip")[15:0] & `INTS_MASK) {
         bins pairs[] = {[0:$]} with ($countones(item) == 2 && (item & ~`INTS_MASK) == 0);
     }
+    // The pairs held in one enable CSR and the split ones, as for sie_pairs_one_csr and sie_pairs_split
+    sip_pairs_one_csr: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mip")[15:0] & `INTS_MASK) {
+        bins pairs[] = {[0:$]} with ($countones(item) == 2 && (item & ~`INTS_MASK) == 0 && `ONE_CSR_PAIR(item));
+    }
+    `ifdef H_SUPPORTED
+        sip_pairs_split: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mip")[15:0] & `INTS_MASK) {
+            bins pairs[] = {[0:$]} with ($countones(item) == 2 && (item & ~`INTS_MASK) == 0 && !`ONE_CSR_PAIR(item));
+        }
+    `endif
 
     // Every S-level interrupt pending at once. The VS pending bits are raised through hvip, which is
     // out of reach of the S-level macros, so they are masked off as in sie_ones.
@@ -171,15 +208,34 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     //   S-mode test: S ecall -> M handler -> mret to S (MPP = S). The interrupt is taken if SIE = 1.
     //   U-mode test: U ecall -> S handler (-> M handler -> mret back to the S handler) -> sret to
     //                U (SPP = U). The S handler runs with SIE = 0, so the interrupt waits for the sret.
+    //   VS/VU-mode test: as for U, but the sret returns to VS or VU (hstatus.SPV = 1, SPP = S or U).
     // The mret back into the S handler also has MPP = S, but with SIE = 0, which is why the crosses
     // below that need SIE = 1 do not pick it up.
-    tsbi_return: coverpoint (((ins.current.insn == MRET) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] == 2'b01)) ? 2'd1 :
-                             ((ins.current.insn == SRET) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0] == 1'b0)) ? 2'd2 : 2'd0) {
-        bins S_mode = {2'd1};
-        bins U_mode = {2'd2};
+    `ifdef H_SUPPORTED
+        `define S_SPV get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spv")[0]
+    `else
+        `define S_SPV 1'b0
+    `endif
+    `define S_SRET_TO ((ins.current.insn == SRET) ? {1'b1, `S_SPV, get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0]} : 3'b000)
+    tsbi_return: coverpoint (((ins.current.insn == MRET) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] == 2'b01)) ? 3'b001 : `S_SRET_TO) {
+        bins S_mode = {3'b001};
+        bins U_mode = {3'b100}; // sret, SPV = 0, SPP = U
+        `ifdef H_SUPPORTED
+            bins VS_mode = {3'b111}; // sret, SPV = 1, SPP = S
+            bins VU_mode = {3'b110}; // sret, SPV = 1, SPP = U
+        `endif
     }
-    tsbi_return_u: coverpoint ((ins.current.insn == SRET) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spp")[0] == 1'b0)) {
-        bins U_mode = {1'b1};
+    // The sret flavors alone: U, VS, and VU write sie through T-SBI, while S writes it directly
+    // The mret flavor alone: an S-mode test's T-SBI call returning to it
+    tsbi_return_mret: coverpoint ((ins.current.insn == MRET) && (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] == 2'b01)) {
+        bins S_mode = {1'b1};
+    }
+    tsbi_return_sret: coverpoint `S_SRET_TO {
+        bins U_mode = {3'b100};
+        `ifdef H_SUPPORTED
+            bins VS_mode = {3'b111};
+            bins VU_mode = {3'b110};
+        `endif
     }
     // sstatus.SIE the test runs with after the xret: mret leaves SIE alone, sret restores it from SPIE
     sstatus_sie_on_return: coverpoint ((ins.current.insn == SRET) ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "spie")[0] :
@@ -266,10 +322,17 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         // when Sstc is implemented, and SSI and SEI through the platform interrupt controller.
         // U has no sip or stimecmp access, so it reaches only the interrupt controller.
         // U cannot reach stimecmp or mip.STIP, so U-mode STI is raised through T-SBI (cp_trigger_tsbi)
-        ignore_bins u_sti_tsbi = binsof(priv_mode_interrupts.U_mode) && binsof(sip_walking.stip);
+        ignore_bins u_sti_tsbi = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} && binsof(sip_walking.stip);
         `ifdef SSCOFPMF_SUPPORTED
             // U has no sip, so U-mode LCOFI is raised through T-SBI and recorded by cp_trigger_tsbi
-            ignore_bins u_lcofi_tsbi = binsof(priv_mode_interrupts.U_mode) && binsof(sip_walking.lcofip);
+            ignore_bins u_lcofi_tsbi = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} && binsof(sip_walking.lcofip);
+        `endif
+        `ifdef H_SUPPORTED
+            // VS and VU are like U: in VS, sip and stimecmp are vsip and vstimecmp. The VS-level
+            // interrupts are raised through hvip, which only HS writes, so below HS they are raised
+            // through T-SBI and taken on the sret.
+            ignore_bins vs_ints_tsbi = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} &&
+                                       (binsof(sip_walking.vseip) || binsof(sip_walking.vstip) || binsof(sip_walking.vssip));
         `endif
         `ifndef SSTC_SUPPORTED
             // Without Sstc, STI is raised only by an M-mode write to mip.STIP. With SIE = 0 it stays
@@ -279,8 +342,14 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         `endif
     }
     // Every S-level interrupt has a T-SBI path: mip.STIP, mip.SSIP, mip.SEIP, and mip.LCOFIP are
-    // written in M, and sip.SSIP in the S handler on behalf of U.
-    cp_trigger_tsbi:            cross tsbi_return, sip_walking, sstatus_sie_on_return, mideleg_s_ones, sie_ones, stvec_both;
+    // written in M, and sip.SSIP in the S handler on behalf of U. The VS-level interrupts have one
+    // only below HS: HS writes hvip itself.
+    cp_trigger_tsbi:            cross tsbi_return, sip_walking, sstatus_sie_on_return, mideleg_s_ones, sie_ones, stvec_both {
+        `ifdef H_SUPPORTED
+            ignore_bins s_writes_hvip = binsof(tsbi_return.S_mode) &&
+                                        (binsof(sip_walking.vseip) || binsof(sip_walking.vstip) || binsof(sip_walking.vssip));
+        `endif
+    }
 
     // mip is an M CSR, so S and U write it through T-SBI and the write is recorded in M.
     // S writes sip.SSIP directly; U writes it through T-SBI, which the S handler services itself.
@@ -295,9 +364,9 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
             // STI is taken on the sret, so only cp_trigger_sti_sstc_tsbi records it.
             // With STCE = 0 the S handler cannot write stimecmp either (it is not accessible in S),
             // so the generator skips U-mode STCE = 0; InterruptsSm covers it from M-mode.
-            ignore_bins u_min = binsof(priv_mode_interrupts.U_mode) && binsof(stimecmp_max_min.min);
+            ignore_bins u_min = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} && binsof(stimecmp_max_min.min);
         }
-        cp_trigger_sti_sstc_tsbi: cross tsbi_return_u, menvcfg_stce_one, stimecmp_min, sstatus_sie_on_return, sie_ones, mideleg_s_ones, stvec_both;
+        cp_trigger_sti_sstc_tsbi: cross tsbi_return_sret, menvcfg_stce_one, stimecmp_min, sstatus_sie_on_return, sie_ones, mideleg_s_ones, stvec_both;
     `endif
 
     // can not check whether the conditions correspond to each other
@@ -308,12 +377,22 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
         `ifdef SSCOFPMF_SUPPORTED
             ignore_bins lcofi_tsbi = binsof(walking_sie_one.lcofie); // taken on the T-SBI xret: cp_enable_one_tsbi
         `endif
+        `ifdef H_SUPPORTED
+            // Below HS the VS-level interrupts are raised through T-SBI (hvip): cp_enable_one_tsbi
+            ignore_bins vs_ints_tsbi = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} &&
+                                       (binsof(walking_sie_one.vseie) || binsof(walking_sie_one.vstie) || binsof(walking_sie_one.vssie));
+        `endif
     }
     // sstatus_sie_on_return_one also keeps out the U-mode path's mret into the S handler, which
     // runs with SIE = 0.
     cp_enable_one_tsbi:         cross tsbi_return, mideleg_s_ones, sstatus_sie_on_return_one, walking_sie_one, sip_matches_sie_one {
         // SSI and SEI come from the platform interrupt controller, written from the test mode itself
         ignore_bins platform = binsof(walking_sie_one.ssie) || binsof(walking_sie_one.seie);
+        `ifdef H_SUPPORTED
+            // S writes hvip directly, so its VS-level interrupts are taken in S (cp_enable_one)
+            ignore_bins s_writes_hvip = binsof(tsbi_return.S_mode) &&
+                                        (binsof(walking_sie_one.vseie) || binsof(walking_sie_one.vstie) || binsof(walking_sie_one.vssie));
+        `endif
     }
     // No _tsbi twin: cp_enable_zero checks that the disabled interrupt does not fire, so the test
     // instruction retires with it pending and is observed directly.
@@ -322,29 +401,56 @@ covergroup InterruptsS_cg with function sample(ins_t ins);
     // The pair is raised with sie = 0, then sie is written. S writes sie directly, so the higher
     // priority interrupt is taken on that csrw. U writes sie through T-SBI, so it is taken on the
     // sret out of the S handler and recorded by the _tsbi crosses.
-    cp_priority_sip:            cross priv_mode_interrupts, sstatus_sie_one, mideleg_s_ones, sie_ones, sip_pairs {
-        ignore_bins tsbi = binsof(priv_mode_interrupts.U_mode); // U writes sie through T-SBI: cp_priority_sip_tsbi
+    cp_priority_sip:            cross priv_mode_interrupts, sstatus_sie_one, mideleg_s_ones, sie_ones, sip_pairs_one_csr {
+        // U, VS, and VU write sie through T-SBI: cp_priority_sip_tsbi
+        ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100};
     }
-    cp_priority_sie:            cross priv_mode_interrupts, sstatus_sie_one, mideleg_s_ones, sip_all_ones, sie_pairs {
-        ignore_bins tsbi = binsof(priv_mode_interrupts.U_mode); // U writes sie through T-SBI: cp_priority_sie_tsbi
+    cp_priority_sie:            cross priv_mode_interrupts, sstatus_sie_one, mideleg_s_ones, sip_all_ones, sie_pairs_one_csr {
+        // U, VS, and VU write sie through T-SBI: cp_priority_sie_tsbi
+        ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100};
     }
-    cp_priority_sip_tsbi:       cross tsbi_return_u, mideleg_s_ones, sie_ones, sip_pairs;
-    cp_priority_sie_tsbi:       cross tsbi_return_u, mideleg_s_ones, sip_all_ones, sie_pairs;
+    cp_priority_sip_tsbi:       cross tsbi_return_sret, mideleg_s_ones, sie_ones, sip_pairs;
+    cp_priority_sie_tsbi:       cross tsbi_return_sret, mideleg_s_ones, sip_all_ones, sie_pairs;
+    // S enables a split pair by a T-SBI write of mie, so it is taken on the mret. SIE = 1 keeps out
+    // the mret back into the S handler on the U, VS, and VU paths, which runs with SIE = 0.
+    `ifdef H_SUPPORTED
+        cp_priority_sip_split_tsbi: cross tsbi_return_mret, sstatus_sie_on_return_one, mideleg_s_ones, sie_ones, sip_pairs_split;
+        cp_priority_sie_split_tsbi: cross tsbi_return_mret, sstatus_sie_on_return_one, mideleg_s_ones, sip_all_ones, sie_pairs_split;
+    `endif
 
     // WFI wakes on the Sstc supervisor timer whether or not SIE is set. Not tested in U-mode: with
-    // S-mode implemented, U-mode WFI traps after a bounded time (cp_wfi_timeout).
+    // S-mode implemented, U-mode WFI traps after a bounded time (cp_wfi_timeout). VS-mode WFI waits
+    // only with hstatus.VTW = 0; VU-mode WFI never waits.
     `ifdef SSTC_SUPPORTED
         cp_wfi:                 cross priv_mode_s, sstatus_sie, sie_stie_one, mstatus_tw_zero, menvcfg_stce_one, mideleg_s_ones, wfi;
+        `ifdef H_SUPPORTED
+            cp_wfi_vs:          cross priv_mode_vs, sstatus_sie, sie_stie_one, mstatus_tw_zero, hstatus_vtw_zero, menvcfg_stce_one, mideleg_s_ones, wfi;
+        `endif
     `endif
 
     // mstatus.TW = 1 traps WFI in S and U. U-mode WFI also times out with TW = 0 because S exists.
     cp_wfi_timeout:             cross priv_mode_s_u, sstatus_sie, sie_stie, mstatus_tw_one, wfi;
     cp_wfi_timeout_tw_zero:     cross priv_mode_u, sstatus_sie, sie_stie, mstatus_tw_zero, wfi;
+    // In VS-mode, TW = 1 raises illegal instruction whatever VTW is, and TW = 0 with VTW = 1 raises
+    // virtual instruction. In VU-mode, TW = 0 raises virtual instruction whatever VTW is.
+    `ifdef H_SUPPORTED
+        cp_wfi_timeout_vs:          cross priv_mode_vs, sstatus_sie, sie_stie, mstatus_tw_one, hstatus_vtw, wfi;
+        cp_wfi_timeout_vs_vtw_one:  cross priv_mode_vs, sstatus_sie, sie_stie, mstatus_tw_zero, hstatus_vtw_one, wfi;
+        cp_wfi_timeout_vu:          cross priv_mode_vu, sstatus_sie, sie_stie, mstatus_tw, hstatus_vtw, wfi;
+        // Every TW and VTW in VS-mode: the WFI waits with TW = VTW = 0 (cp_wfi_vs, which needs Sstc) and times
+        // out otherwise
+        `ifdef SSTC_SUPPORTED
+            cp_wfi_vs_tw_vtw:       cross priv_mode_vs, sstatus_sie, mstatus_tw, hstatus_vtw, wfi;
+        `endif
+    `endif
 
 endgroup
 
 `undef INTS_MASK
 `undef INTS_NOH_MASK
+`undef S_SPV
+`undef S_SRET_TO
+`undef ONE_CSR_PAIR
 
 function void interruptss_sample(int hart, int issue, ins_t ins);
     InterruptsS_cg.sample(ins);

@@ -1975,6 +1975,7 @@ tsbi_csr_table:
         //TSBI_CSR_INSTR_TABLE(0x105) // stvec
         TSBI_CSR_INSTR_TABLE(0x106) // scounteren
         TSBI_CSR_INSTR_TABLE(0x10A) // senvcfg
+        TSBI_CSR_INSTR_TABLE(0x143) // stval: Sstvala presets it before each trap in U-mode
         TSBI_CSR_INSTR_TABLE(0x144) // sip
         #ifdef SSTC_SUPPORTED
         TSBI_CSR_INSTR_TABLE(0x14D) // stimecmp

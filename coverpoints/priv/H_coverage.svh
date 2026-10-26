@@ -630,8 +630,8 @@ covergroup H_F_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "general/RISCV_coverage_priv_f_coverpoints.svh"
 
-    // vsstatus.FS is sampled as sstatus (in VS-mode and VU-mode the trace reports vsstatus as sstatus); the HS-level FS is mstatus.FS
-    vsstatus_FS: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs")[1:0] {
+    // vsstatus.FS is sampled from vsstatus; the HS-level FS from sstatus
+    vsstatus_FS: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "fs")[1:0] {
         bins off     = {2'b00};
         `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
             bins initial_state = {2'b01};
@@ -641,7 +641,7 @@ covergroup H_F_cg with function sample(ins_t ins);
         `endif
         bins dirty   = {2'b11};
     }
-    hsstatus_FS: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs")[1:0] {
+    hsstatus_FS: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs")[1:0] {
         bins off     = {2'b00};
         `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
             bins initial_state = {2'b01};
@@ -651,11 +651,11 @@ covergroup H_F_cg with function sample(ins_t ins);
         `endif
         bins dirty   = {2'b11};
     }
-    vsstatus_FS_off_dirty: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs")[1:0] {
+    vsstatus_FS_off_dirty: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "fs")[1:0] {
         bins off     = {2'b00};
         bins dirty   = {2'b11};
     }
-    hsstatus_FS_off_dirty: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs")[1:0] {
+    hsstatus_FS_off_dirty: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs")[1:0] {
         bins off     = {2'b00};
         bins dirty   = {2'b11};
     }
@@ -761,13 +761,13 @@ covergroup H_V_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vsstatus_vs_*
     // tests vsstatus and sstatus ability to set clean and initial to dirty only when supposed to.
-    // In VS-mode and VU-mode the trace reports vsstatus as sstatus; the HS-level VS is mstatus.VS.
+    // The VS-level VS is sampled from vsstatus.VS and the HS-level VS from sstatus.VS.
     // A vector instruction needs both to be on, and sets both to dirty.
     //////////////////////////////////////////////////////////////////////////////////
 
     // Initial and Clean only when MSTATUS_VS_LEGAL_VALUES includes them (otherwise a write
     // of either reads back as Dirty)
-    vsstatus_vs_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "vs") {
+    vsstatus_vs_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "vs") {
         `ifdef UDB_MSTATUS_VS_LEGAL_VALUES_1
             bins first = {1};
         `endif
@@ -776,7 +776,7 @@ covergroup H_V_cg with function sample(ins_t ins);
         `endif
         bins dirty  = {3};
     }
-    vsstatus_vs_all : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "vs") {
+    vsstatus_vs_all : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "vs") {
         bins off = {0};
         `ifdef UDB_MSTATUS_VS_LEGAL_VALUES_1
             bins first = {1};
@@ -786,7 +786,7 @@ covergroup H_V_cg with function sample(ins_t ins);
         `endif
         bins dirty  = {3};
     }
-    hsstatus_vs_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+    hsstatus_vs_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "vs") {
         `ifdef UDB_MSTATUS_VS_LEGAL_VALUES_1
             bins first = {1};
         `endif
@@ -795,7 +795,7 @@ covergroup H_V_cg with function sample(ins_t ins);
         `endif
         bins dirty  = {3};
     }
-    hsstatus_vs_all : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") {
+    hsstatus_vs_all : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "vs") {
         bins off = {0};
         `ifdef UDB_MSTATUS_VS_LEGAL_VALUES_1
             bins first = {1};
@@ -831,13 +831,13 @@ covergroup H_VF_cg with function sample(ins_t ins);
     `include "general/RISCV_coverage_standard_coverpoints.svh"
     `include "general/RISCV_coverage_priv_vf_coverpoints.svh"
 
-    // In VS-mode the trace reports vsstatus as sstatus; the HS-level status is mstatus.
+    // The VS-level status is sampled from vsstatus and the HS-level status from sstatus.
     //cross vtype_prev_vill_clear, vstart_zero, vl_nonzero;
     std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
                         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
                         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "vs") != 0 &
-                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "vs") != 0
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "vs") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "vs") != 0
                     }
     {
         bins true = {1'b1};
@@ -845,7 +845,7 @@ covergroup H_VF_cg with function sample(ins_t ins);
 
     // Initial and Clean only when MSTATUS_FS_LEGAL_VALUES includes them (otherwise a write
     // of either reads back as Dirty)
-    vsstatus_fs_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs") {
+    vsstatus_fs_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "fs") {
         `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
             bins first_state = {1};
         `endif
@@ -854,7 +854,7 @@ covergroup H_VF_cg with function sample(ins_t ins);
         `endif
         bins dirty  = {3};
     }
-    vsstatus_fs_all : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs") {
+    vsstatus_fs_all : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "fs") {
         bins off = {0};
         `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
             bins first_state = {1};
@@ -864,7 +864,7 @@ covergroup H_VF_cg with function sample(ins_t ins);
         `endif
         bins dirty  = {3};
     }
-    hsstatus_fs_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
+    hsstatus_fs_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs") {
         `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
             bins first_state = {1};
         `endif
@@ -873,7 +873,7 @@ covergroup H_VF_cg with function sample(ins_t ins);
         `endif
         bins dirty  = {3};
     }
-    hsstatus_fs_all : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
+    hsstatus_fs_all : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs") {
         bins off = {0};
         `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
             bins first_state = {1};

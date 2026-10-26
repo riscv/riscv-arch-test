@@ -299,11 +299,11 @@ covergroup Zicfiss_S_cg with function sample(ins_t ins);
     cp_sspopchk_fault_priority_s:  cross priv_mode_s, ss_pop_instr, ssp_fault_address;
     cp_ssrdp_s:                    cross priv_mode_s, ssrdp_instr;
     cp_ssamoswap_s:                cross priv_mode_s, ssamoswap_instr, pte_ss_page;
-    cp_ss_address_alignment_ssp_s: cross priv_mode_s, ss_push_instr, ssp_LSBs;
-    cp_ss_address_alignment_pop_s: cross priv_mode_s, ss_pop_instr, ssp_LSBs;
+    cp_ss_address_alignment_ssp_s: cross priv_mode_s, ss_push_instr, pte_ss_page, ssp_LSBs;
+    cp_ss_address_alignment_pop_s: cross priv_mode_s, ss_pop_instr, pte_ss_page, ssp_LSBs;
     // The misaligned atomicity granule applies only to Zaamo, Zabha and Zacas AMOs
     // (norm:pma_mag_insts), so every misaligned SSAMOSWAP faults.
-    cp_ss_address_alignment_swap_s: cross priv_mode_s, ssamoswap_instr, ssamoswap_adr_LSBs;
+    cp_ss_address_alignment_swap_s: cross priv_mode_s, ssamoswap_instr, pte_ss_page, ssamoswap_adr_LSBs;
     cp_ss_instr_target_page_s:     cross priv_mode_s, ss_mem_instr, pte_xwr;
 
     `ifdef SVPBMT_SUPPORTED
@@ -313,18 +313,27 @@ covergroup Zicfiss_S_cg with function sample(ins_t ins);
         // implementation may override the AMO PMA of an NC page (norm:Svpbmt_impl_may_override_pmas),
         // so the outcome is implementation-defined, and no UDB parameter yet says which behavior a
         // DUT has.
-        cp_ss_non_idempotent_s:    cross priv_mode_s, ss_mem_instr, pte_pbmt, menvcfg_pbmte;
+        cp_ss_non_idempotent_s:    cross priv_mode_s, ss_mem_instr, pte_ss_page, pte_pbmt, menvcfg_pbmte;
     `endif
 
     // The U/SUM/MXR permission check resolves before any shadow stack rule, so where
     // the two disagree the translation fault is what gets reported.
-    cp_ss_page_perm_priority:      cross priv_mode_s, ss_mem_instr, pte_u, sstatus_sum, sstatus_mxr;
-    cp_ss_page_perm_priority_load: cross priv_mode_s, ordinary_loadops, pte_u, sstatus_sum, sstatus_mxr;
-    cp_ss_page_perm_priority_store: cross priv_mode_s, ordinary_storeops, pte_u, sstatus_sum, sstatus_mxr;
+    cp_ss_page_perm_priority:      cross priv_mode_s, ss_mem_instr, pte_ss_page, pte_u, sstatus_sum, sstatus_mxr;
+    cp_ss_page_perm_priority_load: cross priv_mode_s, ordinary_loadops, pte_ss_page, pte_u, sstatus_sum, sstatus_mxr;
+    cp_ss_page_perm_priority_store: cross priv_mode_s, ordinary_storeops, pte_ss_page, pte_u, sstatus_sum, sstatus_mxr;
 
     // Set and clear senvcfg.SSE under both values of menvcfg.SSE; the signature checks that it
     // reads back 0 whenever menvcfg.SSE is 0.
     cp_senvcfg_sse_rdonly0_s:      cross priv_mode_s, senvcfg_csr, menvcfg_sse, sse_bit_write;
+    cp_ss_unused_mop_rr7_rs2_s: cross priv_mode_s, mop_rr7_rs2;
+    cp_ss_unused_mop_rr7_rs1_s: cross priv_mode_s, mop_rr7_rs1;
+    cp_ss_unused_mop_rr7_rd_s: cross priv_mode_s, mop_rr7_rd;
+    cp_ss_unused_mop_r28_rs1_s: cross priv_mode_s, mop_r28_rs1;
+    cp_ss_unused_mop_r28_rd_s: cross priv_mode_s, mop_r28_rd;
+    `ifdef ZCMOP_SUPPORTED
+        cp_ss_unused_mop_c_s: cross priv_mode_s, mop_c;
+    `endif
+    cp_ss_page_access_store_misaligned_s: cross priv_mode_s, ordinary_storeops, store_addr_lsb, pte_ss_page;
 
 endgroup
 `endif
@@ -582,15 +591,15 @@ covergroup Zicfiss_U_cg with function sample(ins_t ins);
     `else
         cp_ssamoswap:              cross priv_mode_u, ssamoswap_instr, swap_loaded_msb, pte_ss_page;
     `endif
-    cp_ssamoswap_aqrl:             cross priv_mode_u, ssamoswap_instr, swap_aqrl;
-    cp_ssamoswap_reg_edges:        cross priv_mode_u, ssamoswap_instr, swap_reg_edge;
+    cp_ssamoswap_aqrl:             cross priv_mode_u, ssamoswap_instr, pte_ss_page, swap_aqrl;
+    cp_ssamoswap_reg_edges:        cross priv_mode_u, ssamoswap_instr, pte_ss_page, swap_reg_edge;
 
     // Alignment
-    cp_ss_address_alignment_ssp:   cross priv_mode_u, ss_push_instr, ssp_LSBs;
-    cp_ss_address_alignment_pop:   cross priv_mode_u, ss_pop_instr, ssp_LSBs;
+    cp_ss_address_alignment_ssp:   cross priv_mode_u, ss_push_instr, pte_ss_page, ssp_LSBs;
+    cp_ss_address_alignment_pop:   cross priv_mode_u, ss_pop_instr, pte_ss_page, ssp_LSBs;
     // The misaligned atomicity granule applies only to Zaamo, Zabha and Zacas AMOs
     // (norm:pma_mag_insts), so every misaligned SSAMOSWAP faults.
-    cp_ss_address_alignment_swap:  cross priv_mode_u, ssamoswap_instr, ssamoswap_adr_LSBs;
+    cp_ss_address_alignment_swap:  cross priv_mode_u, ssamoswap_instr, pte_ss_page, ssamoswap_adr_LSBs;
 
     // Page / PMA behaviour
     cp_ss_instr_target_page:       cross priv_mode_u, ss_mem_instr, pte_xwr;
@@ -603,7 +612,7 @@ covergroup Zicfiss_U_cg with function sample(ins_t ins);
     cp_ss_page_crossing:           cross priv_mode_u, ss_stack_instr, ssp_page_offset;
 
     // pte.A / pte.D: SSPUSH and SSAMOSWAP write and so need D; SSPOPCHK only reads.
-    cp_ss_page_ad_bits:            cross priv_mode_u, ss_mem_instr, pte_ad;
+    cp_ss_page_ad_bits:            cross priv_mode_u, ss_mem_instr, pte_ss_page, pte_ad;
 
     `ifdef SVPBMT_SUPPORTED
         // PBMT=IO makes the page non-idempotent, which SS instructions must reject; NC memory is
@@ -611,7 +620,7 @@ covergroup Zicfiss_U_cg with function sample(ins_t ins);
         // Known coverage gap: the SSAMOSWAP x PBMT=NC bins are not tested. An implementation may
         // override the AMO PMA of an NC page (norm:Svpbmt_impl_may_override_pmas), so the outcome
         // is implementation-defined, and no UDB parameter yet says which behavior a DUT has.
-        cp_ss_non_idempotent:      cross priv_mode_u, ss_mem_instr, pte_pbmt, menvcfg_pbmte;
+        cp_ss_non_idempotent:      cross priv_mode_u, ss_mem_instr, pte_ss_page, pte_pbmt, menvcfg_pbmte;
     `endif
     cp_ss_page_access_store:       cross priv_mode_u, ordinary_storeops, pte_ss_page;
     cp_ss_page_access_load:        cross priv_mode_u, ordinary_loadops, pte_ss_page, sstatus_mxr;
@@ -646,6 +655,15 @@ covergroup Zicfiss_U_cg with function sample(ins_t ins);
     // Zicfiss inactive for U-mode: the MOP-encoded instructions stay inert, even with an
     // ssp that an active instruction would fault on.
     cp_ss_instr_inactive_u:        cross priv_mode_u, ss_mop_instr, u_sse_inactive, ssp_state;
+    cp_ss_unused_mop_rr7_rs2: cross priv_mode_u, mop_rr7_rs2;
+    cp_ss_unused_mop_rr7_rs1: cross priv_mode_u, mop_rr7_rs1;
+    cp_ss_unused_mop_rr7_rd: cross priv_mode_u, mop_rr7_rd;
+    cp_ss_unused_mop_r28_rs1: cross priv_mode_u, mop_r28_rs1;
+    cp_ss_unused_mop_r28_rd: cross priv_mode_u, mop_r28_rd;
+    `ifdef ZCMOP_SUPPORTED
+        cp_ss_unused_mop_c: cross priv_mode_u, mop_c;
+    `endif
+    cp_ss_page_access_store_misaligned: cross priv_mode_u, ordinary_storeops, store_addr_lsb, pte_ss_page;
 
 endgroup
 `endif

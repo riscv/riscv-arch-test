@@ -204,6 +204,35 @@ coverpoints:
       This is the compatibility guarantee: a Zicfiss-built program still runs, just without backward-edge CFI.
       The hostile-ssp variants are the real proof of the guarantee: an implementation that still performs the access and discards the result passes the benign case but fails these. No exception of any kind, no memory access, ssp unchanged, rd unchanged except SSRDP writing 0.
     bins: instr {SSPUSH x1, SSPUSH x5, C.SSPUSH x1, SSPOPCHK x1, SSPOPCHK x5, C.SSPOPCHK x5, SSRDP} x gate {menvcfg.SSE, senvcfg.SSE} = {00, 10, 11} x ssp_state {valid, misaligned, unmapped, value_mismatch} x {no trap, no memory access, ssp unchanged, rd==0 for SSRDP}
+  - name: |-
+      cp_ss_unused_mop_rr7_rs2
+      cp_ss_unused_mop_rr7_rs1
+      cp_ss_unused_mop_rr7_rd
+      cp_ss_unused_mop_r28_rs1
+      cp_ss_unused_mop_r28_rd
+      cp_ss_unused_mop_c
+    goal: Verify the mop.rr.7, mop.r.28 and c.mop.n encodings that Zicfiss does not use stay Zimop/Zcmop while Zicfiss is active
+    description: |-
+      With Zicfiss active (menvcfg.SSE=1, and senvcfg.SSE=1 for U-mode), ssp at the top of an SS page, execute the encodings Zicfiss does not use.
+      Sweep each register field over x0-x31, holding the others fixed, and skip the Zicfiss instructions:
+      mop.rr.7: rs2 (rd=rs1=x0), rs1 (rd=x0, rs2=x1), rd (rs1=x0, rs2=x1). SSPUSH is rd=rs1=x0 with rs2=x1/x5.
+      mop.r.28: rs1 (rd=x0), rd (rs1=x1). SSPOPCHK is rd=x0 with rs1=x1/x5. SSRDP is rs1=x0.
+      c.mop.3 and c.mop.7 (with Zcmop). c.mop.1 and c.mop.5 are C.SSPUSH x1 and C.SSPOPCHK x5.
+      Preload rd with a nonzero value (a framework register is saved and restored). Record rd, ssp and the word below ssp afterwards.
+    expectation: |-
+      NO exception. rd is written with 0 (unchanged when rd=x0 or for c.mop). ssp is unchanged. Nothing is pushed or checked.
+      An implementation that decodes SSPUSH, SSPOPCHK or SSRDP too loosely, for example ignoring rd or one rs field, fails here.
+    bins: field {rd, rs1, rs2} x register {x0..x31, minus the Zicfiss instructions}; c.mop {3, 7} x {no trap, no memory access, ssp unchanged, rd==0 when rd!=x0}
+  - name: cp_ss_page_access_store_misaligned
+    goal: Verify an ordinary store to an SS page raises a store/AMO access-fault at every address alignment
+    description: |-
+      With a page mapped as an SS page (xwr=010), execute SB, SH, SW and SD (RV64) at effective address bits [2:0] = 0..7. Most of these are misaligned.
+      Check memory is unchanged and record the trap.
+    expectation: |-
+      Every store raises a store/AMO access-fault (cause=7), including the misaligned ones: the SS page rule takes priority over address-misaligned.
+      If the implementation gives address-misaligned exceptions higher priority (MISALIGNED_LDST_EXCEPTION_PRIORITY), the result follows the reference model.
+      Memory on the SS page is unchanged.
+    bins: store {SB, SH, SW, SD} x addr[2:0] {0..7} x pte.xwr {010}
   - name: cp_ssamoswap_sse_gating
     goal: Verify SSAMOSWAP.W/D raises an illegal-instruction exception when the SSE enable chain is off (V=0)
     description: |-

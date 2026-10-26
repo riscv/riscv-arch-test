@@ -128,6 +128,85 @@ def ss_forms_against(
     return lines
 
 
+# Zicfiss uses only some encodings of mop.rr.7 and mop.r.28. The rest stay Zimop/Zcmop.
+# Each register field is swept over x0-x31 with the other fields held fixed, skipping the Zicfiss
+# instructions: SSPUSH (rd = rs1 = x0, rs2 = x1/x5), SSPOPCHK (rd = x0, rs1 = x1/x5), SSRDP (rs1 = x0).
+class _UnusedMop(NamedTuple):
+    coverpoint: str  # suffix of the cp_ss_unused_mop_* coverpoint
+    name: str
+    instr: list[str]
+    rd: int  # destination register; 0 if the instruction does not write one
+
+
+def _unused_mop_list() -> list[_UnusedMop]:
+    cases = [_UnusedMop("rr7_rs2", f"rs2_x{n}", [f"mop.rr.7 x0, x0, x{n}"], 0) for n in range(32) if n not in (1, 5)]
+    cases += [_UnusedMop("rr7_rs1", f"rs1_x{n}", [f"mop.rr.7 x0, x{n}, x1"], 0) for n in range(1, 32)]
+    cases += [_UnusedMop("rr7_rd", f"rd_x{n}", [f"mop.rr.7 x{n}, x0, x1"], n) for n in range(1, 32)]
+    cases += [_UnusedMop("r28_rs1", f"rs1_x{n}", [f"mop.r.28 x0, x{n}"], 0) for n in range(32) if n not in (1, 5)]
+    cases += [_UnusedMop("r28_rd", f"rd_x{n}", [f"mop.r.28 x{n}, x1"], n) for n in range(1, 32)]
+    return cases
+
+
+def unused_mop_cases(test_data: TestData, suffix: str, cg: str) -> list[str]:
+    """Unused mop.rr.7, mop.r.28 and c.mop.n encodings, run while Zicfiss is active.
+
+    Each must act as a Zimop/Zcmop: rd = 0 (when rd is not x0), ssp unchanged and nothing pushed.
+    When rd is a framework register, it is saved and restored around the instruction.
+    """
+    pool = test_data.int_regs.get_registers(4)
+    cases = _unused_mop_list()
+    for n in (3, 7):
+        c_mop = [".option push", ".option arch, +zcmop", f"c.mop.{n}", ".option pop"]
+        cases.append(_UnusedMop("c", f"c_mop_{n}", c_mop, 0))
+
+    lines: list[str] = []
+    for case in cases:
+        # Scratch registers must differ from rd.
+        ssp_reg, save_reg, res_reg = [r for r in pool if r != case.rd][:3]
+        body = [f"LI(x{ssp_reg}, ZICFISS_VA_SS + 0x800)", f"csrw ssp, x{ssp_reg}"]
+        if case.rd:
+            body += [f"mv x{save_reg}, x{case.rd}", f"LI(x{case.rd}, 0x0DDBA11)   # a Zimop writes 0 here"]
+        body += [test_data.add_testcase(case.name, f"cp_ss_unused_mop_{case.coverpoint}{suffix}", cg), *case.instr]
+        if case.rd:
+            body += [f"mv x{res_reg}, x{case.rd}", f"mv x{case.rd}, x{save_reg}", write_sigupd(res_reg, test_data)]
+        body += [
+            f"csrr x{res_reg}, ssp   # unchanged",
+            write_sigupd(res_reg, test_data),
+            f"addi x{res_reg}, x{res_reg}, -REGWIDTH",
+            f"LREG x{res_reg}, 0(x{res_reg})   # nothing was pushed",
+            write_sigupd(res_reg, test_data),
+        ]
+        lines.extend(zcmop_only(case.coverpoint == "c", body))
+    test_data.int_regs.return_registers(pool)
+    return lines
+
+
+def misaligned_store_cases(test_data: TestData, coverpoint: str, cg: str) -> list[str]:
+    """Ordinary stores to an SS page at every low-address-bit value.
+
+    Each store must raise a store/AMO access-fault, including when misaligned, and leave memory unchanged.
+    """
+    addr_reg, data_reg = test_data.int_regs.get_registers(2)
+    lines: list[str] = []
+    for mnemonic in ("sb", "sh", "sw", "sd"):
+        for offset in range(8):
+            case = [
+                f"LI(x{addr_reg}, ZICFISS_VA_SS + 0x400 + {offset})",
+                f"LI(x{data_reg}, 0x5A5A5A5A5A5A5A5A)",
+                test_data.add_testcase(f"{mnemonic}_off{offset}", coverpoint, cg),
+                f"{mnemonic} x{data_reg}, 0(x{addr_reg})",
+                f"LI(x{addr_reg}, ZICFISS_VA_SS + 0x400)",
+                f"LREG x{data_reg}, 0(x{addr_reg})   # unchanged",
+                write_sigupd(data_reg, test_data),
+                f"addi x{addr_reg}, x{addr_reg}, REGWIDTH",
+                f"LREG x{data_reg}, 0(x{addr_reg})   # unchanged",
+                write_sigupd(data_reg, test_data),
+            ]
+            lines.extend(rv64_only(case) if mnemonic == "sd" else case)
+    test_data.int_regs.return_registers([addr_reg, data_reg])
+    return lines
+
+
 def ssamoswap_forms(test_data: TestData, addr: str, tag: str, coverpoint: str, cg: str) -> list[str]:
     """SSAMOSWAP.W, and SSAMOSWAP.D on RV64, against ``addr``, each recording rd afterwards."""
     addr_reg, rd_reg, rs2_reg = test_data.int_regs.get_registers(3)
@@ -1471,6 +1550,19 @@ def _generate_senvcfg_rdonly0_s(test_data: TestData) -> list[str]:
 # ---------------------------------------------------------------------------
 
 
+def _generate_unused_mop_s(test_data: TestData) -> list[str]:
+    lines = _smode_prologue(test_data)
+    lines.extend(unused_mop_cases(test_data, "_s", _CG_S))
+    return lines
+
+
+def _generate_misaligned_store_s(test_data: TestData) -> list[str]:
+    coverpoint = "cp_ss_page_access_store_misaligned_s"
+    lines = _smode_prologue(test_data)
+    lines.extend(misaligned_store_cases(test_data, coverpoint, _CG_S))
+    return lines
+
+
 @add_priv_test_generator(
     "Zicfiss",
     required_extensions=["S", "Zicfiss"],
@@ -1485,6 +1577,8 @@ def make_zicfisss(test_data: TestData) -> list[TestChunk]:
         _generate_ssp_gating_s,
         _generate_page_enc_s,
         _generate_instr_s,
+        _generate_unused_mop_s,
+        _generate_misaligned_store_s,
         _generate_alignment_s,
         _generate_target_page_s,
         _generate_non_idempotent_s,
@@ -2379,6 +2473,21 @@ def _generate_instr_inactive_u(test_data: TestData) -> list[str]:
     return vm_section(coverpoint, "SS instructions inert in U-mode while Zicfiss is inactive", lines)
 
 
+def _generate_unused_mop_u(test_data: TestData) -> list[str]:
+    lines = _umode_prologue(test_data)
+    lines.extend(unused_mop_cases(test_data, "", _CG_U))
+    lines.extend(_SATP_OFF)
+    return vm_section("cp_ss_unused_mop", "Unused MOP encodings stay Zimop/Zcmop while Zicfiss is active", lines)
+
+
+def _generate_misaligned_store_u(test_data: TestData) -> list[str]:
+    coverpoint = "cp_ss_page_access_store_misaligned"
+    lines = _umode_prologue(test_data)
+    lines.extend(misaligned_store_cases(test_data, coverpoint, _CG_U))
+    lines.extend(_SATP_OFF)
+    return vm_section(coverpoint, "Misaligned ordinary stores to an SS page raise an access fault", lines)
+
+
 # ---------------------------------------------------------------------------
 # Top-level generator
 # ---------------------------------------------------------------------------
@@ -2407,6 +2516,8 @@ def make_zicfissu(test_data: TestData) -> list[TestChunk]:
         (_generate_alignment, None),
         (_generate_sse_gating, None),
         (_generate_instr_inactive_u, None),
+        (_generate_unused_mop_u, None),
+        (_generate_misaligned_store_u, None),
         (_generate_target_page, "U_pages"),
         (_generate_target_page_mxr_u, None),
         (_generate_page_crossing, None),

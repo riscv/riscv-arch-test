@@ -56,6 +56,35 @@ coverpoints:
       MXR governs whether the R=0 shadow stack page is readable by an ordinary load. Per [norm:ssmp_ss_load] the shadow stack is readable by any load-only instruction, so this must hold for BOTH MXR values -- an implementation that requires MXR=1 to read an SS page is wrong.
       SS instructions themselves are unaffected by MXR: their access is a store/AMO-flavoured access, not a load.
     bins: pte.U {0,1} x sstatus.SUM {0,1} x sstatus.MXR {0,1} x accessor {SS instr, ordinary load, ordinary store} x cause {none, page-fault from U/SUM, 7, 15} x priority {translation check wins}
+  - name: |-
+      cp_ss_unused_mop_rr7_rs2_s
+      cp_ss_unused_mop_rr7_rs1_s
+      cp_ss_unused_mop_rr7_rd_s
+      cp_ss_unused_mop_r28_rs1_s
+      cp_ss_unused_mop_r28_rd_s
+      cp_ss_unused_mop_c_s
+    goal: Verify the mop.rr.7, mop.r.28 and c.mop.n encodings that Zicfiss does not use stay Zimop/Zcmop while Zicfiss is active
+    description: |-
+      With Zicfiss active (menvcfg.SSE=1), ssp at the top of an SS page, execute the encodings Zicfiss does not use.
+      Sweep each register field over x0-x31, holding the others fixed, and skip the Zicfiss instructions:
+      mop.rr.7: rs2 (rd=rs1=x0), rs1 (rd=x0, rs2=x1), rd (rs1=x0, rs2=x1). SSPUSH is rd=rs1=x0 with rs2=x1/x5.
+      mop.r.28: rs1 (rd=x0), rd (rs1=x1). SSPOPCHK is rd=x0 with rs1=x1/x5. SSRDP is rs1=x0.
+      c.mop.3 and c.mop.7 (with Zcmop). c.mop.1 and c.mop.5 are C.SSPUSH x1 and C.SSPOPCHK x5.
+      Preload rd with a nonzero value (a framework register is saved and restored). Record rd, ssp and the word below ssp afterwards.
+    expectation: |-
+      NO exception. rd is written with 0 (unchanged when rd=x0 or for c.mop). ssp is unchanged. Nothing is pushed or checked.
+      An implementation that decodes SSPUSH, SSPOPCHK or SSRDP too loosely, for example ignoring rd or one rs field, fails here.
+    bins: field {rd, rs1, rs2} x register {x0..x31, minus the Zicfiss instructions}; c.mop {3, 7} x {no trap, no memory access, ssp unchanged, rd==0 when rd!=x0}
+  - name: cp_ss_page_access_store_misaligned_s
+    goal: Verify an ordinary store to an SS page raises a store/AMO access-fault at every address alignment
+    description: |-
+      With a page mapped as an SS page (xwr=010), execute SB, SH, SW and SD (RV64) at effective address bits [2:0] = 0..7. Most of these are misaligned.
+      Check memory is unchanged and record the trap.
+    expectation: |-
+      Every store raises a store/AMO access-fault (cause=7), including the misaligned ones: the SS page rule takes priority over address-misaligned.
+      If the implementation gives address-misaligned exceptions higher priority (MISALIGNED_LDST_EXCEPTION_PRIORITY), the result follows the reference model.
+      Memory on the SS page is unchanged.
+    bins: store {SB, SH, SW, SD} x addr[2:0] {0..7} x pte.xwr {010}
   - name: cp_senvcfg_sse_rdonly0_s
     goal: Verify senvcfg.SSE reads back 0 from S-mode whenever menvcfg.SSE is 0
     description: |-

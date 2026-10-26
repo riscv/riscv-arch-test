@@ -33,6 +33,17 @@ parameter_definitions:
         implementation-defined and must be compared against the reference model rather
         than asserted outright.",
       ]
+  - name: MISALIGNED_LDST_EXCEPTION_PRIORITY
+    coverpoint:
+      [
+        "cp_ss_page_access_store_misaligned",
+        "cp_ss_page_access_store_misaligned_s",
+      ]
+    effect: [
+        "When low, a misaligned ordinary store to an SS page raises a store/AMO access-fault.
+        When high, the address-misaligned exception can take priority. The misaligned
+        bins therefore compare the result against the reference model.",
+      ]
   - name: NUM_USABLE_PMP_ENTRIES
     coverpoint: ["cp_ss_pmp_permissions"]
     effect: [

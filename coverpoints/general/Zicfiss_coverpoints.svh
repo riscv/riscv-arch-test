@@ -109,7 +109,7 @@
     }
 
     // ── Page building blocks ──────────────────────────────────────────────
-    pte_ss_page: coverpoint ins.current.pte_d[3:1] {
+    pte_ss_page: coverpoint ins.current.pte_d[3:1] iff (ins.current.pte_d[0]) {
         bins ss_page = {3'b010};
     }
     // pte.xwr of the PTE the walk ended on. 000 at the last level is a pointer where a
@@ -146,6 +146,49 @@
             wildcard bins sd = {SD};
         `endif
     }
+
+    // Low three bits of an ordinary store's effective address.
+    store_addr_lsb: coverpoint {ins.current.rs1_val + ins.current.imm}[2:0] {
+        type_option.weight = 0;
+        // auto fills 000 through 111
+    }
+    // Zicfiss uses only some encodings of mop.rr.7 and mop.r.28. The rest stay Zimop/Zcmop.
+    // Each register field is swept over all 32 registers with the other fields held at a fixed
+    // value. The ignored bins are the Zicfiss instructions: SSPUSH (rd = rs1 = x0, rs2 = x1/x5),
+    // SSPOPCHK (rd = x0, rs1 = x1/x5) and SSRDP (rs1 = x0).
+    mop_rr7_rs2: coverpoint ins.current.insn[24:20]
+        iff (ins.current.insn ==? MOP_RR_7 && ins.current.insn[11:7] == 0 && ins.current.insn[19:15] == 0) {
+        type_option.weight = 0;
+        ignore_bins sspush = {1, 5};
+    }
+    mop_rr7_rs1: coverpoint ins.current.insn[19:15]
+        iff (ins.current.insn ==? MOP_RR_7 && ins.current.insn[11:7] == 0 && ins.current.insn[24:20] == 1) {
+        type_option.weight = 0;
+        ignore_bins sspush = {0};
+    }
+    mop_rr7_rd: coverpoint ins.current.insn[11:7]
+        iff (ins.current.insn ==? MOP_RR_7 && ins.current.insn[19:15] == 0 && ins.current.insn[24:20] == 1) {
+        type_option.weight = 0;
+        ignore_bins sspush = {0};
+    }
+    mop_r28_rs1: coverpoint ins.current.insn[19:15]
+        iff (ins.current.insn ==? MOP_R_28 && ins.current.insn[11:7] == 0) {
+        type_option.weight = 0;
+        ignore_bins sspopchk = {1, 5};
+    }
+    mop_r28_rd: coverpoint ins.current.insn[11:7]
+        iff (ins.current.insn ==? MOP_R_28 && ins.current.insn[19:15] == 1) {
+        type_option.weight = 0;
+        ignore_bins sspopchk = {0};
+    }
+    `ifdef ZCMOP_SUPPORTED
+        // c.mop.1 and c.mop.5 are C.SSPUSH x1 and C.SSPOPCHK x5.
+        mop_c: coverpoint ins.current.insn {
+            type_option.weight = 0;
+            wildcard bins c_mop_3 = {C_MOP_3};
+            wildcard bins c_mop_7 = {C_MOP_7};
+        }
+    `endif
 
     // ── Alignment building blocks ─────────────────────────────────────────
     // ssp[1:0] are read-only zero, and so is ssp[2] unless UXLEN or SXLEN can be 32. The

@@ -141,8 +141,8 @@ normative_rule_definitions:
     # cp_ss_page_perm_priority_store and cp_menvcfg_sse_ss_page
     coverpoint:
       [
-        "{Zicfiss_U_cg}/{cp_ss_page_access_store,cp_ss_page_access_amo,cp_ss_vector_store}",
-        "{Zicfiss_S_cg}/{cp_ss_page_enc_store}",
+        "{Zicfiss_U_cg}/{cp_ss_page_access_store,cp_ss_page_access_store_misaligned,cp_ss_page_access_amo,cp_ss_vector_store}",
+        "{Zicfiss_S_cg}/{cp_ss_page_enc_store,cp_ss_page_access_store_misaligned_s}",
       ]
   # Access to a SS page using cache-block operation (insn:cbo.*[]) instructions is not
   # permitted. Such accesses will raise a store/AMO access-fault exception.
@@ -226,7 +226,8 @@ normative_rule_definitions:
   # subset of May-Be-Operation instructions defined by the Zimop and Zcmop
   # extensions.
   - name: Zicfiss_enc
-    # Representative coverpoints; also cp_ss_instr_inactive_{m,s}
+    # Representative coverpoints; also cp_ss_instr_inactive_{m,s}. The unused MOP encodings
+    # (cp_ss_unused_mop_*) check that the rest of the MOP space is unaffected.
     coverpoint:
       [
         "{Zicfiss_U_cg}/{cp_sspush,cp_sspopchk_match,cp_ssrdp,cp_ss_instr_inactive_u}",

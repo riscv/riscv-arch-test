@@ -21,10 +21,11 @@ the shadow stack (SS), read/write (RW) and read-only (RO) pages, which share one
 
 from typing import Literal, NamedTuple
 
-from testgen.asm.helpers import comment_banner, write_sigupd
-from testgen.asm.tsbi import tsbi_call
+from testgen.asm.helpers import arch_block, comment_banner, gated, write_sigupd
+from testgen.asm.tsbi import tsbi_call, tsbi_call_or_direct
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.sv.page_tables import SV32, SV39, SvMode, lower_table_data
 from testgen.priv.registry import add_priv_test_generator
 
 # PTE permission encodings. pte.xwr occupies bits [3:1]; V is bit 0.
@@ -79,9 +80,7 @@ MOP_FORMS = [*PUSH_FORMS, *POP_FORMS, SsForm("ssrdp", None, "ssrdp", compressed=
 
 def ss_instr(form: SsForm) -> list[str]:
     """The instruction for ``form``, with Zcmop enabled around it if it is a compressed form."""
-    if form.compressed:
-        return [".option push", ".option arch, +zcmop", form.mnemonic, ".option pop"]
-    return [form.mnemonic]
+    return arch_block([form.mnemonic], "zcmop") if form.compressed else [form.mnemonic]
 
 
 def zcmop_only(compressed: bool, lines: list[str]) -> list[str]:
@@ -91,7 +90,7 @@ def zcmop_only(compressed: bool, lines: list[str]) -> list[str]:
 
 def rv64_only(lines: list[str]) -> list[str]:
     """Return ``lines``, guarded to RV64."""
-    return ["#if __riscv_xlen == 64", *lines, "#endif"]
+    return gated(lines, "__riscv_xlen == 64")
 
 
 def ssamoswap_only(width: SsamoswapWidth, lines: list[str]) -> list[str]:
@@ -101,7 +100,7 @@ def ssamoswap_only(width: SsamoswapWidth, lines: list[str]) -> list[str]:
 
 def vm_section(title: str, description: str, lines: list[str]) -> list[str]:
     """A section banner, and ``lines`` guarded on the configuration supporting Sv39/Sv32."""
-    return [comment_banner(title, description), "#ifdef ZICFISS_VM_SUPPORTED", *lines, "#endif"]
+    return [comment_banner(title, description), *gated(lines, "defined(ZICFISS_VM_SUPPORTED)")]
 
 
 def ss_forms_against(
@@ -228,16 +227,14 @@ def ssamoswap_forms(test_data: TestData, addr: str, tag: str, coverpoint: str, c
 
 
 def set_envcfg_sse(csr: str, value: int, test_data: TestData, *, mode: str) -> list[str]:
-    """Set or clear the SSE field of menvcfg or senvcfg.
+    """Set or clear the SSE field of menvcfg or senvcfg, through T-SBI when ``mode`` cannot access ``csr``.
 
-    ``mode`` is the privilege mode this runs in. menvcfg below M-mode, and senvcfg in
-    U-mode, are written through T-SBI.
+    ``mode`` is the privilege mode this runs in.
     """
     reg = test_data.int_regs.get_register()
     op = "csrs" if value else "csrc"
     instr = f"{op} {csr}, x{reg}   # {'set' if value else 'clear'} {csr}.SSE"
-    direct = mode == "M" or (mode == "S" and csr == "senvcfg")
-    lines = [f"LI(x{reg}, {csr.upper()}_SSE)", instr if direct else tsbi_call(instr)]
+    lines = [f"LI(x{reg}, {csr.upper()}_SSE)", tsbi_call_or_direct(instr, mode)]
     test_data.int_regs.return_registers([reg])
     return lines
 
@@ -260,6 +257,24 @@ def enable_translation(test_data: TestData, *, mode: Literal["M", "S", "U"]) -> 
     return lines
 
 
+def _sv_defines(mode: SvMode, va_ss: int, setup_macro: str, satp_mode: str) -> list[str]:
+    """The ZICFISS_* addresses and page-table geometry for ``mode``. The addresses share one leaf table."""
+    root_level = mode.levels - 1
+    return [
+        "#define ZICFISS_VM_SUPPORTED",
+        f"#define ZICFISS_VA_SS       {va_ss:#x}",
+        f"#define ZICFISS_VA_RW       {va_ss + 0x1000:#x}",
+        f"#define ZICFISS_VA_RO       {va_ss + 0x2000:#x}",
+        f"#define ZICFISS_VA_UNMAPPED {va_ss + 0x100000:#x}   // not mapped: the walk fails at level 1",
+        f"#define ZICFISS_PTE_SETUP(PA, PERMS, VA, LEVEL) {setup_macro}(PA, PERMS, VA, LEVEL)",
+        f"#define ZICFISS_SATP_MODE   {satp_mode}",
+        f"#define ZICFISS_ROOT_SHIFT  {mode.page_offset_bits(root_level)}   // VA shift of the root-level VPN",
+        f"#define ZICFISS_LEAF_SPAN   {mode.page_offset_bits(1)}   // log2 of the bytes one leaf table maps",
+        f"#define ZICFISS_VPN_MASK    {(1 << mode.index_bits(0)) - 1:#x}",
+        f"#define ZICFISS_PTE_LOG2    {mode.pte_bytes.bit_length() - 1}   // log2 of the PTE size",
+    ]
+
+
 def page_table_data_section() -> list[str]:
     """XLEN-dependent symbols, plus the page-table and backing-page labels.
 
@@ -269,42 +284,21 @@ def page_table_data_section() -> list[str]:
     return [
         "",
         "#if defined(SV39_SUPPORTED)",
-        "#define ZICFISS_VM_SUPPORTED",
-        "#define ZICFISS_VA_SS       0x140300000",
-        "#define ZICFISS_VA_RW       0x140301000",
-        "#define ZICFISS_VA_RO       0x140302000",
-        "#define ZICFISS_VA_UNMAPPED 0x140400000   // not mapped: the walk fails at level 1",
-        "#define ZICFISS_PTE_SETUP(PA, PERMS, VA, LEVEL) PTE_SETUP_SV39(PA, PERMS, VA, LEVEL)",
-        "#define ZICFISS_SATP_MODE   ((SATP64_MODE) & (SATP_MODE_SV39 << 60))",
-        "#define ZICFISS_ROOT_SHIFT  30      // VA shift of the root-level VPN",
-        "#define ZICFISS_LEAF_SPAN   21      // log2 of the bytes one leaf table maps",
-        "#define ZICFISS_VPN_MASK    0x1FF",
-        "#define ZICFISS_PTE_LOG2    3       // log2 of the PTE size",
+        *_sv_defines(SV39, 0x140300000, "PTE_SETUP_SV39", "((SATP64_MODE) & (SATP_MODE_SV39 << 60))"),
         "#elif defined(SV32_SUPPORTED)",
-        "#define ZICFISS_VM_SUPPORTED",
-        "#define ZICFISS_VA_SS       0xC0300000",
-        "#define ZICFISS_VA_RW       0xC0301000",
-        "#define ZICFISS_VA_RO       0xC0302000",
-        "#define ZICFISS_VA_UNMAPPED 0xC0400000    // not mapped: the walk fails at level 1",
-        "#define ZICFISS_PTE_SETUP(PA, PERMS, VA, LEVEL) PTE_SETUP_SV32(PA, PERMS, VA, LEVEL)",
-        "#define ZICFISS_SATP_MODE   SATP32_MODE",
-        "#define ZICFISS_ROOT_SHIFT  22",
-        "#define ZICFISS_LEAF_SPAN   22",
-        "#define ZICFISS_VPN_MASK    0x3FF",
-        "#define ZICFISS_PTE_LOG2    2",
+        *_sv_defines(SV32, 0xC0300000, "PTE_SETUP_SV32", "SATP32_MODE"),
         "#endif",
         ".ifndef rvtest_zicfiss_pages_declared",
         ".set rvtest_zicfiss_pages_declared, 1",
         ".pushsection .data",
         "#ifdef ZICFISS_VM_SUPPORTED",
         "#ifdef SV39_SUPPORTED",
-        ".p2align 12",
-        "rvtest_slvl1_pg_tbl: .zero 4096",
+        *lower_table_data(SV39),
         ".p2align 12",
         "rvtest_uimg_lvl1_pg_tbl:    .zero 4096   # Sv39 level-1 table for the test image",
+        "#else",
+        *lower_table_data(SV32),
         "#endif",
-        ".p2align 12",
-        "rvtest_slvl0_pg_tbl: .zero 4096",
         ".p2align 12",
         "rvtest_uimg_lvl0_pg_tbl:    .zero 4096   # 4 KiB leaves for the test image itself",
         ".p2align 3",
@@ -526,12 +520,10 @@ def _generate_ssamoswap_mmode_fault(test_data: TestData) -> list[str]:
             lines.append(f"# --- menvcfg.SSE={sse}, satp.MODE {satp_mode} ---")
             if satp_mode == "translating":
                 lines.extend(
-                    [
-                        "#ifdef ZICFISS_VM_SUPPORTED",
-                        *map_zicfiss_pages(test_data, user=False),
-                        *enable_translation(test_data, mode="M"),
-                        "#endif",
-                    ]
+                    gated(
+                        [*map_zicfiss_pages(test_data, user=False), *enable_translation(test_data, mode="M")],
+                        "defined(ZICFISS_VM_SUPPORTED)",
+                    )
                 )
             else:
                 lines.extend(SATP_OFF)
@@ -555,9 +547,7 @@ def _generate_ssamoswap_mmode_fault(test_data: TestData) -> list[str]:
                         write_sigupd(rd_reg, test_data),
                     ]
                     body = ssamoswap_only(width, case)
-                    lines.extend(
-                        ["#ifdef ZICFISS_VM_SUPPORTED", *body, "#endif"] if satp_mode == "translating" else body
-                    )
+                    lines.extend(gated(body, "defined(ZICFISS_VM_SUPPORTED)") if satp_mode == "translating" else body)
             test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg, mask_reg])
     lines.extend(SATP_OFF)
 
@@ -573,12 +563,10 @@ def _generate_ssamoswap_mmode_fault(test_data: TestData) -> list[str]:
         lines.append(f"# --- MPRV=1, MPP=S, satp.MODE {satp_mode} ---")
         if satp_mode == "translating":
             lines.extend(
-                [
-                    "#ifdef ZICFISS_VM_SUPPORTED",
-                    *map_zicfiss_pages(test_data, user=False),
-                    *enable_translation(test_data, mode="M"),
-                    "#endif",
-                ]
+                gated(
+                    [*map_zicfiss_pages(test_data, user=False), *enable_translation(test_data, mode="M")],
+                    "defined(ZICFISS_VM_SUPPORTED)",
+                )
             )
         addr_reg, rd_reg, rs2_reg, mask_reg = test_data.int_regs.get_registers(4)
         # Bare: the physical address, which the swap must not change. Translating: the S-mode SS
@@ -602,7 +590,7 @@ def _generate_ssamoswap_mmode_fault(test_data: TestData) -> list[str]:
                 write_sigupd(rd_reg, test_data),
             ]
             body = ssamoswap_only(width, case)
-            lines.extend(["#ifdef ZICFISS_VM_SUPPORTED", *body, "#endif"] if satp_mode == "translating" else body)
+            lines.extend(gated(body, "defined(ZICFISS_VM_SUPPORTED)") if satp_mode == "translating" else body)
         test_data.int_regs.return_registers([addr_reg, rd_reg, rs2_reg, mask_reg])
     lines.extend(SATP_OFF)
     return lines
@@ -785,7 +773,7 @@ def _generate_envcfg_rdonly0(test_data: TestData) -> list[str]:
                         write_sigupd(rd_reg, test_data),
                     ]
                 )
-            lines.extend(["#ifdef H_SUPPORTED", *body, "#endif"] if csr == "henvcfg" else body)
+            lines.extend(gated(body, "defined(H_SUPPORTED)") if csr == "henvcfg" else body)
 
     # Leg B: menvcfg.SSE=1 (still set from leg A); with henvcfg.SSE=0, and =1 as the positive
     # control, write both values into senvcfg.SSE from VS-mode and read it back. Its coverpoint

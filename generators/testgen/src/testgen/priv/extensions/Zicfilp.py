@@ -19,8 +19,7 @@ from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
 
 Priv = Literal["M", "S"]
-Mode = Literal["M", "S", "U"]
-LpeMode = Literal["M", "S", "U", "VS"]
+Mode = Literal["M", "S", "U", "VS", "VU"]
 
 LABEL = 0x12345
 OTHER_LABEL = 0x54321
@@ -46,7 +45,13 @@ def _split(covergroup: str) -> str:
     return covergroup.removeprefix("Zicfilp_").removesuffix("_cg")
 
 
-def set_lpe(priv: Mode, mode: LpeMode, reg: int, enable: bool) -> list[str]:
+def _bin(priv: Mode, name: str) -> str:
+    """Bin name of a testcase. The H group runs the shared tests in VS-mode and VU-mode into one covergroup,
+    so the mode keeps their labels apart."""
+    return f"{priv.lower()}_{name}" if priv in ("VS", "VU") else name
+
+
+def set_lpe(priv: Mode, mode: Mode, reg: int, enable: bool) -> list[str]:
     """Set or clear xLPE of `mode` from a test running in `priv`."""
     op = "csrs" if enable else "csrc"
     action = "Enable" if enable else "Disable"
@@ -67,6 +72,12 @@ def set_lpe(priv: Mode, mode: LpeMode, reg: int, enable: bool) -> list[str]:
             f"# {action} landing pads in VS-mode (henvcfg.LPE)",
             f"LI(x{reg}, HENVCFG_LPE)",
             tsbi_call_or_direct(f"{op} henvcfg, x{reg}", priv),
+        ]
+    if mode == "VU":
+        return [
+            f"# {action} landing pads in VU-mode (senvcfg.LPE)",
+            f"LI(x{reg}, SENVCFG_LPE)",
+            tsbi_call_or_direct(f"{op} senvcfg, x{reg}", priv),
         ]
     return [
         f"# {action} landing pads in U-mode (senvcfg.LPE with S-mode, menvcfg.LPE without)",
@@ -152,7 +163,7 @@ def indirect_elp_state_update_tests(test_data: TestData, priv: Mode, covergroup:
                             rs1,
                             rd,
                             target,
-                            f"{kind}_lpe_{lpe}_x{rs1}_{dest}",
+                            _bin(priv, f"{kind}_lpe_{lpe}_x{rs1}_{dest}"),
                             coverpoint,
                             covergroup,
                             save_reg,
@@ -206,7 +217,7 @@ def lpad_label_tests(test_data: TestData, priv: Mode, covergroup: str) -> TestCh
                             jump_reg,
                             0,
                             [target],
-                            f"{kind}_{bin_name}",
+                            _bin(priv, f"{kind}_{bin_name}"),
                             coverpoint,
                             covergroup,
                             save_reg,
@@ -228,7 +239,7 @@ def lpad_label_tests(test_data: TestData, priv: Mode, covergroup: str) -> TestCh
                 jump_reg,
                 0,
                 [f"lpad {lpl:#x}"],
-                bin_name,
+                _bin(priv, bin_name),
                 "cp_zicfilp_lpad_valid_execution",
                 covergroup,
                 save_reg,
@@ -267,7 +278,7 @@ def lpe_disabled_tests(test_data: TestData, priv: Mode, covergroup: str) -> Test
                         jump_reg,
                         0,
                         [f"lpad {OTHER_LABEL:#x}"],
-                        f"{kind}_lpe_0_lpl_mismatch",
+                        _bin(priv, f"{kind}_lpe_0_lpl_mismatch"),
                         coverpoint,
                         covergroup,
                         save_reg,
@@ -297,7 +308,7 @@ def exception_priority_tests(test_data: TestData, priv: Mode, covergroup: str) -
             *set_lpe(priv, priv, temp_reg, True),
             "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
             f"LA(x{jump_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
-            test_data.add_testcase("instr_access_fault", coverpoint, covergroup),
+            test_data.add_testcase(_bin(priv, "instr_access_fault"), coverpoint, covergroup),
             f"jalr x1, 0(x{jump_reg}) # instruction access fault; the handler resumes at ra",
             *RESUME,
             "#endif",
@@ -308,7 +319,7 @@ def exception_priority_tests(test_data: TestData, priv: Mode, covergroup: str) -
                 jump_reg,
                 0,
                 [".word 0xFFFFFFFF # illegal instruction target"],
-                "illegal_instruction",
+                _bin(priv, "illegal_instruction"),
                 coverpoint,
                 covergroup,
                 save_reg,
@@ -334,11 +345,11 @@ def lpad_nop_tests(test_data: TestData, priv: Mode, covergroup: str) -> TestChun
             ),
             *set_lpe(priv, priv, temp_reg, True),
             f"LI(x7, {(LABEL << 12):#x}) # expected landing pad label in x7[31:12]",
-            test_data.add_testcase("lpl_mismatch", coverpoint, covergroup),
+            test_data.add_testcase(_bin(priv, "lpl_mismatch"), coverpoint, covergroup),
             f"lpad {OTHER_LABEL:#x} # label mismatch, but ELP=NO_LP_EXPECTED",
             "#ifdef ZCA_SUPPORTED",
             ".p2align 2",
-            test_data.add_testcase("misaligned", coverpoint, covergroup),
+            test_data.add_testcase(_bin(priv, "misaligned"), coverpoint, covergroup),
             *arch_block(
                 [
                     "c.nop # puts the lpad at pc[1:0]=2",
@@ -370,7 +381,7 @@ def lpad_alignment_tests(test_data: TestData, priv: Mode, covergroup: str) -> Te
         *set_lpe(priv, priv, temp_reg, True),
     ]
     for kind in JUMP_KINDS:
-        test_data.add_testcase(f"{kind}_misaligned_lpad", coverpoint, covergroup)
+        test_data.add_testcase(_bin(priv, f"{kind}_misaligned_lpad"), coverpoint, covergroup)
         label = test_data.current_testcase_label
         lines.extend(
             [
@@ -426,7 +437,7 @@ def direct_jump_tests(test_data: TestData, priv: Mode, covergroup: str) -> TestC
         ("branch_taken", ["beq x0, x0, {target}", skip], None),
     ]
     for bin_name, jump_lines, condition in cases:
-        label = test_data.add_testcase(bin_name, coverpoint, covergroup)
+        label = test_data.add_testcase(_bin(priv, bin_name), coverpoint, covergroup)
         target_label = f"{test_data.current_testcase_label}_target"
         case = [
             "",
@@ -471,7 +482,7 @@ def trap_entry_tests(test_data: TestData, priv: Mode, covergroup: str) -> TestCh
                 "The non-LPAD instruction after it would trap if xRET wrongly restored ELP=LP_EXPECTED.",
             ),
             *set_lpe(priv, priv, temp_reg, True),
-            test_data.add_testcase("illegal_no_lp_expected", coverpoint, covergroup),
+            test_data.add_testcase(_bin(priv, "illegal_no_lp_expected"), coverpoint, covergroup),
             ".word 0x00000000 # illegal instruction",
             *RESUME,
             *set_lpe(priv, priv, temp_reg, False),
@@ -508,7 +519,7 @@ def guarded_trap_entry_tests(test_data: TestData, priv: Mode, covergroup: str) -
                         rs1,
                         0,
                         [".word 0x00000000 # illegal instruction"],
-                        f"{kind}_x{rs1}",
+                        _bin(priv, f"{kind}_x{rs1}"),
                         cp,
                         covergroup,
                         save_reg,
@@ -793,12 +804,32 @@ def make_zicfilpu(test_data: TestData) -> list[TestChunk]:
 
 _H_CG = "Zicfilp_H_cg"
 _VMode = Literal["VS", "VU"]
+_V_MODES: tuple[_VMode, ...] = ("VS", "VU")
 # Targets of an ELP-setting indirect jump: a software-check exception whenever the landing pad enable is 1
 _H_TARGETS = {
     "not_lpad": "addi x0, x0, 0 # non-LPAD target",
     "lpad_mismatch": f"lpad 0x{OTHER_LABEL:x} # label does not match x7[31:12]",
 }
 _X7_LABEL = f"LI(x7, 0x{(LABEL << 12) | LOW_BITS:x}) # expected landing pad label in x7[31:12]"
+
+
+def _in_mode(chunk: TestChunk, mode: _VMode) -> TestChunk:
+    """Run a chunk of the shared tests in VS-mode or VU-mode, returning to HS-mode at its end."""
+    chunk.code = [f"RVTEST_TSBI_GOTO_{mode}MODE", *chunk.code, "RVTEST_TSBI_GOTO_SMODE"]
+    return chunk
+
+
+def _shared_tests(test_data: TestData, mode: _VMode) -> list[TestChunk]:
+    """The tests the S group runs in S-mode, in VS-mode or VU-mode.  Their software-check exceptions are taken in
+    HS-mode, whose SRET restores ELP from sstatus.SPELP."""
+    return [
+        _in_mode(chunk, mode)
+        for chunk in (
+            *make_zicfilp_tests(test_data, mode, _H_CG),
+            trap_entry_tests(test_data, mode, _H_CG),
+            guarded_trap_entry_tests(test_data, mode, _H_CG),
+        )
+    ]
 
 
 def _check_trap_count(test_data: TestData, reg: int) -> list[str]:
@@ -874,7 +905,7 @@ def _h_trap_entry_tests(test_data: TestData) -> TestChunk:
         *set_lpe("S", "VS", temp_reg, True),
         *set_lpe("S", "U", temp_reg, True),
     ]
-    for handler, mode in product(("vs", "hs"), ("VS", "VU")):
+    for handler, mode in product(("vs", "hs"), _V_MODES):
         tag = f"{mode.lower()}_to_{handler}"
         lines.extend(
             [
@@ -909,9 +940,19 @@ def _h_trap_entry_tests(test_data: TestData) -> TestChunk:
     return test_data.end_test_chunk()
 
 
+def _record_spelp(test_data: TestData, csr: str, reg: int, mask_reg: int, mode: Mode = "S") -> list[str]:
+    """Record the SPELP bit of sstatus or vsstatus, read from `mode` (through T-SBI when it cannot read the CSR)."""
+    return [
+        tsbi_call_or_direct(f"csrr x{reg}, {csr}", mode),
+        f"LI(x{mask_reg}, SSTATUS_SPELP)",
+        f"and x{reg}, x{reg}, x{mask_reg}",
+        write_sigupd(reg, test_data),
+    ]
+
+
 def _h_sret_tests(test_data: TestData, from_vs: bool) -> TestChunk:
     """SRET to VS or VU-mode takes the previous ELP from the SPELP of the executing mode: vsstatus.SPELP in VS-mode,
-    sstatus.SPELP in HS-mode.  The SPELP of the other mode has no effect."""
+    sstatus.SPELP in HS-mode.  The SPELP of the other mode has no effect.  The SRET clears the SPELP it used."""
     coverpoint = "cp_vs_sret_spelp" if from_vs else "cp_hs_sret_spelp"
     temp_reg, mask_reg = test_data.int_regs.get_registers(2)
     tc = test_data.begin_test_chunk(_split(_H_CG))
@@ -920,17 +961,19 @@ def _h_sret_tests(test_data: TestData, from_vs: bool) -> TestChunk:
             "In VS-mode, write vsstatus.SPP and vsstatus.SPELP through sstatus and SRET to a non-LPAD instruction\n"
             "in VS-mode or VU-mode, for each value of henvcfg.LPE and senvcfg.LPE.  HS-mode sets sstatus.SPELP to\n"
             "the opposite value first.  Only vsstatus.SPELP = 1 with the LPE of the new mode set raises a\n"
-            "software-check exception.  After an SRET to VS-mode, vsstatus.SPELP must read 0."
+            "software-check exception.  After the SRET, vsstatus.SPELP must read 0: VS-mode reads it as sstatus,\n"
+            "VU-mode through T-SBI."
         )
     else:
         description = (
             "In HS-mode, set hstatus.SPV = 1, sstatus.SPP for VS-mode or VU-mode, sstatus.SPELP, and vsstatus.SPELP\n"
             "to the opposite value, then SRET to a non-LPAD instruction, for each value of henvcfg.LPE and\n"
             "senvcfg.LPE.  Only sstatus.SPELP = 1 with the LPE of the new mode set raises a software-check\n"
-            "exception.  Back in HS-mode, vsstatus.SPELP must be unchanged."
+            "exception.  Back in HS-mode, vsstatus.SPELP must be unchanged.  An SRET to HS-mode (hstatus.SPV = 0), for\n"
+            "each value of menvcfg.LPE, uses and clears sstatus.SPELP and leaves vsstatus.SPELP unchanged."
         )
     lines = [comment_banner(coverpoint, description)]
-    for target, h_lpe, s_lpe, pelp in product(("VS", "VU"), (0, 1), (0, 1), (0, 1)):
+    for target, h_lpe, s_lpe, pelp in product(_V_MODES, (0, 1), (0, 1), (0, 1)):
         test_data.add_testcase(f"to_{target.lower()}_henvcfg{h_lpe}_senvcfg{s_lpe}_spelp{pelp}", coverpoint, _H_CG)
         label = test_data.current_testcase_label
         xret_target: Mode = "S" if target == "VS" else "U"
@@ -969,26 +1012,124 @@ def _h_sret_tests(test_data: TestData, from_vs: bool) -> TestChunk:
             ]
         )
         if from_vs:
-            if target == "VS":
-                lines.extend(_record_pelp_after_xret(test_data, "S", temp_reg, mask_reg))
-            lines.append("RVTEST_TSBI_GOTO_SMODE")
+            lines.extend(
+                [
+                    "# SRET cleared vsstatus.SPELP",
+                    *_record_spelp(test_data, "sstatus" if target == "VS" else "vsstatus", temp_reg, mask_reg, target),
+                    "RVTEST_TSBI_GOTO_SMODE",
+                ]
+            )
         else:
             lines.extend(
                 [
                     "RVTEST_TSBI_GOTO_SMODE",
                     "# vsstatus.SPELP is unchanged",
-                    f"csrr x{temp_reg}, vsstatus",
-                    f"LI(x{mask_reg}, SSTATUS_SPELP)",
-                    f"and x{temp_reg}, x{temp_reg}, x{mask_reg}",
-                    write_sigupd(temp_reg, test_data),
+                    *_record_spelp(test_data, "vsstatus", temp_reg, mask_reg),
                 ]
             )
         lines.extend(_check_trap_count(test_data, temp_reg))
     if not from_vs:
+        lines.extend(_hs_to_hs_sret_cases(test_data, temp_reg, mask_reg))
         lines.extend([f"LI(x{temp_reg}, SSTATUS_SPELP)", f"csrc vsstatus, x{temp_reg}"])
     lines.extend([*set_lpe("S", "VS", temp_reg, False), *set_lpe("S", "U", temp_reg, False)])
     tc.code.extend(lines)
     test_data.int_regs.return_registers([temp_reg, mask_reg])
+    return test_data.end_test_chunk()
+
+
+def _hs_to_hs_sret_cases(test_data: TestData, temp_reg: int, mask_reg: int) -> list[str]:
+    """SRET from HS-mode to HS-mode with vsstatus.SPELP opposite to sstatus.SPELP, for each value of menvcfg.LPE."""
+    coverpoint = "cp_hs_sret_to_hs_spelp"
+    lines = [f"LI(x{temp_reg}, HSTATUS_SPV)", f"csrc hstatus, x{temp_reg} # SRET to HS-mode"]
+    for m_lpe, pelp in product((0, 1), repeat=2):
+        test_data.add_testcase(f"menvcfg{m_lpe}_spelp{pelp}", coverpoint, _H_CG)
+        label = test_data.current_testcase_label
+        lines.extend(
+            [
+                "",
+                *set_lpe("S", "S", temp_reg, bool(m_lpe)),
+                *_set_xret_status("S", "S", pelp, temp_reg),
+                f"# vsstatus.SPELP = {1 - pelp}",
+                f"LI(x{temp_reg}, SSTATUS_SPELP)",
+                f"{'csrc' if pelp else 'csrs'} vsstatus, x{temp_reg}",
+                f"LA(x{temp_reg}, {label}_target)",
+                f"csrw sepc, x{temp_reg}",
+                f"{label}:",
+                "sret",
+                ".p2align 2",
+                f"{label}_target:",
+                "addi x0, x0, 0 # software-check exception only if sstatus.SPELP = 1 and menvcfg.LPE = 1",
+                "lpad 0 # resume point after the software-check exception",
+                "# SRET cleared sstatus.SPELP and left vsstatus.SPELP unchanged",
+                *_record_spelp(test_data, "sstatus", temp_reg, mask_reg),
+                *_record_spelp(test_data, "vsstatus", temp_reg, mask_reg),
+                *_check_trap_count(test_data, temp_reg),
+            ]
+        )
+    lines.extend(set_lpe("S", "S", temp_reg, False))
+    return lines
+
+
+def _h_async_interrupt_tests(test_data: TestData) -> TestChunk:
+    """A VS-level interrupt taken right after an SRET that restored ELP = LP_EXPECTED saves SPELP = 1."""
+    coverpoint = "cp_elp_async_interrupt"
+    temp_reg, sie_reg = test_data.int_regs.get_registers(2)
+    tc = test_data.begin_test_chunk(_split(_H_CG))
+    lines = [
+        comment_banner(
+            coverpoint,
+            "SRET from HS-mode to VS-mode or VU-mode with sstatus.SPELP = 1 and the landing pad enable of the new mode\n"
+            "set restores ELP = LP_EXPECTED, while a VS-level software interrupt (hvip.VSSIP) is pending and enabled.\n"
+            "With hideleg.VSSI = 0 it is taken in HS-mode and with hideleg.VSSI = 1 in VS-mode (vsstatus.SIE = 1),\n"
+            "right after the SRET, before the non-LPAD target.  It saves SPELP = 1 in sstatus or vsstatus, so returning\n"
+            "from it restores ELP and the target raises a software-check exception.  A hart that does not save ELP on\n"
+            "interrupts takes one trap instead of two.",
+        ),
+        f"csrrci x{sie_reg}, sstatus, SSTATUS_SIE # the interrupt must not be taken in HS-mode",
+        *set_lpe("S", "VS", temp_reg, True),
+        *set_lpe("S", "U", temp_reg, True),
+    ]
+    for handler, target in product(("hs", "vs"), _V_MODES):
+        test_data.add_testcase(f"sret_to_{target.lower()}_vssi_to_{handler}", coverpoint, _H_CG)
+        label = test_data.current_testcase_label
+        lines.extend(
+            [
+                "",
+                f"{'csrsi' if handler == 'vs' else 'csrci'} hideleg, 1 << 2 # hideleg.VSSI",
+                "csrsi hie, 1 << 2  # hie.VSSIE",
+                "csrsi hvip, 1 << 2 # hvip.VSSIP: pending, but not taken in HS-mode",
+                f"LI(x{temp_reg}, SSTATUS_SIE)",
+                f"csrs vsstatus, x{temp_reg} # VS-mode takes the delegated interrupt",
+                f"LI(x{temp_reg}, HSTATUS_SPV)",
+                f"csrs hstatus, x{temp_reg} # SRET to a virtual mode",
+                *_set_xret_status("S", "S" if target == "VS" else "U", 1, temp_reg),
+                f"LA(x{temp_reg}, {label}_target)",
+                f"csrw sepc, x{temp_reg}",
+                f"{label}:",
+                "sret",
+                ".p2align 2",
+                f"{label}_target:",
+                "addi x0, x0, 0 # VSSI taken here first; then a software-check exception",
+                "lpad 0         # resume point after the software-check exception",
+                "RVTEST_TSBI_GOTO_SMODE",
+                *_check_trap_count(test_data, temp_reg),
+            ]
+        )
+    lines.extend(
+        [
+            "csrci hvip, 1 << 2",
+            "csrci hie, 1 << 2",
+            "csrci hideleg, 1 << 2",
+            f"LI(x{temp_reg}, SSTATUS_SIE)",
+            f"csrc vsstatus, x{temp_reg}",
+            *set_lpe("S", "VS", temp_reg, False),
+            *set_lpe("S", "U", temp_reg, False),
+            f"andi x{sie_reg}, x{sie_reg}, SSTATUS_SIE",
+            f"csrs sstatus, x{sie_reg} # restore sstatus.SIE",
+        ]
+    )
+    tc.code.extend(lines)
+    test_data.int_regs.return_registers([temp_reg, sie_reg])
     return test_data.end_test_chunk()
 
 
@@ -1034,10 +1175,13 @@ def _h_sstatus_alias_tests(test_data: TestData) -> TestChunk:
 def make_zicfilph(test_data: TestData) -> list[TestChunk]:
     """Generate Zicfilp landing pad tests in VS-mode and VU-mode."""
     return [
+        *_shared_tests(test_data, "VS"),
+        *_shared_tests(test_data, "VU"),
         _h_enable_tests(test_data, "VS"),
         _h_enable_tests(test_data, "VU"),
         _h_trap_entry_tests(test_data),
         _h_sret_tests(test_data, from_vs=True),
         _h_sret_tests(test_data, from_vs=False),
         _h_sstatus_alias_tests(test_data),
+        _h_async_interrupt_tests(test_data),
     ]

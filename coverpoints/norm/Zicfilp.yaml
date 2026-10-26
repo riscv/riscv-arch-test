@@ -11,8 +11,8 @@ normative_rule_definitions:
   - name: cfi_call_term
     coverpoint:
       [
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/{cp_zicfilp_indirect_elp_state_update,cp_zicfilp_indirect_elp_state_update_c} (jalr with rd=x1, c.jalr)",
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/cp_zicfilp_direct_ct_no_elp (jal with rd=x1, c.jal: direct calls)",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/{cp_zicfilp_indirect_elp_state_update,cp_zicfilp_indirect_elp_state_update_c} (jalr with rd=x1, c.jalr)",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/cp_zicfilp_direct_ct_no_elp (jal with rd=x1, c.jal: direct calls)",
       ]
 
   # The term return is used to refer to a jalr instruction with rd=x0 and with rs1=x1 or rs1=x5. A c.jr
@@ -20,7 +20,7 @@ normative_rule_definitions:
   - name: cfi_return_term
     coverpoint:
       [
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/{cp_zicfilp_indirect_elp_state_update,cp_zicfilp_indirect_elp_state_update_c} (jalr with rd=x0, c.jr)",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/{cp_zicfilp_indirect_elp_state_update,cp_zicfilp_indirect_elp_state_update_c} (jalr with rd=x0, c.jr)",
       ]
 
   # The term indirect jump is used to refer to a jalr instruction with rd=x0 and where the rs1 is not x1 or x5
@@ -28,7 +28,7 @@ normative_rule_definitions:
   - name: cfi_indirect_jump_term
     coverpoint:
       [
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/{cp_zicfilp_indirect_elp_state_update,cp_zicfilp_indirect_elp_state_update_c} (jalr with rd=x0, c.jr)",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/{cp_zicfilp_indirect_elp_state_update,cp_zicfilp_indirect_elp_state_update_c} (jalr with rd=x0, c.jr)",
       ]
 
   # The insn:lpad[] instruction (See &lt;&lt;LP_INST&gt;&gt;) is encoded using the
@@ -36,7 +36,7 @@ normative_rule_definitions:
   - name: Zicfilp_lpad_enc
     coverpoint:
       [
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/cp_zicfilp_lpad_valid_execution",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/cp_zicfilp_lpad_valid_execution",
       ]
   # The insn:lpad[] instruction is encoded with a 20-bit immediate value called the
   # landing-pad-label (LPL) that is matched to the expected landing pad label. When LPL is
@@ -46,7 +46,7 @@ normative_rule_definitions:
   - name: Zicfilp_lpad_imm_enc
     coverpoint:
       [
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/{cp_zicfilp_lpad_zero_label_bypass,cp_zicfilp_lpad_valid_execution}",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/{cp_zicfilp_lpad_zero_label_bypass,cp_zicfilp_lpad_valid_execution}",
       ]
 
   # The Zicfilp extension, when enabled, determines if an indirect call or an indirect jump must land on a
@@ -54,8 +54,8 @@ normative_rule_definitions:
   - name: Zicfilp_lpad_expected
     coverpoint:
       [
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/{cp_zicfilp_indirect_elp_state_update,cp_zicfilp_indirect_elp_state_update_c}",
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/cp_zicfilp_direct_ct_no_elp (direct jumps and taken branches do not set ELP)",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/{cp_zicfilp_indirect_elp_state_update,cp_zicfilp_indirect_elp_state_update_c}",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/cp_zicfilp_direct_ct_no_elp (direct jumps and taken branches do not set ELP)",
       ]
 
   # An indirect branch using jalr, c.jalr, or c.jr with rs1 as x7 is termed a software-guarded branch. Such
@@ -63,7 +63,7 @@ normative_rule_definitions:
   - name: Zicfilp_indirect_branch_lpad
     coverpoint:
       [
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/{cp_zicfilp_indirect_elp_state_update,cp_zicfilp_indirect_elp_state_update_c} (rs1 = x1, x5, x7 bins)",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/{cp_zicfilp_indirect_elp_state_update,cp_zicfilp_indirect_elp_state_update_c} (rs1 = x1, x5, x7 bins)",
         "Zicfilp_Sm_cg/{cp_pelp_trap_entry_guarded_zicfilp,cp_pelp_trap_entry_guarded_zicfilp_c}",
       ]
 
@@ -72,7 +72,7 @@ normative_rule_definitions:
   - name: Zicfilp_lpad_label
     coverpoint:
       [
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/{cp_zicfilp_lpad_label_match_mismatch,cp_zicfilp_lpad_valid_execution}",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/{cp_zicfilp_lpad_label_match_mismatch,cp_zicfilp_lpad_valid_execution}",
       ]
 
   # When ELP is set to LP_EXPECTED, if the next instruction in the instruction stream is not 4-byte aligned,
@@ -82,8 +82,8 @@ normative_rule_definitions:
   - name: Zicfilp_elp_lpad_expected
     coverpoint:
       [
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/{cp_zicfilp_lpad_valid_execution,cp_zicfilp_lpad_missing_instruction_exception,cp_zicfilp_lpad_label_mismatch,cp_lpad_no_sw_exception_elp_clear_zicfilp,cp_lpad_nop_no_lp_expected_zicfilp}",
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/cp_lpad_alignment_exception_zicfilp (Zca only: without Zca a target that is not 4-byte aligned raises an instruction-address-misaligned exception first)",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/{cp_zicfilp_lpad_valid_execution,cp_zicfilp_lpad_missing_instruction_exception,cp_zicfilp_lpad_label_mismatch,cp_lpad_no_sw_exception_elp_clear_zicfilp,cp_lpad_nop_no_lp_expected_zicfilp}",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/cp_lpad_alignment_exception_zicfilp (Zca only: without Zca a target that is not 4-byte aligned raises an instruction-address-misaligned exception first)",
       ]
 
   # When Zicfilp is enabled, lpad is the only instruction allowed to execute when the ELP state is
@@ -91,7 +91,7 @@ normative_rule_definitions:
   - name: Zicfilp_lpad_enabled_instr_allowed
     coverpoint:
       [
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/{cp_zicfilp_lpad_missing_instruction_exception,cp_disabled_zicfilp}",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/{cp_zicfilp_lpad_missing_instruction_exception,cp_disabled_zicfilp}",
       ]
 
   # If ext:zicfilp[] is enabled, the insn:lpad[] instruction causes a software-check
@@ -99,28 +99,28 @@ normative_rule_definitions:
   - name: Zicfilp_lpad_enabled_exception
     coverpoint:
       [
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/cp_zicfilp_lpad_label_exception_delivery",
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/cp_lpad_alignment_exception_zicfilp (Zca only)",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/cp_zicfilp_lpad_label_exception_delivery",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/cp_lpad_alignment_exception_zicfilp (Zca only)",
       ]
   # The pc is not 4-byte aligned and csr::[elp] is LP_EXPECTED.
   - name: Zicfilp_lpad_alignment_exception
     coverpoint:
       [
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/cp_lpad_alignment_exception_zicfilp (Zca only)",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/cp_lpad_alignment_exception_zicfilp (Zca only)",
       ]
   # The csr::[elp] is LP_EXPECTED and the LPL is not zero and the LPL does not match the
   # expected landing pad label in bits 31:12 of the x7 register.
   - name: Zicfilp_lpad_label_exception
     coverpoint:
       [
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/{cp_zicfilp_lpad_label_mismatch,cp_zicfilp_lpad_label_exception_delivery}",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/{cp_zicfilp_lpad_label_mismatch,cp_zicfilp_lpad_label_exception_delivery}",
       ]
   # If a software-check exception is not caused then the csr::[elp] is updated to
   # NO_LP_EXPECTED.
   - name: Zicfilp_lpad_no_sw_exception
     coverpoint:
       [
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/{cp_lpad_no_sw_exception_elp_clear_zicfilp,cp_lpad_nop_no_lp_expected_zicfilp}",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/{cp_lpad_no_sw_exception_elp_clear_zicfilp,cp_lpad_nop_no_lp_expected_zicfilp}",
       ]
 
   # A trap may need to be delivered to the same or to a higher privilege mode upon completion of
@@ -128,13 +128,16 @@ normative_rule_definitions:
   - name: Zicfilp_forward_traps
     coverpoint:
       [
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/cp_exception_priority_zicfilp (instruction access fault)",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/cp_exception_priority_zicfilp (instruction access fault)",
+        "Zicfilp_Sm_cg/cp_elp_async_interrupt_zicfilp",
+        "Zicfilp_H_cg/{cp_elp_async_interrupt,cp_trap_entry_spelp} (to HS-mode and VS-mode)",
       ]
   # Asynchronous interrupts.
   - name: Zicfilp_forward_trap_async_interrupt
     coverpoint:
       [
         "Zicfilp_Sm_cg/cp_elp_async_interrupt_zicfilp (S-mode software interrupt taken right after an MRET that set ELP)",
+        "Zicfilp_H_cg/cp_elp_async_interrupt (VS-level software interrupt taken in HS-mode or VS-mode right after an SRET that set ELP)",
       ]
   # Synchronous exceptions with priority higher than that of a software-check exception
   # with xtval set to landing pad fault (code=2) (See &lt;&lt;norm:exc_priority&gt;&gt; of
@@ -142,7 +145,7 @@ normative_rule_definitions:
   - name: Zicfilp_forward_trap_async_exception
     coverpoint:
       [
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/cp_exception_priority_zicfilp (instruction access fault)",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/cp_exception_priority_zicfilp (instruction access fault)",
       ]
 
   # The software-check exception caused by Zicfilp has higher priority than an illegal-instruction exception
@@ -150,7 +153,7 @@ normative_rule_definitions:
   - name: Zicfilp_exception_priority
     coverpoint:
       [
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/cp_exception_priority_zicfilp (instruction access fault and illegal instruction bins)",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/cp_exception_priority_zicfilp (instruction access fault and illegal instruction bins)",
       ]
 
   # The software-check exception due to the instruction not being an lpad instruction when ELP is LP_EXPECTED
@@ -159,9 +162,10 @@ normative_rule_definitions:
   - name: lpad_sw_exception
     coverpoint:
       [
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/{cp_zicfilp_lpad_missing_instruction_exception,cp_zicfilp_lpad_label_exception_delivery}",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/{cp_zicfilp_lpad_missing_instruction_exception,cp_zicfilp_lpad_label_exception_delivery}",
         "Zicfilp_Sm_cg/cp_elp_state_preservation_zicfilp (from S/U-mode to M-mode)",
         "Zicfilp_S_cg/cp_elp_state_preservation_zicfilp (from U-mode to S-mode)",
+        "Zicfilp_H_cg/{cp_trap_entry_spelp,cp_vs_trap_delivery} (from VS-mode and VU-mode to HS-mode and VS-mode)",
       ]
 
   # To store the previous ELP state on trap delivery to S/HS-mode, an csr::[spelp] bit is
@@ -170,20 +174,23 @@ normative_rule_definitions:
     coverpoint:
       [
         "Zicfilp_S_cg/{cp_pelp_trap_entry_zicfilp,cp_elp_state_preservation_zicfilp,cp_pelp_trap_return_zicfilp}",
-        "{Zicfilp_S_cg,Zicfilp_U_cg}/{cp_zicfilp_lpad_label_exception_delivery,cp_exception_priority_zicfilp}",
+        "{Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/{cp_zicfilp_lpad_label_exception_delivery,cp_exception_priority_zicfilp}",
       ]
   # The csr::[spelp] bit in mstatus can be accessed through the csr:sstatus[] CSR.
   - name: cfi_sstatus_spelp_op
     coverpoint:
       [
-        "{Zicfilp_S_cg,Zicfilp_U_cg}/cp_zicfilp_lpad_label_exception_delivery",
+        "{Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/cp_zicfilp_lpad_label_exception_delivery",
         "Zicfilp_S_cg/{cp_pelp_trap_entry_zicfilp,cp_elp_state_preservation_zicfilp,cp_pelp_trap_return_zicfilp}",
       ]
 
   # To store the previous ELP state on traps to VS-mode, a csr::[spelp] bit is defined in
   # the csr:vsstatus[] (VS-modes version of csr:sstatus[]).
   - name: vsstatus_spelp_exists
-    coverpoint: ["Zicfilp_H_cg/{cp_trap_entry_spelp, cp_vs_sret_spelp}"]
+    coverpoint:
+      [
+        "Zicfilp_H_cg/{cp_trap_entry_spelp, cp_vs_sret_spelp, cp_vs_trap_delivery}",
+      ]
 
   # To store the previous ELP state on transition to Debug Mode, a csr::[pelp] bit is
   # defined in the csr:dcsr[] register.
@@ -203,8 +210,9 @@ normative_rule_definitions:
       [
         "Zicfilp_Sm_cg/{cp_pelp_trap_entry_zicfilp,cp_pelp_trap_entry_guarded_zicfilp,cp_pelp_trap_entry_guarded_zicfilp_c,cp_elp_state_preservation_zicfilp}",
         "Zicfilp_S_cg/{cp_pelp_trap_entry_zicfilp,cp_pelp_trap_entry_guarded_zicfilp,cp_pelp_trap_entry_guarded_zicfilp_c,cp_elp_state_preservation_zicfilp}",
-        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg}/{cp_zicfilp_lpad_label_exception_delivery,cp_exception_priority_zicfilp}",
+        "{Zicfilp_Sm_cg,Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/{cp_zicfilp_lpad_label_exception_delivery,cp_exception_priority_zicfilp}",
         "Zicfilp_H_cg/cp_trap_entry_spelp (traps into VS-mode and HS-mode from VS-mode and VU-mode)",
+        "Zicfilp_H_cg/{cp_pelp_trap_entry_zicfilp,cp_pelp_trap_entry_guarded_zicfilp,cp_pelp_trap_entry_guarded_zicfilp_c,cp_elp_async_interrupt,cp_vs_trap_delivery}",
       ]
 
   # An mret or sret instruction is used to return from a trap in M-mode or S-mode, respectively. When executing
@@ -217,6 +225,7 @@ normative_rule_definitions:
         "Zicfilp_S_cg/cp_pelp_trap_return_zicfilp (SRET)",
         "xPELP=NO_LP_EXPECTED after an xRET to the same mode is checked in the signature",
         "Zicfilp_H_cg/{cp_vs_sret_spelp, cp_hs_sret_spelp} (SRET into VS-mode and VU-mode)",
+        "Zicfilp_H_cg/cp_hs_sret_to_hs_spelp (SRET from HS-mode to HS-mode leaves vsstatus.SPELP alone)",
       ]
 
   # The ext:zicfilp[] extension adds the csr::[spelp] and csr::[mpelp] fields that hold
@@ -225,7 +234,7 @@ normative_rule_definitions:
   - name: mstatus_spelp_mpelp_op
     coverpoint:
       [
-        "{Zicfilp_S_cg,Zicfilp_U_cg}/{cp_zicfilp_lpad_label_exception_delivery,cp_exception_priority_zicfilp}",
+        "{Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/{cp_zicfilp_lpad_label_exception_delivery,cp_exception_priority_zicfilp}",
         "Zicfilp_S_cg/{cp_pelp_trap_entry_zicfilp,cp_elp_state_preservation_zicfilp,cp_pelp_trap_return_zicfilp}",
         "Zicfilp_Sm_cg/{cp_zicfilp_lpad_label_exception_delivery,cp_pelp_trap_entry_zicfilp,cp_elp_state_preservation_zicfilp,cp_pelp_trap_return_zicfilp}",
       ]
@@ -325,18 +334,24 @@ normative_rule_definitions:
       [
         "Zicfilp_U_cg/{cp_zicfilp_indirect_elp_state_update,cp_zicfilp_indirect_elp_state_update_c,cp_disabled_zicfilp}",
         "Zicfilp_H_cg/cp_vu_lpe (VU-mode)",
+        "Zicfilp_H_cg/{cp_zicfilp_indirect_elp_state_update,cp_zicfilp_indirect_elp_state_update_c,cp_disabled_zicfilp} (VU-mode)",
       ]
 
   # The Zicfilp extension adds the LPE field in henvcfg. When the LPE field is set to 1, the Zicfilp extension
   # is enabled in VS-mode.
   - name: henvcfg_lpe_op
-    coverpoint: ["Zicfilp_H_cg/{cp_vs_lpe, cp_vu_lpe}"]
+    coverpoint:
+      [
+        "Zicfilp_H_cg/{cp_vs_lpe, cp_vu_lpe}",
+        "Zicfilp_H_cg/{cp_zicfilp_indirect_elp_state_update,cp_zicfilp_indirect_elp_state_update_c,cp_disabled_zicfilp} (VS-mode)",
+      ]
 
   # The Zicfilp extension adds the SPELP field that holds the previous ELP.
   - name: vsstatus_spelp_op
     coverpoint:
       [
-        "Zicfilp_H_cg/{cp_trap_entry_spelp, cp_vs_sret_spelp, cp_hs_sret_spelp, cp_vs_sstatus_spelp}",
+        "Zicfilp_H_cg/{cp_trap_entry_spelp, cp_vs_sret_spelp, cp_hs_sret_spelp, cp_hs_sret_to_hs_spelp, cp_vs_sstatus_spelp}",
+        "Zicfilp_H_cg/{cp_elp_async_interrupt,cp_vs_trap_delivery}",
       ]
 
   # On a trap caused by a software-check exception, the mtval register holds the cause for
@@ -358,7 +373,8 @@ normative_rule_definitions:
   - name: stval_exception_info
     coverpoint:
       [
-        "{Zicfilp_S_cg,Zicfilp_U_cg}/{cp_zicfilp_lpad_missing_instruction_exception,cp_zicfilp_lpad_label_mismatch,cp_zicfilp_lpad_label_exception_delivery}",
+        "{Zicfilp_S_cg,Zicfilp_U_cg,Zicfilp_H_cg}/{cp_zicfilp_lpad_missing_instruction_exception,cp_zicfilp_lpad_label_mismatch,cp_zicfilp_lpad_label_exception_delivery}",
+        "Zicfilp_H_cg/cp_vs_trap_delivery (vstval)",
       ]
 
   # If the Zicfilp extension is implemented, mnstatus also holds the MNPELP field, which on entry to the RNMI

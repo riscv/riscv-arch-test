@@ -13,9 +13,8 @@
 // defines its own mode-specific coverpoints (xLPE, trap CSRs) and crosses.
 // Crosses describe the conditions a test sets up; the expected outcomes
 // (exceptions, xtval, ELP) are checked by the signature.
+// The ZICFILP_* macros are defined at the top of Zicfilp_coverage.svh.
 ///////////////////////////////////////////////
-
-`include "general/Zicfilp_defines.svh"
 
     // Previous instruction was an indirect call/jump, so the current instruction is its target
     indirect_ct_prev: coverpoint ins.prev.insn {

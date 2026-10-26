@@ -8,7 +8,33 @@ notes: |
   hold SPELP, so the tests observe it through the instruction after the handler returns, which raises a
   software-check exception exactly when ELP was restored to LP_EXPECTED.  The number of traps is recorded after each
   case.
+  The Zicfilp_S tests also run in VS-mode and in VU-mode, where henvcfg.LPE and senvcfg.LPE are the landing pad
+  enables.  Their traps are taken in HS-mode, which saves ELP in sstatus.SPELP.
 coverpoints:
+  - name: |-
+      cp_zicfilp_indirect_elp_state_update
+      cp_zicfilp_indirect_elp_state_update_c
+      cp_zicfilp_direct_ct_no_elp
+      cp_zicfilp_lpad_zero_label_bypass
+      cp_zicfilp_lpad_valid_execution
+      cp_zicfilp_lpad_missing_instruction_exception
+      cp_zicfilp_lpad_label_mismatch
+      cp_zicfilp_lpad_label_match_mismatch
+      cp_zicfilp_lpad_label_exception_delivery
+      cp_disabled_zicfilp
+      cp_lpad_no_sw_exception_elp_clear_zicfilp
+      cp_exception_priority_zicfilp
+      cp_lpad_nop_no_lp_expected_zicfilp
+      cp_lpad_alignment_exception_zicfilp
+      cp_pelp_trap_entry_zicfilp
+      cp_pelp_trap_entry_guarded_zicfilp
+      cp_pelp_trap_entry_guarded_zicfilp_c
+    goal: Re-run the common Zicfilp coverpoints and the S-mode trap entry coverpoints in VS-mode and VU-mode
+    description: |-
+      The coverpoints described in the Zicfilp Common Coverpoints table, and the trap entry coverpoints of the Zicfilp_S sheet, executed in VS-mode and in VU-mode.
+      The landing pad enable is henvcfg.LPE in VS-mode and senvcfg.LPE in VU-mode.  Software-check, illegal-instruction and instruction access-fault exceptions are taken in HS-mode, so sstatus.SPELP holds the previous ELP and stval the software-check code.
+    expectation: As in the Common table and the Zicfilp_S sheet, with the trap taken in HS-mode.
+    bins: priv_mode {VS, VU} x (the bins of each re-run coverpoint)
   - name: cp_vs_lpe
     goal: henvcfg.LPE, not menvcfg.LPE, enables landing pads in VS-mode
     description: |-
@@ -41,7 +67,7 @@ coverpoints:
     goal: SRET executed in VS-mode restores ELP from vsstatus.SPELP and clears it
     description: |-
       For each value of henvcfg.LPE, senvcfg.LPE and SPELP, and a return to VS-mode or VU-mode: HS-mode sets sstatus.SPELP to the opposite of SPELP.  In VS-mode, write vsstatus.SPP and vsstatus.SPELP through sstatus, set sepc to a non-LPAD instruction and execute sret.
-    expectation: Software-check exception exactly when vsstatus.SPELP = 1 and the LPE of the new mode (henvcfg.LPE for VS-mode, senvcfg.LPE for VU-mode) is 1.  After an SRET to VS-mode, vsstatus.SPELP reads 0.
+    expectation: Software-check exception exactly when vsstatus.SPELP = 1 and the LPE of the new mode (henvcfg.LPE for VS-mode, senvcfg.LPE for VU-mode) is 1.  After the SRET, vsstatus.SPELP reads 0, read as sstatus in VS-mode and through T-SBI in VU-mode.
     bins: |-
       priv_mode VS x sret x new mode {VU, VS} x henvcfg.LPE {0, 1} x senvcfg.LPE {0, 1} x vsstatus.SPELP {0, 1}
       = 16 bins
@@ -59,4 +85,28 @@ coverpoints:
     expectation: sstatus.SPELP read in VS-mode and vsstatus.SPELP read in HS-mode both hold the value VS-mode wrote.
     bins: |-
       priv_mode VS x {csrrs, csrrc} sstatus x rs1 bit 23 (SPELP) set
+      = 2 bins
+  - name: cp_hs_sret_to_hs_spelp
+    goal: SRET from HS-mode to HS-mode restores ELP from sstatus.SPELP and clears it, leaving vsstatus.SPELP alone
+    description: |-
+      For each value of menvcfg.LPE and sstatus.SPELP: in HS-mode set hstatus.SPV = 0, sstatus.SPP = 1, sstatus.SPELP, and vsstatus.SPELP to the opposite value, set sepc to a non-LPAD instruction and execute sret.
+    expectation: Software-check exception exactly when sstatus.SPELP = 1 and menvcfg.LPE = 1.  After the SRET, sstatus.SPELP reads 0 and vsstatus.SPELP is unchanged.
+    bins: |-
+      priv_mode HS x sret x new mode HS x menvcfg.LPE {0, 1} x sstatus.SPELP {0, 1} x vsstatus.SPELP differs
+      = 4 bins
+  - name: cp_elp_async_interrupt
+    goal: An interrupt taken after an SRET that set ELP = LP_EXPECTED, before the target is decoded, saves SPELP = LP_EXPECTED
+    description: |-
+      henvcfg.LPE = senvcfg.LPE = 1, sstatus.SIE = 0.  In HS-mode raise a VS-level software interrupt (hvip.VSSIP = 1, hie.VSSIE = 1), with hideleg.VSSI = 0 so it is taken in HS-mode, or hideleg.VSSI = 1 and vsstatus.SIE = 1 so it is taken in VS-mode.  SRET with sstatus.SPELP = 1 to a non-LPAD instruction in VS-mode or VU-mode.
+    expectation: The interrupt is taken right after the SRET and saves SPELP = LP_EXPECTED in sstatus or vsstatus.  The handler's SRET restores ELP, so the non-LPAD target then raises a software-check exception, taken in HS-mode.  Two traps in all.
+    bins: |-
+      priv_mode HS x sret x new mode {VU, VS} x sstatus.SPELP = 1 x LPE of the new mode = 1 x interrupt taken in {HS, VS}
+      = 4 bins
+  - name: cp_vs_trap_delivery
+    goal: A software-check exception delegated to VS-mode reports its cause in vscause and vstval and saves ELP in vsstatus.SPELP
+    description: |-
+      hedeleg[18] = 1, henvcfg.LPE = senvcfg.LPE = 1.  From VS-mode and VU-mode, jalr through a register other than x1, x5 and x7 to a non-LPAD instruction.  (The same cases as cp_trap_entry_spelp with the VS-mode handler.)
+    expectation: Software-check exception taken in VS-mode with vscause = 18, vstval = 2 when the hart reports the landing pad fault code in stval and 0 otherwise, and vsstatus.SPELP = LP_EXPECTED.
+    bins: |-
+      priv_mode {VS, VU} x LPE of the mode enabled x vscause software check x vstval x vsstatus.SPELP = 1
       = 2 bins

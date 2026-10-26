@@ -102,7 +102,7 @@ coverpoints:
   - goal: Cache-block management instructions on an X-only VS-stage or G-stage page
     status: Not tested
     notes: |-
-      Whether a cache-block management instruction may access an execute-only page is UNSPECIFIED (cmo.adoc, after cbm_access), so only cbo.zero is tested on X-only leaves.
+      Not tested because the outcome is UNSPECIFIED. When a page permits instruction fetch but neither loads nor stores, cmo.adoc (the paragraph after cbm_access) lets the implementation either perform cbo.clean/flush/inval or raise a store page fault, so a test has no single expected result. cbo.zero needs write permission and must fault on an execute-only page, so it is tested (cp_vs_pte and cp_g_pte).
     rules:
       - cbm_access
   - goal: CBOs under Sv48x4 and Sv57x4, and VS-stage Sv48 and Sv57

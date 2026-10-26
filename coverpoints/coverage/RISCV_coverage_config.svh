@@ -38,12 +38,6 @@
 `ifdef EXCEPTIONS_COVERAGE
   `include "Exceptions_coverage.svh"
 `endif
-`ifdef EXCEPTIONSH_COVERAGE
-  `include "ExceptionsH_coverage.svh"
-`endif
-`ifdef EXCEPTIONSHV_COVERAGE
-  `include "ExceptionsHV_coverage.svh"
-`endif
 `ifdef EXCEPTIONSVF16_COVERAGE
   `include "ExceptionsVf16_coverage.svh"
 `endif
@@ -97,6 +91,24 @@
 `endif
 `ifdef SDTRIGU_COVERAGE
   `include "SdtrigU_coverage.svh"
+`endif
+`ifdef SHCOUNTERENW_COVERAGE
+  `include "Shcounterenw_coverage.svh"
+`endif
+`ifdef SHGATPA_COVERAGE
+  `include "Shgatpa_coverage.svh"
+`endif
+`ifdef SHTVALA_COVERAGE
+  `include "Shtvala_coverage.svh"
+`endif
+`ifdef SHVSATPA_COVERAGE
+  `include "Shvsatpa_coverage.svh"
+`endif
+`ifdef SHVSTVALA_COVERAGE
+  `include "Shvstvala_coverage.svh"
+`endif
+`ifdef SHVSTVECD_COVERAGE
+  `include "Shvstvecd_coverage.svh"
 `endif
 `ifdef SM_COVERAGE
   `include "Sm_coverage.svh"
@@ -158,14 +170,14 @@
 `ifdef SVINVAL_COVERAGE
   `include "Svinval_coverage.svh"
 `endif
-`ifdef SVINVALH_COVERAGE
-  `include "SvinvalH_coverage.svh"
-`endif
 `ifdef SVNAPOT_COVERAGE
   `include "Svnapot_coverage.svh"
 `endif
 `ifdef SVPBMT_COVERAGE
   `include "Svpbmt_coverage.svh"
+`endif
+`ifdef SVVPTC_COVERAGE
+  `include "Svvptc_coverage.svh"
 `endif
 `ifdef U_COVERAGE
   `include "U_coverage.svh"
@@ -290,17 +302,29 @@
 `ifdef ZICBOZ_COVERAGE
   `include "Zicboz_coverage.svh"
 `endif
+`ifdef ZICCAMOA_COVERAGE
+  `include "Ziccamoa_coverage.svh"
+`endif
+`ifdef ZICCAMOC_COVERAGE
+  `include "Ziccamoc_coverage.svh"
+`endif
+`ifdef ZICCIF_COVERAGE
+  `include "Ziccif_coverage.svh"
+`endif
 `ifdef ZICCLSM_COVERAGE
   `include "Zicclsm_coverage.svh"
+`endif
+`ifdef ZICCRSE_COVERAGE
+  `include "Ziccrse_coverage.svh"
 `endif
 `ifdef ZICFILP_COVERAGE
   `include "Zicfilp_coverage.svh"
 `endif
+`ifdef ZICFISS_COVERAGE
+  `include "Zicfiss_coverage.svh"
+`endif
 `ifdef ZICNTR_COVERAGE
   `include "Zicntr_coverage.svh"
-`endif
-`ifdef ZICNTRH_COVERAGE
-  `include "ZicntrH_coverage.svh"
 `endif
 `ifdef ZICOND_COVERAGE
   `include "Zicond_coverage.svh"

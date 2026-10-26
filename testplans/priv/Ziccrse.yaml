@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Ziccrse
+description: Ziccrse requires main memory regions with the coherence and cacheability PMAs to support the RsrvEventual PMA, so a constrained LR/SC loop eventually succeeds.
+notes: These tests run on a single hart, so they cannot check eventual success in the presence of contending harts or agents. They show basic functionality of the extension and are largely redundant with the Zalrsc suites.
+coverpoints:
+  - name: cp_ziccrse
+    goal: LR/SC on main memory eventually succeeds
+    description: lr.w then sc.w on scratch in a constrained loop, retrying until sc.w succeeds or the retry limit is reached, as in the Zalrsc suite
+    expectation: sc.w succeeds (rd = 0), lr.w returns the stored value, and memory holds the sc.w value
+    bins: "1"

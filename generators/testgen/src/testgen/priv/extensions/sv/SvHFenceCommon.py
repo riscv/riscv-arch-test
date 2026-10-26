@@ -170,7 +170,7 @@ def _fence_case(test_data: TestData, g: SvMode, vs: SvMode, case: FenceCase, cov
     label = test_data.add_testcase(case.name, fence.coverpoint, covergroup)
     sig_label = label.removesuffix(":")
     tmp = test_data.int_regs.get_register()
-    lines = [f"// {fence.name} with {case.name}"]
+    lines = [f"\n// Testcase: {fence.name} with {case.name}"]
     for identifier in ("vmid", "asid"):
         lines.extend(_id_bits(g.xlen, identifier, identifier != case.switch, tmp))
     test_data.int_regs.return_register(tmp)

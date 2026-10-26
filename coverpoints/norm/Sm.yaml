@@ -515,6 +515,7 @@ normative_rule_definitions:
         "Sm_F_cg/cp_mstatus_FS_transition",
         "U_F_cg/cp_mstatus_FS_transition",
         "S_F_cg/cp_sstatus_FS_transition",
+        "H_F_cg/cp_vsstatus_FS_transition",
       ]
 
   # The csr::[vs] field encodes the status of the vector extension state, including the
@@ -526,6 +527,7 @@ normative_rule_definitions:
         "Sm_V_cg/{cp_mstatus_vs_set_dirty_vcsr, cp_mstatus_vs_set_dirty_csr}",
         "U_V_cg/{cp_mstatus_vs_set_dirty_vcsr, cp_mstatus_vs_set_dirty_csr}",
         "S_V_cg/{cp_sstatus_vs_set_dirty_vcsr, cp_sstatus_vs_set_dirty_csr}",
+        "H_V_cg/{cp_vsstatus_vs_set_dirty_vcsr, cp_vsstatus_vs_set_dirty_csr}",
       ]
   # A vector context status field, csr::[vs], is added to csr:mstatus[][10:9] and shadowed
   # in csr:sstatus[][10:9]. It is defined analogously to the floating-point context status
@@ -536,6 +538,7 @@ normative_rule_definitions:
         "Sm_V_cg/{cp_mstatus_vs_set_dirty_arithmetic, cp_mstatus_vs_off_arithmetic}",
         "U_V_cg/{cp_mstatus_vs_set_dirty_arithmetic, cp_mstatus_vs_off_arithmetic}",
         "S_V_cg/{cp_sstatus_vs_set_dirty_arithmetic, cp_sstatus_vs_off_arithmetic}",
+        "H_V_cg/{cp_vsstatus_vs_set_dirty_arithmetic, cp_vsstatus_vs_off_arithmetic}",
       ]
 
   # The csr::[xs] field encodes the status of additional user-mode extensions and
@@ -554,6 +557,7 @@ normative_rule_definitions:
         "Sm_F_cg/cp_mstatus_FS_transition",
         "U_F_cg/cp_mstatus_FS_transition",
         "S_F_cg/cp_sstatus_FS_transition",
+        "H_F_cg/cp_vsstatus_FS_transition",
       ]
 
   # If the ext:f[] extension is implemented, the csr::[fs] field shall not be read-only
@@ -565,6 +569,7 @@ normative_rule_definitions:
         "Sm_F_cg/cp_mstatus_FS_transition",
         "U_F_cg/cp_mstatus_FS_transition",
         "S_F_cg/cp_sstatus_FS_transition",
+        "H_F_cg/cp_vsstatus_FS_transition",
       ]
 
   # If neither the ext:f[] extension nor S-mode is implemented, then csr::[fs] is
@@ -614,6 +619,7 @@ normative_rule_definitions:
         "Sm_F_cg/cp_mstatus_FS_transition",
         "U_F_cg/cp_mstatus_FS_transition",
         "S_F_cg/cp_sstatus_FS_transition",
+        "H_F_cg/cp_vsstatus_FS_transition",
       ]
   # If csr:mstatus[vs] is Dirty, csr:mstatus[sd] is 1; otherwise, csr:mstatus[sd] is set
   # in accordance with existing specifications.
@@ -635,6 +641,7 @@ normative_rule_definitions:
         "Sm_F_cg/cp_mstatus_FS_transition",
         "U_F_cg/cp_mstatus_FS_transition",
         "S_F_cg/cp_sstatus_FS_transition",
+        "H_F_cg/cp_vsstatus_FS_transition",
       ]
 
   # When an extension's status is set to Off, any instruction that attempts to read
@@ -645,9 +652,11 @@ normative_rule_definitions:
         "Sm_F_cg/{cp_fcsr_access, cp_mstatus_FS_transition}",
         "U_F_cg/{cp_fcsr_access, cp_mstatus_FS_transition}",
         "S_F_cg/{cp_fcsr_access, cp_sstatus_FS_transition}",
+        "H_F_cg/{cp_fcsr_access, cp_vsstatus_FS_transition}",
         "Sm_V_cg/{cp_mstatus_vs_off_arithmetic, cp_mstatus_vs_off_csr}",
         "U_V_cg/{cp_mstatus_vs_off_arithmetic, cp_mstatus_vs_off_csr}",
         "S_V_cg/{cp_sstatus_vs_off_arithmetic, cp_sstatus_vs_off_csr}",
+        "H_V_cg/{cp_vsstatus_vs_off_arithmetic, cp_vsstatus_vs_off_csr}",
       ]
 
   # When the status is Initial, the corresponding state should have an initial constant
@@ -674,6 +683,7 @@ normative_rule_definitions:
         "Sm_F_cg/{cp_mstatus_FS_transition, cp_fcsr_access}",
         "U_F_cg/{cp_mstatus_FS_transition, cp_fcsr_access}",
         "S_F_cg/{cp_sstatus_FS_transition, cp_fcsr_access}",
+        "H_F_cg/{cp_vsstatus_FS_transition, cp_fcsr_access}",
       ]
 
   # the setting of VS has no effect on the contents of the vector register state.
@@ -689,6 +699,7 @@ normative_rule_definitions:
         "Sm_F_cg/cp_mstatus_FS_transition",
         "U_F_cg/cp_mstatus_FS_transition",
         "S_F_cg/cp_sstatus_FS_transition",
+        "H_F_cg/cp_vsstatus_FS_transition",
         "Sm_mcsr_cg/cp_mcsrwalk_masked/mstatus",
       ]
 
@@ -714,6 +725,7 @@ normative_rule_definitions:
         "Sm_F_cg/cp_mstatus_FS_transition_nondeterministic",
         "U_F_cg/cp_mstatus_FS_transition_nondeterministic",
         "S_F_cg/cp_sstatus_FS_transition_nondeterministic",
+        "H_F_cg/cp_vsstatus_FS_transition_nondeterministic",
       ]
 
   # Implementations may choose to track the dirtiness of the floating-point register
@@ -1406,7 +1418,7 @@ normative_rule_definitions:
   # it appears to be 0. This masking occurs also for the implicit read by the MRET
   # instruction. Though masked, mepc[1] remains writable when IALIGN=32.
   - name: mepc_bit1_dyn_ialign_op
-    coverpoint: ["Out of scope."]
+    coverpoint: ["Sm_mcsr_cg/{cp_mepc_ialign32_read, cp_mepc_ialign32_mret}"]
 
   # mepc is a WARL register
   - name: mepc_warl
@@ -1805,19 +1817,38 @@ normative_rule_definitions:
   # privileged mode.
   - name: mcounteren_op
     # M-mode reads succeed for every mcounteren value
-    coverpoint: ["Sm_Zicntr_cg/cp_mcounteren_access_m"]
+    coverpoint:
+      [
+        "Sm_Zicntr_cg/cp_mcounteren_access_m",
+        "Sm_Zicntr_H_cg/cp_mhscounteren_access_m (M-mode reads succeed for every counter-enable value)",
+      ]
 
   # When the CY, TM, IR, or HPMn bit in the scounteren register is clear, attempts to read the
   # cycle, time, instret, or hpmcountern register while executing in U-mode will cause an
   # illegal-instruction exception.
   - name: scounteren_op
     # M-mode reads succeed for every scounteren value
-    coverpoint: ["Sm_Zicntr_cg/cp_scounteren_access_m"]
+    coverpoint:
+      [
+        "Sm_Zicntr_cg/cp_scounteren_access_m",
+        "Sm_Zicntr_H_cg/cp_mhscounteren_access_m (M-mode reads succeed for every counter-enable value)",
+      ]
+
+  # The counter-enable registers control the availability of the counters to lower
+  # privilege modes.
+  - name: hcounteren_op
+    coverpoint:
+      [
+        "Sm_Zicntr_H_cg/cp_mhscounteren_access_m (M-mode reads succeed for every counter-enable value)",
+      ]
 
   # The counters are accessible from M-mode regardless of the counter-enable registers.
   - name: Zihpm_op_sz_mode_acc_priv
     coverpoint:
-      ["Sm_Zicntr_cg/{cp_mcounteren_access_m, cp_scounteren_access_m}"]
+      [
+        "Sm_Zicntr_cg/{cp_mcounteren_access_m, cp_scounteren_access_m}",
+        "Sm_Zicntr_H_cg/cp_mhscounteren_access_m",
+      ]
 
   # As ECALL and EBREAK cause synchronous exceptions, they are not considered to
   # retire, and should not increment the minstret CSR.
@@ -2004,3 +2035,9 @@ normative_rule_definitions:
   # virtual address and a nonzero rs2 one ASID
   - names: [hfence-vvma_limits]
     coverpoint: ["Sv_H_fence_cg/cp_hfence_vvma"]
+
+  # Reading the time CSR in VS or VU mode returns the sum of the contents of htimedelta
+  # and the actual value of time.
+  - names: [htimedelta_sz_acc_op, htimedeltah_sz_acc_op]
+    coverpoint:
+      ["Sm_Zicntr_H_cg/cp_delta_m (M-mode reads of time ignore htimedelta)"]

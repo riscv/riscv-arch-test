@@ -142,7 +142,8 @@ RVTEST_BEGIN
   csrw vsatp, x6
   hfence.gvma
   hfence.vvma
-// hfence_vvma with rs1_x0_rs2_x0
+
+// Testcase: hfence_vvma with rs1_x0_rs2_x0
   LI(x9, HGATP32_VMID)
   csrs hgatp, x9
   LI(x9, SATP32_ASID)
@@ -197,7 +198,8 @@ Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_x0:
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_x0, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_x0_str)
 
-// hfence_vvma with rs1_x0_rs2_asid
+
+// Testcase: hfence_vvma with rs1_x0_rs2_asid
   LI(x14, HGATP32_VMID)
   csrs hgatp, x14
   LI(x14, SATP32_ASID)
@@ -256,7 +258,8 @@ Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_asid:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_asid, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_asid_str)
 
-// hfence_vvma with rs1_va_rs2_x0
+
+// Testcase: hfence_vvma with rs1_va_rs2_x0
   LI(x15, HGATP32_VMID)
   csrs hgatp, x15
   LI(x15, SATP32_ASID)
@@ -311,7 +314,8 @@ Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_x0:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_x0, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_x0_str)
 
-// hfence_vvma with rs1_va_rs2_asid
+
+// Testcase: hfence_vvma with rs1_va_rs2_asid
   LI(x9, HGATP32_VMID)
   csrs hgatp, x9
   LI(x9, SATP32_ASID)
@@ -370,7 +374,8 @@ Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asid:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asid, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asid_str)
 
-// hfence_vvma with rs1_va_rs2_asidmax
+
+// Testcase: hfence_vvma with rs1_va_rs2_asidmax
   LI(x6, HGATP32_VMID)
   csrs hgatp, x6
   LI(x6, SATP32_ASID)
@@ -426,7 +431,8 @@ Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asidmax:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asidmax, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asidmax_str)
 
-// hfence_gvma with rs1_x0_rs2_x0
+
+// Testcase: hfence_gvma with rs1_x0_rs2_x0
   LI(x14, HGATP32_VMID)
   csrs hgatp, x14
   LI(x14, SATP32_ASID)
@@ -485,7 +491,8 @@ Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_x0:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_x0, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_x0_str)
 
-// hfence_gvma with rs1_x0_rs2_vmid
+
+// Testcase: hfence_gvma with rs1_x0_rs2_vmid
   LI(x15, HGATP32_VMID)
   csrs hgatp, x15
   LI(x15, SATP32_ASID)
@@ -548,7 +555,8 @@ Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_vmid:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_vmid, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_vmid_str)
 
-// hfence_gvma with rs1_gpa_rs2_x0
+
+// Testcase: hfence_gvma with rs1_gpa_rs2_x0
   LI(x9, HGATP32_VMID)
   csrs hgatp, x9
   LI(x9, SATP32_ASID)
@@ -608,7 +616,8 @@ Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_x0:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_x0, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_x0_str)
 
-// hfence_gvma with rs1_gpa_rs2_vmid
+
+// Testcase: hfence_gvma with rs1_gpa_rs2_vmid
   LI(x13, HGATP32_VMID)
   csrs hgatp, x13
   LI(x13, SATP32_ASID)
@@ -672,7 +681,8 @@ Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmid:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmid, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmid_str)
 
-// hfence_gvma with rs1_gpa_rs2_vmidmax
+
+// Testcase: hfence_gvma with rs1_gpa_rs2_vmidmax
   LI(x15, HGATP32_VMID)
   csrs hgatp, x15
   LI(x15, SATP32_ASID)
@@ -733,7 +743,8 @@ Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmidmax:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmidmax, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmidmax_str)
 
-// sfence_vma with rs1_x0_rs2_x0
+
+// Testcase: sfence_vma with rs1_x0_rs2_x0
   LI(x13, HGATP32_VMID)
   csrs hgatp, x13
   LI(x13, SATP32_ASID)
@@ -788,7 +799,8 @@ Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_x0:
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_x0, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_x0_str)
 
-// sfence_vma with rs1_x0_rs2_asid
+
+// Testcase: sfence_vma with rs1_x0_rs2_asid
   LI(x9, HGATP32_VMID)
   csrs hgatp, x9
   LI(x9, SATP32_ASID)
@@ -847,7 +859,8 @@ Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_asid:
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_asid, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_asid_str)
 
-// sfence_vma with rs1_va_rs2_x0
+
+// Testcase: sfence_vma with rs1_va_rs2_x0
   LI(x8, HGATP32_VMID)
   csrs hgatp, x8
   LI(x8, SATP32_ASID)
@@ -902,7 +915,8 @@ Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_x0:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_x0, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_x0_str)
 
-// sfence_vma with rs1_va_rs2_asid
+
+// Testcase: sfence_vma with rs1_va_rs2_asid
   LI(x15, HGATP32_VMID)
   csrs hgatp, x15
   LI(x15, SATP32_ASID)
@@ -961,7 +975,8 @@ Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asid:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asid, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asid_str)
 
-// sfence_vma with rs1_va_rs2_asidmax
+
+// Testcase: sfence_vma with rs1_va_rs2_asidmax
   LI(x8, HGATP32_VMID)
   csrs hgatp, x8
   LI(x8, SATP32_ASID)
@@ -1017,7 +1032,8 @@ Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asidmax:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asidmax, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asidmax_str)
 
-// hfence_gvma with vmid_switch
+
+// Testcase: hfence_gvma with vmid_switch
   LI(x14, HGATP32_VMID)
   csrc hgatp, x14
   LI(x14, SATP32_ASID)
@@ -1082,7 +1098,8 @@ Sv_H_fence_cg_cp_hfence_gvma_vmid_switch:
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_fence_cg_cp_hfence_gvma_vmid_switch, Sv_H_fence_cg_cp_hfence_gvma_vmid_switch_str)
 
-// hfence_vvma with vmid_switch
+
+// Testcase: hfence_vvma with vmid_switch
   LI(x13, HGATP32_VMID)
   csrc hgatp, x13
   LI(x13, SATP32_ASID)
@@ -1139,7 +1156,8 @@ Sv_H_fence_cg_cp_hfence_vvma_vmid_switch:
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_fence_cg_cp_hfence_vvma_vmid_switch, Sv_H_fence_cg_cp_hfence_vvma_vmid_switch_str)
 
-// hfence_vvma with asid_switch
+
+// Testcase: hfence_vvma with asid_switch
   LI(x14, HGATP32_VMID)
   csrs hgatp, x14
   LI(x14, SATP32_ASID)
@@ -1200,7 +1218,8 @@ Sv_H_fence_cg_cp_hfence_vvma_asid_switch:
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_fence_cg_cp_hfence_vvma_asid_switch, Sv_H_fence_cg_cp_hfence_vvma_asid_switch_str)
 
-// sfence_vma with vmid_switch
+
+// Testcase: sfence_vma with vmid_switch
   LI(x8, HGATP32_VMID)
   csrc hgatp, x8
   LI(x8, SATP32_ASID)

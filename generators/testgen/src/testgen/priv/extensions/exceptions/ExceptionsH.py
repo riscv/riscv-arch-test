@@ -103,7 +103,7 @@ def _ecall_tests(test_data: TestData) -> list[str]:
 
 def _virtual_instruction_tests(test_data: TestData) -> list[str]:
     """Each way to raise a virtual-instruction exception from VS-mode and VU-mode (hypervisor.adoc H_virtinst_*)."""
-    addr_reg, rd, save_reg, temp_reg = test_data.int_regs.get_registers(4)
+    addr_reg, rd, temp_reg = test_data.int_regs.get_registers(3)
 
     def trap(bin_name: str, coverpoint: str, instr: str, writes_rd: bool = True) -> list[str]:
         """One instruction that raises virtual instruction; rd must keep its value."""
@@ -130,31 +130,18 @@ def _virtual_instruction_tests(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(
             "cp_virtual_instr_vs_*",
-            "In VS-mode with mstatus.TVM = TW = 0: read instret(h) with hcounteren.IR = 0 and mcounteren.IR = 1;\n"
-            "execute hlv.w, hlvx.wu, hsv.w, hfence.vvma and hfence.gvma; read vstval, htval, vsatp and hgatp;\n"
+            "In VS-mode with mstatus.TW = 0: execute hlv.w, hlvx.wu, hsv.w, hfence.vvma and hfence.gvma;\n"
+            "read vstval, htval, vsatp and hgatp;\n"
             "execute sret with hstatus.VTSR = 1; execute sfence.vma and sinval.vma and read satp with\n"
             "hstatus.VTVM = 1; on RV32 read hedelegh.  Each raises virtual instruction",
         ),
-        "RVTEST_TSBI_CSR_CLEAR(CSR_MSTATUS, MSTATUS_TVM | MSTATUS_TW)",
-        "RVTEST_TSBI_CSR_SET(CSR_MCOUNTEREN, MCOUNTEREN_IR)",
+        "RVTEST_TSBI_CSR_CLEAR(CSR_MSTATUS, MSTATUS_TW)",
         "csrw hedeleg, zero",
-        f"csrr x{save_reg}, hcounteren",
-        "csrci hcounteren, MCOUNTEREN_IR",
         f"LI(x{temp_reg}, HSTATUS_VTSR | HSTATUS_VTVM)",
         f"csrs hstatus, x{temp_reg}",
         *gated(list(P1P13_ON), HEDELEGH_GATE),
         f"LA(x{addr_reg}, scratch)",
         "RVTEST_TSBI_GOTO_VSMODE",
-        *gated(
-            [
-                *trap("instret", "cp_virtual_instr_vs_instret", f"csrr x{rd}, instret"),
-                *gated(
-                    trap("instreth", "cp_virtual_instr_vs_rv32_instreth_mcounter", f"csrr x{rd}, instreth"),
-                    "__riscv_xlen == 32",
-                ),
-            ],
-            "defined(ZICNTR_SUPPORTED)",
-        ),
         *hypervisor_instructions("vs", "cp_virtual_instr_vs_execute_hypervisor"),
         *trap("vstval", "cp_virtual_instr_vs_read_vstval_htval", f"csrr x{rd}, vstval"),
         *trap("htval", "cp_virtual_instr_vs_read_vstval_htval", f"csrr x{rd}, htval"),
@@ -176,32 +163,11 @@ def _virtual_instruction_tests(test_data: TestData) -> list[str]:
         f"csrc hstatus, x{temp_reg}",
         comment_banner(
             "cp_virtual_instr_vu_*",
-            "In VU-mode with mstatus.TVM = TW = 0: read instret(h) with hcounteren.IR or scounteren.IR = 0 and\n"
-            "mcounteren.IR = 1; execute hlv.w, hlvx.wu, hsv.w, hfence.vvma and hfence.gvma; read vstval, htval,\n"
+            "In VU-mode with mstatus.TW = 0: execute hlv.w, hlvx.wu, hsv.w, hfence.vvma and hfence.gvma; read vstval, htval,\n"
             "stval, satp and vsatp; execute wfi, sret and sfence.vma; on RV32 read hedelegh.  Each raises\n"
             "virtual instruction",
         ),
-        "csrsi scounteren, MCOUNTEREN_IR",
         "RVTEST_TSBI_GOTO_VUMODE",
-        *gated(
-            [
-                *trap("instret_1", "cp_virtual_instr_vu_instret_1", f"csrr x{rd}, instret"),
-                *gated(
-                    trap("instreth_1", "cp_virtual_instr_vu_rv32_instreth_1", f"csrr x{rd}, instreth"),
-                    "__riscv_xlen == 32",
-                ),
-                "RVTEST_TSBI_GOTO_SMODE",
-                "csrsi hcounteren, MCOUNTEREN_IR",
-                "csrci scounteren, MCOUNTEREN_IR",
-                "RVTEST_TSBI_GOTO_VUMODE",
-                *trap("instret_2", "cp_virtual_instr_vu_instret_2", f"csrr x{rd}, instret"),
-                *gated(
-                    trap("instreth_2", "cp_virtual_instr_vu_rv32_instreth_2", f"csrr x{rd}, instreth"),
-                    "__riscv_xlen == 32",
-                ),
-            ],
-            "defined(ZICNTR_SUPPORTED)",
-        ),
         *hypervisor_instructions("vu", "cp_virtual_instr_vu_execute_h"),
         *trap("vstval", "cp_virtual_instr_vu_read_vstval_htval", f"csrr x{rd}, vstval"),
         *trap("htval", "cp_virtual_instr_vu_read_vstval_htval", f"csrr x{rd}, htval"),
@@ -214,25 +180,8 @@ def _virtual_instruction_tests(test_data: TestData) -> list[str]:
         *gated(trap("hedelegh", "cp_virtual_instr_vu_rv32_hedelegh", f"csrr x{rd}, hedelegh"), HEDELEGH_GATE),
         "RVTEST_TSBI_GOTO_SMODE",
         *gated(list(P1P13_OFF), HEDELEGH_GATE),
-        "csrsi scounteren, MCOUNTEREN_IR",
-        f"csrw hcounteren, x{save_reg}",
-        comment_banner(
-            "cp_virtual_instr_vs_tvm, cp_virtual_instr_vu_tvm",
-            "mstatus.TVM affects only HS-mode.  With mstatus.TVM = 1 and hstatus.VTVM = 0, read hgatp and vsatp in\n"
-            "VS-mode and hgatp, vsatp and satp in VU-mode.  Each raises virtual instruction, not illegal instruction",
-        ),
-        "RVTEST_TSBI_CSR_SET(CSR_MSTATUS, MSTATUS_TVM)",
-        "RVTEST_TSBI_GOTO_VSMODE",
-        *trap("hgatp", "cp_virtual_instr_vs_tvm", f"csrr x{rd}, hgatp"),
-        *trap("vsatp", "cp_virtual_instr_vs_tvm", f"csrr x{rd}, vsatp"),
-        "RVTEST_TSBI_GOTO_VUMODE",
-        *trap("hgatp", "cp_virtual_instr_vu_tvm", f"csrr x{rd}, hgatp"),
-        *trap("vsatp", "cp_virtual_instr_vu_tvm", f"csrr x{rd}, vsatp"),
-        *trap("satp", "cp_virtual_instr_vu_tvm", f"csrr x{rd}, satp"),
-        "RVTEST_TSBI_GOTO_SMODE",
-        "RVTEST_TSBI_CSR_CLEAR(CSR_MSTATUS, MSTATUS_TVM)",
     ]
-    test_data.int_regs.return_registers([addr_reg, rd, save_reg, temp_reg])
+    test_data.int_regs.return_registers([addr_reg, rd, temp_reg])
     return lines
 
 

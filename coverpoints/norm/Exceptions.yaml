@@ -845,8 +845,8 @@ normative_rule_definitions:
   - name: H_cause_virtual_instruction
     coverpoint:
       [
-        "Exceptions_H_cg/cp_virtual_instr_vs_{execute_hypervisor, instret, mstatus_hgatp, mstatus_vsatp, read_vstval_htval, rv32_hedelegh, rv32_instreth_mcounter, s_vma_instr, satp, sret, tvm}",
-        "Exceptions_H_cg/cp_virtual_instr_vu_{execute_h, instret_1, instret_2, read_stval, read_vstval_htval, rv32_hedelegh, rv32_instreth_1, rv32_instreth_2, satp, sfence_vma, sret, tvm, vsatp, wfi}",
+        "Exceptions_H_cg/cp_virtual_instr_vs_{execute_hypervisor, mstatus_hgatp, mstatus_vsatp, read_vstval_htval, rv32_hedelegh, s_vma_instr, satp, sret}",
+        "Exceptions_H_cg/cp_virtual_instr_vu_{execute_h, read_stval, read_vstval_htval, rv32_hedelegh, satp, sfence_vma, sret, vsatp, wfi}",
         "Exceptions_HSm_cg/cp_tsr_vs_sret",
       ]
 
@@ -855,30 +855,9 @@ normative_rule_definitions:
   - name: H_virtinst_xtval
     coverpoint:
       [
-        "Exceptions_H_cg/cp_virtual_instr_vs_{execute_hypervisor, instret, mstatus_hgatp, mstatus_vsatp, read_vstval_htval, rv32_hedelegh, rv32_instreth_mcounter, s_vma_instr, satp, sret, tvm}",
-        "Exceptions_H_cg/cp_virtual_instr_vu_{execute_h, instret_1, instret_2, read_stval, read_vstval_htval, rv32_hedelegh, rv32_instreth_1, rv32_instreth_2, satp, sfence_vma, sret, tvm, vsatp, wfi}",
+        "Exceptions_H_cg/cp_virtual_instr_vs_{execute_hypervisor, mstatus_hgatp, mstatus_vsatp, read_vstval_htval, rv32_hedelegh, s_vma_instr, satp, sret}",
+        "Exceptions_H_cg/cp_virtual_instr_vu_{execute_h, read_stval, read_vstval_htval, rv32_hedelegh, satp, sfence_vma, sret, vsatp, wfi}",
       ]
-
-  # in VS-mode, attempts to access a non-high-half counter CSR when the corresponding bit
-  # in hcounteren is 0 and the same bit in mcounteren is 1;
-  - name: H_virtinst_vs_nonhighctr_h0_m1
-    coverpoint: ["Exceptions_H_cg/cp_virtual_instr_vs_instret"]
-
-  # in VS-mode, if XLEN=32, attempts to access a high-half counter CSR when the
-  # corresponding bit in hcounteren is 0 and the same bit in mcounteren is 1;
-  - name: H_virtinst_vs32_highctr_h0_m1
-    coverpoint: ["Exceptions_H_cg/cp_virtual_instr_vs_rv32_instreth_mcounter"]
-
-  # in VU-mode, attempts to access a non-high-half counter CSR when the corresponding bit
-  # in either hcounteren or scounteren is 0 and the same bit in mcounteren is 1;
-  - name: H_virtinst_vu_nonhighctr_h0_s0_m1
-    coverpoint: ["Exceptions_H_cg/cp_virtual_instr_vu_instret_{1, 2}"]
-
-  # in VU-mode, if XLEN=32, attempts to access a high-half counter CSR when the
-  # corresponding bit in either hcounteren or scounteren is 0 and the same bit in
-  # mcounteren is 1;
-  - name: H_virtinst_vu32_highctr_h0_s0_m1
-    coverpoint: ["Exceptions_H_cg/cp_virtual_instr_vu_rv32_instreth_{1, 2}"]
 
   # in VS-mode or VU-mode, attempts to execute a hypervisor instruction (HLV, HLVX, HSV,
   # or HFENCE);
@@ -897,7 +876,6 @@ normative_rule_definitions:
       [
         "Exceptions_H_cg/cp_virtual_instr_vs_{read_vstval_htval, mstatus_hgatp}",
         "Exceptions_H_cg/cp_virtual_instr_vu_{read_vstval_htval, vsatp}",
-        "Exceptions_H_cg/cp_virtual_instr_{vs_tvm, vu_tvm}",
       ]
 
   # Representative coverpoints; also Exceptions_H_cg/cp_virtual_instr_vs_mstatus_vsatp

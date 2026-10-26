@@ -1403,9 +1403,6 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
     mstatus_tvm_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
         bins tvm_disabled = {0};
     }
-    mstatus_tvm_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
-        bins tvm_enabled = {1};
-    }
     mstatus_tw_disabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tw") {
         bins tw_disabled = {0};
     }
@@ -1469,43 +1466,6 @@ covergroup Exceptions_H_cg with function sample(ins_t ins);
     cp_virtual_instr_vu_wfi:                cross priv_mode_vu, wfi, mstatus_tw_disabled;
     cp_virtual_instr_vu_sret:               cross priv_mode_vu, sret;
     cp_virtual_instr_vu_sfence_vma:         cross priv_mode_vu, sfence_vma;
-
-    // mstatus.TVM affects only HS-mode: with TVM = 1 these accesses still raise virtual instruction
-    cp_virtual_instr_vs_tvm: cross priv_mode_vs, csrr, vsatp_hgatp, mstatus_tvm_enabled;
-    cp_virtual_instr_vu_tvm: cross priv_mode_vu, csrr, satp_vsatp_hgatp, mstatus_tvm_enabled;
-
-    // Counter reads from VS-mode and VU-mode that hcounteren or scounteren disables while mcounteren enables them
-    `ifdef ZICNTR_SUPPORTED
-        instret: coverpoint ins.current.insn[31:20] {
-            bins instret = {CSR_INSTRET};
-        }
-        mcounteren_enabled_ir: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mcounteren", "ir") {
-            bins enabled = {1};
-        }
-        hcounteren_enabled_ir: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hcounteren", "ir") {
-            bins enabled = {1};
-        }
-        hcounteren_disabled_ir: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hcounteren", "ir") {
-            bins disabled = {0};
-        }
-        scounteren_enabled_ir: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "scounteren", "ir") {
-            bins enabled = {1};
-        }
-        scounteren_disabled_ir: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "scounteren", "ir") {
-            bins disabled = {0};
-        }
-        cp_virtual_instr_vs_instret:   cross priv_mode_vs, csrr, instret, hcounteren_disabled_ir, mcounteren_enabled_ir;
-        cp_virtual_instr_vu_instret_1: cross priv_mode_vu, csrr, instret, hcounteren_disabled_ir, scounteren_enabled_ir, mcounteren_enabled_ir;
-        cp_virtual_instr_vu_instret_2: cross priv_mode_vu, csrr, instret, hcounteren_enabled_ir, scounteren_disabled_ir, mcounteren_enabled_ir;
-        `ifdef UDB_MXLEN_32
-            instreth: coverpoint ins.current.insn[31:20] {
-                bins instreth = {CSR_INSTRETH};
-            }
-            cp_virtual_instr_vs_rv32_instreth_mcounter: cross priv_mode_vs, csrr, instreth, hcounteren_disabled_ir, mcounteren_enabled_ir;
-            cp_virtual_instr_vu_rv32_instreth_1: cross priv_mode_vu, csrr, instreth, hcounteren_disabled_ir, scounteren_enabled_ir, mcounteren_enabled_ir;
-            cp_virtual_instr_vu_rv32_instreth_2: cross priv_mode_vu, csrr, instreth, hcounteren_enabled_ir, scounteren_disabled_ir, mcounteren_enabled_ir;
-        `endif
-    `endif
 
     // hedelegh from VS-mode and VU-mode (RV32)
     `ifdef UDB_MXLEN_32

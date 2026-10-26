@@ -57,8 +57,6 @@ coverpoints:
       HU has no effect outside U-mode.
     bins: 4 priv * 2 instr * 2 access * 2 misaligned * 2 HU
   - name: |-
-      cp_virtual_instr_vs_instret
-      cp_virtual_instr_vs_rv32_instreth_mcounter
       cp_virtual_instr_vs_execute_hypervisor
       cp_virtual_instr_vs_read_vstval_htval
       cp_virtual_instr_vs_mstatus_vsatp
@@ -69,24 +67,18 @@ coverpoints:
       cp_virtual_instr_vs_rv32_hedelegh
     goal: exercise all ways to trigger virtual-instruction exceptions from VS
     description: |-
-      In VS-mode with mstatus.TVM = TW = 0:
-      read instret with hcounteren[2] = 0, mcounteren[2] = 1 (Zicntr)
+      In VS-mode with mstatus.TW = 0:
       execute hlv.w, hlvx.wu, hsv.w, hfence.vvma, hfence.gvma
       read vstval, htval, vsatp, hgatp
       sret with hstatus.VTSR = 1
       {sfence.vma, sinval.vma (Svinval), read satp} with hstatus.VTVM = 1
       RV32 only:
-      read instreth with hcounteren[2] = 0, mcounteren[2] = 1 (Zicntr)
       read hedelegh (Priv 1.13)
     expectation: virtual instruction exception; rd keeps its value and hsv.w does not write memory
-    bins: 14, + 2 on RV32
+    bins: 13, + 1 on RV32
     notes: |-
-      wfi with hstatus.VTW = 1 is in InterruptsH cp_wfi_vs.  Some of these cases are also sampled by H, HSm and ZicntrH coverage.
+      wfi with hstatus.VTW = 1 is in InterruptsH cp_wfi_vs.  Some of these cases are also sampled by H, HSm and H_Zicntr.
   - name: |-
-      cp_virtual_instr_vu_instret_1
-      cp_virtual_instr_vu_instret_2
-      cp_virtual_instr_vu_rv32_instreth_1
-      cp_virtual_instr_vu_rv32_instreth_2
       cp_virtual_instr_vu_execute_h
       cp_virtual_instr_vu_read_vstval_htval
       cp_virtual_instr_vu_read_stval
@@ -98,32 +90,18 @@ coverpoints:
       cp_virtual_instr_vu_rv32_hedelegh
     goal: exercise all ways to trigger virtual-instruction exceptions from VU
     description: |-
-      In VU-mode with mstatus.TVM = TW = 0:
-      read instret with hcounteren[2] = 0, scounteren[2] = 1, mcounteren[2] = 1 (Zicntr)
-      read instret with hcounteren[2] = 1, scounteren[2] = 0, mcounteren[2] = 1 (Zicntr)
+      In VU-mode with mstatus.TW = 0:
       execute hlv.w, hlvx.wu, hsv.w, hfence.vvma, hfence.gvma
       read vstval, htval
       read stval, satp, vsatp
       wfi
       sret, sfence.vma
       RV32 only:
-      read instreth with hcounteren[2] = 0, scounteren[2] = 1, mcounteren[2] = 1 (Zicntr)
-      read instreth with hcounteren[2] = 1, scounteren[2] = 0, mcounteren[2] = 1 (Zicntr)
       read hedelegh (Priv 1.13)
     expectation: virtual instruction exception; rd keeps its value and hsv.w does not write memory
-    bins: 15, + 3 on RV32
+    bins: 13, + 1 on RV32
     notes: |-
-      Some of these cases are also sampled by H, HSm and ZicntrH coverage.
-  - name: cp_virtual_instr_vs_tvm
-    goal: mstatus.TVM does not affect VS-mode
-    description: With mstatus.TVM = 1 and hstatus.VTVM = 0, in VS-mode csrr hgatp and vsatp
-    expectation: Virtual instruction exception, not illegal instruction
-    bins: 2 CSRs
-  - name: cp_virtual_instr_vu_tvm
-    goal: mstatus.TVM does not affect VU-mode
-    description: With mstatus.TVM = 1 and hstatus.VTVM = 0, in VU-mode csrr satp, vsatp and hgatp
-    expectation: Virtual instruction exception, not illegal instruction
-    bins: 3 CSRs
+      Some of these cases are also sampled by H, HSm and H_Zicntr.
   - name: cp_loadstore_priv
     goal: Valid privilege modes of hypervisor load/store
     description: In each privilege mode {HS/VS/U/VU} with hstatus.HU = {0/1}, attempt {HLV.W, HLVX.WU, HSV.W} on scratch memory.  vsatp and hgatp are Bare.

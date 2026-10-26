@@ -100,9 +100,11 @@ include::{testplansdir}/priv/ZkrH.adoc[]
 
 include::{testplansdir}/priv/SstcH.adoc[]
 
-==== SsstateenH Hypervisor State Enable
+==== Hypervisor State Enable
 
-include::{testplansdir}/priv/SsstateenH.adoc[]
+The hypervisor state enable tests are the <<t-Ssstateen_H-coverpoints,Ssstateen_H>> group of the Ssstateen suite,
+for the effects of hstateen, and the <<t-Smstateen_H-coverpoints,Smstateen_H>> group of the Smstateen suite, for the
+effects of mstateen on HS-mode, VS-mode and VU-mode.
 
 ==== SscrindH Hypervisor Indirect CSR Access
 

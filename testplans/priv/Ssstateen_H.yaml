@@ -1,0 +1,81 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Ssstateen_H
+source: https://docs.google.com/spreadsheets/d/1DWBEoprndjQzLTXQTzPI8jW1HydtkYRR3tg58q59fdk/edit?gid=311784014#gid=311784014
+notes: |
+  The H group applies the base tests to hstateen.  Like the base tests it boots to HS-mode, and with Smstateen it sets
+  the mstateen bits the tests need through T-SBI.  hstateen controls VS-mode and VU-mode access but not HS-mode
+  access: an access that only hstateen forbids raises a virtual-instruction exception, and so does any VU-mode access
+  to an S or H CSR that HS-mode could make.  Ssstateen comprises only the sstateen and hstateen CSRs, so the effects
+  of mstateen are tested in the H group of Smstateen.  On RV32 the bits above 31 are in hstateen0h-3h.
+coverpoints:
+  - name: cp_walking_ones
+    goal: hstateen bits are accessible
+    description: |-
+      In HS-mode, with the matching SEn = 1, write hstateen0-3 with walking ones and walking zeros, and read each back.
+      For RV32, also walk hstateen0h-3h.  C (custom state is optional) and CTR, IMSIC, AIA and CSRIND (state Sail does
+      not model) are left out of the hstateen0 check.
+    expectation: Bits whose state the hart implements, and whose mstateen bit is 1, read back as written; the rest read zero
+    bins: 4-8 CSRs * XLEN walking ones/zeros
+  - name: cp_walking_ones_vs
+    goal: sstateen0 bits whose hstateen0 bit is 0 read as zero in VS-mode
+    description: With hstateen0.SE0 = 1, walk ones and zeros through sstateen0 in VS-mode with hstateen0 C, FCSR and JVT all clear and then all set.
+    expectation: sstateen0 bits whose hstateen0 bit is 0 read zero; the others read back as written if the hart has the state
+    bins: hstateen0 C/FCSR/JVT zero, and nonzero when Zcmt or Zfinx makes one of them writable
+  - name: cp_csr_illegal_accesses
+    goal: The hstateen CSRs are not accessible from VS-mode or VU-mode
+    description: With SE0-SE3 = 1, read and write hstateen0-3 (and hstateen0h-3h on RV32) from VS and VU-mode.
+    expectation: Virtual instruction, because HS-mode could make the access
+    bins: 2 modes * 4-8 CSRs * 3 ops
+  - name: cp_hstateen0_se0_controls_sstateen0
+    goal: hstateen0.SE0 controls VS-mode access to sstateen0, but not HS-mode access
+    description: With hstateen0.SE0 = {0,1}, read and write sstateen0 from HS, VS and VU-mode.
+    expectation: HS-mode succeeds.  VS-mode raises virtual instruction when SE0 = 0, else succeeds.  VU-mode raises virtual instruction
+    bins: 2 states * 3 modes * 3 ops
+  - name: cp_hstateen_se_controls_sstateen123
+    goal: Bit 63 of hstateen1-3 controls VS-mode access to sstateen1-3, but not HS-mode access
+    description: For N = 1-3 and hstateenN bit 63 = {0,1}, read and write sstateenN from HS, VS and VU-mode, and check the value read.
+    expectation: HS-mode succeeds.  VS-mode raises virtual instruction when the bit is 0, else succeeds.  VU-mode raises virtual instruction.  sstateenN reads 0
+    bins: 2 states * 3 modes * 3 CSRs * 3 ops
+  - name: cp_envcfg
+    goal: hstateen0.ENVCFG controls VS-mode access to senvcfg, but not HS-mode access
+    description: With hstateen0.ENVCFG = {0,1}, read and write senvcfg from HS, VS and VU-mode.
+    expectation: HS-mode succeeds.  VS-mode raises virtual instruction when ENVCFG = 0, else succeeds.  VU-mode raises virtual instruction
+    bins: 2 states * 3 modes * 3 ops
+  - name: cp_context
+    goal: hstateen0.CONTEXT controls VS-mode access to scontext, but not HS-mode access
+    description: |-
+      If scontext is implemented (Sdtrig):
+      With hstateen0.CONTEXT = {0,1}, read and write scontext from HS, VS and VU-mode.
+    expectation: HS-mode succeeds.  VS-mode raises virtual instruction when CONTEXT = 0, else succeeds.  VU-mode raises virtual instruction
+    bins: 2 states * 3 modes * 3 ops
+  - heading: Not tested
+  - goal: hstateen0.CSRIND controls VS-mode and VU-mode access to siselect and sireg* (really vsiselect and vsireg*)
+    description: With mstateen0.CSRIND = 1, access siselect and sireg* in VS-mode and VU-mode with hstateen0.CSRIND = 0 and 1.
+    status: Not tested
+    notes: Sail 0.16 has no CSRIND bit in mstateen0 or hstateen0 (both read-only zero), so the reference cannot give the results.
+    rules:
+      - hstateen0_csrind_op
+      - hypervisor_impl_csrs_access_control
+  - goal: hstateen0.IMSIC and AIA control VS-mode access to the guest IMSIC state (stopei, really vstopei) and to the rest of the Ssaia state
+    description: With the mstateen0 bit = 1, access stopei, stopi and the other Ssaia supervisor CSRs in VS-mode with hstateen0.IMSIC and AIA = 0 and 1.
+    status: Not tested
+    notes: Sail 0.16 does not model Ssaia or an IMSIC, and its mstateen0 and hstateen0 have no IMSIC or AIA bit, so the reference cannot give the results.
+    rules:
+      - hstateen0_imsic_op
+      - hstateen0_aia_op
+  - goal: hstateen0.CTR controls VS-mode access to the supervisor CTR state and SCTRCLR, while qualified transfers keep recording
+    description: With mstateen0.CTR = 1, access sctrctl (really vsctrctl), sctrstatus and the CTR entries through sireg*, and execute SCTRCLR, in VS-mode with hstateen0.CTR = 0 and 1.
+    status: Not tested
+    notes: Sail 0.16 does not model Smctr or Ssctr, and its mstateen0 and hstateen0 have no CTR bit, so the reference cannot give the results.
+    rules:
+      - hstateen_ctr
+      - hstateen_vs
+      - hstateen0_ctr0_v1_op
+  - goal: hstateen0.JVT and FCSR control VS-mode and VU-mode access to jvt (Zcmt) and fcsr (Zfinx)
+    description: With the mstateen0 bit = 1, read jvt and fcsr in VS-mode and VU-mode with the hstateen0 bit = 0 and 1.
+    status: Not tested
+    notes: Zcmt and Zfinx are incompatible with Zcd and F, which every configuration with H implements.  cp_walking_ones_vs checks that the matching sstateen0 bits read as zero in VS-mode.
+    rules:
+      - stateen0_jvt_op
+      - stateen0_fcsr_op
+  - heading: "Note: All of these tests are performed in HS-mode unless otherwise noted."

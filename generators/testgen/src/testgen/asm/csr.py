@@ -238,6 +238,7 @@ def csr_walk_test(
     walk_zeros: bool = True,
     warl_fields: list[tuple] | None = None,
     maskedwrites: bool = False,
+    tag: str = "",
 ) -> list[str]:
     """
     Generate a CSR walking-ones test: set and (optionally) clear each bit individually.
@@ -263,6 +264,7 @@ def csr_walk_test(
             bits and instead check that the field holds a legal (non-reserved) value; all
             other iterations check the field exactly as usual (see _warl_reserved_check).
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
+        tag: Appended to the CSR name in the testcase names, to tell apart several walks of one CSR.
     """
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
     csr_name, mask = csr
@@ -366,7 +368,7 @@ def csr_walk_test(
             lines.append(f"csrs {csr_name}, x{check_reg}     # set walking 1 in column {i}")
         else:
             lines.append(f"csrs {csr_name}, x{walk_reg}     # set walking 1 in column {i}")
-        lines.extend(readback_lines(f"{csr_name}_set_bit_{i}", reserved_fields_written(i, walking_ones=True)))
+        lines.extend(readback_lines(f"{csr_name}{tag}_set_bit_{i}", reserved_fields_written(i, walking_ones=True)))
         lines.append(f"slli x{walk_reg}, x{walk_reg}, 1      # walk the 1")
     if need_endif:
         lines.append("#endif\n")
@@ -387,7 +389,7 @@ def csr_walk_test(
                 lines.append(f"csrc {csr_name}, x{check_reg}     # clear walking 0 in column {i}")
             else:
                 lines.append(f"csrc {csr_name}, x{walk_reg}     # clear walking 0 in column {i}")
-            lines.extend(readback_lines(f"{csr_name}_clr_bit_{i}", reserved_fields_written(i, walking_ones=False)))
+            lines.extend(readback_lines(f"{csr_name}{tag}_clr_bit_{i}", reserved_fields_written(i, walking_ones=False)))
             lines.append(f"slli x{walk_reg}, x{walk_reg}, 1      # walk the 1")
         if need_endif:
             lines.append("#endif\n")

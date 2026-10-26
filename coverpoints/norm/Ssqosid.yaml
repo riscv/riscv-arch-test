@@ -24,4 +24,4 @@ normative_rule_definitions:
     coverpoint: ["Smstateen_cg/cp_srmcfg"]
 
   - name: Ssqosid_srmcfg_access_virtual_instruction
-    coverpoint: [""]
+    coverpoint: ["Smstateen_H_cg/cp_srmcfg (tests disabled for now)"]

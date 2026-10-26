@@ -423,6 +423,184 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 
 endgroup
 
+// H group: the base coverpoints crossed with HS-, VS- and VU-mode and, for the bits hstateen also has, with the
+// matching hstateen bit.  The hstateen bit is read-only zero while the mstateen bit is 0, so each state is
+// {mstateen bit, hstateen bit} = 00, 10 or 11.
+`ifdef H_SUPPORTED
+covergroup Smstateen_H_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    csrops: coverpoint ins.current.insn {
+        wildcard bins csrw = {CSRRW};
+        wildcard bins csrs = {CSRRS};
+        wildcard bins csrc = {CSRRC};
+    }
+
+    // ── SE0-SE3: sstateen0-3 and hstateen0-3 ─────────────────────────────
+    se0_csrs: coverpoint ins.current.insn[31:20] {
+        bins sstateen0 = {CSR_SSTATEEN0};
+        bins hstateen0 = {CSR_HSTATEEN0};
+        `ifdef UDB_MXLEN_32
+            bins hstateen0h = {CSR_HSTATEEN0H};
+        `endif
+    }
+    sstateen123_csrs: coverpoint ins.current.insn[31:20] {
+        bins sstateen1 = {CSR_SSTATEEN1};
+        bins sstateen2 = {CSR_SSTATEEN2};
+        bins sstateen3 = {CSR_SSTATEEN3};
+        bins hstateen1 = {CSR_HSTATEEN1};
+        bins hstateen2 = {CSR_HSTATEEN2};
+        bins hstateen3 = {CSR_HSTATEEN3};
+        `ifdef UDB_MXLEN_32
+            bins hstateen1h = {CSR_HSTATEEN1H};
+            bins hstateen2h = {CSR_HSTATEEN2H};
+            bins hstateen3h = {CSR_HSTATEEN3H};
+        `endif
+    }
+    // Bit 63 (bit 31 of the high half on RV32) of the mstateen<n> and hstateen<n> matching the CSR being accessed;
+    // n is the low two bits of the CSR address
+    `ifdef UDB_MXLEN_64
+        se_n_state: coverpoint {
+                get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, int'(CSR_MSTATEEN0) + int'(ins.current.insn[21:20]), "mstateen", "mstateen")[63],
+                get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, int'(CSR_HSTATEEN0) + int'(ins.current.insn[21:20]), "hstateen", "hstateen")[63]} {
+    `else
+        se_n_state: coverpoint {
+                get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, int'(CSR_MSTATEEN0H) + int'(ins.current.insn[21:20]), "mstateenh", "mstateenh")[31],
+                get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, int'(CSR_HSTATEEN0H) + int'(ins.current.insn[21:20]), "hstateenh", "hstateenh")[31]} {
+    `endif
+        bins mstateen_zero = {2'b00};
+        bins hstateen_zero = {2'b10};
+        bins both_one      = {2'b11};
+    }
+
+    // ── ENVCFG: senvcfg and henvcfg ───────────────────────────────────────
+    envcfg_csrs: coverpoint ins.current.insn[31:20] {
+        bins senvcfg = {CSR_SENVCFG};
+        bins henvcfg = {CSR_HENVCFG};
+        `ifdef UDB_MXLEN_32
+            bins henvcfgh = {CSR_HENVCFGH};
+        `endif
+    }
+    `ifdef UDB_MXLEN_64
+        envcfg_state: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0", "envcfg")[0],
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstateen0", "envcfg")[0]} {
+    `else
+        envcfg_state: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0h", "envcfg")[0],
+                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstateen0h", "envcfg")[0]} {
+    `endif
+        bins mstateen_zero = {2'b00};
+        bins hstateen_zero = {2'b10};
+        bins both_one      = {2'b11};
+    }
+
+    // ── CONTEXT: scontext and hcontext (Sdtrig) ───────────────────────────
+    // No configuration has hcontext without scontext
+    `ifdef UDB_SCONTEXT_IMPLEMENTED
+        context_csrs: coverpoint ins.current.insn[31:20] {
+            bins scontext = {CSR_SCONTEXT};
+            `ifdef UDB_HCONTEXT_IMPLEMENTED
+                bins hcontext = {CSR_HCONTEXT};
+            `endif
+        }
+        `ifdef UDB_MXLEN_64
+            context_state: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0", "context")[0],
+                                       get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstateen0", "context")[0]} {
+        `else
+            context_state: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0h", "context")[0],
+                                       get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstateen0h", "context")[0]} {
+        `endif
+            bins mstateen_zero = {2'b00};
+            bins hstateen_zero = {2'b10};
+            bins both_one      = {2'b11};
+        }
+    `endif
+
+    // ── P1P13: hedelegh, which exists only on RV32 from Priv 1.13 ─────────
+    `ifdef SM1P13P0_OR_LATER_SUPPORTED
+    `ifdef UDB_MXLEN_32
+        p1p13_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0h", "p1p13")[0] {
+            bins p1p13_disabled = {1'b0};
+            bins p1p13_enabled  = {1'b1};
+        }
+        hedelegh_csr: coverpoint ins.current.insn[31:20] {
+            bins hedelegh = {CSR_HEDELEGH};
+        }
+    `endif
+    `endif
+
+    // ── SRMCFG: srmcfg (Ssqosid) ──────────────────────────────────────────
+    `ifdef SSQOSID_SUPPORTED
+        `ifdef UDB_MXLEN_64
+            srmcfg_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0", "srmcfg")[0] {
+                bins srmcfg_disabled = {1'b0};
+                bins srmcfg_enabled  = {1'b1};
+            }
+        `else
+            srmcfg_state: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0h", "srmcfg")[0] {
+                bins srmcfg_disabled = {1'b0};
+                bins srmcfg_enabled  = {1'b1};
+            }
+        `endif
+        srmcfg_csr: coverpoint ins.current.insn[31:20] {
+            bins srmcfg = {CSR_SRMCFG};
+        }
+    `endif
+
+    // ── Walking ones/zeros on hstateen0-3 from M-mode ─────────────────────
+    hstateen_walk_csrs: coverpoint ins.current.insn[31:20] {
+        bins hstateen0 = {CSR_HSTATEEN0};
+        bins hstateen1 = {CSR_HSTATEEN1};
+        bins hstateen2 = {CSR_HSTATEEN2};
+        bins hstateen3 = {CSR_HSTATEEN3};
+        `ifdef UDB_MXLEN_32
+            bins hstateen0h = {CSR_HSTATEEN0H};
+            bins hstateen1h = {CSR_HSTATEEN1H};
+            bins hstateen2h = {CSR_HSTATEEN2H};
+            bins hstateen3h = {CSR_HSTATEEN3H};
+        `endif
+    }
+    // csrs sets the walking 1 and csrc clears the walking 0
+    walk_ops: coverpoint ins.current.insn {
+        wildcard bins csrs = {CSRRS};
+        wildcard bins csrc = {CSRRC};
+    }
+    walk_bit: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+        bins b[] = {[0:`UDB_MXLEN-1]};
+    }
+    // Bit 63 of the mstateen<n> matching hstateen<n>: the walks run with mstateen0-3 all zeros and all ones
+    `ifdef UDB_MXLEN_64
+        mstateen_se_n: coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, int'(CSR_MSTATEEN0) + int'(ins.current.insn[21:20]), "mstateen", "mstateen")[63] {
+    `else
+        mstateen_se_n: coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, int'(CSR_MSTATEEN0H) + int'(ins.current.insn[21:20]), "mstateenh", "mstateenh")[31] {
+    `endif
+        bins se_disabled = {1'b0};
+        bins se_enabled  = {1'b1};
+    }
+
+    cp_walking_ones:                      cross priv_mode_m, hstateen_walk_csrs, walk_ops, walk_bit, mstateen_se_n;
+    cp_mstateen0_se0_controls_sstateen0:  cross csrops, priv_mode_hs_vs_vu, se0_csrs, se_n_state;
+    cp_mstateen_se_controls_sstateen123:  cross csrops, priv_mode_hs_vs_vu, sstateen123_csrs, se_n_state;
+    cp_envcfg:                            cross csrops, priv_mode_hs_vs_vu, envcfg_csrs, envcfg_state;
+`ifdef UDB_SCONTEXT_IMPLEMENTED
+    cp_context:                           cross csrops, priv_mode_hs_vs_vu, context_csrs, context_state;
+`endif
+`ifdef SM1P13P0_OR_LATER_SUPPORTED
+`ifdef UDB_MXLEN_32
+    // HS-mode access to hedelegh is in Smstateen_cg/cp_p1p13, where S-mode is HS-mode
+    cp_p1p13:                             cross csrops, priv_mode_vs_vu, hedelegh_csr, p1p13_state;
+`endif
+`endif
+`ifdef SSQOSID_SUPPORTED
+    // The tests are disabled for now (SRMCFG_H_TESTS in Smstateen.py), so this reports missing coverage
+    cp_srmcfg:                            cross csrops, priv_mode_hs_vs_vu, srmcfg_csr, srmcfg_state;
+`endif
+endgroup
+`endif
+
 function void smstateen_sample(int hart, int issue, ins_t ins);
     Smstateen_cg.sample(ins);
+    `ifdef H_SUPPORTED
+        Smstateen_H_cg.sample(ins);
+    `endif
 endfunction

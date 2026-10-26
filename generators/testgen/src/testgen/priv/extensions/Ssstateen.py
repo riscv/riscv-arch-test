@@ -7,11 +7,12 @@
 """Ssstateen privileged extension test generator."""
 
 from testgen.asm.csr import csr_walk_test
-from testgen.asm.helpers import arch_block, comment_banner
+from testgen.asm.helpers import arch_block, comment_banner, gated
 from testgen.asm.tsbi import tsbi_call
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.Smstateen import HSTATEEN0_WALK_MASK, bit_controlled_tests
 from testgen.priv.registry import add_priv_test_generator
 
 # ---------------------------------------------------------------------------
@@ -21,26 +22,31 @@ from testgen.priv.registry import add_priv_test_generator
 CSR_OPS = ["csrrw", "csrrs", "csrrc", "csrr"]
 
 
-def _write_se(n: int, temp_reg: int, *, enable: bool) -> list[str]:
-    """Set (enable=True) or clear (enable=False) SE<n>, bit 63 of mstateen<n> (bit 31 of mstateen<n>h on RV32).
+def _write_mstateen_bit(n: int, bit: int, temp_reg: int, *, enable: bool) -> list[str]:
+    """Set (enable=True) or clear (enable=False) bit ``bit`` of mstateen<n> (bit ``bit - 32`` of mstateen<n>h on RV32).
 
     Skipped entirely where Smstateen is absent: mstateenN does not exist there, and an
     illegal access made through T-SBI faults inside the handler rather than in test code,
     which aborts the run. Without Smstateen sstateenN is simply ungated.
     """
     action = "csrs" if enable else "csrc"
-    description = f"set SE{n}=1" if enable else f"clear SE{n}=0"
+    description = f"set bit {bit}" if enable else f"clear bit {bit}"
     return [
         "#ifdef SMSTATEEN_SUPPORTED",
         "#if __riscv_xlen == 64",
-        f"LI(x{temp_reg}, 0x8000000000000000)  # SE{n} = bit 63 of mstateen{n}",
+        f"LI(x{temp_reg}, {1 << bit:#x})",
         tsbi_call(f"{action} mstateen{n}, x{temp_reg}  # {description}"),
         "#else",
-        f"LI(x{temp_reg}, 0x80000000)  # SE{n} = bit 31 of mstateen{n}h",
-        tsbi_call(f"{action} mstateen{n}h, x{temp_reg}  # {description}"),
+        f"LI(x{temp_reg}, {1 << (bit - 32):#x})",
+        tsbi_call(f"{action} mstateen{n}h, x{temp_reg}  # {description} of mstateen{n}"),
         "#endif",
         "#endif  // SMSTATEEN_SUPPORTED",
     ]
+
+
+def _write_se(n: int, temp_reg: int, *, enable: bool) -> list[str]:
+    """Set (enable=True) or clear (enable=False) SE<n>, bit 63 of mstateen<n> (bit 31 of mstateen<n>h on RV32)."""
+    return _write_mstateen_bit(n, 63, temp_reg, enable=enable)
 
 
 def _write_se0(temp_reg: int, *, enable: bool) -> list[str]:
@@ -79,43 +85,57 @@ def _restore_mstateen(save_reg: int, save_regh: int) -> list[str]:
 # ---------------------------------------------------------------------------
 
 
-def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
+def _generate_csr_illegal_accesses(
+    test_data: TestData,
+    *,
+    covergroup: str = "Ssstateen_cg",
+    csrs: list[str] | None = None,
+    csrs_rv32: list[str] | None = None,
+    modes: tuple[tuple[str, str], ...] = (("umode", "RVTEST_TSBI_GOTO_UMODE"),),
+) -> list[str]:
+    """CSR ops on ``csrs`` (sstateen0-3 by default) from each of ``modes`` (U-mode by default) with SE0-SE3=1.
+
+    The H group uses it for hstateen0-3 from VS-mode and VU-mode, which always raise virtual instruction.
+    """
     coverpoint = "cp_csr_illegal_accesses"
-    covergroup = "Ssstateen_cg"
+    csrs = csrs or [f"sstateen{n}" for n in range(4)]
+    rv32 = csrs_rv32 or []
+    mode_names = "/".join(f"{label[:-4].upper()}-mode" for label, _ in modes)
 
     lines = [
         comment_banner(
             coverpoint,
-            "Attempt CSR ops to sstateenN CSRs from U-mode with SE0-SE3=1 (should trap)",
+            f"Attempt CSR ops to {', '.join(csrs)} from {mode_names} with SE0-SE3=1 (should trap)",
         )
     ]
 
     temp_reg, save_mstateen, save_mstatenh = test_data.int_regs.get_registers(3)
 
-    sstateen_csrs = ["sstateen0", "sstateen1", "sstateen2", "sstateen3"]
-
-    # Enable every sstateenN at M level so that the U-mode accesses trap only for privilege.
+    # Enable every sstateenN at M level so that the accesses trap only for privilege.
     # mstateen1-3 reset to zero and no other test leaves SE1-3 set, so they are cleared afterward.
     lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
     for n in range(4):
         lines.extend(_write_se(n, temp_reg, enable=True))
-    lines.append("RVTEST_TSBI_GOTO_UMODE")
 
-    for csr in sstateen_csrs:
-        for op in CSR_OPS:
-            if op == "csrr":
-                insn = f"{op} x{temp_reg}, {csr}  # illegal from U-mode"
-            else:
-                insn = f"{op} x{temp_reg}, {csr}, x{temp_reg}  # illegal from U-mode"
-            lines.extend(
-                [
-                    "",
-                    test_data.add_testcase(f"{csr}_{op.lower()}_umode_se{csr[-1]}_1", coverpoint, covergroup),
-                    insn,
-                ]
-            )
+    for mode_label, enter_line in modes:
+        lines.append(enter_line)
+        for csr in [*csrs, *rv32]:
+            body = []
+            for op in CSR_OPS:
+                if op == "csrr":
+                    insn = f"{op} x{temp_reg}, {csr}  # illegal from {mode_label}"
+                else:
+                    insn = f"{op} x{temp_reg}, {csr}, x{temp_reg}  # illegal from {mode_label}"
+                body.extend(
+                    [
+                        "",
+                        test_data.add_testcase(f"{csr}_{op.lower()}_{mode_label}_se_1", coverpoint, covergroup),
+                        insn,
+                    ]
+                )
+            lines.extend(gated(body, "__riscv_xlen == 32" if csr in rv32 else None))
+        lines.append("RVTEST_TSBI_GOTO_SMODE")
 
-    lines.append("RVTEST_TSBI_GOTO_SMODE")
     lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
     for n in range(1, 4):
         lines.extend(_write_se(n, temp_reg, enable=False))
@@ -133,14 +153,39 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
 # ---------------------------------------------------------------------------
 
 
-def _generate_walking_ones(test_data: TestData) -> list[str]:
+def _generate_walking_ones(
+    test_data: TestData,
+    *,
+    ctl: str = "sstateen",
+    mask0: int = 0x7,
+    covergroup: str = "Ssstateen_cg",
+    high_halves: bool = False,
+) -> list[str]:
+    """Walk <ctl>0-3 from S-mode with the matching SEn=1, checking the bits of <ctl>0 in ``mask0``.
+
+    The H group walks hstateen0-3 from HS-mode, and with ``high_halves`` also hstateen0h-3h on RV32.
+    """
     coverpoint = "cp_walking_ones"
-    covergroup = "Ssstateen_cg"
+
+    def walk(n: int, mask: int | None) -> list[str]:
+        out = csr_walk_test(test_data, (f"{ctl}{n}", mask), covergroup, coverpoint)
+        if high_halves:
+            out.extend(
+                [
+                    "#if __riscv_xlen == 32",
+                    test_data.add_testcase(f"{ctl}{n}h_walk_se{n}_1_smode", coverpoint, covergroup),
+                    *csr_walk_test(
+                        test_data, (f"{ctl}{n}h", None if mask is None else mask >> 32), covergroup, coverpoint
+                    ),
+                    "#endif  // __riscv_xlen == 32",
+                ]
+            )
+        return out
 
     lines = [
         comment_banner(
             coverpoint,
-            "Walking-1 and walking-0 patterns on sstateen0-3 from S-mode with the matching SEn=1",
+            f"Walking-1 and walking-0 patterns on {ctl}0-3 from S-mode with the matching SEn=1",
         )
     ]
 
@@ -167,10 +212,10 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
     lines.extend(
         [
             "",
-            test_data.add_testcase("sstateen0_walk_se0_1_smode", coverpoint, covergroup),
+            test_data.add_testcase(f"{ctl}0_walk_se0_1_smode", coverpoint, covergroup),
         ]
     )
-    lines.extend(csr_walk_test(test_data, ("sstateen0", 0x7), covergroup, coverpoint))
+    lines.extend(walk(0, mask0))
 
     lines.extend(
         [
@@ -185,14 +230,15 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
     )
     test_data.int_regs.return_registers([save_mstateen_se0])
 
-    # sstateen1-3 have no defined bits, so every bit reads zero (norm:stateen_reserved_roz).
-    # Each needs SE<n> set in mstateen<n>; mstateen1-3 reset to zero and no other test
-    # leaves SE1-3 set, so SE<n> is cleared afterward rather than saved and restored.
+    # sstateen1-3 have no defined bits, so every bit reads zero (norm:stateen_reserved_roz);
+    # hstateen1-3 define only bit 63. Each needs SE<n> set in mstateen<n>; mstateen1-3 reset
+    # to zero and no other test leaves SE1-3 set, so SE<n> is cleared afterward rather than
+    # saved and restored.
     temp_reg = test_data.int_regs.get_register()
     for n in range(1, 4):
         lines.extend(_write_se(n, temp_reg, enable=True))
-        lines.extend(["", test_data.add_testcase(f"sstateen{n}_walk_se{n}_1_smode", coverpoint, covergroup)])
-        lines.extend(csr_walk_test(test_data, (f"sstateen{n}", None), covergroup, coverpoint))
+        lines.extend(["", test_data.add_testcase(f"{ctl}{n}_walk_se{n}_1_smode", coverpoint, covergroup)])
+        lines.extend(walk(n, None))
         lines.extend(_write_se(n, temp_reg, enable=False))
     test_data.int_regs.return_registers([temp_reg])
 
@@ -436,6 +482,156 @@ def make_ssstateen(test_data: TestData) -> list[TestChunk]:
     tc.code.append("#ifdef ZCMT_SUPPORTED")
     tc.code.extend(arch_block(_generate_jvt(test_data), "zcmt"))
     tc.code.append("#endif  // ZCMT_SUPPORTED")
+
+    test_chunks.append(test_data.end_test_chunk())
+    return test_chunks
+
+
+# ---------------------------------------------------------------------------
+# H group: hstateen control of VS- and VU-mode access. Like the base tests it boots
+# to (H)S-mode and writes mstateen through T-SBI. Ssstateen comprises only the sstateen
+# and hstateen CSRs, so the effects of mstateen are tested in the Smstateen H group.
+# ---------------------------------------------------------------------------
+
+_H_CG = "Ssstateen_H_cg"
+
+# The H group's modes, entered from HS-mode
+_MODES_H = [
+    ("hsmode", f"{INDENT}# already in HS-mode", False),
+    ("vsmode", "RVTEST_TSBI_GOTO_VSMODE", False),
+    ("vumode", "RVTEST_TSBI_GOTO_VUMODE", False),
+]
+
+# hstateen0 C, FCSR and JVT, which control the matching sstateen0 bits
+_HSTATEEN0_LOW = "(HSTATEEN0_CS | HSTATEEN0_FCSR | HSTATEEN0_JVT)"
+
+
+def _h_enable_mstateen(temp_reg: int) -> list[str]:
+    """With Smstateen, set mstateen0.SE0, ENVCFG and CONTEXT and SE1-SE3, so that HS-mode can reach the state the
+    hstateen CSRs control."""
+    lines = []
+    for bit in (63, 62, 57):
+        lines.extend(_write_mstateen_bit(0, bit, temp_reg, enable=True))
+    for n in range(1, 4):
+        lines.extend(_write_se(n, temp_reg, enable=True))
+    return lines
+
+
+def _h_walking_ones_vs(test_data: TestData) -> list[str]:
+    """Walk sstateen0 from VS-mode with hstateen0 C, FCSR and JVT clear and set; sstateen0 bits whose hstateen0 bit
+    is 0 read as zero (norm:sstateen_vsmode_access_roz)."""
+    coverpoint = "cp_walking_ones_vs"
+    temp_reg = test_data.int_regs.get_register()
+    lines = [
+        comment_banner(
+            coverpoint,
+            "Walking-1 and walking-0 patterns on sstateen0 from VS-mode with hstateen0 C, FCSR and JVT clear and set",
+        ),
+        *_h_enable_mstateen(temp_reg),
+        "#if __riscv_xlen == 64",
+        f"LI(x{temp_reg}, HSTATEEN_SSTATEEN)",
+        f"csrs hstateen0, x{temp_reg}",
+        "#else",
+        f"LI(x{temp_reg}, HSTATEENH_SSTATEEN)",
+        f"csrs hstateen0h, x{temp_reg}",
+        "#endif",
+    ]
+    for state in (0, 1):
+        lines.extend(
+            [
+                "",
+                f"LI(x{temp_reg}, {_HSTATEEN0_LOW})",
+                f"{'csrs' if state else 'csrc'} hstateen0, x{temp_reg}  # hstateen0 C, FCSR, JVT = {state}",
+                "RVTEST_TSBI_GOTO_VSMODE",
+                test_data.add_testcase(f"sstateen0_walk_h{state}_vsmode", coverpoint, _H_CG),
+                *csr_walk_test(test_data, ("sstateen0", 0x7), _H_CG, coverpoint, tag=f"_h{state}"),
+                "RVTEST_TSBI_GOTO_SMODE",
+            ]
+        )
+    test_data.int_regs.return_registers([temp_reg])
+    return lines
+
+
+def _h_gate_tests(test_data: TestData) -> list[str]:
+    """CSR ops on sstateen0-3, senvcfg and scontext from HS-, VS- and VU-mode for each value of the hstateen bit
+    that controls them.  The bits control VS-mode access but not HS-mode access."""
+    common = {"covergroup": _H_CG, "ctl": "hstateen", "modes": _MODES_H, "home": "RVTEST_TSBI_GOTO_SMODE"}
+    temp_reg = test_data.int_regs.get_register()
+    lines = _h_enable_mstateen(temp_reg)
+    test_data.int_regs.return_registers([temp_reg])
+    for n in range(4):
+        lines.extend(
+            bit_controlled_tests(
+                test_data,
+                coverpoint="cp_hstateen0_se0_controls_sstateen0" if n == 0 else "cp_hstateen_se_controls_sstateen123",
+                bit=63,
+                bit_name="se",
+                n=n,
+                banner=f"CSR ops on sstateen{n} from HS/VS/VU-mode with hstateen{n}.SE{n} (bit 63) disabled and enabled",
+                csrs=[f"sstateen{n}"],
+                check=n > 0,
+                preserve=True,
+                **common,
+            )
+        )
+    lines.extend(
+        bit_controlled_tests(
+            test_data,
+            coverpoint="cp_envcfg",
+            bit=62,
+            bit_name="envcfg",
+            banner="CSR ops on senvcfg from HS/VS/VU-mode with hstateen0.envcfg (bit 62) disabled and enabled",
+            csrs=["senvcfg"],
+            preserve=True,
+            **common,
+        )
+    )
+    lines.append("#ifdef UDB_SCONTEXT_IMPLEMENTED")
+    lines.extend(
+        bit_controlled_tests(
+            test_data,
+            coverpoint="cp_context",
+            bit=57,
+            bit_name="context",
+            banner="CSR ops on scontext from HS/VS/VU-mode with hstateen0.context (bit 57) disabled and enabled",
+            csrs=["scontext"],
+            preserve=True,
+            **common,
+        )
+    )
+    lines.append("#endif  // UDB_SCONTEXT_IMPLEMENTED")
+    return lines
+
+
+@add_priv_test_generator(
+    "Ssstateen",
+    required_extensions=["Ssstateen", "H"],
+    march_extensions=["Ssstateen"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
+def make_ssstateen_h(test_data: TestData) -> list[TestChunk]:
+    """Generate the Ssstateen H group tests."""
+    test_chunks: list[TestChunk] = []
+
+    tc = test_data.new_test_chunk(test_chunks, "H_walk")
+    tc.code.extend(
+        [
+            *_generate_walking_ones(
+                test_data, ctl="hstateen", mask0=HSTATEEN0_WALK_MASK, covergroup=_H_CG, high_halves=True
+            ),
+            *_h_walking_ones_vs(test_data),
+            *_generate_csr_illegal_accesses(
+                test_data,
+                covergroup=_H_CG,
+                csrs=[f"hstateen{n}" for n in range(4)],
+                csrs_rv32=[f"hstateen{n}h" for n in range(4)],
+                modes=(("vsmode", "RVTEST_TSBI_GOTO_VSMODE"), ("vumode", "RVTEST_TSBI_GOTO_VUMODE")),
+            ),
+        ]
+    )
+
+    tc = test_data.new_test_chunk(test_chunks, "H_gate")
+    tc.code.extend(_h_gate_tests(test_data))
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

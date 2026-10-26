@@ -1,0 +1,68 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Smstateen_H
+notes: |
+  The H group crosses the base mstateen control bits with HS-mode, VS-mode and VU-mode and, for the bits hstateen0
+  also has, with the matching hstateen bit.  Like the base tests it boots to M-mode, writes the control bits there and
+  enters each mode with T-SBI.  An mstateen bit of 0 makes the matching hstateen bit read-only zero and makes the
+  state it controls illegal to access below M-mode.  When the mstateen bit is 1, a VS-mode or VU-mode access that
+  hstateen or the H extension forbids raises a virtual-instruction exception instead.  The hstateen bit is written
+  while the mstateen bit is 1, so the (mstateen, hstateen) states are (0, 0), (1, 0) and (1, 1).  On RV32 the bits
+  above 31 are in mstateen0h-3h and hstateen0h-3h.
+coverpoints:
+  - name: cp_walking_ones
+    goal: hstateen bits are writable only when their mstateen bit is 1
+    description: |-
+      In M-mode, write hstateen0-3 with walking ones and walking zeros, and read each back, with mstateen0-3 all zeros
+      and then all ones.  For RV32, also walk hstateen0h-3h.
+      With mstateen0-3 all ones, C (custom state is optional) and CTR, IMSIC, AIA and CSRIND (state Sail does not
+      model) are left out of the hstateen0 check.
+    expectation: With mstateen0-3 zero, every bit reads zero.  With them all ones, the bits whose state the hart implements read back as written and the rest read zero
+    bins: 2 mstateen states * 4-8 CSRs * XLEN walking ones/zeros
+  - name: cp_mstateen0_se0_controls_sstateen0
+    goal: mstateen0.SE0 controls access to sstateen0 and hstateen0 below M-mode, and hstateen0.SE0 controls VS-mode access to sstateen0
+    description: For each (mstateen0.SE0, hstateen0.SE0) state, read and write sstateen0 and hstateen0 (and hstateen0h on RV32) from HS, VS and VU-mode.
+    expectation: Illegal instruction when mstateen0.SE0 = 0.  Otherwise HS-mode succeeds; VS-mode raises virtual instruction for hstateen0, and for sstateen0 when hstateen0.SE0 = 0; VU-mode raises virtual instruction
+    bins: 3 states * 3 modes * 2-3 CSRs * 3 ops
+  - name: cp_mstateen_se_controls_sstateen123
+    goal: Bit 63 of mstateen1-3 controls access to sstateen1-3 and hstateen1-3 below M-mode, and bit 63 of hstateen1-3 controls VS-mode access to sstateen1-3
+    description: For N = 1-3 and each (mstateenN, hstateenN) bit 63 state, read and write sstateenN and hstateenN (and hstateenNh on RV32) from HS, VS and VU-mode, and check the value read.
+    expectation: Illegal instruction when the mstateen bit is 0.  Otherwise HS-mode succeeds; VS-mode raises virtual instruction for hstateenN, and for sstateenN when the hstateen bit is 0; VU-mode raises virtual instruction.  sstateenN reads 0
+    bins: 3 states * 3 modes * 6-9 CSRs * 3 ops
+  - name: cp_envcfg
+    goal: mstateen0.ENVCFG controls access to senvcfg and henvcfg below M-mode, and hstateen0.ENVCFG controls VS-mode access to senvcfg
+    description: For each (mstateen0.ENVCFG, hstateen0.ENVCFG) state, read and write senvcfg and henvcfg (and henvcfgh on RV32) from HS, VS and VU-mode.
+    expectation: Illegal instruction when mstateen0.ENVCFG = 0.  Otherwise HS-mode succeeds; VS-mode raises virtual instruction for henvcfg, and for senvcfg when hstateen0.ENVCFG = 0; VU-mode raises virtual instruction
+    bins: 3 states * 3 modes * 2-3 CSRs * 3 ops
+  - name: cp_context
+    goal: mstateen0.CONTEXT controls access to scontext and hcontext below M-mode, and hstateen0.CONTEXT controls VS-mode access to scontext
+    description: |-
+      If scontext is implemented (Sdtrig):
+      For each (mstateen0.CONTEXT, hstateen0.CONTEXT) state, read and write scontext, and hcontext if implemented, from HS, VS and VU-mode.
+    expectation: Illegal instruction when mstateen0.CONTEXT = 0.  Otherwise HS-mode succeeds; VS-mode raises virtual instruction for hcontext, and for scontext when hstateen0.CONTEXT = 0; VU-mode raises virtual instruction
+    bins: 3 states * 3 modes * 1-2 CSRs * 3 ops
+  - name: cp_p1p13
+    goal: mstateen0.P1P13 controls VS-mode and VU-mode access to hedelegh
+    description: |-
+      If Sm1p13 is supported and XLEN = 32:
+      With mstateen0.P1P13 = {0,1}, read and write hedelegh from VS and VU-mode.  HS-mode access is in the base cp_p1p13.
+    expectation: Illegal instruction when P1P13 = 0, because hedelegh then does not exist and the high-half hypervisor CSR rule does not apply (riscv/riscv-isa-manual#3459).  Virtual instruction when P1P13 = 1
+    bins: 2 states * 2 modes * 3 ops
+  - name: cp_srmcfg
+    goal: mstateen0.SRMCFG controls access to srmcfg below M-mode
+    description: |-
+      If Ssqosid is supported:
+      With mstateen0.SRMCFG = {0,1}, read and write srmcfg from HS, VS and VU-mode.
+    expectation: Illegal instruction when SRMCFG = 0.  Otherwise HS-mode succeeds and VS-mode and VU-mode raise virtual instruction
+    bins: 2 states * 3 modes * 3 ops
+    status: Not tested
+    notes: The coverpoint is defined, but the tests are disabled for now (SRMCFG_H_TESTS in Smstateen.py).
+  - heading: Not tested
+  - goal: mstateen0.CSRIND, IMSIC, AIA and CTR control HS-mode and VS-mode access to vsiselect, vsireg*, vstopei and vsctrctl
+    description: Access vsiselect, vsireg*, vstopei and vsctrctl in HS-mode, and their supervisor names in VS-mode, with the mstateen0 bit = 0 and 1.
+    status: Not tested
+    notes: Sail 0.16 models none of Ssaia, Smctr and Ssctr, and its mstateen0 has no CSRIND, IMSIC, AIA or CTR bit, so the reference cannot give the results.  cp_walking_ones leaves these hstateen0 bits out.
+    rules:
+      - mstateen0_csrind_op
+      - mstateen0_imsic_op
+      - mstateen_ctr0_except_csr_access
+  - heading: "Note: The control bits are written in M-mode, and the accesses are made in HS-mode, VS-mode and VU-mode."

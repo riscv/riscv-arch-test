@@ -11,6 +11,10 @@ include::norm/Sm1p13_norm_rules.adoc[]
 
 include::{testplansdir}/priv/Smstateen.adoc[]
 
+===== Smstateen_H Hypervisor
+
+include::{testplansdir}/priv/Smstateen_H.adoc[]
+
 include::norm/Smstateen_norm_rules.adoc[]
 
 ==== Smcsrind Machine-Mode Indirect CSR Access

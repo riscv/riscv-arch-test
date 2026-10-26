@@ -105,6 +105,8 @@ def _virtual_instruction_tests(test_data: TestData) -> list[str]:
     """Each way to raise a virtual-instruction exception from VS-mode and VU-mode (hypervisor.adoc H_virtinst_*)."""
     addr_reg, rd, temp_reg = test_data.int_regs.get_registers(3)
 
+    read_hedelegh = f"csrr x{rd}, 0x612  # hedelegh, by number because LLVM lacks the name"
+
     def trap(bin_name: str, coverpoint: str, instr: str, writes_rd: bool = True) -> list[str]:
         """One instruction that raises virtual instruction; rd must keep its value."""
         return [
@@ -157,7 +159,7 @@ def _virtual_instruction_tests(test_data: TestData) -> list[str]:
             "defined(SVINVAL_SUPPORTED)",
         ),
         *trap("satp", "cp_virtual_instr_vs_satp", f"csrr x{rd}, satp"),
-        *gated(trap("hedelegh", "cp_virtual_instr_vs_rv32_hedelegh", f"csrr x{rd}, hedelegh"), HEDELEGH_GATE),
+        *gated(trap("hedelegh", "cp_virtual_instr_vs_rv32_hedelegh", read_hedelegh), HEDELEGH_GATE),
         "RVTEST_TSBI_GOTO_SMODE",
         f"LI(x{temp_reg}, HSTATUS_VTSR | HSTATUS_VTVM)",
         f"csrc hstatus, x{temp_reg}",
@@ -177,7 +179,7 @@ def _virtual_instruction_tests(test_data: TestData) -> list[str]:
         *trap("wfi", "cp_virtual_instr_vu_wfi", "wfi", writes_rd=False),
         *trap("sret", "cp_virtual_instr_vu_sret", "sret", writes_rd=False),
         *trap("sfence.vma", "cp_virtual_instr_vu_sfence_vma", "sfence.vma", writes_rd=False),
-        *gated(trap("hedelegh", "cp_virtual_instr_vu_rv32_hedelegh", f"csrr x{rd}, hedelegh"), HEDELEGH_GATE),
+        *gated(trap("hedelegh", "cp_virtual_instr_vu_rv32_hedelegh", read_hedelegh), HEDELEGH_GATE),
         "RVTEST_TSBI_GOTO_SMODE",
         *gated(list(P1P13_OFF), HEDELEGH_GATE),
     ]

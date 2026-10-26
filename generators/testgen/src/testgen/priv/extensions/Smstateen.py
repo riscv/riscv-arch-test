@@ -51,11 +51,17 @@ HSTATEEN0_WALK_MASK = 0xE3BFFFFFFFFFFFFE
 SRMCFG_H_TESTS = False
 
 
+# CSRs written by number, because not every assembler knows the name (LLVM lacks hedelegh)
+_CSR_NUMBERS = {"hedelegh": 0x612}
+
+
 def _csr_insn(op: str, rd: int, csr: str, rs1: int) -> str:
     """Emit a single CSR instruction line. csrr is read-only and only takes (rd, csr)."""
+    num = _CSR_NUMBERS.get(csr)
+    operand, comment = (f"{num:#x}", f"  # {csr}") if num else (csr, "")
     if op == "csrr":
-        return f"{op} x{rd}, {csr}"
-    return f"{op} x{rd}, {csr}, x{rs1}"
+        return f"{op} x{rd}, {operand}{comment}"
+    return f"{op} x{rd}, {operand}, x{rs1}{comment}"
 
 
 # ---------------------------------------------------------------------------

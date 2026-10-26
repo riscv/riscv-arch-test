@@ -46,14 +46,6 @@
         `cover_info("//      Exceptions - Enabled");
         `include "Exceptions_coverage_init.svh"
     `endif
-    `ifdef COVER_EXCEPTIONSH
-        `cover_info("//      ExceptionsH - Enabled");
-        `include "ExceptionsH_coverage_init.svh"
-    `endif
-    `ifdef COVER_EXCEPTIONSHV
-        `cover_info("//      ExceptionsHV - Enabled");
-        `include "ExceptionsHV_coverage_init.svh"
-    `endif
     `ifdef COVER_EXCEPTIONSVF16
         `cover_info("//      ExceptionsVf16 - Enabled");
         `include "ExceptionsVf16_coverage_init.svh"

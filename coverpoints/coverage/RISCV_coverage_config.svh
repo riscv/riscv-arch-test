@@ -38,12 +38,6 @@
 `ifdef EXCEPTIONS_COVERAGE
   `include "Exceptions_coverage.svh"
 `endif
-`ifdef EXCEPTIONSH_COVERAGE
-  `include "ExceptionsH_coverage.svh"
-`endif
-`ifdef EXCEPTIONSHV_COVERAGE
-  `include "ExceptionsHV_coverage.svh"
-`endif
 `ifdef EXCEPTIONSVF16_COVERAGE
   `include "ExceptionsVf16_coverage.svh"
 `endif

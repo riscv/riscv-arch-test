@@ -88,6 +88,8 @@ exclude_extensions:
   # (https://gitlab.com/qemu-project/qemu/-/issues/4620). QEMU has further hypervisor bugs
   # filed the same day, 4611 through 4617, so this exclusion will be needed for a while.
   - H
+  - Exceptions_H
+  - Exceptions_HSm
   # The same mstatus.MPV bug breaks the mret and mstatus.TVM tests, and every vsstatus bit is
   # writable (https://gitlab.com/qemu-project/qemu/-/work_items/4589).
   - Sm_H

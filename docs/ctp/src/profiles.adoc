@@ -157,8 +157,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |SsstrictV|Vector Strict|<<t-SsstrictV-coverpoints>>|||o|o|o
 8+^|Hypervisor
 |H|Hypervisor Instructions|<<t-H-coverpoints>>|||o|o|x
-|ExceptionsH|Hypervisor Exceptions|<<t-ExceptionsH-coverpoints>>|||o|o|x
-|ExceptionsHV|Hypervisor Vector Exceptions|<<t-ExceptionsHV-coverpoints>>|||o|o|x
 |InterruptsH|Hypervisor Interrupts|<<t-InterruptsH-coverpoints>>|||o|o|x
 |EndianH|Hypervisor Endian|<<t-EndianH-coverpoints>>|||||
 |PMPH|Hypervisor PMP|<<t-PMPH-coverpoints>>|||o|o|x

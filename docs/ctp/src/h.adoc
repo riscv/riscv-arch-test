@@ -16,13 +16,9 @@ include::{testplansdir}/priv/H.adoc[]
 
 include::norm/H_norm_rules.adoc[]
 
-==== ExceptionsH Hypervisor Exceptions
+==== Hypervisor Exceptions
 
-include::{testplansdir}/priv/ExceptionsH.adoc[]
-
-==== ExceptionsHV Hypervisor Vector Exceptions
-
-include::{testplansdir}/priv/ExceptionsHV.adoc[]
+The hypervisor exception tests are the <<t-Exceptions_H-coverpoints,Exceptions_H>> and <<t-Exceptions_HSm-coverpoints,Exceptions_HSm>> groups of the Exceptions suite.
 
 ==== InterruptsH Hypervisor Interrupts
 

@@ -12,18 +12,19 @@
 
 // Each testcase takes a page fault on a PTE with V=0, sets V=1 with a plain store and no SFENCE.VMA,
 // and retries the access; the signature checks the retry. The coverpoints sample the page fault.
-covergroup Svvptc_cg with function sample(ins_t ins, bit load_fault, bit store_fault, bit fetch_fault);
+covergroup Svvptc_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include "general/RISCV_coverage_standard_coverpoints.svh"
 
-    load_page_fault: coverpoint load_fault {
-        bins fault = {1};
+    load_page_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        bins fault = {LOAD_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? LW);
     }
-    store_page_fault: coverpoint store_fault {
-        bins fault = {1};
+    store_page_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        bins fault = {STORE_AMO_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? SW);
     }
-    fetch_page_fault: coverpoint fetch_fault {
-        bins fault = {1};
+    // A fetch page fault is reported on the jump to the page.
+    fetch_page_fault: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") {
+        bins fault = {INSTRUCTION_PAGE_FAULT} iff (ins.current.trap && ins.current.insn ==? JALR);
     }
 
     `ifdef UDB_MXLEN_64
@@ -50,12 +51,5 @@ covergroup Svvptc_cg with function sample(ins_t ins, bit load_fault, bit store_f
 endgroup
 
 function void svvptc_sample(int hart, int issue, ins_t ins);
-    `XLEN_BITS cause = get_csr_val(hart, issue, `SAMPLE_AFTER, "scause", "code");
-    bit        trapped = ins.current.csr_wb[CSR_SCAUSE];
-
-    // A fetch page fault is reported on the jump to the page.
-    Svvptc_cg.sample(ins,
-                     trapped && (ins.current.insn ==? LW) && cause == `UDB_MXLEN'(LOAD_PAGE_FAULT),
-                     trapped && (ins.current.insn ==? SW) && cause == `UDB_MXLEN'(STORE_AMO_PAGE_FAULT),
-                     trapped && (ins.current.insn ==? JALR) && cause == `UDB_MXLEN'(INSTRUCTION_PAGE_FAULT));
+    Svvptc_cg.sample(ins);
 endfunction

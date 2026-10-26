@@ -304,6 +304,7 @@ def generate_cp_priority(
     for index, (first, second) in enumerate(combinations(types, 2)):
         if split_at is not None and index == split_at:
             tc = test_data.new_test_chunk(test_chunks, suite.split(f"{split_name}_2"))
+            tc.output_split_name = suite.split(split_name)
             tc.section_header = comment_banner(coverpoint, title)
         pair = [first, second]
         # ie: everything is pending and only the pair is enabled; otherwise only the pair is pending

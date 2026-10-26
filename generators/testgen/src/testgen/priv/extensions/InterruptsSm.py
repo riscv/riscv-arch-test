@@ -88,6 +88,7 @@ def _generate_cp_trigger_sm(
     for index, int_type in enumerate(int_types):
         if priv != "M" and index == split_after:
             tc = test_data.new_test_chunk(test_chunks, suite.split(f"trigger_{priv}_2"))
+            tc.output_split_name = suite.split(f"trigger_{priv}")
             tc.section_header = comment_banner(banner, title)
         macro = int_macro[int_type]
         guard = guard_symbol(int_type)

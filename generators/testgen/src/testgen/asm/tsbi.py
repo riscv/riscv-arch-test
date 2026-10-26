@@ -193,6 +193,7 @@ _CSR_ALIASES = {
     "scontext": 0x5A8,
     "scountovf": 0xDA0,
     "hcounteren": 0x606,
+    "henvcfg": 0x60A,
     "hcontext": 0x6A8,
     "mseccfg": 0x747,
     "tselect": 0x7A0,

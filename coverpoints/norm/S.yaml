@@ -269,7 +269,7 @@ normative_rule_definitions:
   # it appears to be 0. This masking occurs also for the implicit read by the SRET
   # instruction. Though masked, sepc[1] remains writable when IALIGN=32.
   - name: sepc_op_mask_ialign32
-    coverpoint: ["Not tested: ACT does not switch IALIGN by writing misa"]
+    coverpoint: ["Sm_mcsr_cg/{cp_sepc_ialign32_read, cp_sepc_ialign32_sret}"]
 
   # sepc is a WARL register that must be able to hold all valid virtual addresses.
   # It need not be capable of holding all possible invalid addresses. Prior to
@@ -500,8 +500,10 @@ normative_rule_definitions:
         "S_scsr_cg/cp_ucsr_from_s",
         "Sm_F_cg/cp_fcsr_access",
         "S_F_cg/cp_fcsr_access",
+        "H_F_cg/cp_fcsr_access",
         "Sm_V_cg/cp_vcsrrswc",
         "S_V_cg/cp_vcsrrswc",
+        "H_V_cg/cp_vcsrrswc",
       ]
 
   # The top two bits (csr[11:10]) indicate whether the register is read/write

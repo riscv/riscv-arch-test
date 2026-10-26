@@ -37,12 +37,6 @@
     `ifdef COVER_EXCEPTIONS
         exceptions_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_EXCEPTIONSH
-        exceptionsh_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSHV
-        exceptionshv_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_EXCEPTIONSVF16
         exceptionsvf16_sample(hart, issue, ins);
     `endif
@@ -93,6 +87,24 @@
     `endif
     `ifdef COVER_SDTRIGU
         sdtrigu_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SHCOUNTERENW
+        shcounterenw_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SHGATPA
+        shgatpa_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SHTVALA
+        shtvala_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SHVSATPA
+        shvsatpa_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SHVSTVALA
+        shvstvala_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SHVSTVECD
+        shvstvecd_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SM
         sm_sample(hart, issue, ins);
@@ -157,14 +169,14 @@
     `ifdef COVER_SVINVAL
         svinval_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_SVINVALH
-        svinvalh_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_SVNAPOT
         svnapot_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SVPBMT
         svpbmt_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SVVPTC
+        svvptc_sample(hart, issue, ins);
     `endif
     `ifdef COVER_U
         u_sample(hart, issue, ins);
@@ -289,17 +301,29 @@
     `ifdef COVER_ZICBOZ
         zicboz_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_ZICCAMOA
+        ziccamoa_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZICCAMOC
+        ziccamoc_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZICCIF
+        ziccif_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_ZICCLSM
         zicclsm_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZICCRSE
+        ziccrse_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZICFILP
         zicfilp_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_ZICFISS
+        zicfiss_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_ZICNTR
         zicntr_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZICNTRH
-        zicntrh_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZICOND
         zicond_sample(hart, issue, ins);

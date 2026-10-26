@@ -76,6 +76,7 @@ implemented_extensions:
   - { name: Svinval, version: "= 1.0.0" }
   - { name: Svnapot, version: "= 1.0.0" }
   - { name: Svpbmt, version: "= 1.0.0" }
+  - { name: Svvptc, version: "= 1.0.0" }
   - { name: Sha, version: "= 1.0.0" }
   - { name: H, version: "= 1.0.0" }
   - { name: Ssstateen, version: "= 1.0.0" }

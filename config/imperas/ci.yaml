@@ -73,6 +73,32 @@ exclude_extensions:
   # (fixed in Imperas-HMC101126-eng-build)
   - Zicfilp_Sm
   - Zicfilp_S
+  # Zicfiss_{U,S,Sm}, seen on imperas-rv64-max and imperas-rv32gck with ImperasDV
+  # Y-2026.03-DEV-20260612. Three model bugs are filed as
+  # https://solvnetplus.synopsys.com/s/case/500WQ000028qjufYAA/zicfiss-discrepancies
+  # 1. A memory fault does not outrank the SSPOPCHK software check. With PMP read-only on the
+  #    shadow stack (Zicfiss_Sm, cp_ss_pmp_permissions), with satp.MODE=Bare (Zicfiss_Sm,
+  #    cp_ss_satp_bare) or on an xwr=001 page (Zicfiss_S/U, cp_ss_instr_target_page*), SSPOPCHK
+  #    raises a software check (cause 18, xtval 3) instead of the store/AMO access fault or
+  #    store/AMO page fault.
+  # 2. An S-mode SS access to a U=1 page with SUM=0 raises a store/AMO access fault instead of a
+  #    store/AMO page fault (Zicfiss_S, cp_ss_page_perm_priority).
+  # 3. CBO.CLEAN/FLUSH/INVAL/ZERO on a shadow stack page do not raise the store/AMO access fault,
+  #    and CBO.ZERO zeroes the page (Zicfiss_U, cp_ss_page_access).
+  # Two more model bugs are filed as
+  # https://solvnetplus.synopsys.com/s/case/500WQ00002CDBVbYAP/zicfiss-misaligned-ssamoswap-performed-when-zamt-and-ssrdp-in-mmode-returns-ssp
+  # SSRDP in M-mode, where Zicfiss is inactive, writes ssp to rd instead of 0
+  # (Zicfiss_Sm, cp_ss_instr_inactive_m), and SSAMOSWAP performs a misaligned access when Zam=T
+  # instead of trapping (cp_ss_address_alignment_swap*). The Zam=T in
+  # imperas.ic, which disagreed with MISALIGNED_AMO: false, was changed to Zam=F by PR #2769.
+  # SS instructions also complete on a PBMT=IO (non-idempotent) page instead of raising a store/AMO
+  # access fault (Zicfiss_U, cp_ss_non_idempotent; Zicfiss_S, cp_ss_non_idempotent_s; Zicfiss_Sm,
+  # cp_ssamoswap_mprv_non_idempotent):
+  # https://solvnetplus.synopsys.com/s/case/500WQ00002CElbsYAD/zicfiss-shadow-stack-instructions-do-not-fault-on-nonidempotent-memory-pbmtio-pages-io-pma-regions
+  # All of these are fixed in Imperas-HMC101126-eng-build, where Zicfiss_{U,S,Sm} pass even with Zam=T.
+  # - Zicfiss_U
+  # - Zicfiss_S
+  # - Zicfiss_Sm
 # Not excluded:
 # - Zama16b is not declared. The model has no misaligned atomicity granule: Zam=T performs every
 #   misaligned AMO, including SSAMOSWAP (riscv-isa-manual#3426), so the configs use Zam=F, where

@@ -140,8 +140,7 @@ def guest_table_data() -> list[str]:
         "#if __riscv_xlen == 32",
         *lower_table_data(SV32X4, VS_SV32),
         "#else",
-        *table_data(SV39X4.page_table_label(1)),
-        *table_data(VS_SV39.page_table_label(1)),
+        *lower_table_data(SV39X4, VS_SV39),
         "#endif",
     ]
 
@@ -297,6 +296,22 @@ def create_page_walk(
                 )
             )
     return lines
+
+
+def create_nonleaf_pte(
+    mode: SvMode,
+    *,
+    level: int,
+    flags: PteExpression,
+    virtual_address: str = "va_data",
+    table_address: str | None = None,
+) -> str:
+    """Emit the non-leaf PTE at ``level`` that points to ``table_address`` (default: the next-level table)."""
+    if level < 1 or level >= mode.levels:
+        raise ValueError(f"Non-leaf level {level} is outside 1..{mode.levels - 1}")
+    _check_macro_stage(mode)
+    table_address = table_address or mode.page_table_label(level - 1)
+    return f"PTE_SETUP_{mode.suffix}({table_address}, ({_pte_expression(flags)}), {virtual_address}, LEVEL{level})"
 
 
 def create_leaf_pte(

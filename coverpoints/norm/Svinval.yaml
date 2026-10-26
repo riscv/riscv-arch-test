@@ -3,22 +3,23 @@
 normative_rule_definitions:
   # However, unlike SFENCE.VMA, SINVAL.VMA instructions are only ordered with respect to
   # SFENCE.VMA, SFENCE.W.INVAL, and SFENCE.INVAL.IR instructions as defined below.
-  # Svinval_cg only shows that the instructions execute. The next three rules need a test that
-  # accesses a page, changes its PTE, runs SFENCE.W.INVAL; SINVAL.VMA rs1, rs2; SFENCE.INVAL.IR
-  # (rs1 = x0 or a VA in the page, rs2 = x0 or the current ASID), and accesses the page again.
+  # Svinval_cg/cp_sinval_vma runs the SFENCE.W.INVAL; SINVAL.VMA rs1, rs2; SFENCE.INVAL.IR sequence
+  # in S-mode after a leaf change, and Svinval_H_cg/cp_sinval_vma_vs in VS-mode after a VS-stage leaf
+  # change (rs1 = x0 or the address, rs2 = x0 or the current ASID); both check that the next access
+  # uses the new leaf.
   - name: Svinval_sinval_vma_invalidates_same_as_sfence_vma
-    coverpoint: [""]
+    coverpoint: ["Svinval_cg/cp_sinval_vma", "Svinval_H_cg/cp_sinval_vma_vs"]
 
   # The SFENCE.INVAL.IR instruction guarantees that any previous SINVAL.VMA instructions
   # executed by the current hart are ordered before subsequent implicit references by
   # that hart to the memory-management data structures.
   - name: Svinval_sfence_w_inval_orders_before_sinval_vma
-    coverpoint: [""]
+    coverpoint: ["Svinval_cg/cp_sinval_vma", "Svinval_H_cg/cp_sinval_vma_vs"]
 
   # the values of rs1 and rs2 for the SFENCE.VMA are the same as those used in the
   # SINVAL.VMA,
   - name: Svinval_sequence_rs1_rs2
-    coverpoint: [""]
+    coverpoint: ["Svinval_cg/cp_sinval_vma", "Svinval_H_cg/cp_sinval_vma_vs"]
 
   # reads and writes prior to the SFENCE.W.INVAL are considered to be those prior to the
   # SFENCE.VMA,
@@ -33,11 +34,16 @@ normative_rule_definitions:
   # In particular, an attempt to execute any of these instructions in U-mode always
   # raises an illegal-instruction exception.
   - name: Svinval_illegal_instruction_u_mode
-    coverpoint: ["Svinval_cg/cp_svinval"]
+    coverpoint:
+      [
+        "Svinval_cg/cp_svinval",
+        "Svinval_H_cg/cp_svinval",
+        "Svinval_SmH_cg/cp_svinval_tvm",
+      ]
 
   # raises an illegal-instruction exception.
   - name: Svinval_sfence_w_inval_inval_u_mode
-    coverpoint: ["Svinval_cg/cp_svinval"]
+    coverpoint: ["Svinval_cg/cp_svinval", "Svinval_H_cg/cp_svinval"]
 
   # SFENCE.W.INVAL and SFENCE.INVAL.IR are unaffected by the mstatus.TVM and
   # hstatus.VTVM fields and hence are always permitted in S-mode and VS-mode.
@@ -46,29 +52,44 @@ normative_rule_definitions:
       [
         "Svinval_cg/cp_svinval",
         "Svinval_Sm_cg/cp_svinval",
-        "TODO: test in hypervisor tests",
+        "Svinval_H_cg/cp_svinval",
+        "Svinval_SmH_cg/cp_svinval_tvm",
       ]
 
   # These have the same semantics as SINVAL.VMA, except that they combine with
   # SFENCE.W.INVAL and SFENCE.INVAL.IR to replace HFENCE.VVMA and HFENCE.GVMA,
   # respectively, instead of SFENCE.VMA.
+  - name: Svinval_hinval_vvma_gvma
+    coverpoint:
+      [
+        "Svinval_H_cg/{cp_svinval, cp_hinval_vvma, cp_hinval_gvma}",
+        "Svinval_SmH_cg/cp_svinval_{m, tvm}",
+      ]
+
+  # An attempt to execute HINVAL.VVMA or HINVAL.GVMA in VS-mode or VU-mode, or to execute
+  # SINVAL.VMA in VU-mode, raises a virtual-instruction exception.
   - names:
       [
-        Svinval_hinval_vvma_gvma,
-        Svinval_hinval_gvma_uses_vmid,
         Svinval_virtual_instruction_vu_vs,
         Svinval_virtual_instruction_vtvms,
         Svinval_sfence_w_inval_inval_vu_mode,
       ]
     coverpoint:
-      [
-        "TODO: test in hypervisor tests (SvinvalH_cg/cr_svinivalH has no tests yet)",
-      ]
+      ["Svinval_H_cg/cp_svinval", "Svinval_SmH_cg/cp_svinval_{m, tvm}"]
+
+  # When hstatus.VTVM=1, an attempt to execute SINVAL.VMA in VS-mode also raises a
+  # virtual-instruction exception.
+  - name: H_virtinst_vs_sfence_sinval_satp_vtvm1
+    coverpoint: ["Svinval_H_cg/cp_svinval"]
+
+  # HINVAL.GVMA uses VMIDs instead of ASIDs.
+  - name: Svinval_hinval_gvma_uses_vmid
+    coverpoint: ["Svinval_H_cg/cp_hinval_gvma"]
 
   # An attempt to execute SINVAL.VMA or HINVAL.GVMA in S-mode or HS-mode when
   # mstatus.TVM=1 also raises an illegal-instruction exception.
   - name: Svinval_illegal_instruction_tvm
-    coverpoint: ["Svinval_Sm_cg/cp_svinval"]
+    coverpoint: ["Svinval_Sm_cg/cp_svinval", "Svinval_SmH_cg/cp_svinval_tvm"]
 
   # The csr::[tvm] (Trap Virtual Memory) bit is a WARL field that supports intercepting
   # supervisor virtual-memory management operations. When csr::[tvm]=1, attempts to read

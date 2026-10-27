@@ -1,4 +1,5 @@
-= RVA23 Certification Requirements Document: Version 1.0
+= RVA23 Certification Requirements Document
+:revnumber: 1.0
 :description: RVA23 CRD (Certification Requirements Document)
 include::../../common/adoc_common.adoc[]
 

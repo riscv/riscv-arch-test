@@ -1,0 +1,16 @@
+# CRD PDF theme: the shared RISC-V theme plus the document version in the footer.
+extends: ../docs-resources/themes/riscv-pdf.yml
+footer:
+  recto:
+    right:
+      content: "{document-title} Version {revnumber} | © RISC-V International"
+  verso:
+    left:
+      content: $footer_recto_right_content
+title_page:
+  revision:
+    font_family: headings
+    font_style: light
+    font_size: $title_page_title_font_size
+    font_color: $title_page_title_font_color
+    margin_top: 0

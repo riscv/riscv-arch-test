@@ -1132,10 +1132,6 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
         wildcard bins leaflvl_w_0 = {8'b11?0?0?1};
     }
 
-    PTE_x_spage_d: coverpoint ins.current.pte_d[7:0] {
-        wildcard bins leaflvl_x_s = {8'b11?01001};
-    }
-
     PTE_spage_d: coverpoint ins.current.pte_d[7:0] {
         wildcard bins leaflvl_s = {8'b11?01111};
     }
@@ -1150,10 +1146,6 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
 
     PTE_w_unset_upage_d: coverpoint ins.current.pte_d[7:0] {
         wildcard bins leaflvl_w_0 = {8'b11?1?0?1};
-    }
-
-    PTE_x_upage_d: coverpoint ins.current.pte_d[7:0] {
-        wildcard bins leaflvl_x_u = {8'b11?11001};
     }
 
     PTE_Abit_unset_d: coverpoint ins.current.pte_d[7:0] {
@@ -1305,12 +1297,6 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
         ignore_bins ig1 = binsof(cbo_ins.zicboz_ins);
     }
     cp_PTE_r_set_w_unset_zicbom_u: cross PTE_r_set_w_unset_upage_d, PageType_d, cbo_ins, priv_mode_u {
-        ignore_bins ig1 = binsof(cbo_ins.zicboz_ins);
-    }
-    cp_PTE_rw_unset_zicbom_s: cross PTE_x_spage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
-        ignore_bins ig1 = binsof(cbo_ins.zicboz_ins);
-    }
-    cp_PTE_rw_unset_zicbom_u: cross PTE_x_upage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
         ignore_bins ig1 = binsof(cbo_ins.zicboz_ins);
     }
 

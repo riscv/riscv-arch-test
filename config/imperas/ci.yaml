@@ -10,6 +10,13 @@ ci_enabled: false
 # Entries marked "fixed in Imperas-HMC101126-eng-build" fail on stock ImperasDV Y-2026.09 but pass with that
 # engineering build, so they are commented out. Uncomment them when running stock Y-2026.09.
 exclude_extensions:
+  # The configs enable Smaia (Ssaia with S) and, with S, Smcsrind and Smcdeleg, which Sail 0.16 does not model
+  # (https://github.com/riscv/sail-riscv/issues/1134, https://github.com/riscv/sail-riscv/issues/956). Sail traps on
+  # their CSRs (miselect, siselect, vsiselect, mtopi, stopi, vstopi, mvien, hvien, hviprio1, sieh), so the CSR
+  # accesses mismatch, and from VU-mode it expects illegal instead of virtual instruction.
+  - Ssstrict_Sm_CSR
+  - Ssstrict_S_CSR
+  - H_vucsr
   # On the vector configs, Imperas does not enforce the vector register-group
   # overlap constraints, so it executes reserved widening encodings such as
   # vwmaccu.vv v14, v9, v15, v0.t instead of raising an illegal instruction:

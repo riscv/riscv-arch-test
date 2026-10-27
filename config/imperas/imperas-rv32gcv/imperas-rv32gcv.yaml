@@ -18,20 +18,20 @@ implemented_extensions:
   - { name: Sdext, version: "= 1.0.0" }
   - { name: Sdtrig, version: "= 1.0.0" }
   - { name: Sm, version: "= 1.13.0" }
-  # - { name: Smaia, version: "= 1.0.0" } # imperas.ic does not enable this extension
-  # - { name: Smcdeleg, version: "= 1.0.0" } # imperas.ic does not enable this extension
-  # - { name: Smcsrind, version: "= 1.0.0" } # imperas.ic does not enable this extension
+  - { name: Smaia, version: "= 1.0.0" }
+  - { name: Smcdeleg, version: "= 1.0.0" }
+  - { name: Smcsrind, version: "= 1.0.0" }
   # - { name: Smctr, version: "= 1.0.0" } # Imperas does not support this extension
   - { name: Smdbltrp, version: "= 1.0.0" }
   - { name: Smepmp, version: "= 1.0.0" }
   # - { name: Smrnmi, version: "= 1.0.0" } # Sail does not support this extension yet
   - { name: Smstateen, version: "= 1.0.0" }
-  # - { name: Ssaia, version: "= 1.0.0" } # imperas.ic does not enable this extension
-  # - { name: Ssccfg, version: "= 1.0.0" } # imperas.ic does not enable this extension
+  - { name: Ssaia, version: "= 1.0.0" }
+  - { name: Ssccfg, version: "= 1.0.0" }
   - { name: Ssccptr, version: "= 1.0.0" }
   # - { name: Sscofpmf, version: "= 1.0.0" } # Imperas implements no HPM counters, which Sscofpmf requires
   - { name: Sscounterenw, version: "= 1.0.0" }
-  # - { name: Sscsrind, version: "= 1.0.0" } # imperas.ic does not enable this extension
+  - { name: Sscsrind, version: "= 1.0.0" }
   # - { name: Ssctr, version: "= 1.0.0" } # Imperas does not support this extension
   # - { name: Ssdbltrp, version: "= 1.0.0" } # Imperas exposes mtval2 (0x34b) with this enabled and H absent
   - { name: Ssstateen, version: "= 1.0.0" }
@@ -576,10 +576,10 @@ params:
   MSTATEEN_ENVCFG_TYPE: rw
   MSTATEEN_CONTEXT_TYPE: rw
   # Csrind params
-  # MSTATEEN_CSRIND_TYPE: rw
+  MSTATEEN_CSRIND_TYPE: rw
   # AIA params
-  # MSTATEEN_AIA_TYPE: rw
-  # MSTATEEN_IMSIC_TYPE: rw
+  MSTATEEN_AIA_TYPE: rw
+  MSTATEEN_IMSIC_TYPE: read-only-0 # no IMSIC
   # Smctr params
   # SCTRDEPTH_DEPTH_LEGAL_VALUES: [16, 32, 64, 128, 256]
   # MCTRCTL_CORSWAPINH_IMPLEMENTED: true

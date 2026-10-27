@@ -245,7 +245,6 @@ The tests use LMUL=8; cases with vl > VLMAX are compiled out.
 a|vl={1, 2, 3, 4, 7, VLMAX} x frm={rne, rtz, rdn, rup, rmm} x {unmasked, random mask, no active elements}.
 Tests: every vl in {1, 2, 3, 4, 7, 8, 16, ... VLMAX} x every frm x {unmasked, fixed pseudo-random mask with elements 0 and 2 active and 1 inactive, all-zero mask}, with:
 
-* exact data: vs1[0] and elements are random integers small enough that every partial sum is exact; vd[0] must be the exact sum with no flags. Also scaled into the subnormal range and the top binade (unmasked, rne).
 * mild data: vs1[0] = 2^t and every element = 0.75 ulp(2^t).
 * cancellation data: vs2[0] = +B, vs2[vl-1] = -B, up to eight elements t = 3/8 ulp(B) spaced between them, alternating +0 and -0 elsewhere, vs1[0] = t.
 |cp_custom_vfredusum_specials|12*12

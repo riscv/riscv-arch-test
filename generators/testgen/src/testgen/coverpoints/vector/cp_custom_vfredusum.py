@@ -20,8 +20,10 @@ exceeds VLMAX for the configuration.
 """
 
 import random
+from dataclasses import dataclass, fields
 
 from testgen.asm.helpers import write_sigupd
+from testgen.constants import VLEN_MAX
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.coverpoints.vector import _redusum_model as model
 from testgen.data.state import TestData
@@ -31,12 +33,43 @@ from testgen.data.test_chunk import TestChunk
 _VL_SWEEP = (1, 2, 3, 4, 7, 8, 16, 32, 64, 128, 256, 512)
 _DETERMINISM_VLS = (3, 7)
 _LMUL = 8
-_VLEN_MAX = 1024
-_MASK_BITS = 8 * _VLEN_MAX // 16  # VLMAX at SEW=16, LMUL=8 and the largest VLEN ACT supports
-_VS2, _VS1, _VD = 8, 16, 24  # vs2 is the v8-v15 group; vs1 and vd are single registers
-_SAVE, _SAVE_RDN = 28, 29  # first results kept for the determinism checks
+_MASK_BITS = 8 * VLEN_MAX // 16  # VLMAX at SEW=16, LMUL=8 and the largest VLEN ACT supports
 _REPORT_FLAGS = 0x100  # set in a failing fflags report so that fflags = 0 still reads as a failure
-_REG_NAMES = ("a", "n", "t", "f", "p", "r", "u", "f1", "f2")
+
+
+@dataclass
+class _IntRegs:
+    """Integer registers of one testcase."""
+
+    addr: int  # data addresses
+    vl: int  # requested vl
+    tmp: int  # vsetvli result and short-lived values
+    flags: int  # fflags after the reduction
+    legal: int  # 1 if vd[0] is legal or matches
+    result: int  # signature value for vd[0]
+    scratch: int
+    flags_first: int  # fflags of the first determinism result
+    flags_rdn: int  # fflags of the RDN determinism result
+
+
+@dataclass
+class _VecRegs:
+    """Vector registers of one testcase; v0 is always the mask."""
+
+    vs2: int  # LMUL=8 element group
+    vs2_repeat: int  # LMUL=8 element group for the repeated determinism run
+    vs1: int
+    vs1_repeat: int
+    vd: int
+    vd_repeat: int
+    first: int  # first determinism result
+    first_rdn: int  # RDN determinism result
+    key: int  # order key of vd[0]
+    sign: int  # sign bit
+    ref: int  # reference value or lower bound
+    ref_hi: int  # upper bound or shifted copy
+    match: int  # comparison mask
+    match_hi: int  # second comparison mask
 
 
 class _Ctx:
@@ -52,11 +85,12 @@ class _Ctx:
         self.efmt = model.FORMATS[self.sew]
         self.acc = model.FORMATS[2 * self.sew] if self.widening else self.efmt
         self.w = self.acc.width
-        self.vlmax = _LMUL * _VLEN_MAX // self.sew
+        self.vlmax = _LMUL * VLEN_MAX // self.sew
         self.prefix = f"redusum_{'w' if self.widening else ''}e{self.sew}"
         self.chunks: list[TestChunk] = []
         self.labels: list[str] = []
-        self.regs: dict[str, int] = {}
+        self.x = _IntRegs(*(0,) * len(fields(_IntRegs)))
+        self.v = _VecRegs(*(0,) * len(fields(_VecRegs)))
 
     def skip(self) -> bool:
         return self.sew > self.td.config.flen
@@ -72,11 +106,15 @@ class _Ctx:
         return self.data(f"{name}_{value:x}", [value], self.w)
 
     def begin(self) -> list[str]:
-        """Start a testcase chunk with fresh integer registers; return its (empty) list of lines."""
+        """Start a testcase chunk with fresh registers; return its (empty) list of lines."""
         self.td.begin_test_chunk()
         self.labels = []
-        regs = self.td.int_regs.get_registers(len(_REG_NAMES), exclude_regs=[0])
-        self.regs = dict(zip(_REG_NAMES, regs, strict=True))
+        self.x = _IntRegs(*self.td.int_regs.get_registers(len(fields(_IntRegs)), exclude_regs=[0]))
+        vec_regs = self.td.vec_regs
+        vec_regs.consume_registers([0])
+        groups = vec_regs.get_registers(2, lmul=_LMUL)
+        singles = vec_regs.get_registers(len(fields(_VecRegs)) - 2)
+        self.v = _VecRegs(*groups, *singles)
         return []
 
     def end(self, lines: list[str]) -> None:
@@ -86,7 +124,8 @@ class _Ctx:
         for label in dict.fromkeys(self.labels):
             elems, width = self.td.vector_labels[label]
             tc.vector_labels.append((label, elems, width))
-        self.td.int_regs.return_registers(list(self.regs.values()))
+        self.td.int_regs.return_registers(list(vars(self.x).values()))
+        self.td.vec_regs.return_registers([0, *vars(self.v).values()])
         self.chunks.append(self.td.end_test_chunk())
 
 
@@ -100,11 +139,11 @@ def _fval(fmt: model.Fmt, mant: int, exp: int) -> int:
     shift = exp + fmt.q
     mag = abs(mant)
     if shift >= 0:
-        x = mag << shift
+        scaled = mag << shift
     else:
         assert mag & ((1 << -shift) - 1) == 0, "value below the smallest subnormal"
-        x = mag >> -shift
-    return model.encode(-x if mant < 0 else x, mant < 0, fmt)
+        scaled = mag >> -shift
+    return model.encode(-scaled if mant < 0 else scaled, mant < 0, fmt)
 
 
 def _edge_values(fmt: model.Fmt) -> dict[str, int]:
@@ -125,53 +164,40 @@ def _edge_values(fmt: model.Fmt) -> dict[str, int]:
     }
 
 
-def _exact_family(ctx: _Ctx, variant: str) -> tuple[int, list[int]]:
-    """
-    Order-independent data: small integers times a power of two, bounded so that every partial sum is a value of
-    the accumulator format. The scale puts them in the normal ("int"), subnormal ("sub") or top-binade ("top")
-    range of the element format.
-    """
-    scale = {"int": 0, "sub": ctx.efmt.emin - ctx.efmt.prec + 1, "top": ctx.efmt.emax - ctx.efmt.prec + 1}[variant]
-    rng = random.Random(f"{ctx.prefix}_{variant}")
-    limit = min(((1 << ctx.acc.prec) - 1) // (_MASK_BITS + 1), (1 << ctx.efmt.prec) - 1)
-    vals = [rng.randint(-limit, limit) for _ in range(ctx.vlmax + 1)]
-    return _fval(ctx.acc, vals[0], scale), [_fval(ctx.efmt, v, scale) for v in vals[1:]]
-
-
 def _mild_family(ctx: _Ctx, scale: int = 0, negate: bool = False) -> tuple[int, list[int]]:
     """
     Somewhat order-dependent data: scalar 2^t and every element c = 0.75 ulp(2^t) in the accumulator format.
     Adding the elements to the scalar one at a time rounds each one to 0 or 1 ulp, while adding them together
     first keeps their sum, so the legal results spread by about one ulp per four elements.
     """
-    t = (1 if ctx.widening and ctx.sew == 16 else 0) + scale
-    sgn = -1 if negate else 1
-    c = _fval(ctx.efmt, 3 * sgn, t - ctx.acc.prec - 1)
-    return _fval(ctx.acc, sgn, t), [c] * ctx.vlmax
+    exp = (1 if ctx.widening and ctx.sew == 16 else 0) + scale
+    sign = -1 if negate else 1
+    elem = _fval(ctx.efmt, 3 * sign, exp - ctx.acc.prec - 1)
+    return _fval(ctx.acc, sign, exp), [elem] * ctx.vlmax
 
 
-def _cancel_family(ctx: _Ctx, n: int, scale: int = 0, negate: bool = False) -> tuple[int, list[int]]:
+def _cancel_family(ctx: _Ctx, vl: int, scale: int = 0, negate: bool = False) -> tuple[int, list[int]]:
     """
     Maximally order-dependent data: element 0 is +B, element n-1 is -B, up to eight copies of t = 3/8 ulp(B) lie
     evenly between them, and the other elements are alternating signed zeros. The scalar is also t. Absorbing each
     t into +-B before they cancel loses it or rounds it up to a whole ulp(B), while adding the ts together first
     keeps them, so the legal results range from 0 to well above the exact sum.
     """
-    eb = ctx.efmt.emax if ctx.widening else ctx.acc.prec + 1
-    et = eb - ctx.acc.prec + 1 - 3
-    sgn = -1 if negate else 1
-    t = _fval(ctx.efmt, 3 * sgn, et + scale)
-    elems = [ctx.efmt.sign_bit if i % 2 else 0 for i in range(n)]
-    elems[0] = _fval(ctx.efmt, sgn, eb + scale)
-    if n >= 3:
-        elems[n - 1] = _fval(ctx.efmt, -sgn, eb + scale)
-    elif n == 2:
-        elems[1] = t
-    inner = list(range(1, n - 1))
-    m = min(len(inner), 8)
-    for j in range(m):
-        elems[inner[(j * len(inner)) // m]] = t
-    return _fval(ctx.acc, 3 * sgn, et + scale), elems
+    exp_big = ctx.efmt.emax if ctx.widening else ctx.acc.prec + 1
+    exp_small = exp_big - ctx.acc.prec + 1 - 3
+    sign = -1 if negate else 1
+    small = _fval(ctx.efmt, 3 * sign, exp_small + scale)
+    elems = [ctx.efmt.sign_bit if i % 2 else 0 for i in range(vl)]
+    elems[0] = _fval(ctx.efmt, sign, exp_big + scale)
+    if vl >= 3:
+        elems[vl - 1] = _fval(ctx.efmt, -sign, exp_big + scale)
+    elif vl == 2:
+        elems[1] = small
+    inner = list(range(1, vl - 1))
+    num_small = min(len(inner), 8)
+    for j in range(num_small):
+        elems[inner[(j * len(inner)) // num_small]] = small
+    return _fval(ctx.acc, 3 * sign, exp_small + scale), elems
 
 
 def _random_mask() -> list[int]:
@@ -186,10 +212,10 @@ def _random_mask() -> list[int]:
     return mask
 
 
-def _active(elems: list[int], mask: list[int] | None, n: int) -> list[int]:
+def _active(elems: list[int], mask: list[int] | None, vl: int) -> list[int]:
     if mask is None:
-        return elems[:n]
-    return [elems[i] for i in range(n) if mask[i // 8] >> (i % 8) & 1]
+        return elems[:vl]
+    return [elems[i] for i in range(vl) if mask[i // 8] >> (i % 8) & 1]
 
 
 def _outcomes(ctx: _Ctx, scalar: int, active: list[int], mode: int) -> model.Result:
@@ -199,9 +225,9 @@ def _outcomes(ctx: _Ctx, scalar: int, active: list[int], mode: int) -> model.Res
     return res
 
 
-def _same(a: model.Result, b: model.Result) -> bool:
-    fields = ("lo_bits", "hi_bits", "pos_inf", "neg_inf", "nan", "may", "must", "passthrough")
-    return all(getattr(a, f) == getattr(b, f) for f in fields)
+def _same(first: model.Result, second: model.Result) -> bool:
+    names = ("lo_bits", "hi_bits", "pos_inf", "neg_inf", "nan", "may", "must", "passthrough")
+    return all(getattr(first, name) == getattr(second, name) for name in names)
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -213,135 +239,132 @@ def _vlmax_expr(ctx: _Ctx) -> str:
     return f"(UDB_VLEN * {_LMUL} / {ctx.sew})"
 
 
-def _guard(ctx: _Ctx, n: int, exact: bool = False) -> list[str]:
-    """Compile a testcase only if vl = n fits (or, if exact, only if n is VLMAX). VLMAX >= 8 at LMUL=8."""
-    if exact:
-        return [f"#if {_vlmax_expr(ctx)} == {n}"]
-    return [f"#if {_vlmax_expr(ctx)} >= {n}"] if n > _LMUL else []
+def _guard(ctx: _Ctx, vl: int, at_vlmax: bool = False) -> list[str]:
+    """Compile a testcase only if vl fits (or, if at_vlmax, only if vl is VLMAX). VLMAX >= 8 at LMUL=8."""
+    if at_vlmax:
+        return [f"#if {_vlmax_expr(ctx)} == {vl}"]
+    return [f"#if {_vlmax_expr(ctx)} >= {vl}"] if vl > _LMUL else []
 
 
-def _endguard(ctx: _Ctx, n: int, exact: bool = False) -> list[str]:
-    return ["#endif"] if _guard(ctx, n, exact) else []
+def _endguard(ctx: _Ctx, vl: int, at_vlmax: bool = False) -> list[str]:
+    return ["#endif"] if _guard(ctx, vl, at_vlmax) else []
 
 
 def _load(
     ctx: _Ctx,
-    n: int,
+    vl: int,
     elems: str,
     scalar: str,
     mask: str | None = None,
     vd_init: str | None = None,
-    vs2: int = _VS2,
-    vs1: int = _VS1,
-    vd: int = _VD,
+    repeat: bool = False,
 ) -> list[str]:
-    """Set vl = n at LMUL=8 and load vs2, the mask, vs1[0] and optionally vd[0]."""
-    r = ctx.regs
+    """Set vl at LMUL=8 and load vs2, the mask, vs1[0] and optionally vd[0] (the repeat registers if repeat)."""
+    x = ctx.x
+    vs2, vs1, vd = _operands(ctx, repeat)
     lines = [
-        f"LI(x{r['n']}, {n}) # vl",
-        f"vsetvli x{r['t']}, x{r['n']}, e{ctx.sew}, m{_LMUL}, tu, mu",
-        f"LA(x{r['a']}, {elems})",
-        f"vle{ctx.sew}.v v{vs2}, (x{r['a']}) # vs2 elements",
+        f"LI(x{x.vl}, {vl}) # vl",
+        f"vsetvli x{x.tmp}, x{x.vl}, e{ctx.sew}, m{_LMUL}, tu, mu",
+        f"LA(x{x.addr}, {elems})",
+        f"vle{ctx.sew}.v v{vs2}, (x{x.addr}) # vs2 elements",
     ]
     if mask is not None:
-        lines += [f"LA(x{r['a']}, {mask})", f"vlm.v v0, (x{r['a']}) # mask"]
+        lines += [f"LA(x{x.addr}, {mask})", f"vlm.v v0, (x{x.addr}) # mask"]
     lines += [
         f"vsetivli x0, 1, e{ctx.w}, m1, tu, mu",
-        f"LA(x{r['a']}, {scalar})",
-        f"vle{ctx.w}.v v{vs1}, (x{r['a']}) # vs1[0]",
+        f"LA(x{x.addr}, {scalar})",
+        f"vle{ctx.w}.v v{vs1}, (x{x.addr}) # vs1[0]",
     ]
     if vd_init is not None:
-        lines += [f"LA(x{r['a']}, {vd_init})", f"vle{ctx.w}.v v{vd}, (x{r['a']}) # vd sentinel"]
-    lines.append(f"vsetvli x{r['t']}, x{r['n']}, e{ctx.sew}, m{_LMUL}, tu, mu")
+        lines += [f"LA(x{x.addr}, {vd_init})", f"vle{ctx.w}.v v{vd}, (x{x.addr}) # vd sentinel"]
+    lines.append(f"vsetvli x{x.tmp}, x{x.vl}, e{ctx.sew}, m{_LMUL}, tu, mu")
     return lines
 
 
-def _reduce(
-    ctx: _Ctx,
-    mode: int,
-    label_line: str,
-    masked: bool = False,
-    vs2: int = _VS2,
-    vs1: int = _VS1,
-    vd: int = _VD,
-    flags_reg: str = "f",
-) -> list[str]:
+def _operands(ctx: _Ctx, repeat: bool) -> tuple[int, int, int]:
+    """vs2, vs1 and vd of the main run, or of the repeated determinism run."""
+    v = ctx.v
+    return (v.vs2_repeat, v.vs1_repeat, v.vd_repeat) if repeat else (v.vs2, v.vs1, v.vd)
+
+
+def _reduce(ctx: _Ctx, mode: int, label_line: str, masked: bool = False, repeat: bool = False) -> list[str]:
+    vs2, vs1, vd = _operands(ctx, repeat)
     return [
         f"fsrmi {mode} # frm = {model.MODE_NAMES[mode].upper()}",
         "fsflagsi 0 # clear fflags",
         label_line,
         f"{ctx.instr} v{vd}, v{vs2}, v{vs1}{', v0.t' if masked else ''}",
-        f"csrr x{ctx.regs[flags_reg]}, fflags",
+        f"csrr x{ctx.x.flags}, fflags",
         "fsrmi 0",
         f"vsetivli x0, 1, e{ctx.w}, m1, tu, mu",
     ]
 
 
 def _sign_lines(ctx: _Ctx) -> list[str]:
-    """v2 = sign bit; x{t} = width - 1."""
-    t = ctx.regs["t"]
-    return [f"LI(x{t}, {ctx.w - 1})", "vmv.v.i v2, 1", f"vsll.vx v2, v2, x{t} # sign bit"]
+    """v{sign} = sign bit; x{tmp} = width - 1."""
+    tmp, sign = ctx.x.tmp, ctx.v.sign
+    return [f"LI(x{tmp}, {ctx.w - 1})", f"vmv.v.i v{sign}, 1", f"vsll.vx v{sign}, v{sign}, x{tmp} # sign bit"]
 
 
-def _report(ctx: _Ctx, value_ok: int, flags_ok: int, src: int = _VD) -> list[str]:
+def _report(ctx: _Ctx, value_ok: int, flags_ok: int, src: int) -> list[str]:
     """Record 0 for a pass; otherwise the result (never 0) and fflags | 0x100."""
-    r, u, f = ctx.regs["r"], ctx.regs["u"], ctx.regs["f"]
+    result, scratch, flags = ctx.x.result, ctx.x.scratch, ctx.x.flags
     return [
-        f"vmv.x.s x{r}, v{src} # result for the failure report",
-        f"seqz x{u}, x{r}",
-        f"or x{r}, x{r}, x{u} # never 0",
-        f"addi x{u}, x{value_ok}, -1 # 0 if vd[0] is legal",
-        f"and x{r}, x{r}, x{u}",
-        write_sigupd(r, ctx.td),
-        f"ori x{u}, x{f}, {_REPORT_FLAGS}",
+        f"vmv.x.s x{result}, v{src} # result for the failure report",
+        f"seqz x{scratch}, x{result}",
+        f"or x{result}, x{result}, x{scratch} # never 0",
+        f"addi x{scratch}, x{value_ok}, -1 # 0 if vd[0] is legal",
+        f"and x{result}, x{result}, x{scratch}",
+        write_sigupd(result, ctx.td),
+        f"ori x{scratch}, x{flags}, {_REPORT_FLAGS}",
         f"addi x{flags_ok}, x{flags_ok}, -1 # 0 if fflags are legal",
-        f"and x{u}, x{u}, x{flags_ok}",
-        write_sigupd(u, ctx.td),
+        f"and x{scratch}, x{scratch}, x{flags_ok}",
+        write_sigupd(scratch, ctx.td),
     ]
 
 
-def _check(ctx: _Ctx, res: model.Result, vd: int = _VD) -> list[str]:
-    """Check vd[0] and fflags against every legal outcome in res. Assumes SEW = accumulator width, vl = 1."""
-    a, p, t, u, f = (ctx.regs[k] for k in ("a", "p", "t", "u", "f"))
+def _check(ctx: _Ctx, res: model.Result) -> list[str]:
+    """Check vd[0] and fflags against every legal outcome in res."""
+    x, v = ctx.x, ctx.v
     lines: list[str] = []
     if res.passthrough is not None:
         # No active elements and a NaN scalar: vs1[0] unchanged with no flags, or canonicalized
         canon = ctx.acc_const("canon_nan", ctx.acc.canonical_nan)
         lines += [
-            f"vmseq.vv v5, v{vd}, v{_VS1} # vs1[0] unchanged",
-            f"vcpop.m x{p}, v5",
-            f"seqz x{t}, x{f} # with no flags",
-            f"and x{p}, x{p}, x{t}",
-            f"LA(x{a}, {canon})",
-            f"vle{ctx.w}.v v3, (x{a})",
-            f"vmseq.vv v5, v{vd}, v3 # or the canonical NaN",
-            f"vcpop.m x{u}, v5",
-            f"xori x{t}, x{f}, {res.passthrough_canon_flags:#x}",
-            f"seqz x{t}, x{t} # with NV exactly when vs1[0] is a signaling NaN",
-            f"and x{u}, x{u}, x{t}",
-            f"or x{p}, x{p}, x{u}",
-            f"mv x{t}, x{p}",
+            f"vmseq.vv v{v.match}, v{v.vd}, v{v.vs1} # vs1[0] unchanged",
+            f"vcpop.m x{x.legal}, v{v.match}",
+            f"seqz x{x.tmp}, x{x.flags} # with no flags",
+            f"and x{x.legal}, x{x.legal}, x{x.tmp}",
+            f"LA(x{x.addr}, {canon})",
+            f"vle{ctx.w}.v v{v.ref}, (x{x.addr})",
+            f"vmseq.vv v{v.match}, v{v.vd}, v{v.ref} # or the canonical NaN",
+            f"vcpop.m x{x.scratch}, v{v.match}",
+            f"xori x{x.tmp}, x{x.flags}, {res.passthrough_canon_flags:#x}",
+            f"seqz x{x.tmp}, x{x.tmp} # with NV exactly when vs1[0] is a signaling NaN",
+            f"and x{x.scratch}, x{x.scratch}, x{x.tmp}",
+            f"or x{x.legal}, x{x.legal}, x{x.scratch}",
+            f"mv x{x.tmp}, x{x.legal}",
         ]
-        return lines + _report(ctx, p, t, vd)
+        return lines + _report(ctx, x.legal, x.tmp, v.vd)
     if res.lo_bits is not None:
         assert res.hi_bits is not None
         lo = ctx.acc_const("key", model.key_of_bits(res.lo_bits, ctx.w))
         hi = ctx.acc_const("key", model.key_of_bits(res.hi_bits, ctx.w))
         lines += _sign_lines(ctx)
         lines += [
-            f"vsra.vx v1, v{vd}, x{t} # all ones if negative",
-            "vor.vv v1, v1, v2",
-            f"vxor.vv v1, v1, v{vd} # v1 = order key of vd[0]",
-            f"LA(x{a}, {lo})",
-            f"vle{ctx.w}.v v3, (x{a}) # key of the lowest legal value {res.lo_bits:#x}",
-            f"LA(x{a}, {hi})",
-            f"vle{ctx.w}.v v4, (x{a}) # key of the highest legal value {res.hi_bits:#x}",
-            "vmsleu.vv v5, v1, v4 # key <= highest",
-            "vmsleu.vv v6, v3, v1 # lowest <= key",
-            "vmand.mm v5, v5, v6",
+            f"vsra.vx v{v.key}, v{v.vd}, x{x.tmp} # all ones if negative",
+            f"vor.vv v{v.key}, v{v.key}, v{v.sign}",
+            f"vxor.vv v{v.key}, v{v.key}, v{v.vd} # order key of vd[0]",
+            f"LA(x{x.addr}, {lo})",
+            f"vle{ctx.w}.v v{v.ref}, (x{x.addr}) # key of the lowest legal value {res.lo_bits:#x}",
+            f"LA(x{x.addr}, {hi})",
+            f"vle{ctx.w}.v v{v.ref_hi}, (x{x.addr}) # key of the highest legal value {res.hi_bits:#x}",
+            f"vmsleu.vv v{v.match}, v{v.key}, v{v.ref_hi} # key <= highest",
+            f"vmsleu.vv v{v.match_hi}, v{v.ref}, v{v.key} # lowest <= key",
+            f"vmand.mm v{v.match}, v{v.match}, v{v.match_hi}",
         ]
     else:
-        lines.append("vmclr.m v5 # no finite result is legal")
+        lines.append(f"vmclr.m v{v.match} # no finite result is legal")
     for allowed, name, value in (
         (res.pos_inf, "pos_inf", ctx.acc.pos_inf),
         (res.neg_inf, "neg_inf", ctx.acc.pos_inf | ctx.acc.sign_bit),
@@ -350,20 +373,20 @@ def _check(ctx: _Ctx, res: model.Result, vd: int = _VD) -> list[str]:
         if allowed:
             label = ctx.acc_const(name, value)
             lines += [
-                f"LA(x{a}, {label})",
-                f"vle{ctx.w}.v v3, (x{a})",
-                f"vmseq.vv v6, v{vd}, v3 # or {name}",
-                "vmor.mm v5, v5, v6",
+                f"LA(x{x.addr}, {label})",
+                f"vle{ctx.w}.v v{v.ref}, (x{x.addr})",
+                f"vmseq.vv v{v.match_hi}, v{v.vd}, v{v.ref} # or {name}",
+                f"vmor.mm v{v.match}, v{v.match}, v{v.match_hi}",
             ]
     lines += [
-        f"vcpop.m x{p}, v5 # 1 if vd[0] is legal",
-        f"andi x{t}, x{f}, {~res.may & 0x1F:#x} # flags that cannot be raised",
-        f"andi x{u}, x{f}, {res.must:#x}",
-        f"xori x{u}, x{u}, {res.must:#x} # required flags that are missing",
-        f"or x{t}, x{t}, x{u}",
-        f"seqz x{t}, x{t} # 1 if fflags are legal",
+        f"vcpop.m x{x.legal}, v{v.match} # 1 if vd[0] is legal",
+        f"andi x{x.tmp}, x{x.flags}, {~res.may & 0x1F:#x} # flags that cannot be raised",
+        f"andi x{x.scratch}, x{x.flags}, {res.must:#x}",
+        f"xori x{x.scratch}, x{x.scratch}, {res.must:#x} # required flags that are missing",
+        f"or x{x.tmp}, x{x.tmp}, x{x.scratch}",
+        f"seqz x{x.tmp}, x{x.tmp} # 1 if fflags are legal",
     ]
-    return lines + _report(ctx, p, t, vd)
+    return lines + _report(ctx, x.legal, x.tmp, v.vd)
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -377,66 +400,45 @@ def cp_custom_vfredusum_sweep(
 ) -> list[TestChunk]:
     """
     vl = 1, 2, 3, 4, 7, 8, 16, ... VLMAX at every rounding mode, unmasked, with a pseudo-random mask and with no
-    active elements, for data whose sum is the same for every tree (exact), differs by a few ulps by tree (mild),
-    or ranges from 0 to well above the exact sum by tree (cancel). Exact data also runs scaled into the subnormal
-    and top-binade ranges.
+    active elements, for data whose sum differs by a few ulps by tree (mild) or ranges from 0 to well above the
+    exact sum by tree (cancel).
     """
     del instr_type
     ctx = _Ctx(instr_name, coverpoint, test_data)
     if ctx.skip():
         return []
-    mask = _random_mask()
-    sweep = [n for n in _VL_SWEEP if n <= ctx.vlmax]
-    data: list[tuple[str, int, list[int], int | None]] = []
-    for fam, (scalar, elems) in (("exact", _exact_family(ctx, "int")), ("mild", _mild_family(ctx))):
-        data += [(fam, scalar, elems, n) for n in sweep]
-    data += [("cancel", *_cancel_family(ctx, n), n) for n in sweep]
+    sweep = [vl for vl in _VL_SWEEP if vl <= ctx.vlmax]
+    mild_scalar, mild_elems = _mild_family(ctx)
+    data = [("mild", mild_scalar, mild_elems, vl) for vl in sweep]
+    data += [("cancel", *_cancel_family(ctx, vl), vl) for vl in sweep]
 
     masks = {
         "unmasked": None,
-        "masked": (f"{ctx.prefix}_mask_random", mask),
+        "masked": (f"{ctx.prefix}_mask_random", _random_mask()),
         "noactive": (f"{ctx.prefix}_mask_zero", [0] * (_MASK_BITS // 8)),
     }
-    for fam, scalar, elems, n in data:
-        assert n is not None
-        for mtag, mdata in masks.items():
+    for family, scalar, elems, vl in data:
+        for mask_tag, mask in masks.items():
             for mode in model.MODES:
-                active = elems[:n] if mdata is None else _active(elems, mdata[1], n)
+                active = elems[:vl] if mask is None else _active(elems, mask[1], vl)
                 res = (
                     _outcomes(ctx, scalar, active, mode)
                     if active
                     else model.reduce_bits(scalar, [], mode, ctx.sew, ctx.widening)
                 )
-                sl = f"{ctx.prefix}_{fam}_scalar"
-                el = f"{ctx.prefix}_{fam}_elems" + (f"_n{n}" if fam == "cancel" else "")
-                name = f"{fam}_vl{n}_{mtag}_{model.MODE_NAMES[mode]}"
+                scalar_label = f"{ctx.prefix}_{family}_scalar"
+                elems_label = f"{ctx.prefix}_{family}_elems" + (f"_n{vl}" if family == "cancel" else "")
                 _data_case(
                     ctx,
-                    name,
-                    f"{fam} data, vl={n}, {mtag}, frm={model.MODE_NAMES[mode]}",
-                    n,
+                    f"{family}_vl{vl}_{mask_tag}_{model.MODE_NAMES[mode]}",
+                    f"{family} data, vl={vl}, {mask_tag}, frm={model.MODE_NAMES[mode]}",
+                    vl,
                     mode,
-                    (sl, [scalar], ctx.w),
-                    (el, elems, ctx.sew),
-                    None if mdata is None else (mdata[0], mdata[1], 8),
+                    (scalar_label, [scalar], ctx.w),
+                    (elems_label, elems, ctx.sew),
+                    None if mask is None else (mask[0], mask[1], 8),
                     res,
                 )
-
-    for variant in ("sub", "top"):
-        scalar, elems = _exact_family(ctx, variant)
-        for n in sweep:
-            res = _outcomes(ctx, scalar, elems[:n], model.RNE)
-            _data_case(
-                ctx,
-                f"exact{variant}_vl{n}_unmasked_rne",
-                f"exact {variant} data, vl={n}, unmasked, frm=rne",
-                n,
-                model.RNE,
-                (f"{ctx.prefix}_exact{variant}_scalar", [scalar], ctx.w),
-                (f"{ctx.prefix}_exact{variant}_elems", elems, ctx.sew),
-                None,
-                res,
-            )
     return ctx.chunks
 
 
@@ -444,7 +446,7 @@ def _data_case(
     ctx: _Ctx,
     bin_name: str,
     desc: str,
-    n: int,
+    vl: int,
     mode: int,
     scalar: tuple[str, list[int], int],
     elems: tuple[str, list[int], int],
@@ -461,17 +463,17 @@ def _data_case(
         label, values, width = item
         ctx.td.register_vector_data(label, width, elements=values)
         labels.append(label)
-    sl, el, ml, vl = labels
-    assert sl is not None and el is not None
+    scalar_label, elems_label, mask_label, vd_label = labels
+    assert scalar_label is not None and elems_label is not None
 
     lines = ctx.begin()
-    ctx.labels = [x for x in labels if x is not None]
+    ctx.labels = [label for label in labels if label is not None]
     lines.append(f"# Testcase {desc}")
-    lines += _guard(ctx, n)
-    lines += _load(ctx, n, el, sl, ml, vl)
-    lines += _reduce(ctx, mode, ctx.td.add_testcase(bin_name, ctx.coverpoint), masked=ml is not None)
+    lines += _guard(ctx, vl)
+    lines += _load(ctx, vl, elems_label, scalar_label, mask_label, vd_label)
+    lines += _reduce(ctx, mode, ctx.td.add_testcase(bin_name, ctx.coverpoint), masked=mask_label is not None)
     lines += _check(ctx, res)
-    lines += _endguard(ctx, n)
+    lines += _endguard(ctx, vl)
     ctx.end(lines)
 
 
@@ -510,15 +512,17 @@ def cp_custom_vfredusum_specials(
     ctx = _Ctx(instr_name, coverpoint, test_data)
     if ctx.skip():
         return []
-    avals = _edge_values(ctx.acc)
-    evals = _edge_values(ctx.efmt)
-    cases: list[tuple[str, tuple[str, ...]]] = [(s, (e,)) for s in avals for e in evals]
-    cases += [(s, lst) for lst in _SPECIAL_LISTS for s in _SPECIAL_SCALARS]
+    acc_values = _edge_values(ctx.acc)
+    elem_values = _edge_values(ctx.efmt)
+    cases: list[tuple[str, tuple[str, ...]]] = [
+        (scalar_cls, (elem_cls,)) for scalar_cls in acc_values for elem_cls in elem_values
+    ]
+    cases += [(scalar_cls, elem_list) for elem_list in _SPECIAL_LISTS for scalar_cls in _SPECIAL_SCALARS]
     for scalar_cls, elem_cls in cases:
-        scalar = avals[scalar_cls]
-        elems = [evals[c] for c in elem_cls]
+        scalar = acc_values[scalar_cls]
+        elems = [elem_values[cls] for cls in elem_cls]
         name = f"{scalar_cls}_{'_'.join(elem_cls)}"
-        el = (f"{ctx.prefix}_elems_{'_'.join(elem_cls)}", elems, ctx.sew)
+        elems_data = (f"{ctx.prefix}_elems_{'_'.join(elem_cls)}", elems, ctx.sew)
         base = _outcomes(ctx, scalar, elems, model.RNE)
         for mode in model.MODES:
             res = base if mode == model.RNE else _outcomes(ctx, scalar, elems, mode)
@@ -530,8 +534,8 @@ def cp_custom_vfredusum_specials(
                 f"vs1[0]={scalar_cls}, vs2={list(elem_cls)}, frm={model.MODE_NAMES[mode]}",
                 len(elems),
                 mode,
-                _class_data(ctx, scalar_cls, ctx.acc, avals),
-                el,
+                _class_data(ctx, scalar_cls, ctx.acc, acc_values),
+                elems_data,
                 None,
                 res,
             )
@@ -551,37 +555,37 @@ def cp_custom_vfredusum_noactive(
     ctx = _Ctx(instr_name, coverpoint, test_data)
     if ctx.skip():
         return []
-    avals = _edge_values(ctx.acc)
+    acc_values = _edge_values(ctx.acc)
     snans = [_edge_values(ctx.efmt)["snan"]] * 8
     zero_mask = (f"{ctx.prefix}_mask_zero", [0] * (_MASK_BITS // 8), 8)
-    el = (f"{ctx.prefix}_elems_snan8", snans, ctx.sew)
-    for cls, scalar in avals.items():
-        for n in (1, 7):
+    elems_data = (f"{ctx.prefix}_elems_snan8", snans, ctx.sew)
+    for cls, scalar in acc_values.items():
+        for vl in (1, 7):
             for mode in (model.RNE, model.RDN):
                 res = model.reduce_bits(scalar, [], mode, ctx.sew, ctx.widening)
                 _data_case(
                     ctx,
-                    f"{cls}_vl{n}_{model.MODE_NAMES[mode]}",
-                    f"no active elements, vs1[0]={cls}, vl={n}, frm={model.MODE_NAMES[mode]}",
-                    n,
+                    f"{cls}_vl{vl}_{model.MODE_NAMES[mode]}",
+                    f"no active elements, vs1[0]={cls}, vl={vl}, frm={model.MODE_NAMES[mode]}",
+                    vl,
                     mode,
-                    _class_data(ctx, cls, ctx.acc, avals),
-                    el,
+                    _class_data(ctx, cls, ctx.acc, acc_values),
+                    elems_data,
                     zero_mask,
                     res,
                 )
     sentinel = _fval(ctx.acc, 5, -1)
     keep = model.Result(sentinel, sentinel, False, False, False, False, 0, 0)
     for masked in (False, True):
-        mtag = "masked" if masked else "unmasked"
+        mask_tag = "masked" if masked else "unmasked"
         _data_case(
             ctx,
-            f"vl0_{mtag}",
-            f"vl=0, {mtag}: vd and fflags unchanged",
+            f"vl0_{mask_tag}",
+            f"vl=0, {mask_tag}: vd and fflags unchanged",
             0,
             model.RNE,
-            _class_data(ctx, "neg1", ctx.acc, avals),
-            el,
+            _class_data(ctx, "neg1", ctx.acc, acc_values),
+            elems_data,
             zero_mask if masked else None,
             keep,
             (f"{ctx.prefix}_sentinel", [sentinel], ctx.w),
@@ -603,96 +607,96 @@ def cp_custom_vfredusum_determinism(
     ctx = _Ctx(instr_name, coverpoint, test_data)
     if ctx.skip():
         return []
-    vlmaxes = [n for n in _VL_SWEEP if n >= _LMUL and n <= ctx.vlmax]
-    for n, exact in [(n, False) for n in _DETERMINISM_VLS] + [(n, True) for n in vlmaxes]:
-        for fam in ("cancel", "mild"):
-            if fam == "cancel":
-                k = -3 if ctx.widening else 3
-                d, ds, dn = (_cancel_family(ctx, n), _cancel_family(ctx, n, k), _cancel_family(ctx, n, 0, True))
+    vlmaxes = [vl for vl in _VL_SWEEP if _LMUL <= vl <= ctx.vlmax]
+    for vl, at_vlmax in [(vl, False) for vl in _DETERMINISM_VLS] + [(vl, True) for vl in vlmaxes]:
+        for family in ("cancel", "mild"):
+            if family == "cancel":
+                scale_exp = -3 if ctx.widening else 3
+                data = _cancel_family(ctx, vl)
+                scaled = _cancel_family(ctx, vl, scale_exp)
+                negated = _cancel_family(ctx, vl, 0, True)
             else:
-                k = 3
-                d, ds, dn = (_mild_family(ctx), _mild_family(ctx, k), _mild_family(ctx, 0, True))
-            _determinism_case(ctx, fam, n, k, d, ds, dn, exact)
+                scale_exp = 3
+                data, scaled, negated = _mild_family(ctx), _mild_family(ctx, scale_exp), _mild_family(ctx, 0, True)
+            _determinism_case(ctx, family, vl, scale_exp, data, scaled, negated, at_vlmax)
     return ctx.chunks
 
 
 def _determinism_case(
     ctx: _Ctx,
-    fam: str,
-    n: int,
-    k: int,
-    d: tuple[int, list[int]],
-    ds: tuple[int, list[int]],
-    dn: tuple[int, list[int]],
-    exact: bool,
+    family: str,
+    vl: int,
+    scale_exp: int,
+    data: tuple[int, list[int]],
+    scaled: tuple[int, list[int]],
+    negated: tuple[int, list[int]],
+    at_vlmax: bool,
 ) -> None:
-    """Determinism checks at vl = n; if exact, only in configurations where n is VLMAX."""
+    """Determinism checks at vl; if at_vlmax, only in configurations where vl is VLMAX."""
     lines = ctx.begin()
     labels = {}
-    for tag, (scalar, elems) in (("d", d), ("s", ds), ("n", dn)):
-        suffix = f"_n{n}" if fam == "cancel" else ""
+    for tag, (scalar, elems) in (("d", data), ("s", scaled), ("n", negated)):
+        suffix = f"_n{vl}" if family == "cancel" else ""
         labels[tag] = (
-            ctx.data(f"det_{fam}_{tag}_scalar", [scalar], ctx.w),
-            ctx.data(f"det_{fam}_{tag}_elems{suffix}", elems[: max(n, 1)] if fam == "cancel" else elems, ctx.sew),
+            ctx.data(f"det_{family}_{tag}_scalar", [scalar], ctx.w),
+            ctx.data(
+                f"det_{family}_{tag}_elems{suffix}", elems[: max(vl, 1)] if family == "cancel" else elems, ctx.sew
+            ),
         )
-    r = ctx.regs
-    lines.append(f"# Testcase determinism, {fam} data, vl={n}{' = VLMAX' if exact else ''}")
-    lines += _guard(ctx, n, exact)
+    x, v = ctx.x, ctx.v
+    lines.append(f"# Testcase determinism, {family} data, vl={vl}{' = VLMAX' if at_vlmax else ''}")
+    lines += _guard(ctx, vl, at_vlmax)
 
-    def run(
-        tag: str, mode: int, bin_name: str, flags: str = "f", vs2: int = _VS2, vs1: int = _VS1, vd: int = _VD
-    ) -> list[str]:
+    def run(tag: str, mode: int, bin_name: str, repeat: bool = False) -> list[str]:
         scalar_label, elems_label = labels[tag]
-        out = _load(ctx, n, elems_label, scalar_label, vs2=vs2, vs1=vs1, vd=vd)
-        return out + _reduce(
-            ctx, mode, ctx.td.add_testcase(bin_name, ctx.coverpoint), vs2=vs2, vs1=vs1, vd=vd, flags_reg=flags
+        return _load(ctx, vl, elems_label, scalar_label, repeat=repeat) + _reduce(
+            ctx, mode, ctx.td.add_testcase(bin_name, ctx.coverpoint), repeat=repeat
         )
 
-    def compare(expected: int, actual: int, flags_ref: str) -> list[str]:
-        p, t = r["p"], r["t"]
+    def compare(expected: int, actual: int, flags_ref: int) -> list[str]:
         return [
-            f"vmseq.vv v5, v{actual}, v{expected}",
-            f"vcpop.m x{p}, v5 # 1 if the result matches",
-            f"xor x{t}, x{r['f']}, x{r[flags_ref]}",
-            f"seqz x{t}, x{t} # 1 if fflags match",
-            *_report(ctx, p, t, actual),
+            f"vmseq.vv v{v.match}, v{actual}, v{expected}",
+            f"vcpop.m x{x.legal}, v{v.match} # 1 if the result matches",
+            f"xor x{x.tmp}, x{x.flags}, x{flags_ref}",
+            f"seqz x{x.tmp}, x{x.tmp} # 1 if fflags match",
+            *_report(ctx, x.legal, x.tmp, actual),
         ]
 
     zero_keep = [
-        f"vsll.vi v4, v{_SAVE}, 1",
-        "vmseq.vi v0, v4, 0 # first result is a zero",
-        f"vmerge.vvm v3, v3, v{_SAVE}, v0 # zeros keep their bits",
+        f"vsll.vi v{v.ref_hi}, v{v.first}, 1",
+        f"vmseq.vi v0, v{v.ref_hi}, 0 # first result is a zero",
+        f"vmerge.vvm v{v.ref}, v{v.ref}, v{v.first}, v0 # zeros keep their bits",
     ]
     # D at RNE, range-checked, then kept with its flags
-    res = _outcomes(ctx, d[0], d[1][:n], model.RNE)
-    lines += run("d", model.RNE, f"{fam}_vl{n}_first")
+    res = _outcomes(ctx, data[0], data[1][:vl], model.RNE)
+    lines += run("d", model.RNE, f"{family}_vl{vl}_first")
     lines += _check(ctx, res)
-    lines += [f"vmv1r.v v{_SAVE}, v{_VD}", f"mv x{r['f1']}, x{r['f']}"]
+    lines += [f"vmv1r.v v{v.first}, v{v.vd}", f"mv x{x.flags_first}, x{x.flags}"]
     # D again, from other registers
-    lines += run("d", model.RNE, f"{fam}_vl{n}_repeat", vs2=16, vs1=25, vd=26)
-    lines += compare(_SAVE, 26, "f1")
+    lines += run("d", model.RNE, f"{family}_vl{vl}_repeat", repeat=True)
+    lines += compare(v.first, v.vd_repeat, x.flags_first)
     # 2^k * D
-    lines += run("s", model.RNE, f"{fam}_vl{n}_scaled")
+    lines += run("s", model.RNE, f"{family}_vl{vl}_scaled")
     lines += [
-        f"LI(x{r['t']}, {k})",
-        f"vmv.v.x v3, x{r['t']}",
-        f"LI(x{r['t']}, {ctx.acc.frac_bits})",
-        f"vsll.vx v3, v3, x{r['t']}",
-        f"vadd.vv v3, v3, v{_SAVE} # first result times 2^{k}",
+        f"LI(x{x.tmp}, {scale_exp})",
+        f"vmv.v.x v{v.ref}, x{x.tmp}",
+        f"LI(x{x.tmp}, {ctx.acc.frac_bits})",
+        f"vsll.vx v{v.ref}, v{v.ref}, x{x.tmp}",
+        f"vadd.vv v{v.ref}, v{v.ref}, v{v.first} # first result times 2^{scale_exp}",
         *zero_keep,
-        *compare(3, _VD, "f1"),
+        *compare(v.ref, v.vd, x.flags_first),
     ]
     # -D at RNE
-    lines += run("n", model.RNE, f"{fam}_vl{n}_negated")
-    lines += [*_sign_lines(ctx), f"vxor.vv v3, v{_SAVE}, v2 # negated first result", *zero_keep]
-    lines += compare(3, _VD, "f1")
+    lines += run("n", model.RNE, f"{family}_vl{vl}_negated")
+    lines += [*_sign_lines(ctx), f"vxor.vv v{v.ref}, v{v.first}, v{v.sign} # negated first result", *zero_keep]
+    lines += compare(v.ref, v.vd, x.flags_first)
     # D at RDN, range-checked and kept; -D at RUP must be its negation
-    res = _outcomes(ctx, d[0], d[1][:n], model.RDN)
-    lines += run("d", model.RDN, f"{fam}_vl{n}_rdn")
+    res = _outcomes(ctx, data[0], data[1][:vl], model.RDN)
+    lines += run("d", model.RDN, f"{family}_vl{vl}_rdn")
     lines += _check(ctx, res)
-    lines += [f"vmv1r.v v{_SAVE_RDN}, v{_VD}", f"mv x{r['f2']}, x{r['f']}"]
-    lines += run("n", model.RUP, f"{fam}_vl{n}_rup_negated")
-    lines += [*_sign_lines(ctx), f"vxor.vv v3, v{_SAVE_RDN}, v2 # negated RDN result"]
-    lines += compare(3, _VD, "f2")
-    lines += _endguard(ctx, n, exact)
+    lines += [f"vmv1r.v v{v.first_rdn}, v{v.vd}", f"mv x{x.flags_rdn}, x{x.flags}"]
+    lines += run("n", model.RUP, f"{family}_vl{vl}_rup_negated")
+    lines += [*_sign_lines(ctx), f"vxor.vv v{v.ref}, v{v.first_rdn}, v{v.sign} # negated RDN result"]
+    lines += compare(v.ref, v.vd, x.flags_rdn)
+    lines += _endguard(ctx, vl, at_vlmax)
     ctx.end(lines)

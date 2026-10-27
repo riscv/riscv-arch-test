@@ -88,7 +88,7 @@ OPTIONS := --trace \
            -a compress \
            -a mathematical-format=svg \
            -a pdf-fontsdir=docs-resources/fonts \
-           -a pdf-theme=src/crd-pdf.yml \
+           -a pdf-theme=docs-resources/themes/riscv-pdf.yml \
            -a docinfo=shared \
            $(XTRA_ADOC_OPTS) \
            -D build \
@@ -110,7 +110,7 @@ build-pdf: $(DOCS_PDF)
 build-html: $(DOCS_HTML)
 build: build-pdf build-html
 
-ALL_SRCS := $(shell find src -name "*.adoc" -o -name "*.yml")
+ALL_SRCS := $(shell find src -name "*.adoc")
 
 $(BUILD_DIR)/%.pdf: $(SRC_DIR)/%.adoc $(ALL_SRCS)
 	$(WORKDIR_SETUP)

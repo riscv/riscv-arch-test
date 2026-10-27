@@ -13,14 +13,14 @@ coverpoints:
     description: |-
       In HS-mode, with the matching SEn = 1, write hstateen0-3 with walking ones and walking zeros, and read each back.
       For RV32, also walk hstateen0h-3h.  C (custom state is optional) is left out of the hstateen0 check, and the walk
-      leaves out CSRIND, AIA, IMSIC, CTR and JVT until Sail models their state (SAIL_UNMODELED_TESTS in Smstateen.py).
+      leaves out CSRIND, AIA, IMSIC, CTR and JVT until Sail models their state (the *_TESTS flags in Smstateen.py).
     expectation: Bits whose state the hart implements, and whose mstateen bit is 1, read back as written; the rest read zero
     bins: 4-8 CSRs * XLEN walking ones/zeros
   - name: cp_walking_ones_vs
     goal: sstateen0 bits whose hstateen0 bit is 0 read as zero in VS-mode
     description: |-
       With hstateen0.SE0 = 1, walk ones and zeros through sstateen0 in VS-mode with hstateen0 C, FCSR and JVT all clear
-      and then all set.  The walk leaves out JVT until Sail models Zcmt (SAIL_UNMODELED_TESTS in Smstateen.py).
+      and then all set.  The walk leaves out JVT until Sail models Zcmt (JVT_TESTS in Smstateen.py).
     expectation: sstateen0 bits whose hstateen0 bit is 0 read zero; the others read back as written if the hart has the state
     bins: hstateen0 C/FCSR/JVT zero, and nonzero when Zcmt or Zfinx makes one of them writable
   - name: cp_csr_illegal_accesses

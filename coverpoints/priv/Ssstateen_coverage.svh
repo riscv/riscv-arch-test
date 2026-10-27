@@ -117,7 +117,7 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
     cp_csr_illegal_accesses: cross priv_mode_u, sstateen_csrs, csrops, mstateen_se_n_one;
     cp_walking_ones:         cross priv_mode_s, sstateen_walk_csr, csrops, csr_walk, mstateen_se_n_one;
     `ifdef ZCMT_SUPPORTED
-        // The tests are disabled until Sail models Zcmt (SAIL_UNMODELED_TESTS in Smstateen.py), so this reports missing coverage
+        // The tests are disabled until Sail models Zcmt (JVT_TESTS in Smstateen.py), so this reports missing coverage
         cp_jvt:              cross priv_mode_s_u, csrops, jvt_csr, jvt_state, se0_one;
     `endif
 endgroup

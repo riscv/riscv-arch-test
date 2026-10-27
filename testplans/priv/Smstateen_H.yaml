@@ -15,7 +15,7 @@ coverpoints:
       In M-mode, write hstateen0-3 with walking ones and walking zeros, and read each back, with mstateen0-3 all zeros
       and then all ones.  For RV32, also walk hstateen0h-3h.
       With mstateen0-3 all ones, C (custom state is optional) is left out of the hstateen0 check, and the walk leaves
-      out CSRIND, AIA, IMSIC, CTR and JVT until Sail models their state (SAIL_UNMODELED_TESTS in Smstateen.py).
+      out CSRIND, AIA, IMSIC, CTR and JVT until Sail models their state (the *_TESTS flags in Smstateen.py).
     expectation: With mstateen0-3 zero, every bit reads zero.  With them all ones, the bits whose state the hart implements read back as written and the rest read zero
     bins: 2 mstateen states * 4-8 CSRs * XLEN walking ones/zeros
   - name: cp_mstateen0_se0_controls_sstateen0

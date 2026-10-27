@@ -7,7 +7,7 @@
 """Ssstateen privileged extension test generator."""
 
 from testgen.asm.csr import csr_walk_test
-from testgen.asm.helpers import arch_block, comment_banner, gated
+from testgen.asm.helpers import arch_block, comment_banner
 from testgen.asm.tsbi import tsbi_call
 from testgen.constants import INDENT
 from testgen.data.state import TestData
@@ -15,9 +15,10 @@ from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.Smstateen import (
     CSR_OPS,
     HSTATEEN0_WALK_MASK,
-    SAIL_UNMODELED_TESTS,
+    JVT_TESTS,
     STATEEN0_SKIP_BITS,
     bit_controlled_tests,
+    csr_illegal_accesses,
     stateen_walk,
 )
 from testgen.priv.registry import add_priv_test_generator
@@ -25,6 +26,9 @@ from testgen.priv.registry import add_priv_test_generator
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+# U-mode, entered from S-mode
+_MODES_U = [("umode", "RVTEST_TSBI_GOTO_UMODE", False)]
 
 # The sstateen0 bits the walks leave out (STATEEN0_SKIP_BITS in Smstateen.py)
 SSTATEEN0_SKIP_BITS = STATEEN0_SKIP_BITS & 0xFFFFFFFF
@@ -99,7 +103,7 @@ def _generate_csr_illegal_accesses(
     covergroup: str = "Ssstateen_cg",
     csrs: list[str] | None = None,
     csrs_rv32: list[str] | None = None,
-    modes: tuple[tuple[str, str], ...] = (("umode", "RVTEST_TSBI_GOTO_UMODE"),),
+    modes: list[tuple[str, str, bool]] = _MODES_U,
 ) -> list[str]:
     """CSR ops on ``csrs`` (sstateen0-3 by default) from each of ``modes`` (U-mode by default) with SE0-SE3=1.
 
@@ -107,8 +111,7 @@ def _generate_csr_illegal_accesses(
     """
     coverpoint = "cp_csr_illegal_accesses"
     csrs = csrs or [f"sstateen{n}" for n in range(4)]
-    rv32 = csrs_rv32 or []
-    mode_names = "/".join(f"{label[:-4].upper()}-mode" for label, _ in modes)
+    mode_names = "/".join(f"{label[:-4].upper()}-mode" for label, _, _ in modes)
 
     lines = [
         comment_banner(
@@ -125,24 +128,16 @@ def _generate_csr_illegal_accesses(
     for n in range(4):
         lines.extend(_write_se(n, temp_reg, enable=True))
 
-    for mode_label, enter_line in modes:
-        lines.append(enter_line)
-        for csr in [*csrs, *rv32]:
-            body = []
-            for op in CSR_OPS:
-                if op == "csrr":
-                    insn = f"{op} x{temp_reg}, {csr}  # illegal from {mode_label}"
-                else:
-                    insn = f"{op} x{temp_reg}, {csr}, x{temp_reg}  # illegal from {mode_label}"
-                body.extend(
-                    [
-                        "",
-                        test_data.add_testcase(f"{csr}_{op.lower()}_{mode_label}_se_1", coverpoint, covergroup),
-                        insn,
-                    ]
-                )
-            lines.extend(gated(body, "__riscv_xlen == 32" if csr in rv32 else None))
-        lines.append("RVTEST_TSBI_GOTO_SMODE")
+    lines.extend(
+        csr_illegal_accesses(
+            test_data,
+            covergroup=covergroup,
+            csrs=csrs,
+            csrs_rv32=csrs_rv32,
+            modes=modes,
+            home="RVTEST_TSBI_GOTO_SMODE",
+        )
+    )
 
     lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
     for n in range(1, 4):
@@ -477,9 +472,8 @@ def make_ssstateen(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(arch_block(fcsr_lines, "zfinx"))
     tc.code.append("#endif  // ZFINX_SUPPORTED")
 
-    # cp_jvt — only when Zcmt is supported (covers both S-mode and U-mode).  Sail does not model Zcmt
-    # (SAIL_UNMODELED_TESTS in Smstateen.py).
-    if SAIL_UNMODELED_TESTS:
+    # cp_jvt — only when Zcmt is supported (covers both S-mode and U-mode)
+    if JVT_TESTS:
         tc.code.append("#ifdef ZCMT_SUPPORTED")
         tc.code.extend(arch_block(_generate_jvt(test_data), "zcmt"))
         tc.code.append("#endif  // ZCMT_SUPPORTED")
@@ -633,7 +627,7 @@ def make_ssstateen_h(test_data: TestData) -> list[TestChunk]:
                 covergroup=_H_CG,
                 csrs=[f"hstateen{n}" for n in range(4)],
                 csrs_rv32=[f"hstateen{n}h" for n in range(4)],
-                modes=(("vsmode", "RVTEST_TSBI_GOTO_VSMODE"), ("vumode", "RVTEST_TSBI_GOTO_VUMODE")),
+                modes=_MODES_H[1:],
             ),
         ]
     )

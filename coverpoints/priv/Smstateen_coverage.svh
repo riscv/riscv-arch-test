@@ -390,7 +390,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 
     // Row 7: Zcmt only
     `ifdef ZCMT_SUPPORTED
-        // The tests are disabled until Sail models Zcmt (SAIL_UNMODELED_TESTS in Smstateen.py), so this reports missing coverage
+        // The tests are disabled until Sail models Zcmt (JVT_TESTS in Smstateen.py), so this reports missing coverage
         cp_jvt_access:     cross priv_mode_maybes_u, csrops, jvt_csr, jvt_state;
     `endif
 
@@ -415,11 +415,11 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 
     // Row 15: Sctr only
     `ifdef SSCTR_SUPPORTED
-        // The tests are disabled until Sail models Smctr (SAIL_UNMODELED_TESTS in Smstateen.py), so this reports missing coverage
+        // The tests are disabled until Sail models Smctr (CTR_TESTS in Smstateen.py), so this reports missing coverage
         cp_ctr: cross csrops, ctr_csrs, ctr_state, priv_mode_m_maybes_u;
     `endif
     `ifdef SSAIA_SUPPORTED
-        // The tests are disabled until Sail models Ssaia (SAIL_UNMODELED_TESTS in Smstateen.py), so this reports missing coverage
+        // The tests are disabled until Sail models Ssaia (AIA_TESTS in Smstateen.py), so this reports missing coverage
         cp_imsic: cross csrops, imsic_csrs, imsic_state, priv_mode_m_maybes_u;
         cp_aia: cross csrops, aia_csrs, aia_state, priv_mode_m_maybes_u;
     `endif

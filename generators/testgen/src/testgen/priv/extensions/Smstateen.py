@@ -43,15 +43,22 @@ _MODES_H = [
     ("vumode", "RVTEST_TSBI_GOTO_VUMODE", False),
 ]
 
-# Sail 0.16, the reference model, does not model Ssaia (riscv/sail-riscv#1134), Smctr, Zcmt (riscv/sail-riscv#1740)
-# or the stateen CSRIND bit (riscv/sail-riscv#956), so on a hart that has that state it cannot give the results.
-# Those tests are disabled.  Their coverpoints and test plan rows stay, so the coverage shows as missing.
-# Reinstate the tests (set this to True) when Sail models the state.
-SAIL_UNMODELED_TESTS = False
+# Tests that are off because Sail 0.16, the reference model, does not model the state, so it cannot give the results
+# on a hart that has it.  Their coverpoints and test plan rows stay, so the coverage shows as missing.  Set a flag to
+# True to turn its tests on when Sail models the state.
+AIA_TESTS = False  # Ssaia: cp_imsic, cp_aia and the IMSIC and AIA bits of the walks (riscv/sail-riscv#1134)
+CSRIND_TESTS = False  # the CSRIND bit of the walks (riscv/sail-riscv#956)
+CTR_TESTS = False  # Smctr: cp_ctr and the CTR bit of the walks
+JVT_TESTS = False  # Zcmt: the jvt tests and the JVT bit of the walks (riscv/sail-riscv#1740)
 
-# The mstateen0 and hstateen0 bits for that state, which the walks leave out while the tests are disabled:
-# CSRIND (60), AIA (59), IMSIC (58), CTR (54) and JVT (2).  The sstateen0 walks leave out JVT.
-STATEEN0_SKIP_BITS = 0 if SAIL_UNMODELED_TESTS else (1 << 60) | (1 << 59) | (1 << 58) | (1 << 54) | (1 << 2)
+# The mstateen0 and hstateen0 bits the walks leave out while their tests are off.  The sstateen0 walks can leave out
+# only JVT.
+STATEEN0_SKIP_BITS = (
+    (0 if CSRIND_TESTS else 1 << 60)
+    | (0 if AIA_TESTS else 1 << 59 | 1 << 58)
+    | (0 if CTR_TESTS else 1 << 54)
+    | (0 if JVT_TESTS else 1 << 2)
+)
 
 # hstateen0 bits the walks check: all but C, because custom state is optional
 HSTATEEN0_WALK_MASK = 0xFFFFFFFFFFFFFFFE
@@ -80,77 +87,55 @@ def _csr_insn(op: str, rd: int, csr: str, rs1: int) -> str:
 # ---------------------------------------------------------------------------
 
 
-def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
+def csr_illegal_accesses(
+    test_data: TestData,
+    *,
+    covergroup: str,
+    csrs: list[str],
+    csrs_rv32: list[str] | None = None,
+    modes: list[tuple[str, str, bool]],
+    home: str,
+) -> list[str]:
+    """CSR ops on ``csrs`` (and ``csrs_rv32`` on RV32) from each of ``modes``, all of which trap.  ``home`` returns to
+    the mode the test runs in after each mode."""
     coverpoint = "cp_csr_illegal_accesses"
-    covergroup = "Smstateen_cg"
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "All CSR ops to mstateenN CSRs from U-mode and S-mode — must trap (M-only CSRs)",
-        )
-    ]
-
+    rv32 = csrs_rv32 or []
     temp_reg = test_data.int_regs.get_register()
-
-    # ── U-mode ──────────────────────────────────────────────────────────────
-    lines.append("RVTEST_TSBI_GOTO_UMODE")
-
-    for csr in MSTATEEN_CSRS_64:
-        for op in CSR_OPS:
-            lines.extend(
-                [
-                    "",
-                    test_data.add_testcase(f"{csr}_{op.lower()}_umode", coverpoint, covergroup),
-                    _csr_insn(op, temp_reg, csr, temp_reg),
-                ]
-            )
-
-    lines.append("#if __riscv_xlen == 32")
-    for csr in MSTATEEN_CSRS_H:
-        for op in CSR_OPS:
-            lines.extend(
-                [
-                    "",
-                    test_data.add_testcase(f"{csr}_{op.lower()}_umode", coverpoint, covergroup),
-                    _csr_insn(op, temp_reg, csr, temp_reg),
-                ]
-            )
-    lines.append("#endif  // __riscv_xlen == 32")
-
-    lines.append("RVTEST_TSBI_GOTO_MMODE")
-
-    # ── S-mode ──────────────────────────────────────────────────────────────
-    lines.append("#ifdef S_SUPPORTED")
-    lines.append("RVTEST_TSBI_GOTO_SMODE")
-
-    for csr in MSTATEEN_CSRS_64:
-        for op in CSR_OPS:
-            lines.extend(
-                [
-                    "",
-                    test_data.add_testcase(f"{csr}_{op.lower()}_smode", coverpoint, covergroup),
-                    _csr_insn(op, temp_reg, csr, temp_reg),
-                ]
-            )
-
-    lines.append("#if __riscv_xlen == 32")
-    for csr in MSTATEEN_CSRS_H:
-        for op in CSR_OPS:
-            lines.extend(
-                [
-                    "",
-                    test_data.add_testcase(f"{csr}_{op.lower()}_smode", coverpoint, covergroup),
-                    _csr_insn(op, temp_reg, csr, temp_reg),
-                ]
-            )
-    lines.append("#endif  // __riscv_xlen == 32")
-
-    lines.append("RVTEST_TSBI_GOTO_MMODE")
-    lines.append("#endif  // S_SUPPORTED")
-
+    lines = []
+    for mode_label, enter_line, needs_guard in modes:
+        body = [enter_line]
+        for csr in [*csrs, *rv32]:
+            ops = []
+            for op in CSR_OPS:
+                ops.extend(
+                    [
+                        "",
+                        test_data.add_testcase(f"{csr}_{op}_{mode_label}", coverpoint, covergroup),
+                        _csr_insn(op, temp_reg, csr, temp_reg),
+                    ]
+                )
+            body.extend(gated(ops, "__riscv_xlen == 32" if csr in rv32 else None))
+        body.append(home)
+        lines.extend(gated(body, "defined(S_SUPPORTED)" if needs_guard else None))
     test_data.int_regs.return_registers([temp_reg])
     return lines
+
+
+def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
+    return [
+        comment_banner(
+            "cp_csr_illegal_accesses",
+            "All CSR ops to mstateenN CSRs from U-mode and S-mode — must trap (M-only CSRs)",
+        ),
+        *csr_illegal_accesses(
+            test_data,
+            covergroup="Smstateen_cg",
+            csrs=MSTATEEN_CSRS_64,
+            csrs_rv32=MSTATEEN_CSRS_H,
+            modes=_MODES_MUS[1:],
+            home="RVTEST_TSBI_GOTO_MMODE",
+        ),
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -249,7 +234,10 @@ def _generate_walking_ones(
 
 
 def _stateen_bit(op: str, ctl: str, n: int, bit: int, temp_reg: int) -> list[str]:
-    """Set (op csrs) or clear (op csrc) bit ``bit`` of <ctl><n>, which is bit ``bit - 32`` of <ctl><n>h on RV32."""
+    """Set (op csrs) or clear (op csrc) bit ``bit`` of <ctl><n>.  A bit above 31 is bit ``bit - 32`` of <ctl><n>h on
+    RV32."""
+    if bit < 32:
+        return [f"LI(x{temp_reg}, {1 << bit:#x})", f"{op} {ctl}{n}, x{temp_reg}"]
     return [
         "#if __riscv_xlen == 64",
         f"LI(x{temp_reg}, {1 << bit:#x})",
@@ -382,54 +370,16 @@ def bit_controlled_tests(
 
 
 def _generate_jvt(test_data: TestData) -> list[str]:
-    coverpoint = "cp_jvt_access"
-    covergroup = "Smstateen_cg"
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "CSR ops on jvt from U/S-mode with mstateen0.jvt (bit 2) disabled and enabled",
-        )
-    ]
-
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2)
-    JVT_BIT_MASK = 1 << 2
-
-    lines.append(f"LI(x{ones_reg}, -1)")
-
     # Lower modes only (U + S); the cp_jvt_access cross does not sample M-mode.
-    for mode_label, enter_line, needs_guard in _MODES_MUS[1:]:
-        if needs_guard:
-            lines.append("#ifdef S_SUPPORTED")
-        for state in [0, 1]:
-            bit_action = "csrc" if state == 0 else "csrs"
-            lines.extend(
-                [
-                    "",
-                    f"{INDENT}# mstateen0.jvt = {state}, {mode_label}",
-                    f"LI(x{temp_reg}, {JVT_BIT_MASK})",
-                    f"{bit_action} mstateen0, x{temp_reg}",
-                ]
-            )
-            lines.append(enter_line)
-            for op in CSR_OPS:
-                lines.extend(
-                    [
-                        "",
-                        test_data.add_testcase(
-                            f"jvt_{op.lower()}_jvt{state}_{mode_label}",
-                            coverpoint,
-                            covergroup,
-                        ),
-                        _csr_insn(op, temp_reg, "jvt", ones_reg),
-                    ]
-                )
-            lines.append("RVTEST_TSBI_GOTO_MMODE")
-        if needs_guard:
-            lines.append("#endif  // S_SUPPORTED")
-
-    test_data.int_regs.return_registers([temp_reg, ones_reg])
-    return lines
+    return bit_controlled_tests(
+        test_data,
+        coverpoint="cp_jvt_access",
+        bit=2,
+        bit_name="jvt",
+        banner="CSR ops on jvt from U/S-mode with mstateen0.jvt (bit 2) disabled and enabled",
+        csrs=["jvt"],
+        modes=_MODES_MUS[1:],
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -551,56 +501,16 @@ def _generate_fcsr(test_data: TestData) -> list[str]:
 
 
 def _generate_fcsr_lower(test_data: TestData) -> list[str]:
-    coverpoint = "cp_fcsr_lower"
-    covergroup = "Smstateen_cg"
-
-    lines = [
-        comment_banner(
-            coverpoint,
-            "S/U-mode CSR ops on frm/fflags/fcsr with mstateen0.fcsr (bit 1) both states",
-        )
-    ]
-
-    temp_reg, ones_reg = test_data.int_regs.get_registers(2)
-    FCSR_BIT_MASK = 1 << 1
-    fp_csrs = ["frm", "fflags", "fcsr"]
-
-    lines.append(f"LI(x{ones_reg}, -1)")
-
     # Lower modes only (U + S); these crosses do not sample M-mode.
-    for mode_label, enter_line, needs_guard in _MODES_MUS[1:]:
-        if needs_guard:
-            lines.append("#ifdef S_SUPPORTED")
-        for state in [0, 1]:
-            bit_action = "csrc" if state == 0 else "csrs"
-            lines.extend(
-                [
-                    "",
-                    f"{INDENT}# mstateen0.fcsr = {state}, {mode_label}",
-                    f"LI(x{temp_reg}, {FCSR_BIT_MASK})",
-                    f"{bit_action} mstateen0, x{temp_reg}",
-                ]
-            )
-            lines.append(enter_line)
-            for csr in fp_csrs:
-                for op in CSR_OPS:
-                    lines.extend(
-                        [
-                            "",
-                            test_data.add_testcase(
-                                f"{csr}_{op.lower()}_fcsr{state}_{mode_label}",
-                                coverpoint,
-                                covergroup,
-                            ),
-                            _csr_insn(op, temp_reg, csr, ones_reg),
-                        ]
-                    )
-            lines.append("RVTEST_TSBI_GOTO_MMODE")
-        if needs_guard:
-            lines.append("#endif  // S_SUPPORTED")
-
-    test_data.int_regs.return_registers([temp_reg, ones_reg])
-    return lines
+    return bit_controlled_tests(
+        test_data,
+        coverpoint="cp_fcsr_lower",
+        bit=1,
+        bit_name="fcsr",
+        banner="S/U-mode CSR ops on frm/fflags/fcsr with mstateen0.fcsr (bit 1) both states",
+        csrs=["frm", "fflags", "fcsr"],
+        modes=_MODES_MUS[1:],
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -725,8 +635,7 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
     )
     tc.code.append("#endif")
 
-    # Sail does not model Ssaia or Zcmt (SAIL_UNMODELED_TESTS)
-    if SAIL_UNMODELED_TESTS:
+    if AIA_TESTS:
         # cp_imsic — only when IMSIC is present
         tc.code.append("#ifdef SSAIA_SUPPORTED")
         tc.code.extend(
@@ -756,6 +665,7 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
         )
         tc.code.append("#endif  // SSAIA_SUPPORTED")
 
+    if JVT_TESTS:
         # cp_jvt_access — only when Zcmt is present (covers S-mode and U-mode)
         tc.code.append("#ifdef ZCMT_SUPPORTED")
         tc.code.extend(arch_block(_generate_jvt(test_data), "zcmt"))
@@ -804,8 +714,7 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
     )
     tc.code.append("#endif  // SSQOSID_SUPPORTED")
 
-    # Sail does not model Smctr (SAIL_UNMODELED_TESTS)
-    if SAIL_UNMODELED_TESTS:
+    if CTR_TESTS:
         # cp_ctr — only when Sctr is present
         tc.code.append("#ifdef SSCTR_SUPPORTED")
         tc.code.extend(

@@ -16,7 +16,7 @@ coverpoints:
       For RV32, also write msstateen0-3h.
     expectation: Access successful
     bins: 4-8 CSRs * 128-64 walking ones/zero
-    notes: The walk leaves out CSRIND, AIA, IMSIC, CTR and JVT until Sail models their state (SAIL_UNMODELED_TESTS in Smstateen.py).
+    notes: The walk leaves out CSRIND, AIA, IMSIC, CTR and JVT until Sail models their state (the *_TESTS flags in Smstateen.py).
     rules:
       - mstateen_rv64_csrs
       - stateen_rv32_upper_bits_csrs
@@ -54,7 +54,7 @@ coverpoints:
       With msstaten0.JVT = {0,1}, read and write jvt   from the M, S if supported, else U
     expectation: Always successful
     status: Not tested
-    notes: The tests are disabled until Sail models Zcmt (SAIL_UNMODELED_TESTS in Smstateen.py).  The coverpoint stays, so the coverage shows as missing.
+    notes: The tests are disabled until Sail models Zcmt (JVT_TESTS in Smstateen.py).  The coverpoint stays, so the coverage shows as missing.
     rules:
       - stateen0_jvt_op
   - name: cp_envcfg
@@ -84,7 +84,7 @@ coverpoints:
     expectation: Always successful
     bins: 2 states x 2 accesses x ? regs
     status: Not tested
-    notes: The tests are disabled until Sail models Ssaia (SAIL_UNMODELED_TESTS in Smstateen.py).  The coverpoint stays, so the coverage shows as missing.
+    notes: The tests are disabled until Sail models Ssaia (AIA_TESTS in Smstateen.py).  The coverpoint stays, so the coverage shows as missing.
     rules:
       - mstateen0_aia_op
   - name: cp_imsic
@@ -95,7 +95,7 @@ coverpoints:
     expectation: Always successful
     bins: 2 states x 2 accesses x ? regs
     status: Not tested
-    notes: The tests are disabled until Sail models Ssaia (SAIL_UNMODELED_TESTS in Smstateen.py).  The coverpoint stays, so the coverage shows as missing.
+    notes: The tests are disabled until Sail models Ssaia (AIA_TESTS in Smstateen.py).  The coverpoint stays, so the coverage shows as missing.
     rules:
       - mstateen0_imsic_op
   - name: cp_context
@@ -133,7 +133,7 @@ coverpoints:
     expectation: Always successful
     bins: 2 states x 2 accesses x 3 regs
     status: Not tested
-    notes: The tests are disabled until Sail models Smctr (SAIL_UNMODELED_TESTS in Smstateen.py).  The coverpoint stays, so the coverage shows as missing.
+    notes: The tests are disabled until Sail models Smctr (CTR_TESTS in Smstateen.py).  The coverpoint stays, so the coverage shows as missing.
     rules:
       - mstateen_ctr1
       - mstateen_ctr0

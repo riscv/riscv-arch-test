@@ -12,14 +12,22 @@ from testgen.asm.tsbi import tsbi_call
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
-from testgen.priv.extensions.Smstateen import HSTATEEN0_WALK_MASK, bit_controlled_tests
+from testgen.priv.extensions.Smstateen import (
+    CSR_OPS,
+    HSTATEEN0_WALK_MASK,
+    SAIL_UNMODELED_TESTS,
+    STATEEN0_SKIP_BITS,
+    bit_controlled_tests,
+    stateen_walk,
+)
 from testgen.priv.registry import add_priv_test_generator
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-CSR_OPS = ["csrrw", "csrrs", "csrrc", "csrr"]
+# The sstateen0 bits the walks leave out (STATEEN0_SKIP_BITS in Smstateen.py)
+SSTATEEN0_SKIP_BITS = STATEEN0_SKIP_BITS & 0xFFFFFFFF
 
 
 def _write_mstateen_bit(n: int, bit: int, temp_reg: int, *, enable: bool) -> list[str]:
@@ -158,29 +166,27 @@ def _generate_walking_ones(
     *,
     ctl: str = "sstateen",
     mask0: int = 0x7,
+    skip0: int = SSTATEEN0_SKIP_BITS,
     covergroup: str = "Ssstateen_cg",
     high_halves: bool = False,
 ) -> list[str]:
-    """Walk <ctl>0-3 from S-mode with the matching SEn=1, checking the bits of <ctl>0 in ``mask0``.
+    """Walk <ctl>0-3 from S-mode with the matching SEn=1, checking the bits of <ctl>0 in ``mask0`` and leaving out
+    the bits in ``skip0``.
 
     The H group walks hstateen0-3 from HS-mode, and with ``high_halves`` also hstateen0h-3h on RV32.
     """
     coverpoint = "cp_walking_ones"
 
-    def walk(n: int, mask: int | None) -> list[str]:
-        out = csr_walk_test(test_data, (f"{ctl}{n}", mask), covergroup, coverpoint)
-        if high_halves:
-            out.extend(
-                [
-                    "#if __riscv_xlen == 32",
-                    test_data.add_testcase(f"{ctl}{n}h_walk_se{n}_1_smode", coverpoint, covergroup),
-                    *csr_walk_test(
-                        test_data, (f"{ctl}{n}h", None if mask is None else mask >> 32), covergroup, coverpoint
-                    ),
-                    "#endif  // __riscv_xlen == 32",
-                ]
-            )
-        return out
+    def walk(n: int, mask: int | None, skip: int = 0) -> list[str]:
+        return stateen_walk(
+            test_data,
+            f"{ctl}{n}",
+            covergroup=covergroup,
+            label=f"{{csr}}_walk_se{n}_1_smode",
+            mask=mask,
+            skip_bits=skip,
+            high_half=high_halves,
+        )
 
     lines = [
         comment_banner(
@@ -209,13 +215,7 @@ def _generate_walking_ones(
     # hit without a mode switch. csr_walk_test emits csrw+csrs (walking-1s) and csrw+csrc
     # (walking-0s), satisfying the csrops cross.
     test_data.int_regs.return_registers([temp_reg])
-    lines.extend(
-        [
-            "",
-            test_data.add_testcase(f"{ctl}0_walk_se0_1_smode", coverpoint, covergroup),
-        ]
-    )
-    lines.extend(walk(0, mask0))
+    lines.extend(walk(0, mask0, skip0))
 
     lines.extend(
         [
@@ -237,7 +237,6 @@ def _generate_walking_ones(
     temp_reg = test_data.int_regs.get_register()
     for n in range(1, 4):
         lines.extend(_write_se(n, temp_reg, enable=True))
-        lines.extend(["", test_data.add_testcase(f"{ctl}{n}_walk_se{n}_1_smode", coverpoint, covergroup)])
         lines.extend(walk(n, None))
         lines.extend(_write_se(n, temp_reg, enable=False))
     test_data.int_regs.return_registers([temp_reg])
@@ -478,10 +477,12 @@ def make_ssstateen(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(arch_block(fcsr_lines, "zfinx"))
     tc.code.append("#endif  // ZFINX_SUPPORTED")
 
-    # cp_jvt — only when Zcmt is supported (covers both S-mode and U-mode)
-    tc.code.append("#ifdef ZCMT_SUPPORTED")
-    tc.code.extend(arch_block(_generate_jvt(test_data), "zcmt"))
-    tc.code.append("#endif  // ZCMT_SUPPORTED")
+    # cp_jvt — only when Zcmt is supported (covers both S-mode and U-mode).  Sail does not model Zcmt
+    # (SAIL_UNMODELED_TESTS in Smstateen.py).
+    if SAIL_UNMODELED_TESTS:
+        tc.code.append("#ifdef ZCMT_SUPPORTED")
+        tc.code.extend(arch_block(_generate_jvt(test_data), "zcmt"))
+        tc.code.append("#endif  // ZCMT_SUPPORTED")
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks
@@ -544,7 +545,9 @@ def _h_walking_ones_vs(test_data: TestData) -> list[str]:
                 f"{'csrs' if state else 'csrc'} hstateen0, x{temp_reg}  # hstateen0 C, FCSR, JVT = {state}",
                 "RVTEST_TSBI_GOTO_VSMODE",
                 test_data.add_testcase(f"sstateen0_walk_h{state}_vsmode", coverpoint, _H_CG),
-                *csr_walk_test(test_data, ("sstateen0", 0x7), _H_CG, coverpoint, tag=f"_h{state}"),
+                *csr_walk_test(
+                    test_data, ("sstateen0", 0x7), _H_CG, coverpoint, tag=f"_h{state}", skip_bits=SSTATEEN0_SKIP_BITS
+                ),
                 "RVTEST_TSBI_GOTO_SMODE",
             ]
         )
@@ -617,7 +620,12 @@ def make_ssstateen_h(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(
         [
             *_generate_walking_ones(
-                test_data, ctl="hstateen", mask0=HSTATEEN0_WALK_MASK, covergroup=_H_CG, high_halves=True
+                test_data,
+                ctl="hstateen",
+                mask0=HSTATEEN0_WALK_MASK,
+                skip0=STATEEN0_SKIP_BITS,
+                covergroup=_H_CG,
+                high_halves=True,
             ),
             *_h_walking_ones_vs(test_data),
             *_generate_csr_illegal_accesses(

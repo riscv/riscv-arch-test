@@ -43,9 +43,18 @@ _MODES_H = [
     ("vumode", "RVTEST_TSBI_GOTO_VUMODE", False),
 ]
 
-# hstateen0 bits the H group walks check: all but C (custom state is optional) and CTR, IMSIC, AIA and CSRIND,
-# whose state Sail does not model (riscv/sail-riscv#222, #956)
-HSTATEEN0_WALK_MASK = 0xE3BFFFFFFFFFFFFE
+# Sail 0.16, the reference model, does not model Ssaia (riscv/sail-riscv#1134), Smctr, Zcmt (riscv/sail-riscv#1740)
+# or the stateen CSRIND bit (riscv/sail-riscv#956), so on a hart that has that state it cannot give the results.
+# Those tests are disabled.  Their coverpoints and test plan rows stay, so the coverage shows as missing.
+# Reinstate the tests (set this to True) when Sail models the state.
+SAIL_UNMODELED_TESTS = False
+
+# The mstateen0 and hstateen0 bits for that state, which the walks leave out while the tests are disabled:
+# CSRIND (60), AIA (59), IMSIC (58), CTR (54) and JVT (2).  The sstateen0 walks leave out JVT.
+STATEEN0_SKIP_BITS = 0 if SAIL_UNMODELED_TESTS else (1 << 60) | (1 << 59) | (1 << 58) | (1 << 54) | (1 << 2)
+
+# hstateen0 bits the walks check: all but C, because custom state is optional
+HSTATEEN0_WALK_MASK = 0xFFFFFFFFFFFFFFFE
 
 # The H group's srmcfg tests are disabled for now.  Smstateen_H_cg/cp_srmcfg stays, so the missing coverage shows.
 SRMCFG_H_TESTS = False
@@ -152,64 +161,75 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
 # ---------------------------------------------------------------------------
 
 
+def stateen_walk(
+    test_data: TestData,
+    csr: str,
+    *,
+    covergroup: str,
+    label: str,
+    mask: int | None = None,
+    skip_bits: int = 0,
+    high_half: bool = False,
+    tag: str = "",
+) -> list[str]:
+    """Walk ``csr``, and with ``high_half`` also <csr>h on RV32, checking the bits in ``mask`` (None checks them all)
+    and leaving out ``skip_bits``.  ``label`` names the testcase; ``tag`` distinguishes the testcases of several
+    walks of one CSR."""
+    coverpoint = "cp_walking_ones"
+    lines = [
+        "",
+        test_data.add_testcase(label.format(csr=csr), coverpoint, covergroup),
+        *csr_walk_test(test_data, (csr, mask), covergroup, coverpoint, tag=tag, skip_bits=skip_bits),
+    ]
+    if high_half:
+        high_mask = None if mask is None else mask >> 32
+        lines.extend(
+            [
+                "#if __riscv_xlen == 32",
+                "",
+                test_data.add_testcase(label.format(csr=f"{csr}h"), coverpoint, covergroup),
+                *csr_walk_test(
+                    test_data, (f"{csr}h", high_mask), covergroup, coverpoint, tag=tag, skip_bits=skip_bits >> 32
+                ),
+                "#endif  // __riscv_xlen == 32",
+            ]
+        )
+    return lines
+
+
 def _generate_walking_ones(
     test_data: TestData,
     *,
     ctl: str = "mstateen",
     mask0: int | None = 0xDF80000000000006,
+    skip0: int = STATEEN0_SKIP_BITS,
     covergroup: str = "Smstateen_cg",
     tag: str = "",
 ) -> list[str]:
     """Walk <ctl>0-3 (and <ctl>0h-3h on RV32) from M-mode.
 
-    ``mask0`` selects which bits of <ctl>0 are checked against the signature (csr_walk_test walks every bit
-    position regardless); None checks them all.  ``tag`` distinguishes the testcases of several walks.
+    ``mask0`` selects which bits of <ctl>0 are checked against the signature; None checks them all.  The walk leaves
+    out the bits in ``skip0``.  ``tag`` distinguishes the testcases of several walks.
     """
-    coverpoint = "cp_walking_ones"
-
     lines = [
         comment_banner(
-            coverpoint,
+            "cp_walking_ones",
             f"Walking-1 and walking-0 patterns on {ctl}0-3 (+ {ctl}0h-3h on RV32) from M-mode",
         )
     ]
+    walk = {"covergroup": covergroup, "label": f"{{csr}}_walk{tag}", "high_half": True, "tag": tag}
 
     # The default mask mirrors mstateen0's writable high-word bits on RV64:
     # SE0(63)|ENVCFG(62)|CSRIND(60)|AIA(59)|IMSIC(58)|CONTEXT(57)|P1P13(56)|SRMCFG(55), plus FCSR(1)|JVT(2) in the
     # low word. On RV32 mstateen0 is the low word (0x6) and those high bits live in mstateen0h (0xDF800000).
-    lines.extend(
-        [
-            "",
-            test_data.add_testcase(f"{ctl}0_walk{tag}", coverpoint, covergroup),
-        ]
-    )
-    lines.extend(csr_walk_test(test_data, (f"{ctl}0", mask0), covergroup, coverpoint, tag=tag))
-
-    # <ctl>0h — RV32 only
-    lines.append("#if __riscv_xlen == 32")
-    lines.extend(
-        [
-            "",
-            test_data.add_testcase(f"{ctl}0h_walk{tag}", coverpoint, covergroup),
-        ]
-    )
-    lines.extend(
-        csr_walk_test(test_data, (f"{ctl}0h", None if mask0 is None else mask0 >> 32), covergroup, coverpoint, tag=tag)
-    )
-    lines.append("#endif  // __riscv_xlen == 32")
+    lines.extend(stateen_walk(test_data, f"{ctl}0", mask=mask0, skip_bits=skip0, **walk))
 
     # mstateen1-3 define only bit 63 (SE1-SE3), which gates sstateenN (and hstateenN). It is
     # writable unless H is absent and sstateenN is all read-only zero (norm:mstateen_bit_63_roz);
     # every other bit is reserved and read-only zero, so the whole CSR is checked. hstateen1-3
     # likewise define only bit 63.
     for n in range(1, 4):
-        lines.extend(["", test_data.add_testcase(f"{ctl}{n}_walk{tag}", coverpoint, covergroup)])
-        lines.extend(csr_walk_test(test_data, (f"{ctl}{n}", None), covergroup, coverpoint, tag=tag))
-    lines.append("#if __riscv_xlen == 32")
-    for n in range(1, 4):
-        lines.extend(["", test_data.add_testcase(f"{ctl}{n}h_walk{tag}", coverpoint, covergroup)])
-        lines.extend(csr_walk_test(test_data, (f"{ctl}{n}h", None), covergroup, coverpoint, tag=tag))
-    lines.append("#endif  // __riscv_xlen == 32")
+        lines.extend(stateen_walk(test_data, f"{ctl}{n}", **walk))
 
     return lines
 
@@ -705,39 +725,41 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
     )
     tc.code.append("#endif")
 
-    # cp_imsic — only when IMSIC is present
-    tc.code.append("#ifdef SSAIA_SUPPORTED")
-    tc.code.extend(
-        bit_controlled_tests(
-            test_data,
-            coverpoint="cp_imsic",
-            bit=58,
-            bit_name="imsic",
-            banner="CSR ops on stopei/vstopei with mstateen0.imsic (bit 58) disabled and enabled — M/S/U-mode",
-            csrs=["stopei", "vstopei"],
+    # Sail does not model Ssaia or Zcmt (SAIL_UNMODELED_TESTS)
+    if SAIL_UNMODELED_TESTS:
+        # cp_imsic — only when IMSIC is present
+        tc.code.append("#ifdef SSAIA_SUPPORTED")
+        tc.code.extend(
+            bit_controlled_tests(
+                test_data,
+                coverpoint="cp_imsic",
+                bit=58,
+                bit_name="imsic",
+                banner="CSR ops on stopei/vstopei with mstateen0.imsic (bit 58) disabled and enabled — M/S/U-mode",
+                csrs=["stopei", "vstopei"],
+            )
         )
-    )
-    tc.code.append("#endif  // SSAIA_SUPPORTED")
+        tc.code.append("#endif  // SSAIA_SUPPORTED")
 
-    # cp_aia — only when AIA is present
-    tc.code.append("#ifdef SSAIA_SUPPORTED")
-    tc.code.extend(
-        bit_controlled_tests(
-            test_data,
-            coverpoint="cp_aia",
-            bit=59,
-            bit_name="aia",
-            banner="CSR ops on Ssaia CSRs with mstateen0.aia (bit 59) disabled and enabled — M/S/U-mode",
-            csrs=["stopi"],
-            csrs_rv32=["sieh", "siph"],
+        # cp_aia — only when AIA is present
+        tc.code.append("#ifdef SSAIA_SUPPORTED")
+        tc.code.extend(
+            bit_controlled_tests(
+                test_data,
+                coverpoint="cp_aia",
+                bit=59,
+                bit_name="aia",
+                banner="CSR ops on Ssaia CSRs with mstateen0.aia (bit 59) disabled and enabled — M/S/U-mode",
+                csrs=["stopi"],
+                csrs_rv32=["sieh", "siph"],
+            )
         )
-    )
-    tc.code.append("#endif  // SSAIA_SUPPORTED")
+        tc.code.append("#endif  // SSAIA_SUPPORTED")
 
-    # cp_jvt_access — only when Zcmt is present (covers S-mode and U-mode)
-    tc.code.append("#ifdef ZCMT_SUPPORTED")
-    tc.code.extend(arch_block(_generate_jvt(test_data), "zcmt"))
-    tc.code.append("#endif  // ZCMT_SUPPORTED")
+        # cp_jvt_access — only when Zcmt is present (covers S-mode and U-mode)
+        tc.code.append("#ifdef ZCMT_SUPPORTED")
+        tc.code.extend(arch_block(_generate_jvt(test_data), "zcmt"))
+        tc.code.append("#endif  // ZCMT_SUPPORTED")
 
     # cp_context — only when Sdtrig is present
     tc.code.append("#ifdef SDTRIG_SUPPORTED")
@@ -782,19 +804,21 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
     )
     tc.code.append("#endif  // SSQOSID_SUPPORTED")
 
-    # cp_ctr — only when Sctr is present
-    tc.code.append("#ifdef SSCTR_SUPPORTED")
-    tc.code.extend(
-        bit_controlled_tests(
-            test_data,
-            coverpoint="cp_ctr",
-            bit=54,
-            bit_name="ctr",
-            banner="CSR ops on sctrdepth/sctrstatus with mstateen0.ctr (bit 54) disabled and enabled — M/S/U-mode",
-            csrs=["sctrdepth", "sctrstatus"],
+    # Sail does not model Smctr (SAIL_UNMODELED_TESTS)
+    if SAIL_UNMODELED_TESTS:
+        # cp_ctr — only when Sctr is present
+        tc.code.append("#ifdef SSCTR_SUPPORTED")
+        tc.code.extend(
+            bit_controlled_tests(
+                test_data,
+                coverpoint="cp_ctr",
+                bit=54,
+                bit_name="ctr",
+                banner="CSR ops on sctrdepth/sctrstatus with mstateen0.ctr (bit 54) disabled and enabled — M/S/U-mode",
+                csrs=["sctrdepth", "sctrstatus"],
+            )
         )
-    )
-    tc.code.append("#endif  // SSCTR_SUPPORTED")
+        tc.code.append("#endif  // SSCTR_SUPPORTED")
 
     # cp_fcsr, cp_fcsr_ro_zero, cp_fcsr_lower, cp_fcsr_fp_instrs — only when Zfinx present
     tc.code.append("#ifdef ZFINX_SUPPORTED")
@@ -911,6 +935,7 @@ def _h_walking_ones(test_data: TestData) -> list[str]:
                 test_data,
                 ctl="hstateen",
                 mask0=HSTATEEN0_WALK_MASK if state else None,
+                skip0=STATEEN0_SKIP_BITS if state else 0,
                 covergroup=_H_CG,
                 tag=f"_m{state}",
             )

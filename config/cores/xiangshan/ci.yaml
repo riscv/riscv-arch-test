@@ -38,10 +38,6 @@ exclude_extensions:
   - Ssstrict_S
   - Ssstrict_Sm
   - Ssstrict_U
-  # mstateen0.CSRIND, AIA and IMSIC are writable (XiangShan implements Sscsrind and
-  # Smaia), but Sail 0.16 has no Sscsrind or Smaia and no sail.json setting for these bits,
-  # so it reads them as zero.
-  - Smstateen
   # PMP_Sm_cfg_A_tor_zero stores to and loads from physical address 0. The SimTop PMA
   # table makes 0x0-0x0FFF_FFFF readable and writable I/O with no device behind it, and
   # the bus error is not reported: the store is dropped and the load returns 0. Sail has

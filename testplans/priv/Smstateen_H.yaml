@@ -14,8 +14,8 @@ coverpoints:
     description: |-
       In M-mode, write hstateen0-3 with walking ones and walking zeros, and read each back, with mstateen0-3 all zeros
       and then all ones.  For RV32, also walk hstateen0h-3h.
-      With mstateen0-3 all ones, C (custom state is optional) and CTR, IMSIC, AIA and CSRIND (state Sail does not
-      model) are left out of the hstateen0 check.
+      With mstateen0-3 all ones, C (custom state is optional) is left out of the hstateen0 check, and the walk leaves
+      out CSRIND, AIA, IMSIC, CTR and JVT until Sail models their state (SAIL_UNMODELED_TESTS in Smstateen.py).
     expectation: With mstateen0-3 zero, every bit reads zero.  With them all ones, the bits whose state the hart implements read back as written and the rest read zero
     bins: 2 mstateen states * 4-8 CSRs * XLEN walking ones/zeros
   - name: cp_mstateen0_se0_controls_sstateen0
@@ -60,7 +60,7 @@ coverpoints:
   - goal: mstateen0.CSRIND, IMSIC, AIA and CTR control HS-mode and VS-mode access to vsiselect, vsireg*, vstopei and vsctrctl
     description: Access vsiselect, vsireg*, vstopei and vsctrctl in HS-mode, and their supervisor names in VS-mode, with the mstateen0 bit = 0 and 1.
     status: Not tested
-    notes: Sail 0.16 models none of Ssaia, Smctr and Ssctr, and its mstateen0 has no CSRIND, IMSIC, AIA or CTR bit, so the reference cannot give the results.  cp_walking_ones leaves these hstateen0 bits out.
+    notes: Sail 0.16 models none of Ssaia, Smctr and Ssctr, and its mstateen0 has no CSRIND, IMSIC, AIA or CTR bit, so the reference cannot give the results.  cp_walking_ones leaves these hstateen0 bits out until Sail models them.
     rules:
       - mstateen0_csrind_op
       - mstateen0_imsic_op

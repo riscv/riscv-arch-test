@@ -239,6 +239,7 @@ def csr_walk_test(
     warl_fields: list[tuple] | None = None,
     maskedwrites: bool = False,
     tag: str = "",
+    skip_bits: int = 0,
 ) -> list[str]:
     """
     Generate a CSR walking-ones test: set and (optionally) clear each bit individually.
@@ -265,9 +266,14 @@ def csr_walk_test(
             other iterations check the field exactly as usual (see _warl_reserved_check).
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
         tag: Appended to the CSR name in the testcase names, to tell apart several walks of one CSR.
+        skip_bits: Bits the walk neither sets nor checks, such as bits for state the reference model does not
+            model. Their columns get no testcase.
     """
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
     csr_name, mask = csr
+    if skip_bits:
+        mask = ((1 << 64) - 1 if mask is None else mask) & ~skip_bits
+        csr = (csr_name, mask)
     if maskedwrites:
         assert mask is not None, f"maskedwrites requires a csr mask (got None for {csr_name})"
     if mask is not None:
@@ -352,7 +358,9 @@ def csr_walk_test(
     ]
     if mask is not None:
         lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
-    if walk_zeros:
+    if walk_zeros and skip_bits:
+        lines.append(f"LI(x{temp_reg}, {((1 << 64) - 1) & ~skip_bits:#x})  # x{temp_reg} = all 1s but the skipped bits")
+    elif walk_zeros:
         lines.append(f"LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s")
 
     need_endif = False
@@ -362,6 +370,9 @@ def csr_walk_test(
         if i == 32:
             lines.append("\n#if __riscv_xlen == 64")
             need_endif = True
+        if skip_bits >> i & 1:
+            lines.append(f"slli x{walk_reg}, x{walk_reg}, 1      # skip column {i}")
+            continue
         lines.append(f"csrw {csr_name}, zero    # clear all bits")
         if maskedwrites:
             lines.append(f"and x{check_reg}, x{walk_reg}, x{mask_reg} # mask walking 1")
@@ -381,6 +392,9 @@ def csr_walk_test(
             if i == 32:
                 lines.append("\n#if __riscv_xlen == 64")
                 need_endif = True
+            if skip_bits >> i & 1:
+                lines.append(f"slli x{walk_reg}, x{walk_reg}, 1      # skip column {i}")
+                continue
             lines.append(
                 f"csrw {csr_name}, x{mask_reg if maskedwrites else temp_reg}   # set all (possibly masked) bits"
             )

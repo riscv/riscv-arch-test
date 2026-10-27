@@ -26,8 +26,3 @@ coverpoints:
     description: With cross of menvcfg.STCE = 1, henvcfg.STCE = 0 mcounteren.TM = 0, hcounteren.TM =0, read/write (0s,1s)/set/clear vstimecmp.  For RV32, also vstimecmph
     expectation: success
     bins: 5 accesses * up to 2 regs
-  - name: cp_vstimecmp_int
-    goal: a vstimecmp timer interrupt is taken under the usual enable and delegation rules
-    description: With menvcfg.STCE = henvcfg.STCE = 1, hie.VSTIE = 1, vsstatus.SIE = 1 and hideleg.VSTI = {0/1}, write vstimecmp = {0, time + htimedelta + a short delay} and change to VS-mode
-    expectation: VS-mode takes STI (cause 5) when hideleg.VSTI = 1; HS-mode takes VSTI (cause 6) otherwise
-    bins: 2 hideleg * 2 (at once, soon)

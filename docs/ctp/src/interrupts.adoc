@@ -33,6 +33,7 @@ include::norm/InterruptsS_norm_rules.adoc[]
 
 The Sstc suite has one covergroup per group of tests: Sstc_Sm_cg (M-mode), Sstc_cg (S-mode and U-mode), and, with the hypervisor extension, Sstc_HSm_cg (M-mode) and Sstc_H_cg (HS, VS, VU and U modes).
 The Sstc_Sm and Sstc_HSm tests require Sm, so they are not part of a certificate without Sm, such as RVA23.
+The Sstc suite takes no interrupts: timer interrupts raised through stimecmp and vstimecmp are tested by cp_trigger_sti_sstc and cp_trigger_vsti_sstc in InterruptsS and InterruptsSm.
 
 ===== Sstc Supervisor-Mode Supervisor Timer Compare
 
@@ -49,14 +50,14 @@ include::{testplansdir}/priv/Sstc_Sm.adoc[]
 ===== Sstc_H Hypervisor Timer Compare
 
 These tests are run on any configuration with the hypervisor extension when the Sstc supervisor timer compare extension is supported.
-They check vstimecmp and stimecmp access from HS, VS, VU and U modes and VS timer interrupts armed from HS-mode.
+They check vstimecmp and stimecmp access from HS, VS, VU and U modes.
 
 include::{testplansdir}/priv/Sstc_H.adoc[]
 
 ===== Sstc_HSm Machine-Mode Hypervisor Timer Compare
 
 These tests are run on any configuration with machine mode and the hypervisor extension when the Sstc supervisor timer compare extension is supported.
-They check from M-mode vstimecmp access, hip.VSTIP as hvip.VSTIP OR the vstimecmp comparison with each menvcfg.STCE and henvcfg.STCE, htimedelta (including 64-bit wrap), and VS timer interrupts armed from M-mode.
+They check from M-mode vstimecmp access, hip.VSTIP as hvip.VSTIP OR the vstimecmp comparison with each menvcfg.STCE and henvcfg.STCE, and htimedelta (including 64-bit wrap).
 
 include::{testplansdir}/priv/Sstc_HSm.adoc[]
 

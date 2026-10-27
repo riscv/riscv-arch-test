@@ -183,11 +183,11 @@ normative_rule_definitions:
 
   # The vstimecmp interrupt is taken under the usual enable and delegation rules
   - names: [hip_vstip_enable, hideleg_op]
-    coverpoint: ["Sstc_H_cg/cp_vstimecmp_int", "Sstc_HSm_cg/cp_vstimecmp_int"]
+    coverpoint: ["{InterruptsS_cg, InterruptsSm_cg}/cp_trigger_vsti_sstc"]
 
   # hip.VSTIP is hvip.VSTIP OR the vstimecmp comparison, which counts only when menvcfg.STCE and henvcfg.STCE are set
   - names: [hip_vstip_defined_v0]
-    coverpoint: ["Sstc_H_cg/cp_vstimecmp_int", "Sstc_HSm_cg/cp_vstip"]
+    coverpoint: ["InterruptsS_cg/cp_trigger_vsti_sstc", "Sstc_HSm_cg/cp_vstip"]
   - names: [hip_vstip_acc]
     coverpoint: ["Sstc_HSm_cg/cp_vstip"]
 

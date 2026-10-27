@@ -11,7 +11,7 @@
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from itertools import combinations
+from itertools import combinations, product
 
 from testgen.asm.csr import write_stce
 from testgen.asm.helpers import comment_banner, write_sigupd
@@ -454,6 +454,119 @@ def generate_cp_wfi(test_data: TestData, test_chunks: list[TestChunk], suite: In
     test_data.int_regs.return_registers([count_reg, tmp_reg])
     if priv == "U":
         tc.code.append("#endif // S_SUPPORTED")
+
+
+def _wait_for_trap(test_data: TestData) -> list[str]:
+    """Wait until the trap handler has counted another trap, such as a timer interrupt armed to fire soon.
+
+    The wait ends at a deadline on the timer, so a missing interrupt shows up as a trap signature mismatch instead
+    of a hang.  The arm macro read time before this wait does, so the compare value is at most
+    RVMODEL_TIMER_INT_SOON_DELAY ticks past the time read here.  The deadline allows that, plus
+    RVMODEL_INTERRUPT_LATENCY ticks (no fewer than its cycles, since the timer ticks no faster than the hart's
+    clock), plus another RVMODEL_TIMER_INT_SOON_DELAY of slack so the deadline never decides a passing run.  Time
+    is readable in the waiting mode (HS-mode, M-mode or VS-mode) because boot sets mcounteren and hcounteren to all
+    ones.  The loop compares time with the deadline by the sign of their difference, so htimedelta does not
+    matter, a wrap is harmless, and the low word of time is enough on RV32.
+    """
+    count_reg, deadline_reg, tmp_reg = test_data.int_regs.get_registers(3)
+    lines = [
+        f"LA(x{count_reg}, rvtest_trap_count)",
+        f"LREG x{count_reg}, 0(x{count_reg})",
+        f"LA(x{deadline_reg}, RVMODEL_TIMER_INT_SOON_DELAY)",
+        f"slli x{deadline_reg}, x{deadline_reg}, 1",
+        f"LA(x{tmp_reg}, RVMODEL_INTERRUPT_LATENCY)",
+        f"add x{deadline_reg}, x{deadline_reg}, x{tmp_reg}",
+        f"csrr x{tmp_reg}, time",
+        f"add x{deadline_reg}, x{deadline_reg}, x{tmp_reg}    # deadline = time + 2 * delay + latency",
+        "1:",
+        f"LA(x{tmp_reg}, rvtest_trap_count)",
+        f"LREG x{tmp_reg}, 0(x{tmp_reg})",
+        f"bne x{tmp_reg}, x{count_reg}, 2f    # interrupt taken",
+        f"csrr x{tmp_reg}, time",
+        f"sub x{tmp_reg}, x{tmp_reg}, x{deadline_reg}",
+        f"bltz x{tmp_reg}, 1b    # deadline not reached",
+        "2:",
+    ]
+    test_data.int_regs.return_registers([count_reg, deadline_reg, tmp_reg])
+    return lines
+
+
+def _write_henvcfg_stce(reg: int, enable: bool) -> list[str]:
+    """Set or clear henvcfg.STCE (henvcfgh.STCE on RV32) from M-mode or HS-mode."""
+    op = "csrs" if enable else "csrc"
+    return [
+        "#if __riscv_xlen == 64",
+        f"LI(x{reg}, HENVCFG_STCE)",
+        f"{op} henvcfg, x{reg} # henvcfg.STCE = {int(enable)}",
+        "#else",
+        f"LI(x{reg}, HENVCFGH_STCE)",
+        f"{op} henvcfgh, x{reg} # henvcfgh.STCE = {int(enable)}",
+        "#endif",
+    ]
+
+
+def generate_cp_trigger_vsti_sstc(
+    test_data: TestData, test_chunks: list[TestChunk], suite: InterruptSuite, priv: str
+) -> None:
+    """Arm vstimecmp in the boot mode at once (vstimecmp = 0) or soon, with hie.VSTIE = 1 and hideleg.VSTI = 0/1.
+
+    VS-mode takes STI when hideleg.VSTI = 1.  HS-mode takes VSTI otherwise: in HS-mode with sstatus.SIE = 1 when
+    the suite boots to HS-mode (InterruptsS), else in VS-mode (InterruptsSm).
+    """
+
+    ######################################
+    coverpoint = "cp_trigger_vsti_sstc"
+    ######################################
+    boot = suite.boot
+    tc = test_data.new_test_chunk(test_chunks, f"trigger_vsti_sstc_{priv}")
+    tc.section_header = comment_banner(
+        coverpoint,
+        f"With menvcfg.STCE = henvcfg.STCE = 1 and hie.VSTIE = 1, arm vstimecmp in {'M' if boot == 'M' else 'HS'}-mode"
+        " at once (vstimecmp = 0)\nor soon (time + htimedelta + delay).  VS-mode takes STI with hideleg.VSTI = 1;"
+        " HS-mode takes VSTI with\n"
+        f"hideleg.VSTI = 0, {'in VS-mode' if boot == 'M' else 'in HS-mode with sstatus.SIE = 1'}",
+    )
+    tmp_reg = test_data.int_regs.get_register()
+    tc.code += [
+        "#ifdef H_SUPPORTED",
+        "#ifdef SSTC_SUPPORTED",
+        *write_stce(test_data, True, boot),
+        *_write_henvcfg_stce(tmp_reg, True),
+        # vstimecmp has no reset value, so disarm it before any enable lets a stale comparison fire VSTI
+        f"RVTEST_CLR_VSSTC_INT_{boot}",
+        "csrw hvip, zero",
+        f"LI(x{tmp_reg}, SSTATUS_SIE)",
+        f"csrs vsstatus, x{tmp_reg} # vsstatus.SIE = 1",
+    ]
+    for deleg, soon in product((0, 1), (False, True)):
+        in_hs = boot == "S" and not deleg
+        tc.code += [
+            f"LI(x{tmp_reg}, MIP_VSTIP)",
+            f"csrw hie, x{tmp_reg} # hie.VSTIE = 1",
+            f"LI(x{tmp_reg}, {'MIP_VSTIP' if deleg else 0})",
+            f"csrw hideleg, x{tmp_reg} # hideleg.VSTI = {deleg}",
+            *(["csrsi sstatus, SSTATUS_SIE"] if in_hs else []),
+            test_data.add_testcase(
+                f"priv_{priv}_hideleg_{deleg}_{'soon' if soon else 'now'}", coverpoint, suite.covergroup
+            ),
+            f"RVTEST_SET_VSSTC_INT{'_SOON' if soon else ''}_{boot}",
+            *([] if in_hs else ["RVTEST_TSBI_GOTO_VSMODE"]),
+            *(_wait_for_trap(test_data) if soon else [f"RVTEST_IDLE_FOR_INTERRUPT(x{tmp_reg})"]),
+            "csrci sstatus, SSTATUS_SIE" if in_hs else f"RVTEST_TSBI_GOTO_{boot}MODE",
+            f"RVTEST_CLR_VSSTC_INT_{boot}",
+        ]
+    tc.code += [
+        "csrw hideleg, zero",
+        "csrw hie, zero",
+        f"LI(x{tmp_reg}, SSTATUS_SIE)",
+        f"csrc vsstatus, x{tmp_reg} # vsstatus.SIE = 0",
+        *_write_henvcfg_stce(tmp_reg, False),
+        *write_stce(test_data, False, boot),
+        "#endif // SSTC_SUPPORTED",
+        "#endif // H_SUPPORTED",
+        "",
+    ]
+    test_data.int_regs.return_register(tmp_reg)
 
 
 def _write_vtw(reg: int, vtw: bool, boot: str) -> list[str]:

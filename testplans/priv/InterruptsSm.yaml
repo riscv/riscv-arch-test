@@ -85,6 +85,13 @@ coverpoints:
       - when mideleg = 0, MIE = 1, running in M mode,
       anytime running in non M mode,
     bins: 5 priv * 2 STCE * 2 MIE * 2 SIE * 2 vecMODE * 2 mideleg
+  - name: cp_trigger_vsti_sstc
+    goal: VSTI with Sstc
+    description: |-
+      if H_SUPPORTED and SSTC_SUPPORTED:
+      In M-mode with menvcfg.STCE = henvcfg.STCE = 1, hie.VSTIE = 1, vsstatus.SIE = 1 and hideleg.VSTI = {0/1}, write vstimecmp = {0, time + htimedelta + a short delay} and change to VS-mode
+    expectation: VS-mode takes STI (cause 5) when hideleg.VSTI = 1; HS-mode takes VSTI (cause 6) otherwise
+    bins: 2 hideleg * 2 (at once, soon)
   - name: cp_enable
     goal: Enables control interrupts
     description: |-

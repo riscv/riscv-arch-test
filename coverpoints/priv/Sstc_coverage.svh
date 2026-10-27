@@ -212,31 +212,11 @@ covergroup Sstc_H_cg with function sample(ins_t ins);
         wildcard bins csrrs_all = {CSRRS} iff (ins.current.rs1_val == '1);
         wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val ==  0);
     }
-    // A csrw of vstimecmp arming it at once (0) or soon (time + htimedelta + delay); all 1s disarms it
-    csrrw: coverpoint ins.current.insn {
-        wildcard bins csrrw = {CSRRW};
-    }
-    vstimecmp_low: coverpoint ins.current.insn[31:20] {
-        bins vstimecmp = {CSR_VSTIMECMP};
-    }
-    vstimecmp_arm: coverpoint (ins.current.rs1_val == 0 ? 0 : ins.current.rs1_val == '1 ? 2 : 1) {
-        bins now  = {0};
-        bins soon = {1};
-    }
-    hideleg_vstip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vstip")[0] {
-        // autofill 0/1
-    }
-    hie_vstie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vstie")[0] {
-        bins one = {1};
-    }
 
     // main coverpoints
     // HS-mode reaches vstimecmp only with menvcfg.STCE = mcounteren.TM = 1
     cp_hs_vstimecmp_accessible:   cross priv_mode_hs, csrr, vstimecmp_csrs, stce_pair, tm_pair;
     cp_hs_vstimecmp_accesses:     cross priv_mode_hs, csraccesses, vstimecmp_csrs, stce_pair_m1_h0, tm_pair_m1_h0;
-    // vstimecmp armed in HS-mode at once or soon with hie.VSTIE = 1 raises VSTI in HS-mode or, delegated by hideleg,
-    // STI in VS-mode
-    cp_vstimecmp_int:             cross priv_mode_hs, csrrw, vstimecmp_low, vstimecmp_arm, hideleg_vstip, hie_vstie_one, stce_pair_ones;
     // stimecmp is vstimecmp in VS-mode, gated by both STCE and both TM bits; vstimecmp by its own name is never
     // accessible in VS-mode
     cp_vs_stimecmp_accessible:    cross priv_mode_vs, csrr, stimecmp_csrs, stce_pair, tm_pair;
@@ -377,23 +357,6 @@ covergroup Sstc_HSm_cg with function sample(ins_t ins);
             bins zero = {64'h0};
         }
     `endif
-    // A csrw of vstimecmp arming it at once (0) or soon (time + htimedelta + delay); all 1s disarms it
-    csrrw: coverpoint ins.current.insn {
-        wildcard bins csrrw = {CSRRW};
-    }
-    vstimecmp_low: coverpoint ins.current.insn[31:20] {
-        bins vstimecmp = {CSR_VSTIMECMP};
-    }
-    vstimecmp_arm: coverpoint (ins.current.rs1_val == 0 ? 0 : ins.current.rs1_val == '1 ? 2 : 1) {
-        bins now  = {0};
-        bins soon = {1};
-    }
-    hideleg_vstip: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hideleg", "vstip")[0] {
-        // autofill 0/1
-    }
-    hie_vstie_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hie", "vstie")[0] {
-        bins one = {1};
-    }
 
     // main coverpoints
     // hip.VSTIP is hvip.VSTIP | (menvcfg.STCE & henvcfg.STCE & time + htimedelta >= vstimecmp), unsigned
@@ -402,9 +365,6 @@ covergroup Sstc_HSm_cg with function sample(ins_t ins);
     // M-mode reaches vstimecmp whatever the enables hold
     cp_m_vstimecmp_accessible: cross priv_mode_m, csrr, vstimecmp_csrs, stce_pair, tm_pair;
     cp_m_vstimecmp_accesses:   cross priv_mode_m, csraccesses, vstimecmp_csrs, stce_pair_m1_h0, tm_pair_zeros;
-    // vstimecmp armed from M-mode at once or soon with hie.VSTIE = 1 raises VSTI in HS-mode or, delegated by
-    // hideleg, STI in VS-mode
-    cp_vstimecmp_int:          cross priv_mode_m, csrrw, vstimecmp_low, vstimecmp_arm, hideleg_vstip, hie_vstie_one, stce_pair_ones;
 endgroup
 `endif
 `endif

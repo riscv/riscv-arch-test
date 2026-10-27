@@ -14,7 +14,7 @@
 from itertools import product
 
 from testgen.asm.csr import cntr_access_test, csr_access_test, csr_walk_test, gen_csr_read_sigupd
-from testgen.asm.helpers import arch_block, comment_banner, gated, write_sigupd
+from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -2125,7 +2125,10 @@ def _h_mret_tests(test_data: TestData) -> list[str]:
 
 
 def _h_zicfilp_tests(test_data: TestData) -> list[str]:
-    """Landing pads across traps from VS-mode and VU-mode into M-mode, and MRETs to VS-mode and VU-mode."""
+    """Landing pads across traps from VS-mode and VU-mode into M-mode, and MRETs to VS-mode and VU-mode.
+
+    The Sm suite's -march need not include Zicfilp, so lpad 0 is written as its encoding, auipc x0, 0.
+    """
     medeleg_reg, jump_reg, temp_reg = test_data.int_regs.get_registers(3)
     lpe_csr = {"VS": "henvcfg", "VU": "senvcfg"}
     lines = [
@@ -2143,7 +2146,7 @@ def _h_zicfilp_tests(test_data: TestData) -> list[str]:
     ]
     resume = [
         "addi x0, x0, 0 # ELP must be NO_LP_EXPECTED here, otherwise software-check exception",
-        "lpad 0         # resume point after a software-check exception on the nop",
+        "auipc x0, 0    # lpad 0: resume point after a software-check exception on the nop",
     ]
     for mode in ("VS", "VU"):
         test_data.add_testcase(f"{mode.lower()}_lp_expected", "cp_trap_mpelp_virt", _H_INST_CG)
@@ -2212,7 +2215,7 @@ def _h_zicfilp_tests(test_data: TestData) -> list[str]:
                 ".p2align 2",
                 f"{label}_target:",
                 "addi x0, x0, 0 # software-check exception only if MPELP = 1 and the new mode's enable is 1",
-                "lpad 0         # resume point after the software-check exception",
+                "auipc x0, 0    # lpad 0: resume point after the software-check exception",
                 "RVTEST_TSBI_GOTO_MMODE",
                 f"LA(x{temp_reg}, rvtest_trap_count)",
                 f"LREG x{temp_reg}, 0(x{temp_reg})",
@@ -2223,7 +2226,7 @@ def _h_zicfilp_tests(test_data: TestData) -> list[str]:
         lines.extend([f"LI(x{temp_reg}, {csr.upper()}_LPE)", f"csrc {csr}, x{temp_reg}"])
     lines.append(f"csrw medeleg, x{medeleg_reg}")
     test_data.int_regs.return_registers([medeleg_reg, jump_reg, temp_reg])
-    return gated(arch_block(lines, "Zicfilp"), "defined(ZICFILP_SUPPORTED)")
+    return gated(lines, "defined(ZICFILP_SUPPORTED)")
 
 
 @add_priv_test_generator(

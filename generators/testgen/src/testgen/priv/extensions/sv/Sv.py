@@ -1188,11 +1188,13 @@ def _straddle_test_name(sv: SvMode, kind: str, page: _StraddlePage, mode: str) -
 
 
 def _straddle_cases(user: bool, denied: PteFlags) -> tuple[tuple[str, PteFlags, PteFlags, str], ...]:
-    """(description, first page, next page, expected) for each straddle case; every case faults.  Both pages faulting
-    is not tested: which part faults first is implementation-defined.
+    """(description, first page, next page, expected) for each straddle case.  Neither page faulting comes first, so
+    the trap CSRs it samples are not left over from a faulting case.  Both pages faulting is not tested: which part
+    faults first is implementation-defined.
     """
     rwx, invalid = PteFlags(user=user), PteFlags(user=user, valid=False)
     return (
+        ("both RWX", rwx, rwx, "the access completes"),
         ("first invalid (V=0), next RWX", invalid, rwx, "page fault on the part in the first page"),
         ("first RWX, next invalid (V=0)", rwx, invalid, "page fault on the part in the next page"),
         ("first RWX, next lacks the permission", rwx, denied, "page fault on the part in the next page"),
@@ -1200,9 +1202,10 @@ def _straddle_cases(user: bool, denied: PteFlags) -> tuple[tuple[str, PteFlags, 
 
 
 def _t_fetch_straddle(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode, page: _StraddlePage) -> None:
-    """Jump to a 32-bit instruction two bytes below the end of a page, with the first page invalid, or the next page
-    invalid or not executable.  The fetch faults: stval holds the address of the half that faults and sepc the start
-    of the instruction.  Only on Zca harts, where jalr can reach a pc that is not 4-byte aligned.
+    """Jump to a 32-bit instruction two bytes below the end of a page, with neither page faulting, the first page
+    invalid, or the next page invalid or not executable.  A faulting fetch writes the address of the half that faults
+    to stval and the start of the instruction to sepc.  When neither page faults, the instruction (addi x0, x0, 0) runs
+    and the return after it comes back.  Only on Zca harts, where jalr can reach a pc that is not 4-byte aligned.
     """
     for mode in ("Smode", "Umode"):
         regs = SvRegs.allocate(test_data)
@@ -1261,17 +1264,20 @@ def _straddle_accesses(
 
 
 def _t_load_store_straddle(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode, page: _StraddlePage) -> None:
-    """Store and load across the end of a page, with the first page invalid, or the next page invalid or execute-only.
-    At the end of a kilopage every integer and floating-point width straddles the boundary at every offset from 1 to
-    its size - 1; at the end of a megapage a word straddles it two bytes below.  A hart that performs misaligned
-    accesses faults on the part of the access in the faulting page, however it splits the access, so stval holds the
-    address of that part.  A hart that does not perform them raises address-misaligned instead, which the reference
-    model predicts from its configuration.  Every access traps, so the trap signature checks it; a faulting store may
-    have written the part in the other page, so memory is not checked.
+    """Store and load across the end of a page, with neither page faulting, the first page invalid, or the next page
+    invalid or execute-only.  At the end of a kilopage every integer and floating-point width straddles the boundary
+    at every offset from 1 to its size - 1; at the end of a megapage a word straddles it two bytes below.
+
+    When neither page faults, each load reads back the value just stored, which the signature checks; floating-point
+    stores take their value from an aligned load of a pattern at the start of va_data.  Otherwise every access traps
+    and the trap signature checks it: a hart that performs misaligned accesses faults on the part of the access in the
+    faulting page, however it splits the access, so stval holds the address of that part, and a hart that does not
+    raises address-misaligned instead, which the reference model predicts from its configuration.  A faulting store
+    may have written the part in the other page, so memory is not checked after it.
     """
     for mode in ("Smode", "Umode"):
         regs = SvRegs.allocate(test_data)
-        freg = test_data.float_regs.get_register()
+        pattern, check = test_data.float_regs.get_registers(2)
         user = mode == "Umode"
         m = mode[0].lower()
         crosses = {"store": f"cp_straddle_write_{m}", "load": f"cp_straddle_read_{m}"}
@@ -1285,9 +1291,12 @@ def _t_load_store_straddle(test_data: TestData, test_chunks: list[TestChunk], sv
             va_defs=page.va_defs(sv),
         )
         enter, leave = mode_switch(mode, "Smode")
+        value, addr, load, base = (f"x{reg}" for reg in (regs.value, regs.addr, regs.load, regs.result))
         accesses = _straddle_accesses(sv, page)
         cases = _straddle_cases(user, PteFlags(user=user, read=False, write=False))
+        traps = 0
         for number, (description, first, successor, expected) in enumerate(cases, start=1):
+            completes = first.valid and successor.valid and successor.read
             chunk.code.extend(
                 [
                     *level_header(sv, page.level),
@@ -1297,11 +1306,18 @@ def _t_load_store_straddle(test_data: TestData, test_chunks: list[TestChunk], sv
                     ),
                     *page.mappings(sv, first, successor),
                     "",
-                    *enter,
                 ]
             )
-            for load, store, offsets, gate, arch in accesses:
-                data = f"f{freg}" if load.startswith("f") else f"x{regs.load}"
+            if completes and any(load_op.startswith("f") for load_op, *_ in accesses):
+                # The floating-point pattern: four words at the 16-byte aligned start of the page
+                pattern_stores = [
+                    line for i in range(4) for line in (f"addi {value}, {value}, 16", f"sw {value}, {4 * i}({base})")
+                ]
+                chunk.code.extend([f"LI({base}, {page.va})", *enter, *pattern_stores, *leave])
+            elif not completes:
+                chunk.code.extend(enter)
+            for load_op, store_op, offsets, gate, arch in accesses:
+                fp = load_op.startswith("f")
                 chunk.code.extend(
                     [
                         *([f"#ifdef {gate}"] if gate else []),
@@ -1311,25 +1327,48 @@ def _t_load_store_straddle(test_data: TestData, test_chunks: list[TestChunk], sv
                 for below in offsets:
                     labels = {
                         op: test_data.add_testcase(f"test{number}_{name}_{below}", crosses[op], PERMISSIONS_CG)
-                        for op, name in (("store", store), ("load", load))
+                        for op, name in (("store", store_op), ("load", load_op))
                     }
+                    source, dest = (f"f{pattern}", f"f{check}") if fp else (value, load)
+                    access = [
+                        f"LI({addr}, {page.access(sv, below)})",
+                        labels["store"],
+                        f"{store_op} {source}, 0({addr})",
+                        "nop",
+                        labels["load"],
+                        f"{load_op} {dest}, 0({addr})",
+                        "nop",
+                    ]
+                    # A hart that does not perform misaligned accesses traps on both even when neither page faults
+                    traps += 2
+                    if not completes:
+                        chunk.code.extend(access)
+                        continue
+                    # Clear the destination first (floating point: an aligned load of zeros from mid-page) so the
+                    # signature shows the straddling load wrote it
+                    setup = (
+                        [f"{load_op} {source}, 0({base})", f"{load_op} {dest}, 0x400({base})"]
+                        if fp
+                        else [f"mv {load}, x0"]
+                    )
+                    label = labels["load"].removesuffix(":")
                     chunk.code.extend(
                         [
-                            f"LI(x{regs.addr}, {page.access(sv, below)})",
-                            labels["store"],
-                            f"{store} {data}, 0(x{regs.addr})",
-                            "nop",
-                            labels["load"],
-                            f"{load} {data}, 0(x{regs.addr})",
-                            "nop",
+                            *enter,
+                            *setup,
+                            *access,
+                            *leave,
+                            write_sigupd(check if fp else regs.load, test_data, "float" if fp else "int", label=label),
                         ]
                     )
+                    if fp and sv.xlen == 64:
+                        # RVTEST_SIGUPD_F takes 3 entries when FLEN > XLEN (Q on RV64); priv tests assume FLEN = 64
+                        chunk.sigupd_count += 1
                 chunk.code.extend([*([".option pop"] if arch else []), *([f"#endif // {gate}"] if gate else [])])
-            chunk.code.extend([*leave, ""])
+            chunk.code.extend([*([] if completes else leave), ""])
         chunk.raw_data.extend(sv_data(sv, regs, (page.level,), data_region_body=page.data))
-        traps = 2 * len(cases) * sum(len(offsets) for _, _, offsets, _, _ in accesses)
         chunk.trap_sigupd_count = trap_sigupd_count(traps)
-        test_data.float_regs.return_register(freg)
+        test_data.float_regs.return_registers([pattern, check])
         test_chunks.append(end_sv_test(test_data, regs))
 
 

@@ -19,7 +19,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
-#define TRAP_SIGUPD_COUNT 5
+#define TRAP_SIGUPD_COUNT 6
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -63,11 +63,11 @@ RVTEST_BEGIN
 
 // 4KB page at level 0
 
-// Test case 1: 32-bit instruction at the end of a page, first invalid (V=0), next RWX | Test in U-Mode | expected = page fault on the part in the first page
+// Test case 1: 32-bit instruction at the end of a page, both RWX | Test in U-Mode | expected = the access completes
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV48(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  PTE_SETUP_SV48(sv_straddle_page, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data, LEVEL0)
+  PTE_SETUP_SV48(sv_straddle_page, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   PTE_SETUP_SV48(sv_straddle_next, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_next, LEVEL0)
   sfence.vma
 
@@ -81,12 +81,12 @@ Sv_vm_permissions_cg_cp_straddle_exec_u_test1:
 
 // 4KB page at level 0
 
-// Test case 2: 32-bit instruction at the end of a page, first RWX, next invalid (V=0) | Test in U-Mode | expected = page fault on the part in the next page
+// Test case 2: 32-bit instruction at the end of a page, first invalid (V=0), next RWX | Test in U-Mode | expected = page fault on the part in the first page
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV48(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  PTE_SETUP_SV48(sv_straddle_page, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
-  PTE_SETUP_SV48(sv_straddle_next, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_next, LEVEL0)
+  PTE_SETUP_SV48(sv_straddle_page, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_data, LEVEL0)
+  PTE_SETUP_SV48(sv_straddle_next, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_next, LEVEL0)
   sfence.vma
 
   LI(x9, 0x28500403ffe)
@@ -99,7 +99,25 @@ Sv_vm_permissions_cg_cp_straddle_exec_u_test2:
 
 // 4KB page at level 0
 
-// Test case 3: 32-bit instruction at the end of a page, first RWX, next lacks the permission | Test in U-Mode | expected = page fault on the part in the next page
+// Test case 3: 32-bit instruction at the end of a page, first RWX, next invalid (V=0) | Test in U-Mode | expected = page fault on the part in the next page
+  PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
+  PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
+  PTE_SETUP_SV48(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
+  PTE_SETUP_SV48(sv_straddle_page, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+  PTE_SETUP_SV48(sv_straddle_next, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_next, LEVEL0)
+  sfence.vma
+
+  LI(x9, 0x28500403ffe)
+  RVTEST_TSBI_GOTO_UMODE
+Sv_vm_permissions_cg_cp_straddle_exec_u_test3:
+  jalr ra, x9, 0
+  nop
+  RVTEST_TSBI_GOTO_SMODE
+
+
+// 4KB page at level 0
+
+// Test case 4: 32-bit instruction at the end of a page, first RWX, next lacks the permission | Test in U-Mode | expected = page fault on the part in the next page
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV48(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
@@ -109,7 +127,7 @@ Sv_vm_permissions_cg_cp_straddle_exec_u_test2:
 
   LI(x9, 0x28500403ffe)
   RVTEST_TSBI_GOTO_UMODE
-Sv_vm_permissions_cg_cp_straddle_exec_u_test3:
+Sv_vm_permissions_cg_cp_straddle_exec_u_test4:
   jalr ra, x9, 0
   nop
   RVTEST_TSBI_GOTO_SMODE
@@ -146,9 +164,10 @@ rvtest_slvl2_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_vm_permissions_cg_cp_straddle_exec_u_test1_str: .string "\"test: 4; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_u; bin: test1\""
-Sv_vm_permissions_cg_cp_straddle_exec_u_test2_str: .string "\"test: 5; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_u; bin: test2\""
-Sv_vm_permissions_cg_cp_straddle_exec_u_test3_str: .string "\"test: 6; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_u; bin: test3\""
+Sv_vm_permissions_cg_cp_straddle_exec_u_test1_str: .string "\"test: 5; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_u; bin: test1\""
+Sv_vm_permissions_cg_cp_straddle_exec_u_test2_str: .string "\"test: 6; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_u; bin: test2\""
+Sv_vm_permissions_cg_cp_straddle_exec_u_test3_str: .string "\"test: 7; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_u; bin: test3\""
+Sv_vm_permissions_cg_cp_straddle_exec_u_test4_str: .string "\"test: 8; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_u; bin: test4\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

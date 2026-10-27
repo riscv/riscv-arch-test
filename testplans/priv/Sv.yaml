@@ -721,62 +721,62 @@ coverpoints:
     rules:
       - "[norm:Sv39_va_signext] [norm:Sv48_va_signext] [norm:Sv57_va_signext] [norm:stval_op_faulting_addr]"
   - name: cp_straddle_exec_s
-    goal: Verify a fetch that straddles two pages faults on the part in the page that faults, from S-mode
-    description: "Zca harts, S-mode: va_data is a 4 KiB page with PTE.U=0 whose last two bytes hold the first half of a 32-bit instruction (addi x0, x0, 0), followed in the next page by a return. Map the two pages {first invalid (V=0) and next RWX, first RWX and next invalid (V=0), first RWX and next valid but not executable (RW)}. Jump (jalr) to va_data + 0xFFE. On RV64, repeat across the end of a 2 MiB megapage. Both pages faulting is not tested: which half faults first is implementation-defined."
-    expectation: Instruction page fault (scause = 12) with sepc = the jalr target, the start of the instruction; stval = the jalr target when the first page faults, and the page or megapage boundary when the next page faults. stval may instead be 0 on a hart that does not report the address.
+    goal: Verify a fetch that straddles two pages completes, or faults on the part in the page that faults, from S-mode
+    description: "Zca harts, S-mode: va_data is a 4 KiB page with PTE.U=0 whose last two bytes hold the first half of a 32-bit instruction (addi x0, x0, 0), followed in the next page by a return. Map the two pages {both RWX, first invalid (V=0) and next RWX, first RWX and next invalid (V=0), first RWX and next valid but not executable (RW)}. Jump (jalr) to va_data + 0xFFE. On RV64, repeat across the end of a 2 MiB megapage. Both pages faulting is not tested: which half faults first is implementation-defined."
+    expectation: With both pages RWX, the instruction executes and returns. Otherwise instruction page fault (scause = 12) with sepc = the jalr target, the start of the instruction; stval = the jalr target when the first page faults, and the page or megapage boundary when the next page faults. stval may instead be 0 on a hart that does not report the address.
     bins: |-
-      jalr x straddle_fetch_page {kilopage, megapage on RV64} x straddle_fetch_fault {first_faults, next_faults} x mode {S-mode}
-      = 2 per Sv mode on RV32, 4 per Sv mode on RV64 (1 fault bin without REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT)
+      jalr x straddle_fetch_page {kilopage, megapage on RV64} x straddle_fetch_outcome {completes, first_faults, next_faults} x mode {S-mode}
+      = 3 per Sv mode on RV32, 6 per Sv mode on RV64 (2 outcomes, completes and faults, without REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT)
     id: stval_faulting_address_variable_instr
     rules:
       - "[norm:stval_faulting_address_variable_instr]"
   - name: cp_straddle_exec_u
-    goal: Verify a fetch that straddles two pages faults on the part in the page that faults, from U-mode
-    description: "Zca harts, U-mode: va_data is a 4 KiB page with PTE.U=1 whose last two bytes hold the first half of a 32-bit instruction (addi x0, x0, 0), followed in the next page by a return. Map the two pages {first invalid (V=0) and next RWX, first RWX and next invalid (V=0), first RWX and next valid but not executable (RW)}. Jump (jalr) to va_data + 0xFFE. On RV64, repeat across the end of a 2 MiB megapage. Both pages faulting is not tested: which half faults first is implementation-defined."
-    expectation: Instruction page fault (scause = 12) with sepc = the jalr target, the start of the instruction; stval = the jalr target when the first page faults, and the page or megapage boundary when the next page faults. stval may instead be 0 on a hart that does not report the address.
+    goal: Verify a fetch that straddles two pages completes, or faults on the part in the page that faults, from U-mode
+    description: "Zca harts, U-mode: va_data is a 4 KiB page with PTE.U=1 whose last two bytes hold the first half of a 32-bit instruction (addi x0, x0, 0), followed in the next page by a return. Map the two pages {both RWX, first invalid (V=0) and next RWX, first RWX and next invalid (V=0), first RWX and next valid but not executable (RW)}. Jump (jalr) to va_data + 0xFFE. On RV64, repeat across the end of a 2 MiB megapage. Both pages faulting is not tested: which half faults first is implementation-defined."
+    expectation: With both pages RWX, the instruction executes and returns. Otherwise instruction page fault (scause = 12) with sepc = the jalr target, the start of the instruction; stval = the jalr target when the first page faults, and the page or megapage boundary when the next page faults. stval may instead be 0 on a hart that does not report the address.
     bins: |-
-      jalr x straddle_fetch_page {kilopage, megapage on RV64} x straddle_fetch_fault {first_faults, next_faults} x mode {U-mode}
-      = 2 per Sv mode on RV32, 4 per Sv mode on RV64 (1 fault bin without REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT)
+      jalr x straddle_fetch_page {kilopage, megapage on RV64} x straddle_fetch_outcome {completes, first_faults, next_faults} x mode {U-mode}
+      = 3 per Sv mode on RV32, 6 per Sv mode on RV64 (2 outcomes, completes and faults, without REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT)
     id: stval_faulting_address_variable_instr
     rules:
       - "[norm:stval_faulting_address_variable_instr]"
   - name: cp_straddle_read_s
-    goal: Verify a load of each width that straddles two pages faults on the part in the page that faults, from S-mode
-    description: "S-mode: va_data is a 4 KiB page with PTE.U=0. Map the two pages {first invalid (V=0) and next RWX, first RWX and next invalid (V=0), first RWX and next execute-only}. With each mapping, store and then load at every offset from 1 to size - 1 bytes below the page boundary: sh/lh at 1, sw/lw at 1-3, sd/ld at 1-7 (RV64), fsh/flh at 1 (Zfhmin), fsw/flw at 1-3 (F), fsd/fld at 1-7 (D) and fsq/flq at 1-15 (Q). On RV64, also sw/lw two bytes below the end of a 2 MiB megapage. Both pages faulting is not tested: which part faults first is implementation-defined. The coverpoints need MISALIGNED_LDST; harts that do not perform misaligned accesses run the test and raise an address-misaligned exception instead."
-    expectation: Every access faults, load page fault (scause = 13), with stval = the access address when the first page faults, and the page or megapage boundary when the next page faults (or 0 on a hart that does not report the address).
+    goal: Verify a load of each width that straddles two pages completes, or faults on the part in the page that faults, from S-mode
+    description: "S-mode: va_data is a 4 KiB page with PTE.U=0. Map the two pages {both RWX, first invalid (V=0) and next RWX, first RWX and next invalid (V=0), first RWX and next execute-only}. With each mapping, store and then load at every offset from 1 to size - 1 bytes below the page boundary: sh/lh at 1, sw/lw at 1-3, sd/ld at 1-7 (RV64), fsh/flh at 1 (Zfhmin), fsw/flw at 1-3 (F), fsd/fld at 1-7 (D) and fsq/flq at 1-15 (Q). On RV64, also sw/lw two bytes below the end of a 2 MiB megapage. Both pages faulting is not tested: which part faults first is implementation-defined. The coverpoints need MISALIGNED_LDST; harts that do not perform misaligned accesses run the test and raise an address-misaligned exception instead."
+    expectation: With both pages RWX, each load returns the value just stored (the signature checks it). Otherwise every access faults, load page fault (scause = 13), with stval = the access address when the first page faults, and the page or megapage boundary when the next page faults (or 0 on a hart that does not report the address).
     bins: |-
-      straddle_load {lh, lw at each offset; ld at each offset and lw on a megapage on RV64; flh, flw, fld, flq at each offset with Zfhmin, F, D, Q} x straddle_load_fault {first_faults, next_faults} x mode {S-mode}
-      = 8 per Sv mode on RV32 and 24 on RV64 with no FP, + 2 (Zfhmin), 6 (F), 14 (D), 30 (Q) (half as many without REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT)
+      straddle_load {lh, lw at each offset; ld at each offset and lw on a megapage on RV64; flh, flw, fld, flq at each offset with Zfhmin, F, D, Q} x straddle_load_outcome {completes, first_faults, next_faults} x mode {S-mode}
+      = 12 per Sv mode on RV32 and 36 on RV64 with no FP, + 3 (Zfhmin), 9 (F), 21 (D), 45 (Q) (2 outcomes, completes and faults, without REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT)
     id: stval_op_load_store_fault
     rules:
       - "[norm:stval_op_load_store_fault]"
   - name: cp_straddle_read_u
-    goal: Verify a load of each width that straddles two pages faults on the part in the page that faults, from U-mode
-    description: "U-mode: va_data is a 4 KiB page with PTE.U=1. Map the two pages {first invalid (V=0) and next RWX, first RWX and next invalid (V=0), first RWX and next execute-only}. With each mapping, store and then load at every offset from 1 to size - 1 bytes below the page boundary: sh/lh at 1, sw/lw at 1-3, sd/ld at 1-7 (RV64), fsh/flh at 1 (Zfhmin), fsw/flw at 1-3 (F), fsd/fld at 1-7 (D) and fsq/flq at 1-15 (Q). On RV64, also sw/lw two bytes below the end of a 2 MiB megapage. Both pages faulting is not tested: which part faults first is implementation-defined. The coverpoints need MISALIGNED_LDST; harts that do not perform misaligned accesses run the test and raise an address-misaligned exception instead."
-    expectation: Every access faults, load page fault (scause = 13), with stval = the access address when the first page faults, and the page or megapage boundary when the next page faults (or 0 on a hart that does not report the address).
+    goal: Verify a load of each width that straddles two pages completes, or faults on the part in the page that faults, from U-mode
+    description: "U-mode: va_data is a 4 KiB page with PTE.U=1. Map the two pages {both RWX, first invalid (V=0) and next RWX, first RWX and next invalid (V=0), first RWX and next execute-only}. With each mapping, store and then load at every offset from 1 to size - 1 bytes below the page boundary: sh/lh at 1, sw/lw at 1-3, sd/ld at 1-7 (RV64), fsh/flh at 1 (Zfhmin), fsw/flw at 1-3 (F), fsd/fld at 1-7 (D) and fsq/flq at 1-15 (Q). On RV64, also sw/lw two bytes below the end of a 2 MiB megapage. Both pages faulting is not tested: which part faults first is implementation-defined. The coverpoints need MISALIGNED_LDST; harts that do not perform misaligned accesses run the test and raise an address-misaligned exception instead."
+    expectation: With both pages RWX, each load returns the value just stored (the signature checks it). Otherwise every access faults, load page fault (scause = 13), with stval = the access address when the first page faults, and the page or megapage boundary when the next page faults (or 0 on a hart that does not report the address).
     bins: |-
-      straddle_load {lh, lw at each offset; ld at each offset and lw on a megapage on RV64; flh, flw, fld, flq at each offset with Zfhmin, F, D, Q} x straddle_load_fault {first_faults, next_faults} x mode {U-mode}
-      = 8 per Sv mode on RV32 and 24 on RV64 with no FP, + 2 (Zfhmin), 6 (F), 14 (D), 30 (Q) (half as many without REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT)
+      straddle_load {lh, lw at each offset; ld at each offset and lw on a megapage on RV64; flh, flw, fld, flq at each offset with Zfhmin, F, D, Q} x straddle_load_outcome {completes, first_faults, next_faults} x mode {U-mode}
+      = 12 per Sv mode on RV32 and 36 on RV64 with no FP, + 3 (Zfhmin), 9 (F), 21 (D), 45 (Q) (2 outcomes, completes and faults, without REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT)
     id: stval_op_load_store_fault
     rules:
       - "[norm:stval_op_load_store_fault]"
   - name: cp_straddle_write_s
-    goal: Verify a store of each width that straddles two pages faults on the part in the page that faults, from S-mode
-    description: "S-mode: va_data is a 4 KiB page with PTE.U=0. Map the two pages {first invalid (V=0) and next RWX, first RWX and next invalid (V=0), first RWX and next execute-only}. With each mapping, store and then load at every offset from 1 to size - 1 bytes below the page boundary: sh/lh at 1, sw/lw at 1-3, sd/ld at 1-7 (RV64), fsh/flh at 1 (Zfhmin), fsw/flw at 1-3 (F), fsd/fld at 1-7 (D) and fsq/flq at 1-15 (Q). On RV64, also sw/lw two bytes below the end of a 2 MiB megapage. Both pages faulting is not tested: which part faults first is implementation-defined. The coverpoints need MISALIGNED_LDST; harts that do not perform misaligned accesses run the test and raise an address-misaligned exception instead."
-    expectation: Every access faults, store/AMO page fault (scause = 15), with stval = the access address when the first page faults, and the page or megapage boundary when the next page faults (or 0 on a hart that does not report the address).
+    goal: Verify a store of each width that straddles two pages completes, or faults on the part in the page that faults, from S-mode
+    description: "S-mode: va_data is a 4 KiB page with PTE.U=0. Map the two pages {both RWX, first invalid (V=0) and next RWX, first RWX and next invalid (V=0), first RWX and next execute-only}. With each mapping, store and then load at every offset from 1 to size - 1 bytes below the page boundary: sh/lh at 1, sw/lw at 1-3, sd/ld at 1-7 (RV64), fsh/flh at 1 (Zfhmin), fsw/flw at 1-3 (F), fsd/fld at 1-7 (D) and fsq/flq at 1-15 (Q). On RV64, also sw/lw two bytes below the end of a 2 MiB megapage. Both pages faulting is not tested: which part faults first is implementation-defined. The coverpoints need MISALIGNED_LDST; harts that do not perform misaligned accesses run the test and raise an address-misaligned exception instead."
+    expectation: With both pages RWX, each load returns the value just stored (the signature checks it). Otherwise every access faults, store/AMO page fault (scause = 15), with stval = the access address when the first page faults, and the page or megapage boundary when the next page faults (or 0 on a hart that does not report the address).
     bins: |-
-      straddle_store {sh, sw at each offset; sd at each offset and sw on a megapage on RV64; fsh, fsw, fsd, fsq at each offset with Zfhmin, F, D, Q} x straddle_store_fault {first_faults, next_faults} x mode {S-mode}
-      = 8 per Sv mode on RV32 and 24 on RV64 with no FP, + 2 (Zfhmin), 6 (F), 14 (D), 30 (Q) (half as many without REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT)
+      straddle_store {sh, sw at each offset; sd at each offset and sw on a megapage on RV64; fsh, fsw, fsd, fsq at each offset with Zfhmin, F, D, Q} x straddle_store_outcome {completes, first_faults, next_faults} x mode {S-mode}
+      = 12 per Sv mode on RV32 and 36 on RV64 with no FP, + 3 (Zfhmin), 9 (F), 21 (D), 45 (Q) (2 outcomes, completes and faults, without REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT)
     id: stval_op_load_store_fault
     rules:
       - "[norm:stval_op_load_store_fault]"
   - name: cp_straddle_write_u
-    goal: Verify a store of each width that straddles two pages faults on the part in the page that faults, from U-mode
-    description: "U-mode: va_data is a 4 KiB page with PTE.U=1. Map the two pages {first invalid (V=0) and next RWX, first RWX and next invalid (V=0), first RWX and next execute-only}. With each mapping, store and then load at every offset from 1 to size - 1 bytes below the page boundary: sh/lh at 1, sw/lw at 1-3, sd/ld at 1-7 (RV64), fsh/flh at 1 (Zfhmin), fsw/flw at 1-3 (F), fsd/fld at 1-7 (D) and fsq/flq at 1-15 (Q). On RV64, also sw/lw two bytes below the end of a 2 MiB megapage. Both pages faulting is not tested: which part faults first is implementation-defined. The coverpoints need MISALIGNED_LDST; harts that do not perform misaligned accesses run the test and raise an address-misaligned exception instead."
-    expectation: Every access faults, store/AMO page fault (scause = 15), with stval = the access address when the first page faults, and the page or megapage boundary when the next page faults (or 0 on a hart that does not report the address).
+    goal: Verify a store of each width that straddles two pages completes, or faults on the part in the page that faults, from U-mode
+    description: "U-mode: va_data is a 4 KiB page with PTE.U=1. Map the two pages {both RWX, first invalid (V=0) and next RWX, first RWX and next invalid (V=0), first RWX and next execute-only}. With each mapping, store and then load at every offset from 1 to size - 1 bytes below the page boundary: sh/lh at 1, sw/lw at 1-3, sd/ld at 1-7 (RV64), fsh/flh at 1 (Zfhmin), fsw/flw at 1-3 (F), fsd/fld at 1-7 (D) and fsq/flq at 1-15 (Q). On RV64, also sw/lw two bytes below the end of a 2 MiB megapage. Both pages faulting is not tested: which part faults first is implementation-defined. The coverpoints need MISALIGNED_LDST; harts that do not perform misaligned accesses run the test and raise an address-misaligned exception instead."
+    expectation: With both pages RWX, each load returns the value just stored (the signature checks it). Otherwise every access faults, store/AMO page fault (scause = 15), with stval = the access address when the first page faults, and the page or megapage boundary when the next page faults (or 0 on a hart that does not report the address).
     bins: |-
-      straddle_store {sh, sw at each offset; sd at each offset and sw on a megapage on RV64; fsh, fsw, fsd, fsq at each offset with Zfhmin, F, D, Q} x straddle_store_fault {first_faults, next_faults} x mode {U-mode}
-      = 8 per Sv mode on RV32 and 24 on RV64 with no FP, + 2 (Zfhmin), 6 (F), 14 (D), 30 (Q) (half as many without REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT)
+      straddle_store {sh, sw at each offset; sd at each offset and sw on a megapage on RV64; fsh, fsw, fsd, fsq at each offset with Zfhmin, F, D, Q} x straddle_store_outcome {completes, first_faults, next_faults} x mode {U-mode}
+      = 12 per Sv mode on RV32 and 36 on RV64 with no FP, + 3 (Zfhmin), 9 (F), 21 (D), 45 (Q) (2 outcomes, completes and faults, without REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT)
     id: stval_op_load_store_fault
     rules:
       - "[norm:stval_op_load_store_fault]"

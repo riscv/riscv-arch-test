@@ -15,11 +15,11 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 10
+#define SIGUPD_COUNT 11
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
-#define TRAP_SIGUPD_COUNT 8
+#define TRAP_SIGUPD_COUNT 10
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -64,7 +64,29 @@ RVTEST_BEGIN
 
 // 2MB page at level 1
 
-// Test case 1: loads and stores across the end of a megapage, first invalid (V=0), next RWX | Test in S-Mode | expected = for each store and load, page fault on the part in the first page
+// Test case 1: loads and stores across the end of a megapage, both RWX | Test in S-Mode | expected = for each store and load, the access completes
+  PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_mega, LEVEL4)
+  PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_mega, LEVEL3)
+  PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_mega, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV57(sv_straddle_mega_next - 1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_mega, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV57(sv_straddle_mega_next, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_mega_next, LEVEL1)
+  sfence.vma
+
+  mv x9, x0
+  LI(x14, 0x70285009ffffe)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_sw_2:
+  sw x8, 0(x14)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_lw_2:
+  lw x9, 0(x14)
+  nop
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_vm_permissions_cg_cp_straddle_read_s_test1_lw_2, Sv_vm_permissions_cg_cp_straddle_read_s_test1_lw_2_str)
+
+
+// 2MB page at level 1
+
+// Test case 2: loads and stores across the end of a megapage, first invalid (V=0), next RWX | Test in S-Mode | expected = for each store and load, page fault on the part in the first page
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_mega, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_mega, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_mega, LEVEL2)
@@ -73,27 +95,8 @@ RVTEST_BEGIN
   sfence.vma
 
   LI(x14, 0x70285009ffffe)
-Sv_vm_permissions_cg_cp_straddle_write_s_test1_sw_2:
-  sw x9, 0(x14)
-  nop
-Sv_vm_permissions_cg_cp_straddle_read_s_test1_lw_2:
-  lw x9, 0(x14)
-  nop
-
-
-// 2MB page at level 1
-
-// Test case 2: loads and stores across the end of a megapage, first RWX, next invalid (V=0) | Test in S-Mode | expected = for each store and load, page fault on the part in the next page
-  PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_mega, LEVEL4)
-  PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_mega, LEVEL3)
-  PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_mega, LEVEL2)
-  SUPERPAGE_PTE_SETUP_SV57(sv_straddle_mega_next - 1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_mega, LEVEL1)
-  SUPERPAGE_PTE_SETUP_SV57(sv_straddle_mega_next, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_mega_next, LEVEL1)
-  sfence.vma
-
-  LI(x14, 0x70285009ffffe)
 Sv_vm_permissions_cg_cp_straddle_write_s_test2_sw_2:
-  sw x9, 0(x14)
+  sw x8, 0(x14)
   nop
 Sv_vm_permissions_cg_cp_straddle_read_s_test2_lw_2:
   lw x9, 0(x14)
@@ -102,7 +105,26 @@ Sv_vm_permissions_cg_cp_straddle_read_s_test2_lw_2:
 
 // 2MB page at level 1
 
-// Test case 3: loads and stores across the end of a megapage, first RWX, next lacks the permission | Test in S-Mode | expected = for each store and load, page fault on the part in the next page
+// Test case 3: loads and stores across the end of a megapage, first RWX, next invalid (V=0) | Test in S-Mode | expected = for each store and load, page fault on the part in the next page
+  PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_mega, LEVEL4)
+  PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_mega, LEVEL3)
+  PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_mega, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV57(sv_straddle_mega_next - 1, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_mega, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV57(sv_straddle_mega_next, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_mega_next, LEVEL1)
+  sfence.vma
+
+  LI(x14, 0x70285009ffffe)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_sw_2:
+  sw x8, 0(x14)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_lw_2:
+  lw x9, 0(x14)
+  nop
+
+
+// 2MB page at level 1
+
+// Test case 4: loads and stores across the end of a megapage, first RWX, next lacks the permission | Test in S-Mode | expected = for each store and load, page fault on the part in the next page
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_mega, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_mega, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_mega, LEVEL2)
@@ -111,10 +133,10 @@ Sv_vm_permissions_cg_cp_straddle_read_s_test2_lw_2:
   sfence.vma
 
   LI(x14, 0x70285009ffffe)
-Sv_vm_permissions_cg_cp_straddle_write_s_test3_sw_2:
-  sw x9, 0(x14)
+Sv_vm_permissions_cg_cp_straddle_write_s_test4_sw_2:
+  sw x8, 0(x14)
   nop
-Sv_vm_permissions_cg_cp_straddle_read_s_test3_lw_2:
+Sv_vm_permissions_cg_cp_straddle_read_s_test4_lw_2:
   lw x9, 0(x14)
   nop
 
@@ -159,12 +181,14 @@ rvtest_slvl3_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_vm_permissions_cg_cp_straddle_write_s_test1_sw_2_str: .string "\"test: 1295; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_sw_2\""
-Sv_vm_permissions_cg_cp_straddle_read_s_test1_lw_2_str: .string "\"test: 1296; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_lw_2\""
-Sv_vm_permissions_cg_cp_straddle_write_s_test2_sw_2_str: .string "\"test: 1297; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_sw_2\""
-Sv_vm_permissions_cg_cp_straddle_read_s_test2_lw_2_str: .string "\"test: 1298; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_lw_2\""
-Sv_vm_permissions_cg_cp_straddle_write_s_test3_sw_2_str: .string "\"test: 1299; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_sw_2\""
-Sv_vm_permissions_cg_cp_straddle_read_s_test3_lw_2_str: .string "\"test: 1300; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_lw_2\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_sw_2_str: .string "\"test: 1443; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_sw_2\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_lw_2_str: .string "\"test: 1444; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_lw_2\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_sw_2_str: .string "\"test: 1445; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_sw_2\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_lw_2_str: .string "\"test: 1446; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_lw_2\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_sw_2_str: .string "\"test: 1447; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_sw_2\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_lw_2_str: .string "\"test: 1448; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_lw_2\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test4_sw_2_str: .string "\"test: 1449; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test4_sw_2\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test4_lw_2_str: .string "\"test: 1450; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test4_lw_2\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

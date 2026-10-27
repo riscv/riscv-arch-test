@@ -19,7 +19,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
-#define TRAP_SIGUPD_COUNT 5
+#define TRAP_SIGUPD_COUNT 6
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -63,12 +63,12 @@ RVTEST_BEGIN
 
 // 4KB page at level 0
 
-// Test case 1: 32-bit instruction at the end of a page, first invalid (V=0), next RWX | Test in S-Mode | expected = page fault on the part in the first page
+// Test case 1: 32-bit instruction at the end of a page, both RWX | Test in S-Mode | expected = the access completes
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  PTE_SETUP_SV57(sv_straddle_page, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL0)
+  PTE_SETUP_SV57(sv_straddle_page, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   PTE_SETUP_SV57(sv_straddle_next, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_next, LEVEL0)
   sfence.vma
 
@@ -80,13 +80,13 @@ Sv_vm_permissions_cg_cp_straddle_exec_s_test1:
 
 // 4KB page at level 0
 
-// Test case 2: 32-bit instruction at the end of a page, first RWX, next invalid (V=0) | Test in S-Mode | expected = page fault on the part in the next page
+// Test case 2: 32-bit instruction at the end of a page, first invalid (V=0), next RWX | Test in S-Mode | expected = page fault on the part in the first page
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
   PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
-  PTE_SETUP_SV57(sv_straddle_page, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
-  PTE_SETUP_SV57(sv_straddle_next, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_next, LEVEL0)
+  PTE_SETUP_SV57(sv_straddle_page, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL0)
+  PTE_SETUP_SV57(sv_straddle_next, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_next, LEVEL0)
   sfence.vma
 
   LI(x15, 0x7028500403ffe)
@@ -97,7 +97,24 @@ Sv_vm_permissions_cg_cp_straddle_exec_s_test2:
 
 // 4KB page at level 0
 
-// Test case 3: 32-bit instruction at the end of a page, first RWX, next lacks the permission | Test in S-Mode | expected = page fault on the part in the next page
+// Test case 3: 32-bit instruction at the end of a page, first RWX, next invalid (V=0) | Test in S-Mode | expected = page fault on the part in the next page
+  PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
+  PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
+  PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
+  PTE_SETUP_SV57(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
+  PTE_SETUP_SV57(sv_straddle_page, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
+  PTE_SETUP_SV57(sv_straddle_next, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_next, LEVEL0)
+  sfence.vma
+
+  LI(x15, 0x7028500403ffe)
+Sv_vm_permissions_cg_cp_straddle_exec_s_test3:
+  jalr ra, x15, 0
+  nop
+
+
+// 4KB page at level 0
+
+// Test case 4: 32-bit instruction at the end of a page, first RWX, next lacks the permission | Test in S-Mode | expected = page fault on the part in the next page
   PTE_SETUP_SV57(rvtest_slvl3_pg_tbl, (PTE_V), va_data, LEVEL4)
   PTE_SETUP_SV57(rvtest_slvl2_pg_tbl, (PTE_V), va_data, LEVEL3)
   PTE_SETUP_SV57(rvtest_slvl1_pg_tbl, (PTE_V), va_data, LEVEL2)
@@ -107,7 +124,7 @@ Sv_vm_permissions_cg_cp_straddle_exec_s_test2:
   sfence.vma
 
   LI(x15, 0x7028500403ffe)
-Sv_vm_permissions_cg_cp_straddle_exec_s_test3:
+Sv_vm_permissions_cg_cp_straddle_exec_s_test4:
   jalr ra, x15, 0
   nop
 
@@ -149,6 +166,7 @@ rvtest_slvl3_pg_tbl:
 Sv_vm_permissions_cg_cp_straddle_exec_s_test1_str: .string "\"test: 1; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_s; bin: test1\""
 Sv_vm_permissions_cg_cp_straddle_exec_s_test2_str: .string "\"test: 2; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_s; bin: test2\""
 Sv_vm_permissions_cg_cp_straddle_exec_s_test3_str: .string "\"test: 3; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_s; bin: test3\""
+Sv_vm_permissions_cg_cp_straddle_exec_s_test4_str: .string "\"test: 4; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_s; bin: test4\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

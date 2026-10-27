@@ -705,29 +705,31 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
         }
     `endif
 
-    // An access that spans the end of a page into the next page, with the first page faulting or the next page
-    // faulting.  The fault bins are {faults in the first page (stval = the access address), faults in the next page
-    // (stval = the page boundary)}.  A hart that writes zero to stval on a page fault (no
+    // An access that spans the end of a page into the next page, with neither page faulting, the first page faulting,
+    // or the next page faulting.  The outcome is {completes, faults in the first page (stval = the access address),
+    // faults in the next page (stval = the page boundary)}.  A hart that writes zero to stval on a page fault (no
     // UDB_REPORT_VA_IN_STVAL_ON_*_PAGE_FAULT) has one faults bin instead.
     //
     // A fetch is a jalr to a 32-bit instruction (addi x0, x0, 0) at page offset 0xFFE, and on RV64 also at the end of a
-    // 2 MiB megapage.  Sail logs the trap CSRs of a faulting fetch with the jalr, so the jalr samples the fault.
+    // 2 MiB megapage.  Sail logs the trap CSRs of a faulting fetch with the jalr, so the jalr samples a fault (and
+    // sepc, the start of the instruction); the instruction itself, at pc 0xFFE, samples a fetch that completes.
     `ifdef ZCA_SUPPORTED
-        jalr: coverpoint ins.current.insn {
-            wildcard bins jalr = {JALR};
-        }
-        straddle_fetch_page: coverpoint (((ins.current.rs1_val + ins.current.imm) & 'h1FFFFF) == 'h1FFFFE) iff (((ins.current.rs1_val + ins.current.imm) & 'hFFF) == 'hFFE) {
+        straddle_fetch_page: coverpoint ((((ins.current.insn ==? JALR) ? ins.current.rs1_val + ins.current.imm : ins.current.pc_rdata) & 'h1FFFFF) == 'h1FFFFE)
+                             iff ((((ins.current.insn ==? JALR) ? ins.current.rs1_val + ins.current.imm : ins.current.pc_rdata) & 'hFFF) == 'hFFE) {
             bins kilopage = {0};
             `ifdef UDB_MXLEN_64
                 bins megapage = {1};
             `endif
         }
-        // 0: not an instruction page fault with sepc = the start of the instruction, 1: faults in the first page,
-        // 2: faults in the next page, 3: faults with another stval
-        straddle_fetch_fault: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") != INSTRUCTION_PAGE_FAULT ||
-                                          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sepc", "sepc") != ins.current.rs1_val + ins.current.imm ? 2'd0 :
-                                          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.rs1_val + ins.current.imm ? 2'd1 :
-                                          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.rs1_val + ins.current.imm + 2 ? 2'd2 : 2'd3) {
+        // 0: completes, 1: faults in the first page, 2: faults in the next page, 3: faults with another stval,
+        // 7: neither (another instruction, or a jalr that does not take an instruction page fault at its target)
+        straddle_fetch_outcome: coverpoint ((ins.current.insn == 32'h00000013) && !ins.current.trap ? 3'd0 :
+                                            !(ins.current.insn ==? JALR) ||
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") != INSTRUCTION_PAGE_FAULT ||
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "sepc", "sepc") != ins.current.rs1_val + ins.current.imm ? 3'd7 :
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.rs1_val + ins.current.imm ? 3'd1 :
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.rs1_val + ins.current.imm + 2 ? 3'd2 : 3'd3) {
+            bins completes = {0};
             `ifdef UDB_REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT
                 bins first_faults = {1};
                 bins next_faults  = {2};
@@ -735,8 +737,8 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
                 bins faults = {[1:3]};
             `endif
         }
-        cp_straddle_exec_s: cross priv_mode_s, jalr, straddle_fetch_page, straddle_fetch_fault, mode;
-        cp_straddle_exec_u: cross priv_mode_u, jalr, straddle_fetch_page, straddle_fetch_fault, mode;
+        cp_straddle_exec_s: cross priv_mode_s, straddle_fetch_page, straddle_fetch_outcome, mode;
+        cp_straddle_exec_u: cross priv_mode_u, straddle_fetch_page, straddle_fetch_outcome, mode;
     `endif
 
     // A load or store that spans the end of a kilopage, at every offset from 1 to its size - 1 below the boundary, and
@@ -789,10 +791,13 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
                 bins fsq[] = {['h0C1:'h0CF]};
             `endif
         }
-        // 0: no page fault, 1: faults in the first page, 2: faults in the next page, 3: faults with another stval
-        straddle_load_fault: coverpoint (!ins.current.trap || get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") != LOAD_PAGE_FAULT ? 2'd0 :
-                                         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.rs1_val + ins.current.imm ? 2'd1 :
-                                         get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == (((ins.current.rs1_val + ins.current.imm) >> 12) + 1) << 12 ? 2'd2 : 2'd3) {
+        // 0: completes, 1: faults in the first page, 2: faults in the next page, 3: faults with another stval,
+        // 7: another trap
+        straddle_load_outcome: coverpoint (!ins.current.trap ? 3'd0 :
+                                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") != LOAD_PAGE_FAULT ? 3'd7 :
+                                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.rs1_val + ins.current.imm ? 3'd1 :
+                                           get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == (((ins.current.rs1_val + ins.current.imm) >> 12) + 1) << 12 ? 3'd2 : 3'd3) {
+            bins completes = {0};
             `ifdef UDB_REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT
                 bins first_faults = {1};
                 bins next_faults  = {2};
@@ -800,9 +805,11 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
                 bins faults = {[1:3]};
             `endif
         }
-        straddle_store_fault: coverpoint (!ins.current.trap || get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") != STORE_AMO_PAGE_FAULT ? 2'd0 :
-                                          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.rs1_val + ins.current.imm ? 2'd1 :
-                                          get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == (((ins.current.rs1_val + ins.current.imm) >> 12) + 1) << 12 ? 2'd2 : 2'd3) {
+        straddle_store_outcome: coverpoint (!ins.current.trap ? 3'd0 :
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "code") != STORE_AMO_PAGE_FAULT ? 3'd7 :
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == ins.current.rs1_val + ins.current.imm ? 3'd1 :
+                                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "stval", "stval") == (((ins.current.rs1_val + ins.current.imm) >> 12) + 1) << 12 ? 3'd2 : 3'd3) {
+            bins completes = {0};
             `ifdef UDB_REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT
                 bins first_faults = {1};
                 bins next_faults  = {2};
@@ -810,10 +817,10 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
                 bins faults = {[1:3]};
             `endif
         }
-        cp_straddle_read_s:  cross priv_mode_s, straddle_load,  straddle_load_fault,  mode;
-        cp_straddle_read_u:  cross priv_mode_u, straddle_load,  straddle_load_fault,  mode;
-        cp_straddle_write_s: cross priv_mode_s, straddle_store, straddle_store_fault, mode;
-        cp_straddle_write_u: cross priv_mode_u, straddle_store, straddle_store_fault, mode;
+        cp_straddle_read_s:  cross priv_mode_s, straddle_load,  straddle_load_outcome,  mode;
+        cp_straddle_read_u:  cross priv_mode_u, straddle_load,  straddle_load_outcome,  mode;
+        cp_straddle_write_s: cross priv_mode_s, straddle_store, straddle_store_outcome, mode;
+        cp_straddle_write_u: cross priv_mode_u, straddle_store, straddle_store_outcome, mode;
     `endif
 endgroup
 

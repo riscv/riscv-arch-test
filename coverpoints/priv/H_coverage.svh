@@ -618,6 +618,565 @@ covergroup H_inst_cg with function sample(ins_t ins);
     cp_sret_vs:  cross priv_mode_vs, sret, old_spp, old_spie, old_vtsr;
 endgroup
 
+// Counter access and htimedelta in HS, VS, U and VU modes.
+// Written: Julia Gong jgong@g.hmc.edu November 10, 2025
+// H_F, H_V and H_VF tests (H_F-NN.S, H_V_*-NN.S, H_VF-NN.S) are part of the H suite and run only
+// when F, Zve32x or Zve32f is also supported. They parallel S_F, S_V and S_VF in S_coverage.svh,
+// using vsstatus in VS-mode and VU-mode crossed with the HS-level sstatus, and share their coverpoints through
+// the general/RISCV_coverage_priv_* includes.
+`ifdef F_SUPPORTED
+covergroup H_F_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_priv_f_coverpoints.svh"
+
+    // vsstatus.FS is sampled from vsstatus; the HS-level FS from sstatus
+    vsstatus_FS: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "fs")[1:0] {
+        bins off     = {2'b00};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins initial_state = {2'b01};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins clean   = {2'b10};
+        `endif
+        bins dirty   = {2'b11};
+    }
+    hsstatus_FS: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs")[1:0] {
+        bins off     = {2'b00};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins initial_state = {2'b01};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins clean   = {2'b10};
+        `endif
+        bins dirty   = {2'b11};
+    }
+    vsstatus_FS_off_dirty: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "fs")[1:0] {
+        bins off     = {2'b00};
+        bins dirty   = {2'b11};
+    }
+    hsstatus_FS_off_dirty: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs")[1:0] {
+        bins off     = {2'b00};
+        bins dirty   = {2'b11};
+    }
+
+    // main coverpoints
+    cp_fcsr_access:           cross priv_mode_vs_vu, fcsrname, csraccesses, vsstatus_FS, hsstatus_FS; // superset of ZicsrF cp_fcsr_access crossing with vsstatus.FS and sstatus.FS
+    cp_vsstatus_FS_transition: cross priv_mode_vs_vu, deterministic_instrs, vsstatus_FS, hsstatus_FS;
+    cp_vsstatus_FS_transition_nondeterministic: cross priv_mode_vs_vu, nondeterministic_instrs, vsstatus_FS_off_dirty, hsstatus_FS_off_dirty;
+endgroup
+`endif
+
+`ifdef ZVE32X_SUPPORTED
+covergroup H_V_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_priv_v_coverpoints.svh"
+
+    // crosses of the shared vector coverpoints
+    cp_vcsrrswc                 : cross priv_mode_vs_vu, vcsrs, csrops;
+    cp_vcsrs_walking1s          : cross priv_mode_vs_vu, writable_vcsrs, csrw, walking_ones_rs1;
+    cp_sew_lmul_vsetvl          : cross priv_mode_vs_vu, vsetvl_instruction, rs2_vtype_legal, rs2_lmul, rs2_sew {
+        `ifndef UDB_SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED_NO_UNREQUIRED_SUPPORTED
+            ignore_bins illegal_sew_lmul =
+                (binsof(rs2_sew) intersect { 3'b011 } && binsof(rs2_lmul) intersect { 3'b111 }) ||  // SEW = 64, LMUL = f2
+                (binsof(rs2_sew) intersect { 3'b011 } && binsof(rs2_lmul) intersect { 3'b110 }) ||  // SEW = 64, LMUL = f4
+                (binsof(rs2_sew) intersect { 3'b011 } && binsof(rs2_lmul) intersect { 3'b101 }) ||  // SEW = 64, LMUL = f8
+                (binsof(rs2_sew) intersect { 3'b010 } && binsof(rs2_lmul) intersect { 3'b110 }) ||  // SEW = 32, LMUL = f4
+                (binsof(rs2_sew) intersect { 3'b010 } && binsof(rs2_lmul) intersect { 3'b101 }) ||  // SEW = 32, LMUL = f8
+                (binsof(rs2_sew) intersect { 3'b001 } && binsof(rs2_lmul) intersect { 3'b101 });    // SEW = 16, LMUL = f8
+
+            `ifndef UDB_ELEN_64
+                ignore_bins illegal_sew_lmul_elen32 =
+                    (binsof(rs2_sew) intersect { 3'b010 } && binsof(rs2_lmul) intersect { 3'b111 }) ||  // SEW = 32, LMUL = f2
+                    (binsof(rs2_sew) intersect { 3'b001 } && binsof(rs2_lmul) intersect { 3'b110 }) ||  // SEW = 16, LMUL = f4
+                    (binsof(rs2_sew) intersect { 3'b000 } && binsof(rs2_lmul) intersect { 3'b101 });    // SEW = 8, LMUL = f8
+            `endif
+        `endif
+    }
+    cp_sew_lmul_vset_i_vli      : cross priv_mode_vs_vu, vset_i_vli_instructions, vset_sew, vset_lmul {
+        `ifndef UDB_SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED_NO_UNREQUIRED_SUPPORTED
+            ignore_bins illegal_sew_lmul =
+                (binsof(vset_sew) intersect { 3'b011 } && binsof(vset_lmul) intersect { 3'b111 }) ||  // SEW = 64, LMUL = f2
+                (binsof(vset_sew) intersect { 3'b011 } && binsof(vset_lmul) intersect { 3'b110 }) ||  // SEW = 64, LMUL = f4
+                (binsof(vset_sew) intersect { 3'b011 } && binsof(vset_lmul) intersect { 3'b101 }) ||  // SEW = 64, LMUL = f8
+                (binsof(vset_sew) intersect { 3'b010 } && binsof(vset_lmul) intersect { 3'b110 }) ||  // SEW = 32, LMUL = f4
+                (binsof(vset_sew) intersect { 3'b010 } && binsof(vset_lmul) intersect { 3'b101 }) ||  // SEW = 32, LMUL = f8
+                (binsof(vset_sew) intersect { 3'b001 } && binsof(vset_lmul) intersect { 3'b101 });    // SEW = 16, LMUL = f8
+
+            `ifndef UDB_ELEN_64
+                ignore_bins illegal_sew_lmul_elen32 =
+                    (binsof(vset_sew) intersect { 3'b010 } && binsof(vset_lmul) intersect { 3'b111 }) ||  // SEW = 32, LMUL = f2
+                    (binsof(vset_sew) intersect { 3'b001 } && binsof(vset_lmul) intersect { 3'b110 }) ||  // SEW = 16, LMUL = f4
+                    (binsof(vset_sew) intersect { 3'b000 } && binsof(vset_lmul) intersect { 3'b101 });    // SEW = 8, LMUL = f8
+            `endif
+        `endif
+    }
+    cp_vill_vsetvl              : cross priv_mode_vs_vu, vsetvl_instruction, vtype_prev_vill_set, rs2_vtype_legal, rs2_sew_all_supported, rs2_lmul_8;
+    cp_vill_vset_i_vli          : cross priv_mode_vs_vu, vset_i_vli_instructions, vtype_prev_vill_set, current_vset_sew_all_supported, current_vset_lmul_8;
+    cp_vill_vsetvl_rs2_vill     : cross priv_mode_vs_vu, vsetvl_instruction, vtype_prev_vill_set, rs2_vtype_legal_no_msb, rs2_sew_all_supported, rs2_lmul_8, rs2_vill_set;
+    cp_vsetvl_rs2_vill          : cross priv_mode_vs_vu, vsetvl_instruction, rs2_vill_set, rs2_sew_supported, rs2_lmul_1, rs2_vtype_legal_no_msb, vtype_prev_vill_clear;
+    cp_vtype_vill_set_vl_0      : cross priv_mode_vs_vu, vsetvl_instruction, rs1_non_zero, rs2_vill_set, vl_nonzero;
+    cp_vsetvl_i_rd_nx0_rs1_x0   : cross priv_mode_vs_vu, vsetvl_i_instructions, vl_not_max, rd_n0, rs1_x0, vtype_all_sew_supported, vtype_all_lmul_supported {
+        // SEW > LMUL*ELEN sets vill=1 and forces vtype.vsew/vlmul to 0,
+        // so these BEFORE-state (sew, lmul) pairs are architecturally unreachable.
+        ignore_bins illegal_sew_lmul =
+            (binsof(vtype_all_sew_supported.sixtyfour) && binsof(vtype_all_lmul_supported.half))   ||
+            (binsof(vtype_all_sew_supported.sixtyfour) && binsof(vtype_all_lmul_supported.fourth)) ||
+            (binsof(vtype_all_sew_supported.sixtyfour) && binsof(vtype_all_lmul_supported.eighth)) ||
+            (binsof(vtype_all_sew_supported.thirtytwo) && binsof(vtype_all_lmul_supported.fourth)) ||
+            (binsof(vtype_all_sew_supported.thirtytwo) && binsof(vtype_all_lmul_supported.eighth)) ||
+            (binsof(vtype_all_sew_supported.sixteen)   && binsof(vtype_all_lmul_supported.eighth));
+    }
+    cp_vsetvl_i_rd_x0_rs1_x0    : cross priv_mode_vs_vu, vsetvl_i_instructions, vl_nonzero, rd_x0, rs1_x0, vset_i_vli_vlmax_unchanged;
+    cp_vsetvl_i_avl_eq_zero     : cross priv_mode_vs_vu, vsetvl_i_instructions, rs1_eq_zero;
+    cp_vsetvl_i_avl_eq_vlmax    : cross priv_mode_vs_vu, vsetvl_i_instructions, rs1_eq_vlmax;
+    cp_vsetvl_i_avl_lt_2x_vlmax : cross priv_mode_vs_vu, vsetvl_i_instructions, rs1_lt_2x_vlmax_gt_vlmax;
+    cp_vsetvl_i_avl_eq_2x_vlmax : cross priv_mode_vs_vu, vsetvl_i_instructions, rs1_eq_2x_vlmax;
+    cp_vsetvl_i_avl_gt_2x_vlmax : cross priv_mode_vs_vu, vsetvl_i_instructions, rs1_gt_2x_vlmax;
+    cp_vsetivli_avl_edges       : cross priv_mode_vs_vu, vsetivli_instruction, vtype_all_sew_supported, imm5_edges, vtype_lmul_1;
+    cp_vstart_out_of_bounds     : cross priv_mode_vs_vu, vstart_csr, csr_write, rs1_2_to_16;
+    cp_vl_walking1s_sew_lmul    : cross priv_mode_vs_vu, vsetivli_prev_instruction, vsetivli_prev_sew_lmul, csrrw, csr_vl, walking_ones_rs1 {
+        `ifndef UDB_SUPPORT_FRACTIONAL_LMUL_BEYOND_REQUIRED_NO_UNREQUIRED_SUPPORTED
+            // SEW > LMUL*ELEN sets vill; the tests skip these unless the DUT supports the extra fractional LMULs.
+            // Encodings are {vsew, vlmul}. ELEN is at most 64, so ELEN>=128 pairs are never legal.
+            ignore_bins illegal_sew_lmul = binsof(vsetivli_prev_sew_lmul) intersect {
+                5'b01_101,  // e16, mf8
+                5'b10_110,  // e32, mf4
+                5'b10_101,  // e32, mf8
+                5'b11_111,  // e64, mf2
+                5'b11_110,  // e64, mf4
+                5'b11_101   // e64, mf8
+            };
+            `ifndef UDB_ELEN_64
+                ignore_bins illegal_sew_lmul_elen32 = binsof(vsetivli_prev_sew_lmul) intersect {
+                    5'b00_101,  // e8, mf8
+                    5'b01_110,  // e16, mf4
+                    5'b10_111   // e32, mf2
+                };
+            `endif
+        `endif
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vsstatus_vs_*
+    // tests vsstatus and sstatus ability to set clean and initial to dirty only when supposed to.
+    // The VS-level VS is sampled from vsstatus.VS and the HS-level VS from sstatus.VS.
+    // A vector instruction needs both to be on, and sets both to dirty.
+    //////////////////////////////////////////////////////////////////////////////////
+
+    // Initial and Clean only when MSTATUS_VS_LEGAL_VALUES includes them (otherwise a write
+    // of either reads back as Dirty)
+    vsstatus_vs_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "vs") {
+        `ifdef UDB_MSTATUS_VS_LEGAL_VALUES_1
+            bins first = {1};
+        `endif
+        `ifdef UDB_MSTATUS_VS_LEGAL_VALUES_2
+            bins clean  = {2};
+        `endif
+        bins dirty  = {3};
+    }
+    vsstatus_vs_all : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "vs") {
+        bins off = {0};
+        `ifdef UDB_MSTATUS_VS_LEGAL_VALUES_1
+            bins first = {1};
+        `endif
+        `ifdef UDB_MSTATUS_VS_LEGAL_VALUES_2
+            bins clean  = {2};
+        `endif
+        bins dirty  = {3};
+    }
+    hsstatus_vs_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "vs") {
+        `ifdef UDB_MSTATUS_VS_LEGAL_VALUES_1
+            bins first = {1};
+        `endif
+        `ifdef UDB_MSTATUS_VS_LEGAL_VALUES_2
+            bins clean  = {2};
+        `endif
+        bins dirty  = {3};
+    }
+    hsstatus_vs_all : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "vs") {
+        bins off = {0};
+        `ifdef UDB_MSTATUS_VS_LEGAL_VALUES_1
+            bins first = {1};
+        `endif
+        `ifdef UDB_MSTATUS_VS_LEGAL_VALUES_2
+            bins clean  = {2};
+        `endif
+        bins dirty  = {3};
+    }
+
+    cp_vsstatus_vs_set_dirty_arithmetic : cross priv_mode_vs_vu, std_vec,        vector_vector_arithmetic_instruction,   vsstatus_vs_on, hsstatus_vs_on;
+    cp_vsstatus_vs_set_dirty_csr        : cross priv_mode_vs_vu, std_vec,        vsetvli_instruction,                    vsstatus_vs_on, hsstatus_vs_on;
+    cp_vsstatus_vs_set_dirty_vcsr       : cross priv_mode_vs_vu, vcsrs_writable, csrops,                                 vsstatus_vs_on, hsstatus_vs_on;
+
+    // VS off at either level
+    cp_vsstatus_vs_off_arithmetic       : cross priv_mode_vs_vu, vsstatus_vs_all, hsstatus_vs_all, vector_vector_arithmetic_instruction iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                                                                                                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                                                                                                                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 ) {
+        ignore_bins both_on = binsof(vsstatus_vs_all) intersect {[1:3]} && binsof(hsstatus_vs_all) intersect {[1:3]};
+    }
+    cp_vsstatus_vs_off_csr              : cross priv_mode_vs_vu, vsstatus_vs_all, hsstatus_vs_all, vsetvli_instruction iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                                                                                                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                                                                                                                 get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 ) {
+        ignore_bins both_on = binsof(vsstatus_vs_all) intersect {[1:3]} && binsof(hsstatus_vs_all) intersect {[1:3]};
+    }
+
+endgroup
+`endif
+
+`ifdef ZVE32F_SUPPORTED
+covergroup H_VF_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+    `include "general/RISCV_coverage_priv_vf_coverpoints.svh"
+
+    // The VS-level status is sampled from vsstatus and the HS-level status from sstatus.
+    //cross vtype_prev_vill_clear, vstart_zero, vl_nonzero;
+    std_trap_vec : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "vs") != 0 &
+                        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "vs") != 0
+                    }
+    {
+        bins true = {1'b1};
+    }
+
+    // Initial and Clean only when MSTATUS_FS_LEGAL_VALUES includes them (otherwise a write
+    // of either reads back as Dirty)
+    vsstatus_fs_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "fs") {
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins first_state = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins clean  = {2};
+        `endif
+        bins dirty  = {3};
+    }
+    vsstatus_fs_all : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "fs") {
+        bins off = {0};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins first_state = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins clean  = {2};
+        `endif
+        bins dirty  = {3};
+    }
+    hsstatus_fs_on : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs") {
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins first_state = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins clean  = {2};
+        `endif
+        bins dirty  = {3};
+    }
+    hsstatus_fs_all : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sstatus", "fs") {
+        bins off = {0};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins first_state = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins clean  = {2};
+        `endif
+        bins dirty  = {3};
+    }
+
+    cp_vectorfp_vsstatus_fs_state_affecting_register : cross priv_mode_vs_vu, std_vec, vfmv_f_s, vsstatus_fs_on, hsstatus_fs_on;
+    cp_vectorfp_vsstatus_fs_state_affecting_csr      : cross priv_mode_vs_vu, std_vec, vector_vector_arithmetic_fp_instruction, vsstatus_fs_on, hsstatus_fs_on, fflags_modified_after_clear;
+    cp_vectorfp_vsstatus_fs_state_nonaffecting       : cross priv_mode_vs_vu, std_vec, vector_vector_arithmetic_fp_instruction, vsstatus_fs_on, hsstatus_fs_on, vs1_zero, vs2_zero;
+    // FS off at either level
+    cp_vectorfp_vsstatus_fs_off                      : cross priv_mode_vs_vu, std_trap_vec, vector_vector_arithmetic_fp_instruction, vsstatus_fs_all, hsstatus_fs_all, vs1_zero, vs2_zero {
+        ignore_bins both_on = binsof(vsstatus_fs_all) intersect {[1:3]} && binsof(hsstatus_fs_all) intersect {[1:3]};
+    }
+
+endgroup
+`endif
+
+`ifdef ZICNTR_SUPPORTED
+covergroup H_Zicntr_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    // The counter accessed: one that exists and whose mcounteren, hcounteren and scounteren bits are writable
+    counter: coverpoint ins.current.insn[31:20] {
+        `ifdef UDB_MCOUNTENABLE_EN_0 `ifdef UDB_HCOUNTENABLE_EN_0 `ifdef UDB_SCOUNTENABLE_EN_0
+            bins cycle_csr = {CSR_CYCLE};
+            `ifdef UDB_MXLEN_32
+                bins cycleh_csr = {CSR_CYCLEH};
+            `endif
+        `endif `endif `endif
+        `ifdef UDB_MCOUNTENABLE_EN_1 `ifdef UDB_HCOUNTENABLE_EN_1 `ifdef UDB_SCOUNTENABLE_EN_1
+            bins time_csr = {CSR_TIME};
+            `ifdef UDB_MXLEN_32
+                bins timeh_csr = {CSR_TIMEH};
+            `endif
+        `endif `endif `endif
+        `ifdef UDB_MCOUNTENABLE_EN_2 `ifdef UDB_HCOUNTENABLE_EN_2 `ifdef UDB_SCOUNTENABLE_EN_2
+            bins instret_csr = {CSR_INSTRET};
+            `ifdef UDB_MXLEN_32
+                bins instreth_csr = {CSR_INSTRETH};
+            `endif
+        `endif `endif `endif
+        `ifdef ZIHPM_SUPPORTED
+            `ifdef UDB_HPM_COUNTER_EN_3 `ifdef UDB_MCOUNTENABLE_EN_3 `ifdef UDB_HCOUNTENABLE_EN_3 `ifdef UDB_SCOUNTENABLE_EN_3
+                bins hpmcounter3_csr = {CSR_HPMCOUNTER3};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter3h_csr = {CSR_HPMCOUNTER3H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_4 `ifdef UDB_MCOUNTENABLE_EN_4 `ifdef UDB_HCOUNTENABLE_EN_4 `ifdef UDB_SCOUNTENABLE_EN_4
+                bins hpmcounter4_csr = {CSR_HPMCOUNTER4};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter4h_csr = {CSR_HPMCOUNTER4H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_5 `ifdef UDB_MCOUNTENABLE_EN_5 `ifdef UDB_HCOUNTENABLE_EN_5 `ifdef UDB_SCOUNTENABLE_EN_5
+                bins hpmcounter5_csr = {CSR_HPMCOUNTER5};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter5h_csr = {CSR_HPMCOUNTER5H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_6 `ifdef UDB_MCOUNTENABLE_EN_6 `ifdef UDB_HCOUNTENABLE_EN_6 `ifdef UDB_SCOUNTENABLE_EN_6
+                bins hpmcounter6_csr = {CSR_HPMCOUNTER6};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter6h_csr = {CSR_HPMCOUNTER6H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_7 `ifdef UDB_MCOUNTENABLE_EN_7 `ifdef UDB_HCOUNTENABLE_EN_7 `ifdef UDB_SCOUNTENABLE_EN_7
+                bins hpmcounter7_csr = {CSR_HPMCOUNTER7};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter7h_csr = {CSR_HPMCOUNTER7H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_8 `ifdef UDB_MCOUNTENABLE_EN_8 `ifdef UDB_HCOUNTENABLE_EN_8 `ifdef UDB_SCOUNTENABLE_EN_8
+                bins hpmcounter8_csr = {CSR_HPMCOUNTER8};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter8h_csr = {CSR_HPMCOUNTER8H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_9 `ifdef UDB_MCOUNTENABLE_EN_9 `ifdef UDB_HCOUNTENABLE_EN_9 `ifdef UDB_SCOUNTENABLE_EN_9
+                bins hpmcounter9_csr = {CSR_HPMCOUNTER9};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter9h_csr = {CSR_HPMCOUNTER9H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_10 `ifdef UDB_MCOUNTENABLE_EN_10 `ifdef UDB_HCOUNTENABLE_EN_10 `ifdef UDB_SCOUNTENABLE_EN_10
+                bins hpmcounter10_csr = {CSR_HPMCOUNTER10};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter10h_csr = {CSR_HPMCOUNTER10H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_11 `ifdef UDB_MCOUNTENABLE_EN_11 `ifdef UDB_HCOUNTENABLE_EN_11 `ifdef UDB_SCOUNTENABLE_EN_11
+                bins hpmcounter11_csr = {CSR_HPMCOUNTER11};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter11h_csr = {CSR_HPMCOUNTER11H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_12 `ifdef UDB_MCOUNTENABLE_EN_12 `ifdef UDB_HCOUNTENABLE_EN_12 `ifdef UDB_SCOUNTENABLE_EN_12
+                bins hpmcounter12_csr = {CSR_HPMCOUNTER12};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter12h_csr = {CSR_HPMCOUNTER12H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_13 `ifdef UDB_MCOUNTENABLE_EN_13 `ifdef UDB_HCOUNTENABLE_EN_13 `ifdef UDB_SCOUNTENABLE_EN_13
+                bins hpmcounter13_csr = {CSR_HPMCOUNTER13};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter13h_csr = {CSR_HPMCOUNTER13H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_14 `ifdef UDB_MCOUNTENABLE_EN_14 `ifdef UDB_HCOUNTENABLE_EN_14 `ifdef UDB_SCOUNTENABLE_EN_14
+                bins hpmcounter14_csr = {CSR_HPMCOUNTER14};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter14h_csr = {CSR_HPMCOUNTER14H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_15 `ifdef UDB_MCOUNTENABLE_EN_15 `ifdef UDB_HCOUNTENABLE_EN_15 `ifdef UDB_SCOUNTENABLE_EN_15
+                bins hpmcounter15_csr = {CSR_HPMCOUNTER15};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter15h_csr = {CSR_HPMCOUNTER15H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_16 `ifdef UDB_MCOUNTENABLE_EN_16 `ifdef UDB_HCOUNTENABLE_EN_16 `ifdef UDB_SCOUNTENABLE_EN_16
+                bins hpmcounter16_csr = {CSR_HPMCOUNTER16};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter16h_csr = {CSR_HPMCOUNTER16H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_17 `ifdef UDB_MCOUNTENABLE_EN_17 `ifdef UDB_HCOUNTENABLE_EN_17 `ifdef UDB_SCOUNTENABLE_EN_17
+                bins hpmcounter17_csr = {CSR_HPMCOUNTER17};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter17h_csr = {CSR_HPMCOUNTER17H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_18 `ifdef UDB_MCOUNTENABLE_EN_18 `ifdef UDB_HCOUNTENABLE_EN_18 `ifdef UDB_SCOUNTENABLE_EN_18
+                bins hpmcounter18_csr = {CSR_HPMCOUNTER18};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter18h_csr = {CSR_HPMCOUNTER18H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_19 `ifdef UDB_MCOUNTENABLE_EN_19 `ifdef UDB_HCOUNTENABLE_EN_19 `ifdef UDB_SCOUNTENABLE_EN_19
+                bins hpmcounter19_csr = {CSR_HPMCOUNTER19};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter19h_csr = {CSR_HPMCOUNTER19H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_20 `ifdef UDB_MCOUNTENABLE_EN_20 `ifdef UDB_HCOUNTENABLE_EN_20 `ifdef UDB_SCOUNTENABLE_EN_20
+                bins hpmcounter20_csr = {CSR_HPMCOUNTER20};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter20h_csr = {CSR_HPMCOUNTER20H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_21 `ifdef UDB_MCOUNTENABLE_EN_21 `ifdef UDB_HCOUNTENABLE_EN_21 `ifdef UDB_SCOUNTENABLE_EN_21
+                bins hpmcounter21_csr = {CSR_HPMCOUNTER21};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter21h_csr = {CSR_HPMCOUNTER21H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_22 `ifdef UDB_MCOUNTENABLE_EN_22 `ifdef UDB_HCOUNTENABLE_EN_22 `ifdef UDB_SCOUNTENABLE_EN_22
+                bins hpmcounter22_csr = {CSR_HPMCOUNTER22};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter22h_csr = {CSR_HPMCOUNTER22H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_23 `ifdef UDB_MCOUNTENABLE_EN_23 `ifdef UDB_HCOUNTENABLE_EN_23 `ifdef UDB_SCOUNTENABLE_EN_23
+                bins hpmcounter23_csr = {CSR_HPMCOUNTER23};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter23h_csr = {CSR_HPMCOUNTER23H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_24 `ifdef UDB_MCOUNTENABLE_EN_24 `ifdef UDB_HCOUNTENABLE_EN_24 `ifdef UDB_SCOUNTENABLE_EN_24
+                bins hpmcounter24_csr = {CSR_HPMCOUNTER24};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter24h_csr = {CSR_HPMCOUNTER24H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_25 `ifdef UDB_MCOUNTENABLE_EN_25 `ifdef UDB_HCOUNTENABLE_EN_25 `ifdef UDB_SCOUNTENABLE_EN_25
+                bins hpmcounter25_csr = {CSR_HPMCOUNTER25};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter25h_csr = {CSR_HPMCOUNTER25H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_26 `ifdef UDB_MCOUNTENABLE_EN_26 `ifdef UDB_HCOUNTENABLE_EN_26 `ifdef UDB_SCOUNTENABLE_EN_26
+                bins hpmcounter26_csr = {CSR_HPMCOUNTER26};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter26h_csr = {CSR_HPMCOUNTER26H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_27 `ifdef UDB_MCOUNTENABLE_EN_27 `ifdef UDB_HCOUNTENABLE_EN_27 `ifdef UDB_SCOUNTENABLE_EN_27
+                bins hpmcounter27_csr = {CSR_HPMCOUNTER27};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter27h_csr = {CSR_HPMCOUNTER27H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_28 `ifdef UDB_MCOUNTENABLE_EN_28 `ifdef UDB_HCOUNTENABLE_EN_28 `ifdef UDB_SCOUNTENABLE_EN_28
+                bins hpmcounter28_csr = {CSR_HPMCOUNTER28};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter28h_csr = {CSR_HPMCOUNTER28H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_29 `ifdef UDB_MCOUNTENABLE_EN_29 `ifdef UDB_HCOUNTENABLE_EN_29 `ifdef UDB_SCOUNTENABLE_EN_29
+                bins hpmcounter29_csr = {CSR_HPMCOUNTER29};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter29h_csr = {CSR_HPMCOUNTER29H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_30 `ifdef UDB_MCOUNTENABLE_EN_30 `ifdef UDB_HCOUNTENABLE_EN_30 `ifdef UDB_SCOUNTENABLE_EN_30
+                bins hpmcounter30_csr = {CSR_HPMCOUNTER30};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter30h_csr = {CSR_HPMCOUNTER30H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_31 `ifdef UDB_MCOUNTENABLE_EN_31 `ifdef UDB_HCOUNTENABLE_EN_31 `ifdef UDB_SCOUNTENABLE_EN_31
+                bins hpmcounter31_csr = {CSR_HPMCOUNTER31};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter31h_csr = {CSR_HPMCOUNTER31H};
+                `endif
+            `endif `endif `endif `endif
+        `endif
+    }
+
+    // The enable bit of the accessed counter in each counter-enable register
+    mcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[ins.current.insn[24:20]] {
+        bins disabled = {0};
+        bins enabled  = {1};
+    }
+    hcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[ins.current.insn[24:20]] {
+        bins disabled = {0};
+        bins enabled  = {1};
+    }
+    scounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[ins.current.insn[24:20]] {
+        bins disabled = {0};
+        bins enabled  = {1};
+    }
+    // The same bits held while another counter-enable register is walked
+    mcounteren_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[ins.current.insn[24:20]] {
+        bins one = {1};
+    }
+    hcounteren_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[ins.current.insn[24:20]] {
+        bins one = {1};
+    }
+    hcounteren_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[ins.current.insn[24:20]] {
+        bins zero = {0};
+    }
+    scounteren_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[ins.current.insn[24:20]] {
+        bins one = {1};
+    }
+    scounteren_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[ins.current.insn[24:20]] {
+        bins zero = {0};
+    }
+
+    csraccess: coverpoint ins.current.insn {
+        wildcard bins csrr = {CSRR};
+        wildcard bins csrw = {CSRW};
+    }
+
+    // htimedelta = {0, 2^30, 2^32-1, 2^60, -1, -2^30, -2^60} while time and timeh are read
+    csrr_time: coverpoint ins.current.insn[31:20] iff (ins.current.insn ==? CSRR) {
+        bins read_time = {CSR_TIME};
+        `ifdef UDB_MXLEN_32
+            bins read_timeh = {CSR_TIMEH};
+        `endif
+    }
+    `ifdef UDB_MXLEN_64
+        htimedelta: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedelta", "htimedelta") {
+    `else
+        htimedelta: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedeltah", "htimedeltah")[31:0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedelta", "htimedelta")[31:0]} {
+    `endif
+        bins zero       = {64'h0000000000000000};
+        bins pos_2p30   = {64'h0000000040000000};
+        bins pos_2p32m1 = {64'h00000000FFFFFFFF};
+        bins pos_2p60   = {64'h1000000000000000};
+        bins neg_1      = {64'hFFFFFFFFFFFFFFFF};
+        bins neg_2p30   = {64'hFFFFFFFFC0000000};
+        bins neg_2p60   = {64'hF000000000000000};
+    }
+
+    // HS-mode
+    cp_scounteren_access_hs: cross csraccess, counter, scounteren_bit, mcounteren_one, hcounteren_zero, priv_mode_hs;
+    cp_delta_hs: cross csrr_time, htimedelta, priv_mode_hs;
+
+    // VS-mode
+    cp_mcounteren_access_vs: cross csraccess, counter, mcounteren_bit, hcounteren_one, scounteren_zero, priv_mode_vs;
+    cp_mcounteren_access_vs_h0: cross csraccess, counter, mcounteren_bit, hcounteren_zero, scounteren_zero, priv_mode_vs;
+    cp_hcounteren_access_vs: cross csraccess, counter, hcounteren_bit, mcounteren_one, scounteren_zero, priv_mode_vs;
+    cp_delta_vs: cross csrr_time, htimedelta, priv_mode_vs;
+
+    // U-mode
+    cp_scounteren_access_u: cross csraccess, counter, scounteren_bit, mcounteren_one, hcounteren_zero, priv_mode_u;
+    cp_delta_u: cross csrr_time, htimedelta, priv_mode_u;
+
+    // VU-mode
+    cp_mcounteren_access_vu: cross csraccess, counter, mcounteren_bit, hcounteren_one, scounteren_one, priv_mode_vu;
+    cp_mcounteren_access_vu_hs0: cross csraccess, counter, mcounteren_bit, hcounteren_zero, scounteren_zero, priv_mode_vu;
+    cp_hcounteren_access_vu: cross csraccess, counter, hcounteren_bit, mcounteren_one, scounteren_one, priv_mode_vu;
+    cp_scounteren_access_vu: cross csraccess, counter, scounteren_bit, mcounteren_one, hcounteren_one, priv_mode_vu;
+    cp_delta_vu: cross csrr_time, htimedelta, priv_mode_vu;
+endgroup
+`endif
+
 function void h_sample(int hart, int issue, ins_t ins);
     H_hscsr_cg.sample(ins);
     H_vscause_cg.sample(ins);
@@ -625,4 +1184,16 @@ function void h_sample(int hart, int issue, ins_t ins);
     H_vsstatus_cg.sample(ins);
     H_vucsr_cg.sample(ins);
     H_inst_cg.sample(ins);
+    `ifdef F_SUPPORTED
+        H_F_cg.sample(ins);
+    `endif
+    `ifdef ZVE32X_SUPPORTED
+        H_V_cg.sample(ins);
+    `endif
+    `ifdef ZVE32F_SUPPORTED
+        H_VF_cg.sample(ins);
+    `endif
+    `ifdef ZICNTR_SUPPORTED
+        H_Zicntr_cg.sample(ins);
+    `endif
 endfunction

@@ -19,47 +19,115 @@ from testgen.data.test_chunk import TestChunk
 
 # Status CSR whose FS and VS fields the tests in each privilege mode check; it also names their
 # coverpoints and testcase labels. U-mode code reaches the fields through T-SBI (see _status_access).
-STATUS_CSR = {"M": "mstatus", "S": "sstatus", "U": "mstatus"}
+# VS-mode code reaches vsstatus as sstatus and the HS-level sstatus through T-SBI. VU-mode code reaches both
+# through T-SBI.
+STATUS_CSR = {"M": "mstatus", "S": "sstatus", "U": "mstatus", "VS": "vsstatus", "VU": "vsstatus"}
+VIRTUAL_MODES = ("VS", "VU")
 
 
-def _status_access(priv: str, instr: Callable[[str], str]) -> list[str]:
-    """Run instr(csr), an access to the status CSR, from code running in priv ("M", "S" or "U").
+def hs_status_values(priv: str, include_off: bool = True) -> tuple[int | None, ...]:
+    """Values of the HS-level sstatus field to cross with the status field checked in priv (VS- and VU-mode only)."""
+    if priv not in VIRTUAL_MODES:
+        return (None,)
+    return (0, 1, 2, 3) if include_off else (1, 2, 3)
+
+
+def off_status_pairs(priv: str) -> list[tuple[int, int | None]]:
+    """(xstatus field, HS-level sstatus field) pairs where an instruction needing the field traps.
+
+    In VS- and VU-mode that is any pair with either field Off.
+    """
+    if priv not in VIRTUAL_MODES:
+        return [(0, None)]
+    return [(vs, hs) for vs in range(4) for hs in range(4) if vs == 0 or hs == 0]
+
+
+def off_tag(vs: int, hs: int | None) -> str:
+    """Testcase label suffix for an Off pair from off_status_pairs."""
+    return "" if hs is None else f"_vs{vs}_hs{hs}"
+
+
+def hs_tag(hs: int | None) -> str:
+    """Testcase label suffix for an HS-level sstatus field value."""
+    return "" if hs is None else f"_hs{hs}"
+
+
+def hs_note(hs: int | None, field: str = "FS") -> str:
+    """Testcase comment suffix for an HS-level sstatus field value."""
+    return "" if hs is None else f" and sstatus.{field}={hs}"
+
+
+def _status_access(priv: str, instr: Callable[[str], str], hs: bool = False) -> list[str]:
+    """Run instr(csr), an access to the status CSR, from code running in priv ("M", "S", "U", "VS" or "VU").
 
     M- and S-mode access STATUS_CSR[priv] directly. U-mode goes through T-SBI, to sstatus when
-    S-mode is supported and to mstatus otherwise.
+    S-mode is supported and to mstatus otherwise. VS-mode accesses vsstatus as sstatus, or with
+    hs=True the HS-level sstatus through T-SBI. VU-mode accesses vsstatus, or with hs=True sstatus,
+    both through T-SBI.
     """
-    if priv != "U":
+    if priv == "VU":
+        return [tsbi_call(instr("sstatus" if hs else "vsstatus"))]
+    if priv == "VS":
+        return [tsbi_call(instr("sstatus")) if hs else instr("sstatus")]
+    if priv != "U":  # M- or S-mode
         return [tsbi_call_or_direct(instr(STATUS_CSR[priv]), priv)]
     return ["#ifdef S_SUPPORTED", tsbi_call(instr("sstatus")), "#else", tsbi_call(instr("mstatus")), "#endif"]
 
 
 def gen_status_read_sigupd(check_reg: int, test_data: TestData, priv: str, mask_reg: int | None = None) -> str:
-    """Read the status CSR from code running in priv into the signature, keeping only the bits in mask_reg if given."""
-    if mask_reg is None and priv != "U":
-        return gen_csr_read_sigupd_in_mode(check_reg, (STATUS_CSR[priv], None), test_data, priv)
-    lines = _status_access(priv, lambda csr: f"csrr x{check_reg}, {csr}")
-    if mask_reg is not None:
-        lines.append(f"and x{check_reg}, x{check_reg}, x{mask_reg}    # keep only the masked bits")
-    lines.append(write_sigupd(check_reg, test_data))
-    return "\n".join(lines)
+    """Read the status CSR from code running in priv into the signature, keeping only the bits in mask_reg if given.
 
-
-def set_status_fields(temp_reg: int, priv: str, fs: int | None = None, vs: int | None = None) -> list[str]:
-    """Set xstatus.FS and/or xstatus.VS from code running in priv ("M", "S" or "U").
-
-    The fields are named by their encoding.h masks, and a field value is that many times the mask's
-    lowest bit.
+    VS- and VU-mode code also read the HS-level sstatus into the signature.
     """
+    if mask_reg is None and priv not in ("U", *VIRTUAL_MODES):
+        return gen_csr_read_sigupd_in_mode(check_reg, (STATUS_CSR[priv], None), test_data, priv)
+    reads = []
+    for hs in (False, True) if priv in VIRTUAL_MODES else (False,):
+        lines = _status_access(priv, lambda csr: f"csrr x{check_reg}, {csr}", hs)
+        if mask_reg is not None:
+            lines.append(f"and x{check_reg}, x{check_reg}, x{mask_reg}    # keep only the masked bits")
+        lines.append(write_sigupd(check_reg, test_data))
+        reads.extend(lines)
+    return "\n".join(reads)
+
+
+def _set_fields(temp_reg: int, priv: str, fs: int | None, vs: int | None, hs: bool) -> list[str]:
+    """Set the xstatus.FS and/or xstatus.VS that are not None, in the HS-level sstatus if hs=True."""
     fields = [(name, val) for name, val in (("FS", fs), ("VS", vs)) if val is not None]
+    if not fields:
+        return []
     names = " and ".join(name for name, _ in fields)
     mask = " | ".join(f"MSTATUS_{name}" for name, _ in fields)
     value = " | ".join(f"{val} * (MSTATUS_{name} & -MSTATUS_{name})" for name, val in fields if val) or "0"
     settings = ", ".join(f"{name}={val}" for name, val in fields)
+    where = "HS-level " if hs else ""
     return [
         f"LI(x{temp_reg}, {mask})",
-        *_status_access(priv, lambda csr: f"csrc {csr}, x{temp_reg}  # clear {names}"),
+        *_status_access(priv, lambda csr: f"csrc {csr}, x{temp_reg}  # clear {where}{names}", hs),
         f"LI(x{temp_reg}, {value})",
-        *_status_access(priv, lambda csr: f"csrs {csr}, x{temp_reg}  # {settings}"),
+        *_status_access(priv, lambda csr: f"csrs {csr}, x{temp_reg}  # {where}{settings}", hs),
+    ]
+
+
+def set_status_fields(
+    temp_reg: int,
+    priv: str,
+    fs: int | None = None,
+    vs: int | None = None,
+    hs_fs: int | None = None,
+    hs_vs: int | None = None,
+) -> list[str]:
+    """Set xstatus.FS and/or xstatus.VS from code running in priv ("M", "S", "U", "VS" or "VU").
+
+    VS- and VU-mode code set the HS-level sstatus fields too: hs_fs and hs_vs, or Dirty for a field
+    that fs or vs sets and hs_fs or hs_vs leaves unset.
+    """
+    if priv in VIRTUAL_MODES:
+        hs_fs = 3 if fs is not None and hs_fs is None else hs_fs
+        hs_vs = 3 if vs is not None and hs_vs is None else hs_vs
+    return [
+        *_set_fields(temp_reg, priv, fs, vs, hs=False),
+        *_set_fields(temp_reg, priv, hs_fs, hs_vs, hs=True),
     ]
 
 
@@ -226,6 +294,7 @@ def addr_value_tests(test_data: TestData, csr_name: str, covergroup: str) -> lis
         f"csrr x{save_reg}, {csr_name}      # Save CSR",
         "",
         f"# Testcase: {csr_name} = current pc",
+        ".p2align 2    # a 4-byte-aligned pc keeps xtvec.MODE = Direct",
         f"auipc x{walk_reg}, 0",
         test_data.add_testcase("pc", f"cp_{csr_name}_vaddr_pc", covergroup),
         f"csrw {csr_name}, x{walk_reg}    # directly follows the auipc so the value is this csrw's pc - 4",
@@ -537,3 +606,32 @@ def priv_inst_trap_tests(
         instr = f"{name}    # test {name} instruction"
         lines.extend([test_data.add_testcase(name, coverpoint, covergroup), instr])
     return lines
+
+
+# htimedelta values.  time is far below 2^30 when the tests run.  The negative ones make time + htimedelta
+# wrap modulo 2^64 once time exceeds their magnitude; neg_1 wraps for any time >= 1.  pos_2p32m1 and neg_1
+# make the low-word add carry into the upper word on RV32.
+HTIMEDELTAS = {
+    "zero": 0,
+    "pos_2p30": 1 << 30,
+    "pos_2p32m1": (1 << 32) - 1,
+    "pos_2p60": 1 << 60,
+    "neg_1": -1,
+    "neg_2p30": -(1 << 30),
+    "neg_2p60": -(1 << 60),
+}
+
+
+def read_time(lo: int, hi: int, tmp: int) -> list[str]:
+    """Read time into lo, and on RV32 timeh into hi, reading again if timeh changes between the reads."""
+    return [
+        "#if __riscv_xlen == 64",
+        f"csrr x{lo}, time",
+        "#else",
+        "1:",
+        f"csrr x{hi}, timeh",
+        f"csrr x{lo}, time",
+        f"csrr x{tmp}, timeh",
+        f"bne x{hi}, x{tmp}, 1b    # timeh changed between the reads",
+        "#endif",
+    ]

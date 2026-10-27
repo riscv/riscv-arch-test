@@ -94,6 +94,12 @@ exclude_extensions:
   - H
   # Six of the eleven Sm_H tests end in an l2_behav.sv:464 assertion; not yet triaged
   - Sm_H
+  # Wrong htval on a VS-stage PTE fault (https://github.com/bsc-loca/sargantana/issues/123)
+  - Shtvala-
+  - Shtvala_amo
+  - Shtvala_hlsv
+  # VS-stage permission fault reported as a guest-page fault (https://github.com/bsc-loca/sargantana/issues/124)
+  - Shvstvala_page_fault
   # An interrupt taken from VS or VU into HS sets hstatus.GVA = 1:
   # core:datapath/rtl/datapath.sv#L913 (https://github.com/bsc-loca/sargantana/issues/119)
   - InterruptsS_enable_VS
@@ -119,6 +125,10 @@ exclude_extensions:
   - InterruptsSm_priority_mip_VU
   # Same as InterruptsS_wfi_timeout_VU (https://github.com/bsc-loca/sargantana/issues/121)
   - InterruptsSm_wfi_timeout_VU
+  # Not yet triaged on Sargantana: the same hedeleg[10] bug, and trap signature, htval and mtval2
+  # mismatches on HS- and VS-mode traps (excluded on the hypervisor branch)
+  - Exceptions_H
+  - Exceptions_HSm
 
 apt_packages: "autoconf flex bison help2man libfl-dev ccache device-tree-compiler libboost-dev libboost-regex-dev libboost-system-dev"
 install_script: ".github/scripts/install-sargantana.sh"

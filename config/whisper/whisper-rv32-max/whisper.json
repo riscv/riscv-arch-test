@@ -47,6 +47,11 @@
   },
 
   "csr": {
+    // misa.C is writable, so tests can clear it and run with IALIGN = 32 (MUTABLE_MISA_C).  Giving misa a
+
+    // mask also needs its reset value, which is otherwise taken from the ISA string.
+
+    "misa": { "reset": "0x403411af", "mask": "0x4", "poke_mask": "0x4" },
     "vstart": {
       "mask": "0xff",
       "poke_mask": "0xff"

@@ -19,7 +19,7 @@
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
-#define TRAP_SIGUPD_COUNT 4
+#define TRAP_SIGUPD_COUNT 5
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -64,11 +64,11 @@ RVTEST_BEGIN
 
 // 2MB page at level 1
 
-// Test case 1: 32-bit instruction at the end of an RWX megapage, next megapage invalid (V=0) | Test in U-Mode | expected = Instruction page fault at the megapage boundary
+// Test case 1: 32-bit instruction at the end of a megapage, first invalid (V=0), next RWX | Test in U-Mode | expected = page fault on the part in the first page
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_mega, LEVEL3)
   PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_mega, LEVEL2)
-  SUPERPAGE_PTE_SETUP_SV48(sv_straddle_mega_next - 1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_mega, LEVEL1)
-  SUPERPAGE_PTE_SETUP_SV48(sv_straddle_mega_next, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_mega_next, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV48(sv_straddle_mega_next - 1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_mega, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV48(sv_straddle_mega_next, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_mega_next, LEVEL1)
   sfence.vma
 
   LI(x8, 0x285009ffffe)
@@ -81,7 +81,24 @@ Sv_vm_permissions_cg_cp_straddle_exec_u_test1:
 
 // 2MB page at level 1
 
-// Test case 2: 32-bit instruction at the end of an RWX megapage, next megapage RW | Test in U-Mode | expected = Instruction page fault at the megapage boundary
+// Test case 2: 32-bit instruction at the end of a megapage, first RWX, next invalid (V=0) | Test in U-Mode | expected = page fault on the part in the next page
+  PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_mega, LEVEL3)
+  PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_mega, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV48(sv_straddle_mega_next - 1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_mega, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV48(sv_straddle_mega_next, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_mega_next, LEVEL1)
+  sfence.vma
+
+  LI(x8, 0x285009ffffe)
+  RVTEST_TSBI_GOTO_UMODE
+Sv_vm_permissions_cg_cp_straddle_exec_u_test2:
+  jalr ra, x8, 0
+  nop
+  RVTEST_TSBI_GOTO_SMODE
+
+
+// 2MB page at level 1
+
+// Test case 3: 32-bit instruction at the end of a megapage, first RWX, next lacks the permission | Test in U-Mode | expected = page fault on the part in the next page
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_mega, LEVEL3)
   PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_mega, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV48(sv_straddle_mega_next - 1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_mega, LEVEL1)
@@ -90,7 +107,7 @@ Sv_vm_permissions_cg_cp_straddle_exec_u_test1:
 
   LI(x8, 0x285009ffffe)
   RVTEST_TSBI_GOTO_UMODE
-Sv_vm_permissions_cg_cp_straddle_exec_u_test2:
+Sv_vm_permissions_cg_cp_straddle_exec_u_test3:
   jalr ra, x8, 0
   nop
   RVTEST_TSBI_GOTO_SMODE
@@ -117,6 +134,9 @@ sv_straddle_next:
   .half 0x0013              // At least one halfword below the megapage boundary
   .balignw 0x200000, 0x0013
 sv_straddle_mega_next:
+  .half 0x0000              // Second half of addi x0, x0, 0
+  .half 0x8067              // jalr x0, 0(ra), in halves since it is not 4-byte aligned
+  .half 0x0000
 
 // Page tables
   .p2align 12
@@ -130,8 +150,9 @@ rvtest_slvl2_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_vm_permissions_cg_cp_straddle_exec_u_test1_str: .string "\"test: 7; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_u; bin: test1\""
-Sv_vm_permissions_cg_cp_straddle_exec_u_test2_str: .string "\"test: 8; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_u; bin: test2\""
+Sv_vm_permissions_cg_cp_straddle_exec_u_test1_str: .string "\"test: 10; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_u; bin: test1\""
+Sv_vm_permissions_cg_cp_straddle_exec_u_test2_str: .string "\"test: 11; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_u; bin: test2\""
+Sv_vm_permissions_cg_cp_straddle_exec_u_test3_str: .string "\"test: 12; cg: Sv_vm_permissions_cg; cp: cp_straddle_exec_u; bin: test3\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

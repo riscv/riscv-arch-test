@@ -15,11 +15,11 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 12
+#define SIGUPD_COUNT 10
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
-#define TRAP_SIGUPD_COUNT 6
+#define TRAP_SIGUPD_COUNT 182
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -63,44 +63,722 @@ RVTEST_BEGIN
 
 // 4KB page at level 0
 
-// Test case 1: word at the end of an RWX page, next page invalid (V=0) | Test in S-Mode | expected = Store and load page faults at the page boundary
+// Test case 1: loads and stores across the end of a page, first invalid (V=0), next RWX | Test in S-Mode | expected = for each store and load, page fault on the part in the first page
+  PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
+  PTE_SETUP_SV32(sv_straddle_page, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_data, LEVEL0)
+  PTE_SETUP_SV32(sv_straddle_next, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_next, LEVEL0)
+  sfence.vma
+
+  LI(x8, 0x90407fff)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_sh_1:
+  sh x13, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_lh_1:
+  lh x13, 0(x8)
+  nop
+  LI(x8, 0x90407fff)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_sw_1:
+  sw x13, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_lw_1:
+  lw x13, 0(x8)
+  nop
+  LI(x8, 0x90407ffe)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_sw_2:
+  sw x13, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_lw_2:
+  lw x13, 0(x8)
+  nop
+  LI(x8, 0x90407ffd)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_sw_3:
+  sw x13, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_lw_3:
+  lw x13, 0(x8)
+  nop
+#ifdef ZFHMIN_SUPPORTED
+  .option push
+  .option arch, +zfhmin
+  LI(x8, 0x90407fff)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsh_1:
+  fsh f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flh_1:
+  flh f9, 0(x8)
+  nop
+  .option pop
+#endif // ZFHMIN_SUPPORTED
+#ifdef F_SUPPORTED
+  .option push
+  .option arch, +f
+  LI(x8, 0x90407fff)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsw_1:
+  fsw f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flw_1:
+  flw f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffe)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsw_2:
+  fsw f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flw_2:
+  flw f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffd)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsw_3:
+  fsw f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flw_3:
+  flw f9, 0(x8)
+  nop
+  .option pop
+#endif // F_SUPPORTED
+#ifdef D_SUPPORTED
+  .option push
+  .option arch, +d
+  LI(x8, 0x90407fff)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsd_1:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_fld_1:
+  fld f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffe)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsd_2:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_fld_2:
+  fld f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffd)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsd_3:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_fld_3:
+  fld f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffc)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsd_4:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_fld_4:
+  fld f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffb)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsd_5:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_fld_5:
+  fld f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffa)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsd_6:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_fld_6:
+  fld f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff9)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsd_7:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_fld_7:
+  fld f9, 0(x8)
+  nop
+  .option pop
+#endif // D_SUPPORTED
+#ifdef Q_SUPPORTED
+  .option push
+  .option arch, +q
+  LI(x8, 0x90407fff)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_1:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_1:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffe)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_2:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_2:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffd)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_3:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_3:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffc)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_4:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_4:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffb)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_5:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_5:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffa)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_6:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_6:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff9)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_7:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_7:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff8)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_8:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_8:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff7)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_9:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_9:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff6)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_10:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_10:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff5)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_11:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_11:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff4)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_12:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_12:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff3)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_13:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_13:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff2)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_14:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_14:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff1)
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_15:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_15:
+  flq f9, 0(x8)
+  nop
+  .option pop
+#endif // Q_SUPPORTED
+
+
+// 4KB page at level 0
+
+// Test case 2: loads and stores across the end of a page, first RWX, next invalid (V=0) | Test in S-Mode | expected = for each store and load, page fault on the part in the next page
   PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV32(sv_straddle_page, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   PTE_SETUP_SV32(sv_straddle_next, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R), va_next, LEVEL0)
   sfence.vma
 
-  LI(x8, 0x90407ffe)
-  addi x14, x14, 16
-  mv x13, x14
-Sv_vm_permissions_cg_cp_straddle_write_s_test1_store:
-  sw x14, 0(x8)
+  LI(x8, 0x90407fff)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_sh_1:
+  sh x13, 0(x8)
   nop
-Sv_vm_permissions_cg_cp_straddle_read_s_test1_load:
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_lh_1:
+  lh x13, 0(x8)
+  nop
+  LI(x8, 0x90407fff)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_sw_1:
+  sw x13, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_lw_1:
   lw x13, 0(x8)
   nop
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_straddle_read_s_test1_load, Sv_vm_permissions_cg_cp_straddle_read_s_test1_load_str)
+  LI(x8, 0x90407ffe)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_sw_2:
+  sw x13, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_lw_2:
+  lw x13, 0(x8)
+  nop
+  LI(x8, 0x90407ffd)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_sw_3:
+  sw x13, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_lw_3:
+  lw x13, 0(x8)
+  nop
+#ifdef ZFHMIN_SUPPORTED
+  .option push
+  .option arch, +zfhmin
+  LI(x8, 0x90407fff)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsh_1:
+  fsh f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flh_1:
+  flh f9, 0(x8)
+  nop
+  .option pop
+#endif // ZFHMIN_SUPPORTED
+#ifdef F_SUPPORTED
+  .option push
+  .option arch, +f
+  LI(x8, 0x90407fff)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsw_1:
+  fsw f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flw_1:
+  flw f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffe)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsw_2:
+  fsw f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flw_2:
+  flw f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffd)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsw_3:
+  fsw f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flw_3:
+  flw f9, 0(x8)
+  nop
+  .option pop
+#endif // F_SUPPORTED
+#ifdef D_SUPPORTED
+  .option push
+  .option arch, +d
+  LI(x8, 0x90407fff)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsd_1:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_fld_1:
+  fld f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffe)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsd_2:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_fld_2:
+  fld f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffd)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsd_3:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_fld_3:
+  fld f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffc)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsd_4:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_fld_4:
+  fld f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffb)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsd_5:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_fld_5:
+  fld f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffa)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsd_6:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_fld_6:
+  fld f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff9)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsd_7:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_fld_7:
+  fld f9, 0(x8)
+  nop
+  .option pop
+#endif // D_SUPPORTED
+#ifdef Q_SUPPORTED
+  .option push
+  .option arch, +q
+  LI(x8, 0x90407fff)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_1:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_1:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffe)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_2:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_2:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffd)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_3:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_3:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffc)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_4:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_4:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffb)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_5:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_5:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffa)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_6:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_6:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff9)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_7:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_7:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff8)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_8:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_8:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff7)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_9:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_9:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff6)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_10:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_10:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff5)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_11:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_11:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff4)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_12:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_12:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff3)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_13:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_13:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff2)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_14:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_14:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff1)
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_15:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_15:
+  flq f9, 0(x8)
+  nop
+  .option pop
+#endif // Q_SUPPORTED
 
 
 // 4KB page at level 0
 
-// Test case 2: word at the end of an RWX page, next page execute-only | Test in S-Mode | expected = Store and load page faults at the page boundary
+// Test case 3: loads and stores across the end of a page, first RWX, next lacks the permission | Test in S-Mode | expected = for each store and load, page fault on the part in the next page
   PTE_SETUP_SV32(rvtest_slvl0_pg_tbl, (PTE_V), va_data, LEVEL1)
   PTE_SETUP_SV32(sv_straddle_page, (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_data, LEVEL0)
   PTE_SETUP_SV32(sv_straddle_next, (PTE_D | PTE_A | PTE_X | PTE_V), va_next, LEVEL0)
   sfence.vma
 
-  LI(x8, 0x90407ffe)
-  addi x14, x14, 16
-  mv x13, x14
-Sv_vm_permissions_cg_cp_straddle_write_s_test2_store:
-  sw x14, 0(x8)
+  LI(x8, 0x90407fff)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_sh_1:
+  sh x13, 0(x8)
   nop
-Sv_vm_permissions_cg_cp_straddle_read_s_test2_load:
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_lh_1:
+  lh x13, 0(x8)
+  nop
+  LI(x8, 0x90407fff)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_sw_1:
+  sw x13, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_lw_1:
   lw x13, 0(x8)
   nop
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_vm_permissions_cg_cp_straddle_read_s_test2_load, Sv_vm_permissions_cg_cp_straddle_read_s_test2_load_str)
+  LI(x8, 0x90407ffe)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_sw_2:
+  sw x13, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_lw_2:
+  lw x13, 0(x8)
+  nop
+  LI(x8, 0x90407ffd)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_sw_3:
+  sw x13, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_lw_3:
+  lw x13, 0(x8)
+  nop
+#ifdef ZFHMIN_SUPPORTED
+  .option push
+  .option arch, +zfhmin
+  LI(x8, 0x90407fff)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsh_1:
+  fsh f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flh_1:
+  flh f9, 0(x8)
+  nop
+  .option pop
+#endif // ZFHMIN_SUPPORTED
+#ifdef F_SUPPORTED
+  .option push
+  .option arch, +f
+  LI(x8, 0x90407fff)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsw_1:
+  fsw f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flw_1:
+  flw f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffe)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsw_2:
+  fsw f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flw_2:
+  flw f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffd)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsw_3:
+  fsw f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flw_3:
+  flw f9, 0(x8)
+  nop
+  .option pop
+#endif // F_SUPPORTED
+#ifdef D_SUPPORTED
+  .option push
+  .option arch, +d
+  LI(x8, 0x90407fff)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsd_1:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_fld_1:
+  fld f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffe)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsd_2:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_fld_2:
+  fld f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffd)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsd_3:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_fld_3:
+  fld f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffc)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsd_4:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_fld_4:
+  fld f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffb)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsd_5:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_fld_5:
+  fld f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffa)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsd_6:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_fld_6:
+  fld f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff9)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsd_7:
+  fsd f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_fld_7:
+  fld f9, 0(x8)
+  nop
+  .option pop
+#endif // D_SUPPORTED
+#ifdef Q_SUPPORTED
+  .option push
+  .option arch, +q
+  LI(x8, 0x90407fff)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_1:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_1:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffe)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_2:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_2:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffd)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_3:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_3:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffc)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_4:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_4:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffb)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_5:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_5:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ffa)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_6:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_6:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff9)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_7:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_7:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff8)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_8:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_8:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff7)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_9:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_9:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff6)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_10:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_10:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff5)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_11:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_11:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff4)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_12:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_12:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff3)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_13:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_13:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff2)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_14:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_14:
+  flq f9, 0(x8)
+  nop
+  LI(x8, 0x90407ff1)
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_15:
+  fsq f9, 0(x8)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_15:
+  flq f9, 0(x8)
+  nop
+  .option pop
+#endif // Q_SUPPORTED
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -128,10 +806,186 @@ rvtest_slvl0_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_vm_permissions_cg_cp_straddle_write_s_test1_store_str: .string "\"test: 352; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_store\""
-Sv_vm_permissions_cg_cp_straddle_read_s_test1_load_str: .string "\"test: 353; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_load\""
-Sv_vm_permissions_cg_cp_straddle_write_s_test2_store_str: .string "\"test: 354; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_store\""
-Sv_vm_permissions_cg_cp_straddle_read_s_test2_load_str: .string "\"test: 355; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_load\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_sh_1_str: .string "\"test: 352; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_sh_1\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_lh_1_str: .string "\"test: 353; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_lh_1\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_sw_1_str: .string "\"test: 354; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_sw_1\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_lw_1_str: .string "\"test: 355; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_lw_1\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_sw_2_str: .string "\"test: 356; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_sw_2\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_lw_2_str: .string "\"test: 357; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_lw_2\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_sw_3_str: .string "\"test: 358; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_sw_3\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_lw_3_str: .string "\"test: 359; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_lw_3\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsh_1_str: .string "\"test: 360; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsh_1\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flh_1_str: .string "\"test: 361; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_flh_1\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsw_1_str: .string "\"test: 362; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsw_1\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flw_1_str: .string "\"test: 363; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_flw_1\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsw_2_str: .string "\"test: 364; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsw_2\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flw_2_str: .string "\"test: 365; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_flw_2\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsw_3_str: .string "\"test: 366; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsw_3\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flw_3_str: .string "\"test: 367; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_flw_3\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsd_1_str: .string "\"test: 368; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsd_1\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_fld_1_str: .string "\"test: 369; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_fld_1\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsd_2_str: .string "\"test: 370; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsd_2\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_fld_2_str: .string "\"test: 371; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_fld_2\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsd_3_str: .string "\"test: 372; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsd_3\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_fld_3_str: .string "\"test: 373; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_fld_3\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsd_4_str: .string "\"test: 374; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsd_4\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_fld_4_str: .string "\"test: 375; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_fld_4\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsd_5_str: .string "\"test: 376; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsd_5\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_fld_5_str: .string "\"test: 377; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_fld_5\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsd_6_str: .string "\"test: 378; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsd_6\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_fld_6_str: .string "\"test: 379; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_fld_6\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsd_7_str: .string "\"test: 380; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsd_7\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_fld_7_str: .string "\"test: 381; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_fld_7\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_1_str: .string "\"test: 382; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsq_1\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_1_str: .string "\"test: 383; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_flq_1\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_2_str: .string "\"test: 384; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsq_2\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_2_str: .string "\"test: 385; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_flq_2\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_3_str: .string "\"test: 386; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsq_3\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_3_str: .string "\"test: 387; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_flq_3\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_4_str: .string "\"test: 388; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsq_4\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_4_str: .string "\"test: 389; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_flq_4\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_5_str: .string "\"test: 390; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsq_5\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_5_str: .string "\"test: 391; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_flq_5\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_6_str: .string "\"test: 392; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsq_6\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_6_str: .string "\"test: 393; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_flq_6\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_7_str: .string "\"test: 394; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsq_7\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_7_str: .string "\"test: 395; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_flq_7\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_8_str: .string "\"test: 396; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsq_8\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_8_str: .string "\"test: 397; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_flq_8\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_9_str: .string "\"test: 398; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsq_9\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_9_str: .string "\"test: 399; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_flq_9\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_10_str: .string "\"test: 400; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsq_10\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_10_str: .string "\"test: 401; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_flq_10\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_11_str: .string "\"test: 402; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsq_11\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_11_str: .string "\"test: 403; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_flq_11\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_12_str: .string "\"test: 404; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsq_12\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_12_str: .string "\"test: 405; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_flq_12\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_13_str: .string "\"test: 406; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsq_13\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_13_str: .string "\"test: 407; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_flq_13\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_14_str: .string "\"test: 408; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsq_14\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_14_str: .string "\"test: 409; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_flq_14\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test1_fsq_15_str: .string "\"test: 410; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test1_fsq_15\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test1_flq_15_str: .string "\"test: 411; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test1_flq_15\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_sh_1_str: .string "\"test: 412; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_sh_1\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_lh_1_str: .string "\"test: 413; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_lh_1\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_sw_1_str: .string "\"test: 414; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_sw_1\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_lw_1_str: .string "\"test: 415; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_lw_1\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_sw_2_str: .string "\"test: 416; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_sw_2\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_lw_2_str: .string "\"test: 417; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_lw_2\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_sw_3_str: .string "\"test: 418; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_sw_3\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_lw_3_str: .string "\"test: 419; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_lw_3\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsh_1_str: .string "\"test: 420; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsh_1\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flh_1_str: .string "\"test: 421; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_flh_1\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsw_1_str: .string "\"test: 422; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsw_1\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flw_1_str: .string "\"test: 423; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_flw_1\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsw_2_str: .string "\"test: 424; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsw_2\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flw_2_str: .string "\"test: 425; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_flw_2\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsw_3_str: .string "\"test: 426; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsw_3\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flw_3_str: .string "\"test: 427; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_flw_3\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsd_1_str: .string "\"test: 428; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsd_1\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_fld_1_str: .string "\"test: 429; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_fld_1\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsd_2_str: .string "\"test: 430; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsd_2\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_fld_2_str: .string "\"test: 431; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_fld_2\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsd_3_str: .string "\"test: 432; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsd_3\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_fld_3_str: .string "\"test: 433; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_fld_3\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsd_4_str: .string "\"test: 434; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsd_4\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_fld_4_str: .string "\"test: 435; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_fld_4\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsd_5_str: .string "\"test: 436; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsd_5\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_fld_5_str: .string "\"test: 437; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_fld_5\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsd_6_str: .string "\"test: 438; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsd_6\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_fld_6_str: .string "\"test: 439; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_fld_6\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsd_7_str: .string "\"test: 440; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsd_7\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_fld_7_str: .string "\"test: 441; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_fld_7\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_1_str: .string "\"test: 442; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsq_1\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_1_str: .string "\"test: 443; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_flq_1\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_2_str: .string "\"test: 444; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsq_2\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_2_str: .string "\"test: 445; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_flq_2\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_3_str: .string "\"test: 446; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsq_3\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_3_str: .string "\"test: 447; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_flq_3\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_4_str: .string "\"test: 448; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsq_4\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_4_str: .string "\"test: 449; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_flq_4\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_5_str: .string "\"test: 450; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsq_5\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_5_str: .string "\"test: 451; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_flq_5\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_6_str: .string "\"test: 452; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsq_6\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_6_str: .string "\"test: 453; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_flq_6\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_7_str: .string "\"test: 454; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsq_7\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_7_str: .string "\"test: 455; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_flq_7\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_8_str: .string "\"test: 456; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsq_8\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_8_str: .string "\"test: 457; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_flq_8\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_9_str: .string "\"test: 458; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsq_9\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_9_str: .string "\"test: 459; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_flq_9\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_10_str: .string "\"test: 460; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsq_10\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_10_str: .string "\"test: 461; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_flq_10\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_11_str: .string "\"test: 462; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsq_11\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_11_str: .string "\"test: 463; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_flq_11\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_12_str: .string "\"test: 464; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsq_12\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_12_str: .string "\"test: 465; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_flq_12\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_13_str: .string "\"test: 466; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsq_13\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_13_str: .string "\"test: 467; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_flq_13\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_14_str: .string "\"test: 468; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsq_14\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_14_str: .string "\"test: 469; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_flq_14\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test2_fsq_15_str: .string "\"test: 470; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test2_fsq_15\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test2_flq_15_str: .string "\"test: 471; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test2_flq_15\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_sh_1_str: .string "\"test: 472; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_sh_1\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_lh_1_str: .string "\"test: 473; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_lh_1\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_sw_1_str: .string "\"test: 474; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_sw_1\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_lw_1_str: .string "\"test: 475; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_lw_1\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_sw_2_str: .string "\"test: 476; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_sw_2\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_lw_2_str: .string "\"test: 477; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_lw_2\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_sw_3_str: .string "\"test: 478; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_sw_3\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_lw_3_str: .string "\"test: 479; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_lw_3\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsh_1_str: .string "\"test: 480; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsh_1\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flh_1_str: .string "\"test: 481; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_flh_1\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsw_1_str: .string "\"test: 482; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsw_1\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flw_1_str: .string "\"test: 483; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_flw_1\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsw_2_str: .string "\"test: 484; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsw_2\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flw_2_str: .string "\"test: 485; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_flw_2\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsw_3_str: .string "\"test: 486; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsw_3\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flw_3_str: .string "\"test: 487; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_flw_3\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsd_1_str: .string "\"test: 488; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsd_1\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_fld_1_str: .string "\"test: 489; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_fld_1\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsd_2_str: .string "\"test: 490; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsd_2\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_fld_2_str: .string "\"test: 491; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_fld_2\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsd_3_str: .string "\"test: 492; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsd_3\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_fld_3_str: .string "\"test: 493; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_fld_3\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsd_4_str: .string "\"test: 494; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsd_4\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_fld_4_str: .string "\"test: 495; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_fld_4\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsd_5_str: .string "\"test: 496; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsd_5\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_fld_5_str: .string "\"test: 497; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_fld_5\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsd_6_str: .string "\"test: 498; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsd_6\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_fld_6_str: .string "\"test: 499; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_fld_6\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsd_7_str: .string "\"test: 500; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsd_7\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_fld_7_str: .string "\"test: 501; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_fld_7\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_1_str: .string "\"test: 502; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsq_1\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_1_str: .string "\"test: 503; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_flq_1\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_2_str: .string "\"test: 504; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsq_2\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_2_str: .string "\"test: 505; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_flq_2\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_3_str: .string "\"test: 506; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsq_3\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_3_str: .string "\"test: 507; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_flq_3\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_4_str: .string "\"test: 508; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsq_4\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_4_str: .string "\"test: 509; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_flq_4\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_5_str: .string "\"test: 510; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsq_5\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_5_str: .string "\"test: 511; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_flq_5\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_6_str: .string "\"test: 512; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsq_6\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_6_str: .string "\"test: 513; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_flq_6\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_7_str: .string "\"test: 514; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsq_7\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_7_str: .string "\"test: 515; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_flq_7\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_8_str: .string "\"test: 516; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsq_8\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_8_str: .string "\"test: 517; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_flq_8\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_9_str: .string "\"test: 518; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsq_9\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_9_str: .string "\"test: 519; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_flq_9\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_10_str: .string "\"test: 520; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsq_10\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_10_str: .string "\"test: 521; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_flq_10\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_11_str: .string "\"test: 522; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsq_11\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_11_str: .string "\"test: 523; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_flq_11\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_12_str: .string "\"test: 524; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsq_12\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_12_str: .string "\"test: 525; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_flq_12\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_13_str: .string "\"test: 526; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsq_13\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_13_str: .string "\"test: 527; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_flq_13\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_14_str: .string "\"test: 528; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsq_14\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_14_str: .string "\"test: 529; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_flq_14\""
+Sv_vm_permissions_cg_cp_straddle_write_s_test3_fsq_15_str: .string "\"test: 530; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_s; bin: test3_fsq_15\""
+Sv_vm_permissions_cg_cp_straddle_read_s_test3_flq_15_str: .string "\"test: 531; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_s; bin: test3_flq_15\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

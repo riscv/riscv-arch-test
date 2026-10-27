@@ -582,14 +582,15 @@ normative_rule_definitions:
   # instructions, then stval will contain the virtual address of the portion of the
   # instruction that caused the fault, while sepc will point to the beginning of the
   # instruction.
-  # A 32-bit instruction at the end of a page whose next page faults.
+  # A 32-bit instruction at the end of a page whose first or next page faults.
   - name: stval_faulting_address_variable_instr
     coverpoint: ["Sv_vm_permissions_cg/cp_straddle_exec_{s,u}"]
 
   # If stval is written with a nonzero value when a misaligned load or store causes
   # an access-fault, page-fault, or hardware-error exception, then stval will
   # contain the virtual address of the portion of the access that caused the fault.
-  # A word at the end of a page whose next page faults: a hart that performs misaligned accesses faults on the part in the next page.
+  # A load or store of each width across the end of a page whose first or next page faults: a hart that performs
+  # misaligned accesses faults on the part in that page.
   - name: stval_op_load_store_fault
     coverpoint: ["Sv_vm_permissions_cg/cp_straddle_{read,write}_{s,u}"]
 

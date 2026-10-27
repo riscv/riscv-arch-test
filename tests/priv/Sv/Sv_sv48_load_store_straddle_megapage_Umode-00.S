@@ -15,11 +15,11 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 12
+#define SIGUPD_COUNT 10
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
-#define TRAP_SIGUPD_COUNT 6
+#define TRAP_SIGUPD_COUNT 8
 
 // Include framework macros
 #include "riscv_arch_test.h"
@@ -59,55 +59,67 @@ RVTEST_BEGIN
   SATP_SETUP_RV64(sv48) // Enable address translation.
   sfence.vma
 
-  LI(x13, 0x800) // Test signature initialization
+  LI(x8, 0x800) // Test signature initialization
 
 
 // 2MB page at level 1
 
-// Test case 1: word at the end of an RWX megapage, next megapage invalid (V=0) | Test in U-Mode | expected = Store and load page faults at the megapage boundary
+// Test case 1: loads and stores across the end of a megapage, first invalid (V=0), next RWX | Test in U-Mode | expected = for each store and load, page fault on the part in the first page
+  PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_mega, LEVEL3)
+  PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_mega, LEVEL2)
+  SUPERPAGE_PTE_SETUP_SV48(sv_straddle_mega_next - 1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_mega, LEVEL1)
+  SUPERPAGE_PTE_SETUP_SV48(sv_straddle_mega_next, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_mega_next, LEVEL1)
+  sfence.vma
+
+  RVTEST_TSBI_GOTO_UMODE
+  LI(x9, 0x285009ffffe)
+Sv_vm_permissions_cg_cp_straddle_write_u_test1_sw_2:
+  sw x15, 0(x9)
+  nop
+Sv_vm_permissions_cg_cp_straddle_read_u_test1_lw_2:
+  lw x15, 0(x9)
+  nop
+  RVTEST_TSBI_GOTO_SMODE
+
+
+// 2MB page at level 1
+
+// Test case 2: loads and stores across the end of a megapage, first RWX, next invalid (V=0) | Test in U-Mode | expected = for each store and load, page fault on the part in the next page
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_mega, LEVEL3)
   PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_mega, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV48(sv_straddle_mega_next - 1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_mega, LEVEL1)
   SUPERPAGE_PTE_SETUP_SV48(sv_straddle_mega_next, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R), va_mega_next, LEVEL1)
   sfence.vma
 
-  LI(x8, 0x285009ffffe)
-  addi x13, x13, 16
-  mv x14, x13
   RVTEST_TSBI_GOTO_UMODE
-Sv_vm_permissions_cg_cp_straddle_write_u_test1_store:
-  sw x13, 0(x8)
+  LI(x9, 0x285009ffffe)
+Sv_vm_permissions_cg_cp_straddle_write_u_test2_sw_2:
+  sw x15, 0(x9)
   nop
-Sv_vm_permissions_cg_cp_straddle_read_u_test1_load:
-  lw x14, 0(x8)
+Sv_vm_permissions_cg_cp_straddle_read_u_test2_lw_2:
+  lw x15, 0(x9)
   nop
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_straddle_read_u_test1_load, Sv_vm_permissions_cg_cp_straddle_read_u_test1_load_str)
 
 
 // 2MB page at level 1
 
-// Test case 2: word at the end of an RWX megapage, next megapage execute-only | Test in U-Mode | expected = Store and load page faults at the megapage boundary
+// Test case 3: loads and stores across the end of a megapage, first RWX, next lacks the permission | Test in U-Mode | expected = for each store and load, page fault on the part in the next page
   PTE_SETUP_SV48(rvtest_slvl2_pg_tbl, (PTE_V), va_mega, LEVEL3)
   PTE_SETUP_SV48(rvtest_slvl1_pg_tbl, (PTE_V), va_mega, LEVEL2)
   SUPERPAGE_PTE_SETUP_SV48(sv_straddle_mega_next - 1, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V), va_mega, LEVEL1)
   SUPERPAGE_PTE_SETUP_SV48(sv_straddle_mega_next, (PTE_D | PTE_A | PTE_U | PTE_X | PTE_V), va_mega_next, LEVEL1)
   sfence.vma
 
-  LI(x8, 0x285009ffffe)
-  addi x13, x13, 16
-  mv x14, x13
   RVTEST_TSBI_GOTO_UMODE
-Sv_vm_permissions_cg_cp_straddle_write_u_test2_store:
-  sw x13, 0(x8)
+  LI(x9, 0x285009ffffe)
+Sv_vm_permissions_cg_cp_straddle_write_u_test3_sw_2:
+  sw x15, 0(x9)
   nop
-Sv_vm_permissions_cg_cp_straddle_read_u_test2_load:
-  lw x14, 0(x8)
+Sv_vm_permissions_cg_cp_straddle_read_u_test3_lw_2:
+  lw x15, 0(x9)
   nop
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_vm_permissions_cg_cp_straddle_read_u_test2_load, Sv_vm_permissions_cg_cp_straddle_read_u_test2_load_str)
 
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -131,6 +143,9 @@ sv_straddle_next:
   .half 0x0013              // At least one halfword below the megapage boundary
   .balignw 0x200000, 0x0013
 sv_straddle_mega_next:
+  .half 0x0000              // Second half of addi x0, x0, 0
+  .half 0x8067              // jalr x0, 0(ra), in halves since it is not 4-byte aligned
+  .half 0x0000
 
 // Page tables
   .p2align 12
@@ -144,10 +159,12 @@ rvtest_slvl2_pg_tbl:
   .skip(4096)
 
 // Testcase strings
-Sv_vm_permissions_cg_cp_straddle_write_u_test1_store_str: .string "\"test: 695; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_u; bin: test1_store\""
-Sv_vm_permissions_cg_cp_straddle_read_u_test1_load_str: .string "\"test: 696; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_u; bin: test1_load\""
-Sv_vm_permissions_cg_cp_straddle_write_u_test2_store_str: .string "\"test: 697; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_u; bin: test2_store\""
-Sv_vm_permissions_cg_cp_straddle_read_u_test2_load_str: .string "\"test: 698; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_u; bin: test2_load\""
+Sv_vm_permissions_cg_cp_straddle_write_u_test1_sw_2_str: .string "\"test: 1133; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_u; bin: test1_sw_2\""
+Sv_vm_permissions_cg_cp_straddle_read_u_test1_lw_2_str: .string "\"test: 1134; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_u; bin: test1_lw_2\""
+Sv_vm_permissions_cg_cp_straddle_write_u_test2_sw_2_str: .string "\"test: 1135; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_u; bin: test2_sw_2\""
+Sv_vm_permissions_cg_cp_straddle_read_u_test2_lw_2_str: .string "\"test: 1136; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_u; bin: test2_lw_2\""
+Sv_vm_permissions_cg_cp_straddle_write_u_test3_sw_2_str: .string "\"test: 1137; cg: Sv_vm_permissions_cg; cp: cp_straddle_write_u; bin: test3_sw_2\""
+Sv_vm_permissions_cg_cp_straddle_read_u_test3_lw_2_str: .string "\"test: 1138; cg: Sv_vm_permissions_cg; cp: cp_straddle_read_u; bin: test3_lw_2\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

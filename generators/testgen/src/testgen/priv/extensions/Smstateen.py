@@ -63,9 +63,6 @@ STATEEN0_SKIP_BITS = (
 # hstateen0 bits the walks check: all but C, because custom state is optional
 HSTATEEN0_WALK_MASK = 0xFFFFFFFFFFFFFFFE
 
-# The H group's srmcfg tests are disabled for now.  Smstateen_H_cg/cp_srmcfg stays, so the missing coverage shows.
-SRMCFG_H_TESTS = False
-
 
 # CSRs written by number, because not every assembler knows the name (LLVM lacks hedelegh)
 _CSR_NUMBERS = {"hedelegh": 0x612}
@@ -812,21 +809,20 @@ def _h_gate_tests(test_data: TestData) -> list[str]:
         )
     )
     lines.append("#endif  // SM1P13P0_OR_LATER_SUPPORTED && RV32")
-    if SRMCFG_H_TESTS:
-        lines.append("#ifdef SSQOSID_SUPPORTED")
-        lines.extend(
-            bit_controlled_tests(
-                test_data,
-                coverpoint="cp_srmcfg",
-                bit=55,
-                bit_name="srmcfg",
-                banner="CSR ops on srmcfg from HS/VS/VU-mode with mstateen0.srmcfg (bit 55) disabled and enabled",
-                csrs=["srmcfg"],
-                preserve=True,
-                **common,
-            )
+    lines.append("#ifdef SSQOSID_SUPPORTED")
+    lines.extend(
+        bit_controlled_tests(
+            test_data,
+            coverpoint="cp_srmcfg",
+            bit=55,
+            bit_name="srmcfg",
+            banner="CSR ops on srmcfg from HS/VS/VU-mode with mstateen0.srmcfg (bit 55) disabled and enabled",
+            csrs=["srmcfg"],
+            preserve=True,
+            **common,
         )
-        lines.append("#endif  // SSQOSID_SUPPORTED")
+    )
+    lines.append("#endif  // SSQOSID_SUPPORTED")
     return lines
 
 

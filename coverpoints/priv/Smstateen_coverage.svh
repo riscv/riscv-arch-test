@@ -595,7 +595,6 @@ covergroup Smstateen_H_cg with function sample(ins_t ins);
         `endif
     `endif
     `ifdef SSQOSID_SUPPORTED
-        // The tests are disabled for now (SRMCFG_H_TESTS in Smstateen.py), so this reports missing coverage
         cp_srmcfg:                        cross csrops, priv_mode_hs_vs_vu, srmcfg_csr, srmcfg_state;
     `endif
 endgroup

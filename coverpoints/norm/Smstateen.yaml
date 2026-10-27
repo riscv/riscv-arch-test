@@ -210,11 +210,7 @@ normative_rule_definitions:
     coverpoint: ["{Smstateen_cg,Smstateen_H_cg}/cp_p1p13"]
 
   - name: mstateen0_srmcfg_op
-    coverpoint:
-      [
-        "Smstateen_cg/cp_srmcfg",
-        "Smstateen_H_cg/cp_srmcfg (tests disabled for now)",
-      ]
+    coverpoint: ["{Smstateen_cg,Smstateen_H_cg}/cp_srmcfg"]
 
   - name: mstateen_ctr1
     coverpoint: ["Smstateen_cg/cp_ctr"]

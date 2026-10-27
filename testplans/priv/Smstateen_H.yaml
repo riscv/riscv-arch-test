@@ -54,8 +54,6 @@ coverpoints:
       With mstateen0.SRMCFG = {0,1}, read and write srmcfg from HS, VS and VU-mode.
     expectation: Illegal instruction when SRMCFG = 0.  Otherwise HS-mode succeeds and VS-mode and VU-mode raise virtual instruction
     bins: 2 states * 3 modes * 3 ops
-    status: Not tested
-    notes: The coverpoint is defined, but the tests are disabled for now (SRMCFG_H_TESTS in Smstateen.py).
   - heading: Not tested
   - goal: mstateen0.CSRIND, IMSIC, AIA and CTR control HS-mode and VS-mode access to vsiselect, vsireg*, vstopei and vsctrctl
     description: Access vsiselect, vsireg*, vstopei and vsctrctl in HS-mode, and their supervisor names in VS-mode, with the mstateen0 bit = 0 and 1.

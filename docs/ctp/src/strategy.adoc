@@ -59,7 +59,7 @@ A partially-configured UDB description of each profile is given in:
 
 Some RISC-V behaviors are UNSPECIFIED, which means an implementation can do anything. These behaviors are not tested because there is no wrong answer. <<t-behavior-normative-rules>> summarizes the normative rules regarding reserved behaviors.
 
-Unimplemented opcodes (except in the custom space) and instructions accessing non-existent CSRs are reserved.  The behavior of reserved instructions is UNSPECIFIED, so they should not be tested by most testplans.  However, when the Ssstrict extension is enabled, reserved instructions raise an illegal instruction exception.  This is tested by the <<SsstrictS, SsstrictS>> test plan.
+Unimplemented opcodes (except in the custom space) and instructions accessing non-existent CSRs are reserved.  The behavior of reserved instructions is UNSPECIFIED, so they should not be tested by most testplans.  However, when the Ssstrict extension is enabled, reserved instructions raise an illegal instruction exception.  This is tested by the <<t-Ssstrict_S-coverpoints, Ssstrict_S>> test plan.
 
 [[t-behavior-normative-rules]]
 .I Normative Rules Regarding Behaviors

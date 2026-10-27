@@ -44,6 +44,7 @@ normative_rule_definitions:
         "Sm_V_cg/cp_vcsrs_walking1s",
         "U_V_cg/cp_vcsrs_walking1s",
         "S_V_cg/cp_vcsrs_walking1s",
+        "H_V_cg/cp_vcsrs_walking1s",
       ]
 
   # A vector context status field, csr::[vs], is added to csr:mstatus[][10:9] and shadowed
@@ -55,6 +56,7 @@ normative_rule_definitions:
         "Sm_V_cg/{cp_mstatus_vs_set_dirty_arithmetic, cp_mstatus_vs_off_arithmetic}",
         "U_V_cg/{cp_mstatus_vs_set_dirty_arithmetic, cp_mstatus_vs_off_arithmetic}",
         "S_V_cg/{cp_sstatus_vs_set_dirty_arithmetic, cp_sstatus_vs_off_arithmetic}",
+        "H_V_cg/{cp_vsstatus_vs_set_dirty_arithmetic, cp_vsstatus_vs_off_arithmetic}",
       ]
 
   # When mstatus.VS is set to Initial or Clean, executing any instruction that
@@ -67,26 +69,12 @@ normative_rule_definitions:
         "Sm_V_cg/cp_mstatus_vs_set_dirty_arithmetic",
         "U_V_cg/cp_mstatus_vs_set_dirty_arithmetic",
         "S_V_cg/cp_sstatus_vs_set_dirty_arithmetic",
+        "H_V_cg/cp_vsstatus_vs_set_dirty_arithmetic",
         "Sm_V_cg/cp_mstatus_vs_set_dirty_csr",
         "U_V_cg/cp_mstatus_vs_set_dirty_csr",
         "S_V_cg/cp_sstatus_vs_set_dirty_csr",
+        "H_V_cg/cp_vsstatus_vs_set_dirty_csr",
       ]
-
-  # When V=1, both csr:vsstatus[vs] and csr:mstatus[vs] are in effect: attempts to execute
-  # any vector instruction, or to access the vector CSRs, raise an illegal-instruction
-  # exception when either field is set to Off.
-  - name: vsstatus_vs_mstatus_vs_op_off
-    coverpoint:
-      [
-        "ExceptionsHV_cg/cp_mstatus_vs_off",
-        "ExceptionsHV_cg/cp_vsstatus_vs_off",
-      ]
-
-  # When the hypervisor extension is present, a vector context status field, csr::[vs], is
-  # added to csr:vsstatus[][10:9]. It is defined analogously to the floating-point context
-  # status field, csr::[fs].
-  - name: vsstatus_vs_sz_acc
-    coverpoint: ["ExceptionsHV_cg/cp_vsstatus_vs_off"]
 
   # Attempts to execute any vector instruction, or to access the vector CSRs, raise
   # an illegal-instruction exception when mstatus.VS is set to Off.
@@ -96,6 +84,7 @@ normative_rule_definitions:
         "Sm_V_cg/cp_mstatus_vs_off_arithmetic",
         "U_V_cg/cp_mstatus_vs_off_arithmetic",
         "S_V_cg/cp_sstatus_vs_off_arithmetic",
+        "H_V_cg/cp_vsstatus_vs_off_arithmetic",
       ]
 
   # When V=1 and neither csr:vsstatus[vs] nor csr:mstatus[vs] is set to Off, executing any
@@ -173,9 +162,11 @@ normative_rule_definitions:
         "Sm_V_cg/cp_sew_lmul_vset_i_vli",
         "U_V_cg/cp_sew_lmul_vset_i_vli",
         "S_V_cg/cp_sew_lmul_vset_i_vli",
+        "H_V_cg/cp_sew_lmul_vset_i_vli",
         "Sm_V_cg/cp_sew_lmul_vsetvl",
         "U_V_cg/cp_sew_lmul_vsetvl",
         "S_V_cg/cp_sew_lmul_vsetvl",
+        "H_V_cg/cp_sew_lmul_vsetvl",
       ]
 
   # The csr:vtype[] register has five fields, csr::[vill], csr::[vma], csr::[vta],
@@ -187,6 +178,7 @@ normative_rule_definitions:
         "Sm_V_cg/cp_sew_lmul_vsetvl",
         "U_V_cg/cp_sew_lmul_vsetvl",
         "S_V_cg/cp_sew_lmul_vsetvl",
+        "H_V_cg/cp_sew_lmul_vsetvl",
       ]
 
   # The value in vsew sets the dynamic selected element width (SEW). By default, a
@@ -197,6 +189,7 @@ normative_rule_definitions:
         "Sm_V_cg/cp_sew_lmul_vset_i_vli",
         "U_V_cg/cp_sew_lmul_vset_i_vli",
         "S_V_cg/cp_sew_lmul_vset_i_vli",
+        "H_V_cg/cp_sew_lmul_vset_i_vli",
         "Vf16_vfadd_vf_cg/cr_vl_lmul_sew16",
       ]
 
@@ -208,6 +201,7 @@ normative_rule_definitions:
         "Sm_V_cg/cp_sew_lmul_vset_i_vli",
         "U_V_cg/cp_sew_lmul_vset_i_vli",
         "S_V_cg/cp_sew_lmul_vset_i_vli",
+        "H_V_cg/cp_sew_lmul_vset_i_vli",
       ]
 
   # Implementations must provide fractional LMUL settings that allow the narrowest
@@ -226,6 +220,7 @@ normative_rule_definitions:
         "Sm_V_cg/cp_sew_lmul_vset_i_vli",
         "U_V_cg/cp_sew_lmul_vset_i_vli",
         "S_V_cg/cp_sew_lmul_vset_i_vli",
+        "H_V_cg/cp_sew_lmul_vset_i_vli",
       ]
 
   # For a given supported fractional LMUL setting, implementations must support SEW
@@ -236,6 +231,7 @@ normative_rule_definitions:
         "Sm_V_cg/cp_sew_lmul_vset_i_vli",
         "U_V_cg/cp_sew_lmul_vset_i_vli",
         "S_V_cg/cp_sew_lmul_vset_i_vli",
+        "H_V_cg/cp_sew_lmul_vset_i_vli",
       ]
 
   # The use of vtype encodings with LMUL &lt; SEWMIN/ELEN is reserved, but
@@ -246,6 +242,7 @@ normative_rule_definitions:
         "Sm_V_cg/cp_vtype_vill_set_vl_0",
         "U_V_cg/cp_vtype_vill_set_vl_0",
         "S_V_cg/cp_vtype_vill_set_vl_0",
+        "H_V_cg/cp_vtype_vill_set_vl_0",
       ]
 
   # LMUL is set by the signed vlmul field in vtype (i.e., LMUL = 2vlmul[2:0]).
@@ -349,6 +346,7 @@ normative_rule_definitions:
         "Sm_V_cg/cp_vsetvl_i_rd_nx0_rs1_x0",
         "U_V_cg/cp_vsetvl_i_rd_nx0_rs1_x0",
         "S_V_cg/cp_vsetvl_i_rd_nx0_rs1_x0",
+        "H_V_cg/cp_vsetvl_i_rd_nx0_rs1_x0",
         "Vls16_vle16ff_v_cg/cp_custom_ffLS_update_vl",
       ]
 
@@ -362,7 +360,12 @@ normative_rule_definitions:
   # register length in bytes.
   - name: vlenb_acc_op
     coverpoint:
-      ["Sm_V_cg/cp_vcsrrswc", "U_V_cg/cp_vcsrrswc", "S_V_cg/cp_vcsrrswc"]
+      [
+        "Sm_V_cg/cp_vcsrrswc",
+        "U_V_cg/cp_vcsrrswc",
+        "S_V_cg/cp_vcsrrswc",
+        "H_V_cg/cp_vcsrrswc",
+      ]
 
   # The XLEN-bit-wide read-write csr:vstart[] CSR specifies the index of the first element
   # to be executed by a vector instruction, as described in .
@@ -372,9 +375,11 @@ normative_rule_definitions:
         "Sm_V_cg/cp_vcsrs_walking1s",
         "U_V_cg/cp_vcsrs_walking1s",
         "S_V_cg/cp_vcsrs_walking1s",
+        "H_V_cg/cp_vcsrs_walking1s",
         "Sm_V_cg/cp_vstart_out_of_bounds",
         "U_V_cg/cp_vstart_out_of_bounds",
         "S_V_cg/cp_vstart_out_of_bounds",
+        "H_V_cg/cp_vstart_out_of_bounds",
       ]
 
   # All vector instructions are defined to begin execution with the element number
@@ -404,6 +409,7 @@ normative_rule_definitions:
         "Sm_V_cg/cp_vstart_out_of_bounds",
         "U_V_cg/cp_vstart_out_of_bounds",
         "S_V_cg/cp_vstart_out_of_bounds",
+        "H_V_cg/cp_vstart_out_of_bounds",
       ]
 
   # The use of vstart values greater than the largest element index for the current
@@ -430,6 +436,7 @@ normative_rule_definitions:
         "Sm_V_cg/cp_vcsrs_walking1s",
         "U_V_cg/cp_vcsrs_walking1s",
         "S_V_cg/cp_vcsrs_walking1s",
+        "H_V_cg/cp_vcsrs_walking1s",
         "Vx16_vaadd_vv_cg/cr_vxrm_vs2_vs1_edges",
         "Vx16_vaadd_vx_cg/cr_vxrm_vs2_rs1_edges",
         "Vx16_vssra_vi_cg/cr_vxrm_vs2_imm_edges",
@@ -439,7 +446,12 @@ normative_rule_definitions:
   # independent access, but is also reflected as a field in vcsr.
   - name: vcsr_vxrm_op
     coverpoint:
-      ["Sm_V_cg/cp_vcsrrswc", "U_V_cg/cp_vcsrrswc", "S_V_cg/cp_vcsrrswc"]
+      [
+        "Sm_V_cg/cp_vcsrrswc",
+        "U_V_cg/cp_vcsrrswc",
+        "S_V_cg/cp_vcsrrswc",
+        "H_V_cg/cp_vcsrrswc",
+      ]
 
   # The fixed-point rounding algorithm is specified as follows. Suppose the
   # pre-rounding result is v, and d bits of that result are to be rounded off. Then
@@ -463,19 +475,30 @@ normative_rule_definitions:
         "Sm_V_cg/cp_vcsrs_walking1s",
         "U_V_cg/cp_vcsrs_walking1s",
         "S_V_cg/cp_vcsrs_walking1s",
+        "H_V_cg/cp_vcsrs_walking1s",
         "Vx16_vsaddu_vv_cg/cp_csr_vxsat",
       ]
 
   # The vxsat bit is mirrored in vcsr.
   - name: vcsr_vxsat_op
     coverpoint:
-      ["Sm_V_cg/cp_vcsrrswc", "U_V_cg/cp_vcsrrswc", "S_V_cg/cp_vcsrrswc"]
+      [
+        "Sm_V_cg/cp_vcsrrswc",
+        "U_V_cg/cp_vcsrrswc",
+        "S_V_cg/cp_vcsrrswc",
+        "H_V_cg/cp_vcsrrswc",
+      ]
 
   # The csr:vxrm[] and csr:vxsat[] separate CSRs can also be accessed via fields in the
   # XLEN-bit-wide vector control and status CSR, csr:vcsr[].
   - name: vcsr_vxrm_vxsat_acc
     coverpoint:
-      ["Sm_V_cg/cp_vcsrrswc", "U_V_cg/cp_vcsrrswc", "S_V_cg/cp_vcsrrswc"]
+      [
+        "Sm_V_cg/cp_vcsrrswc",
+        "U_V_cg/cp_vcsrrswc",
+        "S_V_cg/cp_vcsrrswc",
+        "H_V_cg/cp_vcsrrswc",
+      ]
 
   # When LMUL=1, elements are simply packed in order from the least-significant to
   # most-significant bits of the vector register.
@@ -716,15 +739,19 @@ normative_rule_definitions:
         "Sm_V_cg/cp_sew_lmul_vsetvl",
         "U_V_cg/cp_sew_lmul_vsetvl",
         "S_V_cg/cp_sew_lmul_vsetvl",
+        "H_V_cg/cp_sew_lmul_vsetvl",
         "Sm_V_cg/cp_sew_lmul_vset_i_vli",
         "U_V_cg/cp_sew_lmul_vset_i_vli",
         "S_V_cg/cp_sew_lmul_vset_i_vli",
+        "H_V_cg/cp_sew_lmul_vset_i_vli",
         "Sm_V_cg/cp_vsetvl_i_avl_eq_vlmax",
         "U_V_cg/cp_vsetvl_i_avl_eq_vlmax",
         "S_V_cg/cp_vsetvl_i_avl_eq_vlmax",
+        "H_V_cg/cp_vsetvl_i_avl_eq_vlmax",
         "Sm_V_cg/cp_vsetivli_avl_edges",
         "U_V_cg/cp_vsetivli_avl_edges",
         "S_V_cg/cp_vsetivli_avl_edges",
+        "H_V_cg/cp_vsetivli_avl_edges",
       ]
 
   # the vl register is also set to zero.
@@ -734,12 +761,15 @@ normative_rule_definitions:
         "Sm_V_cg/cp_sew_lmul_vset_i_vli",
         "U_V_cg/cp_sew_lmul_vset_i_vli",
         "S_V_cg/cp_sew_lmul_vset_i_vli",
+        "H_V_cg/cp_sew_lmul_vset_i_vli",
         "Sm_V_cg/cp_sew_lmul_vsetvl",
         "U_V_cg/cp_sew_lmul_vsetvl",
         "S_V_cg/cp_sew_lmul_vsetvl",
+        "H_V_cg/cp_sew_lmul_vsetvl",
         "Sm_V_cg/cp_vtype_vill_set_vl_0",
         "U_V_cg/cp_vtype_vill_set_vl_0",
         "S_V_cg/cp_vtype_vill_set_vl_0",
+        "H_V_cg/cp_vtype_vill_set_vl_0",
       ]
 
   # The new csr:vtype[] value is encoded in the immediate fields of insn:vsetvli[] and
@@ -750,9 +780,11 @@ normative_rule_definitions:
         "Sm_V_cg/cp_sew_lmul_vset_i_vli",
         "U_V_cg/cp_sew_lmul_vset_i_vli",
         "S_V_cg/cp_sew_lmul_vset_i_vli",
+        "H_V_cg/cp_sew_lmul_vset_i_vli",
         "Sm_V_cg/cp_sew_lmul_vsetvl",
         "U_V_cg/cp_sew_lmul_vsetvl",
         "S_V_cg/cp_sew_lmul_vsetvl",
+        "H_V_cg/cp_sew_lmul_vsetvl",
       ]
 
   # If the csr:vtype[] value is not supported by the implementation, then the csr::[vill]
@@ -764,6 +796,7 @@ normative_rule_definitions:
         "Sm_V_cg/cp_vill_vsetvl",
         "U_V_cg/cp_vill_vsetvl",
         "S_V_cg/cp_vill_vsetvl",
+        "H_V_cg/cp_vill_vsetvl",
       ]
   # A csr:vtype[] value with csr::[vill] set is treated as an unsupported configuration.
   - name: vtype_vill_val_vill
@@ -773,6 +806,7 @@ normative_rule_definitions:
         "Sm_V_cg/cp_vill_vsetvl",
         "U_V_cg/cp_vill_vsetvl",
         "S_V_cg/cp_vill_vsetvl",
+        "H_V_cg/cp_vill_vsetvl",
       ]
   # Implementations must consider all bits of the csr:vtype[] value to determine if the
   # configuration is supported. An unsupported value in any location within the
@@ -784,6 +818,7 @@ normative_rule_definitions:
         "Sm_V_cg/cp_vill_vsetvl",
         "U_V_cg/cp_vill_vsetvl",
         "S_V_cg/cp_vill_vsetvl",
+        "H_V_cg/cp_vill_vsetvl",
       ]
 
   # When rs1 is not x0, the AVL is an unsigned integer held in the x register specified by
@@ -794,24 +829,31 @@ normative_rule_definitions:
         "Sm_V_cg/cp_vsetvl_i_rd_x0_rs1_x0",
         "U_V_cg/cp_vsetvl_i_rd_x0_rs1_x0",
         "S_V_cg/cp_vsetvl_i_rd_x0_rs1_x0",
+        "H_V_cg/cp_vsetvl_i_rd_x0_rs1_x0",
         "Sm_V_cg/cp_vsetvl_i_rd_nx0_rs1_x0",
         "U_V_cg/cp_vsetvl_i_rd_nx0_rs1_x0",
         "S_V_cg/cp_vsetvl_i_rd_nx0_rs1_x0",
+        "H_V_cg/cp_vsetvl_i_rd_nx0_rs1_x0",
         "Sm_V_cg/cp_vsetvl_i_avl_eq_zero",
         "U_V_cg/cp_vsetvl_i_avl_eq_zero",
         "S_V_cg/cp_vsetvl_i_avl_eq_zero",
+        "H_V_cg/cp_vsetvl_i_avl_eq_zero",
         "Sm_V_cg/cp_vsetvl_i_avl_eq_vlmax",
         "U_V_cg/cp_vsetvl_i_avl_eq_vlmax",
         "S_V_cg/cp_vsetvl_i_avl_eq_vlmax",
+        "H_V_cg/cp_vsetvl_i_avl_eq_vlmax",
         "Sm_V_cg/cp_vsetvl_i_avl_lt_2x_vlmax",
         "U_V_cg/cp_vsetvl_i_avl_lt_2x_vlmax",
         "S_V_cg/cp_vsetvl_i_avl_lt_2x_vlmax",
+        "H_V_cg/cp_vsetvl_i_avl_lt_2x_vlmax",
         "Sm_V_cg/cp_vsetvl_i_avl_eq_2x_vlmax",
         "U_V_cg/cp_vsetvl_i_avl_eq_2x_vlmax",
         "S_V_cg/cp_vsetvl_i_avl_eq_2x_vlmax",
+        "H_V_cg/cp_vsetvl_i_avl_eq_2x_vlmax",
         "Sm_V_cg/cp_vsetvl_i_avl_gt_2x_vlmax",
         "U_V_cg/cp_vsetvl_i_avl_gt_2x_vlmax",
         "S_V_cg/cp_vsetvl_i_avl_gt_2x_vlmax",
+        "H_V_cg/cp_vsetvl_i_avl_gt_2x_vlmax",
       ]
   # When rs1=x0 but rd≠x0, the maximum unsigned integer value (~0) is used as the AVL, and
   # the resulting VLMAX is written to vl and also to the x register specified by rd.
@@ -821,6 +863,7 @@ normative_rule_definitions:
         "Sm_V_cg/cp_vsetvl_i_rd_nx0_rs1_x0",
         "U_V_cg/cp_vsetvl_i_rd_nx0_rs1_x0",
         "S_V_cg/cp_vsetvl_i_rd_nx0_rs1_x0",
+        "H_V_cg/cp_vsetvl_i_rd_nx0_rs1_x0",
       ]
   # When rs1=x0 and rd=x0, the instructions operate as if the current vector length in
   # csr:vl[] is used as the AVL, and the resulting value is written to csr:vl[], but not
@@ -832,6 +875,7 @@ normative_rule_definitions:
         "Sm_V_cg/cp_vsetvl_i_rd_x0_rs1_x0",
         "U_V_cg/cp_vsetvl_i_rd_x0_rs1_x0",
         "S_V_cg/cp_vsetvl_i_rd_x0_rs1_x0",
+        "H_V_cg/cp_vsetvl_i_rd_x0_rs1_x0",
       ]
 
   # Use of the instructions with a new SEW/LMUL ratio that would result in a change
@@ -851,6 +895,7 @@ normative_rule_definitions:
         "Sm_V_cg/cp_vsetivli_avl_edges",
         "U_V_cg/cp_vsetivli_avl_edges",
         "S_V_cg/cp_vsetivli_avl_edges",
+        "H_V_cg/cp_vsetivli_avl_edges",
       ]
 
   # The insn:vset*[] instructions first set VLMAX according to their csr:vtype[] argument,
@@ -861,15 +906,19 @@ normative_rule_definitions:
         "Sm_V_cg/cp_vsetvl_i_avl_eq_vlmax",
         "U_V_cg/cp_vsetvl_i_avl_eq_vlmax",
         "S_V_cg/cp_vsetvl_i_avl_eq_vlmax",
+        "H_V_cg/cp_vsetvl_i_avl_eq_vlmax",
         "Sm_V_cg/cp_vsetvl_i_avl_lt_2x_vlmax",
         "U_V_cg/cp_vsetvl_i_avl_lt_2x_vlmax",
         "S_V_cg/cp_vsetvl_i_avl_lt_2x_vlmax",
+        "H_V_cg/cp_vsetvl_i_avl_lt_2x_vlmax",
         "Sm_V_cg/cp_vsetvl_i_avl_gt_2x_vlmax",
         "U_V_cg/cp_vsetvl_i_avl_gt_2x_vlmax",
         "S_V_cg/cp_vsetvl_i_avl_gt_2x_vlmax",
+        "H_V_cg/cp_vsetvl_i_avl_gt_2x_vlmax",
         "Sm_V_cg/cp_vsetvl_i_avl_eq_zero",
         "U_V_cg/cp_vsetvl_i_avl_eq_zero",
         "S_V_cg/cp_vsetvl_i_avl_eq_zero",
+        "H_V_cg/cp_vsetvl_i_avl_eq_zero",
       ]
   # csr:vl[] = AVL if AVL ≤ VLMAX ceil(AVL / 2) ≤ vl ≤ VLMAX if AVL &lt; (2 * VLMAX)
   # csr:vl[] = VLMAX if AVL ≥ (2 * VLMAX) Deterministic on any given implementation for
@@ -884,15 +933,19 @@ normative_rule_definitions:
         "Sm_V_cg/cp_vsetvl_i_avl_eq_vlmax",
         "U_V_cg/cp_vsetvl_i_avl_eq_vlmax",
         "S_V_cg/cp_vsetvl_i_avl_eq_vlmax",
+        "H_V_cg/cp_vsetvl_i_avl_eq_vlmax",
         "Sm_V_cg/cp_vsetvl_i_avl_lt_2x_vlmax",
         "U_V_cg/cp_vsetvl_i_avl_lt_2x_vlmax",
         "S_V_cg/cp_vsetvl_i_avl_lt_2x_vlmax",
+        "H_V_cg/cp_vsetvl_i_avl_lt_2x_vlmax",
         "Sm_V_cg/cp_vsetvl_i_avl_gt_2x_vlmax",
         "U_V_cg/cp_vsetvl_i_avl_gt_2x_vlmax",
         "S_V_cg/cp_vsetvl_i_avl_gt_2x_vlmax",
+        "H_V_cg/cp_vsetvl_i_avl_gt_2x_vlmax",
         "Sm_V_cg/cp_vsetvl_i_avl_eq_zero",
         "U_V_cg/cp_vsetvl_i_avl_eq_zero",
         "S_V_cg/cp_vsetvl_i_avl_eq_zero",
+        "H_V_cg/cp_vsetvl_i_avl_eq_zero",
       ]
 
   # All vector loads and stores may generate and accept a non-zero vstart value.
@@ -1845,6 +1898,7 @@ normative_rule_definitions:
         "Sm_VF_cg/cp_vectorfp_mstatus_fs_state_affecting_register",
         "U_VF_cg/cp_vectorfp_mstatus_fs_state_affecting_register",
         "S_VF_cg/cp_vectorfp_sstatus_fs_state_affecting_register",
+        "H_VF_cg/cp_vectorfp_vsstatus_fs_state_affecting_register",
       ]
 
   # If the hypervisor extension is implemented and V=1, the csr:vsstatus[fs] field is
@@ -3041,7 +3095,12 @@ normative_rule_definitions:
   # The Zve32x extension depends on the Zicsr extension.
   - name: Zve32x_dependent_Zicsr
     coverpoint:
-      ["Sm_V_cg/cp_vcsrrswc", "U_V_cg/cp_vcsrrswc", "S_V_cg/cp_vcsrrswc"]
+      [
+        "Sm_V_cg/cp_vcsrrswc",
+        "U_V_cg/cp_vcsrrswc",
+        "S_V_cg/cp_vcsrrswc",
+        "H_V_cg/cp_vcsrrswc",
+      ]
 
   # The ext:zve32f[] extension depends on the ext:zve32x[] and ext:f[] extensions.
   - name: Zve32f_Zve64f_dependent_F

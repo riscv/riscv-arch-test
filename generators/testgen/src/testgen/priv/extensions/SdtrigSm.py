@@ -6,6 +6,6 @@
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-from testgen.priv.extensions.SdtrigCommon import UDB_DEFINES, register_sdtrig_suite
+from testgen.priv.extensions.SdtrigCommon import SDTRIG_DEFINES, register_sdtrig_suite
 
-register_sdtrig_suite("Sm", ["Sm", "Sdtrig"], [*UDB_DEFINES, "#define BOOT_TO_MMODE"])
+register_sdtrig_suite("Sm", ["Sm", "Sdtrig"], [*SDTRIG_DEFINES, "#define BOOT_TO_MMODE"])

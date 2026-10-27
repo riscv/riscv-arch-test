@@ -128,6 +128,15 @@ include::{testplansdir}/priv/Svnapot.adoc[]
 
 include::norm/Svnapot_norm_rules.adoc[]
 
+==== Svvptc Obviating Memory-Management Instructions after Marking PTEs Valid
+
+Svvptc requires a store that changes a PTE from invalid to valid to reach later implicit accesses within a bounded time, without `SFENCE.VMA`.
+The bound is implementation-defined, so each test provokes a page fault on the invalid PTE, stores the valid PTE, waits a fixed number of instructions, and checks that the retried access succeeds.
+
+include::{testplansdir}/priv/Svvptc.adoc[]
+
+include::norm/Svvptc_norm_rules.adoc[]
+
 ==== Svukte User Kernel Translation Enable
 
 include::{testplansdir}/priv/Svukte.adoc[]

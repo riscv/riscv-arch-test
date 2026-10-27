@@ -179,6 +179,9 @@
 `ifdef SVPBMT_COVERAGE
   `include "Svpbmt_coverage.svh"
 `endif
+`ifdef SVVPTC_COVERAGE
+  `include "Svvptc_coverage.svh"
+`endif
 `ifdef U_COVERAGE
   `include "U_coverage.svh"
 `endif
@@ -319,6 +322,9 @@
 `endif
 `ifdef ZICFILP_COVERAGE
   `include "Zicfilp_coverage.svh"
+`endif
+`ifdef ZICFISS_COVERAGE
+  `include "Zicfiss_coverage.svh"
 `endif
 `ifdef ZICNTR_COVERAGE
   `include "Zicntr_coverage.svh"

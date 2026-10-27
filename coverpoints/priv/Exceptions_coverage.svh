@@ -949,12 +949,21 @@ covergroup Exceptions_ZicboS_cg with function sample(ins_t ins);
             }
             menvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "cbcfe")[0] {
             }
+            // cbo.inval only executes with cbie enabled; 00 traps and 10 is reserved
+            menvcfg_cbie_enabled: coverpoint ins.current.csr[CSR_MENVCFG][5:4] {
+                bins flush = {2'b01};
+                bins inval = {2'b11};
+            }
         `endif
         `ifdef S1P12P0_OR_LATER_SUPPORTED
             senvcfg_cbie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "senvcfg", "cbie")[1:0] {
                 ignore_bins reserved = {2'b10};
             }
             senvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "senvcfg", "cbcfe")[0] {
+            }
+            senvcfg_cbie_enabled: coverpoint ins.current.csr[CSR_SENVCFG][5:4] {
+                bins flush = {2'b01};
+                bins inval = {2'b11};
             }
         `endif
     `endif
@@ -1003,6 +1012,7 @@ covergroup Exceptions_ZicboS_cg with function sample(ins_t ins);
         `ifdef S1P12P0_OR_LATER_SUPPORTED
             `ifdef ZICBOM_SUPPORTED
                 cp_cbie:  cross cbo_inval,      menvcfg_cbie,  senvcfg_cbie,  priv_mode_s_u;
+                cp_cbo_inval_data: cross cbo_inval, menvcfg_cbie_enabled, senvcfg_cbie_enabled, priv_mode_s_u;
                 cp_cbcfe: cross cbo_flushclean, menvcfg_cbcfe, senvcfg_cbcfe, priv_mode_s_u;
             `endif
             `ifdef ZICBOZ_SUPPORTED
@@ -1103,6 +1113,10 @@ covergroup Exceptions_ZicboSm_cg with function sample(ins_t ins);
     }
 
     // main coverpoints
+    `ifdef ZICBOM_SUPPORTED
+        // cbo.inval data check in M-mode, where no xenvcfg.CBIE applies
+        cp_cbo_inval_data: cross cbo_inval, priv_mode_m;
+    `endif
     `ifdef SM1P12P0_OR_LATER_SUPPORTED
         `ifdef U_SUPPORTED
             `ifdef ZICBOM_SUPPORTED
@@ -1163,6 +1177,17 @@ covergroup Exceptions_ZicboU_cg with function sample(ins_t ins);
             }
             menvcfg_cbcfe: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "cbcfe")[0] {
             }
+            // cbo.inval only executes with cbie enabled; 00 traps and 10 is reserved
+            menvcfg_cbie_enabled: coverpoint ins.current.csr[CSR_MENVCFG][5:4] {
+                bins flush = {2'b01};
+                bins inval = {2'b11};
+            }
+        `endif
+        `ifdef S1P12P0_OR_LATER_SUPPORTED
+            senvcfg_cbie_enabled: coverpoint ins.current.csr[CSR_SENVCFG][5:4] {
+                bins flush = {2'b01};
+                bins inval = {2'b11};
+            }
         `endif
     `endif
     `ifdef ZICBOZ_SUPPORTED
@@ -1200,6 +1225,11 @@ covergroup Exceptions_ZicboU_cg with function sample(ins_t ins);
     `ifdef SM1P12P0_OR_LATER_SUPPORTED
         `ifdef ZICBOM_SUPPORTED
             cp_cbie:  cross cbo_inval,      menvcfg_cbie,  priv_mode_u;
+            `ifdef S1P12P0_OR_LATER_SUPPORTED
+                cp_cbo_inval_data: cross cbo_inval, menvcfg_cbie_enabled, senvcfg_cbie_enabled, priv_mode_u;
+            `else
+                cp_cbo_inval_data: cross cbo_inval, menvcfg_cbie_enabled, priv_mode_u;
+            `endif
             cp_cbcfe: cross cbo_flushclean, menvcfg_cbcfe, priv_mode_u;
         `endif
         `ifdef ZICBOZ_SUPPORTED

@@ -130,10 +130,6 @@ include::{testplansdir}/priv/SvaduH.adoc[]
 
 include::{testplansdir}/priv/ZicfilpH.adoc[]
 
-==== ZicfissH Hypervisor Shadow Stack
-
-include::{testplansdir}/priv/ZicfissH.adoc[]
-
 ==== SsdbltrpH Hypervisor Double Trap
 
 include::{testplansdir}/priv/SsdbltrpH.adoc[]

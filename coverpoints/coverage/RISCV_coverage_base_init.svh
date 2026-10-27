@@ -234,6 +234,10 @@
         `cover_info("//      Svpbmt - Enabled");
         `include "Svpbmt_coverage_init.svh"
     `endif
+    `ifdef COVER_SVVPTC
+        `cover_info("//      Svvptc - Enabled");
+        `include "Svvptc_coverage_init.svh"
+    `endif
     `ifdef COVER_U
         `cover_info("//      U - Enabled");
         `include "U_coverage_init.svh"
@@ -421,6 +425,10 @@
     `ifdef COVER_ZICFILP
         `cover_info("//      Zicfilp - Enabled");
         `include "Zicfilp_coverage_init.svh"
+    `endif
+    `ifdef COVER_ZICFISS
+        `cover_info("//      Zicfiss - Enabled");
+        `include "Zicfiss_coverage_init.svh"
     `endif
     `ifdef COVER_ZICNTR
         `cover_info("//      Zicntr - Enabled");

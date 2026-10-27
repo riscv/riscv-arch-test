@@ -178,6 +178,9 @@
     `ifdef COVER_SVPBMT
         svpbmt_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SVVPTC
+        svvptc_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_U
         u_sample(hart, issue, ins);
     `endif
@@ -318,6 +321,9 @@
     `endif
     `ifdef COVER_ZICFILP
         zicfilp_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZICFISS
+        zicfiss_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZICNTR
         zicntr_sample(hart, issue, ins);

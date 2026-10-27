@@ -11,7 +11,7 @@ normative_rule_definitions:
         "Ssnpm_cg/cp_pmlen_masking",
         "S_scsr_cg/cp_scsrwalk/senvcfg",
         "Ssnpm_H_cg/cp_vu_pmm",
-        "Ssnpm_H_cg/cp_hlv_hs_pmm (hstatus.SPVP = 0)",
+        "Ssnpm_H_cg/cp_hlv_hs_spvp0_pmm",
       ]
 
   # Changing senvcfg.PMM takes effect immediately, without the need to execute an
@@ -37,5 +37,5 @@ normative_rule_definitions:
     coverpoint:
       [
         "Ssnpm_H_cg/cp_vs_pmm",
-        "Ssnpm_H_cg/{cp_hlv_hs_pmm, cp_hlv_u_pmm} (hstatus.SPVP = 1)",
+        "Ssnpm_H_cg/{cp_hlv_hs_spvp1_pmm, cp_hlv_u_spvp1_pmm}",
       ]

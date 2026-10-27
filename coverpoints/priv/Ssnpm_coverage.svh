@@ -160,16 +160,18 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
         bins vu = {0};
         bins vs = {1};
     }
+    spvp_vu: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp") {
+        bins vu = {0};
+    }
+    spvp_vs: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp") {
+        bins vs = {1};
+    }
+    hstatus_hu: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hu") {
+        bins hu = {1};
+    }
 
-    // The PMM field that applies to the access: henvcfg.PMM in VS-mode and for HLV/HSV/HLVX with SPVP = 1,
-    // senvcfg.PMM in VU-mode and for them from HS-mode with SPVP = 0, hstatus.HUPMM from U-mode with SPVP = 0
-    applicable_pmm: coverpoint
-        (ins.prev.mode_virt ? (ins.prev.mode == 2'b01 ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm")
-                                                      : get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm")) :
-         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp") ?
-             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm") :
-         ins.prev.mode == 2'b01 ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm")
-                                : get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hupmm")) {
+    // PMM fields: henvcfg.PMM applies to VS-mode, senvcfg.PMM to VU-mode and hstatus.HUPMM to HLV/HSV from U-mode
+    henvcfg_pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm") {
         bins disabled = {0};
         `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
             bins pmlen7 = {2};
@@ -178,13 +180,31 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
             bins pmlen16 = {3};
         `endif
     }
-    applicable_pmm_enabled: coverpoint
-        (ins.prev.mode_virt ? (ins.prev.mode == 2'b01 ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm")
-                                                      : get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm")) :
-         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spvp") ?
-             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm") :
-         ins.prev.mode == 2'b01 ? get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm")
-                                : get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hupmm")) {
+    senvcfg_pmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm") {
+        bins disabled = {0};
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+            bins pmlen7 = {2};
+        `endif
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+            bins pmlen16 = {3};
+        `endif
+    }
+    hstatus_hupmm: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hupmm") {
+        bins disabled = {0};
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_7
+            bins pmlen7 = {2};
+        `endif
+        `ifdef UDB_SUPPORTED_PMLEN_SSNPM_16
+            bins pmlen16 = {3};
+        `endif
+    }
+    henvcfg_pmm_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "pmm") {
+        bins enabled = {[2:3]};
+    }
+    senvcfg_pmm_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "pmm") {
+        bins enabled = {[2:3]};
+    }
+    hstatus_hupmm_enabled: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "hupmm") {
         bins enabled = {[2:3]};
     }
     vsstatus_mxr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsstatus", "mxr") {
@@ -192,18 +212,23 @@ covergroup Ssnpm_H_cg with function sample(ins_t ins);
     }
 
     // Loads and stores in VS-mode (henvcfg.PMM) and VU-mode (senvcfg.PMM)
-    cp_vs_pmm: cross priv_mode_vs, ld_sd, applicable_pmm, tag, vsatp_bare, hgatp_mode;
-    cp_vu_pmm: cross priv_mode_vu, ld_sd, applicable_pmm, tag, vsatp_bare, hgatp_mode;
+    cp_vs_pmm: cross priv_mode_vs, ld_sd, henvcfg_pmm, tag, vsatp_bare, hgatp_mode;
+    cp_vu_pmm: cross priv_mode_vu, ld_sd, senvcfg_pmm, tag, vsatp_bare, hgatp_mode;
 
-    // HLV and HSV from HS-mode and from U-mode with hstatus.HU = 1
-    cp_hlv_hs_pmm: cross priv_mode_hs, hlv_hsv, spvp, applicable_pmm, tag, vsatp_bare, hgatp_mode;
-    cp_hlv_u_pmm:  cross priv_mode_u,  hlv_hsv, spvp, applicable_pmm, tag, vsatp_bare, hgatp_mode;
+    // HLV and HSV from HS-mode: henvcfg.PMM with SPVP = 1, senvcfg.PMM with SPVP = 0
+    cp_hlv_hs_spvp1_pmm: cross priv_mode_hs, hlv_hsv, spvp_vs, henvcfg_pmm, tag, vsatp_bare, hgatp_mode;
+    cp_hlv_hs_spvp0_pmm: cross priv_mode_hs, hlv_hsv, spvp_vu, senvcfg_pmm, tag, vsatp_bare, hgatp_mode;
 
-    // HLVX is never masked
-    cp_hlvx_pmm: cross priv_mode_s_u, hlvx, spvp, applicable_pmm_enabled, tag, vsatp_bare, hgatp_mode;
+    // HLV and HSV from U-mode with hstatus.HU = 1: henvcfg.PMM with SPVP = 1, hstatus.HUPMM with SPVP = 0
+    cp_hlv_u_spvp1_pmm: cross priv_mode_u, hstatus_hu, hlv_hsv, spvp_vs, henvcfg_pmm, tag, vsatp_bare, hgatp_mode;
+    cp_hlv_u_spvp0_pmm: cross priv_mode_u, hstatus_hu, hlv_hsv, spvp_vu, hstatus_hupmm, tag, vsatp_bare, hgatp_mode;
+
+    // HLVX is never masked, whichever PMM field applies
+    cp_hlvx_hs_pmm: cross priv_mode_hs, hlvx, spvp, henvcfg_pmm_enabled, senvcfg_pmm_enabled, tag, vsatp_bare, hgatp_mode;
+    cp_hlvx_u_pmm: cross priv_mode_u, hstatus_hu, hlvx, spvp, henvcfg_pmm_enabled, hstatus_hupmm_enabled, tag, vsatp_bare, hgatp_mode;
 
     // vsstatus.MXR = 1 turns masking off in VS-mode and VU-mode
-    cp_mxr_pmm: cross priv_mode_vs_vu, ld, vsstatus_mxr, applicable_pmm_enabled, tag, vsatp_bare, hgatp_mode;
+    cp_mxr_pmm: cross priv_mode_vs_vu, ld, vsstatus_mxr, henvcfg_pmm_enabled, senvcfg_pmm_enabled, tag, vsatp_bare, hgatp_mode;
 
 endgroup
 `endif // H_SUPPORTED

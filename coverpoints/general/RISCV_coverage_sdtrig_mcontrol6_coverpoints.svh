@@ -53,18 +53,6 @@ tdata1_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "
     bins disabled = {1'b0};
     bins enabled  = {1'b1};
 }
-tdata1_xsl_store: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "execute")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "store")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "load")[0]} {
-    type_option.weight = 0;
-    bins store = {3'b010};
-}
-tdata1_xsl_load_store: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "execute")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "store")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "load")[0]} {
-    type_option.weight = 0;
-    bins load_store = {3'b011};
-}
-tdata1_xsl_load_store_execute: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "execute")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "store")[0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "load")[0]} {
-    type_option.weight = 0;
-    bins execute = {3'b111};
-}
 tdata1_match_cmp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "tdata1", "match")[3:0] {
     type_option.weight = 0;
     bins equal = {4'd0};
@@ -137,10 +125,6 @@ store_data_cmp: coverpoint (ins.current.rs2_val == '0       ? 3'd0 :
         bins ones           = {'1};
     }
     // cp_mcontrol6_napot_allones: a csrw of all ones to tdata2
-    csr_tdata2_napot: coverpoint ins.current.insn[31:20] {
-        type_option.weight = 0;
-        bins tdata2 = {CSR_TDATA2};
-    }
     tdata2_write_ones: coverpoint ins.current.rs1_val {
         type_option.weight = 0;
         bins ones = {'1};
@@ -431,3 +415,20 @@ chain_fired: coverpoint sdtrig_bp_taken(ins) {
     bins fired     = {1'b1};
     bins not_fired = {1'b0};
 }
+`ifndef SDTRIG_SUITE_SM
+// SdtrigS/U cp_mcontrol6_priv_bits: a sw to the address watched by an mcontrol6 store trigger (select = 0, store = 1)
+// and whether it fired as the trigger's m/s/u bits require (sdtrig_priv_bits_outcome)
+priv_bits_sw: coverpoint ins.current.insn iff (
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "type")[3:0] == 4'd6 &&
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "store")[0] &&
+        !get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata1", "select")[0] &&
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "tdata2", "tdata2") == ins.current.rs1_val + ins.current.imm) {
+    type_option.weight = 0;
+    wildcard bins sw = {SW};
+}
+priv_bits_outcome: coverpoint sdtrig_priv_bits_outcome(ins, `SDTRIG_MCONTROL6_MODE_BIT) {
+    type_option.weight = 0;
+    bins own_fired      = {2'd1};
+    bins others_no_fire = {2'd2};
+}
+`endif

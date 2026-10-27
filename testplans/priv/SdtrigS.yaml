@@ -5,8 +5,9 @@ description: |
   Tests run in S-mode with tdata1.s = 1, and the rows mirrored from SdtrigSm read S-mode for M-mode. The trigger CSRs
   are accessed through T-SBI, so those accesses run in M-mode; cp_csr_access_trap_s instead accesses them directly
   from S-mode, which traps
-  The trigger-module register rows, cp_csr_access_common, cp_tdata2_translate, cp_textra_mhselect_no_h and the icount
-  readbacks are sampled on those M-mode accesses, as in SdtrigSm
+  The trigger-module register rows, cp_tdata2_translate, cp_textra_mhselect_no_h and the icount readbacks are sampled
+  on those M-mode accesses, as in SdtrigSm. cp_csr_access_common runs only in SdtrigSm: through T-SBI it would make
+  the same M-mode accesses
   medeleg[3] = 1 (breakpoints from triggers are taken in S-mode) unless the hart has no S-mode or hard-wires it to 0 (tcontrol); then
   they are taken in M-mode. Other assumptions are inherited from SdtrigSm
   Only SdtrigSm runs cp_csr_unimplemented (an M-mode access to an absent CSR), the itrigger/etrigger cases taken
@@ -17,25 +18,6 @@ description: |
 coverpoints:
   # The rows below that SdtrigSm also has mirror its rows; keep them in step.
   - heading: Access
-  - name: cp_csr_access_common
-    goal: |-
-      Access all Sdtrig CSRs common to all triggers
-      Accesses to trigger CSRs used by any of the implemented triggers must succeed
-      At least one trigger must be supported
-    description: |-
-      For each of UDB_SDTRIG_NUM_TRIGGERS in tselect:
-      For i each type in {3, 4, 5, 6, 15} the trigger supports (UDB_SDTRIG_<TYPE>_SUPPORTED_TRIGGERS[tselect])
-      tdata1.type = i
-      For x register in {tdata1,tinfo}, and in {tdata2,tdata3,tcontrol,hcontext,mcontext,scontext} if UDB_x_IMPLEMENTED:
-      csr read, write all 1s, write all 0s, set all 1s, clear all 1s, write back initial value of each register:
-    expectation: |-
-      WARL
-      illegal instruction exception on CSR access if it is not implemented by any trigger
-    bins: UDB_SDTRIG_NUM_TRIGGERS * supported types (up to 5) * implemented regs (2-8) * 5 accesses
-    rules:
-      - Sdtrig_csr_mode
-      - Sdtrig_num_trigs_ge1
-    notes: "comments on test results: No exceptions. Tcontrol and mscontext not implemented on spike"
   - name: cp_csr_access_trap_s
     goal: The M-level trigger CSRs are not accessible from S-mode
     description: |-

@@ -1,3 +1,6 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: Apache-2.0
+
 # Mapping of normative rules to coverpoints for a test suite
 
 normative_rule_definitions:
@@ -33,7 +36,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sv_satp_cg/{cp_access_s,cp_access_u,satp_asid_PPN}",
-        "SvSm_satp_cg/cp_access_m",
+        "Sv_Sm_satp_cg/cp_access_m",
       ]
 
   # &lt;&lt;norm:satp_mode_enc&gt;&gt; shows the encodings of the MODE field when SXLEN=32
@@ -96,7 +99,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Sv_vm_permissions_cg/{cp_spage_read_s_d, cp_spage_exec_s_i, cp_upage_umode_read_u}",
-        "SvSm_mstatus_mprv_cg/cp_mprv_load",
+        "Sv_Sm_mstatus_mprv_cg/cp_mprv_load",
       ]
 
   # Note that writing satp does not imply any ordering constraints between page-table
@@ -579,3 +582,211 @@ normative_rule_definitions:
   # whether access-fault exceptions are raised due to PMAs or PMP.
   - name: mstatus_mxr_sum_op_acc_fault
     coverpoint: ["TODO: combine MXR/SUM with a PMA or PMP access fault"]
+
+  # When csr::[mprv]=0, explicit memory accesses behave as normal, using the translation
+  # and protection mechanisms of the current privilege mode. When csr::[mprv]=1, load
+  # and store memory addresses are translated and protected, and endianness is applied,
+  # as though the current privilege mode were set to csr::[mpp].
+  - name: mstatus_mprv_ldst_op
+    coverpoint: ["Sv_Sm_mstatus_mprv_cg/cp_mprv_{load,store}"]
+
+  # Instruction address-translation and protection are unaffected by the setting of
+  # csr::[mprv].
+  - name: mstatus_mprv_inst_xlat_op
+    coverpoint: ["Sv_Sm_mstatus_mprv_cg/cp_mprv_ins"]
+
+  # When csr::[sum]=0, S-mode memory accesses to pages that are accessible by U-mode
+  # (U=1 in <<sv32pte>>) will fault. When csr::[sum]=1, these accesses are permitted.
+  - names: [mstatus_sum_op, mstatus_sum_op_mprv_mpp]
+    # Representative coverpoints; also cp_mprv_upage_smode_sumunset_noexec and cp_mprv_upage_smode_sumset_exec
+    coverpoint:
+      [
+        "Sv_Sm_mstatus_mprv_cg/cp_mprv_upage_smode_sumunset_{noread,nowrite}",
+        "Sv_Sm_mstatus_mprv_cg/cp_mprv_upage_smode_sumset_{read,write}",
+      ]
+
+  # The csr::[tvm] (Trap Virtual Memory) bit is a WARL field that supports intercepting
+  # supervisor virtual-memory management operations. When csr::[tvm]=1, attempts to read
+  # or write the csr:satp[] CSR or execute an insn:sfence.vma[] or insn:sinval.vma[]
+  # instruction while executing in S-mode will raise an illegal-instruction exception.
+  # When csr::[tvm]=0, these operations are permitted in S-mode. csr::[tvm] is read-only
+  # 0 when S-mode is not supported or if satp.MODE is read-only 0; otherwise, it
+  # must be writable.
+  - names: [mstatus_tvm_op, mstatus_tvm_warl]
+    coverpoint:
+      ["Sv_Sm_mstatus_mprv_cg/cp_tvm_exception_s", "Svinval_Sm_cg/cp_svinval"]
+
+  # The csr::[mbe], csr::[sbe], and csr::[ube] bits in csr:mstatus[] and csr:mstatush[]
+  # are WARL fields that control the endianness of memory accesses other than instruction
+  # fetches. Each may be read/write or read-only.
+  # The SBE crosses need a configuration with big-endian implicit page-table accesses.
+  - name: mstatus_mstatush_xbe_warl
+    coverpoint: ["Sv_Sm_mstatus_mprv_cg/cp_mstatus_sbe_{read,write}"]
+  # For implicit accesses to supervisor-level memory management data structures, such as
+  # page tables, endianness is always controlled by csr::[sbe].
+  - name: mstatus_sbe_implicit
+    coverpoint: ["Sv_Sm_mstatus_mprv_cg/cp_mstatus_sbe_{read,write}"]
+
+  # If mtval is written with a nonzero value when a breakpoint, address-misaligned,
+  # access-fault, page-fault, or hardware-error exception occurs on an instruction
+  # fetch, load, or store, then mtval will contain the faulting virtual address.
+  # The trap signature records mtval.
+  - name: mtval_vaddr_wr_faulting_addr
+    coverpoint: ["Sv_Sm_mstatus_mprv_cg/{load_page_fault,store_page_fault}"]
+
+  # When a page-fault, guest-page-fault, or access-fault exception is taken, the
+  # relevant *tval CSR is written with the faulting effective address (i.e. the value of
+  # rs1).
+  # rs1 is block aligned in these tests, so a DUT that reports the aligned address also passes.
+  - name: fault_excep_csr
+    coverpoint:
+      [
+        "Sv_Zicbo_cg/{cp_PTE_inv_cbo_s,cp_PTE_inv_cbo_u}",
+        "TODO: guest page fault",
+      ]
+
+  # If access to the cache block is not permitted, a cache-block management instruction
+  # raises a store page-fault or store guest-page-fault exception if address translation
+  # does not permit any access or raises a store access-fault exception otherwise.
+  - name: cbm_unperm_fault
+    coverpoint:
+      [
+        "Sv_Zicbo_cg/{cp_PTE_rw_unset_zicbom_s,cp_PTE_rw_unset_zicbom_u}",
+        "TODO: guest page fault",
+      ]
+
+  # The permissions required for a cache-block management instruction are defined in the
+  # CMO chapter; when address translation does not permit any access, the instruction
+  # raises a store page-fault exception.
+  - name: cbm_page_fault
+    # Representative coverpoints; also cp_PTE_inv_cbo_u, cp_PTE_res_rwx_cbo_{s,u}, cp_upage_sumunset_cbo_s
+    coverpoint:
+      [
+        "Sv_Zicbo_cg/{cp_PTE_rw_unset_zicbom_s, cp_PTE_rw_unset_zicbom_u, cp_PTE_inv_cbo_s, cp_spage_rwx_cbo_u}",
+      ]
+
+  # During address translation, the instruction also checks the accessed bit and may
+  # either raise an exception or set the bit as required.
+  - name: cbm_unperm_translate
+    coverpoint:
+      [
+        "Sv_Zicbo_cg/{cp_Abit_unset_cbo_s,cp_Abit_unset_cbo_u}",
+        "TODO: guest page fault",
+      ]
+
+  # If access to the cache block is not permitted, a cache-block zero instruction raises
+  # a store page-fault or store guest-page-fault exception if address translation does
+  # not permit write access or raises a store access-fault exception otherwise.
+  - name: cbz_unperm_fault
+    coverpoint:
+      [
+        "Sv_Zicbo_cg/{cp_PTE_w_unset_zicboz_s,cp_PTE_w_unset_zicboz_u}",
+        "TODO: guest page fault",
+      ]
+
+  # During address translation, the instruction also checks the accessed and dirty bits
+  # and may either raise an exception or set the bits as required.
+  - name: cbz_unperm_translate
+    coverpoint:
+      [
+        "Sv_Zicbo_cg/{cp_Abit_unset_cbo_s, cp_Abit_unset_cbo_u, cp_Dbit_unset_zicboz_s, cp_Dbit_unset_zicboz_u}",
+      ]
+
+  # During address translation, the instruction does not check the accessed and dirty
+  # bits and neither raises an exception nor sets the bits.
+  # Needs prefetches to pages with A=0 or D=0 that expect no trap and read the PTE back to
+  # check that A and D stay 0; the prefetch tests use only pages with A=D=1.
+  - name: cbp_unperm_translate
+    coverpoint: [""]
+
+  # A cache-block management instruction is permitted to access the specified cache block
+  # whenever a load instruction or store instruction is permitted to access the
+  # corresponding physical addresses.
+  # The read-only page case: a load is permitted, so the CMO must not fault.
+  - name: cbm_access
+    coverpoint:
+      [
+        "Sv_Zicbo_cg/{cp_PTE_r_set_w_unset_zicbom_s,cp_PTE_r_set_w_unset_zicbom_u}",
+      ]
+
+  # PMAs are checked for any access to physical memory, including accesses that have
+  # undergone virtual to physical memory translation.
+  - name: pma_chk_paddr
+    coverpoint:
+      [
+        "Sv_Zicbo_cg/{cp_leaf_PTE_to_nonexistent_pa_cbo_s,cp_leaf_PTE_to_nonexistent_pa_cbo_u}",
+      ]
+
+  # Load/store/AMO address-misaligned exceptions may have either higher or lower
+  # priority than load/store/AMO page-fault and access-fault exceptions.
+  - name: mcause_exccode_priority_misaligned
+    coverpoint:
+      [
+        "Sv_Exceptions_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}",
+        "Sv_ExceptionsSm_cg/cp_misaligned_priority_m",
+        "Sv_ExceptionsZaamo_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}",
+        "Sv_ExceptionsZalrsc_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}",
+      ]
+
+  # Priority|Exc.Code|Description === Highest|3|Instruction address breakpoint¶|12,
+  # 1|During instruction address translation: First encountered page fault or access
+  # fault¶|1|With physical address for instruction: Instruction access fault¶|2 0
+  # 8,9,11 3 3|Illegal instruction Instruction address misaligned Environment call
+  # Environment break Load/store/AMO address breakpoint¶|4,6|Optionally:
+  # Load/store/AMO address misaligned¶|13, 15, 5, 7|During address translation for
+  # an explicit memory access: First encountered page fault or access
+  # fault¶|5,7|With physical address for an explicit memory access: Load/store/AMO
+  # access fault¶Lowest|4,6|If not higher priority: Load/store/AMO address
+  # misaligned ===
+  - name: exc_priority
+    coverpoint:
+      [
+        "Sv_Exceptions_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u, cp_misaligned_priority_fetch_s, cp_misaligned_priority_fetch_u}",
+        "Sv_ExceptionsSm_cg/cp_misaligned_priority_m",
+        "Sv_ExceptionsZaamo_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}",
+        "Sv_ExceptionsZalrsc_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}",
+      ]
+
+  # If an instruction access-fault or instruction page-fault exception occurs on
+  # the target of a jump or taken branch, the exception is reported on the target
+  # instruction, not on the jump or branch instruction.
+  - name: ia_fault_exc_on_target
+    coverpoint:
+      [
+        "Sv_Exceptions_cg/{cp_misaligned_priority_fetch_s, cp_misaligned_priority_fetch_u}",
+      ]
+
+  # For AMOs, the Zaamo extension requires that the address held in rs1 be naturally
+  # aligned to the size of the operand (i.e., eight-byte aligned for doublewords and
+  # four-byte aligned for words).
+  - name: amo_alignment
+    coverpoint:
+      [
+        "Sv_ExceptionsZaamo_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}",
+      ]
+
+  # The misaligned atomicity granule PMA optionally relaxes this alignment requirement.
+  # The misaligned amoadd.w lies inside a 16-byte granule, so it does not raise an
+  # address-misaligned exception on a Zama16b hart.
+  - name: misaligned_atomicity_granule_size
+    coverpoint:
+      [
+        "Sv_ExceptionsZaamo_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}",
+      ]
+
+  # No sc.w instruction shall retire unless it passes memory permission checks,
+  # The sc.w has no reservation, yet it must still raise the page fault or access fault.
+  - name: sc_retire_permission
+    coverpoint:
+      [
+        "Sv_ExceptionsZalrsc_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}",
+      ]
+
+  # For lr and sc, the Zalrsc extension requires that the address held in rs1 be naturally
+  # aligned to the size of the operand. If the address is not naturally aligned, an
+  # address-misaligned exception or an access-fault exception will be generated.
+  - name: lr_sc_alignment
+    coverpoint:
+      [
+        "Sv_ExceptionsZalrsc_cg/{cp_misaligned_priority_s, cp_misaligned_priority_u}",
+      ]

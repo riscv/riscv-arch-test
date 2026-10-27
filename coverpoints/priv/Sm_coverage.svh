@@ -623,6 +623,41 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
     cp_misa_dependencies :      cross priv_mode_m, csrrw, misa, misa_dependencies;
     cp_misa_clear_c :           cross priv_mode_m, csrc, misa_c_0, pc_1;
 
+    // mepc[1] is masked on reads, including mret's, while misa.C = 0 makes IALIGN = 32
+    // Only on harts with Zca whose misa.C is writable, so that IALIGN can change
+    `ifdef ZCA_SUPPORTED
+        `ifdef UDB_MUTABLE_MISA_C
+            csrr_mepc : coverpoint ins.current.insn {
+                wildcard bins csrr_mepc = {CSRRS} iff (ins.current.insn[31:20] == CSR_MEPC && ins.current.insn[19:15] == 0);
+            }
+            mret_insn : coverpoint ins.current.insn {
+                wildcard bins mret = {MRET};
+            }
+            misa_c_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "misa", "exts")[2] {
+                bins off = {1'b0};
+            }
+            mepc_bit1 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mepc", "mepc")[1] {
+                bins set = {1'b1};
+            }
+            cp_mepc_ialign32_read :  cross priv_mode_m, csrr_mepc, misa_c_off, mepc_bit1;
+            cp_mepc_ialign32_mret :  cross priv_mode_m, mret_insn, misa_c_off, mepc_bit1;
+            // sepc[1] likewise, for reads and sret in M-mode and S-mode
+            `ifdef S_SUPPORTED
+                csrr_sepc : coverpoint ins.current.insn {
+                    wildcard bins csrr_sepc = {CSRRS} iff (ins.current.insn[31:20] == CSR_SEPC && ins.current.insn[19:15] == 0);
+                }
+                sret_insn : coverpoint ins.current.insn {
+                    wildcard bins sret = {SRET};
+                }
+                sepc_bit1 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sepc", "sepc")[1] {
+                    bins set = {1'b1};
+                }
+                cp_sepc_ialign32_read :  cross priv_mode_m_s, csrr_sepc, misa_c_off, sepc_bit1;
+                cp_sepc_ialign32_sret :  cross priv_mode_m_s, sret_insn, misa_c_off, sepc_bit1;
+            `endif
+        `endif
+    `endif
+
     cp_mtime_write :            cross priv_mode_m, csrr,  time_csr; // assumes mtime has been written
     `ifdef UDB_MXLEN_32
         cp_mtimeh_write :       cross priv_mode_m, csrr,  timeh_csr; // assumes mtimeh has been written
@@ -710,15 +745,32 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         scsrname : coverpoint ins.current.insn[31:20] {
             bins sstatus       = {CSR_SSTATUS};
             bins sie           = {CSR_SIE};
-            // bins stvec         = {CSR_STVEC}; // warl field has complex write restrictions and is not easy to test
+            bins stvec         = {CSR_STVEC}; // WARL; the signature checks only MODE[1], which must read 0
             bins scounteren    = {CSR_SCOUNTEREN};
             bins sscratch      = {CSR_SSCRATCH};
             bins sepc          = {CSR_SEPC};
-            // bins scause        = {CSR_SCAUSE}; // WLRL field; tested with cp_scause_write_*
+            // bins scause        = {CSR_SCAUSE}; // WLRL field; tested with cp_scause_from_m
             bins stval         = {CSR_STVAL};
             bins sip           = {CSR_SIP};
             `ifdef S1P12P0_OR_LATER_SUPPORTED
               bins senvcfg       = {CSR_SENVCFG};
+            `endif
+        }
+        scause_csr : coverpoint ins.current.insn[31:20] {
+            bins scause = {CSR_SCAUSE};
+        }
+        // the scause Exception Code is WLRL; Ss1p12 and later must hold the values 0-31, Ss1p11 only the supported codes
+        scause_wlrl_values : coverpoint ins.current.rs1_val {
+            bins code[] = {[0:9], 12, 13, 15};
+            `ifdef S1P12P0_OR_LATER_SUPPORTED
+              bins code_ss1p12[] = {10, 11, 14, [16:31]};
+            `else
+              `ifdef SOFTWARE_CHECK_SUPPORTED
+                bins code_18_software_check = {18};
+              `endif
+              `ifdef H_SUPPORTED
+                bins code_h[] = {10, [20:23]};
+              `endif
             `endif
         }
         shadow : coverpoint {ins.prev.insn[31:20], ins.current.insn[31:20]} {
@@ -766,6 +818,7 @@ covergroup Sm_mcsr_cg with function sample(ins_t ins);
         }
 
         cp_scsr_from_m :            cross priv_mode_m, scsrname, csraccesses;
+        cp_scause_from_m :          cross priv_mode_m, csrrw, scause_csr, scause_wlrl_values;
         cp_satp_from_m :            cross priv_mode_m, csrr, satp, mstatus_tvm;
         cp_satp_from_s :            cross priv_mode_s, csrr, satp, mstatus_tvm;
         cp_shadow :                 cross priv_mode_m, shadow, csrw_prev, rs1_prev, csrr;
@@ -1843,6 +1896,653 @@ covergroup Sm_Zicntr_cg with function sample(ins_t ins);
 endgroup
 `endif
 
+`ifdef H_SUPPORTED
+`include "general/RISCV_coverage_hypervisor.svh"
+
+covergroup Sm_H_mcsr_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    csraccesses : coverpoint ins.current.insn {
+        wildcard bins csrrc_all = {CSRRC} iff (ins.current.rs1_val == '1); // csrc all ones
+        wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val ==  0); // csrw all zeros
+        wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val == '1); // csrw all ones
+        wildcard bins csrrs_all = {CSRRS} iff (ins.current.rs1_val == '1); // csrs all ones
+        wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val ==  0); // csrr
+    }
+    csraccesses_masked : coverpoint ins.current.insn {
+        wildcard bins csrrc_all = {CSRRC} iff (ins.current.rs1_val != 0); // csrc mask
+        wildcard bins csrrw0    = {CSRRW} iff (ins.current.rs1_val == 0); // csrw all zeros
+        wildcard bins csrrw1    = {CSRRW} iff (ins.current.rs1_val != 0); // csrw mask
+        wildcard bins csrrs_all = {CSRRS} iff (ins.current.rs1_val != 0); // csrs mask
+        wildcard bins csrr      = {CSRR}  iff (ins.current.rs1_val == 0); // csrr
+    }
+    csrop: coverpoint ins.current.insn {
+        wildcard bins csrrs = {CSRRS};
+        wildcard bins csrrc = {CSRRC};
+    }
+    walking_ones: coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+        bins b_1[] = { [0:`UDB_MXLEN-1] };
+    }
+
+    // Machine, HS and VS H-extension CSRs accessed and walked without masked writes.  Keep in sync with HCommon.py.
+    hcsrname : coverpoint ins.current.insn[31:20] {
+        bins hedeleg    = {CSR_HEDELEG};
+        bins hideleg    = {CSR_HIDELEG};
+        bins hie        = {CSR_HIE};
+        bins hcounteren = {CSR_HCOUNTEREN};
+        bins hgeie      = {CSR_HGEIE};
+        bins hip        = {CSR_HIP};
+        bins hvip       = {CSR_HVIP};
+        `ifdef ZICNTR_SUPPORTED
+            bins htimedelta = {CSR_HTIMEDELTA};
+        `endif
+        bins vsstatus   = {CSR_VSSTATUS};
+        bins vsie       = {CSR_VSIE};
+        bins vstval     = {CSR_VSTVAL};
+        bins vsip       = {CSR_VSIP};
+        bins vstvec     = {CSR_VSTVEC};
+        bins vsscratch  = {CSR_VSSCRATCH};
+        bins vsepc      = {CSR_VSEPC};
+        `ifdef SSTC_SUPPORTED
+            bins vstimecmp = {CSR_VSTIMECMP};
+        `endif
+        `ifdef UDB_MXLEN_32
+            `ifdef ZICNTR_SUPPORTED
+                bins htimedeltah = {CSR_HTIMEDELTAH};
+            `endif
+            `ifdef SSTC_SUPPORTED
+                bins vstimecmph = {CSR_VSTIMECMPH};
+            `endif
+        `endif
+    }
+    // CSRs that need only hold zero: the readback is checked after writing zero and after clearing every bit
+    hcsrname_zero : coverpoint ins.current.insn[31:20] {
+        bins mtval2 = {CSR_MTVAL2};
+        bins mtinst = {CSR_MTINST};
+        bins htval  = {CSR_HTVAL};
+        bins htinst = {CSR_HTINST};
+        bins hgatp  = {CSR_HGATP};
+        bins vsatp  = {CSR_VSATP};
+        `ifdef UDB_MXLEN_32
+            `ifdef SM1P13P0_OR_LATER_SUPPORTED
+                bins hedelegh = {CSR_HEDELEGH};
+            `endif
+        `endif
+    }
+    // CSRs whose access and walk tests write only the checked fields
+    hcsrname_masked : coverpoint ins.current.insn[31:20] {
+        bins hstatus = {CSR_HSTATUS};
+        bins henvcfg = {CSR_HENVCFG};
+        `ifdef UDB_MXLEN_32
+            bins henvcfgh = {CSR_HENVCFGH};
+        `endif
+    }
+    hgeip : coverpoint ins.current.insn[31:20] {
+        bins hgeip = {CSR_HGEIP};
+    }
+
+    cp_hcsr_access:         cross priv_mode_m, hcsrname, csraccesses;
+    cp_hcsr_access_zero:    cross priv_mode_m, hcsrname_zero, csraccesses;
+    cp_hcsr_access_masked:  cross priv_mode_m, hcsrname_masked, csraccesses_masked;
+    cp_hcsr_access_ro:      cross priv_mode_m, hgeip, csraccesses;
+    cp_hcsrwalk:            cross priv_mode_m, hcsrname, csrop, walking_ones {
+        // vsepc and vstval may legalize invalid addresses, so they are walked with valid addresses instead
+        ignore_bins vaddr = binsof(hcsrname.vsepc) || binsof(hcsrname.vstval);
+    }
+    // Keep the lists below in sync with the masks in HCommon.py
+    cp_hcsrwalk_masked:     cross priv_mode_m, hcsrname_masked, csrop, walking_ones {
+        ignore_bins hstatus_not_walked = binsof(hcsrname_masked.hstatus) &&
+            binsof(walking_ones) intersect {[0:5], [10:19], [23:63]};
+        ignore_bins henvcfg_not_walked = binsof(hcsrname_masked.henvcfg) &&
+            binsof(walking_ones) intersect {1, [8:31], [34:60]};
+        `ifdef UDB_MXLEN_32
+            ignore_bins henvcfgh_not_walked = binsof(hcsrname_masked.henvcfgh) &&
+                binsof(walking_ones) intersect {[2:28]};
+        `endif
+    }
+
+    // hgatp and vsatp: walk a 1 and a 0 through the non-MODE bits with a legal MODE
+    csrrw : coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW};
+    }
+    atpname : coverpoint ins.current.insn[31:20] {
+        `ifdef UDB_MXLEN_64
+            `ifdef UDB_SV39X4_TRANSLATION
+                bins hgatp = {CSR_HGATP};
+            `endif
+            `ifdef UDB_SV39_VSMODE_TRANSLATION
+                bins vsatp = {CSR_VSATP};
+            `endif
+        `else
+            `ifdef UDB_SV32X4_TRANSLATION
+                bins hgatp = {CSR_HGATP};
+            `endif
+            `ifdef UDB_SV32_VSMODE_TRANSLATION
+                bins vsatp = {CSR_VSATP};
+            `endif
+        `endif
+    }
+    `ifdef UDB_MXLEN_64
+        atp_walk1 : coverpoint $clog2(ins.current.rs1_val[59:0])
+            iff (ins.current.rs1_val[63:60] == 8 && $onehot(ins.current.rs1_val[59:0])) {
+            bins b[] = {[0:59]};
+        }
+        atp_walk0 : coverpoint $clog2(~ins.current.rs1_val[59:0])
+            iff (ins.current.rs1_val[63:60] == 8 && $onehot(~ins.current.rs1_val[59:0])) {
+            bins b[] = {[0:59]};
+        }
+    `else
+        atp_walk1 : coverpoint $clog2(ins.current.rs1_val[30:0])
+            iff (ins.current.rs1_val[31] && $onehot(ins.current.rs1_val[30:0])) {
+            bins b[] = {[0:30]};
+        }
+        atp_walk0 : coverpoint $clog2(~ins.current.rs1_val[30:0])
+            iff (ins.current.rs1_val[31] && $onehot(~ins.current.rs1_val[30:0])) {
+            bins b[] = {[0:30]};
+        }
+    `endif
+    cp_atpwalk1:            cross priv_mode_m, csrrw, atpname, atp_walk1;
+    cp_atpwalk0:            cross priv_mode_m, csrrw, atpname, atp_walk0;
+
+    // vsepc and vstval hold every address that sepc and stval hold: the current pc, an address in scratch, and each
+    // canonical virtual address with one bit walked.  vsepc bit 0 is always 0, and bit 1 is 0 unless Zca allows
+    // 2-byte instruction alignment.
+    vsepc : coverpoint ins.current.insn[31:20] {
+        bins vsepc = {CSR_VSEPC};
+    }
+    vstval : coverpoint ins.current.insn[31:20] {
+        bins vstval = {CSR_VSTVAL};
+    }
+    xaddr_pc : coverpoint (ins.current.rs1_val + 4 == ins.current.pc_rdata) {
+        bins pc = {1};
+    }
+    xaddr_scratch : coverpoint (ins.current.rs1_val[7:0] == 8'hA8) {
+        bins scratch = {1};
+    }
+    cp_vsepc_vaddr_pc:       cross priv_mode_m, csrrw, vsepc, xaddr_pc;
+    cp_vsepc_vaddr_scratch:  cross priv_mode_m, csrrw, vsepc, xaddr_scratch;
+    cp_vstval_vaddr_pc:      cross priv_mode_m, csrrw, vstval, xaddr_pc;
+    cp_vstval_vaddr_scratch: cross priv_mode_m, csrrw, vstval, xaddr_scratch;
+    `ifdef H_VADDR_WALK_MSB
+        vaddr_walk1 : coverpoint $clog2(ins.current.rs1_val) iff ($onehot(ins.current.rs1_val)) {
+            bins b_1[] = { [0:`H_VADDR_WALK_MSB] };
+        }
+        vaddr_walk0 : coverpoint $clog2(~ins.current.rs1_val) iff ($onehot(~ins.current.rs1_val)) {
+            bins b_0[] = { [0:`H_VADDR_WALK_MSB] };
+        }
+        cp_vsepc_vaddr_walk1:    cross priv_mode_m, csrrw, vsepc, vaddr_walk1;
+        cp_vsepc_vaddr_walk0:    cross priv_mode_m, csrrw, vsepc, vaddr_walk0;
+        cp_vstval_vaddr_walk1:   cross priv_mode_m, csrrw, vstval, vaddr_walk1;
+        cp_vstval_vaddr_walk0:   cross priv_mode_m, csrrw, vstval, vaddr_walk0;
+    `endif
+
+    // Read an S CSR right after writing its VS replica
+    csrw_prev : coverpoint ins.prev.insn {
+        wildcard bins csrw = {CSRW};
+    }
+    csrr : coverpoint ins.current.insn {
+        wildcard bins csrr = {CSRR};
+    }
+    replica_pair : coverpoint {ins.prev.insn[31:20], ins.current.insn[31:20]} {
+        bins sstatus  = {{CSR_VSSTATUS, CSR_SSTATUS}};
+        bins sie      = {{CSR_VSIE, CSR_SIE}};
+        bins stvec    = {{CSR_VSTVEC, CSR_STVEC}};
+        bins sscratch = {{CSR_VSSCRATCH, CSR_SSCRATCH}};
+        bins sepc     = {{CSR_VSEPC, CSR_SEPC}};
+        bins scause   = {{CSR_VSCAUSE, CSR_SCAUSE}};
+        bins stval    = {{CSR_VSTVAL, CSR_STVAL}};
+        bins sip      = {{CSR_VSIP, CSR_SIP}};
+        // satp always supports Sv39 (RV64) or Sv32 (RV32), but vsatp need not
+        `ifdef UDB_MXLEN_64
+            `ifdef UDB_SV39_VSMODE_TRANSLATION
+                bins satp = {{CSR_VSATP, CSR_SATP}};
+            `endif
+        `elsif UDB_SV32_VSMODE_TRANSLATION
+            bins satp = {{CSR_VSATP, CSR_SATP}};
+        `endif
+    }
+    cp_replica:             cross priv_mode_m, csrw_prev, csrr, replica_pair;
+
+    // In VS-mode, S CSR names access the VS replicas.  VS-mode ecalls go to M-mode, so M-mode can check that
+    // the S CSRs keep their values
+    csrw : coverpoint ins.current.insn {
+        wildcard bins csrw = {CSRW};
+    }
+    sreplicated : coverpoint ins.current.insn[31:20] {
+        bins sstatus  = {CSR_SSTATUS};
+        bins sie      = {CSR_SIE};
+        bins stvec    = {CSR_STVEC};
+        bins sscratch = {CSR_SSCRATCH};
+        bins sepc     = {CSR_SEPC};
+        bins scause   = {CSR_SCAUSE};
+        bins stval    = {CSR_STVAL};
+        bins sip      = {CSR_SIP};
+        `ifdef UDB_MXLEN_64
+            `ifdef UDB_SV39_VSMODE_TRANSLATION
+                bins satp = {CSR_SATP};
+            `endif
+        `elsif UDB_SV32_VSMODE_TRANSLATION
+            bins satp = {CSR_SATP};
+        `endif
+    }
+    cp_replica_vs:          cross priv_mode_vs, csrw, sreplicated;
+
+    // mtval must not be read-only zero with H
+    mtval : coverpoint ins.current.insn[31:20] {
+        bins mtval = {CSR_MTVAL};
+    }
+    rs1_ones : coverpoint ins.current.rs1_val {
+        bins ones = {'1};
+    }
+    cp_mtvala:              cross priv_mode_m, csrrw, mtval, rs1_ones;
+
+    // vsepc[1] is masked on reads, including sret's in VS-mode, while misa.C = 0 makes IALIGN = 32
+    // Only on harts with Zca whose misa.C is writable, so that IALIGN can change
+    `ifdef ZCA_SUPPORTED
+        `ifdef UDB_MUTABLE_MISA_C
+            csrr_vsepc : coverpoint ins.current.insn {
+                wildcard bins csrr_vsepc = {CSRRS} iff (ins.current.insn[31:20] == CSR_VSEPC && ins.current.insn[19:15] == 0);
+            }
+            // In VS-mode the trace records vsepc accesses under sepc
+            csrr_sepc : coverpoint ins.current.insn {
+                wildcard bins csrr_sepc = {CSRRS} iff (ins.current.insn[31:20] == CSR_SEPC && ins.current.insn[19:15] == 0);
+            }
+            sret_insn : coverpoint ins.current.insn {
+                wildcard bins sret = {SRET};
+            }
+            misa_c_off : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "misa", "exts")[2] {
+                bins off = {1'b0};
+            }
+            vsepc_bit1 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsepc", "vsepc")[1] {
+                bins set = {1'b1};
+            }
+            sepc_bit1 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "sepc", "sepc")[1] {
+                bins set = {1'b1};
+            }
+            cp_vsepc_ialign32_read :    cross priv_mode_m_s, csrr_vsepc,  misa_c_off, vsepc_bit1;
+            cp_vsepc_ialign32_vs_read : cross priv_mode_vs, csrr_sepc, misa_c_off, sepc_bit1;
+            cp_vsepc_ialign32_sret :    cross priv_mode_vs, sret_insn, misa_c_off, sepc_bit1;
+        `endif
+    `endif
+endgroup
+
+covergroup Sm_H_tvm_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    mstatus_tvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tvm") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    hstatus_vtvm : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtvm") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    csr_rw : coverpoint ins.current.insn {
+        wildcard bins csrr = {CSRR};
+        wildcard bins csrw = {CSRW};
+    }
+    // mstatus.TVM = 1 traps satp and hgatp accesses in HS-mode, but not vsatp accesses; hstatus.VTVM does not affect HS-mode
+    atp_hs : coverpoint ins.current.insn[31:20] {
+        bins satp  = {CSR_SATP};
+        bins hgatp = {CSR_HGATP};
+        bins vsatp = {CSR_VSATP};
+    }
+    satp : coverpoint ins.current.insn[31:20] {
+        bins satp = {CSR_SATP};
+    }
+    hfence : coverpoint ins.current.insn {
+        wildcard bins hfence_vvma = {HFENCE_VVMA};
+        wildcard bins hfence_gvma = {HFENCE_GVMA};
+    }
+    sfence : coverpoint ins.current.insn {
+        wildcard bins sfence_vma = {SFENCE_VMA};
+    }
+
+    cp_tvm_hs:  cross priv_mode_hs, atp_hs, csr_rw, mstatus_tvm, hstatus_vtvm;
+    cp_tvm_vs:  cross priv_mode_vs, satp, csr_rw, mstatus_tvm, hstatus_vtvm;
+    cp_hfence:  cross priv_mode_m_hs_vs_u_vu, hfence, mstatus_tvm, hstatus_vtvm;
+    cp_sfence:  cross priv_mode_m_hs_vs_u_vu, sfence, mstatus_tvm, hstatus_vtvm;
+endgroup
+
+covergroup Sm_H_inst_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    `ifdef H_TWO_STAGE
+        hlv : coverpoint ins.current.insn {
+            wildcard bins hlv_b  = {HLV_B};
+            wildcard bins hlv_bu = {HLV_BU};
+            wildcard bins hlv_h  = {HLV_H};
+            wildcard bins hlv_hu = {HLV_HU};
+            wildcard bins hlv_w  = {HLV_W};
+            `ifdef UDB_MXLEN_64
+                wildcard bins hlv_wu = {HLV_WU};
+                wildcard bins hlv_d  = {HLV_D};
+            `endif
+        }
+        hlvx : coverpoint ins.current.insn {
+            wildcard bins hlvx_hu = {HLVX_HU};
+            wildcard bins hlvx_wu = {HLVX_WU};
+        }
+        hsv : coverpoint ins.current.insn {
+            wildcard bins hsv_b = {HSV_B};
+            wildcard bins hsv_h = {HSV_H};
+            wildcard bins hsv_w = {HSV_W};
+            `ifdef UDB_MXLEN_64
+                wildcard bins hsv_d = {HSV_D};
+            `endif
+        }
+        cp_hlv:  cross priv_mode_m, hlv;
+        cp_hlvx: cross priv_mode_m, hlvx;
+        cp_hsv:  cross priv_mode_m, hsv;
+
+        hlv_hsv : coverpoint ins.current.insn {
+            wildcard bins hlv_w = {HLV_W};
+            wildcard bins hsv_w = {HSV_W};
+        }
+        vsatp_mode : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "mode") {
+            bins bare  = {0};
+            bins paged = {[1:15]};
+        }
+        guest_page_fault : coverpoint {ins.current.csr_wb[CSR_MCAUSE], ins.current.csr[CSR_MCAUSE][4:0]} {
+            bins load_store = {6'b110101, 6'b110111};
+        }
+        // Guest-page faults on the final translation (vsatp Bare) and on an implicit VS-stage access
+        cp_guest_page_fault: cross priv_mode_m, hlv_hsv, vsatp_mode, guest_page_fault;
+    `endif
+
+    mret : coverpoint ins.current.insn {
+        bins mret = {MRET};
+    }
+    sret : coverpoint ins.current.insn {
+        bins sret = {SRET};
+    }
+    old_mpp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
+        bins u = {0};
+        bins s = {1};
+        bins m = {3};
+    }
+    `ifdef UDB_MXLEN_64
+        old_mpv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpv") {
+    `else
+        old_mpv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpv") {
+    `endif
+        bins off = {0};
+        bins on  = {1};
+    }
+    old_mpie : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpie") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    old_spp : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spp") {
+        bins u = {0};
+        bins s = {1};
+    }
+    old_spie : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spie") {
+        bins off = {0};
+        bins on  = {1};
+    }
+    old_spv : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "spv") {
+        bins off = {0};
+        bins on  = {1};
+    }
+
+    cp_mret_m:  cross priv_mode_m, mret, old_mpp, old_mpv, old_mpie;
+    cp_sret_m:  cross priv_mode_m, sret, old_spp, old_spv, old_spie;
+endgroup
+`endif
+
+// Counter reads and htimedelta observed from M-mode with H.
+// Written: David_Harris@hmc.edu 24 September 2026
+`ifdef ZICNTR_SUPPORTED
+`ifdef H_SUPPORTED
+covergroup Sm_Zicntr_H_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include "general/RISCV_coverage_standard_coverpoints.svh"
+
+    // The counter accessed: one that exists and whose mcounteren, hcounteren and scounteren bits are writable
+    counter: coverpoint ins.current.insn[31:20] {
+        `ifdef UDB_MCOUNTENABLE_EN_0 `ifdef UDB_HCOUNTENABLE_EN_0 `ifdef UDB_SCOUNTENABLE_EN_0
+            bins cycle_csr = {CSR_CYCLE};
+            `ifdef UDB_MXLEN_32
+                bins cycleh_csr = {CSR_CYCLEH};
+            `endif
+        `endif `endif `endif
+        `ifdef UDB_MCOUNTENABLE_EN_1 `ifdef UDB_HCOUNTENABLE_EN_1 `ifdef UDB_SCOUNTENABLE_EN_1
+            bins time_csr = {CSR_TIME};
+            `ifdef UDB_MXLEN_32
+                bins timeh_csr = {CSR_TIMEH};
+            `endif
+        `endif `endif `endif
+        `ifdef UDB_MCOUNTENABLE_EN_2 `ifdef UDB_HCOUNTENABLE_EN_2 `ifdef UDB_SCOUNTENABLE_EN_2
+            bins instret_csr = {CSR_INSTRET};
+            `ifdef UDB_MXLEN_32
+                bins instreth_csr = {CSR_INSTRETH};
+            `endif
+        `endif `endif `endif
+        `ifdef ZIHPM_SUPPORTED
+            `ifdef UDB_HPM_COUNTER_EN_3 `ifdef UDB_MCOUNTENABLE_EN_3 `ifdef UDB_HCOUNTENABLE_EN_3 `ifdef UDB_SCOUNTENABLE_EN_3
+                bins hpmcounter3_csr = {CSR_HPMCOUNTER3};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter3h_csr = {CSR_HPMCOUNTER3H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_4 `ifdef UDB_MCOUNTENABLE_EN_4 `ifdef UDB_HCOUNTENABLE_EN_4 `ifdef UDB_SCOUNTENABLE_EN_4
+                bins hpmcounter4_csr = {CSR_HPMCOUNTER4};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter4h_csr = {CSR_HPMCOUNTER4H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_5 `ifdef UDB_MCOUNTENABLE_EN_5 `ifdef UDB_HCOUNTENABLE_EN_5 `ifdef UDB_SCOUNTENABLE_EN_5
+                bins hpmcounter5_csr = {CSR_HPMCOUNTER5};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter5h_csr = {CSR_HPMCOUNTER5H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_6 `ifdef UDB_MCOUNTENABLE_EN_6 `ifdef UDB_HCOUNTENABLE_EN_6 `ifdef UDB_SCOUNTENABLE_EN_6
+                bins hpmcounter6_csr = {CSR_HPMCOUNTER6};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter6h_csr = {CSR_HPMCOUNTER6H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_7 `ifdef UDB_MCOUNTENABLE_EN_7 `ifdef UDB_HCOUNTENABLE_EN_7 `ifdef UDB_SCOUNTENABLE_EN_7
+                bins hpmcounter7_csr = {CSR_HPMCOUNTER7};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter7h_csr = {CSR_HPMCOUNTER7H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_8 `ifdef UDB_MCOUNTENABLE_EN_8 `ifdef UDB_HCOUNTENABLE_EN_8 `ifdef UDB_SCOUNTENABLE_EN_8
+                bins hpmcounter8_csr = {CSR_HPMCOUNTER8};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter8h_csr = {CSR_HPMCOUNTER8H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_9 `ifdef UDB_MCOUNTENABLE_EN_9 `ifdef UDB_HCOUNTENABLE_EN_9 `ifdef UDB_SCOUNTENABLE_EN_9
+                bins hpmcounter9_csr = {CSR_HPMCOUNTER9};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter9h_csr = {CSR_HPMCOUNTER9H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_10 `ifdef UDB_MCOUNTENABLE_EN_10 `ifdef UDB_HCOUNTENABLE_EN_10 `ifdef UDB_SCOUNTENABLE_EN_10
+                bins hpmcounter10_csr = {CSR_HPMCOUNTER10};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter10h_csr = {CSR_HPMCOUNTER10H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_11 `ifdef UDB_MCOUNTENABLE_EN_11 `ifdef UDB_HCOUNTENABLE_EN_11 `ifdef UDB_SCOUNTENABLE_EN_11
+                bins hpmcounter11_csr = {CSR_HPMCOUNTER11};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter11h_csr = {CSR_HPMCOUNTER11H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_12 `ifdef UDB_MCOUNTENABLE_EN_12 `ifdef UDB_HCOUNTENABLE_EN_12 `ifdef UDB_SCOUNTENABLE_EN_12
+                bins hpmcounter12_csr = {CSR_HPMCOUNTER12};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter12h_csr = {CSR_HPMCOUNTER12H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_13 `ifdef UDB_MCOUNTENABLE_EN_13 `ifdef UDB_HCOUNTENABLE_EN_13 `ifdef UDB_SCOUNTENABLE_EN_13
+                bins hpmcounter13_csr = {CSR_HPMCOUNTER13};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter13h_csr = {CSR_HPMCOUNTER13H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_14 `ifdef UDB_MCOUNTENABLE_EN_14 `ifdef UDB_HCOUNTENABLE_EN_14 `ifdef UDB_SCOUNTENABLE_EN_14
+                bins hpmcounter14_csr = {CSR_HPMCOUNTER14};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter14h_csr = {CSR_HPMCOUNTER14H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_15 `ifdef UDB_MCOUNTENABLE_EN_15 `ifdef UDB_HCOUNTENABLE_EN_15 `ifdef UDB_SCOUNTENABLE_EN_15
+                bins hpmcounter15_csr = {CSR_HPMCOUNTER15};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter15h_csr = {CSR_HPMCOUNTER15H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_16 `ifdef UDB_MCOUNTENABLE_EN_16 `ifdef UDB_HCOUNTENABLE_EN_16 `ifdef UDB_SCOUNTENABLE_EN_16
+                bins hpmcounter16_csr = {CSR_HPMCOUNTER16};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter16h_csr = {CSR_HPMCOUNTER16H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_17 `ifdef UDB_MCOUNTENABLE_EN_17 `ifdef UDB_HCOUNTENABLE_EN_17 `ifdef UDB_SCOUNTENABLE_EN_17
+                bins hpmcounter17_csr = {CSR_HPMCOUNTER17};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter17h_csr = {CSR_HPMCOUNTER17H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_18 `ifdef UDB_MCOUNTENABLE_EN_18 `ifdef UDB_HCOUNTENABLE_EN_18 `ifdef UDB_SCOUNTENABLE_EN_18
+                bins hpmcounter18_csr = {CSR_HPMCOUNTER18};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter18h_csr = {CSR_HPMCOUNTER18H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_19 `ifdef UDB_MCOUNTENABLE_EN_19 `ifdef UDB_HCOUNTENABLE_EN_19 `ifdef UDB_SCOUNTENABLE_EN_19
+                bins hpmcounter19_csr = {CSR_HPMCOUNTER19};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter19h_csr = {CSR_HPMCOUNTER19H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_20 `ifdef UDB_MCOUNTENABLE_EN_20 `ifdef UDB_HCOUNTENABLE_EN_20 `ifdef UDB_SCOUNTENABLE_EN_20
+                bins hpmcounter20_csr = {CSR_HPMCOUNTER20};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter20h_csr = {CSR_HPMCOUNTER20H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_21 `ifdef UDB_MCOUNTENABLE_EN_21 `ifdef UDB_HCOUNTENABLE_EN_21 `ifdef UDB_SCOUNTENABLE_EN_21
+                bins hpmcounter21_csr = {CSR_HPMCOUNTER21};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter21h_csr = {CSR_HPMCOUNTER21H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_22 `ifdef UDB_MCOUNTENABLE_EN_22 `ifdef UDB_HCOUNTENABLE_EN_22 `ifdef UDB_SCOUNTENABLE_EN_22
+                bins hpmcounter22_csr = {CSR_HPMCOUNTER22};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter22h_csr = {CSR_HPMCOUNTER22H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_23 `ifdef UDB_MCOUNTENABLE_EN_23 `ifdef UDB_HCOUNTENABLE_EN_23 `ifdef UDB_SCOUNTENABLE_EN_23
+                bins hpmcounter23_csr = {CSR_HPMCOUNTER23};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter23h_csr = {CSR_HPMCOUNTER23H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_24 `ifdef UDB_MCOUNTENABLE_EN_24 `ifdef UDB_HCOUNTENABLE_EN_24 `ifdef UDB_SCOUNTENABLE_EN_24
+                bins hpmcounter24_csr = {CSR_HPMCOUNTER24};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter24h_csr = {CSR_HPMCOUNTER24H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_25 `ifdef UDB_MCOUNTENABLE_EN_25 `ifdef UDB_HCOUNTENABLE_EN_25 `ifdef UDB_SCOUNTENABLE_EN_25
+                bins hpmcounter25_csr = {CSR_HPMCOUNTER25};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter25h_csr = {CSR_HPMCOUNTER25H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_26 `ifdef UDB_MCOUNTENABLE_EN_26 `ifdef UDB_HCOUNTENABLE_EN_26 `ifdef UDB_SCOUNTENABLE_EN_26
+                bins hpmcounter26_csr = {CSR_HPMCOUNTER26};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter26h_csr = {CSR_HPMCOUNTER26H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_27 `ifdef UDB_MCOUNTENABLE_EN_27 `ifdef UDB_HCOUNTENABLE_EN_27 `ifdef UDB_SCOUNTENABLE_EN_27
+                bins hpmcounter27_csr = {CSR_HPMCOUNTER27};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter27h_csr = {CSR_HPMCOUNTER27H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_28 `ifdef UDB_MCOUNTENABLE_EN_28 `ifdef UDB_HCOUNTENABLE_EN_28 `ifdef UDB_SCOUNTENABLE_EN_28
+                bins hpmcounter28_csr = {CSR_HPMCOUNTER28};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter28h_csr = {CSR_HPMCOUNTER28H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_29 `ifdef UDB_MCOUNTENABLE_EN_29 `ifdef UDB_HCOUNTENABLE_EN_29 `ifdef UDB_SCOUNTENABLE_EN_29
+                bins hpmcounter29_csr = {CSR_HPMCOUNTER29};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter29h_csr = {CSR_HPMCOUNTER29H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_30 `ifdef UDB_MCOUNTENABLE_EN_30 `ifdef UDB_HCOUNTENABLE_EN_30 `ifdef UDB_SCOUNTENABLE_EN_30
+                bins hpmcounter30_csr = {CSR_HPMCOUNTER30};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter30h_csr = {CSR_HPMCOUNTER30H};
+                `endif
+            `endif `endif `endif `endif
+            `ifdef UDB_HPM_COUNTER_EN_31 `ifdef UDB_MCOUNTENABLE_EN_31 `ifdef UDB_HCOUNTENABLE_EN_31 `ifdef UDB_SCOUNTENABLE_EN_31
+                bins hpmcounter31_csr = {CSR_HPMCOUNTER31};
+                `ifdef UDB_MXLEN_32
+                    bins hpmcounter31h_csr = {CSR_HPMCOUNTER31H};
+                `endif
+            `endif `endif `endif `endif
+        `endif
+    }
+
+    // The enable bit of the accessed counter in mcounteren
+    mcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[ins.current.insn[24:20]] {
+        bins disabled = {0};
+        bins enabled  = {1};
+    }
+
+    csraccess: coverpoint ins.current.insn {
+        wildcard bins csrr = {CSRR};
+        wildcard bins csrw = {CSRW};
+    }
+
+    // htimedelta = {0, 2^30, 2^32-1, 2^60, -1, -2^30, -2^60} while time and timeh are read
+    csrr_time: coverpoint ins.current.insn[31:20] iff (ins.current.insn ==? CSRR) {
+        bins read_time = {CSR_TIME};
+        `ifdef UDB_MXLEN_32
+            bins read_timeh = {CSR_TIMEH};
+        `endif
+    }
+    `ifdef UDB_MXLEN_64
+        htimedelta: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedelta", "htimedelta") {
+    `else
+        htimedelta: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedeltah", "htimedeltah")[31:0], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htimedelta", "htimedelta")[31:0]} {
+    `endif
+        bins zero       = {64'h0000000000000000};
+        bins pos_2p30   = {64'h0000000040000000};
+        bins pos_2p32m1 = {64'h00000000FFFFFFFF};
+        bins pos_2p60   = {64'h1000000000000000};
+        bins neg_1      = {64'hFFFFFFFFFFFFFFFF};
+        bins neg_2p30   = {64'hFFFFFFFFC0000000};
+        bins neg_2p60   = {64'hF000000000000000};
+    }
+
+    // mcounteren, hcounteren and scounteren hold the same enable bit for the accessed counter
+    cp_mhscounteren_access_m: cross csraccess, counter, mcounteren_bit, priv_mode_m
+        iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[ins.current.insn[24:20]] ==
+                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[ins.current.insn[24:20]] &&
+             get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[ins.current.insn[24:20]] ==
+                 get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[ins.current.insn[24:20]]);
+    cp_delta_m: cross csrr_time, htimedelta, priv_mode_m;
+endgroup
+`endif
+`endif
+
 function void sm_sample(int hart, int issue, ins_t ins);
     Sm_mcause_cg.sample(ins);
     Sm_mstatus_cg.sample(ins);
@@ -1860,6 +2560,19 @@ function void sm_sample(int hart, int issue, ins_t ins);
     `ifndef EXCLUDE_SM
         `ifdef ZICNTR_SUPPORTED
             Sm_Zicntr_cg.sample(ins);
+            `ifdef H_SUPPORTED
+                Sm_Zicntr_H_cg.sample(ins);
+            `endif
+        `endif
+        `ifdef H_SUPPORTED
+            Sm_H_mcsr_cg.sample(ins);
+            Sm_H_tvm_cg.sample(ins);
+            Sm_H_inst_cg.sample(ins);
+        `endif
+        `ifdef H_SUPPORTED
+            Sm_H_mcsr_cg.sample(ins);
+            Sm_H_tvm_cg.sample(ins);
+            Sm_H_inst_cg.sample(ins);
         `endif
     `endif
     //$display("Sm_sample: PC = %h (%s) misa %b rs1 %b, misa_c0 %b, pc_1 %b",

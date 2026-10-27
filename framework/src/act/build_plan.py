@@ -369,6 +369,7 @@ def gen_rvvi_tasks(
     sail_cmd.extend(
         [
             "--trace",
+            "--trace-ptw",
             "--trace-output",
             str(sail_trace),
             "--config",
@@ -561,7 +562,7 @@ def gen_coverage_tasks(
 # Top-level build plan construction
 # ---------------------------------------------------------------------------
 
-_COVERAGE_GROUPS_WITHOUT_COVERPOINTS = frozenset({Path("priv/H")})
+_COVERAGE_GROUPS_WITHOUT_COVERPOINTS: frozenset[Path] = frozenset()
 
 
 def generate_build_plan(

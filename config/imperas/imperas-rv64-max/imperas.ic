@@ -87,6 +87,7 @@
 --override cpu*/Zcd=T
 --override cpu*/Sstc=T
 --override cpu*/Smstateen=T
+--override cpu*/Ssqosid=T # srmcfg with 12-bit RCID and MCID
 --override cpu*/Ssstateen=T
 --override cpu*/Sscofpmf=T
 

@@ -21,26 +21,31 @@ from testgen.priv.registry import add_priv_test_generator
 CSR_OPS = ["csrrw", "csrrs", "csrrc", "csrr"]
 
 
-def _write_se0(temp_reg: int, *, enable: bool) -> list[str]:
-    """Set (enable=True) or clear (enable=False) SE0 in mstateen0/mstateen0h.
+def _write_se(n: int, temp_reg: int, *, enable: bool) -> list[str]:
+    """Set (enable=True) or clear (enable=False) SE<n>, bit 63 of mstateen<n> (bit 31 of mstateen<n>h on RV32).
 
-    Skipped entirely where Smstateen is absent: mstateen0 does not exist there, and an
+    Skipped entirely where Smstateen is absent: mstateenN does not exist there, and an
     illegal access made through T-SBI faults inside the handler rather than in test code,
-    which aborts the run. Without Smstateen sstateen0 is simply ungated.
+    which aborts the run. Without Smstateen sstateenN is simply ungated.
     """
     action = "csrs" if enable else "csrc"
-    description = "set SE0=1" if enable else "clear SE0=0"
+    description = f"set SE{n}=1" if enable else f"clear SE{n}=0"
     return [
         "#ifdef SMSTATEEN_SUPPORTED",
         "#if __riscv_xlen == 64",
-        f"LI(x{temp_reg}, 0x8000000000000000)  # SE0 = bit 63 of mstateen0",
-        tsbi_call(f"{action} mstateen0, x{temp_reg}  # {description}"),
+        f"LI(x{temp_reg}, 0x8000000000000000)  # SE{n} = bit 63 of mstateen{n}",
+        tsbi_call(f"{action} mstateen{n}, x{temp_reg}  # {description}"),
         "#else",
-        f"LI(x{temp_reg}, 0x80000000)  # SE0 = bit 31 of mstateen0h",
-        tsbi_call(f"{action} mstateen0h, x{temp_reg}  # {description}"),
+        f"LI(x{temp_reg}, 0x80000000)  # SE{n} = bit 31 of mstateen{n}h",
+        tsbi_call(f"{action} mstateen{n}h, x{temp_reg}  # {description}"),
         "#endif",
         "#endif  // SMSTATEEN_SUPPORTED",
     ]
+
+
+def _write_se0(temp_reg: int, *, enable: bool) -> list[str]:
+    """Set (enable=True) or clear (enable=False) SE0 in mstateen0/mstateen0h."""
+    return _write_se(0, temp_reg, enable=enable)
 
 
 def _save_mstateen(save_reg: int, save_regh: int) -> list[str]:
@@ -69,7 +74,7 @@ def _restore_mstateen(save_reg: int, save_regh: int) -> list[str]:
 
 # ---------------------------------------------------------------------------
 # cp_csr_illegal_accesses
-#   Cross: priv_mode_u × sstateen_csrs × csrops × se0_one
+#   Cross: priv_mode_u × sstateen_csrs × csrops × mstateen_se_n_one
 #   U-mode only.
 # ---------------------------------------------------------------------------
 
@@ -81,7 +86,7 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(
             coverpoint,
-            "Attempt CSR ops to sstateenN CSRs from U-mode with SE0=1 (should trap)",
+            "Attempt CSR ops to sstateenN CSRs from U-mode with SE0-SE3=1 (should trap)",
         )
     ]
 
@@ -89,8 +94,11 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
 
     sstateen_csrs = ["sstateen0", "sstateen1", "sstateen2", "sstateen3"]
 
+    # Enable every sstateenN at M level so that the U-mode accesses trap only for privilege.
+    # mstateen1-3 reset to zero and no other test leaves SE1-3 set, so they are cleared afterward.
     lines.extend(_save_mstateen(save_mstateen, save_mstatenh))
-    lines.extend(_write_se0(temp_reg, enable=True))
+    for n in range(4):
+        lines.extend(_write_se(n, temp_reg, enable=True))
     lines.append("RVTEST_TSBI_GOTO_UMODE")
 
     for csr in sstateen_csrs:
@@ -102,13 +110,15 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
             lines.extend(
                 [
                     "",
-                    test_data.add_testcase(f"{csr}_{op.lower()}_umode_se0_1", coverpoint, covergroup),
+                    test_data.add_testcase(f"{csr}_{op.lower()}_umode_se{csr[-1]}_1", coverpoint, covergroup),
                     insn,
                 ]
             )
 
     lines.append("RVTEST_TSBI_GOTO_SMODE")
     lines.extend(_restore_mstateen(save_mstateen, save_mstatenh))
+    for n in range(1, 4):
+        lines.extend(_write_se(n, temp_reg, enable=False))
 
     test_data.int_regs.return_registers([temp_reg, save_mstateen, save_mstatenh])
     return lines
@@ -116,9 +126,10 @@ def _generate_csr_illegal_accesses(test_data: TestData) -> list[str]:
 
 # ---------------------------------------------------------------------------
 # cp_walking_ones
-#   Cross: priv_mode_s × sstateen_walk_csr × csrops × csr_walk × se0_one
-#   Must run from S-mode with SE0=1. csr_walk_test covers csrw+csrs+csrc
-#   internally (walking-1s uses csrw+csrs, walking-0s uses csrw+csrc).
+#   Cross: priv_mode_s × sstateen_walk_csr × csrops × csr_walk × mstateen_se_n_one
+#   Must run from S-mode with SEn=1 in the mstateenN matching each sstateenN.
+#   csr_walk_test covers csrw+csrs+csrc internally (walking-1s uses csrw+csrs,
+#   walking-0s uses csrw+csrc).
 # ---------------------------------------------------------------------------
 
 
@@ -129,7 +140,7 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
     lines = [
         comment_banner(
             coverpoint,
-            "Walking-1 and walking-0 patterns on sstateen0 from S-mode with SE0=1",
+            "Walking-1 and walking-0 patterns on sstateen0-3 from S-mode with the matching SEn=1",
         )
     ]
 
@@ -173,6 +184,17 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
         ]
     )
     test_data.int_regs.return_registers([save_mstateen_se0])
+
+    # sstateen1-3 have no defined bits, so every bit reads zero (norm:stateen_reserved_roz).
+    # Each needs SE<n> set in mstateen<n>; mstateen1-3 reset to zero and no other test
+    # leaves SE1-3 set, so SE<n> is cleared afterward rather than saved and restored.
+    temp_reg = test_data.int_regs.get_register()
+    for n in range(1, 4):
+        lines.extend(_write_se(n, temp_reg, enable=True))
+        lines.extend(["", test_data.add_testcase(f"sstateen{n}_walk_se{n}_1_smode", coverpoint, covergroup)])
+        lines.extend(csr_walk_test(test_data, (f"sstateen{n}", None), covergroup, coverpoint))
+        lines.extend(_write_se(n, temp_reg, enable=False))
+    test_data.int_regs.return_registers([temp_reg])
 
     return lines
 

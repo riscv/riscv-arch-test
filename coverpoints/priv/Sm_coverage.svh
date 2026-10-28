@@ -153,8 +153,6 @@ covergroup Sm_mprivinst_cg with function sample(ins_t ins);
     sret: coverpoint ins.current.insn  {
         bins sret   = {SRET};
     }
-    old_mstatus_tsr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tsr")[0] {
-    }
     old_mstatus_mprv: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv")[0] {
     }
     old_mstatus_mpp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
@@ -166,20 +164,29 @@ covergroup Sm_mprivinst_cg with function sample(ins_t ins);
             bins U_mode = {2'b00};
         `endif
     }
-    old_mstatus_spp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spp")[0] {
-    }
     old_mstatus_mpie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpie")[0] {
     }
     old_mstatus_mie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mie")[0] {
     }
-    old_mstatus_spie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spie")[0] {
-    }
-    old_mstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0] {
-    }
+    `ifdef S_SUPPORTED
+        old_mstatus_tsr: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tsr")[0] {
+        }
+        old_mstatus_spp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spp")[0] {
+        }
+        old_mstatus_spie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "spie")[0] {
+        }
+        old_mstatus_sie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "sie")[0] {
+        }
+    `endif
 
     cp_mprivinst: cross priv_mode_m, privinstrs;
     cp_mret:      cross priv_mode_m, mret, old_mstatus_mpp, old_mstatus_mprv, old_mstatus_mpie, old_mstatus_mie;
-    cp_sret:      cross priv_mode_m, sret, old_mstatus_mprv, old_mstatus_spp, old_mstatus_spie, old_mstatus_sie, old_mstatus_tsr;
+    `ifdef S_SUPPORTED
+        cp_sret:  cross priv_mode_m, sret, old_mstatus_mprv, old_mstatus_spp, old_mstatus_spie, old_mstatus_sie, old_mstatus_tsr;
+    `else
+        // Without S, TSR, SPP, SPIE and SIE are read-only zero, and sret is an illegal instruction
+        cp_sret:  cross priv_mode_m, sret, old_mstatus_mprv;
+    `endif
 
     `ifdef S_SUPPORTED
         // this version needs to be in Sm because it exercises TSR, which would cause a trap loop if illegal instructions are delegated to S-mode

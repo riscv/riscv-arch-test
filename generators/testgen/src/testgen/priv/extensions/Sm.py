@@ -534,7 +534,8 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 7)  # CBZE: Cache Block Zero Enable
         | (3 << 32)  # PMM: Pointer Masking
         | (1 << 59)  # DTE: Double Trap Enable
-        | (0 << 60)  # Counter Delegation Smcdeleg not supported by Sail; TODO change to 1 when Smcdeleg implemented
+        | (0 << 60)  # CDE: the menvcfg(h) walks add it without Smcdeleg, where it is read-only zero.
+        # Sail does not implement Smcdeleg; TODO change to 1 when it does
         | (1 << 61)  # ADUE: A/D
         | (1 << 62)  # PBMTE: Page-Based Memory Type Enable
         | (1 << 63)  # STCE: Supervisor Timer Compare Enable
@@ -742,7 +743,15 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     warl_fields = [("cbie", 4, 2, 0b10), ("pmm", 32, 2, 0b01)]
     tc.code.extend(
-        csr_walk_test(test_data, csr_menvcfg, covergroup, coverpoint_masked, warl_fields=warl_fields, maskedwrites=True)
+        csr_walk_test(
+            test_data,
+            csr_menvcfg,
+            covergroup,
+            coverpoint_masked,
+            warl_fields=warl_fields,
+            maskedwrites=True,
+            cond_mask=("__riscv_xlen == 64 && !defined(SMCDELEG_SUPPORTED)", 1 << 60),
+        )
     )
     tc.code.append("#endif")
 
@@ -763,7 +772,16 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
 
     tc.code.append("\n#ifdef SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.extend(csr_walk_test(test_data, csr_mstatush, covergroup, coverpoint_masked, maskedwrites=True))
-    tc.code.extend(csr_walk_test(test_data, csr_menvcfgh, covergroup, coverpoint_masked, maskedwrites=True))
+    tc.code.extend(
+        csr_walk_test(
+            test_data,
+            csr_menvcfgh,
+            covergroup,
+            coverpoint_masked,
+            maskedwrites=True,
+            cond_mask=("!defined(SMCDELEG_SUPPORTED)", 1 << 28),
+        )
+    )
     tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")
     tc.code.append("\n#ifdef MSECCFG_SUPPORTED")
     tc.code.extend(csr_walk_test(test_data, csr_mseccfgh, covergroup, coverpoint_masked, maskedwrites=True))

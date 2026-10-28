@@ -238,6 +238,7 @@ def csr_walk_test(
     walk_zeros: bool = True,
     warl_fields: list[tuple] | None = None,
     maskedwrites: bool = False,
+    cond_mask: tuple[str, int] | None = None,
 ) -> list[str]:
     """
     Generate a CSR walking-ones test: set and (optionally) clear each bit individually.
@@ -263,6 +264,9 @@ def csr_walk_test(
             bits and instead check that the field holds a legal (non-reserved) value; all
             other iterations check the field exactly as usual (see _warl_reserved_check).
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
+        cond_mask: Optional (condition, bits): bits are added to the mask when the preprocessor
+            condition holds.  Example: ("!defined(SMCDELEG_SUPPORTED)", 1 << 28) walks menvcfgh.CDE
+            only where it is read-only zero.
     """
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
     csr_name, mask = csr
@@ -350,6 +354,17 @@ def csr_walk_test(
     ]
     if mask is not None:
         lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
+    if cond_mask is not None:
+        assert mask is not None, f"cond_mask requires a csr mask (got None for {csr_name})"
+        cond, bits = cond_mask
+        lines.extend(
+            [
+                f"#if {cond}",
+                f"LI(x{check_reg}, {bits:#x})",
+                f"or x{mask_reg}, x{mask_reg}, x{check_reg}    # also walk these bits",
+                "#endif",
+            ]
+        )
     if walk_zeros:
         lines.append(f"LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s")
 

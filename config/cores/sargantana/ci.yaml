@@ -13,14 +13,16 @@ ci_enabled: true
 #   cvfpu: https://github.com/openhwgroup/cvfpu/blob/84066933/src/
 exclude_extensions:
   # FMA sets UF when the result rounds up to the smallest normal: cvfpu:fpnew_fma_multi.sv#L801-L803
+  # (https://github.com/openhwfoundation/cvfpu/issues/182, fixed by openhwfoundation/cvfpu#190; https://github.com/bsc-loca/sargantana/issues/113 item 12)
   - F-fmadd.s
   - F-fmsub.s
   - F-fnmadd.s
   - F-fnmsub.s
-  # fmul.s has the same UF bug: cvfpu:fpnew_fma_multi.sv#L801-L803
+  # fmul.s has the same UF bug: cvfpu:fpnew_fma_multi.sv#L801-L803 (https://github.com/openhwfoundation/cvfpu/issues/182)
   - ZicsrF
   # fleq/fltq raise NV on a quiet NaN: fpu:zfa_post_process.sv#L88-L98; fround.s/froundnx.s and
-  # fmaxm.s/fminm.s ignore NaN-boxing; fcvtmod.w.d drops NX
+  # fmaxm.s/fminm.s ignore NaN-boxing; fcvtmod.w.d drops NX (https://github.com/bsc-loca/sargantana/issues/113 items 10, 11 and 14; fixed in BSC's
+  # internal version)
   - Zfa-fleq.s
   - Zfa-fltq.s
   - ZfaD-fcvtmod.w.d
@@ -33,46 +35,52 @@ exclude_extensions:
   - ZfaD-fmaxm.s
   - ZfaD-fminm.s
   # fcvt.s.h/fcvt.d.h ignore NaN-boxing; fcvt.h.s/fcvt.h.d round a tiny value up under RMM: fpu:conv_zfhmin.sv
+  # (https://github.com/bsc-loca/sargantana/issues/113 items 11 and 13; fixed in BSC's internal version)
   - Zfhmin-fcvt.h.s
   - Zfhmin-fcvt.s.h
   - ZfhminD-fcvt.d.h
   - ZfhminD-fcvt.h.d
   - ZfhminD-fcvt.s.h
-  # Testbench: time is tied to 0: tile:simulator/sim_top.sv#L263-L268
+  # Testbench, not the core: the standalone sim_top ties time_i to 0: tile:simulator/sim_top.sv#L263-L268
   - Zicntr
   # minstret counts ecall, ebreak and CSR illegal-instruction traps, which raise csr_xcpt rather than
   # ex_i: csr:csr_bsc.sv#L948 (https://github.com/bsc-loca/sargantana/issues/114)
   - Sm_Zicntr
   # U mode may read a counter if mcounteren or scounteren allows it: csr:csr_bsc.sv#L2411
+  # (https://github.com/bsc-loca/csr/issues/10)
   - S_Zicntr
-  # Same counter-enable bug: csr:csr_bsc.sv#L2411
+  # Same counter-enable bug: csr:csr_bsc.sv#L2411 (https://github.com/bsc-loca/csr/issues/10)
   - U_Zicntr
-  # csrr mstatus/sstatus just after an FP write reads SD = 0: csr:csr_bsc.sv#L1009
+  # csrr mstatus/sstatus just after an FP write reads SD = 0: csr:csr_bsc.sv#L1009 (https://github.com/bsc-loca/sargantana/issues/113 item 9)
   - Sm_F
   - S_F
-  # mstatus.MPP and menvcfg.CBIE keep the reserved 0b10: csr:csr_bsc.sv#L1525, #L1595; mideleg.SGEI
-  # is read-only one with GEILEN = 0: csr:csr_bsc.sv#L1559-L1560; misa.V is set without V
+  # mstatus.MPP and menvcfg.CBIE keep the reserved 0b10: csr:csr_bsc.sv#L1525, #L1595 (https://github.com/bsc-loca/sargantana/issues/113
+  # items 15 and 8). mideleg.SGEI is read-only one with GEILEN = 0 (csr:csr_bsc.sv#L1559-L1560), which is legal
+  # (norm:mideleg_rd1_lower_level) but Sail cannot model (https://github.com/riscv/sail-riscv/issues/2049). misa.V is set for the partial vector unit,
+  # which the configuration does not declare.
   - Sm_mcsr_access
   - Sm_mcsr_walk
   - Sm_scsr
   - Sm_shadow
   # sepc[1] is writable with IALIGN = 32: csr:csr_bsc.sv#L1244; senvcfg.CBIE keeps 0b10: #L1242
+  # (https://github.com/bsc-loca/sargantana/issues/113 items 5 and 8; bsc-loca/csr#7 masks sepc[1])
   - S_scsr-
   - S_scsr_addr
   # An FP instruction that raises fflags without writing an f register leaves FS clean:
   # csr:csr_bsc.sv#L1019-L1021, #L1041-L1044 (https://github.com/bsc-loca/sargantana/issues/117)
   - U_F
   # mideleg is applied after the interrupt is picked by cause, so a delegated SEI hides an M-level STI:
-  # csr:csr_bsc.sv#L1888-L1936
+  # csr:csr_bsc.sv#L1888-L1936 (https://github.com/bsc-loca/sargantana/issues/127)
   - InterruptsSm_priority_mideleg
-  # Once a trigger case sets mie to all ones, the hart takes a supervisor timer interrupt (mcause 5)
-  # that Sail does not have pending; seen since the xtval seeding added in #2749, not yet root-caused
+  # A write to mtval2 writes mip (csr:csr_bsc.sv#L1599-L1600), so the xtval seeding added in #2749 sets STIP
+  # (https://github.com/bsc-loca/csr/issues/14). The VS and VU groups also hit the GVA bug (#119).
   - InterruptsSm_trigger
   # scountovf reads are masked by mcounteren in M mode too: https://github.com/bsc-loca/sargantana/issues/116
   - Sscofpmf_Sm_mcounteren
   # A non-canonical VA gives an access fault and is checked at 41 bits:
   # core:datapath/rtl/exe_stage/rtl/load_store_queue.sv#L197; bad PTEs hang or give the wrong fault
   # (a non-leaf PTE with D, A, U or a reserved bit 63:54 set is walked instead of page-faulting)
+  # (https://github.com/bsc-loca/sargantana/issues/113 items 1, 4, 6 and 7)
   - Sv_sv39_canonical
   - Sv_sv39_nleaf_pte_DAU
   - Sv_sv39_nleaf_pte_reserved
@@ -80,19 +88,21 @@ exclude_extensions:
   - Sv_sv39_svnapot
   - Sv_sv39_svpbmt
   # PTE reads are never PMA-checked, so a walk to a faulting address page-faults:
-  # mmu:dcache_adapters/bsc_mmu_hpdc_adapter.sv#L87-L93
+  # mmu:dcache_adapters/bsc_mmu_hpdc_adapter.sv#L87-L93 (https://github.com/bsc-loca/sargantana/issues/113 item 3)
   - Sv_Zicbo_sv39_zicbom
   - Sv_Zicbo_sv39_zicboz
   # A translated fetch is not PMA-checked: core:datapath/rtl/if_stage_1/rtl/if_stage_1.sv#L139-L141
+  # (https://github.com/bsc-loca/sargantana/issues/113 item 16)
   - Sv_Exceptions
-  - Sv_ExceptionsSm
-  # LR/SC exception cases under Sv39 deadlock ("200 cycles without a valid commit"), like the Sv hangs
-  - Sv_ExceptionsZalrsc
-  # hedeleg[10] and hedeleg[23:20] are writable but must be read-only zero: csr:csr_bsc.sv#L1320-L1339;
-  # an hlv.d page fault in HS mode matches Sail's cause and tval but not the rest of its trap signature
-  # (status/GVA/htinst; HS-mode trap CSR writes: csr:csr_bsc.sv#L2086-L2099)
+  # hedeleg[10] and hedeleg[23:20] are writable but must be read-only zero: csr:csr_bsc.sv#L1320-L1339
+  # (https://github.com/bsc-loca/sargantana/issues/126); virtual instruction instead of illegal instruction for
+  # instructions that HS-mode cannot execute either: csr:csr_bsc.sv#L2389-L2392 (https://github.com/bsc-loca/csr/issues/15); htval on a
+  # VS-stage PTE read (https://github.com/bsc-loca/sargantana/issues/123); vsstatus.SD ignores VS
+  # (https://github.com/bsc-loca/sargantana/issues/118); vsepc[1], henvcfg.CBIE and vsstatus.SD after an FP
+  # write as in https://github.com/bsc-loca/sargantana/issues/113 items 5, 8 and 9; the counter-enable bug (bsc-loca/csr#10)
   - H
-  # Six of the eleven Sm_H tests end in an l2_behav.sv:464 assertion; not yet triaged
+  # The H CSR bugs above (#126, #123, https://github.com/bsc-loca/sargantana/issues/113), and mstatus.TVM traps SFENCE.VMA in VS-mode:
+  # csr:csr_bsc.sv#L2532 (https://github.com/bsc-loca/csr/issues/16)
   - Sm_H
   # Wrong htval on a VS-stage PTE fault (https://github.com/bsc-loca/sargantana/issues/123)
   - Shtvala-
@@ -125,8 +135,8 @@ exclude_extensions:
   - InterruptsSm_priority_mip_VU
   # Same as InterruptsS_wfi_timeout_VU (https://github.com/bsc-loca/sargantana/issues/121)
   - InterruptsSm_wfi_timeout_VU
-  # Not yet triaged on Sargantana: the same hedeleg[10] bug, and trap signature, htval and mtval2
-  # mismatches on HS- and VS-mode traps (excluded on the hypervisor branch)
+  # GVA is 0 on breakpoints and misaligned jumps from VS-mode and 1 on virtual-instruction exceptions:
+  # core:datapath/rtl/id_stage/rtl/decoder.sv#L3606, #L3630 (https://github.com/bsc-loca/sargantana/issues/128)
   - Exceptions_H
   - Exceptions_HSm
 

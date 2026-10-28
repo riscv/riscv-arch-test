@@ -651,7 +651,7 @@ normative_rule_definitions:
   - name: cbm_unperm_fault
     coverpoint:
       [
-        "Sv_Zicbo_cg/{cp_PTE_rw_unset_zicbom_s,cp_PTE_rw_unset_zicbom_u}",
+        "Sv_Zicbo_cg/{cp_spage_rwx_cbo_u,cp_upage_sumunset_cbo_s}",
         "TODO: guest page fault",
       ]
 
@@ -660,10 +660,7 @@ normative_rule_definitions:
   # raises a store page-fault exception.
   - name: cbm_page_fault
     # Representative coverpoints; also cp_PTE_inv_cbo_u, cp_PTE_res_rwx_cbo_{s,u}, cp_upage_sumunset_cbo_s
-    coverpoint:
-      [
-        "Sv_Zicbo_cg/{cp_PTE_rw_unset_zicbom_s, cp_PTE_rw_unset_zicbom_u, cp_PTE_inv_cbo_s, cp_spage_rwx_cbo_u}",
-      ]
+    coverpoint: ["Sv_Zicbo_cg/{cp_PTE_inv_cbo_s, cp_spage_rwx_cbo_u}"]
 
   # During address translation, the instruction also checks the accessed bit and may
   # either raise an exception or set the bit as required.

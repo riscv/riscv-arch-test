@@ -137,6 +137,17 @@ covergroup Svpbmt_cg with function sample(ins_t ins);
     leaf_PTE_pbmt_write_s: cross leaf_PTE_pbmt_s_d, PBMTE_set, PageType_d, sw, priv_mode_s;
     leaf_PTE_pbmt_write_u: cross leaf_PTE_pbmt_u_d, PBMTE_set, PageType_d, sw, priv_mode_u;
 
+    // A load right after a store, through 4 KiB leaves with different non-cacheable PBMTs (the test maps both
+    // to one page)
+    nc_io_alias_d: coverpoint {ins.prev.pte_d[62:61], ins.current.pte_d[62:61]}
+            iff (ins.prev.insn ==? SD & ins.current.insn ==? LD & ins.prev.page_type_d == 2'b00 & ins.current.page_type_d == 2'b00) {
+        bins nc_store_io_load = {4'b0110};
+        bins io_store_nc_load = {4'b1001};
+    }
+
+    nc_io_alias_s: cross nc_io_alias_d, PBMTE_set, priv_mode_s;
+    nc_io_alias_u: cross nc_io_alias_d, PBMTE_set, priv_mode_u;
+
     leaf_PTE_pbmt_reserved_enc_exec_s:  cross leaf_PTE_pbmt_res_s_i, PBMTE_set, PageType_i, jalr, ins_page_fault, priv_mode_s;
     leaf_PTE_pbmt_reserved_enc_exec_u:  cross leaf_PTE_pbmt_res_u_i, PBMTE_set, PageType_i, jalr, ins_page_fault, priv_mode_u;
     leaf_PTE_pbmt_reserved_enc_read_s:  cross leaf_PTE_pbmt_res_s_d, PBMTE_set, PageType_d, lw, load_page_fault, priv_mode_s;
@@ -178,13 +189,12 @@ covergroup Svpbmt_Zicbom_cg with function sample(ins_t ins);
 endgroup
 `endif // ZICBOM_SUPPORTED
 
-`ifdef ZICBOM_SUPPORTED
 `ifdef ZICBOZ_SUPPORTED
 covergroup Svpbmt_Zicboz_cg with function sample(ins_t ins);
     option.per_instance = 0;
     `include  "general/RISCV_coverage_standard_coverpoints.svh"
 
-    // 4 KiB leaf with PBMT = NC or IO, aliasing a PBMT = 0 mapping of the same page
+    // 4 KiB leaf with PBMT = NC or IO
     leaf_PTE_pbmt_s_d: coverpoint ins.current.pte_d[7:0] {
         wildcard bins nc = {8'b11?01111} iff (ins.current.pte_d[62:61] == 2'b01);
         wildcard bins io = {8'b11?01111} iff (ins.current.pte_d[62:61] == 2'b10);
@@ -210,14 +220,13 @@ covergroup Svpbmt_Zicboz_cg with function sample(ins_t ins);
     cp_cbo_zero_pbmt_u: cross cbo_zero, leaf_PTE_pbmt_u_d, PBMTE_set, PageType_d, priv_mode_u;
 endgroup
 `endif // ZICBOZ_SUPPORTED
-`endif // ZICBOM_SUPPORTED
 
 function void svpbmt_sample(int hart, int issue, ins_t ins);
     Svpbmt_cg.sample(ins);
 `ifdef ZICBOM_SUPPORTED
     Svpbmt_Zicbom_cg.sample(ins);
+`endif // ZICBOM_SUPPORTED
 `ifdef ZICBOZ_SUPPORTED
     Svpbmt_Zicboz_cg.sample(ins);
 `endif // ZICBOZ_SUPPORTED
-`endif // ZICBOM_SUPPORTED
 endfunction

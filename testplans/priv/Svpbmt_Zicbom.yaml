@@ -3,22 +3,22 @@ suite: Svpbmt_Zicbom
 coverpoints:
   - heading: "General Test Environment (Svpbmt_Zicbom):\n- T-SBI suite: boots to S-mode (BOOT_TO_SMODE) and drives the test from the boot identity map. U-mode accesses use RVTEST_TSBI_GOTO_UMODE / RVTEST_TSBI_GOTO_SMODE.\n- Sv39 4 KiB pages: va_data maps a data page with PBMT = 0 (cacheable) and va_alias maps the same physical page with PBMT = NC or IO.\n- menvcfg.PBMTE and menvcfg.CBCFE are set through T-SBI; U-mode tests also set senvcfg.CBCFE. RV64 only."
   - name: cp_cbo_flush_pbmt_s
-    goal: Verify cbo.flush through a PBMT = NC or IO alias writes back a block dirtied through a cacheable mapping, from S-mode
-    description: "S-mode: sd through va_data (PBMT = 0, PTE.U=0); fence iorw, iorw; cbo.flush through va_alias (PBMT = NC, then IO); fence iorw, iorw; ld through va_alias."
-    expectation: "The load returns the stored value: the fence, cbo.flush, fence sequence restores coherence between the aliases, and cache-block management instructions ignore the PBMT downgrade to non-cacheable."
+    goal: Verify cbo.flush through a PBMT = NC or IO alias writes back a dirty block and removes a clean copy of a block cached through a cacheable mapping, from S-mode
+    description: "S-mode, PTE.U=0, va_alias with PBMT = NC, then IO. Writeback: sd through va_data (PBMT = 0); fence iorw, iorw; cbo.flush through va_alias; fence iorw, iorw; ld through va_alias. Invalidate: ld through va_data; fence iorw, iorw; cbo.flush through va_alias; fence iorw, iorw; sd through va_alias; fence iorw, iorw; cbo.flush through va_alias; fence iorw, iorw; ld through va_data."
+    expectation: "Each final load returns the last value stored: the fence, cbo.flush, fence sequences restore coherence between the aliases, and cache-block management instructions ignore the PBMT downgrade to non-cacheable. Each cbo.flush checked is the first access through va_alias after sfence.vma."
     bins: |-
       cbo_flush x leaf_PTE_pbmt_s_d {NC, IO} x PBMTE_set x PageType_d {sv39_kilo} x mode {S-mode}
-      = 2 bins on RV64 (RV64 only)
+      = 2 bins on RV64 (RV64 only); writeback and invalidate cases hit the same bins
     id: Svpbmt_cacheable_aliasing_fence_flush_fence_required
     rules:
       - Svpbmt_cacheable_aliasing_fence_flush_fence_required
   - name: cp_cbo_flush_pbmt_u
-    goal: Verify cbo.flush through a PBMT = NC or IO alias writes back a block dirtied through a cacheable mapping, from U-mode
-    description: "U-mode: sd through va_data (PBMT = 0, PTE.U=1); fence iorw, iorw; cbo.flush through va_alias (PBMT = NC, then IO, PTE.U=1); fence iorw, iorw; ld through va_alias."
-    expectation: "The load returns the stored value: the fence, cbo.flush, fence sequence restores coherence between the aliases, and cache-block management instructions ignore the PBMT downgrade to non-cacheable."
+    goal: Verify cbo.flush through a PBMT = NC or IO alias writes back a dirty block and removes a clean copy of a block cached through a cacheable mapping, from U-mode
+    description: "U-mode, PTE.U=1, va_alias with PBMT = NC, then IO. Writeback: sd through va_data (PBMT = 0); fence iorw, iorw; cbo.flush through va_alias; fence iorw, iorw; ld through va_alias. Invalidate: ld through va_data; fence iorw, iorw; cbo.flush through va_alias; fence iorw, iorw; sd through va_alias; fence iorw, iorw; cbo.flush through va_alias; fence iorw, iorw; ld through va_data."
+    expectation: "Each final load returns the last value stored: the fence, cbo.flush, fence sequences restore coherence between the aliases, and cache-block management instructions ignore the PBMT downgrade to non-cacheable. Each cbo.flush checked is the first access through va_alias after sfence.vma."
     bins: |-
       cbo_flush x leaf_PTE_pbmt_u_d {NC, IO} x PBMTE_set x PageType_d {sv39_kilo} x mode {U-mode}
-      = 2 bins on RV64 (RV64 only)
+      = 2 bins on RV64 (RV64 only); writeback and invalidate cases hit the same bins
     id: Svpbmt_cacheable_aliasing_fence_flush_fence_required
     rules:
       - Svpbmt_cacheable_aliasing_fence_flush_fence_required

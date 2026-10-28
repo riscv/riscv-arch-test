@@ -124,7 +124,7 @@ include::{testplansdir}/priv/Svpbmt.adoc[]
 
 include::{testplansdir}/priv/Svpbmt_Zicbom.adoc[]
 
-===== Svpbmt_Zicboz Cache-Block Zero Through PBMT Aliases
+===== Svpbmt_Zicboz Cache-Block Zero on PBMT Pages
 
 include::{testplansdir}/priv/Svpbmt_Zicboz.adoc[]
 

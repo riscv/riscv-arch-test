@@ -79,7 +79,6 @@ normative_rule_definitions:
         Svpbmt_memory_pma_io_pbmt_strong_io_ordering,
         Svpbmt_memory_pma_io_pbmt_treated_as_io_and_memory,
         Svpbmt_aliasing_attribute,
-        Svpbmt_noncacheable_aliasing_no_coherence_loss,
         Svpbmt_noncacheable_aliasing_may_weaken_ordering,
         Svpbmt_noncacheable_aliasing_fence_prevents_ordering_loss,
         Svpbmt_cacheable_aliasing_may_cause_coherence_loss,
@@ -93,13 +92,14 @@ normative_rule_definitions:
   # of memory ordering: fence iorw, iorw, followed by cbo.flush to an address of that location,
   # followed by a fence iorw, iorw.
   # One hart observes this with a cacheable mapping and a PBMT = NC or IO alias of the same page:
-  # Svpbmt_Zicbom checks that the flush writes a dirty block back, Svpbmt_Zicboz that it removes a stale copy.
+  # Svpbmt_Zicbom checks that the flush writes a dirty block back and removes a clean copy.
   - name: Svpbmt_cacheable_aliasing_fence_flush_fence_required
-    coverpoint:
-      [
-        "Svpbmt_Zicbom_cg/{cp_cbo_flush_pbmt_s, cp_cbo_flush_pbmt_u}",
-        "Svpbmt_Zicboz_cg/{cp_cbo_zero_pbmt_s, cp_cbo_zero_pbmt_u}",
-      ]
+    coverpoint: ["Svpbmt_Zicbom_cg/{cp_cbo_flush_pbmt_s, cp_cbo_flush_pbmt_u}"]
+
+  # Accessing the same location using different attributes that are both non-cacheable (e.g., NC
+  # and IO) does not cause loss of coherence
+  - name: Svpbmt_noncacheable_aliasing_no_coherence_loss
+    coverpoint: ["Svpbmt_cg/{nc_io_alias_s, nc_io_alias_u}"]
 
   # if hgatp.MODE is not equal to zero, non-zero G-stage PTE PBMT bits override the
   # attributes in the PMA to produce an intermediate set of attributes.

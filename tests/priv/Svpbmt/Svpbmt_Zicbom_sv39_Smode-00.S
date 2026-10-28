@@ -15,7 +15,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 12
+#define SIGUPD_COUNT 14
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
@@ -100,6 +100,44 @@ Svpbmt_Zicbom_cg_cp_cbo_flush_pbmt_s_io:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Svpbmt_Zicbom_cg_cp_cbo_flush_pbmt_s_io, Svpbmt_Zicbom_cg_cp_cbo_flush_pbmt_s_io_str)
 
+// Test case 3: cbo.flush through a PBMT=NC alias of a clean cached block
+  PTE_SETUP_SV39(rvtest_data_1, ((1 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_alias, LEVEL0)
+  sfence.vma
+  LI(x8, va_data + 0x800)
+  LI(x15, va_alias + 0x800)
+  ld x14, 0(x8)  // Cache the block through the cacheable mapping
+  fence iorw, iorw
+Svpbmt_Zicbom_cg_cp_cbo_flush_pbmt_s_nc_invalidate:
+  cbo.flush (x15)  // Must remove the cached copy
+  fence iorw, iorw
+  addi x13, x13, 16
+  sd x13, 0(x15)  // Write memory through the alias
+  fence iorw, iorw
+  cbo.flush (x15)
+  fence iorw, iorw
+  ld x14, 0(x8)  // Read through the cacheable mapping
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svpbmt_Zicbom_cg_cp_cbo_flush_pbmt_s_nc_invalidate, Svpbmt_Zicbom_cg_cp_cbo_flush_pbmt_s_nc_invalidate_str)
+
+// Test case 4: cbo.flush through a PBMT=IO alias of a clean cached block
+  PTE_SETUP_SV39(rvtest_data_1, ((2 << 61) | PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V), va_alias, LEVEL0)
+  sfence.vma
+  LI(x8, va_data + 0x800)
+  LI(x15, va_alias + 0x800)
+  ld x14, 0(x8)  // Cache the block through the cacheable mapping
+  fence iorw, iorw
+Svpbmt_Zicbom_cg_cp_cbo_flush_pbmt_s_io_invalidate:
+  cbo.flush (x15)  // Must remove the cached copy
+  fence iorw, iorw
+  addi x13, x13, 16
+  sd x13, 0(x15)  // Write memory through the alias
+  fence iorw, iorw
+  cbo.flush (x15)
+  fence iorw, iorw
+  ld x14, 0(x8)  // Read through the cacheable mapping
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Svpbmt_Zicbom_cg_cp_cbo_flush_pbmt_s_io_invalidate, Svpbmt_Zicbom_cg_cp_cbo_flush_pbmt_s_io_invalidate_str)
+
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -133,6 +171,8 @@ rvtest_slvl1_pg_tbl:
 // Testcase strings
 Svpbmt_Zicbom_cg_cp_cbo_flush_pbmt_s_nc_str: .string "\"test: 1; cg: Svpbmt_Zicbom_cg; cp: cp_cbo_flush_pbmt_s; bin: nc\""
 Svpbmt_Zicbom_cg_cp_cbo_flush_pbmt_s_io_str: .string "\"test: 2; cg: Svpbmt_Zicbom_cg; cp: cp_cbo_flush_pbmt_s; bin: io\""
+Svpbmt_Zicbom_cg_cp_cbo_flush_pbmt_s_nc_invalidate_str: .string "\"test: 3; cg: Svpbmt_Zicbom_cg; cp: cp_cbo_flush_pbmt_s; bin: nc_invalidate\""
+Svpbmt_Zicbom_cg_cp_cbo_flush_pbmt_s_io_invalidate_str: .string "\"test: 4; cg: Svpbmt_Zicbom_cg; cp: cp_cbo_flush_pbmt_s; bin: io_invalidate\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

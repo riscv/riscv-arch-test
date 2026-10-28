@@ -327,8 +327,8 @@
       }
     },
     "B": {
-      // VERIFIED — B_EXT=ZBA_ZBB_ZBC_ZBS per User Manual, Introduction
-      "supported": true
+      // B_EXT=ZBA_ZBB_ZBC_ZBS enables Zba, Zbb and Zbs below, but misa.B reads 0 on this core
+      "supported": false
     },
     "S": {
       "supported": false,

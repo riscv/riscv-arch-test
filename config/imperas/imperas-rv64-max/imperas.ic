@@ -13,8 +13,9 @@
 --override iss/cpu0/simulateexceptions=T
 --override iss/cpu0/defaultsemihost=F
 
-# Guest external interrupts.
---override cpu*/GEILEN=6
+# Guest external interrupts. hgeip is driven only by the model's guest external interrupt nets, which nothing
+# connects in this standalone run, so the platform has no guest interrupt files: GEILEN = 0.
+--override cpu*/GEILEN=0
 
 # Bit manipulation
 --override cpu*/add_Extensions=B
@@ -144,3 +145,5 @@
 --override cpu*/amo_trigger=T
 # Sdtrig: no tcontrol, so breakpoint reentrancy follows mstatus.MIE/SIE, which Sail models
 --override cpu*/tcontrol_undefined=T
+# Sdtrig: NAPOT ranges up to 2^63 (SDTRIG_MCONTROL6_MASKMAX6); the RVA23S64 variant defaults to 0 (exact compare)
+--override cpu*/mcontrol_maskmax=63

@@ -10,7 +10,7 @@ set -euo pipefail
 INSTALL_DIR="${1:?Usage: install-veer-eh2.sh <install-dir>}"
 VEER_EH2_REPO="https://github.com/chipsalliance/Cores-VeeR-EH2.git"
 VEER_EH2_COMMIT="a7203d02d4774c9b8aa08b4827ec300d2c80a388"
-VERILATOR_VERSION="v5.036"
+VERILATOR_VERSION="v5.052"
 
 mkdir -p "$INSTALL_DIR/bin"
 

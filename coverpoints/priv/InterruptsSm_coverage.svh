@@ -43,6 +43,18 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     mstatus_tw_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "tw")[0] {
         bins one = {1}; // WFI outside M mode traps after the implementation-defined timeout
     }
+    `ifdef H_SUPPORTED
+        // hstatus.VTW: with mstatus.TW = 0, VS-mode WFI raises virtual instruction after a bounded time when set
+        hstatus_vtw: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtw")[0] {
+            // autofill 0/1
+        }
+        hstatus_vtw_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtw")[0] {
+            bins zero = {0};
+        }
+        hstatus_vtw_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "hstatus", "vtw")[0] {
+            bins one = {1};
+        }
+    `endif
 
     // Privilege modes this config implements.
     priv_mode_interrupts: coverpoint {ins.prev.mode_virt, ins.prev.mode} {
@@ -363,17 +375,28 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         bins wfi = {WFI};
     }
 
-    // Interrupts raised through T-SBI fire right after the mret back to S/U, so they are recorded on
-    // the mret. Before the mret, MPP holds the mode it returns to and MPIE the MIE it restores.
+    // Interrupts raised through T-SBI fire right after the mret back to S/U/VS/VU, so they are recorded
+    // on the mret. Before the mret, MPP (and with H, MPV) holds the mode it returns to and MPIE the MIE
+    // it restores.
     mret_insn: coverpoint ins.current.insn {
         bins mret = {MRET};
     }
     `ifdef U_SUPPORTED
-        mstatus_mpp: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0] {
+        // MPV is mstatus bit 39, which lands in mstatush when MXLEN is 32.  It reads 0 without H.
+        `ifdef UDB_MXLEN_64
+            `define SM_MPV get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpv")[0]
+        `else
+            `define SM_MPV get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatush", "mpv")[0]
+        `endif
+        mstatus_mpv_mpp: coverpoint {`SM_MPV, get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp")[1:0]} {
             `ifdef S_SUPPORTED
-                bins S_mode = {2'b01};
+                bins S_mode = {3'b001};
             `endif
-            bins U_mode = {2'b00};
+            bins U_mode = {3'b000};
+            `ifdef H_SUPPORTED
+                bins VS_mode = {3'b101};
+                bins VU_mode = {3'b100};
+            `endif
         }
     `endif
     mstatus_mpie: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpie")[0] {
@@ -388,8 +411,8 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         // mret out of the T-SBI handler that set them, before any S/U instruction retires.
         // cp_trigger_tsbi records them there. Everything else is reachable in S/U: sip.SSIP and
         // sip.LCOFIP are read-write, stimecmp is S-accessible when menvcfg.STCE is 1, and MEI/SEI
-        // come from the interrupt controller.
-        ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b001, 3'b000} &&
+        // come from the interrupt controller. VS and VU are like U (3'b101, 3'b100).
+        ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b001, 3'b000, 3'b101, 3'b100} &&
                            binsof(mip_walking) intersect {16'h0008, 16'h0080};
         // The same argument applies wherever the mode cannot reach the pending bit either.
         // sip.LCOFIP only aliases mip.LCOFIP when mideleg.LCOFI is set, and U-mode has no sip at
@@ -400,19 +423,31 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
             `ifdef SSCOFPMF_SUPPORTED
                 // In U-mode the pending bit is out of reach whatever mideleg says, because U has no sip
                 // at all, so the T-SBI call that sets it takes the interrupt on its own mret.
-                ignore_bins lcofi_u_has_no_sip = binsof(priv_mode_interrupts) intersect {3'b000} &&
+                // VS and VU are the same: in VS, sip is vsip.
+                ignore_bins lcofi_u_has_no_sip = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} &&
                                                  binsof(mip_walking.lcofip);
                 ignore_bins lcofi_needs_mideleg = binsof(priv_mode_interrupts) intersect {3'b001} &&
                                                   binsof(mip_walking.lcofip) && binsof(mideleg_both.zeros);
             `endif
             // Same for STI: sip.STIP is read-only and U cannot reach stimecmp, so every U-mode STI
-            // is raised from M and taken on the mret, whatever mideleg says.
-            ignore_bins u_cannot_raise_sti = binsof(priv_mode_interrupts) intersect {3'b000} &&
+            // is raised from M and taken on the mret, whatever mideleg says. VS and VU likewise.
+            ignore_bins u_cannot_raise_sti = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} &&
                                              binsof(mip_walking.stip);
+        `endif
+        `ifdef H_SUPPORTED
+            // The VS-level interrupts are raised through hvip, which only M and HS can write. Below HS
+            // the T-SBI call that writes it returns with the interrupt enabled, so it is taken on the mret.
+            ignore_bins vs_ints_tsbi = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} &&
+                                       (binsof(mip_walking.vseip) || binsof(mip_walking.vstip) || binsof(mip_walking.vssip));
         `endif
     }
     `ifdef U_SUPPORTED
-        cp_trigger_tsbi:        cross priv_mode_m, mret_insn, mstatus_mpp, mip_walking, mstatus_mpie, mstatus_sie, mideleg_both, mie_ones, mtvec_both {
+        cp_trigger_tsbi:        cross priv_mode_m, mret_insn, mstatus_mpv_mpp, mip_walking, mstatus_mpie, mstatus_sie, mideleg_both, mie_ones, mtvec_both {
+            `ifdef H_SUPPORTED
+                // HS writes hvip itself, so its VS-level interrupts never sit pending across an mret
+                ignore_bins hs_writes_hvip = binsof(mstatus_mpv_mpp.S_mode) &&
+                                             (binsof(mip_walking.vseip) || binsof(mip_walking.vstip) || binsof(mip_walking.vssip));
+            `endif
             // MEI is the only interrupt with no mip write path: it is raised by a store to the
             // interrupt controller from whatever mode the test runs in, so it never sits pending
             // across an mret. Every other interrupt can be written to mip through T-SBI for either
@@ -436,16 +471,16 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         cp_trigger_sti_sstc:    cross priv_mode_interrupts, menvcfg_stce, mstatus_mie, mstatus_sie, mie_ones, mideleg_both, mtvec_both, stimecmp_max_min {
             // U-mode cannot write stimecmp, so its STCE = 1 STI fires on the T-SBI mret and only
             // cp_trigger_sti_sstc_tsbi records it.
-            ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b000} && binsof(menvcfg_stce) intersect {1} &&
+            ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} && binsof(menvcfg_stce) intersect {1} &&
                                binsof(stimecmp_max_min.min);
         }
         `ifdef U_SUPPORTED
             // Overlaps cp_trigger_sti_sstc except for U-mode with STCE = 1 and stimecmp = 0.
-            cp_trigger_sti_sstc_tsbi: cross priv_mode_m, mret_insn, mstatus_mpp, menvcfg_stce, mstatus_mpie, mstatus_sie, mie_ones, mideleg_both, mtvec_both, stimecmp_max_min {
+            cp_trigger_sti_sstc_tsbi: cross priv_mode_m, mret_insn, mstatus_mpv_mpp, menvcfg_stce, mstatus_mpie, mstatus_sie, mie_ones, mideleg_both, mtvec_both, stimecmp_max_min {
                 `ifdef S_SUPPORTED
                     // With STCE = 1, S-mode arms stimecmp itself, so no T-SBI mret returns to S
                     // with the timer armed.
-                    ignore_bins s_writes_stimecmp = binsof(mstatus_mpp.S_mode) && binsof(menvcfg_stce) intersect {1} &&
+                    ignore_bins s_writes_stimecmp = binsof(mstatus_mpv_mpp.S_mode) && binsof(menvcfg_stce) intersect {1} &&
                                                     binsof(stimecmp_max_min.min);
                 `endif
             }
@@ -453,12 +488,17 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     `endif
         // can not check whether the conditions correspond to each other
     cp_enable_one:              cross priv_mode_interrupts, mideleg_zeros, mstatus_mie_one, walking_mie_one, mip_matches_mie_one {
-        // MSI, MTI, STI, and LCOFI are raised through T-SBI in S/U and covered by cp_enable_one_tsbi
-        ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b001, 3'b000} &&
+        // MSI, MTI, STI, and LCOFI are raised through T-SBI in S/U/VS/VU and covered by cp_enable_one_tsbi
+        ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b001, 3'b000, 3'b101, 3'b100} &&
                            binsof(walking_mie_one) intersect {16'h0008, 16'h0080, 16'h0020, 16'h2000};
+        `ifdef H_SUPPORTED
+            // so are the VS-level interrupts below HS (hvip)
+            ignore_bins vs_ints_tsbi = binsof(priv_mode_interrupts) intersect {3'b000, 3'b101, 3'b100} &&
+                                       binsof(walking_mie_one) intersect {16'h0400, 16'h0040, 16'h0004};
+        `endif
     }
     `ifdef U_SUPPORTED
-        cp_enable_one_tsbi:     cross priv_mode_m, mret_insn, mstatus_mpp, mideleg_zeros, walking_mie_one, mip_matches_mie_one {
+        cp_enable_one_tsbi:     cross priv_mode_m, mret_insn, mstatus_mpv_mpp, mideleg_zeros, walking_mie_one, mip_matches_mie_one {
             // As in cp_trigger_tsbi, MEI has no mip write path, so it never sits pending across an mret.
             ignore_bins mei_has_no_mip_write = binsof(walking_mie_one) intersect {16'h0800};
         }
@@ -466,27 +506,26 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     // No _tsbi twin: cp_enable_zero checks that the disabled interrupt does not fire, so the S/U
     // instruction retires with it pending and is observed directly.
     cp_enable_zero:             cross priv_mode_interrupts, mideleg_zeros, mstatus_mie_one, walking_mie_zero, mip_matches_mie_zero;
-    // In S/U, mie and mideleg are written through T-SBI, so the priority interrupts fire right after
+    // In S/U/VS/VU, mie and mideleg are written through T-SBI, so the priority interrupts fire right after
     // the mret and are covered by the _tsbi crosses
     cp_priority_mip:            cross priv_mode_interrupts, mideleg_zeros, mstatus_mie_one, mie_ones, mip_pairs {
-        ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b001, 3'b000};
+        ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b001, 3'b000, 3'b101, 3'b100};
     }
     cp_priority_mie:            cross priv_mode_interrupts, mideleg_zeros, mstatus_mie_one, mip_all_ones, mie_pairs {
-        ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b001, 3'b000};
+        ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b001, 3'b000, 3'b101, 3'b100};
     }
     `ifdef U_SUPPORTED
-        cp_priority_mip_tsbi:   cross priv_mode_m, mret_insn, mstatus_mpp, mideleg_zeros, mie_ones, mip_pairs;
-        cp_priority_mie_tsbi:   cross priv_mode_m, mret_insn, mstatus_mpp, mideleg_zeros, mip_all_ones, mie_pairs;
+        cp_priority_mip_tsbi:   cross priv_mode_m, mret_insn, mstatus_mpv_mpp, mideleg_zeros, mie_ones, mip_pairs;
+        cp_priority_mie_tsbi:   cross priv_mode_m, mret_insn, mstatus_mpv_mpp, mideleg_zeros, mip_all_ones, mie_pairs;
     `endif
     `ifdef S_SUPPORTED
         cp_priority_mideleg:        cross priv_mode_interrupts, mstatus_mie_one, mie_ones, mip_pairs_noh, mideleg_one_of_mip_pair {
-            ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b001, 3'b000};
+            ignore_bins tsbi = binsof(priv_mode_interrupts) intersect {3'b001, 3'b000, 3'b101, 3'b100};
         }
-        cp_priority_mideleg_tsbi:   cross priv_mode_m, mret_insn, mstatus_mpp, mie_ones, mip_pairs_noh, mideleg_one_of_mip_pair;
+        cp_priority_mideleg_tsbi:   cross priv_mode_m, mret_insn, mstatus_mpv_mpp, mie_ones, mip_pairs_noh, mideleg_one_of_mip_pair;
     `endif
     cp_wfi_m:                   cross priv_mode_m, mstatus_mie, mstatus_tw, wfi, mideleg_zeros;
 
-    // H modes not included as wfi behavior is additionally affected by hstatus.VTW - TODO: test in InterruptsH
     // WFI with TW = 0 is exercised in the most privileged mode below M that this config implements.
     // The mode is selected with a macro rather than an `ifdef inside the cross argument list: on a hart
     // with neither S nor U (cv32e20 implements Sm and no lower mode) the inline form leaves a cross with
@@ -500,6 +539,10 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
     `ifdef SM_WFI_PRIV
         cp_wfi:                 cross `SM_WFI_PRIV, mstatus_mie, mie_mtie_one, mstatus_tw_zero, wfi, mideleg_zeros;
     `endif
+    // VS-mode WFI waits only with hstatus.VTW = 0; VU-mode WFI never waits.
+    `ifdef H_SUPPORTED
+        cp_wfi_vs:              cross priv_mode_vs, mstatus_mie, mie_mtie_one, mstatus_tw_zero, hstatus_vtw_zero, wfi, mideleg_zeros;
+    `endif
 
     // mstatus.TW = 1 traps WFI in every mode below M, so the timeout applies whenever any lower mode
     // exists, not only when S does. S-mode implies U-mode, so S_SUPPORTED means both bins of
@@ -510,6 +553,15 @@ covergroup InterruptsSm_cg with function sample(ins_t ins);
         cp_wfi_timeout_tw_zero:             cross priv_mode_u, mstatus_mie, mie_mtie, mstatus_tw_zero, wfi;
     `elsif U_SUPPORTED
         cp_wfi_timeout:                     cross priv_mode_u, mstatus_mie, mie_mtie, mstatus_tw_one, wfi;
+    `endif
+    // In VS-mode, TW = 1 raises illegal instruction whatever VTW is, and TW = 0 with VTW = 1 raises
+    // virtual instruction. In VU-mode, TW = 0 raises virtual instruction whatever VTW is.
+    `ifdef H_SUPPORTED
+        cp_wfi_timeout_vs:                  cross priv_mode_vs, mstatus_mie, mie_mtie, mstatus_tw_one, hstatus_vtw, wfi;
+        cp_wfi_timeout_vs_vtw_one:          cross priv_mode_vs, mstatus_mie, mie_mtie, mstatus_tw_zero, hstatus_vtw_one, wfi;
+        cp_wfi_timeout_vu:                  cross priv_mode_vu, mstatus_mie, mie_mtie, mstatus_tw, hstatus_vtw, wfi;
+        // Every TW and VTW in VS-mode: the WFI waits with TW = VTW = 0 (cp_wfi_vs) and times out otherwise
+        cp_wfi_vs_tw_vtw:                   cross priv_mode_vs, mstatus_mie, mstatus_tw, hstatus_vtw, wfi;
     `endif
 
     `ifdef SSTC_SUPPORTED // need to modify this one to check more stuff
@@ -522,6 +574,9 @@ endgroup
 
 `undef SM_INT_MASK
 `undef SM_NOH_MASK
+`ifdef SM_MPV
+    `undef SM_MPV
+`endif
 `ifdef SM_WFI_PRIV
     `undef SM_WFI_PRIV
 `endif

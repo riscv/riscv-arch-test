@@ -22,6 +22,7 @@ coverpoints:
       - stateen_warl_access
       - stateen_unimplemented_state_roz
       - stateen_reserved_roz
+      - mstateen0_fcsr_roz
   - name: cp_csr_illegal_accesses
     goal: Each stateen CSR allows read/write access from its own and higher privilege modes and denies read/writeaccess from lower privilege modes
     description: |-
@@ -32,13 +33,6 @@ coverpoints:
     rules:
       - stateen_op
       - stateen_illegal_state_access
-  - name: cp_fcsr_ro_zero
-    goal: Test if fcsr bit is read-only zero when misa.F=1
-    description: Write 1 to mstateen0.FCSR and read back
-    expectation: Expect 0 if misa.F = 1
-    bins: "1"
-    rules:
-      - mstateen0_fcsr_roz
   - name: cp_fcsr
     goal: fcsr controls access to fcsr when misa.F = 0
     description: |-
@@ -46,6 +40,7 @@ coverpoints:
       with misa.F = 0 and mstateen0.fcsr, read and write fcsr
     rules:
       - stateen0_fcsr_op
+      - stateen0_fcsr0_misa_f0_illegal_fpu_instr
   - name: cp_jvt_access
     goal: jvt controls access
     description: |-
@@ -126,15 +121,6 @@ coverpoints:
     rules:
       - mstateen_ctr1
       - mstateen_ctr0
-  - name: cp_fcsr_lower
-    goal: fcsr controls access to fcsr when misa.F = 0
-    description: |-
-      If Zfinx is supported:
-      with misa.F = 0 and mstateen0.fcsr, read and write fcsr, frm, fflags from the next lower mode (S if supported, else U).
-      Also try executing fadd.s, flw, fcvt.w.s, fcvt.s.w, fmv.x.w, fmv.w.x, fclass.s. M, S if supported, else U
-    expectation: Illegal instruction if 0, else successful
-    rules:
-      - stateen0_fcsr0_misa_f0_illegal_fpu_instr
   - name: cp_fcsr_fp_instrs
     goal: fcsr controls floating-point instructions when misa.F = 0
     description: |-
@@ -164,5 +150,12 @@ coverpoints:
       - mstateen_bit_63_op
       - stateen_illegal_state_access
       - stateen_reserved_roz
+  - name: cp_mstateen0_se0_only_sstateen0
+    goal: Bits that are zero in mstateen0 are read-only zero in sstateen0
+    description: |-
+      With only mstateen0.SE0 set, set a walking one in sstateen0 with csrs and clear a walking zero with csrc, from M-mode and S-mode.
+    expectation: Every sstateen0 bit other than read-only ones stays zero.
+    rules:
+      - mstateen_lower_priv_roz
   - heading: "Note: All of these tests are performed in M-mode unless otherwise noted."
   - heading: "Note: Smstateen implies U-mode (otherwise there is no need for this extension)"

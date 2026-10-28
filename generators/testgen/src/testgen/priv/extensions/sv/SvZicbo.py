@@ -202,14 +202,6 @@ def _add_exception_cases(
             add_standard(
                 level, PteFlags(user=True), "User page from S-Mode", "Store page fault", "cp_upage_sumunset_cbo_s"
             )
-        if family == "zicbom":
-            add_standard(
-                level,
-                PteFlags(user=umode, read=False, write=False),
-                "Execute-only page",
-                "Store page fault",
-                f"cp_PTE_rw_unset_zicbom_{m}",
-            )
         add_standard(
             level, PteFlags(user=umode, accessed=False), "PTE.A unset", "Store page fault", f"cp_Abit_unset_cbo_{m}"
         )

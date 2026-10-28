@@ -38,12 +38,6 @@
 `ifdef EXCEPTIONS_COVERAGE
   `include "Exceptions_coverage.svh"
 `endif
-`ifdef EXCEPTIONSH_COVERAGE
-  `include "ExceptionsH_coverage.svh"
-`endif
-`ifdef EXCEPTIONSHV_COVERAGE
-  `include "ExceptionsHV_coverage.svh"
-`endif
 `ifdef EXCEPTIONSVF16_COVERAGE
   `include "ExceptionsVf16_coverage.svh"
 `endif
@@ -185,6 +179,9 @@
 `ifdef SVPBMT_COVERAGE
   `include "Svpbmt_coverage.svh"
 `endif
+`ifdef SVVPTC_COVERAGE
+  `include "Svvptc_coverage.svh"
+`endif
 `ifdef U_COVERAGE
   `include "U_coverage.svh"
 `endif
@@ -325,6 +322,9 @@
 `endif
 `ifdef ZICFILP_COVERAGE
   `include "Zicfilp_coverage.svh"
+`endif
+`ifdef ZICFISS_COVERAGE
+  `include "Zicfiss_coverage.svh"
 `endif
 `ifdef ZICNTR_COVERAGE
   `include "Zicntr_coverage.svh"

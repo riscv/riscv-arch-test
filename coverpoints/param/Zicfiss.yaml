@@ -1,0 +1,64 @@
+# Parameter mappings
+#
+# Implementation-defined behaviours that affect the Zicfiss coverpoints.
+
+parameter_definitions:
+  - name: REPORT_CAUSE_IN_MTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
+    coverpoint: ["cp_ss_swcheck_mtval"]
+    effect: [
+        "When true, a shadow stack software-check exception taken to M-mode reports the
+        shadow stack fault code (3) in `mtval`; when false, `mtval` is 0. The coverpoint's
+        `mtval` bin follows the parameter.",
+      ]
+  - name: REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
+    coverpoint: ["cp_sspopchk_mismatch", "cp_sspopchk_mismatch_s"]
+    effect:
+      [
+        "Same as the mtval parameter, for a software-check exception delegated to S-mode.",
+      ]
+  - name: REPORT_CAUSE_IN_VSTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
+    coverpoint: ["Untested"]
+    effect: [
+        "Same as the mtval parameter, for a software-check exception taken in VS-mode. No
+        current coverpoint drives this: the VS/VU coverpoints exercise ssp CSR gating,
+        which raises virtual-instruction, not software-check. Listed for when the
+        Zicfiss_H generator lands.",
+      ]
+  - name: MISALIGNED_AMO
+    coverpoint:
+      ["cp_ss_address_alignment_swap", "cp_ss_address_alignment_swap_s"]
+    effect: [
+        "SSAMOSWAP takes the same exception options as A-extension AMOs for a
+        non-naturally-aligned address, so the expected result of the addr[2:0] sweep is
+        implementation-defined and must be compared against the reference model rather
+        than asserted outright.",
+      ]
+  - name: MISALIGNED_LDST_EXCEPTION_PRIORITY
+    coverpoint:
+      [
+        "cp_ss_page_access_store_misaligned",
+        "cp_ss_page_access_store_misaligned_s",
+      ]
+    effect: [
+        "When low, a misaligned ordinary store to an SS page raises a store/AMO access-fault.
+        When high, the address-misaligned exception can take priority. The misaligned
+        bins therefore compare the result against the reference model.",
+      ]
+  - name: NUM_USABLE_PMP_ENTRIES
+    coverpoint: ["cp_ss_pmp_permissions"]
+    effect: [
+        "The PMP test uses entry 0 for the shadow stack page and entry 1 for the rest of
+        memory. With fewer than two usable entries the test and the coverpoint are left out.",
+      ]
+  - name: PMP_NAPOT_SUPPORTED
+    coverpoint: ["cp_ss_pmp_permissions"]
+    effect: [
+        "The PMP test maps the shadow stack page with a NAPOT region. Without NAPOT the test
+        and the coverpoint are left out.",
+      ]
+  - name: PMP_GRANULARITY
+    coverpoint: ["cp_ss_pmp_permissions"]
+    effect: [
+        "The PMP region is the 4 KiB shadow stack page. With a granularity above 4 KiB the
+        test and the coverpoint are left out.",
+      ]

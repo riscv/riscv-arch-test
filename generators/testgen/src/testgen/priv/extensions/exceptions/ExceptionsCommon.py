@@ -11,7 +11,7 @@
 A setup argument holds lines emitted before each testcase, such as initializing xtval.
 """
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 
 from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
@@ -219,6 +219,162 @@ def generate_ecall_tests(
         test_data.add_testcase(testcase_name, coverpoint, covergroup),
         "RVTEST_TSBI_ECALL_TEST  # ecall to the execution environment, recorded in the trap signature",
     ]
+    return lines
+
+
+# The exceptions generate_delegated_fault_tests raises, as named in the medeleg coverpoints
+DELEGATED_FAULT_KINDS = (
+    "instrmisaligned",
+    "instraccessfault",
+    "illegalinstruction",
+    "ebreak",
+    "loadmisaligned",
+    "loadaccessfault",
+    "storemisaligned",
+    "storeaccessfault",
+    "ecall",
+)
+
+
+def generate_delegated_fault_tests(
+    test_data: TestData, tag: str, coverpoints: Mapping[str, str], covergroup: str, regs: tuple[int, int, int]
+) -> list[str]:
+    """Raise each exception whose delegation a medeleg or hedeleg walk checks.
+
+    coverpoints maps each of DELEGATED_FAULT_KINDS to the coverpoint that records it.
+    regs holds the address, store data and load destination registers.
+    """
+    addr_reg, data_reg, check_reg = regs
+    lines: list[str] = []
+    # Instruction misaligned: a misaligned jalr target next to the access-fault address.  Also tests
+    # priority of misaligned and access faults.  Simple misalignment tests are in
+    # generate_instr_adr_misaligned_*_tests and are not repeated here.
+    lines.extend(
+        [
+            "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+            test_data.add_testcase(tag, coverpoints["instrmisaligned"], covergroup),
+            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"jalr x1, 2(x{addr_reg})  # misaligned target",
+            "#endif",
+        ]
+    )
+
+    # Instruction access fault
+    lines.extend(
+        [
+            "#ifdef RVMODEL_ACCESS_FAULT_ADDRESS",
+            test_data.add_testcase(tag, coverpoints["instraccessfault"], covergroup),
+            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"jalr x1, 0(x{addr_reg})",
+            "#endif",
+        ]
+    )
+
+    # Illegal instruction zeros
+    lines.extend(
+        [
+            test_data.add_testcase(f"zeros_{tag}", coverpoints["illegalinstruction"], covergroup),
+            ".p2align 2",
+            ".word 0x00000000",
+        ]
+    )
+
+    # Illegal instruction ones
+    lines.extend(
+        [
+            test_data.add_testcase(f"ones_{tag}", coverpoints["illegalinstruction"], covergroup),
+            ".p2align 2",
+            ".word 0xFFFFFFFF",
+        ]
+    )
+
+    # Ebreak
+    lines.extend(
+        [
+            test_data.add_testcase(tag, coverpoints["ebreak"], covergroup),
+            "ebreak",
+        ]
+    )
+
+    # Load misaligned
+    lines.extend([test_data.add_testcase(tag, coverpoints["loadmisaligned"], covergroup), f"LA(x{addr_reg}, scratch)"])
+    for offset in range(8):
+        for op in ["lw", "lh", "lhu", "lb", "lbu"]:
+            lines.append(f"{op} x{check_reg}, {offset}(x{addr_reg})")
+        lines.extend(
+            [
+                "#if __riscv_xlen == 64",
+                f" ld x{check_reg}, {offset}(x{addr_reg})",
+                f" lwu x{check_reg}, {offset}(x{addr_reg})",
+                "#endif",
+            ]
+        )
+
+    # Load access fault
+    lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
+    lines.extend(
+        [
+            test_data.add_testcase(tag, coverpoints["loadaccessfault"], covergroup),
+            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+        ]
+    )
+    for op in ["lw", "lh", "lhu", "lb", "lbu"]:
+        lines.append(f"{op} x{check_reg}, 0(x{addr_reg})")
+    lines.extend(
+        [
+            "#if __riscv_xlen == 64",
+            f" ld x{check_reg}, 0(x{addr_reg})",
+            f" lwu x{check_reg}, 0(x{addr_reg})",
+            "#endif",
+            "#endif",
+        ]
+    )
+
+    # Store misaligned
+    lines.extend(
+        [
+            test_data.add_testcase(tag, coverpoints["storemisaligned"], covergroup),
+            f"LI(x{data_reg}, 0xDECAFCAB)",
+            f"LA(x{addr_reg}, scratch)",
+        ]
+    )
+    for offset in range(8):
+        for op in ["sw", "sh", "sb"]:
+            lines.append(f"{op} x{data_reg}, {offset}(x{addr_reg})")
+        lines.extend(
+            [
+                "#if __riscv_xlen == 64",
+                f" sd x{data_reg}, {offset}(x{addr_reg})",
+                "#endif",
+            ]
+        )
+
+    # Store access fault
+    lines.append("#ifdef RVMODEL_ACCESS_FAULT_ADDRESS")
+    lines.extend(
+        [
+            test_data.add_testcase(tag, coverpoints["storeaccessfault"], covergroup),
+            f"LA(x{addr_reg}, RVMODEL_ACCESS_FAULT_ADDRESS)",
+            f"LI(x{data_reg}, 0xADDEDCAB)",
+        ]
+    )
+    for op in ["sw", "sh", "sb"]:
+        lines.append(f"{op} x{data_reg}, 0(x{addr_reg})")
+    lines.extend(
+        [
+            "#if __riscv_xlen == 64",
+            f" sd x{data_reg}, 0(x{addr_reg})",
+            "#endif",
+            "#endif",
+        ]
+    )
+
+    lines.extend(
+        [
+            test_data.add_testcase(tag, coverpoints["ecall"], covergroup),
+            "RVTEST_TSBI_ECALL_TEST  # ecall to the execution environment, recorded in the trap signature",
+        ]
+    )
     return lines
 
 

@@ -1,7 +1,7 @@
 // Copyright (c) 2026, Harvey Mudd College
 // SPDX-License-Identifier: Apache-2.0
 {
-  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.15/sail_riscv_config_schema.json",
+  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.16/sail_riscv_config_schema.json",
   "base": {
     "xlen": 32,
     "E": false,
@@ -124,7 +124,7 @@
     "medeleg": {
       "delegatable_bits": {
         "len": 64,
-        "value": "0x0000_0000_000c_b3FF"
+        "value": "0x0000_0000_0008_B3FF"
       }
     },
     "mideleg": {
@@ -210,6 +210,9 @@
   },
   "memory": {
     "physaddr_bits": 32,
+    "invalid_physical_address": {
+      "None": null
+    },
     "asidlen": 9,
     "vmidlen": 7,
     "pmp": {
@@ -502,6 +505,7 @@
       "mutable_misa": false,
       "supported": false,
       "geilen": 31,
+      "implicit_vs_pte_access_sets_gstage_d": false,
       "guest_page_fault_writes_htval": true,
       // Whether a trap into M or HS mode caused by the specified exception
       // writes the transformed trapping instruction to `mtinst`/`htinst`.
@@ -843,8 +847,34 @@
       "Ssstateen": {
         "supported": false
       },
-      "C_readonly_zero": true,
-      "SE0_readonly_zero": false
+      "mstateen0": {
+        "SE0": "CSRBit_Writable",
+        "ENVCFG": "CSRBit_ReadOnlyZero",
+        "CONTEXT": "CSRBit_ReadOnlyZero",
+        "P1P13": "CSRBit_ReadOnlyZero",
+        "SRMCFG": "CSRBit_ReadOnlyZero",
+        "FCSR": "CSRBit_ReadOnlyZero",
+        "C": "CSRBit_ReadOnlyZero"
+      },
+      "mstateen1": {
+        "SE1": "CSRBit_Writable"
+      },
+      "mstateen2": {
+        "SE2": "CSRBit_Writable"
+      },
+      "mstateen3": {
+        "SE3": "CSRBit_Writable"
+      },
+      "hstateen0": {
+        "ENVCFG": "CSRBit_ReadOnlyZero",
+        "CONTEXT": "CSRBit_ReadOnlyZero",
+        "FCSR": "CSRBit_ReadOnlyZero",
+        "C": "CSRBit_ReadOnlyZero"
+      },
+      "sstateen0": {
+        "FCSR": "CSRBit_ReadOnlyZero",
+        "C": "CSRBit_ReadOnlyZero"
+      }
     },
     "Ssqosid": {
       "supported": false,
@@ -891,6 +921,24 @@
         // Triggers for reserved interrupts are not supported.  This
         // value is ignored when `itrigger` is not supported.
         "supported_interrupts": { "len": "xlen", "value": "0" }
+      },
+      "mcontrol6": {
+        "supported": false,
+        "maskmax6": 31,
+        "address_select_matches_all_addresses": true,
+        "max_chain_length": 4
+      },
+      "textra": {
+        "mhselect": {
+          "mcontext_match": false,
+          "vmid_match": false
+        },
+        "sselect": {
+          "scontext_match": false,
+          "asid_match": false
+        },
+        "mhvalue_len": 6,
+        "svalue_len": 16
       },
       // CSRs
       "mcontext": { "supported": false },

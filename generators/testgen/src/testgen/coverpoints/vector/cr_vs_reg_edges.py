@@ -9,6 +9,7 @@
 
 import re
 
+from testgen.asm.vector_helpers import get_lmul_flag
 from testgen.coverpoints.registry import add_coverpoint_generator
 from testgen.coverpoints.vector.helpers import make_and_register_edge_label
 from testgen.data.edges import IMMEDIATE_EDGES, VECTOR_EDGES, get_general_edges
@@ -50,6 +51,7 @@ def make_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_dat
     edges1 = edges2 = VECTOR_EDGES.vx_edges
     suffix1 = suffix2 = "emul1"
     lmul = 1
+    ignore_vector_safety = False
 
     # Safely get the variant after cr_*_*_edges
     coverpoint_suffix = coverpoint[coverpoint.find("edges") + len("edges") :]
@@ -96,6 +98,12 @@ def make_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_dat
             lmul = 8
             edges1 = edges2 = VECTOR_EDGES.v_crypto_edges
             suffix1 = suffix2 = "emul8"
+        case "vs1_eew16":
+            assert r2_name == "vs1", f"Expected cr_vs2_vs1_edges_vs1_eew16 got {coverpoint}"
+            assert test_data.config.sew is not None, "SEW must be provided for vector tests"
+            # vs1 is second in this coverpoint
+            suffix2 = f"emul{get_lmul_flag(16 / test_data.config.sew)}"
+            ignore_vector_safety = True
         case _:
             raise ValueError(f"Unknown coverpoint variant: {coverpoint}")
 
@@ -115,6 +123,7 @@ def make_cross_edges(instr_name: str, instr_type: str, coverpoint: str, test_dat
                 masked=False,
                 suite="base",
                 **{f"{r1_name}_val_pointer": r1_label, f"{r2_name}_val_pointer": r2_label},
+                ignore_vector_safety=ignore_vector_safety,
             )
 
             desc = f"{coverpoint} ({r1_name}={r1_edge}, {r2_name}={r2_edge})"

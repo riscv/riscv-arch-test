@@ -129,6 +129,7 @@ function edge_vs_values_t vs_edges_check(int hart, int issue, `VLEN_BITS val, st
     "f4":    eew = sew / 4;
     "f8":    eew = sew / 8;
     "m":     eew = 8;       // vl = 8 and eew = 1 for mask (logical) instructions
+    "eew16": eew = 16;
     default: begin
       $error("ERROR: SystemVerilog Functional Coverage: Unsupported SEW multiplier: %s", sew_multiplier);
       $fatal(1);

@@ -10,9 +10,12 @@ coverpoints:
     bins: |-
       PTE_RWX_s_i x PTE_Svnapot_i x PTE_N_i x kilopage_i x mode x exec_acc x mode {S-mode}
       = 3 bins on RV64 (RV64 only)
-    id: Svnapot_depends_Sv39 Svnapot_pte_N Svnapot_range_napot Svnapot_valid_encoding Svnapot_implicit_read_ppn_subst
+    id: Svnapot_depends_Sv39 Svnapot_pte_n Svnapot_range_napot Svnapot_valid_encoding_ppn_subst
     rules:
-      - "[norm:Svnapot_depends_Sv39] [norm:Svnapot_pte_N] [norm:Svnapot_range_napot] [norm:Svnapot_valid_encoding] [norm:Svnapot_implicit_read_ppn_subst]"
+      - Svnapot_depends_Sv39
+      - Svnapot_pte_n
+      - Svnapot_range_napot
+      - Svnapot_valid_encoding_ppn_subst
   - name: Svnapot_legal_enc_exec_u
     goal: Verify an instruction fetch through a 64 KiB NAPOT mapping succeeds from U-mode
     description: "U-mode: sixteen level-0 PTEs with N=1, PPN[3:0]=1000 and PTE.U=1 map a naturally aligned 64 KiB region. Jump (jalr) into the page at offsets 0, 0x2000 and 0xF000 of va_data."
@@ -20,9 +23,12 @@ coverpoints:
     bins: |-
       PTE_RWX_u_i x PTE_Svnapot_i x PTE_N_i x kilopage_i x mode x exec_acc x mode {U-mode}
       = 3 bins on RV64 (RV64 only)
-    id: Svnapot_depends_Sv39 Svnapot_pte_N Svnapot_range_napot Svnapot_valid_encoding Svnapot_implicit_read_ppn_subst
+    id: Svnapot_depends_Sv39 Svnapot_pte_n Svnapot_range_napot Svnapot_valid_encoding_ppn_subst
     rules:
-      - "[norm:Svnapot_depends_Sv39] [norm:Svnapot_pte_N] [norm:Svnapot_range_napot] [norm:Svnapot_valid_encoding] [norm:Svnapot_implicit_read_ppn_subst]"
+      - Svnapot_depends_Sv39
+      - Svnapot_pte_n
+      - Svnapot_range_napot
+      - Svnapot_valid_encoding_ppn_subst
   - name: Svnapot_legal_enc_read_s
     goal: Verify a load through a 64 KiB NAPOT mapping succeeds from S-mode
     description: "S-mode: sixteen level-0 PTEs with N=1, PPN[3:0]=1000 and PTE.U=0 map a naturally aligned 64 KiB region. Load (lw) from the page at offsets 0, 0x2000 and 0xF000 of va_data."
@@ -60,7 +66,7 @@ coverpoints:
       = 12 bins on RV64 (RV64 only)
     id: Svnapot_reserved_encoding_fault
     rules:
-      - "[norm:Svnapot_reserved_encoding_fault]"
+      - Svnapot_reserved_encoding_fault
   - name: Svnapot_reserved_enc_exec_u
     goal: Verify a reserved NAPOT PPN encoding raises an instruction page fault on an instruction fetch from U-mode
     description: "U-mode: level-0 PTE with N=1, PTE.U=1 and PPN[3:0] = 0001, 0010, 0100 or 0000. Jump (jalr) into the page through va_data."
@@ -70,7 +76,7 @@ coverpoints:
       = 12 bins on RV64 (RV64 only)
     id: Svnapot_reserved_encoding_fault
     rules:
-      - "[norm:Svnapot_reserved_encoding_fault]"
+      - Svnapot_reserved_encoding_fault
   - name: Svnapot_reserved_enc_read_s
     goal: Verify a reserved NAPOT PPN encoding raises a load page fault on a load from S-mode
     description: "S-mode: level-0 PTE with N=1, PTE.U=0 and PPN[3:0] = 0001, 0010, 0100 or 0000. Load (lw) from the page through va_data."

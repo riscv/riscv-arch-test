@@ -8,18 +8,19 @@
 set -euo pipefail
 
 INSTALL_DIR="${1:?Usage: install-cvw.sh <install-dir>}"
-CVW_COMMIT="f0048e13de7f6b587f17f8ecccef5ef2ac7a751b"
-VERILATOR_VERSION="v5.036"
+CVW_COMMIT="80368f45c89bd8e384221368d422eba367b9aa52"
+VERILATOR_VERSION="v5.052"
 
 # Install Verilator from source
-git clone https://github.com/verilator/verilator.git
-cd verilator
-git checkout "$VERILATOR_VERSION"
-autoconf
-./configure --prefix="$INSTALL_DIR"
-make -j"$(nproc)"
-make install
-cd ..
+git clone --depth 1 --branch "$VERILATOR_VERSION" https://github.com/verilator/verilator.git "$INSTALL_DIR/verilator-src"
+(
+  cd "$INSTALL_DIR/verilator-src"
+  autoconf
+  ./configure --prefix="$INSTALL_DIR"
+  make -j"$(nproc)"
+  make install
+)
+rm -rf "$INSTALL_DIR/verilator-src"
 
 # Clone CVW repo
 git clone https://github.com/openhwfoundation/cvw.git "$INSTALL_DIR/cvw"

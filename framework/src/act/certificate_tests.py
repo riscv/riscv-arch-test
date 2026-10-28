@@ -1,20 +1,37 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: Apache-2.0
 
-"""Certificate test-suite mappings."""
+"""Certificate extension lists.
 
-RVA23_TEST_SUITES = frozenset(
+A test belongs to a certificate if every extension it requires is in the certificate's extension list.
+For a group of alternative extensions, one member in the list is enough.
+"""
+
+RVA23_EXTENSIONS = frozenset(
     {
-        ### Unpriv tests
+        # Single letter extensions
         "I",
         "M",
+        "A",
         "F",
         "D",
+        "C",
+        "V",
+        "S",
+        "U",
+        "H",
         # Zi extensions
+        "Zic64b",
         "Zicbom",
         "Zicbop",
         "Zicboz",
-        "Zicclsm",
+        "Ziccamoa",
+        "Ziccamoc",
+        "Ziccif",
+        "Ziccrse",
+        "Zicfilp",
+        "Zicfiss",
+        "Zicntr",
         "Zicond",
         "Zicsr",
         "Zifencei",
@@ -24,11 +41,16 @@ RVA23_TEST_SUITES = frozenset(
         "Zimop",
         # Zm extensions
         "Zmmul",
+        # Zk extensions
+        "Zkt",
         # Za extensions
+        "Za64rs",
         "Zaamo",
         "Zabha",
         "Zacas",
         "Zalrsc",
+        "Zama16b",
+        "Zawrs",
         # Zf extensions
         "Zfa",
         "Zfbfmin",
@@ -44,138 +66,72 @@ RVA23_TEST_SUITES = frozenset(
         "Zbb",
         "Zbc",
         "Zbs",
-        # V extension
-        "Vf16",
-        "Vf32",
-        "Vf64",
-        "Vls16",
-        "Vls32",
-        "Vls64",
-        "Vls8",
-        "Vx16",
-        "Vx32",
-        "Vx64",
-        "Vx8",
-        # Zv extensions
-        "Zvbb16",
-        "Zvbb32",
-        "Zvbb64",
-        "Zvbb8",
-        "Zvbc64",
-        "Zvfbfmin",
-        "Zvfbfwma",
-        "Zvfhmin",
-        "Zvkb16",
-        "Zvkb32",
-        "Zvkb64",
-        "Zvkb8",
-        "Zvkg",
-        "Zvkg32",
-        "Zvkned",
-        "Zvkned32",
-        "Zvknhb64",
-        "Zvksed",
-        "Zvksed32",
-        "Zvksh",
-        "Zvksh32",
-        # Misaligned access tests
-        "Misalign",
-        "MisalignV",
-        ### Priv Tests
-        "U",
-        "S",
-        "H",
-        "HV",
-        "UV",
-        "UF",
-        # Exceptions Tests
-        "ExceptionsF",
-        "ExceptionsH",
-        "ExceptionsHV",
-        "ExceptionsS",
-        "ExceptionsSv",
-        "ExceptionsSvZaamo",
-        "ExceptionsSvZalrsc",
-        "ExceptionsU",
-        "ExceptionsVf",
-        "ExceptionsVls",
-        "ExceptionsVx",
-        "ExceptionsZaamo",
-        "ExceptionsZalrsc",
-        "ExceptionsZc",
-        "ExceptionsZicboS",
-        "ExceptionsZicboU",
-        # Interrupts Tests
-        "InterruptsH",
-        "InterruptsS",
-        "InterruptsU",
-        # Za extensions
-        "Za64rs",
-        "Zama16b",
-        "Zawrs",
-        "ZawrsS",
-        "ZawrsU",
-        # Zi extensions
-        "Zic64bZicboz",
-        "ZicntrS",
-        "ZicntrU",
-        "ZicsrF",
         # Zk extensions
         "Zkr",
-        "ZkrH",
-        "ZkrS",
-        "ZkrU",
-        # Debug extension
-        "Sdtrig",
+        # Zv extensions
+        "Zvbb",
+        "Zvbc",
+        "Zve32f",
+        "Zve32x",
+        "Zve64d",
+        "Zve64f",
+        "Zve64x",
+        "Zvfbfmin",
+        "Zvfbfwma",
+        "Zvfh",
+        "Zvfhmin",
+        "Zvkb",
+        "Zvkg",
+        "Zvkned",
+        "Zvknha",
+        "Zvknhb",
+        "Zvksed",
+        "Zvksh",
         # Sh extensions
         "Shcounterenw",
         "Shgatpa",
         "Shlcofideleg",
         "Shtvala",
+        "Shvsatpa",
         "Shvstvala",
         "Shvstvecd",
         # Ss extensions
+        "Ssccptr",
         "Sscofpmf",
-        "Sscounterenw",
         "Ssstateen",
-        "SsstateenH",
-        "SsstrictS",
-        "SsstrictV",
-        "SstcH",
+        "Ssstrict",
+        "Sstc",
         "Sstvala",
         "Sstvecd",
         "Ssu64xl",
+        "Ssnpm",
+        "Smnpm",
         # Sv extensions
-        "Sv",
+        "Sv39",
+        "Sv48",
+        "Sv57",
         "Svade",
         "Svadu",
-        "SvaduH",
-        "SvaduPMP",
         "Svbare",
-        "SvH",
-        "SvHZicbo",
         "Svinval",
-        "SvinvalH",
         "Svnapot",
         "Svpbmt",
-        "SvPMP",
-        "SvPMPZicbo",
-        "SvZicbo",
+        "Svvptc",
     }
 )
 
-CERTIFICATE_TEST_SUITES = {"RVA23": RVA23_TEST_SUITES}
+CERTIFICATE_EXTENSIONS = {"RVA23": RVA23_EXTENSIONS}
 
 
 def certificate_exists(certificate: str) -> bool:
     """Check if a certificate exists."""
-    return certificate in CERTIFICATE_TEST_SUITES
+    return certificate in CERTIFICATE_EXTENSIONS
 
 
-def get_certificate_test_suites(certificate: str) -> frozenset[str]:
-    """Return the test suites for a certificate."""
+def get_certificate_extensions(certificate: str) -> frozenset[str]:
+    """Return the extensions that a certificate covers."""
     try:
-        return CERTIFICATE_TEST_SUITES[certificate]
+        return CERTIFICATE_EXTENSIONS[certificate]
     except KeyError:
-        available = ", ".join(CERTIFICATE_TEST_SUITES)
+        available = ", ".join(CERTIFICATE_EXTENSIONS)
         raise ValueError(f"Unknown certificate '{certificate}'. Available certificates: {available}.")

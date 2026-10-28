@@ -27387,7 +27387,7 @@ covergroup Vx32_vrgatherei16_vv_cg with function sample(ins_t ins);
     }
 
 
-    // cp_custom_vindexCorners (SEW=32): vrgather/vslidedown index corner cases
+    // cp_custom_vindexCorners: vrgatherei16 index corner cases
     vindexCorners_valid: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
         get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0
@@ -27395,11 +27395,11 @@ covergroup Vx32_vrgatherei16_vv_cg with function sample(ins_t ins);
         bins true = {1'b1};
     }
 
-    vtype_sew_elemt_zero_vs1_all_ones : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)} {
-        wildcard bins sew32     = {66'b10_????????_????????_????????_????????_11111111_11111111_11111111_11111111};
+    elemt_zero_vs1_all_ones : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs1_val, 16) {
+        bins eew16     = {16'b11111111_11111111};
     }
 
-    cp_custom_vindexCorners_index_ge_vlmax : cross vindexCorners_valid, vtype_sew_elemt_zero_vs1_all_ones;
+    cp_custom_vindexCorners_index_ge_vlmax : cross vindexCorners_valid, elemt_zero_vs1_all_ones;
 
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -27411,11 +27411,11 @@ covergroup Vx32_vrgatherei16_vv_cg with function sample(ins_t ins);
         bins two = {1};
     }
 
-    vtype_sew_elemt_zero_vs1_2 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)} {
-        wildcard bins sew32     = {66'b10_????????_????????_????????_????????_00000000_00000000_00000000_00000010};
+    elemt_zero_vs1_2 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs1_val, 16) {
+        bins eew16     = {16'b00000000_00000010};
     }
 
-    cp_custom_vindexCorners_index_gt_vl_lt_vlmax :   cross vindexCorners_valid, vindexCorners_vl_one, vindexCorners_vtype_lmul_2, vtype_sew_elemt_zero_vs1_2;
+    cp_custom_vindexCorners_index_gt_vl_lt_vlmax :   cross vindexCorners_valid, vindexCorners_vl_one, vindexCorners_vtype_lmul_2, elemt_zero_vs1_2;
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vindexEdges_index_gt_vl_lt_vlmax
@@ -27424,11 +27424,11 @@ covergroup Vx32_vrgatherei16_vv_cg with function sample(ins_t ins);
     // Custom coverpoints for Vector slidedown and gather instructions
 
     // cross vtype_prev_vill_clear, vstart_zero, vl_nonzero, no_trap;
-    vtype_sew_elemt_zero_vs1_all_ones_sew32 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)} {
-        wildcard bins sew32     = {66'b10_????????_????????_????????_????????_11111111_11111111_11111111_11111111};
+    elemt_zero_vs1_all_ones_eew16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs1_val, 16) {
+        bins eew16     = {16'b11111111_11111111};
     }
 
-    cp_custom_vindexEdges_index_ge_vlmax : cross std_vec, vtype_sew_elemt_zero_vs1_all_ones_sew32;
+    cp_custom_vindexEdges_index_ge_vlmax : cross std_vec, elemt_zero_vs1_all_ones_eew16;
 
     //////////////////////////////////////////////////////////////////////////////////
 
@@ -27440,11 +27440,11 @@ covergroup Vx32_vrgatherei16_vv_cg with function sample(ins_t ins);
         bins two = {1};
     }
 
-    vtype_sew_elemt_zero_vs1_2_sew32 : coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew")[1:0],  get_vr_element_zero(ins.hart, ins.issue, ins.current.vs1_val)} {
-        wildcard bins sew32     = {66'b10_????????_????????_????????_????????_00000000_00000000_00000000_00000010};
+    elemt_zero_vs1_2_eew16 : coverpoint get_vr_element_zero_eew(ins.hart, ins.issue, ins.current.vs1_val, 16) {
+        bins eew16     = {16'b00000000_00000010};
     }
 
-    cp_custom_vindexEdges_index_gt_vl_lt_vlmax :   cross std_vec, vl_one, vtype_lmul_2, vtype_sew_elemt_zero_vs1_2_sew32;
+    cp_custom_vindexEdges_index_gt_vl_lt_vlmax :   cross std_vec, vl_one, vtype_lmul_2, elemt_zero_vs1_2_eew16;
 
     //// end cp_custom_vindexEdges_index_gt_vl_lt_vlmax////////////////////////////////////////////////
 
@@ -27482,10 +27482,10 @@ covergroup Vx32_vrgatherei16_vv_cg with function sample(ins_t ins);
     //// end cp_vs1////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs1_edges
+    // cp_vs1_edges_eew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs1_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs1_val, "1")  iff (ins.trap == 0 )  {
+    cp_vs1_edges_eew16 : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs1_val, "eew16")  iff (ins.trap == 0 )  {
         // Edges values of vs1, assuming vl = 1
         bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
         bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
@@ -27501,7 +27501,7 @@ covergroup Vx32_vrgatherei16_vv_cg with function sample(ins_t ins);
         bins random     = {vs_random    };   //  = {(SEW){random}}
     }
 
-    //// end cp_vs1_edges////////////////////////////////////////////////
+    //// end cp_vs1_edges_eew16 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vs2
@@ -27535,12 +27535,14 @@ covergroup Vx32_vrgatherei16_vv_cg with function sample(ins_t ins);
 
     //// end cp_vs2_edges////////////////////////////////////////////////
 
+
+
     //////////////////////////////////////////////////////////////////////////////////
-    // cr_vl_lmul_sew32
+    // cr_vl_lmul_e16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_csr_vtype_lmul_all_sew32_lmul_le_8 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
-        // Value of VTYPE.vlmul (vector register grouping), SEW = 32
+    cp_csr_vtype_lmul_all_le_8_e16 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul"){
+        // Value of VTYPE.vlmul (vector register grouping)
         `ifdef LMULf2_SUPPORTED
             bins half   = {7};
         `endif
@@ -27557,26 +27559,26 @@ covergroup Vx32_vrgatherei16_vv_cg with function sample(ins_t ins);
         bins legal      = {vl_legal     };
     }
 
-    cr_vl_lmul_sew32 : cross cp_csr_vtype_lmul_all_sew32_lmul_le_8, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
-        // Cross coverage all legal LMULs for SEW = 32 and vl edges (1, random, vlmax)
+    cr_vl_lmul_e16_sew32 : cross cp_csr_vtype_lmul_all_le_8_e16, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+        // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 8 and vl edges (1, random, vlmax)
     }
 
     //////////////////////////////////////////////////////////////////////////////////
 
-    //// end cr_vl_lmul_sew32////////////////////////////////////////////////
+    //// end cr_vl_lmul_e16_sew32////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cr_vs2_vs1_edges
+    // cr_vs2_vs1_edges_vs1_eew16
     //////////////////////////////////////////////////////////////////////////////////
 
-    cr_vs2_vs1_edges : cross cp_vs2_edges,cp_vs1_edges  iff (ins.trap == 0 )  {
+    cr_vs2_vs1_edges : cross cp_vs2_edges,cp_vs1_edges_eew16  iff (ins.trap == 0 )  {
         // Cross coverage of VS2 edges and VS1 edges
     }
 
-    //// end cr_vs2_vs1_edges////////////////////////////////////////////////
+    //// end cr_vs2_vs1_edges_vs1_eew16 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cr_vtype_agnostic
+    // cr_vtype_agnostic_e16
     //////////////////////////////////////////////////////////////////////////////////
 
     cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
@@ -27595,11 +27597,11 @@ covergroup Vx32_vrgatherei16_vv_cg with function sample(ins_t ins);
         bins enabled = {1'b0};
     }
 
-    cr_vtype_agnostic : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
+    cr_vtype_agnostic_e16 : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
         // Cross coverage of vector tail and mask agnostic behaviors
     }
 
-    //// end cr_vtype_agnostic////////////////////////////////////////////////
+        //// end cr_vtype_agnostic_e16////////////////////////////////////////////////
 
 endgroup
 // ---------------------

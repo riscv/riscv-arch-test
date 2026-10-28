@@ -12,7 +12,7 @@ import importlib.resources
 import re
 from pathlib import Path
 
-from testgen.constants import EXPERIMENTAL_EXTENSIONS, EXTENSION_PARAM_MAP
+from testgen.constants import EXPERIMENTAL_EXTENSIONS
 from testgen.data.config import TestConfig
 
 
@@ -123,10 +123,6 @@ def canonicalize_extensions(
     params: list[str] = []
     if xlen > 0:
         params.append(f"MXLEN: {xlen}")
-    for ext in ext_components:
-        if ext in EXTENSION_PARAM_MAP:
-            params.append(EXTENSION_PARAM_MAP[ext])
-            ext_components.remove(ext)
 
     # Canonicize extensions
     if "I" not in ext_components and "E" not in ext_components:
@@ -173,6 +169,7 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
         "Vls32": ["Zve32x"],
         "Vx64": ["Zve64x"],
         "Vls64": ["Zve64x"],
+        "Vf8": ["Zvfh", "Zfhmin", "F"],
         "Vf16": ["Zvfh", "Zfhmin", "F"],
         "Vf32": ["Zve32f", "F"],
         "Vf64": ["Zve64d", "F", "D"],
@@ -182,6 +179,17 @@ def get_vector_base_extension(testsuite: str, instr_name: str, xlen: int, sew: i
     }
 
     mapped = vector_map[testsuite] if testsuite in vector_map else [f"Zve{max(sew, 32)}x"]
+
+    if testsuite == "Vf16" and instr_name in [
+        "vfwcvt.f.x.v",
+        "vfwcvt.f.xu.v",
+        "vfncvt.x.f.w",
+        "vfncvt.xu.f.w",
+        "vfncvt.rtz.x.f.w",
+        "vfncvt.rtz.xu.f.w",
+    ]:
+        # At SEW=16 these convert between 16-bit integers and binary32, so Zve32f provides them without Zvfh.
+        mapped = ["Zve32f", "F"]
 
     for zve_ext in ["Zve64x", "Zve64f", "Zve64d"]:
         # All Zve* extensions support all vector load and store instructions (31.1.7. Vector Loads and Stores),

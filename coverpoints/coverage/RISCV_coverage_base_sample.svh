@@ -34,41 +34,8 @@
     `ifdef COVER_ENDIANZALRSC
         endianzalrsc_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_EXCEPTIONSF
-        exceptionsf_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSH
-        exceptionsh_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSHV
-        exceptionshv_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSS
-        exceptionss_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSSM
-        exceptionssm_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSSV
-        exceptionssv_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSSVSM
-        exceptionssvsm_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSSVZAAMO
-        exceptionssvzaamo_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSSVZAAMOSM
-        exceptionssvzaamosm_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSSVZALRSC
-        exceptionssvzalrsc_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSSVZALRSCSM
-        exceptionssvzalrscsm_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSU
-        exceptionsu_sample(hart, issue, ins);
+    `ifdef COVER_EXCEPTIONS
+        exceptions_sample(hart, issue, ins);
     `endif
     `ifdef COVER_EXCEPTIONSVF16
         exceptionsvf16_sample(hart, issue, ins);
@@ -88,29 +55,11 @@
     `ifdef COVER_EXCEPTIONSVX
         exceptionsvx_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_EXCEPTIONSZAAMO
-        exceptionszaamo_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSZALRSC
-        exceptionszalrsc_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSZC
-        exceptionszc_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSZICBOS
-        exceptionszicbos_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSZICBOSM
-        exceptionszicbosm_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_EXCEPTIONSZICBOU
-        exceptionszicbou_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_F
         f_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_HV
-        hv_sample(hart, issue, ins);
+    `ifdef COVER_H
+        h_sample(hart, issue, ins);
     `endif
     `ifdef COVER_I
         i_sample(hart, issue, ins);
@@ -124,41 +73,41 @@
     `ifdef COVER_M
         m_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_MISALIGN
-        misalign_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_MISALIGNV
         misalignv_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_PMPF
-        pmpf_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_PMPS
-        pmps_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_PMPSM
-        pmpsm_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_PMPU
-        pmpu_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_PMPZAAMO
-        pmpzaamo_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_PMPZALRSC
-        pmpzalrsc_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_PMPZCA
-        pmpzca_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_PMPZICBO
-        pmpzicbo_sample(hart, issue, ins);
+    `ifdef COVER_PMP
+        pmp_sample(hart, issue, ins);
     `endif
     `ifdef COVER_S
         s_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SDTRIGS
+        sdtrigs_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_SDTRIGSM
         sdtrigsm_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SDTRIGU
+        sdtrigu_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SHCOUNTERENW
+        shcounterenw_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SHGATPA
+        shgatpa_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SHTVALA
+        shtvala_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SHVSATPA
+        shvsatpa_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SHVSTVALA
+        shvstvala_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_SHVSTVECD
+        shvstvecd_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SM
         sm_sample(hart, issue, ins);
@@ -166,17 +115,8 @@
     `ifdef COVER_SMMPM
         smmpm_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_SMNPMS
-        smnpms_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_SMNPMSSM
-        smnpmssm_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_SMNPMU
-        smnpmu_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_SMNPMUSM
-        smnpmusm_sample(hart, issue, ins);
+    `ifdef COVER_SMNPM
+        smnpm_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SMSTATEEN
         smstateen_sample(hart, issue, ins);
@@ -184,14 +124,8 @@
     `ifdef COVER_SSCCPTR
         ssccptr_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_SSCOFPMFS
-        sscofpmfs_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_SSCOFPMFSM
-        sscofpmfsm_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_SSCOFPMFU
-        sscofpmfu_sample(hart, issue, ins);
+    `ifdef COVER_SSCOFPMF
+        sscofpmf_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SSCOUNTERENW
         sscounterenw_sample(hart, issue, ins);
@@ -199,29 +133,17 @@
     `ifdef COVER_SSNPM
         ssnpm_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_SSNPMSM
-        ssnpmsm_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_SSSTATEEN
         ssstateen_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_SSSTRICTS
-        ssstricts_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_SSSTRICTSM
-        ssstrictsm_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_SSSTRICTU
-        ssstrictu_sample(hart, issue, ins);
+    `ifdef COVER_SSSTRICT
+        ssstrict_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SSSTRICTV
         ssstrictv_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SSTC
         sstc_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_SSTCSM
-        sstcsm_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SSTVALA
         sstvala_sample(hart, issue, ins);
@@ -238,41 +160,17 @@
     `ifdef COVER_SVH
         svh_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_SVPMP
-        svpmp_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_SVPMPZICBO
-        svpmpzicbo_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_SVSM
-        svsm_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_SVZICBO
-        svzicbo_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_SVADE
         svade_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SVADU
         svadu_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_SVADUPMP
-        svadupmp_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_SVBARE
         svbare_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_SVBARESM
-        svbaresm_sample(hart, issue, ins);
-    `endif
     `ifdef COVER_SVINVAL
         svinval_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_SVINVALH
-        svinvalh_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_SVINVALSM
-        svinvalsm_sample(hart, issue, ins);
     `endif
     `ifdef COVER_SVNAPOT
         svnapot_sample(hart, issue, ins);
@@ -280,14 +178,11 @@
     `ifdef COVER_SVPBMT
         svpbmt_sample(hart, issue, ins);
     `endif
+    `ifdef COVER_SVVPTC
+        svvptc_sample(hart, issue, ins);
+    `endif
     `ifdef COVER_U
         u_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_UF
-        uf_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_UV
-        uv_sample(hart, issue, ins);
     `endif
     `ifdef COVER_VF16
         vf16_sample(hart, issue, ins);
@@ -297,6 +192,9 @@
     `endif
     `ifdef COVER_VF64
         vf64_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_VF8
+        vf8_sample(hart, issue, ins);
     `endif
     `ifdef COVER_VLS16
         vls16_sample(hart, issue, ins);
@@ -340,14 +238,8 @@
     `ifdef COVER_ZAMA16B
         zama16b_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZAWRSS
-        zawrss_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZAWRSSM
-        zawrssm_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZAWRSU
-        zawrsu_sample(hart, issue, ins);
+    `ifdef COVER_ZAWRS
+        zawrs_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZBA
         zba_sample(hart, issue, ins);
@@ -400,8 +292,8 @@
     `ifdef COVER_ZIBI
         zibi_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZIC64BZICBOZ
-        zic64bzicboz_sample(hart, issue, ins);
+    `ifdef COVER_ZIC64B
+        zic64b_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZICBOM
         zicbom_sample(hart, issue, ins);
@@ -412,32 +304,29 @@
     `ifdef COVER_ZICBOZ
         zicboz_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZICFILPS
-        zicfilps_sample(hart, issue, ins);
+    `ifdef COVER_ZICCAMOA
+        ziccamoa_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZICFILPSU
-        zicfilpsu_sample(hart, issue, ins);
+    `ifdef COVER_ZICCAMOC
+        ziccamoc_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZICFILPSM
-        zicfilpsm_sample(hart, issue, ins);
+    `ifdef COVER_ZICCIF
+        ziccif_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZICFILPU
-        zicfilpu_sample(hart, issue, ins);
+    `ifdef COVER_ZICCLSM
+        zicclsm_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZICCRSE
+        ziccrse_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZICFILP
+        zicfilp_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZICFISS
+        zicfiss_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZICNTR
         zicntr_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZICNTRH
-        zicntrh_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZICNTRS
-        zicntrs_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZICNTRSM
-        zicntrsm_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZICNTRU
-        zicntru_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZICOND
         zicond_sample(hart, issue, ins);
@@ -472,20 +361,17 @@
     `ifdef COVER_ZKNH
         zknh_sample(hart, issue, ins);
     `endif
-    `ifdef COVER_ZKRS
-        zkrs_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZKRSM
-        zkrsm_sample(hart, issue, ins);
-    `endif
-    `ifdef COVER_ZKRU
-        zkru_sample(hart, issue, ins);
+    `ifdef COVER_ZKR
+        zkr_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZKSED
         zksed_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZKSH
         zksh_sample(hart, issue, ins);
+    `endif
+    `ifdef COVER_ZKT
+        zkt_sample(hart, issue, ins);
     `endif
     `ifdef COVER_ZMMUL
         zmmul_sample(hart, issue, ins);

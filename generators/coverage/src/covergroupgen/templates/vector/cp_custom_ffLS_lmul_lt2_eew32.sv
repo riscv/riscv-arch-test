@@ -30,10 +30,6 @@
                 bins masked = {1'b0};
             }
 
-            ffLS_vtype_lmul_1: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul") {
-                bins one = {0};
-            }
-
             ffLS_vl_ge2: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl")) {
                 bins ge2 = {[2:$]};
             }

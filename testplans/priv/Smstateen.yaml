@@ -17,12 +17,11 @@ coverpoints:
     expectation: Access successful
     bins: 4-8 CSRs * 128-64 walking ones/zero
     rules:
-      - smstateen_mmode_rv64_csrs
-      - smstateen_rv32_upper_bits_csrs
-      - stateen_warl_access
+      - mstateen_rv64_csrs
+      - stateen_rv32_upper_bits_csrs
       - stateen_warl_access
       - stateen_unimplemented_state_roz
-      - stateen-reserved_roz
+      - stateen_reserved_roz
   - name: cp_csr_illegal_accesses
     goal: Each stateen CSR allows read/write access from its own and higher privilege modes and denies read/writeaccess from lower privilege modes
     description: |-
@@ -32,36 +31,36 @@ coverpoints:
     bins: 4-8CSRs
     rules:
       - stateen_op
-      - smstateen_illegal_state_access
+      - stateen_illegal_state_access
   - name: cp_fcsr_ro_zero
     goal: Test if fcsr bit is read-only zero when misa.F=1
     description: Write 1 to mstateen0.FCSR and read back
     expectation: Expect 0 if misa.F = 1
     bins: "1"
     rules:
-      - mstateen0-fcsr_roz
+      - mstateen0_fcsr_roz
   - name: cp_fcsr
     goal: fcsr controls access to fcsr when misa.F = 0
     description: |-
       If Zfinx is supported:
       with misa.F = 0 and mstateen0.fcsr, read and write fcsr
     rules:
-      - stateen0-fcsr_op
-  - name: cp_jvt
+      - stateen0_fcsr_op
+  - name: cp_jvt_access
     goal: jvt controls access
     description: |-
       If Zcmt is supported:
       With msstaten0.JVT = {0,1}, read and write jvt   from the M, S if supported, else U
     expectation: Always successful
     rules:
-      - stateen0-jvt_op
+      - stateen0_jvt_op
   - name: cp_envcfg
     goal: envcfg controls access to senvcfg
     description: With mstateen0.envcfg = {0,1}, read and write sevncfg from  M, S if supported, else U
     expectation: Always successful
     bins: 2 states x 2 accesses
     rules:
-      - mstateen0-envcfg_op
+      - mstateen0_envcfg_op
   - name: cp_csrind
     goal: csrind controls access
     description: |-
@@ -71,7 +70,7 @@ coverpoints:
     expectation: Always successful
     bins: 2 states x 2 accesses x 6 regs
     rules:
-      - mstateen0-csrind_op
+      - mstateen0_csrind_op
   - name: cp_aia
     goal: aia controls access
     description: |-
@@ -80,7 +79,7 @@ coverpoints:
     expectation: Always successful
     bins: 2 states x 2 accesses x ? regs
     rules:
-      - mstateen0-aia_op
+      - mstateen0_aia_op
   - name: cp_imsic
     goal: ismic controls access
     description: |-
@@ -89,7 +88,7 @@ coverpoints:
     expectation: Always successful
     bins: 2 states x 2 accesses x ? regs
     rules:
-      - mstateen0-imsic_op
+      - mstateen0_imsic_op
   - name: cp_context
     goal: sdtrig controls access
     description: |-
@@ -98,7 +97,7 @@ coverpoints:
     expectation: Always successful
     bins: 2 states x 2 accesses
     rules:
-      - mstateen0-context_op
+      - mstateen0_context_op
   - name: cp_p1p13
     goal: hedelegh controls access
     description: |-
@@ -107,7 +106,7 @@ coverpoints:
     expectation: Always successful
     bins: 2 states x 2 accesses
     rules:
-      - mstateen0-p1p13_op
+      - mstateen0_p1p13_op
   - name: cp_srmcfg
     goal: srmcfg controls access
     description: |-
@@ -116,7 +115,7 @@ coverpoints:
     expectation: Always successful
     bins: 2 states x 2 accesses
     rules:
-      - mstateen0-srmcfg_op
+      - mstateen0_srmcfg_op
   - name: cp_ctr
     goal: ctr controls access
     description: |-
@@ -135,16 +134,35 @@ coverpoints:
       Also try executing fadd.s, flw, fcvt.w.s, fcvt.s.w, fmv.x.w, fmv.w.x, fclass.s. M, S if supported, else U
     expectation: Illegal instruction if 0, else successful
     rules:
-      - stateen0-fcsr0_misa-f0_illegal_fpu_instr
-  - name: |-
-      cp_mstateen0_se0_one_controls_sstateen0
-      cp_mstateen0_se0_zero_controls_sstateen0
+      - stateen0_fcsr0_misa_f0_illegal_fpu_instr
+  - name: cp_fcsr_fp_instrs
+    goal: fcsr controls floating-point instructions when misa.F = 0
+    description: |-
+      If Zfinx is supported:
+      with misa.F = 0 and mstateen0.fcsr = {0,1}, execute fadd.s, fcvt.w.s, fcvt.s.w, and fclass.s from S (if supported) and U-mode
+    expectation: Illegal instruction if 0, else successful
+    rules:
+      - stateen0_fcsr0_misa_f0_illegal_fpu_instr
+  - name: cp_mstateen0_se0_controls_sstateen0
     goal: mstateen.SE0 controls access to sstateen0
     description: For mstateen0.SE0 = {0,1} write and read back sstateen0.
     expectation: Access fault if 0, success if 1.
     bins: 2 SE0*2R/W
     rules:
-      - mstateen-bit-63_op
-      - mstateen0-se0_op
+      - mstateen_bit_63_op
+      - mstateen0_se0_op
+  - name: cp_mstateen_se_controls_sstateen123
+    goal: Bit 63 of mstateen1-3 controls access to sstateen1-3
+    description: |-
+      For N = 1-3 and mstateenN bit 63 = {0,1}, read and write sstateenN from S-mode, and check the value read.
+      For RV32, bit 63 is bit 31 of mstateenNh.
+    expectation: |-
+      Illegal instruction if 0. If 1, access succeeds and sstateenN reads 0 (it has no defined bits).
+      Bit 63 may be read-only zero without the hypervisor extension; the bit = 1 bins are then unreachable.
+    bins: 3 CSRs * 2 states * 3 ops
+    rules:
+      - mstateen_bit_63_op
+      - stateen_illegal_state_access
+      - stateen_reserved_roz
   - heading: "Note: All of these tests are performed in M-mode unless otherwise noted."
   - heading: "Note: Smstateen implies U-mode (otherwise there is no need for this extension)"

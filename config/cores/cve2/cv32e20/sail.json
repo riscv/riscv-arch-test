@@ -1,5 +1,5 @@
 {
-  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.15/sail_riscv_config_schema.json",
+  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.16/sail_riscv_config_schema.json",
   "base": {
     "xlen": 32,
     "E": false,
@@ -7,8 +7,9 @@
     // was generated during a write to its corresponding `mhpmevent`
     // CSR (which could change the monitored event).
     "hpmcounter_increments_in_self_hpmevent_write": false,
-    // The precision of the HPM counter, upto 64 bits.
-    "hpmcounter_width_bits": 64,
+    // The precision of the HPM counter, upto 64 bits. CV32E20 builds
+    // mhpmcounter3..12 with MHPMCounterWidth = 40.
+    "hpmcounter_width_bits": 40,
     // The width of the `mhpmevent` CSRs, upto 64 bits, if Sscofpmf is
     // not supported.  On RV32 without Sscofpmf, this can be upto 32,
     // since the `mhpmeventh` CSRs are not accessible.
@@ -22,12 +23,14 @@
       // This bits in this value control whether the corresponding
       // bits of the CSR are writable.  Note that bit 1 cannot be written
       // to as it is read-only zero.
-      "writable_bits": { "len": 32, "value": "0xFFFF_FFFD" }
+      // CV32E20 implements bits 0 and 2..12 (mcycle, minstret, mhpmcounter3..12).
+      "writable_bits": { "len": 32, "value": "0x0000_1FFD" }
     },
     "writable_fiom": true,
+    // CV32E20 implements mhpmcounter3..12 (MHPMCounterNum = 10); the others are read-only zero.
     "writable_hpm_counters": {
       "len": 32,
-      "value": "0xFFFF_FFFF"
+      "value": "0x0000_1FF8"
     },
     // The top 29 bits control whether the corresponding bits of `scounteren`
     // that control HPM counters are read-only zero. CV32E20 has no S-mode,
@@ -96,7 +99,7 @@
     "medeleg": {
       "delegatable_bits": {
         "len": 64,
-        "value": "0x0000_0000_000c_b3FF"
+        "value": "0x0000_0000_0008_B3FF"
       }
     },
     "mideleg": {
@@ -173,6 +176,9 @@
   },
   "memory": {
     "physaddr_bits": 32,
+    "invalid_physical_address": {
+      "None": null
+    },
     "asidlen": 9,
     "vmidlen": 7,
     "pmp": {
@@ -286,9 +292,10 @@
     ]
   },
   "platform": {
+    // cve2_pkg: CSR_MVENDORID_VALUE = 0x602, CSR_MARCHID_VALUE = 35, CSR_MIMPID_VALUE = 0.
     "vendorid": 1538,
-    "archid": 36,
-    "impid": 256,
+    "archid": 35,
+    "impid": 0,
     "hartid": 0,
     // Cache block size, specified as a power of 2.
     "cache_block_size_exp": 6,
@@ -449,6 +456,7 @@
       "mutable_misa": false,
       "supported": false,
       "geilen": 31,
+      "implicit_vs_pte_access_sets_gstage_d": false,
       "guest_page_fault_writes_htval": true,
       // Whether a trap into M or HS mode caused by the specified exception
       // writes the transformed trapping instruction to `mtinst`/`htinst`.
@@ -782,8 +790,34 @@
       "Ssstateen": {
         "supported": false
       },
-      "C_readonly_zero": true,
-      "SE0_readonly_zero": false
+      "mstateen0": {
+        "SE0": "CSRBit_Writable",
+        "ENVCFG": "CSRBit_ReadOnlyZero",
+        "CONTEXT": "CSRBit_ReadOnlyZero",
+        "P1P13": "CSRBit_ReadOnlyZero",
+        "SRMCFG": "CSRBit_ReadOnlyZero",
+        "FCSR": "CSRBit_ReadOnlyZero",
+        "C": "CSRBit_ReadOnlyZero"
+      },
+      "mstateen1": {
+        "SE1": "CSRBit_Writable"
+      },
+      "mstateen2": {
+        "SE2": "CSRBit_Writable"
+      },
+      "mstateen3": {
+        "SE3": "CSRBit_Writable"
+      },
+      "hstateen0": {
+        "ENVCFG": "CSRBit_ReadOnlyZero",
+        "CONTEXT": "CSRBit_ReadOnlyZero",
+        "FCSR": "CSRBit_ReadOnlyZero",
+        "C": "CSRBit_ReadOnlyZero"
+      },
+      "sstateen0": {
+        "FCSR": "CSRBit_ReadOnlyZero",
+        "C": "CSRBit_ReadOnlyZero"
+      }
     },
     "Ssqosid": {
       "supported": false,
@@ -830,6 +864,24 @@
         // Triggers for reserved interrupts are not supported.  This
         // value is ignored when `itrigger` is not supported.
         "supported_interrupts": { "len": "xlen", "value": "0" }
+      },
+      "mcontrol6": {
+        "supported": false,
+        "maskmax6": 31,
+        "address_select_matches_all_addresses": true,
+        "max_chain_length": 4
+      },
+      "textra": {
+        "mhselect": {
+          "mcontext_match": false,
+          "vmid_match": false
+        },
+        "sselect": {
+          "scontext_match": false,
+          "asid_match": false
+        },
+        "mhvalue_len": 6,
+        "svalue_len": 16
       },
       // CSRs
       "mcontext": { "supported": false },

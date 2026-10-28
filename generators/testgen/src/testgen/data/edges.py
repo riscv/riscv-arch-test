@@ -754,7 +754,9 @@ def get_vector_edge(edge: str, suffix: str, sew: int) -> int:
             raise ValueError(f"Unsupported Floating Point SEW={sew}")
 
     if suffix == "f_emul2":
-        if sew == 16:
+        if sew == 8:
+            return VECTOR_EDGES.f16[edge]
+        elif sew == 16:
             return VECTOR_EDGES.f32[edge]
         elif sew == 32:
             return VECTOR_EDGES.f64[edge]

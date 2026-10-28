@@ -278,7 +278,7 @@ normative_rule_definitions:
       ]
 
   # There is only a *.vs form of the instruction.
-  - name: vaesz_vs_only
+  - name: vaesz-vs_only
     coverpoint: ["Zvkned_vaesz_vs_cg/cp_asm_count"]
 
   # vs2 holds a scalar element group that is used as the round key for all of the
@@ -375,7 +375,3 @@ normative_rule_definitions:
   # This extension (Zvkng) is shorthand for the following set of other extensions: Zvkn, Zvkg.
   - name: Zvkng_def
     coverpoint: ["Definition, checked through UDB"]
-
-  # There is only a *.vs form of the instruction.
-  - name: vaesz-vs_only
-    coverpoint: ["Zvkned_vaesz_vs_cg/cp_asm_count"]

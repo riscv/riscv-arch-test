@@ -15,7 +15,7 @@ from pathlib import Path
 import pyjson5
 
 from act.build_types import COVERAGE_STEP_TIMEOUT_SECONDS, BuildTask, PythonAction, SubprocessAction, SymlinkAction
-from act.config import Config, CoverageSimulator, RefModelType, spike_isa_string
+from act.config import Config, CoverageSimulator, RefModelType
 from act.coverreport import generate_report, merge_summaries
 from act.parse_test_constraints import TestMetadata
 from act.sail_to_rvvi import sailLog2Trace
@@ -103,13 +103,6 @@ def _ref_model_sig_cmd(
         cmd.extend(config.ref_model_type.signature_flags(sig_file, xlen // 8))
         cmd.append(str(sig_elf))
         return cmd
-    if config.ref_model_type == RefModelType.SPIKE:
-        cmd = [str(config.ref_model_exe), f"--isa={spike_isa_string(xlen)}"]
-        if debug:
-            cmd.extend(["-l", "--log-commits", f"--log={sig_trace_file}"])
-        cmd.extend(config.ref_model_type.signature_flags(sig_file, xlen // 8))
-        cmd.append(str(sig_elf))
-        return cmd
     raise ValueError(f"Unsupported reference model type: {config.ref_model_type}")
 
 
@@ -175,7 +168,7 @@ def gen_compile_tasks(
         "-mcmodel=medany",
         "-nostdlib",
         f"-I{env_dir}",
-        f"-I{base_dir.absolute()}",
+        f"-I{base_dir.absolute() / 'env'}",
     ]
     if enable_experimental_extensions:
         compile_prefix.append("-DENABLE_EXPERIMENTAL_EXTENSIONS")
@@ -376,6 +369,7 @@ def gen_rvvi_tasks(
     sail_cmd.extend(
         [
             "--trace",
+            "--trace-ptw",
             "--trace-output",
             str(sail_trace),
             "--config",
@@ -417,6 +411,7 @@ def gen_coverage_tasks(
     verbose: bool = False,
     dry_run: bool = False,
     enable_experimental_extensions: bool = False,
+    exclude_sm: bool = False,
 ) -> list[BuildTask]:
     """Generate BuildTasks for coverage UCDB generation, reports, and summary merging."""
     tasks: list[BuildTask] = []
@@ -491,6 +486,8 @@ def gen_coverage_tasks(
             coverage_define_list.append("FCOV_VERBOSE")
         if enable_experimental_extensions:
             coverage_define_list.append("ENABLE_EXPERIMENTAL_EXTENSIONS")
+        if exclude_sm:
+            coverage_define_list.append("EXCLUDE_SM")
         coverage_defines = " ".join(coverage_define_list)
         if coverage_simulator == CoverageSimulator.QUESTA:
             do_script = (
@@ -565,7 +562,7 @@ def gen_coverage_tasks(
 # Top-level build plan construction
 # ---------------------------------------------------------------------------
 
-_COVERAGE_GROUPS_WITHOUT_COVERPOINTS = frozenset({Path("priv/H")})
+_COVERAGE_GROUPS_WITHOUT_COVERPOINTS: frozenset[Path] = frozenset()
 
 
 def generate_build_plan(
@@ -582,6 +579,7 @@ def generate_build_plan(
     verbose: bool = False,
     dry_run: bool = False,
     enable_experimental_extensions: bool = False,
+    exclude_sm: bool = False,
 ) -> list[BuildTask]:
     """Build the full DAG of tasks for a single config."""
     if coverage_enabled and config.ref_model_type != RefModelType.SAIL:
@@ -606,10 +604,10 @@ def generate_build_plan(
     env_files = tuple(sorted(p.absolute() for p in env_dir.iterdir() if p.is_file()))
     c_runtime_sources = tuple((env_dir / name).absolute() for name in ("c_test_start.S", "c_test_support.c"))
     dut_headers = tuple(sorted(p.absolute() for p in config.dut_include_dir.iterdir() if p.suffix == ".h"))
-    udb_headers = tuple(sorted(p.absolute() for p in config_wkdir.iterdir() if p.suffix == ".h"))
+    udb_headers = tuple(sorted(p.absolute() for p in (config_wkdir / "env").iterdir() if p.suffix == ".h"))
     compile_inputs = (*env_files, *dut_headers, *udb_headers, config.linker_script.absolute())
 
-    # Sail config affects reference model output (Spike has no equivalent file).
+    # Sail config affects reference model output.
     ref_model_inputs: tuple[Path, ...] = ()
     # sail_macros.h is included by every test, so the platform defines are needed
     # whatever the reference model is; only the model's own inputs are Sail-specific.
@@ -683,12 +681,13 @@ def generate_build_plan(
                 coverpoint_dir,
                 config_coverage_dir,
                 config_report_dir,
-                config_wkdir,
+                config_wkdir / "env",
                 tests_dir / "env",
                 coverage_simulator,
                 verbose,
                 dry_run,
                 enable_experimental_extensions,
+                exclude_sm,
             )
         )
 

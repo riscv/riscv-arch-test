@@ -10,9 +10,11 @@ coverpoints:
     bins: |-
       PTE_Abit_unset_s_i x PageType_i x Svade_enabled x ins_page_fault x exec_acc x mode {S-mode}
       = 7 bins on RV64, 2 on RV32
-    id: svade_access_ad_bit_clear Svadu_disabled_hw_update_falls_back_to_svade menvcfg_adue_op
+    id: Svade_access_ad_bit_clear Svadu_disabled_hw_update_falls_back_to_Svade menvcfg_adue_op
     rules:
-      - "[norm:svade_access_ad_bit_clear] [norm:Svadu_disabled_hw_update_falls_back_to_svade] [norm:menvcfg_adue_op]"
+      - Svade_access_ad_bit_clear
+      - Svadu_disabled_hw_update_falls_back_to_Svade
+      - menvcfg_adue_op
   - name: Abit_unset_exec_u
     goal: Verify an instruction fetch through a PTE with A=0 raises an instruction page fault from U-mode (Svade)
     description: "U-mode: menvcfg.ADUE=0 (cleared through T-SBI). Leaf PTE with A=0 (with D=0 and D=1) and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Jump (jalr) into the page through va_data."
@@ -20,9 +22,11 @@ coverpoints:
     bins: |-
       PTE_Abit_unset_u_i x PageType_i x Svade_enabled x ins_page_fault x exec_acc x mode {U-mode}
       = 7 bins on RV64, 2 on RV32
-    id: svade_access_ad_bit_clear Svadu_disabled_hw_update_falls_back_to_svade menvcfg_adue_op
+    id: Svade_access_ad_bit_clear Svadu_disabled_hw_update_falls_back_to_Svade menvcfg_adue_op
     rules:
-      - "[norm:svade_access_ad_bit_clear] [norm:Svadu_disabled_hw_update_falls_back_to_svade] [norm:menvcfg_adue_op]"
+      - Svade_access_ad_bit_clear
+      - Svadu_disabled_hw_update_falls_back_to_Svade
+      - menvcfg_adue_op
   - name: Abit_unset_read_s
     goal: Verify a load through a PTE with A=0 raises a load page fault from S-mode (Svade)
     description: "S-mode: menvcfg.ADUE=0 (cleared through T-SBI). Leaf PTE with A=0 (with D=0 and D=1) and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data."
@@ -30,9 +34,11 @@ coverpoints:
     bins: |-
       PTE_Abit_unset_s_d x PageType_d x Svade_enabled x load_page_fault x read_acc x mode {S-mode}
       = 7 bins on RV64, 2 on RV32
-    id: svade_access_ad_bit_clear Svadu_disabled_hw_update_falls_back_to_svade menvcfg_adue_op
+    id: Svade_access_ad_bit_clear Svadu_disabled_hw_update_falls_back_to_Svade menvcfg_adue_op
     rules:
-      - "[norm:svade_access_ad_bit_clear] [norm:Svadu_disabled_hw_update_falls_back_to_svade] [norm:menvcfg_adue_op]"
+      - Svade_access_ad_bit_clear
+      - Svadu_disabled_hw_update_falls_back_to_Svade
+      - menvcfg_adue_op
   - name: Abit_unset_read_u
     goal: Verify a load through a PTE with A=0 raises a load page fault from U-mode (Svade)
     description: "U-mode: menvcfg.ADUE=0 (cleared through T-SBI). Leaf PTE with A=0 (with D=0 and D=1) and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Load (lw) from the page through va_data."
@@ -40,9 +46,11 @@ coverpoints:
     bins: |-
       PTE_Abit_unset_u_d x PageType_d x Svade_enabled x load_page_fault x read_acc x mode {U-mode}
       = 7 bins on RV64, 2 on RV32
-    id: svade_access_ad_bit_clear Svadu_disabled_hw_update_falls_back_to_svade menvcfg_adue_op
+    id: Svade_access_ad_bit_clear Svadu_disabled_hw_update_falls_back_to_Svade menvcfg_adue_op
     rules:
-      - "[norm:svade_access_ad_bit_clear] [norm:Svadu_disabled_hw_update_falls_back_to_svade] [norm:menvcfg_adue_op]"
+      - Svade_access_ad_bit_clear
+      - Svadu_disabled_hw_update_falls_back_to_Svade
+      - menvcfg_adue_op
   - name: Abit_unset_write_s
     goal: Verify a store through a PTE with A=0 raises a store/AMO page fault from S-mode (Svade)
     description: "S-mode: menvcfg.ADUE=0 (cleared through T-SBI). Leaf PTE with A=0 (with D=0 and D=1) and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data."
@@ -50,9 +58,11 @@ coverpoints:
     bins: |-
       PTE_Abit_unset_s_d x PageType_d x Svade_enabled x store_page_fault x write_acc x mode {S-mode}
       = 7 bins on RV64, 2 on RV32
-    id: svade_access_ad_bit_clear Svadu_disabled_hw_update_falls_back_to_svade menvcfg_adue_op
+    id: Svade_access_ad_bit_clear Svadu_disabled_hw_update_falls_back_to_Svade menvcfg_adue_op
     rules:
-      - "[norm:svade_access_ad_bit_clear] [norm:Svadu_disabled_hw_update_falls_back_to_svade] [norm:menvcfg_adue_op]"
+      - Svade_access_ad_bit_clear
+      - Svadu_disabled_hw_update_falls_back_to_Svade
+      - menvcfg_adue_op
   - name: Abit_unset_write_u
     goal: Verify a store through a PTE with A=0 raises a store/AMO page fault from U-mode (Svade)
     description: "U-mode: menvcfg.ADUE=0 (cleared through T-SBI). Leaf PTE with A=0 (with D=0 and D=1) and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page through va_data."
@@ -60,9 +70,11 @@ coverpoints:
     bins: |-
       PTE_Abit_unset_u_d x PageType_d x Svade_enabled x store_page_fault x write_acc x mode {U-mode}
       = 7 bins on RV64, 2 on RV32
-    id: svade_access_ad_bit_clear Svadu_disabled_hw_update_falls_back_to_svade menvcfg_adue_op
+    id: Svade_access_ad_bit_clear Svadu_disabled_hw_update_falls_back_to_Svade menvcfg_adue_op
     rules:
-      - "[norm:svade_access_ad_bit_clear] [norm:Svadu_disabled_hw_update_falls_back_to_svade] [norm:menvcfg_adue_op]"
+      - Svade_access_ad_bit_clear
+      - Svadu_disabled_hw_update_falls_back_to_Svade
+      - menvcfg_adue_op
   - name: Dbit_unset_write_s
     goal: Verify a store through a PTE with D=0 raises a store/AMO page fault from S-mode (Svade)
     description: "S-mode: menvcfg.ADUE=0. Leaf PTE with A=1, D=0 and PTE.U=0, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page; loads and fetches of the same page are also done."
@@ -70,9 +82,11 @@ coverpoints:
     bins: |-
       PTE_Dbit_unset_s_d x PageType_d x Svade_enabled x store_page_fault x write_acc x mode {S-mode}
       = 7 bins on RV64, 2 on RV32
-    id: svade_access_ad_bit_clear Svadu_disabled_hw_update_falls_back_to_svade menvcfg_adue_op
+    id: Svade_access_ad_bit_clear Svadu_disabled_hw_update_falls_back_to_Svade menvcfg_adue_op
     rules:
-      - "[norm:svade_access_ad_bit_clear] [norm:Svadu_disabled_hw_update_falls_back_to_svade] [norm:menvcfg_adue_op]"
+      - Svade_access_ad_bit_clear
+      - Svadu_disabled_hw_update_falls_back_to_Svade
+      - menvcfg_adue_op
   - name: Dbit_unset_write_u
     goal: Verify a store through a PTE with D=0 raises a store/AMO page fault from U-mode (Svade)
     description: "U-mode: menvcfg.ADUE=0. Leaf PTE with A=1, D=0 and PTE.U=1, at every page-table level (4 KiB page and each superpage size of the Sv mode). Store (sw) to the page; loads and fetches of the same page are also done."
@@ -80,6 +94,8 @@ coverpoints:
     bins: |-
       PTE_Dbit_unset_u_d x PageType_d x Svade_enabled x store_page_fault x write_acc x mode {U-mode}
       = 7 bins on RV64, 2 on RV32
-    id: svade_access_ad_bit_clear Svadu_disabled_hw_update_falls_back_to_svade menvcfg_adue_op
+    id: Svade_access_ad_bit_clear Svadu_disabled_hw_update_falls_back_to_Svade menvcfg_adue_op
     rules:
-      - "[norm:svade_access_ad_bit_clear] [norm:Svadu_disabled_hw_update_falls_back_to_svade] [norm:menvcfg_adue_op]"
+      - Svade_access_ad_bit_clear
+      - Svadu_disabled_hw_update_falls_back_to_Svade
+      - menvcfg_adue_op

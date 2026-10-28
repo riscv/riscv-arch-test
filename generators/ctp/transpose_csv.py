@@ -8,6 +8,7 @@
 # requires-python = ">=3.10"
 # ///
 
+import argparse
 import csv
 import sys
 from datetime import datetime, timezone
@@ -99,49 +100,25 @@ def write_asciidoc(filepath: Path, tables: list[list[list[str]]], suite_name: st
 
 
 def process_csv_file_to_adoc(source_path: Path, dest_dir: Path, instructions_per_table: int) -> None:
-    base_name = source_path.stem
-
     with source_path.open(newline="", encoding="utf-8") as infile:
-        reader = csv.reader(infile)
-        rows = list(reader)
+        rows = list(csv.reader(infile))
 
-    transposed = transpose_csv(rows)
-    chunks = split_columns_with_blanks(transposed, instructions_per_table)
-
-    adoc_path = dest_dir / f"{base_name}.adoc"
-    write_asciidoc(adoc_path, chunks, base_name)
+    chunks = split_columns_with_blanks(transpose_csv(rows), instructions_per_table)
+    write_asciidoc(dest_dir / f"{source_path.stem}.adoc", chunks, source_path.stem)
 
 
 def main() -> None:
-    if len(sys.argv) != 4:
-        print(f"Usage: {sys.argv[0]} <source_directory> <destination_directory> <instructions_per_table>")
-        sys.exit(1)
+    ap = argparse.ArgumentParser(description="Convert CSV test plans into AsciiDoc tables")
+    ap.add_argument("--out", required=True, type=Path, help="output directory")
+    ap.add_argument("--per-table", default=12, type=int, help="maximum instructions per table")
+    ap.add_argument("csvs", nargs="+", type=Path, help="CSV test plans")
+    a = ap.parse_args()
+    if a.per_table < 1:
+        ap.error("--per-table must be at least 1")
 
-    source_dir = Path(sys.argv[1])
-    dest_dir = Path(sys.argv[2])
-    try:
-        instructions_per_table = int(sys.argv[3])
-        if instructions_per_table < 1:
-            raise ValueError
-    except ValueError:
-        print("Error: instructions_per_table must be an integer >= 1.")
-        sys.exit(1)
-
-    if not source_dir.is_dir():
-        print(f"Error: source directory '{source_dir}' does not exist.")
-        sys.exit(1)
-
-    dest_dir.mkdir(parents=True, exist_ok=True)
-
-    for entry in sorted(source_dir.iterdir()):
-        if entry.suffix.lower() == ".csv":
-            print(f"Processing {entry.name}...")
-            try:
-                process_csv_file_to_adoc(entry, dest_dir, instructions_per_table)
-            except (OSError, csv.Error) as e:
-                print(f"Error processing {entry.name}: {e}")
-
-    print("Done.")
+    a.out.mkdir(parents=True, exist_ok=True)
+    for csv_path in a.csvs:
+        process_csv_file_to_adoc(csv_path, a.out, a.per_table)
 
 
 if __name__ == "__main__":

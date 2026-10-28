@@ -5,73 +5,75 @@ normative_rule_definitions:
   - name: mhpmevent_inh_op
     coverpoint:
       [
-        "SscofpmfSm_cg/cp_minh_inhibits_mmode",
-        "SscofpmfS_cg/cp_sinh_inhibits_smode",
-        "SscofpmfU_cg/cp_uinh_inhibits_umode",
+        "Sscofpmf_Sm_cg/cp_minh_inhibits_mmode",
+        "Sscofpmf_S_cg/cp_sinh_inhibits_smode",
+        "Sscofpmf_U_cg/cp_uinh_inhibits_umode",
       ]
 
   - name: mhpmevent_of_op
     coverpoint:
-      ["{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_of_set_on_overflow}"]
+      ["{Sscofpmf_Sm_cg,Sscofpmf_S_cg,Sscofpmf_U_cg}/{cp_of_set_on_overflow}"]
 
   - name: mhpmevent_of_bit_set
     coverpoint:
-      ["{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_of_set_on_overflow}"]
+      ["{Sscofpmf_Sm_cg,Sscofpmf_S_cg,Sscofpmf_U_cg}/{cp_of_set_on_overflow}"]
 
   - name: hpmcounter_overflow
     coverpoint:
-      ["{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_of_set_on_overflow}"]
+      ["{Sscofpmf_Sm_cg,Sscofpmf_S_cg,Sscofpmf_U_cg}/{cp_of_set_on_overflow}"]
 
   - name: count_overflow_interrupt
     coverpoint:
       [
-        "{SscofpmfSm_cg,SscofpmfS_cg,SscofpmfU_cg}/{cp_of_set_on_overflow,cp_of_already_set}",
+        "{Sscofpmf_Sm_cg,Sscofpmf_S_cg,Sscofpmf_U_cg}/{cp_of_set_on_overflow,cp_of_already_set}",
       ]
 
   - name: count_overflow_trigger
-    # Representative coverpoints; also SscofpmfU_cg/{cp_overflow_hw_only, cp_lcofip_hw_only}
     coverpoint:
-      ["{SscofpmfSm_cg,SscofpmfS_cg}/{cp_overflow_hw_only, cp_lcofip_hw_only}"]
+      [
+        "{Sscofpmf_Sm_cg,Sscofpmf_S_cg,Sscofpmf_U_cg}/{cp_overflow_hw_only, cp_lcofip_hw_only}",
+      ]
 
   - name: scountovf_op
-    coverpoint: ["{SscofpmfSm_cg,SscofpmfS_cg}/{cp_scountovf_shadow}"]
+    coverpoint: ["{Sscofpmf_Sm_cg,Sscofpmf_S_cg}/{cp_scountovf_shadow}"]
 
   - name: scountovf_mmode_read_access
     coverpoint:
       [
-        "SscofpmfSm_cg/cp_scountovf_mcounteren",
-        "SscofpmfSm_cg/cp_sscofpmf_access",
+        "Sscofpmf_Sm_cg/cp_scountovf_mcounteren",
+        "Sscofpmf_Sm_cg/cp_sscofpmf_access",
       ]
 
   - name: scountovf_smode_read_access
     coverpoint:
       [
-        "SscofpmfS_cg/cp_scountovf_mcounteren",
-        "SscofpmfS_cg/cp_sscofpmf_access",
+        "Sscofpmf_S_cg/cp_scountovf_mcounteren",
+        "Sscofpmf_S_cg/cp_sscofpmf_access",
       ]
 
   - name: scountovf_smode_read_access_control
-    coverpoint: ["SscofpmfS_cg/cp_scountovf_mcounteren"]
+    coverpoint: ["Sscofpmf_S_cg/cp_scountovf_mcounteren"]
 
   - name: mhpmeventh_presence
-    coverpoint: ["SscofpmfSm_cg/cp_sscofpmf_access"]
+    coverpoint: ["Sscofpmf_Sm_cg/cp_sscofpmf_access"]
 
   # If the ext:sscofpmf[] extension is implemented, bits csr:mip[lcofip] and
   # csr:mie[lcofie] are the interrupt-pending and interrupt-enable bits for
   # local-counter-overflow interrupts.
   - name: mip_lcofip_mie_lcofie_op
-    coverpoint: ["SscofpmfSm_cg/cp_lcofi_m"]
+    coverpoint: ["Sscofpmf_Sm_cg/cp_lcofi_m"]
   # reflects the occurrence of a local counter-overflow overflow interrupt request
   # resulting from any of the mhpmeventn.OF bits being set.
   - name: mip_lcofip_reflects_overflow
-    coverpoint: ["SscofpmfSm_cg/cp_lcofi_m"]
+    coverpoint: ["Sscofpmf_Sm_cg/cp_of_set_on_overflow"]
   # When an OF bit is set, it eventually, but not necessarily immediately, sets the LCOFIP
   # bit in the mip/sip registers.
   - name: lcofip_op
-    coverpoint: ["SscofpmfSm_cg/cp_lcofi_m", "SscofpmfS_cg/cp_lcofi_sip_s"]
+    coverpoint:
+      ["{Sscofpmf_Sm_cg,Sscofpmf_S_cg,Sscofpmf_U_cg}/{cp_of_set_on_overflow}"]
   # csr::[lcofip] is read-write in csr:mip[]
   - name: mip_lcofip_acc
-    coverpoint: ["SscofpmfSm_cg/cp_lcofi_m"]
+    coverpoint: ["Sscofpmf_Sm_cg/cp_lcofi_m"]
 
   # If the Sscofpmf extension is implemented, bits sip.LCOFIP and sie.LCOFIE are the
   # interrupt-pending and interrupt-enable bits for local-counter-overflow interrupts.
@@ -80,16 +82,21 @@ normative_rule_definitions:
   # the Sscofpmf extension is not implemented, sip.LCOFIP and sie.LCOFIE are read-only
   # zeros.
   - name: sip_sie_Sscofpmf
-    coverpoint: ["SscofpmfS_cg/cp_lcofi_sip_s", "SscofpmfU_cg/cp_lcofi_sip_u"]
+    coverpoint:
+      [
+        "Sscofpmf_S_cg/cp_lcofi_sip_s",
+        "Sscofpmf_S_cg/cp_of_set_on_overflow",
+        "Sscofpmf_U_cg/cp_lcofi_sip_u",
+      ]
 
   - name: intr_m_mode_pri
-    coverpoint: ["SscofpmfSm_cg/cp_lcofip_priority_m"]
+    coverpoint: ["Sscofpmf_Sm_cg/cp_lcofip_priority_m"]
 
   # Multiple simultaneous interrupts destined for supervisor mode are handled in the
   # following decreasing priority order: SEI, SSI, STI, LCOFI.
   - name: sip_sie_priority_bit_order
-    coverpoint: ["SscofpmfS_cg/cp_lcofip_priority_s"]
+    coverpoint: ["Sscofpmf_S_cg/cp_lcofip_priority_s"]
 
-  # VS-mode is out of scope for these suites: the SscofpmfSm/S/U suites never run in VS-mode.
+  # VS-mode is out of scope for these suites: the Sscofpmf_Sm/S/U groups never run in VS-mode.
   - name: scountovf_vsmode_read_access
     coverpoint: [""]

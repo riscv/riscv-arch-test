@@ -14,7 +14,7 @@ from testgen.priv.extensions.ZpmCommon import (
     IMAGE_TABLES,
     MODE_GUARDS,
     MODES,
-    PMM_CONFIGS,
+    PMLEN_BY_PMM,
     SPLITS,
     build_4k_image_map,
     csr_op,
@@ -22,10 +22,12 @@ from testgen.priv.extensions.ZpmCommon import (
     data_slvl_tables,
     generate_edge_case_tests,
     generate_instruction_sweep_tests,
+    generate_mprv_lower_mode_tests,
     generate_sign_extension_tests,
     generate_xlen_change_tests,
     generate_zicfiss_tests,
     map_pm_hi_page,
+    mprv_data_section,
     satp_clear,
     satp_setup,
     set_mxr,
@@ -36,6 +38,50 @@ from testgen.priv.extensions.ZpmCommon import (
 from testgen.priv.registry import add_priv_test_generator
 
 COVERGROUP = "Ssnpm_cg"
+SM_COVERGROUP = "Ssnpm_Sm_cg"
+
+
+def _ssnpm_sweep(test_data: TestData, pmm: int) -> list[TestChunk]:
+    """Build the chunks for one senvcfg.PMM setting, across every satp mode."""
+    pmlen = PMLEN_BY_PMM[pmm]
+    label = f"pmm{pmm:02b}"
+    chunks = []
+    for mode in MODES:
+        # Each PMM setting is split into three files to keep every test under 100k instructions.
+        # sweep_lowtags and sweep_hightags run every load, store, AMO, CBO and vector instruction through
+        # a tagged pointer: the first with tags that leave bit 63 clear, the second with tags that set it.
+        # edgecases holds the remaining checks, such as misaligned accesses, JALR, access faults and MXR.
+        for split, uppers in SPLITS:
+            tc = test_data.begin_test_chunk(split_name=f"{mode}_{label}_{split}")
+            guard = MODE_GUARDS[mode]
+            if guard:
+                tc.raw_data.append(f"#ifdef {guard}")
+            tc.raw_data.extend(data_page("pm_lo_page"))
+            if mode != "bare":
+                tc.raw_data.extend(
+                    [
+                        *data_page("pm_hi_page"),
+                        *data_slvl_tables(mode),
+                        *data_slvl_tables(mode, IMAGE_TABLES),
+                        *ss_data_page(),
+                    ]
+                )
+            if guard:
+                tc.raw_data.append(f"#endif // {guard}")
+            tc.code = _ssnpm_chunk(mode, pmm, pmlen, label, split, uppers, test_data)
+            chunks.append(test_data.end_test_chunk())
+    return chunks
+
+
+# One generator per PMLEN. The header params select the file only when the config supports that PMLEN.
+@add_priv_test_generator(
+    "Ssnpm",
+    required_extensions=["Ssnpm"],
+    march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz", "Zicfiss"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+)
+def make_ssnpm_pmm00(test_data: TestData) -> list[TestChunk]:
+    return _ssnpm_sweep(test_data, 0b00)
 
 
 @add_priv_test_generator(
@@ -43,35 +89,21 @@ COVERGROUP = "Ssnpm_cg"
     required_extensions=["Ssnpm"],
     march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz", "Zicfiss"],
     extra_defines=["#define BOOT_TO_SMODE"],
+    params=["SUPPORTED_PMLEN_SSNPM: 7"],
 )
-def make_ssnpm(test_data: TestData) -> list[TestChunk]:
-    chunks = []
-    for mode in MODES:
-        for pmm, pmlen, label in PMM_CONFIGS:
-            # Each PMM setting is split into three files to keep every test under 100k instructions.
-            # sweep_lowtags and sweep_hightags run every load, store, AMO, CBO and vector instruction through
-            # a tagged pointer: the first with tags that leave bit 63 clear, the second with tags that set it.
-            # edgecases holds the remaining checks, such as misaligned accesses, JALR, access faults and MXR.
-            for split, uppers in SPLITS:
-                tc = test_data.begin_test_chunk(split_name=f"{mode}_{label}_{split}")
-                guard = MODE_GUARDS[mode]
-                if guard:
-                    tc.raw_data.append(f"#ifdef {guard}")
-                tc.raw_data.extend(data_page("pm_lo_page"))
-                if mode != "bare":
-                    tc.raw_data.extend(
-                        [
-                            *data_page("pm_hi_page"),
-                            *data_slvl_tables(mode),
-                            *data_slvl_tables(mode, IMAGE_TABLES),
-                            *ss_data_page(),
-                        ]
-                    )
-                if guard:
-                    tc.raw_data.append(f"#endif // {guard}")
-                tc.code = _ssnpm_chunk(mode, pmm, pmlen, label, split, uppers, test_data)
-                chunks.append(test_data.end_test_chunk())
-    return chunks
+def make_ssnpm_pmm10(test_data: TestData) -> list[TestChunk]:
+    return _ssnpm_sweep(test_data, 0b10)
+
+
+@add_priv_test_generator(
+    "Ssnpm",
+    required_extensions=["Ssnpm"],
+    march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz", "Zicfiss"],
+    extra_defines=["#define BOOT_TO_SMODE"],
+    params=["SUPPORTED_PMLEN_SSNPM: 16"],
+)
+def make_ssnpm_pmm11(test_data: TestData) -> list[TestChunk]:
+    return _ssnpm_sweep(test_data, 0b11)
 
 
 def _ssnpm_chunk(
@@ -176,3 +208,26 @@ def _ssnpm_chunk(
     if guard:
         lines.append(f"#endif // {guard}")
     return lines
+
+
+# M-mode half of Ssnpm: MPRV=1 with MPP=U. The probes run in M-mode but take U-mode's effective
+# privilege, so senvcfg.PMM governs the pointer masking and mseccfg.PMM does not apply.
+@add_priv_test_generator(
+    "Ssnpm",
+    required_extensions=["Ssnpm", "Sm"],
+    march_extensions=["I", "A", "F", "D", "V", "Zabha", "Zacas", "Zicbom", "Zicbop", "Zicboz"],
+    extra_defines=["#define BOOT_TO_MMODE"],
+)
+def make_ssnpmsm(test_data: TestData) -> list[TestChunk]:
+    tc = test_data.begin_test_chunk(split_name="Sm")
+    tc.raw_data.extend(mprv_data_section())
+    tc.code = [
+        *generate_mprv_lower_mode_tests(
+            test_data,
+            SM_COVERGROUP,
+            mpp="PRV_U",
+            pmm_csr="senvcfg",
+            cp="cp_pm_mprv_mpp_u",
+        ),
+    ]
+    return [test_data.end_test_chunk()]

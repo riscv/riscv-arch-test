@@ -10,9 +10,10 @@ coverpoints:
     bins: |-
       satp_bare x read_acc x mode {S/U-mode}
       = 2 bins on RV64, 2 on RV32
-    id: satp_mode_op satp_mode_sz satp_mode_acc svbare_satp_mode_bare
+    id: satp_mode svbare_satp_mode_bare
     rules:
-      - "[norm:satp_mode_op] [norm:satp_mode_sz] [norm:satp_mode_acc] [norm:svbare_satp_mode_bare]"
+      - satp_mode
+      - svbare_satp_mode_bare
   - name: cp_satp_bare_store
     goal: Verify a store with satp.MODE=Bare uses the physical address in S-mode and U-mode
     description: "S-mode: write satp = 0 and read it back. Store (sw) to the page at the physical address of rvtest_data_1 in S-mode, then in U-mode (RVTEST_TSBI_GOTO_UMODE)."
@@ -20,9 +21,10 @@ coverpoints:
     bins: |-
       satp_bare x write_acc x mode {S/U-mode}
       = 2 bins on RV64, 2 on RV32
-    id: satp_mode_op satp_mode_sz satp_mode_acc svbare_satp_mode_bare
+    id: satp_mode svbare_satp_mode_bare
     rules:
-      - "[norm:satp_mode_op] [norm:satp_mode_sz] [norm:satp_mode_acc] [norm:svbare_satp_mode_bare]"
+      - satp_mode
+      - svbare_satp_mode_bare
   - name: cp_satp_bare_exec
     goal: Verify an instruction fetch with satp.MODE=Bare uses the physical address in S-mode and U-mode
     description: "S-mode: write satp = 0 and read it back. Jump (jalr) into the page at the physical address of rvtest_data_1 in S-mode, then in U-mode (RVTEST_TSBI_GOTO_UMODE)."
@@ -30,6 +32,7 @@ coverpoints:
     bins: |-
       satp_bare x exec_acc x mode {S/U-mode}
       = 2 bins on RV64, 2 on RV32
-    id: satp_mode_op satp_mode_sz satp_mode_acc svbare_satp_mode_bare
+    id: satp_mode svbare_satp_mode_bare
     rules:
-      - "[norm:satp_mode_op] [norm:satp_mode_sz] [norm:satp_mode_acc] [norm:svbare_satp_mode_bare]"
+      - satp_mode
+      - svbare_satp_mode_bare

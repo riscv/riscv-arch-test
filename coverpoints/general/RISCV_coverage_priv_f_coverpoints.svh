@@ -7,7 +7,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // Description:
-//   Floating-point CSR and instruction coverpoints common to Sm_F_cg and S_F_cg
+//   Floating-point CSR and instruction coverpoints common to Sm_F_cg, S_F_cg, H_F_cg and U_F_cg
 //   Coverpoints that name mstatus/sstatus stay in each covergroup.
 //
 ///////////////////////////////////////////
@@ -42,7 +42,13 @@ deterministic_instrs: coverpoint ins.current.insn {
     wildcard bins fsgnj        = {FSGNJ_S};
     wildcard bins fmv_f_x      = {FMV_S_X};
     wildcard bins fmin         = {FMIN_S};
+    wildcard bins fcvt_w_s     = {FCVT_W_S};
+    wildcard bins fcvt_wu_s    = {FCVT_WU_S};
+    wildcard bins feq          = {FEQ_S};
     `ifdef ZFA_SUPPORTED
+        `ifdef D_SUPPORTED
+            wildcard bins fcvtmod_w_d  = {FCVTMOD_W_D};
+        `endif
         wildcard bins fli          = {FLI_S};
         wildcard bins fround       = {FROUND_S};
         `ifdef UDB_MXLEN_32
@@ -64,8 +70,6 @@ deterministic_instrs: coverpoint ins.current.insn {
 }
 nondeterministic_instrs: coverpoint ins.current.insn {
     wildcard bins fsw          = {FSW};
-    wildcard bins fcvt_w_s     = {FCVT_W_S};
-    wildcard bins feq          = {FEQ_S};
     wildcard bins fmv_x_f      = {FMV_X_S};
     wildcard bins fclass       = {FCLASS_S};
     `ifdef ZFA_SUPPORTED

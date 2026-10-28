@@ -31,7 +31,8 @@
 
 - `make help`: list supported targets and variables.
 - `make tests`: generate assembly tests and coverpoints without compiling them.
-- `make`: generate tests and build ELFs for the default Spike RV32 and RV64 configurations.
+- `CONFIG_FILES=config/spike/spike-rv64-max/test_config.yaml make`: build tests and ELFs for one or more configs. `CONFIG_FILES` is required for `make`.
+- `make coverage` uses `CONFIG_FILES` if set. Otherwise it uses the Sail rv32/rv64 max configs.
 - `CONFIG_FILES=config/cores/<vendor>/<config>/test_config.yaml make`: build tests for one DUT configuration.
 - `make <config-target>`: build and run one or more configurations discovered from `run_cmd.txt`.
 - `EXTENSIONS=I,M make tests` or `EXTENSIONS=I make <config-target>`: restrict work to selected suites. `EXCLUDE_EXTENSIONS=Sm` applies a negative filter.

@@ -97,6 +97,12 @@ SEW_DEPENDENT_CPS = {
     "cr_vl_lmul",
 }
 
+# Coverpoints whose template name would otherwise match SEW_DEPENDENT_CPS, but are not
+SEW_INDEPENDENT_CPS = {
+    "cp_custom_vindexCorners_ei16",
+    "cp_custom_vindexVV_ei16",
+}
+
 # Vector extension prefixes used to identify vector architectures.
 VECTOR_PREFIXES = ("Vx", "Zv", "Vls", "Vf")
 
@@ -116,6 +122,9 @@ def _sew_variants_for(arch: str) -> list[str] | None:
     the base entry.
     """
     if any(prefix in arch for prefix in ("Vx", "Vls", "Zvbb", "Zvkb")):
+        return ["8", "16", "32", "64"]
+    if arch == "Vf":
+        # SEW=8 has only Zvfh's conversions between 8-bit integers and binary16
         return ["8", "16", "32", "64"]
     if "Vf" in arch:
         return ["16", "32", "64"]  # SEW 8 is not supported for vector floating point
@@ -575,7 +584,7 @@ def _resolve_coverpoint(cp: str, arch: str, instr: str) -> str | None:
         cp = re.sub(r"_sew_ge\d+$", "", cp)
 
     # Append SEW suffix for SEW-dependent coverpoints.
-    if any(sew_cp in cp for sew_cp in SEW_DEPENDENT_CPS):
+    if any(sew_cp in cp and cp not in SEW_INDEPENDENT_CPS for sew_cp in SEW_DEPENDENT_CPS):
         cp = cp + "_sew" + _get_effew(arch)
 
     # _eew_eq_sew[_lte{N}]: only emit when the indexed-LS EEW equals the arch SEW.
@@ -748,7 +757,7 @@ def _gen_covergroup_samples(
                 lines.append(customize_template(templates, "covergroup_sample_vector", arch, instr))
         elif vector_sample:
             lines.append(customize_template(templates, "covergroup_sample_vector", arch, instr))
-        elif arch != "E":  # E currently breaks coverage
+        else:
             call = customize_template(templates, "covergroup_case_sample", arch, instr)
             lines.append(_gen_sample_arm(templates, instr, [call]))
 

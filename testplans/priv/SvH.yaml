@@ -138,7 +138,7 @@ coverpoints:
     notes: |-
       reviewed: y
       coverpoint done: ✅ Done
-  - name: cp_vsatp_spages_sum_rwx
+  - name: cp_vsatp_spages_sum
     goal: RWX on VS-mode pages, vsstaus.SUM=0
     description: |-
       Environment: PTE.U=0. vsstatus.SUM=0. RWX = {001, 011, 100, 101, 111} vsatp.MODE={Sv32 orSv39}
@@ -158,7 +158,7 @@ coverpoints:
     bins: "{read, write, exec} * 2 RWX * 2 U * 2 SUM * 2 MXR * 2 modes"
     id: vsstatus-mxr_vm
     rules:
-      - The vsstatus field MXR, which makes execute-only pages readable by explicit loads, only overrides VS-stage page protection. Setting MXR at VS-level does not override guest-physical page protections.
+      - vsstatus_mxr_vm
     notes: |-
       reviewed: y
       coverpoint done: ✅ Done
@@ -264,7 +264,7 @@ coverpoints:
     notes: |-
       reviewed: y
       coverpoint done: ✅ Done
-  - name: hgatp_pte_g_bit
+  - name: cp_hgatp_pte_g_bit
     goal: PTE.G bit is reserved in G-stage PTEs
     description: |-
       Environment: Set G-stage PTE.G i(bit not used by Sv*x4).

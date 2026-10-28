@@ -12,7 +12,9 @@ from CHIPS Alliance. The configuration runs the RTL under Verilator, pinned to c
 | -------------------- | ------------------------------------------------------ | ------------------- |
 | `veer-eh2-rv32imacb` | RV32IMAC_Zicsr_Zifencei_Zba_Zbb_Zbc_Zbs_Zbkb_Zbkc_Zbkx | M only, single hart |
 
-The core is built with `atomic_enable=1`, `num_threads=1`, and every `bitmanip_*` option set to 1.
+The core is built with `atomic_enable=1`, `num_threads=1`, `dccm_size=256`, and every `bitmanip_*`
+option set to 1. EH2 executes AMOs and LR/SC only in the DCCM, so `link.ld` places the test `.data`
+section there; the DCCM is enlarged from the default 64 KB because some tests' `.data` exceeds 64 KB.
 
 ## Building and running
 

@@ -8,10 +8,10 @@ coverpoints:
     expectation: If msstateen = 0, read back 0.  If mssstateen = 1, read back value written. Note that writing msstateen = 1s won't actually set most of the bits to 1.
     bins: 2 msstateen * 4 CSRs * 64 walking ones/zero
     rules:
-      - smstateen_mmode_rv64_csrs
+      - mstateen_rv64_csrs
       - stateen_warl_access
       - sstateen_ro1_bits
-      - sstateen_bit_correspondence
+      - mstateen_bit_correspondence
   - name: cp_csr_illegal_accesses
     goal: Test that each stateen CSR allows read/write access from its own and higher privilege modes and denies read/write access from lower privilege modes
     description: |-
@@ -26,7 +26,7 @@ coverpoints:
     bins: 2mode * 4CSRs * 1value * 2 R/W
     rules:
       - stateen_op
-      - smstateen_illegal_state_access
+      - stateen_illegal_state_access
       - sstateen_user_access_control
   - name: cp_envcfg
     goal: envcfg controls access to senvcfg
@@ -34,7 +34,7 @@ coverpoints:
     expectation: Illegal instruction if 0, else successful
     bins: 2 states x 2 accesses
     rules:
-      - mstateen0-envcfg_op
+      - mstateen0_envcfg_op
   - name: cp_fcsr_lower
     goal: fcsr controls access to fcsr when misa.F = 0
     description: |-
@@ -43,8 +43,16 @@ coverpoints:
     expectation: Illegal instruction if 0, else successful
     bins: 2 states x 2 accesses
     rules:
-      - stateen0-fcsr0_misa-f0_illegal_fpu_instr
-  - name: cp_jvt_lower
+      - stateen0_fcsr0_misa_f0_illegal_fpu_instr
+  - name: cp_fcsr_fp_instrs
+    goal: fcsr controls floating-point instructions when misa.F = 0
+    description: |-
+      If Zfinx is supported:
+      with misa.F = 0 and sstateen0.fcsr = {0,1}, execute fadd.s, fcvt.w.s, fcvt.s.w, and fclass.s from S and U-mode
+    expectation: Illegal instruction if 0, else successful
+    rules:
+      - stateen0_fcsr0_misa_f0_illegal_fpu_instr
+  - name: cp_jvt
     goal: jvt controls access
     description: |-
       If Zcmt is supported:
@@ -52,7 +60,7 @@ coverpoints:
     expectation: Illegal instruction if 0, else successful
     bins: 2 states x 2 accesses
     rules:
-      - stateen0-jvt_op
+      - stateen0_jvt_op
       - sstateen_user_access_control
   - heading: "Note: All of these tests are performed in S-mode unless otherwise noted."
   - heading: "Note: mstateen0.SE0 must be 1 (else sstateen0 is inaccessible)."

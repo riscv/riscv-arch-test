@@ -24,7 +24,7 @@ normative_rule_definitions:
   # writing a new value obtained from the three least-significant bits of integer register
   # rs1 into csr:frm[]. insn:frflags[] and insn:fsflags[] are defined analogously for the
   # Accrued Exception Flags field csr:fflags[] (csr:fcsr[] bits 4&#8205;&#8211;&#8205;0).
-  - name: fflags_frm_op_sz_acc
+  - names: [fflags_op_sz_acc, frm_op_sz_acc]
     coverpoint:
       [
         "ZicsrF_cg/{cp_fcsr_frm_write, cp_frm_write, cp_fcsr_fflags_write, cp_fflags_write, cp_fcsr_swap}",

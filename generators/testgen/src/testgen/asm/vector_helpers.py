@@ -14,7 +14,7 @@ from typing import Literal
 from testgen.asm.helpers import write_sigupd
 from testgen.constants import INDENT, VLEN_MAX
 from testgen.data.params import InstructionParams, PresetMask
-from testgen.data.random import random_int
+from testgen.data.random import random_int, random_range
 from testgen.data.state import TestData
 
 
@@ -483,22 +483,6 @@ def load_vxrm(vxrm: str) -> list[str]:
     ]
 
 
-def write_sigupd_vxsat(test_data: TestData) -> list[str]:
-    assert test_data.test_chunk is not None, "No active test chunk — call begin_test_chunk() first"
-
-    test_data.test_chunk.sigupd_count += 1
-
-    sig_reg = test_data.int_regs.sig_reg
-    link_reg = test_data.int_regs.link_reg
-    temp_reg = test_data.int_regs.temp_reg
-    label = test_data.current_testcase_label
-
-    return [
-        "# Run SIGUPD to see if vxsat was correctly set",
-        f"RVTEST_SIGUPD_VXSAT(x{sig_reg}, x{link_reg}, x{temp_reg}, {label}, {label}_str)",
-    ]
-
-
 @dataclass
 class VectorLoad:
     """
@@ -776,3 +760,152 @@ def handle_vector_fp(setup: list[str], check: list[str], frm_val: int, test_data
             break
     else:
         check.insert(0, "fsrmi 0x0")
+
+
+def prep_vstart(
+    test_data: TestData,
+    params: InstructionParams,
+    vstart_val: Literal["one", "vlmaxm1", "vlmaxd2", "random", "vstart_gt_vl"],
+) -> list[str]:
+    """
+    Prepares vl and vstart for the given value. For vstart_val in {one, vlmaxm1, vlmaxd2, random}, vstart
+    will be less than the resulting vl. For vstart_val = vstart_gt_vl, it generates vstart and vl such that
+    0 < vl < vstart < vlmax.
+    """
+
+    assert params.lmul is not None, "LMUL must be provided for vector tests"
+    assert params.sew is not None, "SEW must be provided for vector tests"
+
+    vstart_reg = test_data.int_regs.get_register(exclude_regs=[0])
+    lines = [f"# Load vstart={vstart_val}"]
+
+    match vstart_val:
+        case "one":
+            lines.append(f"LI (x{vstart_reg}, 1)")
+        case "vlmaxm1":
+            lines.extend(
+                [
+                    f"vsetvli x{vstart_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, ta, ma",
+                    f"addi x{vstart_reg}, x{vstart_reg}, -1",
+                ]
+            )
+        case "vlmaxd2":
+            lines.extend(
+                [
+                    f"vsetvli x{vstart_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, ta, ma",
+                    f"srli x{vstart_reg}, x{vstart_reg}, 1",
+                ]
+            )
+        case "random":
+            vlmax_reg, temp_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+
+            lines.extend(
+                [
+                    f"vsetvli x{vlmax_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, ta, ma",
+                    f"LI (x{vstart_reg}, {random_range(0, VLEN_MAX - 3)})",
+                    "#ifdef M_SUPPORTED",
+                    f"{INDENT}# On cores with M, using remu to give legal vstart values is more uniformly random",
+                    f"{INDENT}.option push",
+                    f"{INDENT}.option arch, +m",
+                    f"{INDENT}addi x{vlmax_reg}, x{vlmax_reg}, -2",
+                    f"{INDENT}bgt x{vlmax_reg}, x0, 1f",
+                    f"{INDENT}addi x{vstart_reg}, x{vlmax_reg}, 1  # if vlmax is too low, default to vlmax-1",
+                    f"{INDENT}j 2f",
+                    "1:",
+                    f"{INDENT}remu x{vstart_reg}, x{vstart_reg}, x{vlmax_reg}",
+                    f"{INDENT}addi x{vstart_reg}, x{vstart_reg}, 2",
+                    "2:",
+                    f"{INDENT}.option pop",
+                    "#else",
+                    f"{INDENT}addi x{vlmax_reg}, x{vlmax_reg}, -1",
+                    f"{INDENT}and x{vstart_reg}, x{vstart_reg}, x{vlmax_reg}",
+                    f"{INDENT}# Ensure that we have an interesting value for vstart",
+                    f"{INDENT}LI (x{temp_reg}, 2)",
+                    f"{INDENT}bge x{vstart_reg}, x{temp_reg}, 1f",
+                    f"{INDENT}addi x{vstart_reg}, x{vstart_reg}, 2",
+                    "1:",
+                    f"{INDENT}# Clamp to vlmax-1",
+                    f"{INDENT}ble x{vstart_reg}, x{vlmax_reg}, 2f",
+                    f"{INDENT}addi x{vstart_reg}, x{vlmax_reg}, 0",
+                    "2:",
+                    "#endif",
+                ]
+            )
+
+            test_data.int_regs.return_registers([vlmax_reg, temp_reg])
+        case "vstart_gt_vl":
+            # Prepare a vstart and vl such that 0 < vl < vstart < vlmax
+            vl_reg, vlmax_reg = test_data.int_regs.get_registers(2, exclude_regs=[0])
+            # Ensure that these differ in the last bit and are at least 1. Also, ensure that rand_vl will be
+            # non-zero mod vlmax (provided vlmax > 2, which is a requirement for the bounds we want)
+            rand_vstart = random_range(1, VLEN_MAX - 1) | 1
+            rand_vl = (random_range(2, VLEN_MAX - 1) & ~1) | 2
+            lines.extend(
+                [
+                    "# Load random values for vl and vstart, and get their remainder mod vlmax",
+                    f"vsetvli x{vlmax_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, ta, ma",
+                    f"addi x{vlmax_reg}, x{vlmax_reg}, -1",
+                    f"LI (x{vstart_reg}, {rand_vstart})",
+                    f"and x{vstart_reg}, x{vstart_reg}, x{vlmax_reg}",
+                    f"LI (x{vl_reg}, {rand_vl})",
+                    f"and x{vl_reg}, x{vl_reg}, x{vlmax_reg}",
+                    "# Set vl < vstart",
+                    f"bgt x{vstart_reg}, x{vl_reg}, 1f",
+                    f"add x{vlmax_reg}, x{vstart_reg}, x0",
+                    f"add x{vstart_reg}, x{vl_reg}, x0",
+                    f"add x{vl_reg}, x{vlmax_reg}, x0",
+                    "1:",
+                    reload_vtype(params, f"x{vl_reg}"),
+                ]
+            )
+            test_data.int_regs.return_registers([vlmax_reg, vl_reg])
+
+    lines.append(f"csrw vstart, x{vstart_reg}")
+    test_data.int_regs.return_register(vstart_reg)
+
+    return lines
+
+
+def index_register_safety(
+    index_reg: int,
+    index_eew: int,
+    segments: int,
+    random_vl_reg: str,
+    test_data: TestData,
+    params: InstructionParams,
+    align_indices: bool = True,
+) -> list[str]:
+    assert params.lmul is not None, "LMUL must be set for vector instructions"
+    assert params.sew is not None, "SEW must be set for vector instructions"
+
+    lines = [
+        "# Ensure that the data in vs2 is within the range [0, 2*vlmax) and sew-aligned",
+        f"vsetvli x{params.temp_reg}, x0, e{params.sew}, m{get_lmul_flag(params.lmul)}, ta, ma",
+        f"add x{params.temp_reg}, x{params.temp_reg}, x{params.temp_reg}",
+    ]
+
+    index_emul = params.lmul * index_eew / params.sew
+    if params.vl == "vlmax":
+        temp_reg2 = test_data.int_regs.get_register(exclude_regs=[0])
+        lines.append(f"vsetvli x{temp_reg2}, x0, e{index_eew}, m{get_lmul_flag(index_emul)}, tu, mu")
+        test_data.int_regs.return_register(temp_reg2)
+    elif params.vl == "random":
+        lines.append(f"vsetvli x0, {random_vl_reg}, e{index_eew}, m{get_lmul_flag(index_emul)}, tu, mu")
+    else:
+        assert isinstance(params.vl, int)
+        lines.append(f"vsetivli x0, {params.vl}, e{index_eew}, m{get_lmul_flag(index_emul)}, tu, mu")
+
+    # Construct a factor that shifts an index so that the correct alignment is read
+    # This will not overflow the specified space as the vlmax calculation implicitly
+    # takes into account SEW
+    index_alignment_factor = params.sew // 8 * segments
+    # Turn this into a bit shift for the nearest power of 2
+    index_alignment_shift = index_alignment_factor.bit_length() - 1
+    if 2**index_alignment_shift < index_alignment_factor:
+        index_alignment_shift += 1
+
+    lines.append(f"vremu.vx v{index_reg}, v{index_reg}, x{params.temp_reg}")
+    if align_indices:
+        lines.append(f"vsll.vi v{index_reg}, v{index_reg}, {index_alignment_shift}")
+
+    return lines

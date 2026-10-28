@@ -1,5 +1,5 @@
 {
-  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.15/sail_riscv_config_schema.json",
+  "$schema": "https://github.com/riscv/sail-riscv/releases/download/0.16/sail_riscv_config_schema.json",
   "base": {
     "xlen": 32,
     // Whether the base ISA is E, in which case accessing
@@ -215,6 +215,29 @@
     // bitvectors in the model and since it is unlikely real implementations
     // will have lower values.
     "physaddr_bits": 34,
+    // Whether physical addresses reported in `xtval` are truncated to
+    // `physaddr_bits` can be specified.  When valid physical
+    // addresses result from truncating invalid physical addresses to
+    // `physaddr_bits`, the parameter below may specify a constant
+    // value of `xlen` bits that should be reported as an invalid
+    // address instead in `xtval`. The model does not currently
+    // support arbitrary transformations of invalid physical
+    // addresses.
+    //
+    // Any specified invalid address need not fit within the
+    // `physaddr_bits` specified above, and it should not lie within
+    // any specified PMA region.  The value should be specified as
+    //   `{"Some": {"len": "xlen", "value": "0x<constant>"}}`.
+    // Note that if pointer masking extensions are enabled, the
+    // specified address needs to be a valid pointer-masked address
+    // for each supported `PMLEN`.
+    //
+    // If no truncation should take place, use `{"None": null}`.  In
+    // this case, the original faulting address is reported without
+    // truncation.
+    "invalid_physical_address": {
+      "None": null
+    },
     "asidlen": 9,
     "vmidlen": 7,
     "pmp": {
@@ -611,6 +634,8 @@
       "mutable_misa": false,
       "supported": false,
       "geilen": 31,
+      // Whether an implicit access to a VS-stage PTE sets the D bit of a writable G-stage PTE
+      "implicit_vs_pte_access_sets_gstage_d": false,
       "guest_page_fault_writes_htval": false,
       // Whether a trap into M or HS mode caused by the specified exception
       // writes the transformed trapping instruction to `mtinst`/`htinst`.
@@ -955,8 +980,43 @@
       "Ssstateen": {
         "supported": false
       },
-      "C_readonly_zero": true,
-      "SE0_readonly_zero": false
+      // Each stateen bit is one of CSRBit_Writable,
+      // CSRBit_ReadOnlyZero or CSRBit_ReadOnlyOne.
+      // Bits for features the hart does not support must be
+      // CSRBit_ReadOnlyZero. Bits that depend on misa (ENVCFG
+      // on misa.S, P1P13 on misa.H) also read as zero while that
+      // extension is disabled at run time.
+      "mstateen0": {
+        "SE0": "CSRBit_Writable",
+        "ENVCFG": "CSRBit_ReadOnlyZero",
+        "CONTEXT": "CSRBit_ReadOnlyZero",
+        "P1P13": "CSRBit_ReadOnlyZero",
+        "SRMCFG": "CSRBit_ReadOnlyZero",
+        "FCSR": "CSRBit_ReadOnlyZero",
+        "C": "CSRBit_ReadOnlyZero"
+      },
+      // Bit 63 of mstateen1, mstateen2 and mstateen3. These can only be
+      // read-only zero if H is not supported.
+      "mstateen1": {
+        "SE1": "CSRBit_Writable"
+      },
+      "mstateen2": {
+        "SE2": "CSRBit_Writable"
+      },
+      "mstateen3": {
+        "SE3": "CSRBit_Writable"
+      },
+      // hstateen0.SE0 is always writable.
+      "hstateen0": {
+        "ENVCFG": "CSRBit_ReadOnlyZero",
+        "CONTEXT": "CSRBit_ReadOnlyZero",
+        "FCSR": "CSRBit_ReadOnlyZero",
+        "C": "CSRBit_ReadOnlyZero"
+      },
+      "sstateen0": {
+        "FCSR": "CSRBit_ReadOnlyZero",
+        "C": "CSRBit_ReadOnlyZero"
+      }
     },
     "Ssqosid": {
       "supported": false,
@@ -1007,6 +1067,41 @@
         // Triggers for reserved interrupts are not supported.  This
         // value is ignored when `itrigger` is not supported.
         "supported_interrupts": { "len": "xlen", "value": "0" }
+      },
+      "mcontrol6": {
+        "supported": false,
+        // If `mcontrol6` is supported, this value needs to be in the range
+        // 0 < `maskmax6` < XLEN.
+        "maskmax6": 31,
+        // Whether an address selection matches all the accessed addresses.
+        // If set to `false`, it matches only the lowest address.
+        "address_select_matches_all_addresses": true,
+        // Maximum length of a chain. This cannot exceed the number of
+        // triggers.  A value of 0 implies chains are not supported.
+        "max_chain_length": 4
+      },
+      "textra": {
+        // Which context matches are supported. Writes of unsupported
+        // `mhselect` and `sselect` values are legalized to 0 (ignore).
+        "mhselect": {
+          // Values 1, 4 and 5, match on `mcontext`. Requires the
+          // `mcontext` CSR. Values 1 and 5 also require H.
+          "mcontext_match": false,
+          // Values 2 and 6, match on the VMID in `hgatp`. Requires H.
+          "vmid_match": false
+        },
+        "sselect": {
+          // Value 1, match on `scontext`. Requires S and the `scontext`
+          // CSR.
+          "scontext_match": false,
+          // Value 2, match on the ASID in `satp` or `vsatp`. Requires S.
+          "asid_match": true
+        },
+        // The number of implemented `mhvalue` and `svalue` bits. Bits
+        // above these are read only zero. At most 6 and 16 on RV32,
+        // 13 and 32 on RV64.
+        "mhvalue_len": 6,
+        "svalue_len": 16
       },
       // CSRs
       "mcontext": { "supported": false },

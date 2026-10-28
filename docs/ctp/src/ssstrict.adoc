@@ -8,17 +8,19 @@ No non-conforming extensions are present. Attempts to execute unimplemented opco
 or access unimplemented CSRs in the standard or reserved encoding spaces raises an illegal
 instruction exception that results in a contained trap to the supervisor-mode trap handler.
 
+The Ssstrict suite has one group per privilege mode the tests run in: Ssstrict_Sm (M-mode), Ssstrict_S (S-mode) and Ssstrict_U (U-mode), plus Ssstrict_H (VS-mode and VU-mode) when the H extension is implemented.
+
+The Ssstrict_Sm tests require Sm, so they are not part of a certificate without Sm, such as RVA23.
+
 Vector instructions introduce complex register constraints and are tested separately in <<t-SsstrictV-coverpoints,SsstrictV>>.
 
-==== SsstrictSm
+==== Ssstrict_Sm
 
-RISC-V does not have a ratified equivalent of Ssstrict for machine mode, but this optional test suite checks the behavior of unimplemented instructions and CSRs from machine mode.  It runs the same tests as <<t-SsstrictS-coverpoints,SsstrictS>> but from machine mode.
+RISC-V does not have a ratified equivalent of Ssstrict for machine mode, but this optional test suite checks the behavior of unimplemented instructions and CSRs from machine mode.  It runs the same tests as <<t-Ssstrict_S-coverpoints,Ssstrict_S>> but from machine mode.
 
-include::{testplansdir}/priv/SsstrictSm.adoc[]
+include::{testplansdir}/priv/Ssstrict_Sm.adoc[]
 
-include::norm/SsstrictSm_norm_rules.adoc[]
-
-==== SsstrictS
+==== Ssstrict_S
 
 Attempt to issue all flavors of 32-bit instructions in the standard and reserved spaces and all 16-bit compressed instructions.  Also attempt to access all CSRs in the standard and reserved spaces that should be inaccessible.  Expect illegal instruction trap for unimplemented instructions and CSRs, matching reference model.
 
@@ -26,11 +28,20 @@ According to the RVA23 profile spec, the illegal instruction should be cause a t
 
 On a hart without Zca, the 16-bit encodings in the compressed sweep may be treated as the start of 32-bit instructions, so xtval may hold either the 16-bit parcel or the 32-bit word it begins.  Sail reports the 16-bit parcel.  The tests accept exactly those two values: an xtval that matches the 32-bit word at xepc is reduced to its 16-bit parcel before comparison, and any other value mismatches.
 
-include::{testplansdir}/priv/SsstrictS.adoc[]
-include::norm/SsstrictS_norm_rules.adoc[]
+include::{testplansdir}/priv/Ssstrict_S.adoc[]
 
-==== SsstrictU
+==== Ssstrict_U
 
-Same as <<t-SsstrictS-coverpoints,SsstrictS>>, but runs from user mode and includes attempts to access supervisor CSRs that should be inaccessible from user mode.
+Same as <<t-Ssstrict_S-coverpoints,Ssstrict_S>>, but runs from user mode and includes attempts to access supervisor CSRs that should be inaccessible from user mode.
 
-include::{testplansdir}/priv/SsstrictU.adoc[]
+include::{testplansdir}/priv/Ssstrict_U.adoc[]
+
+==== Ssstrict_H
+
+Same as <<t-Ssstrict_S-coverpoints,Ssstrict_S>> from VS-mode and <<t-Ssstrict_U-coverpoints,Ssstrict_U>> from VU-mode.  Instructions and CSR accesses that are HS-qualified but prevented when V=1 raise virtual-instruction exceptions instead of illegal-instruction exceptions.
+
+include::{testplansdir}/priv/Ssstrict_H.adoc[]
+
+==== Ssstrict Normative Rules
+
+include::norm/Ssstrict_norm_rules.adoc[]

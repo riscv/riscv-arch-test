@@ -30,6 +30,7 @@ from dataclasses import dataclass
 from random import randint, seed
 
 from testgen.asm.helpers import comment_banner, reproducible_hash
+from testgen.constants import INDENT
 from testgen.data.registers import IntegerRegisterFile
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -810,7 +811,6 @@ _S_CSR_SKIP: frozenset[int] = frozenset(
         0x180,  # satp: TLB flush / address-translation mode change
         0x105,  # stvec: overwriting stvec breaks the delegated-trap handler
         0x140,  # sscratch: avoid corrupting framework save area
-        0x5A8,  # scontext: Sail traps, Spike does not
     }
 )
 
@@ -844,8 +844,8 @@ def _in_virtual_mode(mode: str, chunks: list[TestChunk]) -> list[TestChunk]:
     Each chunk may begin a fresh split file, which boots to HS-mode, so each one enters the mode itself.
     """
     for tc in chunks:
-        tc.code[:0] = [f"\tRVTEST_TSBI_GOTO_{mode}MODE"]
-        tc.code.append("\tRVTEST_TSBI_GOTO_SMODE")
+        tc.code[:0] = [f"{INDENT}RVTEST_TSBI_GOTO_{mode}MODE"]
+        tc.code.append(f"{INDENT}RVTEST_TSBI_GOTO_SMODE")
     return chunks
 
 

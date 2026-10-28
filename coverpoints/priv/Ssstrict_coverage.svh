@@ -70,9 +70,9 @@ covergroup Ssstrict_Sm_mcsr_cg with function sample(ins_t ins);
         bins ones = {'1};
     }
 
-    csrop: coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1110011) {
-        bins csrrs = {3'b010};
-        bins csrrc = {3'b011};
+    csrop: coverpoint ins.current.insn {
+        wildcard bins csrrs = {CSRRS};
+        wildcard bins csrrc = {CSRRC};
     }
 
     // main coverpoints
@@ -223,7 +223,6 @@ covergroup Ssstrict_S_scsr_cg with function sample(ins_t ins);
         ignore_bins satp = {CSR_SATP}; // satp accesses may cause complex side effects
         ignore_bins stvec = {CSR_STVEC}; // stvec accesses may cause complex side effects
         ignore_bins sscratch = {CSR_SSCRATCH}; // sscratch accesses may cause complex side effects
-        ignore_bins scontext = {CSR_SCONTEXT}; // inconsistent between Sail and Spike; tested in Sdtrig if it exists
         bins super_std02[] = {[12'h181:12'h1FF]};
         bins hyper_std0[] = {[12'h200:12'h2FF]};
         ignore_bins mach_std0 = {[12'h300:12'h3FF]};
@@ -259,9 +258,9 @@ covergroup Ssstrict_S_scsr_cg with function sample(ins_t ins);
         bins zero = {0};
         bins ones = {'1};
     }
-    csrop: coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1110011) {
-        bins csrrs = {3'b010};
-        bins csrrc = {3'b011};
+    csrop: coverpoint ins.current.insn {
+        wildcard bins csrrs = {CSRRS};
+        wildcard bins csrrc = {CSRRC};
     }
     mcsrs: coverpoint ins.current.insn[31:20] {
         bins mstatus = {CSR_MSTATUS};
@@ -445,9 +444,9 @@ covergroup Ssstrict_U_ucsr_cg with function sample(ins_t ins);
         bins zero = {0};
         bins ones = {'1};
     }
-    csrop: coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1110011) {
-        bins csrrs = {3'b010};
-        bins csrrc = {3'b011};
+    csrop: coverpoint ins.current.insn {
+        wildcard bins csrrs = {CSRRS};
+        wildcard bins csrrc = {CSRRC};
     }
 
     // main coverpoints
@@ -593,7 +592,6 @@ covergroup Ssstrict_H_vscsr_cg with function sample(ins_t ins);
         ignore_bins satp = {CSR_SATP}; // satp accesses may cause complex side effects
         ignore_bins stvec = {CSR_STVEC}; // stvec accesses may cause complex side effects
         ignore_bins sscratch = {CSR_SSCRATCH}; // sscratch accesses may cause complex side effects
-        ignore_bins scontext = {CSR_SCONTEXT}; // inconsistent between Sail and Spike; tested in Sdtrig if it exists
         bins super_std02[] = {[12'h181:12'h1FF]};
         bins hyper_std0[] = {[12'h200:12'h2FF]};
         ignore_bins mach_std0 = {[12'h300:12'h3FF]};
@@ -629,9 +627,9 @@ covergroup Ssstrict_H_vscsr_cg with function sample(ins_t ins);
         bins zero = {0};
         bins ones = {'1};
     }
-    csrop: coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1110011) {
-        bins csrrs = {3'b010};
-        bins csrrc = {3'b011};
+    csrop: coverpoint ins.current.insn {
+        wildcard bins csrrs = {CSRRS};
+        wildcard bins csrrc = {CSRRC};
     }
 
     // main coverpoints
@@ -694,9 +692,9 @@ covergroup Ssstrict_H_vucsr_cg with function sample(ins_t ins);
         bins zero = {0};
         bins ones = {'1};
     }
-    csrop: coverpoint ins.current.insn[14:12] iff (ins.current.insn[6:0] == 7'b1110011) {
-        bins csrrs = {3'b010};
-        bins csrrc = {3'b011};
+    csrop: coverpoint ins.current.insn {
+        wildcard bins csrrs = {CSRRS};
+        wildcard bins csrrc = {CSRRC};
     }
 
     // main coverpoints

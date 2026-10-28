@@ -3166,15 +3166,13 @@ strap_handler_fastillegalinstr:
         csrr a1, scause
         xori a1, a1, 2                  // a1 = 0 iff scause == 2 (illegal instruction)
 #ifdef H_SUPPORTED
-        beqz a1, fast_Sillegal_cause
+        beqz a1, fast_Shandled_cause
         xori a1, a1, 2 ^ 22             // a1 = 0 iff scause == 22 (virtual instruction, from VS or VU)
 #endif
         bnez a1, fast_Sothertrap        // not illegal (or virtual) instruction — restore regs and use the S
                                         // framework handler (NOT fast_Mothertrap: the M trampoline's mscratch
                                         // access is itself illegal from S-mode and creates a trap loop)
-#ifdef H_SUPPORTED
-fast_Sillegal_cause:
-#endif
+fast_Shandled_cause:
         // Same test-body check as the M handler: only traps taken in the test code segment
         // may use the fast path, because it signature-updates through x2, which is not
         // loaded until the end of boot. See the M handler for the full rationale.

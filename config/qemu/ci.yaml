@@ -101,6 +101,9 @@ exclude_extensions:
   # (https://gitlab.com/qemu-project/qemu/-/issues/4620).
   - Svinval_H
   - Svinval_SmH
+  # The same mstatus.MPV bug keeps the VS-mode and VU-mode WRS tests in HS-mode
+  # (https://gitlab.com/qemu-project/qemu/-/work_items/4588).
+  - Zawrs_H
   # With ADUE=1, QEMU sets A/D on a PTE with a reserved Svnapot encoding before raising the page fault
   # (https://gitlab.com/qemu-project/qemu/-/work_items/4636)
   - Svadu_sv39_Svadu_fault

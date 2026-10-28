@@ -1,0 +1,114 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Zawrs_H
+source: https://docs.google.com/spreadsheets/d/1LpZQ1LwAInN2jjq_oDn_r8xIuPU7h_R_SpbgVbmUf54/edit?gid=0#gid=0
+notes: |
+  covergroup Zawrs_H
+  The tests boot to HS-mode, set up each case there, and run the WRS in VS-mode or VU-mode.
+  The TW/VTW, hedeleg and VSSIP cases come from riscv-arch-test PR 2915 by Wei Shen.
+coverpoints:
+  - heading: tests for single core
+  - name: cp_wrs_sto_timeout_h
+    goal: WRS.STO waits till timeout in VS-mode and VU-mode, whatever TW and VTW are
+    description: |-
+      cross lr instruction to set up reservation.
+      mstatus.TW = {0/1}
+      hstatus.VTW = {0/1}
+      mstatus.MIE = 0
+      mstatus.SIE = 0
+      mie = all 0s to disable interrupts
+      Execute WRS.STO in {VS/VU} mode
+    expectation: no exception, next instruction executes normally after WRS.STO finish execution
+    bins: 2 x 2 x 2 bins
+    rules:
+      - Zawrs_wrs-sto_stall_duration
+  - name: cp_wrs_no_res_h
+    goal: WRS behaves as nop in VS-mode and VU-mode when no reservation is established
+    description: |-
+      mstatus.TW = 0
+      hstatus.VTW = 0
+      mstatus.MIE = 0
+      mstatus.SIE = 0
+      mie = all 0s to disable interrupts
+      Clear all reservation with sc.w, then execute {WRS.STO, WRS.NTO} with no reservation created in {VS/VU} mode
+    expectation: WRS behaves as nop
+    bins: 2 x 2 bins
+    rules:
+      - Zawrs_all_priv_modes
+    notes: TW = 1 and VTW = 1 can not be tested because the DUT may trap immediately, where SAIL allows the instruction to retire successfully
+  - name: cp_wrs_resume_h
+    goal: WRS follows the rules of WFI for resuming on interrupts in VS-mode and VU-mode
+    description: |-
+      cross lr instruction to set up reservation.
+      mstatus.TW = 0
+      hstatus.VTW = 0
+      sie.STIE = 1 and menvcfg.STCE = 1 with Sstc, otherwise mie.MTIE = 1
+      mstatus.MIE = {0/1}
+      mstatus.SIE = {0/1}
+      Enter {VS/VU} mode, set up timer to interrupt soon through T-SBI
+      execute {WRS.NTO/WRS.STO} in {VS/VU} mode
+    expectation: WRS resumes when the interrupt is pending; the interrupt is taken in every case, because supervisor and machine interrupts are always enabled in VS-mode and VU-mode
+    bins: 2 x 2 x 2 x 2 bins
+    rules:
+      - Zawrs_exec_resume_rules
+    notes: |-
+      Not generated without a timer interrupt (needs Sstc or MTI_INTR_IMPL).
+  - name: cp_wrs_interrupt_h
+    goal: A pending, locally enabled VS-level interrupt ends a VS-mode WRS even when it is globally disabled
+    description: |-
+      cross lr instruction to set up reservation.
+      mstatus.TW = 0
+      hstatus.VTW = 0
+      hideleg.VSSIP = 1, hie.VSSIE (vsie.SSIE) = 1, hvip.VSSIP = 1
+      vsstatus.SIE = 0
+      execute {WRS.NTO/WRS.STO} in VS mode
+    expectation: WRS completes without taking the interrupt, and vsip.SSIP stays pending
+    bins: 2 bins
+    rules:
+      - Zawrs_exec_resume_rules
+  - name: cp_wrs_nto_tw_h
+    goal: WRS.NTO times out with an illegal-instruction exception when TW = 1, whatever VTW is
+    description: |-
+      cross lr instruction to set up reservation.
+      mstatus.TW = 1
+      hstatus.VTW = {0/1}
+      hedeleg[2] = {0/1}
+      mstatus.MIE = 0
+      mstatus.SIE = 0
+      mie = all 0s to disable interrupts
+      execute WRS.NTO in {VS/VU} mode, repeating it until it traps
+    expectation: illegal-instruction exception (TW takes priority over VTW), taken in HS-mode with hedeleg[2] = 0 and in VS-mode with hedeleg[2] = 1
+    bins: 2 x 2 x 2 bins
+    rules:
+      - Zawrs_priv_illegal_instr_excp
+      - Zawrs_virtual_instr_excp
+  - name: cp_wrs_nto_vtw_h
+    goal: WRS.NTO times out with a virtual-instruction exception when TW = 0 and VTW = 1
+    description: |-
+      cross lr instruction to set up reservation.
+      mstatus.TW = 0
+      hstatus.VTW = 1
+      hedeleg = all 0s
+      mstatus.MIE = 0
+      mstatus.SIE = 0
+      mie = all 0s to disable interrupts
+      execute WRS.NTO in {VS/VU} mode, repeating it until it traps
+    expectation: virtual-instruction exception, taken in HS-mode
+    bins: 2 bins
+    rules:
+      - Zawrs_virtual_instr_excp
+  - name: cp_wrs_no_mie_h
+    goal: Pending interrupts that mie does not enable do not end a VS-mode or VU-mode WRS
+    description: |-
+      cross lr instruction to set up reservation
+      mstatus.MIE = 1
+      mstatus.SIE = 1
+      mie = all 0s
+      mstatus.TW = 1
+      hstatus.VTW = 0
+      mip = {SSIP + SEIP + STIP + MSIP + MEIP + MTIP}, as implemented
+      hvip = {VSSIP + VSTIP + VSEIP}
+      execute {WRS.NTO/WRS.STO} in {VS/VU} mode
+    expectation: WRS does not stop when interrupt pending, WRS.NTO causes illegal instruction
+    bins: 2 x 2 bins
+    rules:
+      - Zawrs_stall_terminate

@@ -59,22 +59,25 @@ vvvp_config = InstructionTypeConfig(
 vcompress_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
     vector_data=VectorTypeConfig(
-        overlap_constraints={("vd", "vs1"), ("vd", "vs2"), ("vs1", "vs2")}, require_zero_vstart=True
+        overlap_constraints={("vd", "vs1"), ("vd", "vs2"), ("vs1", "vs2")},
+        maskable=False,
+        require_zero_vstart=True,
     ),
 )
 vvv_egs4_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
     vector_data=VectorTypeConfig(
         egs=4,
+        maskable=False,
     ),
 )
 vvv_sha_egs4_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
-    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs1"), ("vd", "vs2")}, egs=4),
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs1"), ("vd", "vs2")}, egs=4, maskable=False),
 )
 vvv_sm_egs8_config = InstructionTypeConfig(
     required_params={"vd", "vs1", "vs2"},
-    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, egs=8),
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, egs=8, maskable=False),
 )
 
 

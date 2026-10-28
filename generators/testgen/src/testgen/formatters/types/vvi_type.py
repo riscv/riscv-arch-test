@@ -60,13 +60,16 @@ vvip_down_config = InstructionTypeConfig(
     required_params={"vd", "immval", "vs2"}, imm_bits=5, imm_signed=False, vector_data=VectorTypeConfig()
 )
 vvi_egs4_config = InstructionTypeConfig(
-    required_params={"vd", "immval", "vs2"}, imm_bits=5, imm_signed=False, vector_data=VectorTypeConfig(egs=4)
+    required_params={"vd", "immval", "vs2"},
+    imm_bits=5,
+    imm_signed=False,
+    vector_data=VectorTypeConfig(egs=4, maskable=False),
 )
 vvi_sm_egs8_config = InstructionTypeConfig(
     required_params={"vd", "immval", "vs2"},
     imm_bits=5,
     imm_signed=False,
-    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, egs=8),
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, egs=8, maskable=False),
 )
 
 

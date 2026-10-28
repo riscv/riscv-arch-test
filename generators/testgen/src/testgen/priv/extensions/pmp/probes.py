@@ -17,6 +17,14 @@ from testgen.data.state import TestData
 _OFFSETS = ("address", "address-4", "address+4", "address+g-4", "address+g")
 _AMOS = ("amoadd", "amoand", "amoor", "amoxor", "amomax", "amomaxu", "amomin", "amominu", "amoswap")
 
+
+def covergroup(test_data: TestData) -> str:
+    """The covergroup of the active chunk; its split name starts with the group (``F_cfg_wr`` -> ``PMP_F_cg``)."""
+    chunk = test_data.test_chunk
+    assert chunk is not None and chunk.split_name is not None, "PMP chunks need a split name that starts with the group"
+    return f"PMP_{chunk.split_name.split('_')[0]}_cg"
+
+
 #: The covergroup cross a probe's testcase belongs to: a name, or a function of the probe's instruction.
 Cross = str | Callable[[str], str]
 
@@ -41,7 +49,7 @@ def cross_by_access(
 
 def _testcase(test_data: TestData, name: str, coverpoint: Cross, instruction: str) -> str:
     cross = coverpoint if isinstance(coverpoint, str) else coverpoint(instruction)
-    return test_data.add_testcase(name, cross, f"{test_data.testsuite}_cg")
+    return test_data.add_testcase(name, cross, covergroup(test_data))
 
 
 def gen_rwx(test_data: TestData, case: str, coverpoint: Cross, region: str = "TEST_FOR_EXECUTION") -> list[str]:

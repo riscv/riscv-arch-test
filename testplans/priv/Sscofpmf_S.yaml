@@ -1,0 +1,96 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Sscofpmf_S
+source: https://docs.google.com/spreadsheets/d/13ibIsAhJpQBXcL1Y5F7sddysLPFpaCr8_oDyQV_Boqw/edit?gid=0#gid=0
+coverpoints:
+  - name: cp_sinh_inhibits_smode
+    goal: SINH inhibits counting in S-mode
+    description: |-
+      In S-mode, with M-level CSRs accessed through T-SBI:
+      mhpmevent[55:0] = RVMODEL_MHPMEVENT_VAL, OF = 0, MINH = 1
+      SINH = 0, then 1: mhpmcounter = 0, run RVMODEL_MHPMEVENT_CODE, read mhpmcounter
+      mhpmevent[62:58] (MINH, SINH, UINH, VSINH, VUINH) = each of the 32 combinations: read mhpmevent
+    expectation: |-
+      mhpmcounter is nonzero iff SINH = 0
+      mhpmevent reads back the combination, with the bits of unimplemented modes reading 0
+    bins: 32 xINH combinations
+  - name: cp_of_set_on_overflow
+    goal: OF is set when mhpmcounter overflows
+    description: |-
+      In S-mode, for mhpmevent[62:58] = {10000, 10100, 11000, 11100}:
+      sip = 0, sie = 0
+      mhpmevent[55:0] = RVMODEL_MHPMEVENT_VAL, OF = 0
+      mhpmcounter = all 1s (mhpmcounterh too on RV32)
+      Run RVMODEL_MHPMEVENT_CODE
+      Read mhpmevent (OF and xINH) and mhpmcounter
+      Wait for RVMODEL_INTERRUPT_LATENCY, read sip.LCOFIP
+    expectation: |-
+      If SINH = 0: mhpmcounter wraps, OF becomes 1 and sip.LCOFIP becomes 1
+      If SINH = 1: mhpmcounter does not move, and OF and sip.LCOFIP stay 0
+    bins: 2 patterns with SINH = 0
+  - name: cp_of_already_set
+    goal: An overflow with OF already 1 does not request a count overflow interrupt
+    description: |-
+      In S-mode:
+      mie = 0
+      mhpmevent[55:0] = RVMODEL_MHPMEVENT_VAL, xINH = 10000, OF = 1
+      mhpmcounter = all 1s (mhpmcounterh too on RV32)
+      Clear sip.LCOFIP
+      Run RVMODEL_MHPMEVENT_CODE, wait for RVMODEL_INTERRUPT_LATENCY
+      Read mhpmevent, mhpmcounter and sip.LCOFIP
+    expectation: mhpmcounter wraps, OF stays 1, and sip.LCOFIP stays 0
+    bins: "1"
+  - name: cp_overflow_hw_only
+    goal: Software writes to mhpmcounter never cause an overflow
+    description: |-
+      In S-mode:
+      mie = 0, mhpmevent = 0, clear sip.LCOFIP
+      mhpmcounter = all 1s, read OF
+      mhpmcounter = all 0s, read OF
+    expectation: OF stays 0
+    bins: 2 mhpmcounter values
+  - name: cp_lcofip_hw_only
+    goal: Setting OF by software does not raise LCOFIP
+    description: |-
+      In S-mode:
+      mie = 0, clear sip.LCOFIP
+      Set mhpmevent.OF with a CSR write, wait for RVMODEL_INTERRUPT_LATENCY, read sip.LCOFIP
+      Clear mhpmevent.OF with a CSR write, wait for RVMODEL_INTERRUPT_LATENCY, read sip.LCOFIP
+    expectation: sip.LCOFIP stays 0
+    bins: 2 OF values
+  - name: cp_scountovf_shadow
+    goal: scountovf shadows the OF bits of mhpmevent3..31
+    description: |-
+      In S-mode:
+      mcounteren = all 1s
+      Write mhpmevent3..31.OF = all 0s, walking 1s, all 1s; read scountovf after each
+    expectation: scountovf[31:3] matches the OF bits, and scountovf[2:0] = 0
+    bins: 31 OF patterns
+  - name: cp_scountovf_mcounteren
+    goal: In S-mode, scountovf is masked by mcounteren
+    description: |-
+      In S-mode, for mhpmevent3..31.OF = all 1s, even checkerboard, odd checkerboard:
+      mcounteren = all 0s, all 1s, walking 1 through bits 31:3; read scountovf after each
+    expectation: scountovf[31:3] = OF bits & mcounteren[31:3], and scountovf[2:0] = 0
+    bins: 3 OF patterns * 31 mcounteren values
+  - name: cp_sscofpmf_access
+    goal: Access scountovf
+    description: In S-mode, read, write 0s, write 1s, set 1s and clear 1s scountovf
+    expectation: Reading scountovf succeeds; writing it raises an illegal-instruction exception because scountovf is read-only
+    bins: 5 accesses
+  - name: cp_lcofi_sip_s
+    goal: LCOFI is taken in S-mode iff it is pending and enabled
+    description: |-
+      In S-mode, mideleg.LCOFI = 1, sstatus.SIE = 1
+      For sip.LCOFIP = {0, 1} (written by software) x sie.LCOFIE = {0, 1}:
+          wait for RVMODEL_INTERRUPT_LATENCY
+    expectation: Trap to S-mode iff LCOFIP = 1 and LCOFIE = 1
+    bins: 2 pending * 2 enabled
+  - name: cp_lcofip_priority_s
+    goal: LCOFI has the lowest priority of the S-mode interrupts
+    description: |-
+      In S-mode, xINH = 10000, sstatus.SIE = 1, sie = 0, S-level interrupts delegated to S-mode
+      For each competing interrupt in {SEIP, STIP, SSIP, none} that the platform implements:
+          overflow mhpmcounter to raise LCOFIP, and raise the competing interrupt
+          wait with sie = all 0s, then with sie = all 1s
+    expectation: With sie = all 0s nothing is taken. With sie = all 1s the competing interrupt is taken first and LCOFI last.
+    bins: 2 sie values * 4 competing interrupts

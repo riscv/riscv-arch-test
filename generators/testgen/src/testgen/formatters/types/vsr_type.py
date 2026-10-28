@@ -22,7 +22,7 @@ from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig,
 from testgen.instructions.vector import parse_vector_instruction_info
 
 vsr_config = InstructionTypeConfig(
-    required_params={"vs3", "rs1"}, instruction_class=["store"], vector_data=VectorTypeConfig()
+    required_params={"vs3", "rs1"}, instruction_class=["store"], vector_data=VectorTypeConfig(maskable=False)
 )
 
 

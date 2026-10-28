@@ -92,9 +92,14 @@ normative_rule_definitions:
   # Executing the following sequence between such accesses prevents both loss of coherence and loss
   # of memory ordering: fence iorw, iorw, followed by cbo.flush to an address of that location,
   # followed by a fence iorw, iorw.
-  # One hart observes this with a cacheable mapping and a PBMT = NC or IO alias of the same page.
+  # One hart observes this with a cacheable mapping and a PBMT = NC or IO alias of the same page:
+  # Svpbmt_Zicbom checks that the flush writes a dirty block back, Svpbmt_Zicboz that it removes a stale copy.
   - name: Svpbmt_cacheable_aliasing_fence_flush_fence_required
-    coverpoint: ["Svpbmt_Zicbom_cg/{cp_cbo_flush_pbmt_s, cp_cbo_flush_pbmt_u}"]
+    coverpoint:
+      [
+        "Svpbmt_Zicbom_cg/{cp_cbo_flush_pbmt_s, cp_cbo_flush_pbmt_u}",
+        "Svpbmt_Zicboz_cg/{cp_cbo_zero_pbmt_s, cp_cbo_zero_pbmt_u}",
+      ]
 
   # if hgatp.MODE is not equal to zero, non-zero G-stage PTE PBMT bits override the
   # attributes in the PMA to produce an intermediate set of attributes.

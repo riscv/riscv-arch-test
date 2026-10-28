@@ -178,9 +178,46 @@ covergroup Svpbmt_Zicbom_cg with function sample(ins_t ins);
 endgroup
 `endif // ZICBOM_SUPPORTED
 
+`ifdef ZICBOM_SUPPORTED
+`ifdef ZICBOZ_SUPPORTED
+covergroup Svpbmt_Zicboz_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    `include  "general/RISCV_coverage_standard_coverpoints.svh"
+
+    // 4 KiB leaf with PBMT = NC or IO, aliasing a PBMT = 0 mapping of the same page
+    leaf_PTE_pbmt_s_d: coverpoint ins.current.pte_d[7:0] {
+        wildcard bins nc = {8'b11?01111} iff (ins.current.pte_d[62:61] == 2'b01);
+        wildcard bins io = {8'b11?01111} iff (ins.current.pte_d[62:61] == 2'b10);
+    }
+    leaf_PTE_pbmt_u_d: coverpoint ins.current.pte_d[7:0] {
+        wildcard bins nc = {8'b11?11111} iff (ins.current.pte_d[62:61] == 2'b01);
+        wildcard bins io = {8'b11?11111} iff (ins.current.pte_d[62:61] == 2'b10);
+    }
+
+    PBMTE_set: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "pbmte")[0] {
+        bins PBMTE_set = {1'b1};
+    }
+
+    PageType_d: coverpoint ins.current.page_type_d {
+        bins sv39_kilo = {2'b00} iff (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000);
+    }
+
+    cbo_zero: coverpoint ins.current.insn {
+        wildcard bins cbo_zero = {CBO_ZERO} iff (!ins.current.trap);
+    }
+
+    cp_cbo_zero_pbmt_s: cross cbo_zero, leaf_PTE_pbmt_s_d, PBMTE_set, PageType_d, priv_mode_s;
+    cp_cbo_zero_pbmt_u: cross cbo_zero, leaf_PTE_pbmt_u_d, PBMTE_set, PageType_d, priv_mode_u;
+endgroup
+`endif // ZICBOZ_SUPPORTED
+`endif // ZICBOM_SUPPORTED
+
 function void svpbmt_sample(int hart, int issue, ins_t ins);
     Svpbmt_cg.sample(ins);
 `ifdef ZICBOM_SUPPORTED
     Svpbmt_Zicbom_cg.sample(ins);
+`ifdef ZICBOZ_SUPPORTED
+    Svpbmt_Zicboz_cg.sample(ins);
+`endif // ZICBOZ_SUPPORTED
 `endif // ZICBOM_SUPPORTED
 endfunction

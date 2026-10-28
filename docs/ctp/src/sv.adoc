@@ -124,6 +124,10 @@ include::{testplansdir}/priv/Svpbmt.adoc[]
 
 include::{testplansdir}/priv/Svpbmt_Zicbom.adoc[]
 
+===== Svpbmt_Zicboz Cache-Block Zero Through PBMT Aliases
+
+include::{testplansdir}/priv/Svpbmt_Zicboz.adoc[]
+
 include::norm/Svpbmt_norm_rules.adoc[]
 
 ==== Svnapot Naturally-Aligned Power-of-Two Page Sizes

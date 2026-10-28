@@ -32,6 +32,7 @@ from testgen.asm.helpers import comment_banner, reproducible_hash
 from testgen.data.registers import IntegerRegisterFile
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
+from testgen.priv.extensions.PrivCommon import unless_sail_gap
 from testgen.priv.registry import add_priv_test_generator
 
 # Number of CSR addresses per CSR-sweep chunk. Each CSR contributes 5 testcases
@@ -304,22 +305,25 @@ def _generate_csr_sweep_body(
 
             ih = hex(csr_addr)
             lines.extend(
-                [
-                    f"# CSR {ih}",
-                    f"\t{test_data.add_testcase(f'csrr_{ih}', 'cp_csrr', covergroup)}",
-                    f"\tcsrr x{r1}, {ih}",  # save CSR value
-                    f"\tli x{r2}, -1",  # all-ones value
-                    f"\t{test_data.add_testcase(f'csrw_ones_{ih}', 'cp_csrw_edges', covergroup)}",
-                    f"\tcsrrw x{r3}, {ih}, x{r2}",  # write all-ones
-                    f"\t{test_data.add_testcase(f'csrw_zeros_{ih}', 'cp_csrw_edges', covergroup)}",
-                    f"\tcsrrw x{r3}, {ih}, x0",  # write all-zeros
-                    f"\t{test_data.add_testcase(f'csrrs_{ih}', 'cp_csrcs', covergroup)}",
-                    f"\tcsrrs x{r3}, {ih}, x{r2}",  # set all bits
-                    f"\t{test_data.add_testcase(f'csrrc_{ih}', 'cp_csrcs', covergroup)}",
-                    f"\tcsrrc x{r3}, {ih}, x{r2}",  # clear all bits
-                    f"\tcsrrw x{r3}, {ih}, x{r1}",  # restore
-                    "",
-                ]
+                unless_sail_gap(
+                    csr_addr,
+                    [
+                        f"# CSR {ih}",
+                        f"\t{test_data.add_testcase(f'csrr_{ih}', 'cp_csrr', covergroup)}",
+                        f"\tcsrr x{r1}, {ih}",  # save CSR value
+                        f"\tli x{r2}, -1",  # all-ones value
+                        f"\t{test_data.add_testcase(f'csrw_ones_{ih}', 'cp_csrw_edges', covergroup)}",
+                        f"\tcsrrw x{r3}, {ih}, x{r2}",  # write all-ones
+                        f"\t{test_data.add_testcase(f'csrw_zeros_{ih}', 'cp_csrw_edges', covergroup)}",
+                        f"\tcsrrw x{r3}, {ih}, x0",  # write all-zeros
+                        f"\t{test_data.add_testcase(f'csrrs_{ih}', 'cp_csrcs', covergroup)}",
+                        f"\tcsrrs x{r3}, {ih}, x{r2}",  # set all bits
+                        f"\t{test_data.add_testcase(f'csrrc_{ih}', 'cp_csrcs', covergroup)}",
+                        f"\tcsrrc x{r3}, {ih}, x{r2}",  # clear all bits
+                        f"\tcsrrw x{r3}, {ih}, x{r1}",  # restore
+                        "",
+                    ],
+                )
             )
             test_data.int_regs.return_registers([r1, r2, r3])
         _finalize_chunk(test_data, lines, test_chunks)

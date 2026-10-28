@@ -750,7 +750,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             coverpoint_masked,
             warl_fields=warl_fields,
             maskedwrites=True,
-            cond_mask=("__riscv_xlen == 64 && !defined(SMCDELEG_SUPPORTED)", 1 << 60),
+            cond_mask=[("__riscv_xlen == 64 && !defined(SMCDELEG_SUPPORTED)", 1 << 60)],
         )
     )
     tc.code.append("#endif")
@@ -779,7 +779,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
             covergroup,
             coverpoint_masked,
             maskedwrites=True,
-            cond_mask=("!defined(SMCDELEG_SUPPORTED)", 1 << 28),
+            cond_mask=[("!defined(SMCDELEG_SUPPORTED)", 1 << 28)],
         )
     )
     tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")

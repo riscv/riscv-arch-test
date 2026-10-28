@@ -257,6 +257,7 @@ def _vu_csr_tests(test_data: TestData, test_chunks: list[TestChunk]) -> None:
         "In VU-mode, attempt to read each CSR that is not a user CSR.  Should throw illegal or virtual instruction",
         mode="VU",
         csrs_per_chunk=CSRS_PER_CHUNK,
+        skip_sail_gaps=True,
     )
     csr_ro_write_tests(
         test_data, test_chunks, VU_CG, USER_RO_CSR_RANGES, "vucsr_ro", mode="VU", csrs_per_chunk=CSRS_PER_CHUNK

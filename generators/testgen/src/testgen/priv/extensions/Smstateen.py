@@ -140,18 +140,34 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
         )
     ]
 
-    # The walk mask selects which bits are checked against the signature (csr_walk_test
-    # walks every bit position regardless). It mirrors mstateen0's writable high-word
-    # bits on RV64: SE0(63)|ENVCFG(62)|CSRIND(60)|AIA(59)|IMSIC(58)|CONTEXT(57)|P1P13(56)|
-    # SRMCFG(55), plus FCSR(1)|JVT(2) in the low word. On RV32 mstateen0 is the low word
-    # (0x6) and those high bits live in mstateen0h (0xDF800000).
+    # The walk writes and checks only the bits in its mask.  The mask holds the bits Sail models: SE0(63),
+    # ENVCFG(62), CONTEXT(57), P1P13(56), SRMCFG(55) and FCSR(1).  Sail does not implement Sscsrind, Ssaia,
+    # Ssctr or Zcmt and reads CSRIND(60), AIA(59), IMSIC(58), CTR(54) and JVT(2) as zero, so each of those is
+    # walked only where its extension is absent and the bit is read-only zero.  Where the extension is present
+    # its csr_walk bin reports missing until Sail implements it (TODO: walk these bits everywhere then).
+    # Bit 0 (C) controls custom state, which no configuration parameter describes and csr_walk does not cover.
+    # On RV32 mstateen0 is the low word and the high bits live in mstateen0h.
     lines.extend(
         [
             "",
             test_data.add_testcase("mstateen0_walk", coverpoint, covergroup),
         ]
     )
-    lines.extend(csr_walk_test(test_data, ("mstateen0", 0xDF80000000000006), covergroup, coverpoint))
+    lines.extend(
+        csr_walk_test(
+            test_data,
+            ("mstateen0", 0xC380000000000002),
+            covergroup,
+            coverpoint,
+            maskedwrites=True,
+            cond_mask=[
+                ("__riscv_xlen == 64 && !defined(SSCSRIND_SUPPORTED)", 1 << 60),
+                ("__riscv_xlen == 64 && !defined(SSAIA_SUPPORTED)", (1 << 59) | (1 << 58)),
+                ("__riscv_xlen == 64 && !defined(SSCTR_SUPPORTED)", 1 << 54),
+                ("!defined(ZCMT_SUPPORTED)", 1 << 2),
+            ],
+        )
+    )
 
     # mstateen0h — RV32 only
     lines.append("#if __riscv_xlen == 32")
@@ -161,7 +177,20 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
             test_data.add_testcase("mstateen0h_walk", coverpoint, covergroup),
         ]
     )
-    lines.extend(csr_walk_test(test_data, ("mstateen0h", 0xDF800000), covergroup, coverpoint))
+    lines.extend(
+        csr_walk_test(
+            test_data,
+            ("mstateen0h", 0xC3800000),
+            covergroup,
+            coverpoint,
+            maskedwrites=True,
+            cond_mask=[
+                ("!defined(SSCSRIND_SUPPORTED)", 1 << 28),
+                ("!defined(SSAIA_SUPPORTED)", (1 << 27) | (1 << 26)),
+                ("!defined(SSCTR_SUPPORTED)", 1 << 22),
+            ],
+        )
+    )
     lines.append("#endif  // __riscv_xlen == 32")
 
     # mstateen1-3 define only bit 63 (SE1-SE3), which gates sstateenN (and hstateenN). It is
@@ -658,39 +687,12 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
     )
     tc.code.append("#endif")
 
-    # cp_imsic — only when IMSIC is present
-    tc.code.append("#ifdef SSAIA_SUPPORTED")
-    tc.code.extend(
-        _generate_bit_controlled(
-            test_data,
-            coverpoint="cp_imsic",
-            bit=58,
-            bit_name="imsic",
-            banner="CSR ops on stopei/vstopei with mstateen0.imsic (bit 58) disabled and enabled — M/S/U-mode",
-            csrs=["stopei", "vstopei"],
-        )
-    )
-    tc.code.append("#endif  // SSAIA_SUPPORTED")
-
-    # cp_aia — only when AIA is present
-    tc.code.append("#ifdef SSAIA_SUPPORTED")
-    tc.code.extend(
-        _generate_bit_controlled(
-            test_data,
-            coverpoint="cp_aia",
-            bit=59,
-            bit_name="aia",
-            banner="CSR ops on Ssaia CSRs with mstateen0.aia (bit 59) disabled and enabled — M/S/U-mode",
-            csrs=["stopi"],
-            csrs_rv32=["sieh", "siph"],
-        )
-    )
-    tc.code.append("#endif  // SSAIA_SUPPORTED")
-
-    # cp_jvt_access — only when Zcmt is present (covers S-mode and U-mode)
-    tc.code.append("#ifdef ZCMT_SUPPORTED")
-    tc.code.extend(arch_block(_generate_jvt(test_data), "zcmt"))
-    tc.code.append("#endif  // ZCMT_SUPPORTED")
+    # cp_imsic, cp_aia, cp_jvt_access and cp_ctr are not generated: they access the CSRs of Ssaia, Zcmt and
+    # Ssctr, which Sail does not implement, so Sail cannot predict the accesses on the harts that have them,
+    # the only harts that cover these coverpoints.  Their bins report missing there until Sail implements the
+    # extensions.  TODO: generate them again then (_generate_bit_controlled for cp_imsic on stopei/vstopei
+    # bit 58, cp_aia on stopi and RV32 sieh/siph bit 59, cp_ctr on sctrdepth/sctrstatus bit 54, and
+    # _generate_jvt for cp_jvt_access).
 
     # cp_context — only when Sdtrig is present
     tc.code.append("#ifdef SDTRIG_SUPPORTED")
@@ -734,20 +736,6 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
         )
     )
     tc.code.append("#endif  // SSQOSID_SUPPORTED")
-
-    # cp_ctr — only when Sctr is present
-    tc.code.append("#ifdef SSCTR_SUPPORTED")
-    tc.code.extend(
-        _generate_bit_controlled(
-            test_data,
-            coverpoint="cp_ctr",
-            bit=54,
-            bit_name="ctr",
-            banner="CSR ops on sctrdepth/sctrstatus with mstateen0.ctr (bit 54) disabled and enabled — M/S/U-mode",
-            csrs=["sctrdepth", "sctrstatus"],
-        )
-    )
-    tc.code.append("#endif  // SSCTR_SUPPORTED")
 
     # cp_fcsr, cp_fcsr_ro_zero, cp_fcsr_lower, cp_fcsr_fp_instrs — only when Zfinx present
     tc.code.append("#ifdef ZFINX_SUPPORTED")

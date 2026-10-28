@@ -170,7 +170,19 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
             test_data.add_testcase("sstateen0_walk_se0_1_smode", coverpoint, covergroup),
         ]
     )
-    lines.extend(csr_walk_test(test_data, ("sstateen0", 0x7), covergroup, coverpoint))
+    # The walk writes and checks C(0) and FCSR(1), which Sail models.  Sail does not implement Zcmt and reads
+    # JVT(2) as zero, so JVT is walked only without Zcmt, where it is read-only zero; with Zcmt its csr_walk bin
+    # reports missing until Sail implements Zcmt (TODO: walk JVT everywhere then).
+    lines.extend(
+        csr_walk_test(
+            test_data,
+            ("sstateen0", 0x3),
+            covergroup,
+            coverpoint,
+            maskedwrites=True,
+            cond_mask=[("!defined(ZCMT_SUPPORTED)", 1 << 2)],
+        )
+    )
 
     lines.extend(
         [
@@ -432,10 +444,10 @@ def make_ssstateen(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(arch_block(fcsr_lines, "zfinx"))
     tc.code.append("#endif  // ZFINX_SUPPORTED")
 
-    # cp_jvt — only when Zcmt is supported (covers both S-mode and U-mode)
-    tc.code.append("#ifdef ZCMT_SUPPORTED")
-    tc.code.extend(arch_block(_generate_jvt(test_data), "zcmt"))
-    tc.code.append("#endif  // ZCMT_SUPPORTED")
+    # cp_jvt is not generated: it accesses jvt, and Sail does not implement Zcmt, so Sail cannot predict the
+    # accesses on the harts that have Zcmt, the only harts that cover it.  Its bins report missing there until
+    # Sail implements Zcmt.  TODO: generate it again then (arch_block(_generate_jvt(test_data), "zcmt") under
+    # ZCMT_SUPPORTED).
 
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

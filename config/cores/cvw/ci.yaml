@@ -4,7 +4,10 @@
 # Requires Verilator and the CVW repository
 
 ci_enabled: true
-exclude_extensions: []
+exclude_extensions:
+  # cbo.flush through a PBMT=NC/IO alias does not reach the D$ (https://github.com/openhwfoundation/cvw/issues/2003);
+  # remove when CVW_COMMIT in install-cvw.sh includes the fix
+  - Svpbmt_Zicbom
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cvw.sh"
 setup_script: ".github/scripts/setup-cvw.sh"

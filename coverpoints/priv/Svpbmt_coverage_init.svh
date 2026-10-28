@@ -9,3 +9,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
     Svpbmt_cg = new(); Svpbmt_cg.set_inst_name("obj_Svpbmt");
+`ifdef ZICBOM_SUPPORTED
+    Svpbmt_Zicbom_cg = new(); Svpbmt_Zicbom_cg.set_inst_name("obj_Svpbmt_Zicbom");
+`endif // ZICBOM_SUPPORTED

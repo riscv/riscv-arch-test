@@ -349,9 +349,10 @@ params:
       true,
       true,
     ]
+  # instruction-address-misaligned cannot occur with Zca, so medeleg[0] is read-only zero (csrm.sv MEDELEG_MASK)
   MEDELEG_DELEGATABLE:
     [
-      true,
+      false,
       true,
       true,
       true,

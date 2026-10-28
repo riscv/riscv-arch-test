@@ -5,11 +5,10 @@ coverpoints:
   - heading: Following tests are done in HS-mode
   - name: cp_shcounterenw
     goal: which hcounteren bits are writable
-    description: Write a 0 and a -1 to hcounteren.
+    description: Set and clear each bit of hcounteren, then write all 1s and all 0s, as Sscounterenw does for scounteren.
     expectation: |-
       0 writes 32 bits of 0
-      -1 writes 1s to every bit with a non-read-only-zero hpmcounter, matching ref model
+      -1 writes 1s to every bit with a non-read-only-zero hpmcounter (HPM_COUNTER_EN); the other bits match the reference model
     bins: "2"
     rules:
       - Shcounterenw_hpmcounter_hcounteren
-  - heading: check that hcounteren works with mcounteren and scounteren to control access to counters from lower privilege modes.

@@ -1,56 +1,50 @@
 
 === PMP
 
-==== PMPSm
+==== PMP_Sm Machine
 
-include::{testplansdir}/priv/PMPSm.adoc[]
+include::{testplansdir}/priv/PMP_Sm.adoc[]
 
-include::norm/PMPSm_norm_rules.adoc[]
+==== PMP_S Supervisor
 
+include::{testplansdir}/priv/PMP_S.adoc[]
 
-==== PMPS
+==== PMP_U User
 
-include::{testplansdir}/priv/PMPS.adoc[]
+include::{testplansdir}/priv/PMP_U.adoc[]
 
-include::norm/PMPS_norm_rules.adoc[]
+==== PMP_F Float
 
+include::{testplansdir}/priv/PMP_F.adoc[]
 
-==== PMPU
+==== PMP_Zca Compressed
 
-include::{testplansdir}/priv/PMPU.adoc[]
+include::{testplansdir}/priv/PMP_Zca.adoc[]
 
-include::norm/PMPU_norm_rules.adoc[]
+==== PMP_Zicbo CBOM/CBOZ
 
-==== PMPF
+include::{testplansdir}/priv/PMP_Zicbo.adoc[]
 
-include::{testplansdir}/priv/PMPF.adoc[]
+==== PMP_Zaamo AMO
 
-include::norm/PMPF_norm_rules.adoc[]
+include::{testplansdir}/priv/PMP_Zaamo.adoc[]
 
+==== PMP_Zalrsc LR/SC
 
-==== PMPZca
+include::{testplansdir}/priv/PMP_Zalrsc.adoc[]
 
-include::{testplansdir}/priv/PMPZca.adoc[]
+==== PMP_Sv Virtual Memory
 
-include::norm/PMPZca_norm_rules.adoc[]
+include::{testplansdir}/priv/PMP_Sv.adoc[]
 
+==== PMP_SvZicbo Virtual Memory + CBOM/CBOZ
 
+include::{testplansdir}/priv/PMP_SvZicbo.adoc[]
 
-==== PMPZicbo
+==== PMP_Svadu Page Table Update
 
-include::{testplansdir}/priv/PMPZicbo.adoc[]
+include::{testplansdir}/priv/PMP_Svadu.adoc[]
 
-include::norm/PMPZicbo_norm_rules.adoc[]
+==== PMP Normative Rules
 
-==== PMPZaamo
-
-include::{testplansdir}/priv/PMPZaamo.adoc[]
-
-include::norm/PMPZaamo_norm_rules.adoc[]
-
-
-==== PMPZalrsc
-
-include::{testplansdir}/priv/PMPZalrsc.adoc[]
-
-include::norm/PMPZalrsc_norm_rules.adoc[]
+include::norm/PMP_norm_rules.adoc[]

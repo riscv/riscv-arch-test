@@ -500,8 +500,8 @@ normative_rule_definitions:
     coverpoint:
       ["Not tested: extension dependency checked by the UDB configuration"]
 
-  # PageType_*, canonical_page_* and misaligned_PPN_* have no Sv57 bins, so the Sv57 tests
-  # do not reach the cp_spage, cp_canonical and cp_misaligned crosses. The Sv57 rules use
+  # PageType_* and misaligned_PPN_* have no Sv57 bins, so the Sv57 tests
+  # do not reach the cp_spage and cp_misaligned crosses. The Sv57 rules use
   # crosses keyed on satp.MODE instead.
   # This section describes a simple paged virtual-memory system designed for RV64 systems,
   # which supports 57-bit virtual address spaces.
@@ -548,9 +548,9 @@ normative_rule_definitions:
       ]
 
   # must have bits 63–57 all equal to bit 56, or else a page-fault exception will occur
-  # Needs Sv57 bins in canonical_page_{i,d}; the Sv57 canonical tests run but no cross records them.
   - name: Sv57_va_signext
-    coverpoint: [""]
+    # Representative coverpoints; also cp_canonical_{read,write,exec}_u
+    coverpoint: ["Sv_vm_permissions_cg/cp_canonical_{read,write,exec}_s"]
 
   # Any level of PTE may be a leaf PTE
   # Needs Sv57 bins in PageType_{i,d}; the Sv57 superpage tests run but no cross records the leaf level.

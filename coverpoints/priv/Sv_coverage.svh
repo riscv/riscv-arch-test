@@ -210,15 +210,6 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
         wildcard bins leaflvl_s = {8'b11?01111};
     }
 
-    PTE_canonical_i: coverpoint ins.current.pte_i[7:0] { //va.1
-        wildcard bins leaflvl_u = {8'b11?11111};
-        wildcard bins leaflvl_s = {8'b11?01111};
-    }
-    PTE_canonical_d: coverpoint ins.current.pte_d[7:0] { //va.1
-        wildcard bins leaflvl_u = {8'b11?11111};
-        wildcard bins leaflvl_s = {8'b11?01111};
-    }
-
     PTE_DAU_i: coverpoint ins.current.pte_i[7:0] {
         wildcard bins nonleaf_D_bit = {8'b10?00001};
         wildcard bins nonleaf_A_bit = {8'b01?00001};
@@ -656,53 +647,44 @@ covergroup Sv_vm_permissions_cg with function sample(ins_t ins);
     }
 
     `ifdef UDB_MXLEN_64
-        canonical_page_d: coverpoint ins.current.page_type_d {
-            `ifdef SV48_SUPPORTED
-                bins sv48_tera_canonical = {2'b11} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
-                bins sv48_giga_canonical = {2'b10} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
-                bins sv48_mega_canonical = {2'b01} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
-                bins sv48_kilo_canonical = {2'b00} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_d[63:48] != 0) && (ins.current.virt_adr_d[63:48] != '1));
-            `endif
+        // A non-canonical virtual address page faults before the walk, so no PTE is read and the access has no page
+        // type.  The crosses therefore record only what an implementation can show: the translation mode whose
+        // sign-extension rule the address breaks, the privilege mode, and the page fault, which also tells a load
+        // from a store.  Each samples only the record that writes the cause.
+        canonical_va_d: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0]
+            iff (ins.current.csr_wb[CSR_SCAUSE]) {
+            type_option.weight = 0;
             `ifdef SV39_SUPPORTED
-                bins sv39_giga_canonical = {2'b10} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_d[63:39] != 0) && (ins.current.virt_adr_d[63:39] != '1));
-                bins sv39_mega_canonical = {2'b01} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_d[63:39] != 0) && (ins.current.virt_adr_d[63:39] != '1));
-                bins sv39_kilo_canonical = {2'b00} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_d[63:39] != 0) && (ins.current.virt_adr_d[63:39] != '1));
+                bins sv39 = {4'b1000} iff (ins.va_noncanonical(ins.current.virt_adr_d, 39));
             `endif
-        }
-        canonical_page_i: coverpoint ins.current.page_type_i {
             `ifdef SV48_SUPPORTED
-                bins sv48_tera_canonical = {2'b11} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
-                bins sv48_giga_canonical = {2'b10} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
-                bins sv48_mega_canonical = {2'b01} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
-                bins sv48_kilo_canonical = {2'b00} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1001) && (ins.current.virt_adr_i[63:48] != 0) && (ins.current.virt_adr_i[63:48] != '1));
+                bins sv48 = {4'b1001} iff (ins.va_noncanonical(ins.current.virt_adr_d, 48));
             `endif
+            `ifdef SV57_SUPPORTED
+                bins sv57 = {4'b1010} iff (ins.va_noncanonical(ins.current.virt_adr_d, 57));
+            `endif
+        }
+        // The fetch from a jalr's non-canonical target, on whichever record carries the fault
+        canonical_va_i: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0]
+            iff (ins.current.csr_wb[CSR_SCAUSE] && ins.jalr_fetch_fault()) {
+            type_option.weight = 0;
             `ifdef SV39_SUPPORTED
-                bins sv39_giga_canonical = {2'b10} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_i[63:39] != 0) && (ins.current.virt_adr_i[63:39] != '1));
-                bins sv39_mega_canonical = {2'b01} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_i[63:39] != 0) && (ins.current.virt_adr_i[63:39] != '1));
-                bins sv39_kilo_canonical = {2'b00} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "mode")[3:0] == 4'b1000) && (ins.current.virt_adr_i[63:39] != 0) && (ins.current.virt_adr_i[63:39] != '1));
+                bins sv39 = {4'b1000} iff (ins.va_noncanonical(ins.jalr_fetch_target(), 39));
+            `endif
+            `ifdef SV48_SUPPORTED
+                bins sv48 = {4'b1001} iff (ins.va_noncanonical(ins.jalr_fetch_target(), 48));
+            `endif
+            `ifdef SV57_SUPPORTED
+                bins sv57 = {4'b1010} iff (ins.va_noncanonical(ins.jalr_fetch_target(), 57));
             `endif
         }
 
-        cp_canonical_read_s: cross PTE_canonical_d, canonical_page_d, load_page_fault, read_acc { //va.1
-            ignore_bins ig1 = binsof(PTE_canonical_d.leaflvl_u);
-        }
-        cp_canonical_read_u: cross PTE_canonical_d, canonical_page_d, load_page_fault, read_acc { //va.1
-            ignore_bins ig1 = binsof(PTE_canonical_d.leaflvl_s);
-        }
-
-        cp_canonical_write_s: cross PTE_canonical_d, canonical_page_d, store_page_fault, write_acc { //va.1
-            ignore_bins ig1 = binsof(PTE_canonical_d.leaflvl_u);
-        }
-        cp_canonical_write_u: cross PTE_canonical_d, canonical_page_d, store_page_fault, write_acc { //va.1
-            ignore_bins ig1 = binsof(PTE_canonical_d.leaflvl_s);
-        }
-
-        cp_canonical_exec_s: cross PTE_canonical_i, canonical_page_i, ins_page_fault, exec_acc { //va.1
-            ignore_bins ig1 = binsof(PTE_canonical_i.leaflvl_u);
-        }
-        cp_canonical_exec_u: cross PTE_canonical_i, canonical_page_i, ins_page_fault, exec_acc { //va.1
-            ignore_bins ig1 = binsof(PTE_canonical_i.leaflvl_s);
-        }
+        cp_canonical_read_s:  cross priv_mode_s, canonical_va_d, load_page_fault;  //va.1
+        cp_canonical_read_u:  cross priv_mode_u, canonical_va_d, load_page_fault;  //va.1
+        cp_canonical_write_s: cross priv_mode_s, canonical_va_d, store_page_fault; //va.1
+        cp_canonical_write_u: cross priv_mode_u, canonical_va_d, store_page_fault; //va.1
+        cp_canonical_exec_s:  cross priv_mode_s, canonical_va_i, ins_page_fault;   //va.1
+        cp_canonical_exec_u:  cross priv_mode_u, canonical_va_i, ins_page_fault;   //va.1
     `endif
 endgroup
 

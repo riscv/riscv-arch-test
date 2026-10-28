@@ -236,13 +236,14 @@ covergroup Smstateen_cg with function sample(ins_t ins);
         // mstateen0 has only SE0 set, so every other bit of sstateen0 must be read-only zero
         `ifdef UDB_MXLEN_64
             mstateen0_se0_only: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0", "mstateen0") {
+                bins se0_only = {64'h8000_0000_0000_0000};
             }
         `else
             mstateen0_se0_only: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0h", "mstateen0h"),
                                             get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstateen0", "mstateen0")} {
-        `endif
                 bins se0_only = {64'h8000_0000_0000_0000};
             }
+        `endif
     `endif
 
     cp_walking_ones: cross priv_mode_m, mstateen_csrs, walk_ops, walk_bit;

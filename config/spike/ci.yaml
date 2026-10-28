@@ -15,7 +15,7 @@ exclude_extensions:
   # https://github.com/riscv/sail-riscv/issues/2054
   # The exclusion applies to every Spike config, so the other configs, which pass, lose Smstateen too until
   # exclusions can be given per config.
-  - Smstateen-00
+  - Smstateen
   # Spike stores tdata2 as written (trigger_t::tdata2_write in riscv/triggers.cc), so
   # an all-ones write to an mcontrol6 NAPOT trigger reads back with bit maskmax6-1 set; the Debug spec requires it to
   # read 0 (fix: https://github.com/riscv-software-src/riscv-isa-sim/pull/2481). Drop it when the Spike pin includes it.

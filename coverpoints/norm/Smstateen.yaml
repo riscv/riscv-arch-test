@@ -57,10 +57,7 @@ normative_rule_definitions:
   # zero), the same bit appears as read-only zero in the matching hstateen and sstateen
   # CSRs.
   - name: mstateen_lower_priv_roz
-    coverpoint:
-      [
-        "TODO: clear an mstateen0 bit (e.g. FCSR or JVT) and check that the matching sstateen0 bit reads zero",
-      ]
+    coverpoint: ["Smstateen_cg/cp_mstateen0_se0_only_sstateen0"]
 
   - name: sstateen_vsmode_access_roz
     coverpoint: [""]
@@ -104,15 +101,13 @@ normative_rule_definitions:
     coverpoint: ["Not tested: custom state is non-standard and not certified"]
 
   - name: stateen0_fcsr_op
-    coverpoint:
-      ["Smstateen_cg/{cp_fcsr, cp_fcsr_lower}", "Ssstateen_cg/cp_fcsr_lower"]
+    coverpoint: ["Smstateen_cg/cp_fcsr", "Ssstateen_cg/cp_fcsr"]
 
   - name: mstateen0_fcsr_roz
-    coverpoint: ["Smstateen_cg/cp_fcsr_ro_zero"]
+    coverpoint: ["Smstateen_cg/cp_walking_ones"]
 
   - name: stateen0_fcsr0_misa_f0_illegal_fpu_instr
-    coverpoint:
-      ["{Smstateen_cg,Ssstateen_cg}/{cp_fcsr_lower, cp_fcsr_fp_instrs}"]
+    coverpoint: ["{Smstateen_cg,Ssstateen_cg}/{cp_fcsr, cp_fcsr_fp_instrs}"]
 
   - name: stateen0_jvt_op
     coverpoint: ["Smstateen_cg/cp_jvt_access", "Ssstateen_cg/cp_jvt"]

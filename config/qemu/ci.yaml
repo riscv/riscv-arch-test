@@ -68,8 +68,7 @@ exclude_extensions:
   - Zama16b
   # mstateen0 bits are writable for state the hart lacks: P1P13 on RV64 and on RV32 without H
   # (https://gitlab.com/qemu-project/qemu/-/work_items/4495), and ENVCFG, CSRIND, AIA and IMSIC without S
-  # (https://gitlab.com/qemu-project/qemu/-/work_items/4655). On the max configs CSRIND, AIA and IMSIC are
-  # legally writable, but Sail does not model Sscsrind or Ssaia.
+  # (https://gitlab.com/qemu-project/qemu/-/work_items/4655).
   - Smstateen
   # On RV64, reserved bit 63 of sstateen1-3 is writable while mstateenN bit 63 is set, but sstateen1-3 have no
   # defined bits and must read zero (https://gitlab.com/qemu-project/qemu/-/work_items/4726). Smstateen fails too.

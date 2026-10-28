@@ -173,6 +173,7 @@ def feature_tests(
             body = _access_lines(test_data, cg, cp, feat.csrs, feat.rv32_csrs, feat.insns, mode, base, tag)
             lines += _mode_block(mode, base, body)
     lines += _bit_lines(gate, feat, lambda c, _: [f"csrw {c}, x{save}  # restore {c}"])
+    lines.append(f"mv x{save}, zero  # do not leave the gate CSR value in a register")
     test_data.int_regs.return_registers([rd, save])
     return gated(arch_block(lines, *feat.arch), feat.guard)
 
@@ -204,13 +205,15 @@ def walk_tests(
     modes: list[str],
     base: str,
     guard: str | None = None,
-    ignore_bits: int = 0,
+    unchecked_bits: list[tuple[int, str]] | None = None,
 ) -> list[str]:
-    """Walk a one and a zero through every bit of a CSR from each mode. Bits in `ignore_bits` are walked but not checked."""
-    mask = ~ignore_bits & 0xFFFFFFFFFFFFFFFF if ignore_bits else None
+    """Walk a one and a zero through every bit of a CSR from each mode.
+
+    Each (bits, define) in `unchecked_bits` is walked but not checked when `define` is defined.
+    """
     lines = [comment_banner(cp, f"Walking ones and zeros on {csr} from {', '.join(modes)} mode")]
     for mode in modes:
         prefix = f"{mode.lower()}_" if len(modes) > 1 else ""
-        walk = csr_walk_test(test_data, (csr, mask), cg, cp, bin_prefix=prefix)
+        walk = csr_walk_test(test_data, (csr, None), cg, cp, bin_prefix=prefix, unchecked_bits=unchecked_bits)
         lines += _mode_block(mode, base, walk)
     return gated(lines, guard)

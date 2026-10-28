@@ -24,7 +24,13 @@ CG = "Smstateen_cg"
 MSTATEEN_REGS = [f"mstateen{n}" for n in range(4)]
 MSTATEENH_REGS = [f"{csr}h" for csr in MSTATEEN_REGS]
 # TODO: Remove the ignored bits and the skipped imsic and aia features once Sail models Smaia/Ssaia
-MSTATEEN0_IGNORED_BITS = (1 << 2) | (1 << 54) | (0b111 << 58)  # JVT, CTR, IMSIC, AIA, CSRIND
+# Bits are only unchecked when the DUT implements the extension.
+MSTATEEN0_UNCHECKED_BITS = [
+    (1 << 2, "ZCMT_SUPPORTED"),  # JVT
+    (1 << 54, "SSCTR_SUPPORTED"),  # CTR
+    (0b11 << 58, "SSAIA_SUPPORTED"),  # IMSIC, AIA
+    (1 << 60, "SSCSRIND_SUPPORTED"),  # CSRIND
+]
 # (feature, coverpoint)
 FEATURE_COVERPOINTS = [
     ("envcfg", "cp_envcfg"),
@@ -112,9 +118,12 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(_se0_only_walk(test_data))
 
     for csr in MSTATEEN_REGS:
-        ignore = MSTATEEN0_IGNORED_BITS if csr == "mstateen0" else 0
+        unchecked = MSTATEEN0_UNCHECKED_BITS if csr == "mstateen0" else None
+        unchecked_h = [(bits >> 32, define) for bits, define in unchecked or [] if bits >> 32]
         tc = test_data.new_test_chunk(test_chunks)
-        tc.code.extend(walk_tests(test_data, CG, "cp_walking_ones", csr, modes=["M"], base="M", ignore_bits=ignore))
+        tc.code.extend(
+            walk_tests(test_data, CG, "cp_walking_ones", csr, modes=["M"], base="M", unchecked_bits=unchecked)
+        )
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(
             walk_tests(
@@ -125,7 +134,7 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
                 modes=["M"],
                 base="M",
                 guard="__riscv_xlen == 32",
-                ignore_bits=ignore >> 32,
+                unchecked_bits=unchecked_h or None,
             )
         )
     test_chunks.append(test_data.end_test_chunk())

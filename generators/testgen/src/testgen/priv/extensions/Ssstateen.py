@@ -20,7 +20,7 @@ from testgen.priv.registry import add_priv_test_generator
 CG = "Ssstateen_cg"
 SSTATEEN_REGS = [f"sstateen{n}" for n in range(4)]
 # TODO: Check sstateen0.JVT again once Sail supports Zcmt.
-SSTATEEN0_IGNORED_BITS = 1 << 2  # JVT
+SSTATEEN0_UNCHECKED_BITS = [(1 << 2, "ZCMT_SUPPORTED")]  # JVT
 # (feature, coverpoint)
 # TODO: re-enable jvt once Sail support Zcmt
 FEATURE_COVERPOINTS = [
@@ -43,8 +43,10 @@ def make_ssstateen(test_data: TestData) -> list[TestChunk]:
     tc.code.extend(illegal_access_tests(test_data, CG, "cp_csr_illegal_accesses", SSTATEEN_REGS, modes=["U"], base="S"))
     for csr in SSTATEEN_REGS:
         tc = test_data.new_test_chunk(test_chunks)
-        ignore = SSTATEEN0_IGNORED_BITS if csr == "sstateen0" else 0
-        tc.code.extend(walk_tests(test_data, CG, "cp_walking_ones", csr, modes=["S"], base="S", ignore_bits=ignore))
+        unchecked = SSTATEEN0_UNCHECKED_BITS if csr == "sstateen0" else None
+        tc.code.extend(
+            walk_tests(test_data, CG, "cp_walking_ones", csr, modes=["S"], base="S", unchecked_bits=unchecked)
+        )
     for key, cp in FEATURE_COVERPOINTS:
         tc = test_data.new_test_chunk(test_chunks)
         tc.code.extend(feature_tests(test_data, CG, cp, FEATURES[key], gate="sstateen0", modes=["S", "U"], base="S"))

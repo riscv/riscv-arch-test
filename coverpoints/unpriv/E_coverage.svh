@@ -1241,7 +1241,7 @@ covergroup E_jalr_cg with function sample(ins_t ins);
         bins randomp = {1795};
     }
 
-    cp_offset : coverpoint ins.jump_backward(signed'(ins.current.rs1_val) + signed'(ins.current.imm))  iff (ins.trap == 0 )  {
+    cp_offset : coverpoint {ins.current.rs1_val + ins.current.imm - ins.get_pc()}[`UDB_MXLEN-1]  iff (ins.trap == 0 )  {
         // jalr destination in rs1+imm is forward/backward
     }
     cp_offset_lsbs : coverpoint {ins.current.rs1_val[0], ins.current.imm[0]}  iff (ins.trap == 0 )  {

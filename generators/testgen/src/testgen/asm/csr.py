@@ -172,6 +172,20 @@ def csr_access_test(
     return lines
 
 
+def _clear_unchecked(reg: int, temp_reg: int, unchecked: tuple[str, int] | None) -> list[str]:
+    """Clear the bits of unchecked = (condition, bits) from the mask in reg when the preprocessor condition holds."""
+    if unchecked is None:
+        return []
+    cond, bits = unchecked
+    return [
+        f"#if {cond}",
+        f"LI(x{temp_reg}, {bits:#x})",
+        f"not x{temp_reg}, x{temp_reg}",
+        f"and x{reg}, x{reg}, x{temp_reg}    # written but not compared",
+        "#endif",
+    ]
+
+
 def _warl_reserved_check(
     test_data: TestData,
     csr_name: str,
@@ -182,6 +196,7 @@ def _warl_reserved_check(
     check_reg: int,
     warl_mask_reg: int,
     warl_mask: int,
+    unchecked: tuple[str, int] | None = None,
 ) -> list[str]:
     """
     Generate the readback for a walk iteration that wrote reserved values to WARL fields.
@@ -204,12 +219,14 @@ def _warl_reserved_check(
         check_reg: Scratch register for the readback
         warl_mask_reg: Scratch register for the mask
         warl_mask: CSR mask with the reserved fields' bits excluded
+        unchecked: Optional (condition, bits) also excluded from the check when the condition holds
     """
     field_list = ", ".join(f[0].upper() for f in reserved_fields)
     lines = [
         f"{INDENT}# {field_list} written with a reserved value; legalization is implementation-defined,",
         f"{INDENT}# so check the other bits exactly and only check {field_list} for a legal (non-reserved) value.",
         f"LI(x{warl_mask_reg}, {warl_mask:#x})    # Load mask excluding {field_list}",
+        *_clear_unchecked(warl_mask_reg, check_reg, unchecked),
         test_data.add_testcase(bin_name, coverpoint, covergroup),
         gen_csr_read_sigupd(check_reg, (csr_name, warl_mask), test_data, warl_mask_reg),
     ]
@@ -238,7 +255,7 @@ def csr_walk_test(
     walk_zeros: bool = True,
     warl_fields: list[tuple] | None = None,
     maskedwrites: bool = False,
-    cond_mask: tuple[str, int] | None = None,
+    unchecked: tuple[str, int] | None = None,
 ) -> list[str]:
     """
     Generate a CSR walking-ones test: set and (optionally) clear each bit individually.
@@ -264,9 +281,10 @@ def csr_walk_test(
             bits and instead check that the field holds a legal (non-reserved) value; all
             other iterations check the field exactly as usual (see _warl_reserved_check).
         maskedwrites: If True, the CSR is written with a mask applied to the value being written.
-        cond_mask: Optional (condition, bits): bits are added to the mask when the preprocessor
-            condition holds.  Example: ("!defined(SMCDELEG_SUPPORTED)", 1 << 28) walks menvcfgh.CDE
-            only where it is read-only zero.
+        unchecked: Optional (condition, bits): bits that are walked but left out of the readback
+            check when the preprocessor condition holds, because the reference model cannot predict
+            them there.  Example: ("defined(SMCDELEG_SUPPORTED)", 1 << 28) for menvcfgh.CDE, which
+            Sail treats as read-only zero.
     """
     assert 0 <= start_bit < 32, f"start_bit must be in 0..31, got {start_bit}"
     csr_name, mask = csr
@@ -278,6 +296,9 @@ def csr_walk_test(
         save_reg, temp_reg, walk_reg, check_reg = test_data.int_regs.get_registers(4)
         mask_reg = None
     warl_mask_reg = test_data.int_regs.get_register() if warl_fields else None
+    # With masked writes, temp_reg (all 1s) is unused, so it holds the readback mask when bits are unchecked
+    assert unchecked is None or maskedwrites, f"unchecked requires maskedwrites ({csr_name})"
+    read_mask_reg = temp_reg if unchecked is not None else mask_reg
 
     def field_value_written(field: tuple, i: int, *, walking_ones: bool) -> int:
         """Value the walk writes to the WARL field when setting/clearing bit i."""
@@ -319,7 +340,7 @@ def csr_walk_test(
                 if not reserved:
                     return [
                         test_data.add_testcase(name, coverpoint, covergroup),
-                        gen_csr_read_sigupd(check_reg, csr, test_data, mask_reg),
+                        gen_csr_read_sigupd(check_reg, csr, test_data, read_mask_reg),
                     ]
                 assert warl_mask_reg is not None
                 return _warl_reserved_check(
@@ -332,6 +353,7 @@ def csr_walk_test(
                     check_reg,
                     warl_mask_reg,
                     warl_mask_for(reserved),
+                    unchecked,
                 )
             gate, rest = remaining[0], remaining[1:]
             gated = [f for f in matched if len(f) == 5 and f[4] == gate]
@@ -354,18 +376,10 @@ def csr_walk_test(
     ]
     if mask is not None:
         lines.append(f"LI(x{mask_reg}, {mask})    # Load mask ({mask:#x})")
-    if cond_mask is not None:
-        assert mask is not None, f"cond_mask requires a csr mask (got None for {csr_name})"
-        cond, bits = cond_mask
-        lines.extend(
-            [
-                f"#if {cond}",
-                f"LI(x{check_reg}, {bits:#x})",
-                f"or x{mask_reg}, x{mask_reg}, x{check_reg}    # also walk these bits",
-                "#endif",
-            ]
-        )
-    if walk_zeros:
+    if unchecked is not None:
+        lines.append(f"mv x{temp_reg}, x{mask_reg}    # readback mask")
+        lines.extend(_clear_unchecked(temp_reg, check_reg, unchecked))
+    elif walk_zeros:
         lines.append(f"LI(x{temp_reg}, -1)             # x{temp_reg} = all 1s")
 
     need_endif = False

@@ -534,8 +534,7 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
         | (1 << 7)  # CBZE: Cache Block Zero Enable
         | (3 << 32)  # PMM: Pointer Masking
         | (1 << 59)  # DTE: Double Trap Enable
-        | (0 << 60)  # CDE: the menvcfg(h) walks add it without Smcdeleg, where it is read-only zero.
-        # Sail does not implement Smcdeleg; TODO change to 1 when it does
+        | (0 << 60)  # CDE: walked (csr_menvcfg_walk), but not in the access tests: Sail does not implement Smcdeleg
         | (1 << 61)  # ADUE: A/D
         | (1 << 62)  # PBMTE: Page-Based Memory Type Enable
         | (1 << 63)  # STCE: Supervisor Timer Compare Enable
@@ -589,10 +588,15 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     # TODO: remove mcountinhibit mask when Sail gets parameters for writable bits
     csr_mcountinhibit = ("mcountinhibit", 0b111)
     csr_menvcfg = ("menvcfg", menvcfg_mask)
+    # The walks also set and clear CDE.  It is read-only zero without Smcdeleg; with Smcdeleg it is writable but
+    # Sail, which does not implement Smcdeleg, reads it as 0, so the readback does not compare it there.
+    # TODO: compare CDE everywhere (and write it in the access tests) once Sail implements Smcdeleg
+    csr_menvcfg_walk = ("menvcfg", menvcfg_mask | 1 << 60)
     csr_mseccfg = ("mseccfg", mseccfg_mask)
     # RV32-only high CSRs
     csr_mstatush = ("mstatush", (mstatus_mask >> 32) & 0x7FFFFFFF)  # SD not in bit 31 of mstatush
     csr_menvcfgh = ("menvcfgh", menvcfg_mask >> 32)
+    csr_menvcfgh_walk = ("menvcfgh", (menvcfg_mask | 1 << 60) >> 32)
     csr_mseccfgh = ("mseccfgh", mseccfg_mask >> 32)
     # medelegh (0x312) by number: clang 20 does not accept the CSR name (gcc does).  All bits reserved/custom.
     csr_medelegh = ("0x312", 0x00000000)
@@ -745,12 +749,12 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.extend(
         csr_walk_test(
             test_data,
-            csr_menvcfg,
+            csr_menvcfg_walk,
             covergroup,
             coverpoint_masked,
             warl_fields=warl_fields,
             maskedwrites=True,
-            cond_mask=("__riscv_xlen == 64 && !defined(SMCDELEG_SUPPORTED)", 1 << 60),
+            unchecked=("__riscv_xlen == 64 && defined(SMCDELEG_SUPPORTED)", 1 << 60),
         )
     )
     tc.code.append("#endif")
@@ -775,11 +779,11 @@ def _generate_mcsr_tests(test_data: TestData, test_chunks: list) -> None:
     tc.code.extend(
         csr_walk_test(
             test_data,
-            csr_menvcfgh,
+            csr_menvcfgh_walk,
             covergroup,
             coverpoint_masked,
             maskedwrites=True,
-            cond_mask=("!defined(SMCDELEG_SUPPORTED)", 1 << 28),
+            unchecked=("defined(SMCDELEG_SUPPORTED)", 1 << 28),
         )
     )
     tc.code.append("#endif // SM1P12P0_OR_LATER_SUPPORTED")

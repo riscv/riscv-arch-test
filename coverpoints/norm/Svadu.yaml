@@ -35,8 +35,13 @@ normative_rule_definitions:
   # address translation.
   # ADUE=1 here; Svade.yaml maps the ADUE=0 half.
   - name: menvcfg_adue_op
-    # Representative coverpoints; also the other Svadu_cg/{Abit,Dbit}_unset crosses
-    coverpoint: ["Svadu_cg/{Abit_unset_read_s, Dbit_unset_write_s}"]
+    # Representative coverpoints; also the other Svadu_cg/{Abit,Dbit}_unset crosses.
+    # fault_no_update checks that every leaf PTE check passes before the hardware update.
+    coverpoint:
+      [
+        "Svadu_cg/{Abit_unset_read_s, Dbit_unset_write_s}",
+        "Svadu_cg/fault_no_update_{exec,read,write}_s",
+      ]
 
   # After changing menvcfg.ADUE, executing an SFENCE.VMA instruction with rs1=x0 and
   # rs2=x0 suffices to synchronize address-translation caches with respect to the

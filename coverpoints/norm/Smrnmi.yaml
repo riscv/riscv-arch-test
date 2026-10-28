@@ -3,20 +3,23 @@ normative_rule_definitions:
   # provided by the ext:smrnmi[] extension, sets the csr::[mdt] bit to 0 if the new
   # privilege mode is not M.
   - name: mstatus_mdt_clr_mnret
-    coverpoint: [""]
+    coverpoint: ["TODO: covered by the Smdbltrp suite (not yet written)"]
   # If the ext:ssdbltrp[] extension is also implemented, and the new privilege mode is U,
   # VS, or VU, then csr:sstatus[sdt] is also set to 0.
   - name: sstatus_sdt_clr_mnret
-    coverpoint: [""]
+    coverpoint: ["TODO: covered by the Ssdbltrp suite (not yet written)"]
 
   # Additionally, if it is VU, then vsstatus.SDT is also set to 0.
   - name: vsstatus_sdt_clr_mnret
-    coverpoint: ["TODO: MNRET to VU-mode with Smdbltrp, Ssdbltrp, and H"]
+    coverpoint:
+      [
+        "TODO: covered by the Ssdbltrp suite (not yet written): MNRET to VU-mode with Smdbltrp, Ssdbltrp, and H",
+      ]
 
   # When the Smrnmi extension is implemented, a trap caused by an RNMI is not
   # considered an unexpected trap irrespective of the state of the MDT bit.
   - name: trap_unexp_rnmi
-    coverpoint: [""]
+    coverpoint: ["TODO: covered by the Smdbltrp suite (not yet written)"]
 
   # a trap that occurs when executing in M-mode with mnstatus.NMIE set to 0 is an
   # unexpected trap.

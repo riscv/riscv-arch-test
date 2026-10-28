@@ -46,12 +46,14 @@
         }
     `endif
 
-    mprv_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
-        bins mprv_1 = {1'b1};   // MPRV=1: memory access uses MPP privilege
-    }
-    mpp_field_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
-        bins mpp_m = {2'b11};   // effective privilege = M-mode
-    }
+    `ifdef U_SUPPORTED  // MPRV is read-only zero if U mode is not supported
+        mprv_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mprv") {
+            bins mprv_1 = {1'b1};   // MPRV=1: memory access uses MPP privilege
+        }
+        mpp_field_m: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "mpp") {
+            bins mpp_m = {2'b11};   // effective privilege = M-mode
+        }
+    `endif
 
     csr_target: coverpoint ins.current.insn[31:20] { //excluding read-only csrs
         bins mepc     = {CSR_MEPC};
@@ -68,7 +70,9 @@
     // neither satp nor MXR applies. MPP=U and MPP=S are governed by senvcfg.PMM and
     // menvcfg.PMM, which Ssnpm and Smnpm provide, and are covered by SsnpmSm_cg and
     // SmnpmSSm_cg.
-    cp_pm_mprv_mpp_m: cross priv_mode_m, pmm, mprv_bit, a_upper_bits_mprv, sw_lw_insn, mpp_field_m;
+    `ifdef U_SUPPORTED
+        cp_pm_mprv_mpp_m: cross priv_mode_m, pmm, mprv_bit, a_upper_bits_mprv, sw_lw_insn, mpp_field_m;
+    `endif
 
     // cp_pmm_addr_mode_jalr — not guarded by S_SUPPORTED; implicit fetch is
     // never pointer-masked regardless of PMM or MXR availability.

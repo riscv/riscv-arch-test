@@ -7,7 +7,7 @@
 """Smstateen privileged extension test generator."""
 
 from testgen.asm.csr import csr_walk_test
-from testgen.asm.helpers import arch_block, comment_banner
+from testgen.asm.helpers import arch_block, comment_banner, write_sigupd
 from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
@@ -162,6 +162,18 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
         ]
     )
     lines.extend(csr_walk_test(test_data, ("mstateen0h", 0xDF800000), covergroup, coverpoint))
+    lines.append("#endif  // __riscv_xlen == 32")
+
+    # mstateen1-3 define only bit 63 (SE1-SE3), which gates sstateenN (and hstateenN). It is
+    # writable unless H is absent and sstateenN is all read-only zero (norm:mstateen_bit_63_roz);
+    # every other bit is reserved and read-only zero, so the whole CSR is checked.
+    for n in range(1, 4):
+        lines.extend(["", test_data.add_testcase(f"mstateen{n}_walk", coverpoint, covergroup)])
+        lines.extend(csr_walk_test(test_data, (f"mstateen{n}", None), covergroup, coverpoint))
+    lines.append("#if __riscv_xlen == 32")
+    for n in range(1, 4):
+        lines.extend(["", test_data.add_testcase(f"mstateen{n}h_walk", coverpoint, covergroup)])
+        lines.extend(csr_walk_test(test_data, (f"mstateen{n}h", None), covergroup, coverpoint))
     lines.append("#endif  // __riscv_xlen == 32")
 
     return lines
@@ -550,65 +562,65 @@ def _generate_fcsr_lower_fp_instrs(test_data: TestData) -> list[str]:
 # ---------------------------------------------------------------------------
 
 
-def _write_se0(temp_reg: int, *, enable: bool) -> list[str]:
-    """Set or clear SE0 in mstateen0 (RV64) / mstateen0h (RV32)."""
+def _write_se(n: int, temp_reg: int, *, enable: bool) -> list[str]:
+    """Set or clear SE<n> (bit 63 of mstateen<n> on RV64, bit 31 of mstateen<n>h on RV32)."""
     action = "csrs" if enable else "csrc"
-    description = "set SE0=1" if enable else "clear SE0=0"
+    description = f"set SE{n}=1" if enable else f"clear SE{n}=0"
     return [
         "#if __riscv_xlen == 64",
-        f"LI(x{temp_reg}, 0x8000000000000000)  # SE0 = bit 63 of mstateen0",
-        f"{action} mstateen0, x{temp_reg}  # {description}",
+        f"LI(x{temp_reg}, 0x8000000000000000)  # SE{n} = bit 63 of mstateen{n}",
+        f"{action} mstateen{n}, x{temp_reg}  # {description}",
         "#else",
-        f"LI(x{temp_reg}, 0x80000000)  # SE0 = bit 31 of mstateen0h",
-        f"{action} mstateen0h, x{temp_reg}  # {description}",
+        f"LI(x{temp_reg}, 0x80000000)  # SE{n} = bit 31 of mstateen{n}h",
+        f"{action} mstateen{n}h, x{temp_reg}  # {description}",
         "#endif",
     ]
 
 
-def _generate_se0_controls_sstateen0(test_data: TestData, *, se0: int) -> list[str]:
-    """CSR ops on sstateen0 from S-mode with mstateen0.SE0 set or clear.
+def _generate_se_controls_sstateen(test_data: TestData, *, n: int, se: int) -> list[str]:
+    """CSR ops on sstateen<n> from S-mode with SE<n> (bit 63 of mstateen<n>) set or clear.
 
     The subject is the M-mode control bit, which is why this lives in Smstateen rather
     than Ssstateen. The accesses themselves run in S-mode to hit the priv_mode_s bin.
+    sstateen1-3 have no defined bits, so for them each access also checks the value read,
+    which must be zero (norm:stateen_reserved_roz) whenever the access does not trap.
     """
-    coverpoint = "cp_mstateen0_se0_controls_sstateen0"
-    detail = "SE0=1 (access permitted)" if se0 else "SE0=0 (should trap)"
+    coverpoint = "cp_mstateen0_se0_controls_sstateen0" if n == 0 else "cp_mstateen_se_controls_sstateen123"
+    csr = f"sstateen{n}"
+    detail = f"SE{n}=1 (access permitted)" if se else f"SE{n}=0 (should trap)"
 
-    lines = [comment_banner(coverpoint, f"CSR ops to sstateen0 from S-mode with mstateen0.{detail}")]
+    lines = [comment_banner(coverpoint, f"CSR ops to {csr} from S-mode with mstateen{n}.{detail}")]
 
     temp_reg, save_mstateen, save_mstatenh, save_sstateen, ones_reg = test_data.int_regs.get_registers(5)
 
     lines.extend(
         [
-            f"csrr x{save_sstateen}, sstateen0  # save sstateen0",
+            f"csrr x{save_sstateen}, {csr}  # save {csr}",
             f"LI(x{ones_reg}, -1)",
-            f"csrr x{save_mstateen}, mstateen0  # save mstateen0",
+            f"csrr x{save_mstateen}, mstateen{n}  # save mstateen{n}",
             "#if __riscv_xlen == 32",
-            f"csrr x{save_mstatenh}, mstateen0h  # save mstateen0h on RV32",
+            f"csrr x{save_mstatenh}, mstateen{n}h  # save mstateen{n}h on RV32",
             "#endif",
         ]
     )
-    lines.extend(_write_se0(temp_reg, enable=bool(se0)))
+    lines.extend(_write_se(n, temp_reg, enable=bool(se)))
     lines.append("RVTEST_TSBI_GOTO_SMODE")
 
     for op in CSR_OPS:
-        insn = f"{op} x{temp_reg}, sstateen0" if op == "csrr" else f"{op} x{temp_reg}, sstateen0, x{ones_reg}"
-        lines.extend(
-            [
-                "",
-                test_data.add_testcase(f"sstateen0_{op.lower()}_se0_{se0}_smode", coverpoint, "Smstateen_cg"),
-                insn,
-            ]
-        )
+        insn = f"{op} x{temp_reg}, {csr}" if op == "csrr" else f"{op} x{temp_reg}, {csr}, x{ones_reg}"
+        label = f"{csr}_{op.lower()}_se{n}_{se}_smode"
+        lines.extend(["", test_data.add_testcase(label, coverpoint, "Smstateen_cg"), insn])
+        if n:
+            lines.append(write_sigupd(temp_reg, test_data))
 
     lines.extend(
         [
             "RVTEST_TSBI_GOTO_MMODE",
             "",
-            f"csrw sstateen0, x{save_sstateen}  # restore sstateen0",
-            f"csrw mstateen0, x{save_mstateen}  # restore mstateen0",
+            f"csrw {csr}, x{save_sstateen}  # restore {csr}",
+            f"csrw mstateen{n}, x{save_mstateen}  # restore mstateen{n}",
             "#if __riscv_xlen == 32",
-            f"csrw mstateen0h, x{save_mstatenh}  # restore mstateen0h on RV32",
+            f"csrw mstateen{n}h, x{save_mstatenh}  # restore mstateen{n}h on RV32",
             "#endif",
         ]
     )
@@ -750,12 +762,13 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
 
     test_chunks.append(test_data.end_test_chunk())
 
-    # mstateen0.SE0 gating of sstateen0, kept in its own chunk so it lands in its own file.
-    # sstateen0 only exists under Ssstateen, which also implies S-mode.
+    # mstateenN.SE<N> (bit 63) gating of sstateenN, kept in its own chunk so it lands in its own file.
+    # sstateenN only exists under Ssstateen, which also implies S-mode.
     tc = test_data.begin_test_chunk()
     tc.code.append("#ifdef SSSTATEEN_SUPPORTED")
-    tc.code.extend(_generate_se0_controls_sstateen0(test_data, se0=0))
-    tc.code.extend(_generate_se0_controls_sstateen0(test_data, se0=1))
+    for n in range(4):
+        for se in (0, 1):
+            tc.code.extend(_generate_se_controls_sstateen(test_data, n=n, se=se))
     tc.code.append("#endif  // SSSTATEEN_SUPPORTED")
     test_chunks.append(test_data.end_test_chunk())
 

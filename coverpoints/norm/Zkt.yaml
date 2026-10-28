@@ -6,4 +6,11 @@ normative_rule_definitions:
     coverpoint: ["Definition, checked through UDB"]
 
   - name: Zkt_impl_must_constant_latency
-    coverpoint: ["Not tested: microarchitectural timing"]
+    # Use representative coverpoints; every instruction in the Zkt testplan has a cp_zkt coverpoint
+    coverpoint:
+      [
+        "Zkt_add_cg/cp_zkt_rs1_rs2",
+        "ZktZmmul_mulh_cg/cp_zkt_rs1_rs2",
+        "ZktZca_c_addi_cg/cp_zkt_rs1",
+        "Zkt_auipc_cg/cp_zkt_pc",
+      ]

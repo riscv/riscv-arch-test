@@ -19,7 +19,8 @@ from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig,
 
 xv_config = InstructionTypeConfig(required_params={"rd", "vs2"}, vector_data=VectorTypeConfig(require_zero_vstart=True))
 vmvxs_config = InstructionTypeConfig(
-    required_params={"rd", "vs2"}, vector_data=VectorTypeConfig(scalar_regs={"vs2"}, require_zero_vstart=True)
+    required_params={"rd", "vs2"},
+    vector_data=VectorTypeConfig(scalar_regs={"vs2"}, maskable=False, require_zero_vstart=True),
 )
 
 

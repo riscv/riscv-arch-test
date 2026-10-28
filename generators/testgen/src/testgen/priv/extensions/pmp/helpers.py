@@ -11,7 +11,7 @@ from collections.abc import Callable, Iterable
 
 from testgen.asm.csr import gen_csr_write_sigupd
 from testgen.data.state import TestData
-from testgen.priv.extensions.pmp.probes import Cross, ProbeGenerator
+from testgen.priv.extensions.pmp.probes import Cross, ProbeGenerator, covergroup
 
 #####################################################################
 # PMP CSR helpers
@@ -133,7 +133,7 @@ def write_pmpcfg0(test_data: TestData, value: str, name: str, coverpoint: str) -
     """Write pmpcfg0 and register its readback as a testcase of ``coverpoint``, which samples pmpcfg0."""
     return [
         f"LI(x4, {value})",
-        test_data.add_testcase(name, coverpoint, f"{test_data.testsuite}_cg"),
+        test_data.add_testcase(name, coverpoint, covergroup(test_data)),
         gen_csr_write_sigupd(4, "pmpcfg0", test_data),
         "sfence.vma",
     ]

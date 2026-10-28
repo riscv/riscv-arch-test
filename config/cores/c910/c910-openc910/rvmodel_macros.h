@@ -99,7 +99,6 @@
 ##### Interrupt Latency #####
 
 #define RVMODEL_INTERRUPT_LATENCY 10
-#define RVMODEL_MAX_CYCLES_PER_TIMER_TICK 1
 
 ##### Machine Timer #####
 

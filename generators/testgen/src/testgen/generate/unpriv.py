@@ -11,7 +11,7 @@
 import re
 from pathlib import Path
 
-from testgen.constants import INDENT, TESTCASES_PER_FILE, get_flen_for_extensions
+from testgen.constants import INDENT, TESTCASES_PER_FILE, VLEN_MAX, get_flen_for_extensions
 from testgen.coverpoints import generate_tests_for_coverpoint
 from testgen.data.config import TestConfig
 from testgen.data.registers import IntegerRegisterFile
@@ -52,7 +52,7 @@ def generate_unpriv_extension_tests(
     Args:
         xlen: Target XLEN (32 or 64)
         E_ext: Whether to generate RV32E tests
-        testsuite: Testsuite to generate tests for (e.g., 'I', 'M', 'Zcb', 'Misalign')
+        testsuite: Testsuite to generate tests for (e.g., 'I', 'M', 'Zcb', 'Zicclsm')
         testplan_dir: Directory containing testplan CSV files
         output_test_dir: Directory to output generated tests
         is_vector: Set in vector test suites
@@ -193,6 +193,7 @@ def _generate_unpriv_tests_for_instruction(
                 "#define RVTEST_VECTOR",
                 f"#define RVTEST_SEW {sew}",
                 f"#define VDSEW {vdsew}",
+                f"#define RVTEST_VLEN_MAX {VLEN_MAX}",
             ]
         else:
             extra_defines = []

@@ -1,64 +1,133 @@
 ##################################
 # priv/extensions/PrivCommon.py
 #
-# Shared test generation for the Sm, S, and U privileged suites.
+# Shared test generation for the Sm, S, U and H privileged suites.
 # David_Harris@hmc.edu 31 August 2026
 # SPDX-License-Identifier: Apache-2.0
 ##################################
 
-"""Shared test generation for the privileged mode suites (Sm, S, U)."""
+"""Shared test generation for the privileged mode suites (Sm, S, U, H)."""
 
 from collections.abc import Callable
 
 from testgen.asm.csr import gen_csr_read_sigupd, gen_csr_read_sigupd_in_mode, gen_csr_write_sigupd
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.asm.tsbi import tsbi_call, tsbi_call_or_direct
+from testgen.constants import INDENT
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 
 # Status CSR whose FS and VS fields the tests in each privilege mode check; it also names their
 # coverpoints and testcase labels. U-mode code reaches the fields through T-SBI (see _status_access).
-STATUS_CSR = {"M": "mstatus", "S": "sstatus", "U": "mstatus"}
+# VS-mode code reaches vsstatus as sstatus and the HS-level sstatus through T-SBI. VU-mode code reaches both
+# through T-SBI.
+STATUS_CSR = {"M": "mstatus", "S": "sstatus", "U": "mstatus", "VS": "vsstatus", "VU": "vsstatus"}
+VIRTUAL_MODES = ("VS", "VU")
 
 
-def _status_access(priv: str, instr: Callable[[str], str]) -> list[str]:
-    """Run instr(csr), an access to the status CSR, from code running in priv ("M", "S" or "U").
+def hs_status_values(priv: str, include_off: bool = True) -> tuple[int | None, ...]:
+    """Values of the HS-level sstatus field to cross with the status field checked in priv (VS- and VU-mode only)."""
+    if priv not in VIRTUAL_MODES:
+        return (None,)
+    return (0, 1, 2, 3) if include_off else (1, 2, 3)
+
+
+def off_status_pairs(priv: str) -> list[tuple[int, int | None]]:
+    """(xstatus field, HS-level sstatus field) pairs where an instruction needing the field traps.
+
+    In VS- and VU-mode that is any pair with either field Off.
+    """
+    if priv not in VIRTUAL_MODES:
+        return [(0, None)]
+    return [(vs, hs) for vs in range(4) for hs in range(4) if vs == 0 or hs == 0]
+
+
+def off_tag(vs: int, hs: int | None) -> str:
+    """Testcase label suffix for an Off pair from off_status_pairs."""
+    return "" if hs is None else f"_vs{vs}_hs{hs}"
+
+
+def hs_tag(hs: int | None) -> str:
+    """Testcase label suffix for an HS-level sstatus field value."""
+    return "" if hs is None else f"_hs{hs}"
+
+
+def hs_note(hs: int | None, field: str = "FS") -> str:
+    """Testcase comment suffix for an HS-level sstatus field value."""
+    return "" if hs is None else f" and sstatus.{field}={hs}"
+
+
+def _status_access(priv: str, instr: Callable[[str], str], hs: bool = False) -> list[str]:
+    """Run instr(csr), an access to the status CSR, from code running in priv ("M", "S", "U", "VS" or "VU").
 
     M- and S-mode access STATUS_CSR[priv] directly. U-mode goes through T-SBI, to sstatus when
-    S-mode is supported and to mstatus otherwise.
+    S-mode is supported and to mstatus otherwise. VS-mode accesses vsstatus as sstatus, or with
+    hs=True the HS-level sstatus through T-SBI. VU-mode accesses vsstatus, or with hs=True sstatus,
+    both through T-SBI.
     """
-    if priv != "U":
+    if priv == "VU":
+        return [tsbi_call(instr("sstatus" if hs else "vsstatus"))]
+    if priv == "VS":
+        return [tsbi_call(instr("sstatus")) if hs else instr("sstatus")]
+    if priv != "U":  # M- or S-mode
         return [tsbi_call_or_direct(instr(STATUS_CSR[priv]), priv)]
     return ["#ifdef S_SUPPORTED", tsbi_call(instr("sstatus")), "#else", tsbi_call(instr("mstatus")), "#endif"]
 
 
 def gen_status_read_sigupd(check_reg: int, test_data: TestData, priv: str, mask_reg: int | None = None) -> str:
-    """Read the status CSR from code running in priv into the signature, keeping only the bits in mask_reg if given."""
-    if mask_reg is None and priv != "U":
-        return gen_csr_read_sigupd_in_mode(check_reg, (STATUS_CSR[priv], None), test_data, priv)
-    lines = _status_access(priv, lambda csr: f"csrr x{check_reg}, {csr}")
-    if mask_reg is not None:
-        lines.append(f"and x{check_reg}, x{check_reg}, x{mask_reg}    # keep only the masked bits")
-    lines.append(write_sigupd(check_reg, test_data))
-    return "\n".join(lines)
+    """Read the status CSR from code running in priv into the signature, keeping only the bits in mask_reg if given.
 
-
-def set_status_fields(temp_reg: int, priv: str, fs: int | None = None, vs: int | None = None) -> list[str]:
-    """Set xstatus.FS and/or xstatus.VS from code running in priv ("M", "S" or "U").
-
-    The fields are named by their encoding.h masks, and a field value is that many times the mask's
-    lowest bit.
+    VS- and VU-mode code also read the HS-level sstatus into the signature.
     """
+    if mask_reg is None and priv not in ("U", *VIRTUAL_MODES):
+        return gen_csr_read_sigupd_in_mode(check_reg, (STATUS_CSR[priv], None), test_data, priv)
+    reads = []
+    for hs in (False, True) if priv in VIRTUAL_MODES else (False,):
+        lines = _status_access(priv, lambda csr: f"csrr x{check_reg}, {csr}", hs)
+        if mask_reg is not None:
+            lines.append(f"and x{check_reg}, x{check_reg}, x{mask_reg}    # keep only the masked bits")
+        lines.append(write_sigupd(check_reg, test_data))
+        reads.extend(lines)
+    return "\n".join(reads)
+
+
+def _set_fields(temp_reg: int, priv: str, fs: int | None, vs: int | None, hs: bool) -> list[str]:
+    """Set the xstatus.FS and/or xstatus.VS that are not None, in the HS-level sstatus if hs=True."""
     fields = [(name, val) for name, val in (("FS", fs), ("VS", vs)) if val is not None]
+    if not fields:
+        return []
     names = " and ".join(name for name, _ in fields)
     mask = " | ".join(f"MSTATUS_{name}" for name, _ in fields)
     value = " | ".join(f"{val} * (MSTATUS_{name} & -MSTATUS_{name})" for name, val in fields if val) or "0"
     settings = ", ".join(f"{name}={val}" for name, val in fields)
+    where = "HS-level " if hs else ""
     return [
         f"LI(x{temp_reg}, {mask})",
-        *_status_access(priv, lambda csr: f"csrc {csr}, x{temp_reg}  # clear {names}"),
+        *_status_access(priv, lambda csr: f"csrc {csr}, x{temp_reg}  # clear {where}{names}", hs),
         f"LI(x{temp_reg}, {value})",
-        *_status_access(priv, lambda csr: f"csrs {csr}, x{temp_reg}  # {settings}"),
+        *_status_access(priv, lambda csr: f"csrs {csr}, x{temp_reg}  # {where}{settings}", hs),
+    ]
+
+
+def set_status_fields(
+    temp_reg: int,
+    priv: str,
+    fs: int | None = None,
+    vs: int | None = None,
+    hs_fs: int | None = None,
+    hs_vs: int | None = None,
+) -> list[str]:
+    """Set xstatus.FS and/or xstatus.VS from code running in priv ("M", "S", "U", "VS" or "VU").
+
+    VS- and VU-mode code set the HS-level sstatus fields too: hs_fs and hs_vs, or Dirty for a field
+    that fs or vs sets and hs_fs or hs_vs leaves unset.
+    """
+    if priv in VIRTUAL_MODES:
+        hs_fs = 3 if fs is not None and hs_fs is None else hs_fs
+        hs_vs = 3 if vs is not None and hs_vs is None else hs_vs
+    return [
+        *_set_fields(temp_reg, priv, fs, vs, hs=False),
+        *_set_fields(temp_reg, priv, hs_fs, hs_vs, hs=True),
     ]
 
 
@@ -225,6 +294,7 @@ def addr_value_tests(test_data: TestData, csr_name: str, covergroup: str) -> lis
         f"csrr x{save_reg}, {csr_name}      # Save CSR",
         "",
         f"# Testcase: {csr_name} = current pc",
+        ".p2align 2    # a 4-byte-aligned pc keeps xtvec.MODE = Direct",
         f"auipc x{walk_reg}, 0",
         test_data.add_testcase("pc", f"cp_{csr_name}_vaddr_pc", covergroup),
         f"csrw {csr_name}, x{walk_reg}    # directly follows the auipc so the value is this csrw's pc - 4",
@@ -317,6 +387,140 @@ def xtval_value_tests(test_data: TestData, csr_name: str, covergroup: str) -> li
     return lines
 
 
+H_GATE = "defined(H_SUPPORTED)"
+S1P12_GATE = "defined(S1P12P0_OR_LATER_SUPPORTED)"
+
+# Codes written to each cause CSR, as {kind: {code: #if condition, or None if always written}}.
+# mcause need only hold the codes of supported causes (mcause_exccode_wlrl); exception codes 14 and 17 are reserved.
+MCAUSE_CODES: dict[str, dict[int, str | None]] = {
+    "exception": {
+        **dict.fromkeys((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 15)),
+        10: H_GATE,  # ecall from VS-mode
+        16: "defined(SSDBLTRP_SUPPORTED)",  # double trap
+        18: "defined(ZICFILP_SUPPORTED) || defined(ZICFISS_SUPPORTED)",  # software check
+        19: "defined(SM1P13P0_OR_LATER_SUPPORTED)",  # hardware error
+        **dict.fromkeys((20, 21, 22, 23), H_GATE),  # guest-page faults and virtual instruction
+    },
+    "interrupt": {
+        **dict.fromkeys((1, 3, 5, 7, 9, 11)),
+        **dict.fromkeys((2, 6, 10, 12), H_GATE),  # VS-level and supervisor guest external interrupts
+        13: "defined(SSCOFPMF_SUPPORTED)",  # local counter overflow
+    },
+}
+# scause, and vscause, which must hold the same values (vscause_wlrl), must hold every code 0-31 from Ss1p12
+# (scause_exception_code_sz).  Before that, they need only hold the codes of the causes that every S-mode hart
+# supports, and those of the causes an extension adds: software check (Zicfilp, Zicfiss), local counter overflow
+# (Sscofpmf) and the H causes.
+_SCAUSE_ALWAYS = {"exception": (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 15), "interrupt": (1, 3, 5, 7, 9, 11)}
+_SCAUSE_EXTENSION = {"exception": (10, 18, 20, 21, 22, 23), "interrupt": (2, 6, 10, 12, 13)}
+
+
+def _scause_gate(kind: str, code: int) -> str | None:
+    if code in _SCAUSE_ALWAYS[kind]:
+        return None
+    if code in _SCAUSE_EXTENSION[kind]:
+        return f"{S1P12_GATE} || {MCAUSE_CODES[kind][code]}"
+    return S1P12_GATE
+
+
+SCAUSE_CODES: dict[str, dict[int, str | None]] = {
+    kind: {code: _scause_gate(kind, code) for code in range(32)} for kind in ("exception", "interrupt")
+}
+
+
+def xcause_write_tests(test_data: TestData, csr: str, covergroup: str) -> list[str]:
+    """Write each exception and interrupt code that csr (mcause, scause or vscause) must hold.
+
+    The codes are WLRL, so only legal codes are written (MCAUSE_CODES, SCAUSE_CODES).
+    """
+    codes = MCAUSE_CODES if csr == "mcause" else SCAUSE_CODES
+    save_reg, check_reg, temp_reg = test_data.int_regs.get_registers(3)
+    lines = [f"csrr x{save_reg}, {csr}     # save CSR before testing it"]
+    for kind, interrupt in (("exception", 0), ("interrupt", 1)):
+        coverpoint = f"cp_{csr}_write_{kind}"
+        lines.append(comment_banner(coverpoint, f"with interrupt = {interrupt}: test writing each {kind} cause"))
+        if interrupt:
+            lines.append(f"SET_MSB(x{temp_reg})  # set x{temp_reg} to have msb = 1 for interrupt tests")
+        for code, gate in sorted(codes[kind].items()):
+            body = ["", f"# Testcase: set {csr} to {kind} cause {code}", f"LI(x{check_reg}, {code})"]
+            if interrupt:
+                body.append(f"or x{check_reg}, x{check_reg}, x{temp_reg}          # set interrupt bit")
+            body.extend(
+                [
+                    test_data.add_testcase(f"b_{code}", coverpoint, covergroup),
+                    gen_csr_write_sigupd(check_reg, csr, test_data),
+                ]
+            )
+            lines.extend(gated(body, gate))
+    lines.append(f"\ncsrw {csr}, x{save_reg}       # restore CSR")
+    test_data.int_regs.return_registers([save_reg, check_reg, temp_reg])
+    return lines
+
+
+def xstatus_sd_tests(test_data: TestData, csr: str, covergroup: str, coverpoint: str) -> list[str]:
+    """Write csr (mstatus, or sstatus in S-mode or VS-mode) with each SD, FS, XS and VS.
+
+    SD is read-only, so writing it has no effect; it summarizes FS, XS and VS.
+    """
+    save_reg, check_reg, reg1, reg2, reg3 = test_data.int_regs.get_registers(5)
+    lines = [
+        comment_banner(
+            coverpoint,
+            f"Write all combinations of {csr}.SD = {{0/1}}, FS/XS/VS = {{00, 01, 10, 11}}\n"
+            f"{csr}.SD is read-only, so nothing should happen",
+        ),
+        "",
+        "# Setup",
+        f"SET_MSB(x{reg1}) # put a 1 in the msb of x{reg1} (XLEN-1)",
+        f"csrr x{save_reg}, {csr}        # read and save {csr}",
+        f"{INDENT}# set up x{reg3} with {csr} except SD, FS, XS, VS cleared",
+        f"not x{reg2}, x{reg1}              # x{reg2} has all but msb set",
+        f"and x{reg3}, x{save_reg}, x{reg2} # clear SD bit",
+        f"LI(x{reg2}, 0x1E600)              # x{reg2} has all FS, XS, VS bits set (bits [14:13], [16:15], [10:9], respectively)",
+        f"not x{reg2}, x{reg2}              # x{reg2} has all but FS, XS, VS bits set",
+        f"and x{reg3}, x{reg3}, x{reg2}     # clear FS, XS, VS bits",
+    ]
+    for sd in (0, 1):
+        for fs in range(4):
+            for xs in range(4):
+                for vs in range(4):
+                    fields = fs << 13 | xs << 15 | vs << 9
+                    lines.extend(
+                        [
+                            "",
+                            f"# Testcase: set {csr} to sd = {sd}, fs = {fs:02b}, xs = {xs:02b}, vs = {vs:02b}",
+                            f"LI(x{check_reg}, 0x{fields:08x})  # fs = {fs:02b} xs = {xs:02b} vs = {vs:02b}",
+                        ]
+                    )
+                    if sd == 1:
+                        lines.append(f"or x{check_reg}, x{check_reg}, x{reg1}      # set SD bit")
+                    lines.extend(
+                        [
+                            f"or x{check_reg}, x{check_reg}, x{reg3}   # value to write to {csr} with SD/FS/XS/VS bits set/clear",
+                            test_data.add_testcase(
+                                f"sd_{sd}_fs_{fs:02b}_xs_{xs:02b}_vs_{vs:02b}", coverpoint, covergroup
+                            ),
+                            gen_csr_write_sigupd(check_reg, csr, test_data),
+                        ]
+                    )
+    lines.append(f"\ncsrw {csr}, x{save_reg}    # restore CSR")
+    test_data.int_regs.return_registers([save_reg, check_reg, reg1, reg2, reg3])
+    return lines
+
+
+def _csr_chunks(csr_ranges: list[range], csrs_per_chunk: int) -> list[list[int]]:
+    """Split the CSR numbers in csr_ranges into lists of csrs_per_chunk."""
+    csrs = [csr for csr_range in csr_ranges for csr in csr_range]
+    return [csrs[i : i + csrs_per_chunk] for i in range(0, len(csrs), csrs_per_chunk)]
+
+
+def _in_mode(lines: list[str], mode: str | None) -> list[str]:
+    """Run lines in mode ("VS" or "VU"), entered from HS-mode, or in the current mode if mode is None."""
+    if mode is None:
+        return lines
+    return [f"RVTEST_TSBI_GOTO_{mode}MODE", *lines, "RVTEST_TSBI_GOTO_SMODE"]
+
+
 def csr_insufficient_priv_tests(
     test_data: TestData,
     test_chunks: list[TestChunk],
@@ -324,15 +528,20 @@ def csr_insufficient_priv_tests(
     csr_ranges: list[range],
     chunk_name: str,
     description: str,
+    mode: str | None = None,
+    csrs_per_chunk: int = 1,
 ) -> None:
-    """Attempt to read each higher-privilege CSR; every read must raise illegal instruction."""
+    """Attempt to read each higher-privilege CSR; every read must raise illegal instruction.
+
+    Each chunk of csrs_per_chunk CSRs enters mode ("VS" or "VU") from HS-mode first, if mode is given.
+    """
     coverpoint = "cp_csr_insufficient_priv"
     tc = test_data.new_test_chunk(test_chunks, chunk_name)
     tc.section_header = comment_banner(coverpoint, description)
-    for csr_range in csr_ranges:
-        for csr in csr_range:
-            tc = test_data.new_test_chunk(test_chunks, chunk_name)
-            temp_reg = test_data.int_regs.get_register()
+    for csrs in _csr_chunks(csr_ranges, csrs_per_chunk):
+        tc = test_data.new_test_chunk(test_chunks, chunk_name)
+        temp_reg = test_data.int_regs.get_register()
+        for csr in csrs:
             tc.code.extend(
                 [
                     test_data.add_testcase(f"{csr:03x}", coverpoint, covergroup),
@@ -342,7 +551,8 @@ def csr_insufficient_priv_tests(
                     "",
                 ]
             )
-            test_data.int_regs.return_register(temp_reg)
+        tc.code[:] = _in_mode(tc.code, mode)
+        test_data.int_regs.return_register(temp_reg)
 
 
 def csr_ro_write_tests(
@@ -351,15 +561,20 @@ def csr_ro_write_tests(
     covergroup: str,
     csr_ranges: list[range],
     chunk_name: str,
+    mode: str | None = None,
+    csrs_per_chunk: int = 1,
 ) -> None:
-    """Attempt to write each read-only CSR; every write must raise illegal instruction."""
+    """Attempt to write each read-only CSR; every write must raise illegal instruction.
+
+    Each chunk of csrs_per_chunk CSRs enters mode ("VS" or "VU") from HS-mode first, if mode is given.
+    """
     coverpoint = "cp_csr_ro"
     tc = test_data.new_test_chunk(test_chunks, chunk_name)
     tc.section_header = comment_banner(coverpoint, "Attempt to write read-only CSRs.  Should throw illegal instruction")
-    for csr_range in csr_ranges:
-        for csr in csr_range:
-            tc = test_data.new_test_chunk(test_chunks, chunk_name)
-            temp_reg, read_reg = test_data.int_regs.get_registers(2)
+    for csrs in _csr_chunks(csr_ranges, csrs_per_chunk):
+        tc = test_data.new_test_chunk(test_chunks, chunk_name)
+        temp_reg, read_reg = test_data.int_regs.get_registers(2)
+        for csr in csrs:
             tc.code.extend(
                 [
                     test_data.add_testcase(f"{csr:03x}", coverpoint, covergroup),
@@ -370,7 +585,8 @@ def csr_ro_write_tests(
                     "",
                 ]
             )
-            test_data.int_regs.return_registers([temp_reg, read_reg])
+        tc.code[:] = _in_mode(tc.code, mode)
+        test_data.int_regs.return_registers([temp_reg, read_reg])
 
 
 def priv_inst_trap_tests(
@@ -384,11 +600,38 @@ def priv_inst_trap_tests(
     lines = [
         comment_banner(coverpoint, description),
         test_data.add_testcase("ecall", coverpoint, covergroup),
-        "RVTEST_TSBI_ECALL_TEST  # test ecall to execution environment that just returns",
-        "# ecall returns xepc in a0 (x10).  Store a0 in signature as proof ecall took place.",
-        write_sigupd(10, test_data),
+        "RVTEST_TSBI_ECALL_TEST  # ecall to the execution environment, recorded in the trap signature",
     ]
     for name in instrs:
         instr = f"{name}    # test {name} instruction"
         lines.extend([test_data.add_testcase(name, coverpoint, covergroup), instr])
     return lines
+
+
+# htimedelta values.  time is far below 2^30 when the tests run.  The negative ones make time + htimedelta
+# wrap modulo 2^64 once time exceeds their magnitude; neg_1 wraps for any time >= 1.  pos_2p32m1 and neg_1
+# make the low-word add carry into the upper word on RV32.
+HTIMEDELTAS = {
+    "zero": 0,
+    "pos_2p30": 1 << 30,
+    "pos_2p32m1": (1 << 32) - 1,
+    "pos_2p60": 1 << 60,
+    "neg_1": -1,
+    "neg_2p30": -(1 << 30),
+    "neg_2p60": -(1 << 60),
+}
+
+
+def read_time(lo: int, hi: int, tmp: int) -> list[str]:
+    """Read time into lo, and on RV32 timeh into hi, reading again if timeh changes between the reads."""
+    return [
+        "#if __riscv_xlen == 64",
+        f"csrr x{lo}, time",
+        "#else",
+        "1:",
+        f"csrr x{hi}, timeh",
+        f"csrr x{lo}, time",
+        f"csrr x{tmp}, timeh",
+        f"bne x{hi}, x{tmp}, 1b    # timeh changed between the reads",
+        "#endif",
+    ]

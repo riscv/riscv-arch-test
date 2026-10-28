@@ -1398,7 +1398,9 @@
         csrw mseccfg, zero
       #endif
 
-      #ifdef SMRNMI_SUPPORTED
+      // Sail does not model Smrnmi yet, so only the self-checking build for a DUT writes mnstatus.  The signature
+      // build keeps SMRNMI_SUPPORTED, so tests that depend on it assemble the same code in both builds.
+      #if defined(SMRNMI_SUPPORTED) && defined(RVTEST_SELFCHECK)
         // Smrnmi resets with mnstatus.NMIE=0. With NMIE clear, M-mode exceptions
         // are routed to the RNMI exception vector instead of mtvec. Enable NMIE
         // so T-SBI ecalls and other M-mode traps use the normal handler.

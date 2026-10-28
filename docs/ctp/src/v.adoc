@@ -233,7 +233,10 @@ include::norm/Vf_norm_rules.adoc[]
 Each may use any reduction tree, and each node may round to any format at least as wide as the accumulator (norm:vfredusum_op), so the result and flags can fall in a range.
 At generation time, `_redusum_model.py` computes the legal results (lowest and highest finite value, infinities, canonical NaN) and the flags that may and must be raised.
 The test checks vd[0] and fflags against them and records 0 in the signature if they are legal.
+A flag such as OF must be set when every legal tree raises it, must be clear when none can, and is not checked when it depends on the tree.
+In a failure report, the expected value 0 is the pass code; the bad value is vd[0] (1 if vd[0] is +0) or fflags | 0x100, and the legal range appears in comments after the testcase label in the generated test.
 The tests use LMUL=8; cases with vl > VLMAX are compiled out.
+The tests start at vl = 2: one element and the scalar take a single addition, which the regular edge-value tests (cr_vs2_vs1_edges, vl = 1, random frm) already check.
 
 [[t-vfredusum-coverpoints]]
 .Unordered Floating-Point Sum Reduction Coverpoints
@@ -241,21 +244,18 @@ The tests use LMUL=8; cases with vl > VLMAX are compiled out.
 [%AUTOWIDTH]
 |===
 |Coverpoint|# Bins|Definition
-|cp_custom_vfredusum_sweep|6*5*3
-a|vl={1, 2, 3, 4, 7, VLMAX} x frm={rne, rtz, rdn, rup, rmm} x {unmasked, random mask, no active elements}.
-Tests: every vl in {1, 2, 3, 4, 7, 8, 16, ... VLMAX} x every frm x {unmasked, fixed pseudo-random mask with elements 0 and 2 active and 1 inactive, all-zero mask}, with:
+|cp_custom_vfredusum_sweep|5*5*3
+a|vl={2, 3, 4, 7, VLMAX} x frm={rne, rtz, rdn, rup, rmm} x {unmasked, random mask, no active elements}.
+Tests: every vl in {2, 3, 4, 7, 8, 16, ... VLMAX} x every frm x {unmasked, fixed pseudo-random mask with elements 0 and 2 active and 1 inactive, all-zero mask}, with:
 
 * mild data: vs1[0] = 2^t and every element = 0.75 ulp(2^t).
 * cancellation data: vs2[0] = +B, vs2[vl-1] = -B, up to eight elements t = 3/8 ulp(B) spaced between them, alternating +0 and -0 elsewhere, vs1[0] = t.
-|cp_custom_vfredusum_specials|12*12
-a|vs1[0] x vs2[0], each from {+0, -0, +inf, -inf, canonical qNaN, other qNaN, sNaN, +largest, -largest, smallest subnormal, -1, 1+ulp}. Tests:
-
-* every pair at vl=1;
-* vs1[0] in {+0, -0, +inf, qNaN, sNaN, +largest, -largest, smallest subnormal} with vs2 = {+inf, -inf}, {+inf, +inf}, {+largest, +largest}, {+largest, -largest}, {-largest, -inf}, {qNaN, +inf, -inf}, {sNaN, -inf}, {-0, -0}, {+0, -0}, {smallest subnormal, smallest subnormal}, {1+ulp, -1} or {+largest, +largest, -largest, -largest}.
+|cp_custom_vfredusum_specials|8*9
+a|vs1[0] in {+0, -0, +inf, canonical qNaN, sNaN, +largest, -largest, smallest subnormal} x vs2[0] in {+0, -0, +inf, canonical qNaN, sNaN, +largest, -largest, smallest subnormal, 1+ulp}, vl = 2 to 4. Tests: every vs1[0] class with vs2 = {+inf, -inf}, {+inf, +inf}, {+largest, +largest}, {+largest, -largest}, {-largest, -inf}, {qNaN, +inf, -inf}, {sNaN, -inf}, {-0, -0}, {+0, -0}, {smallest subnormal, smallest subnormal}, {1+ulp, -1} or {+largest, +largest, -largest, -largest}.
 
 Each runs at rne and at every other frm whose legal outcomes differ. A NaN result must be the canonical NaN.
 |cp_custom_vfredusum_noactive|12*2
-a|vs1[0] class x frm={rne, rdn}, no active elements. Tests: every vs1[0] class, vl = 1 and 7, all-zero mask, sNaN elements. vd[0] must equal vs1[0] with no flags; a NaN vs1[0] may instead become the canonical NaN, with NV exactly when it was signaling. vl=0, masked and unmasked: vd and fflags unchanged.
+a|vs1[0] class x frm={rne, rdn}, no active elements. Tests: every vs1[0] class, vl = 7, all-zero mask, sNaN elements. vd[0] must equal vs1[0] with no flags; a NaN vs1[0] may instead become the canonical NaN, with NV exactly when it was signaling. vl=0, masked and unmasked: vd and fflags unchanged.
 |cp_custom_vfredusum_determinism|3*3
 a|vl={3, 7, VLMAX} x frm={rne, rdn, rup}, unmasked. Tests: cancellation and mild data D at vl = 3, 7 and VLMAX. Two reference results, each checked to be legal:
 

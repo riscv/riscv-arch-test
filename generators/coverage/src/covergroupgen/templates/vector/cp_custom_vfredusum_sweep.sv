@@ -4,7 +4,6 @@
     //////////////////////////////////////////////////////////////////////////////////
 
     vfredusum_sweep_vl : coverpoint vred_vl_class(ins.hart, ins.issue) {
-        bins one   = {vred_vl_1};
         bins two   = {vred_vl_2};
         bins three = {vred_vl_3};
         bins four  = {vred_vl_4};

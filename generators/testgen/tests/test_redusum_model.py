@@ -148,7 +148,7 @@ class RedusumModelTest(unittest.TestCase):
             res = model.reduce_bits(scalar_arg, elems, mode, 16, widening)
             lo = None if res.lo_bits is None else decode_acc(res.lo_bits, acc_w)
             hi = None if res.hi_bits is None else decode_acc(res.hi_bits, acc_w)
-            seen = 0
+            must = res.must & (model.NV | model.OF | model.NX)
             for v, f in outcomes(leaves, node_fmts, acc, mode):
                 ctx = f"scalar={scalar:#06x} elems={[hex(e) for e in elems]} mode={model.MODE_NAMES[mode]} widening={widening} -> {v}"
                 if isinstance(v, tuple) and v[0] == NAN:
@@ -160,10 +160,25 @@ class RedusumModelTest(unittest.TestCase):
                     self.assertTrue(lo <= v <= hi, f"{ctx} outside [{lo}, {hi}]")
                 checked = f & (model.NV | model.OF | model.NX)
                 self.assertEqual(checked & ~res.may, 0, f"{ctx}: flags {f:#x} not allowed (may {res.may:#x})")
-                seen |= checked
-            # A flag the model says must be raised has to be raised by every tree; check it was seen at all
-            must = res.must & (model.NV | model.OF | model.NX)
-            self.assertEqual(must & ~seen, 0, f"must flags {must:#x} never raised")
+                self.assertEqual(must & ~checked, 0, f"{ctx}: flags {f:#x} lack required {must:#x}")
+
+    def test_overflow_flag(self) -> None:
+        """OF is required when every tree overflows, optional when only some do, and forbidden when none can."""
+        cases = [
+            (0x7BFF, [0x7BFF], model.OF),  # max + max overflows in every tree
+            (0x7BFF, [0x7BFF, 0x7BFF], model.OF),
+            (0xFBFF, [0xFBFF, 0xFBFF], model.OF),
+            (0x7BFF, [0x7BFF, 0xFBFF], 0),  # overflows only if max + max is rounded to fp16 first
+            (0x3C00, [0x3C00, 0x3C00], 0),  # cannot overflow
+        ]
+        for scalar, elems, must_of in cases:
+            self.check(scalar, elems, False)
+            for mode in model.MODES:
+                res = model.reduce_bits(scalar, elems, mode, 16, False)
+                ctx = f"scalar={scalar:#06x} elems={[hex(e) for e in elems]} mode={model.MODE_NAMES[mode]}"
+                self.assertEqual(res.must & model.OF, must_of, ctx)
+        self.assertTrue(model.reduce_bits(0x7BFF, [0x7BFF, 0xFBFF], model.RNE, 16, False).may & model.OF)
+        self.assertFalse(model.reduce_bits(0x3C00, [0x3C00, 0x3C00], model.RNE, 16, False).may & model.OF)
 
     def test_random_small_reductions(self) -> None:
         rng = random.Random(2897)

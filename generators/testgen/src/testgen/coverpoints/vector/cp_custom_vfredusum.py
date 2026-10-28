@@ -13,10 +13,12 @@ The result of an unordered reduction depends on the tree and on the format of ea
 compare vd[0] with the reference model's value. For each testcase, _redusum_model computes every legal outcome at
 generation time, and the assembly checks that vd[0] is one of them and that fflags holds every flag that must be
 raised and no flag that cannot be. A passing check records 0 in the signature; a failing one records the result
-(never 0) and fflags | 0x100, so the failure report shows what the DUT produced.
+(never 0) and fflags | 0x100, so the failure report shows what the DUT produced; its expected value 0 is the pass
+code, and the legal range is in the comments after the testcase label in the generated test.
 
 The reductions use LMUL=8 so that vl can reach VLMAX = 8*VLEN/SEW. The preprocessor removes testcases whose vl
-exceeds VLMAX for the configuration.
+exceeds VLMAX for the configuration. vl = 1 is left to the regular edge-value tests: one element and the scalar
+have a single legal result.
 """
 
 import random
@@ -30,8 +32,9 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 
 # 7 is the largest vl below every possible VLMAX at LMUL=8; 8, 16, ... 512 reach VLMAX
-_VL_SWEEP = (1, 2, 3, 4, 7, 8, 16, 32, 64, 128, 256, 512)
+_VL_SWEEP = (2, 3, 4, 7, 8, 16, 32, 64, 128, 256, 512)
 _DETERMINISM_VLS = (3, 7)
+_NOACTIVE_VL = 7
 _LMUL = 8
 _MASK_BITS = 8 * VLEN_MAX // 16  # VLMAX at SEW=16, LMUL=8 and the largest VLEN ACT supports
 _REPORT_FLAGS = 0x100  # set in a failing fflags report so that fflags = 0 still reads as a failure
@@ -203,8 +206,7 @@ def _cancel_family(ctx: _Ctx, vl: int, scale: int = 0, negate: bool = False) -> 
 def _random_mask() -> list[int]:
     """Fixed pseudo-random mask bytes covering _MASK_BITS elements (about half active).
 
-    Elements 0 and 2 are active and element 1 is not, so vl = 1, 2 and 3 have active and (for vl >= 2) inactive
-    elements.
+    Elements 0 and 2 are active and element 1 is not, so every vl in the sweep has active and inactive elements.
     """
     rng = random.Random("vfredusum_mask")
     mask = [rng.randrange(256) for _ in range(_MASK_BITS // 8)]
@@ -399,7 +401,7 @@ def cp_custom_vfredusum_sweep(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
     """
-    vl = 1, 2, 3, 4, 7, 8, 16, ... VLMAX at every rounding mode, unmasked, with a pseudo-random mask and with no
+    vl = 2, 3, 4, 7, 8, 16, ... VLMAX at every rounding mode, unmasked, with a pseudo-random mask and with no
     active elements, for data whose sum differs by a few ulps by tree (mild) or ranges from 0 to well above the
     exact sum by tree (cancel).
     """
@@ -503,10 +505,9 @@ def cp_custom_vfredusum_specials(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
     """
-    Signed zeros, infinities, NaNs, the largest finite values and subnormals, both as vs1[0] and as elements:
-    every scalar class with every single element class (vl = 1), and selected element lists (vl = 2 to 4) that
-    produce +inf + -inf, overflow, overflow that a wider intermediate format avoids, and signed-zero sums. Each
-    case runs at RNE and at every other rounding mode whose legal outcomes differ.
+    Signed zeros, infinities, NaNs, the largest finite values and subnormals as vs1[0], each with element lists
+    (vl = 2 to 4) that produce +inf + -inf, overflow, overflow that a wider intermediate format avoids, and
+    signed-zero sums. Each case runs at RNE and at every other rounding mode whose legal outcomes differ.
     """
     del instr_type
     ctx = _Ctx(instr_name, coverpoint, test_data)
@@ -514,10 +515,7 @@ def cp_custom_vfredusum_specials(
         return []
     acc_values = _edge_values(ctx.acc)
     elem_values = _edge_values(ctx.efmt)
-    cases: list[tuple[str, tuple[str, ...]]] = [
-        (scalar_cls, (elem_cls,)) for scalar_cls in acc_values for elem_cls in elem_values
-    ]
-    cases += [(scalar_cls, elem_list) for elem_list in _SPECIAL_LISTS for scalar_cls in _SPECIAL_SCALARS]
+    cases = [(scalar_cls, elem_list) for elem_list in _SPECIAL_LISTS for scalar_cls in _SPECIAL_SCALARS]
     for scalar_cls, elem_cls in cases:
         scalar = acc_values[scalar_cls]
         elems = [elem_values[cls] for cls in elem_cls]
@@ -547,7 +545,7 @@ def cp_custom_vfredusum_noactive(
     instr_name: str, instr_type: str, coverpoint: str, test_data: TestData
 ) -> list[TestChunk]:
     """
-    No active elements: vl = 1 and 7 with an all-zero mask and signaling-NaN elements, for every vs1[0] class, at
+    No active elements: vl = 7 with an all-zero mask and signaling-NaN elements, for every vs1[0] class, at
     RNE and RDN (whose additive identities differ). vd[0] must be vs1[0]; a NaN scalar may instead become the
     canonical NaN, with NV only if it was signaling. Also vl = 0, which must leave vd and fflags unchanged.
     """
@@ -560,20 +558,19 @@ def cp_custom_vfredusum_noactive(
     zero_mask = (f"{ctx.prefix}_mask_zero", [0] * (_MASK_BITS // 8), 8)
     elems_data = (f"{ctx.prefix}_elems_snan8", snans, ctx.sew)
     for cls, scalar in acc_values.items():
-        for vl in (1, 7):
-            for mode in (model.RNE, model.RDN):
-                res = model.reduce_bits(scalar, [], mode, ctx.sew, ctx.widening)
-                _data_case(
-                    ctx,
-                    f"{cls}_vl{vl}_{model.MODE_NAMES[mode]}",
-                    f"no active elements, vs1[0]={cls}, vl={vl}, frm={model.MODE_NAMES[mode]}",
-                    vl,
-                    mode,
-                    _class_data(ctx, cls, ctx.acc, acc_values),
-                    elems_data,
-                    zero_mask,
-                    res,
-                )
+        for mode in (model.RNE, model.RDN):
+            res = model.reduce_bits(scalar, [], mode, ctx.sew, ctx.widening)
+            _data_case(
+                ctx,
+                f"{cls}_vl{_NOACTIVE_VL}_{model.MODE_NAMES[mode]}",
+                f"no active elements, vs1[0]={cls}, vl={_NOACTIVE_VL}, frm={model.MODE_NAMES[mode]}",
+                _NOACTIVE_VL,
+                mode,
+                _class_data(ctx, cls, ctx.acc, acc_values),
+                elems_data,
+                zero_mask,
+                res,
+            )
     sentinel = _fval(ctx.acc, 5, -1)
     keep = model.Result(sentinel, sentinel, False, False, False, False, 0, 0)
     for masked in (False, True):

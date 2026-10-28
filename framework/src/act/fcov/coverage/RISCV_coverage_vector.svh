@@ -486,7 +486,6 @@ endfunction
 
 // Classes for the unordered floating-point sum reduction coverpoints (cp_custom_vfredusum_*)
 typedef enum {
-  vred_vl_1,
   vred_vl_2,
   vred_vl_3,
   vred_vl_4,
@@ -500,7 +499,6 @@ function vred_vl_t vred_vl_class(int hart, int issue);
   int vl = int'(get_csr_val(hart, issue, `SAMPLE_BEFORE, "vl", "vl"));
   int vlmax = get_vtype_vlmax(hart, issue, `SAMPLE_BEFORE);
   case (vl)
-    1: return vred_vl_1;
     2: return vred_vl_2;
     3: return vred_vl_3;
     4: return vred_vl_4;

@@ -189,6 +189,8 @@ class Cands:
 
     lo: int  # smallest finite result (scaled)
     hi: int  # largest finite result (scaled)
+    clean_lo: int = 0  # smallest finite result of a format that does not overflow
+    clean_hi: int = 0  # largest finite result of a format that does not overflow
     pos_inf: bool = False
     neg_inf: bool = False
     inexact: bool = False
@@ -235,7 +237,8 @@ def round_any(x: int, mode: int, acc: Fmt) -> Cands:
                 if r < mag:
                     min_mag = r
                     break
-    c = Cands(lo=-max_mag if neg else min_mag, hi=-min_mag if neg else max_mag, inexact=min_mag != max_mag)
+    lo, hi = (-max_mag, -min_mag) if neg else (min_mag, max_mag)
+    c = Cands(lo=lo, hi=hi, clean_lo=lo, clean_hi=hi, inexact=min_mag != max_mag)
     if max_mag >= acc.overflow_mag:
         c.overflow = c.inexact = True
         if mode in (RNE, RMM) or (mode == RUP and not neg) or (mode == RDN and neg):
@@ -292,6 +295,9 @@ class Outcome:
     snan: bool = False  # an unconsumed signaling NaN leaf (only a lone leaf)
     may: int = 0  # flags that may be raised
     must: int = 0  # flags that must be raised
+    # Finite interval reachable without raising OF, or None if every outcome has raised OF
+    clean_lo: Key | None = None
+    clean_hi: Key | None = None
 
     def has_fin(self) -> bool:
         return self.lo is not None
@@ -301,11 +307,11 @@ def _join(a: Outcome | None, b: Outcome) -> Outcome:
     """Union of two outcome sets (one tree or another)."""
     if a is None:
         return b
-    lo = a.lo if b.lo is None else (b.lo if a.lo is None else min(a.lo, b.lo))
-    hi = a.hi if b.hi is None else (b.hi if a.hi is None else max(a.hi, b.hi))
     return Outcome(
-        lo=lo,
-        hi=hi,
+        lo=_lower(a.lo, b.lo),
+        hi=_upper(a.hi, b.hi),
+        clean_lo=_lower(a.clean_lo, b.clean_lo),
+        clean_hi=_upper(a.clean_hi, b.clean_hi),
         pos_inf=a.pos_inf or b.pos_inf,
         neg_inf=a.neg_inf or b.neg_inf,
         nan=a.nan or b.nan,
@@ -315,30 +321,45 @@ def _join(a: Outcome | None, b: Outcome) -> Outcome:
     )
 
 
+def _lower(a: Key | None, b: Key | None) -> Key | None:
+    return a if b is None else (b if a is None else min(a, b))
+
+
+def _upper(a: Key | None, b: Key | None) -> Key | None:
+    return a if b is None else (b if a is None else max(a, b))
+
+
 def leaf_outcome(leaf: Leaf) -> Outcome:
     if leaf.kind == "fin":
         k = fkey(leaf.x, leaf.neg)
-        return Outcome(lo=k, hi=k)
+        return Outcome(lo=k, hi=k, clean_lo=k, clean_hi=k)
     if leaf.kind == "inf":
         return Outcome(pos_inf=not leaf.neg, neg_inf=leaf.neg)
     return Outcome(nan=True, must_nan=True, snan=leaf.kind == "snan")
 
 
-def _closure(x: int, mode: int, acc: Fmt, low: bool) -> tuple[int, Cands]:
+def _closure(x: int, mode: int, acc: Fmt, low: bool, clean: bool = False) -> tuple[int, Cands]:
     """
     Lowest (low) or highest value reachable from x by rounding it any number of times, with the flags and
-    infinities met on the way. Each rounding is monotone, so taking the extreme at every step is optimal.
+    infinities met on the way; if clean, only through roundings that do not overflow. Each rounding is monotone, so
+    taking the extreme at every step is optimal.
     """
+
+    def extreme(c: Cands) -> int:
+        if clean:
+            return c.clean_lo if low else c.clean_hi
+        return c.lo if low else c.hi
+
     c = round_any(x, mode, acc)
-    info = Cands(c.lo, c.hi, c.pos_inf, c.neg_inf, c.inexact, c.overflow)
-    cur = c.lo if low else c.hi
+    info = Cands(c.lo, c.hi, c.clean_lo, c.clean_hi, c.pos_inf, c.neg_inf, c.inexact, c.overflow)
+    cur = extreme(c)
     while cur != 0:
         n = round_any(cur, mode, acc)
         info.neg_inf |= n.neg_inf
         info.pos_inf |= n.pos_inf
         info.inexact |= n.inexact
         info.overflow |= n.overflow
-        nxt = n.lo if low else n.hi
+        nxt = extreme(n)
         if nxt == cur:
             break
         cur = nxt
@@ -397,8 +418,15 @@ def combine(a: Outcome, b: Outcome, mode: int, acc: Fmt) -> Outcome:
         # Interior points may round even if the corners are exact
         if lo_x != hi_x:
             out.may |= _interior_flags(lo_x, hi_x, acc)
+    # The same, for values reached without raising OF
+    if a.clean_lo and a.clean_hi and b.clean_lo and b.clean_hi:
+        clean_ends: list[Key] = []
+        for ka, kb, low in ((a.clean_lo, b.clean_lo, True), (a.clean_hi, b.clean_hi, False)):
+            x = ka[0] + kb[0]
+            clean_ends.append((0, _zero_sign(ka, kb, mode)) if x == 0 else fkey(_closure(x, mode, acc, low, True)[0]))
+        out.clean_lo, out.clean_hi = min(clean_ends), max(clean_ends)
     if out.must_nan:
-        out.lo = out.hi = None
+        out.lo = out.hi = out.clean_lo = out.clean_hi = None
         out.pos_inf = out.neg_inf = False
         out.nan = True
     out.may |= a.may | b.may | out.must
@@ -495,45 +523,69 @@ def reduce_outcomes(scalar: Leaf, elems: list[Leaf], mode: int, acc: Fmt) -> Res
         neg = _all_zero_sign(leaves, mode)
         z = encode(0, neg, acc)
         return Result(z, z, False, False, False, False, 0, 0, exact_sum=0)
-    # Group equal leaves into a multiset; states are shared across calls with the same leaf kinds
-    counts: dict[tuple, int] = {}
-    reps: dict[tuple, Leaf] = {}
-    for lf in nonzero:
-        k = _key(lf)
-        counts[k] = counts.get(k, 0) + 1
-        reps[k] = lf
-    kinds = tuple(sorted(counts))
-    full = tuple(counts[k] for k in kinds)
-    base = tuple(leaf_outcome(reps[k]) for k in kinds)
+    # Group equal leaves. A multiset of leaves is then a tuple of counts, one per distinct leaf (kind).
+    leaf_counts: dict[tuple, int] = {}
+    leaf_of_kind: dict[tuple, Leaf] = {}
+    for leaf in nonzero:
+        kind = _key(leaf)
+        leaf_counts[kind] = leaf_counts.get(kind, 0) + 1
+        leaf_of_kind[kind] = leaf
+    kinds = tuple(sorted(leaf_counts))
+    full = tuple(leaf_counts[kind] for kind in kinds)
+    # Outcomes of every sub-multiset, shared across calls with the same leaf kinds, rounding mode and format
     memo = _DP_CACHE.setdefault((kinds, mode, acc), {})
-    for st in sorted(product(*(range(c + 1) for c in full)), key=sum):
-        if st in memo or sum(st) == 0:
+    for counts in sorted(_sub_multisets(full), key=sum):  # smaller multisets first
+        if counts in memo or sum(counts) == 0:
             continue
-        if sum(st) == 1:
-            memo[st] = base[st.index(1)]
+        if sum(counts) == 1:
+            memo[counts] = leaf_outcome(leaf_of_kind[kinds[counts.index(1)]])
             continue
-        acc_out: Outcome | None = None
-        for sub in product(*(range(c + 1) for c in st)):
-            other = tuple(s - t for s, t in zip(st, sub, strict=True))
-            if sum(sub) == 0 or sum(other) == 0 or sub > other:
+        # The root node of any tree over these leaves adds a tree over one part to a tree over the rest
+        outcome: Outcome | None = None
+        for part in _sub_multisets(counts):
+            rest = tuple(n - k for n, k in zip(counts, part, strict=True))
+            if sum(part) == 0 or sum(rest) == 0 or part > rest:  # each split once, both sides nonempty
                 continue
-            acc_out = _join(acc_out, combine(memo[sub], memo[other], mode, acc))
-        assert acc_out is not None
-        memo[st] = acc_out
+            outcome = _join(outcome, combine(memo[part], memo[rest], mode, acc))
+        assert outcome is not None
+        memo[counts] = outcome
     root = memo[full]
     if sum(full) == 1:
         # The lone nonzero leaf still passes through a node that adds a zero leaf
-        root = combine(root, Outcome(lo=(0, 1), hi=(0, 1)), mode, acc)
+        root = combine(root, Outcome(lo=(0, 1), hi=(0, 1), clean_lo=(0, 1), clean_hi=(0, 1)), mode, acc)
     fin = finish(root, mode, acc)
     res = _to_result(fin, acc)
     # Every tree adds every leaf, so an inexact exact sum makes the result inexact in every tree
-    if all(lf.kind == "fin" for lf in leaves):
-        s = sum(lf.x for lf in leaves)
-        res.exact_sum = s
-        if not res.nan and not representable(s, acc):
+    if all(leaf.kind == "fin" for leaf in leaves):
+        exact = sum(leaf.x for leaf in leaves)
+        res.exact_sum = exact
+        if not res.nan and not representable(exact, acc):
             res.must |= NX
+        if _must_overflow(root, mode, acc):
+            res.must |= OF | NX
     res.may |= res.must
     return res
+
+
+def _sub_multisets(counts: tuple[int, ...]) -> list[tuple[int, ...]]:
+    """Every sub-multiset of counts, each as a tuple of counts (0 to n of each distinct leaf)."""
+    return list(product(*(range(n + 1) for n in counts)))
+
+
+def _must_overflow(root: Outcome, mode: int, acc: Fmt) -> bool:
+    """
+    Whether every tree over finite leaves raises OF: every root value reached without raising OF overflows in the
+    final rounding to acc. Overflow grows with magnitude, so the value nearest zero decides.
+    """
+    if root.clean_lo is None or root.clean_hi is None:
+        return True  # every tree has already raised OF
+    if root.clean_lo[0] > 0:
+        nearest_zero = root.clean_lo[0]
+    elif root.clean_hi[0] < 0:
+        nearest_zero = root.clean_hi[0]
+    else:
+        return False
+    return round_final(nearest_zero, mode, acc)[3]
 
 
 def _to_result(o: Outcome, acc: Fmt) -> Result:

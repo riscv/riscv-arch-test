@@ -435,14 +435,14 @@ def combine(a: Outcome, b: Outcome, mode: int, acc: Fmt) -> Outcome:
 
 
 def _interior_flags(lo_x: int, hi_x: int, acc: Fmt) -> int:
-    """Flags that rounding some value strictly between lo_x and hi_x may raise."""
-    flags = 0
+    """
+    Flags that rounding some value strictly between lo_x and hi_x may raise. Not OF: rounding is monotone and
+    overflow grows with magnitude, so an interior value overflows only if the end of the same sign does.
+    """
     # Any interval wider than one grid point contains a value that is not on acc's grid
     if hi_x - lo_x > 1 or not (representable(lo_x, acc) and representable(hi_x, acc)):
-        flags |= NX
-    if max(abs(lo_x), abs(hi_x)) >= acc.max_norm:
-        flags |= OF | NX
-    return flags
+        return NX
+    return 0
 
 
 def finish(o: Outcome, mode: int, acc: Fmt) -> Outcome:

@@ -179,6 +179,8 @@ class RedusumModelTest(unittest.TestCase):
                 self.assertEqual(res.must & model.OF, must_of, ctx)
         self.assertTrue(model.reduce_bits(0x7BFF, [0x7BFF, 0xFBFF], model.RNE, 16, False).may & model.OF)
         self.assertFalse(model.reduce_bits(0x3C00, [0x3C00, 0x3C00], model.RNE, 16, False).may & model.OF)
+        # Reaching the largest finite value without exceeding it is not an overflow
+        self.assertFalse(model.reduce_bits(0x7BFF, [0x0001, 0x0001], model.RNE, 16, False).may & model.OF)
 
     def test_random_small_reductions(self) -> None:
         rng = random.Random(2897)

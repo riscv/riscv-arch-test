@@ -1636,7 +1636,8 @@ normative_rule_definitions:
   # Platforms provide a real-time counter, exposed as a memory-mapped machine-mode read-write
   # register, mtime.
   - name: mtime_acc
-    coverpoint: ["Sm_mcsr_cg/cp_mtime_wraparound", "Sm_Zicntr_cg/cp_mtime_write"]
+    coverpoint:
+      ["Sm_mcsr_cg/cp_mtime_wraparound", "Sm_Zicntr_cg/cp_mtime_write"]
 
   # mtime must increment at constant frequency
   - name: mtime_op
@@ -1668,7 +1669,8 @@ normative_rule_definitions:
     coverpoint: ["TODO: write and read back all 64 bits of mtimecmp"]
 
   - name: mtime_enc_img
-    coverpoint: ["Sm_mcsr_cg/cp_mtime_wraparound", "Sm_Zicntr_cg/cp_mtime_write"]
+    coverpoint:
+      ["Sm_mcsr_cg/cp_mtime_wraparound", "Sm_Zicntr_cg/cp_mtime_write"]
 
   - name: mtimecmp_enc_img
     coverpoint: ["TODO: write and read back all 64 bits of mtimecmp"]

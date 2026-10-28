@@ -33,6 +33,77 @@ include::norm/Zksh_norm_rules.adoc[]
 
 ==== Zkt Constant-Time Instructions
 
-Not tested yet.
+Zkt requires the instructions it lists to have data-independent execution latency.
+The suite measures latency with a cycle counter.
+If the hart implements Zicntr, the tests read `cycle` and run in the lowest implemented privilege mode.
+Otherwise, they read `mcycle` and run in M-mode.
+Each row outside the base ISA requires the extension of its instruction, so the suite times every listed instruction the hart implements.
+An instruction in two extensions, such as `ror` in Zbb and Zbkb, has a row for each, and a hart with both runs both.
+
+[[zkt-principle-of-operation]]
+===== Principle of Operation
+
+Each testcase times one instruction with this sequence, where `cycle` is `mcycle` on a hart without Zicntr:
+
+[source,asm]
+----
+  1: load the operands
+     <op>  rA, rs1, rs2      # reads the loaded operands, so the loads complete before timing starts
+     .balign 64              # align to 64-byte boundary to avoid cache line splits
+     csrr  rA, cycle
+     sltu  rZ, rA, x0        # rZ = 0, ready only after the first cycle read
+     or    rs1, rs1, rZ      # rs1 (rs2 for c.mv) keeps its value and depends on the first read
+     <instruction under test>
+     csrr  rB, cycle
+     (repeat once from 1)
+----
+
+* *Drain.* `<op>` is any instruction that reads the loaded operands; the suite uses `xor`.
+It waits for the loads, so their latency does not fall inside the timed window.
+* *Two runs.* The sequence runs twice and only the second run is timed.
+The first run fills the instruction cache and corrects the branch predictor, which may hold an entry for unrelated code at the same index.
+* *Alignment.* The sequence starts on a 64-byte boundary, so the instructions after it are in the same cache line and a fetch stall cannot delay the second read.
+* *Dependency.* `sltu` and `or` make a source of the instruction under test depend on the first read without changing its value, so an out-of-order core cannot execute the instruction before the first read.
+Both are Zkt instructions, so they add a constant time.
+Instructions without data operands (`lui`, `auipc`, `c.lui`, `c.nop`) need no dependency.
+* *Second read.* The second read cannot take a dependency, because `csrrs` with _rs1_≠`x0` writes the CSR.
+Writing `cycle` raises an illegal-instruction exception, and writing `mcycle` changes the count.
+FENCE does not order CSR reads against arithmetic instructions, so it is not used.
+* *Signature.* The latency is the difference between the two reads.
+The first testcase of each instruction sets the baseline, and every testcase writes its latency minus the baseline, which must be 0.
+Reference models count one cycle per instruction and real cores do not, so the signature never holds a raw cycle count.
+Each testcase also writes the result of the instruction.
+
+Registers and immediates are part of the instruction encoding and may legally affect the latency, so they are fixed for each instruction and only the register data varies.
+HINT encodings, such as those with _rd_=`x0`, are not covered by Zkt and are not tested.
+
+A pass means that every timed instruction took the same number of cycles for every edge value of its operands.
+A failure names the first testcase whose latency differed from the baseline; the signature value is the difference in cycles.
+
+The method assumes that:
+
+* CSR reads execute in order at commit, as is typical even for out-of-order cores.
+* The instruction fetches in the timed window have a deterministic delay: after the first run they hit in the instruction cache and TLB, and nothing else, such as another hart or a DMA engine, delays them.
+* Microarchitectural optimizations such as fusion or cracking are deterministic and do not depend on operand data, as Zkt requires.
+
+Known limitations:
+
+* A core that reads the counter before older instructions complete loses sensitivity: it may pass with data-dependent latency, but it does not fail falsely.
+* Value prediction and other data-dependent speculation are out of scope, as Zkt notes.
+* The suite checks the latency of a single instruction in isolation, not its throughput or its interaction with neighboring instructions.
+
+include::{testplansdir}/Zkt.adoc[]
 
 include::norm/Zkt_norm_rules.adoc[]
+
+[[t-Zkt-coverpoint-definition]]
+.Zkt Coverpoint Definitions
+[cols="2, 1, 4" options=header]
+[%autowidth]
+|===
+|Coverpoint|Bins|Definition
+|cp_zkt_rs1_rs2|144 (324 on RV64)|Cross of the rs1 and rs2 edge values (as in `cr_rs1_rs2_edges`) for an instruction that follows `csrr cycle` (or `mcycle`), `sltu` and `or` (<<zkt-principle-of-operation>>).
+|cp_zkt_rs1|12 (18 on RV64)|rs1 edge values (as in `cp_rs1_edges`) for an instruction that follows `csrr cycle` (or `mcycle`), `sltu` and `or` (<<zkt-principle-of-operation>>).
+|cp_zkt_rs2|12 (18 on RV64)|rs2 edge values (as in `cp_rs2_edges`) for an instruction that follows `csrr cycle` (or `mcycle`), `sltu` and `or` (<<zkt-principle-of-operation>>). Used for `c.mv`, whose only source is rs2.
+|cp_zkt_pc|1|An instruction without data operands (`lui`, `auipc`, `c.lui`, `c.nop`) that directly follows `csrr cycle` (or `mcycle`).
+|===

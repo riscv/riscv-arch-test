@@ -55,12 +55,6 @@ E_EXTENSION_TESTS = frozenset(
     }
 )
 
-# Testplan to param mapping. These names are removed from the extension list and the corresponding
-# parameter is added to the @PARAMS@ field in the header of the generated test along with the required value.
-EXTENSION_PARAM_MAP = {
-    "Misalign": "MISALIGNED_LDST: true",
-}
-
 # =============================================================================
 # FLEN Mapping
 # =============================================================================

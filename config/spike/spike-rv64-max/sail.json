@@ -633,7 +633,7 @@
     "H": {
       "mutable_misa": true,
       "supported": true,
-      "geilen": 63,
+      "geilen": 31,
       // Whether an implicit access to a VS-stage PTE sets the D bit of a writable G-stage PTE
       "implicit_vs_pte_access_sets_gstage_d": false,
       "guest_page_fault_writes_htval": true,

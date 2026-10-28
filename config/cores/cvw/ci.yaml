@@ -6,9 +6,11 @@
 ci_enabled: true
 exclude_extensions:
   # Remove each when CVW_COMMIT in install-cvw.sh includes its fix.
-  # cbo.flush through a PBMT=NC/IO alias does not reach the D$ (https://github.com/openhwfoundation/cvw/issues/2003)
+  # cbo.flush through a PBMT=NC/IO alias does not reach the D$ (https://github.com/openhwfoundation/cvw/issues/2003),
+  # fixed by https://github.com/openhwfoundation/cvw/pull/2008
   - Svpbmt_Zicbom
-  # The access right after an uncached cbo.zero is dropped (https://github.com/openhwfoundation/cvw/issues/2006)
+  # The access right after an uncached cbo.zero is dropped (https://github.com/openhwfoundation/cvw/issues/2006),
+  # fixed by https://github.com/openhwfoundation/cvw/pull/2010
   - Svpbmt_Zicboz
 apt_packages: "autoconf flex bison help2man libfl-dev ccache"
 install_script: ".github/scripts/install-cvw.sh"

@@ -1,5 +1,3 @@
-    cp_offset : coverpoint signed'(ins.current.imm)  iff (ins.trap == 0 )  {
-        // Branch Immediate Offset value
-        bins neg  = {[$:-1]};
-        bins pos  = {[1:$]};
+    cp_offset : coverpoint ins.current.imm[`UDB_MXLEN-1]  iff (ins.trap == 0 & ins.current.imm != 0)  {
+        // Branch Immediate Offset value is forward/backward
     }

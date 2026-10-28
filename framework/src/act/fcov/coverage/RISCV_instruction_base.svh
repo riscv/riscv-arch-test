@@ -200,6 +200,12 @@ class RISCV_instruction
     return current.pc_rdata;
   endfunction
 
+  // A jump to target is backward when target - pc is negative
+  function bit jump_backward(`SIGNED_XLEN_BITS target);
+    `SIGNED_XLEN_BITS offset = target - get_pc();
+    return offset[`UDB_MXLEN-1];
+  endfunction
+
   // Works for both ABI and architectural register names
   function gpr_name_t get_gpr_reg (string key);
     case (key)

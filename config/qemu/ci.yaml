@@ -107,6 +107,9 @@ exclude_extensions:
   # (https://gitlab.com/qemu-project/qemu/-/issues/4620).
   - Svinval_H
   - Svinval_SmH
+  # The same mstatus.MPV bug keeps the VS-mode and VU-mode sweeps in HS-mode
+  # (https://gitlab.com/qemu-project/qemu/-/work_items/4588).
+  - Ssstrict_H
   # With ADUE=1, QEMU sets A/D on a PTE with a reserved Svnapot encoding before raising the page fault
   # (https://gitlab.com/qemu-project/qemu/-/work_items/4636)
   - Svadu_sv39_Svadu_fault
@@ -116,33 +119,37 @@ exclude_extensions:
   # same issue as Exceptions_ZicboU/Exceptions_ZicboS and Sv_Zicbo (https://gitlab.com/qemu-project/qemu/-/work_items/3501).
   - Ssnpm_bare_pmm00_sweep
   - Ssnpm_bare_pmm10_sweep
-  - Ssnpm_sv39_pmm10_sweep
-  - Ssnpm_sv39_pmm11_sweep
-  - Ssnpm_sv48_pmm10_sweep
-  - Ssnpm_sv48_pmm11_sweep
-  - Ssnpm_sv57_pmm10_sweep
-  - Ssnpm_sv57_pmm11_sweep
   - Smmpm_pmm00_sweep
   - Smmpm_pmm10_sweep
   - Smnpm_S_bare_pmm00_sweep
   - Smnpm_S_bare_pmm10_sweep
-  - Smnpm_S_sv39_pmm10_sweep
-  - Smnpm_S_sv39_pmm11_sweep
-  - Smnpm_S_sv48_pmm10_sweep
-  - Smnpm_S_sv48_pmm11_sweep
-  - Smnpm_S_sv57_pmm10_sweep
-  - Smnpm_S_sv57_pmm11_sweep
-  - Smnpm_U
-  - Smnpm_USm
-  # On a store/AMO page fault from ssamoswap.w, QEMU writes a
-  # transformed instruction to htinst, but SSAMOSWAP has no defined transformation, so it must be 0
-  # (https://gitlab.com/qemu-project/qemu/-/work_items/4721).
+  # On a store/AMO page fault from ssamoswap.w, QEMU writes a transformed instruction to htinst, but SSAMOSWAP
+  # has no defined transformation, so it must be 0 (https://gitlab.com/qemu-project/qemu/-/work_items/4721).
+  # The pmm00 sweeps fail only on this; the pmm10 sweeps also fail on the SSPUSH/SSPOPCHK bug below.
   - Ssnpm_sv39_pmm00_sweep
   - Ssnpm_sv48_pmm00_sweep
   - Ssnpm_sv57_pmm00_sweep
   - Smnpm_S_sv39_pmm00_sweep
   - Smnpm_S_sv48_pmm00_sweep
   - Smnpm_S_sv57_pmm00_sweep
+  # SSPUSH and SSPOPCHK do not apply pointer masking to ssp, so a shadow-stack access through a tag that PMLEN
+  # masks raises a store/AMO page fault (https://gitlab.com/qemu-project/qemu/-/work_items/4758). PMLEN = 16
+  # masks every tag, so the pmm11 sweeps fail only on this.
+  - Ssnpm_sv39_pmm10_sweep
+  - Ssnpm_sv39_pmm11_sweep
+  - Ssnpm_sv48_pmm10_sweep
+  - Ssnpm_sv48_pmm11_sweep
+  - Ssnpm_sv57_pmm10_sweep
+  - Ssnpm_sv57_pmm11_sweep
+  - Smnpm_S_sv39_pmm10_sweep
+  - Smnpm_S_sv39_pmm11_sweep
+  - Smnpm_S_sv48_pmm10_sweep
+  - Smnpm_S_sv48_pmm11_sweep
+  - Smnpm_S_sv57_pmm10_sweep
+  - Smnpm_S_sv57_pmm11_sweep
+  # Selected only on qemu-rv64-mu, where U-mode CBOs raise illegal-instruction without S-mode because QEMU also
+  # requires senvcfg (https://gitlab.com/qemu-project/qemu/-/work_items/4596).
+  - Smnpm_U
   # Fails on qemu because ecall, ebreak and illegal instruction increments minstret/instret. Filed QEMU issue: https://gitlab.com/qemu-project/qemu/-/work_items/4227
   # Also fails because minstret/instret overcounts by 1 for wfi with a pending or taken interrupt. Filed QEMU issue: https://gitlab.com/qemu-project/qemu/-/work_items/4230
   - Sm_Zicntr

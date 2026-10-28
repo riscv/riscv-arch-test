@@ -363,6 +363,19 @@ def _if_implemented(csr: str, line: str) -> list[str]:
     return [line]
 
 
+# Sail has tcontrol only with Use_tcontrol reentrancy, so other harts that implement it skip the tcontrol tests and
+# their tcontrol bins stay missing. TODO: drop the reentrancy condition once sail-riscv#2039 is fixed.
+_TCONTROL_GUARD = (
+    "#if defined(UDB_TCONTROL_IMPLEMENTED) && defined(UDB_SDTRIG_BREAKPOINT_REENTRANCY_USE_TCONTROL)"
+    " // TODO: only UDB_TCONTROL_IMPLEMENTED once sail-riscv#2039 is fixed"
+)
+
+
+def _csr_guard(csr: str) -> str:
+    """Opening ``#if`` line for the tests of an optional trigger CSR that the hart implements."""
+    return _TCONTROL_GUARD if csr == "tcontrol" else f"#ifdef UDB_{csr.upper()}_IMPLEMENTED"
+
+
 def _arm_type(reg: int, trig_type: int, mode: str) -> list[str]:
     """Set tdata1.type = trig_type the way Sdtrig.adoc says a debugger should.
 
@@ -1113,7 +1126,7 @@ def _generate_access_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             lines.append(f"\n#ifdef {guard}" if guard else f"\n{_num_guard(trig_num)}")
             for csr in csrs:
                 if csr in optional_csrs:
-                    lines.append(f"#ifdef UDB_{csr.upper()}_IMPLEMENTED")
+                    lines.append(_csr_guard(csr))
                 binname = f"tselect_{trig_num}_type_{trig_type}_csr_{csr}"
                 lines.extend(
                     [
@@ -2174,13 +2187,14 @@ def _generate_csr_tests(test_data: TestData, mode: str) -> list[TestChunk]:
     for csr in ("tcontrol", "mcontext", "scontext", "hcontext"):
         lines.extend(
             [
-                f"\n#ifdef UDB_{csr.upper()}_IMPLEMENTED",
+                "",
+                _csr_guard(csr),
                 _add_tc(test_data, csr, coverpoint, covergroup),
                 _csr_access_m(f"csrr x{old1_reg}, {csr} # save", mode),
                 _csr_access_m(f"csrw {csr}, x0 # write all 0s", mode),
                 _csr_access_m(f"csrw {csr}, x{ones_reg} # write all 1s (WARL: not checked)", mode),
                 _csr_access_m(f"csrw {csr}, x{old1_reg} # restore", mode),
-                f"#endif // UDB_{csr.upper()}_IMPLEMENTED",
+                f"#endif // {csr}",
             ]
         )
 
@@ -2565,7 +2579,7 @@ def _generate_tcontrol_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             "read after the trap holds the old mte in both fields",
         )
     )
-    lines.append("#ifdef UDB_TCONTROL_IMPLEMENTED")
+    lines.append(_TCONTROL_GUARD)
     for mte in (0, 1):
         for mpte in (0, 1):
             value = (_TCONTROL_MPTE if mpte else 0) | (_TCONTROL_MTE if mte else 0)
@@ -2580,7 +2594,7 @@ def _generate_tcontrol_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     write_sigupd(data_reg, test_data),
                 ]
             )
-    lines.append("#endif // UDB_TCONTROL_IMPLEMENTED")
+    lines.append("#endif // tcontrol")
 
     ######################################
     coverpoint = "cp_tcontrol_mret"
@@ -2591,7 +2605,7 @@ def _generate_tcontrol_tests(test_data: TestData, mode: str) -> list[TestChunk]:
             "mret (to M-mode, MPP = M) sets mte = mpte and leaves mpte unchanged",
         )
     )
-    lines.append("#ifdef UDB_TCONTROL_IMPLEMENTED")
+    lines.append(_TCONTROL_GUARD)
     for mte in (0, 1):
         for mpte in (0, 1):
             value = (_TCONTROL_MPTE if mpte else 0) | (_TCONTROL_MTE if mte else 0)
@@ -2612,7 +2626,7 @@ def _generate_tcontrol_tests(test_data: TestData, mode: str) -> list[TestChunk]:
                     write_sigupd(data_reg, test_data),
                 ]
             )
-    lines.extend(["csrwi tcontrol, 0 # mte = mpte = 0", "#endif // UDB_TCONTROL_IMPLEMENTED"])
+    lines.extend(["csrwi tcontrol, 0 # mte = mpte = 0", "#endif // tcontrol"])
 
     test_data.int_regs.return_registers([cfg_reg, data_reg, temp_reg])
     chunks.append(test_data.end_test_chunk())

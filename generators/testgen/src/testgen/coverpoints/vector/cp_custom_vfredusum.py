@@ -204,12 +204,12 @@ def _cancel_family(ctx: _Ctx, vl: int, scale: int = 0, negate: bool = False) -> 
 
 
 def _random_mask() -> list[int]:
-    """Fixed pseudo-random mask bytes covering _MASK_BITS elements (about half active).
+    """Pseudo-random mask bytes covering _MASK_BITS elements (about half active), reproducible because the
+    coverpoint registry seeds the generator per instruction and coverpoint.
 
     Elements 0 and 2 are active and element 1 is not, so every vl in the sweep has active and inactive elements.
     """
-    rng = random.Random("vfredusum_mask")
-    mask = [rng.randrange(256) for _ in range(_MASK_BITS // 8)]
+    mask = [random.randrange(256) for _ in range(_MASK_BITS // 8)]
     mask[0] = (mask[0] & ~0b111) | 0b101
     return mask
 

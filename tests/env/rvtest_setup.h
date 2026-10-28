@@ -113,6 +113,10 @@
       bnez T1, rvtest_trap_setup_failed
     #endif
 
+  #ifdef RVTEST_CONFIG_CHECKS
+    RVTEST_CONFIG_CHECK_VERDICT
+  #endif
+
   #ifndef RVTEST_NOSIG
     // Check the regular signature offset to make sure the correct number of
     // signature updates occurred.
@@ -283,6 +287,10 @@
 
   // Include test failure handling code
   RVTEST_FAILURE_CODE
+
+  #ifdef RVTEST_CONFIG_CHECKS
+    RVTEST_CONFIG_CHECK_CODE
+  #endif
 
   // All model-specific (RVMODEL_*) code lives in the dedicated .text.rvmodel
   // section, placed AFTER .data by the linker script. This isolates variable-
@@ -462,6 +470,10 @@
 
   // Failure detection data (strings and scratch space)
   RVTEST_FAILURE_DATA
+
+  #ifdef RVTEST_CONFIG_CHECKS
+    RVTEST_CONFIG_CHECK_DATA
+  #endif
 
   // End of data region
   .global rvtest_data_end

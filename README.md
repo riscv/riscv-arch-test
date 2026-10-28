@@ -415,6 +415,16 @@ All ELFs produced in the `$WORKDIR/<config_name>/elfs` directory must be run on 
 
 When bringing up a new DUT environment, build and run the `Hello` suite first (`EXTENSIONS=Hello`). Its seven tests each check one layer of what the environment provides, in dependency order: boot and I/O, the signature mechanism, trap entry and return, privilege transitions, the software and external interrupt macros, the timer, and the access-fault address. The first one that fails names the layer to fix.
 
+Then run the `ConfigCheck` suite (`EXTENSIONS=ConfigCheck`) to check that the DUT matches its UDB config. Each testcase reads one value the config describes from the hart and compares it with the value the config implies: misa, the mtvec and stvec modes and alignment, the usable PMP entries, PMP granularity and physical address width, the satp modes and ASID width, misaligned load/store support, and one instruction or CSR per listed extension. A mismatch prints the testcase, named after the UDB parameter or extension, with both values:
+
+```
+RVCP-CONFIG: mismatch "test: 19; cg: ConfigCheck_cg; cp: cp_pmp; bin: PMP_GRANULARITY"
+RVCP-CONFIG:   config   0x0000000000001000
+RVCP-CONFIG:   observed 0x0000000000000004
+```
+
+The test carries on after a mismatch, so one run lists every disagreement. The expected values come from the UDB config rather than the reference model, so the reference run checks `sail.json` against the same config and the build stops if they disagree.
+
 Each test will print one of the following to the console:
 
 - **PASSED**: `RVCP-SUMMARY: TEST PASSED - Test File "<test_name.S>"`

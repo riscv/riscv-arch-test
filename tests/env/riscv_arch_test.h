@@ -37,4 +37,7 @@
 #include "rvtest_trap_handler.h"
 #include "rvtest_invisible_trap_handler.h"
 #include "rvtest_failure_code.h"
+#ifdef RVTEST_CONFIG_CHECKS
+  #include "rvtest_config_check.h"
+#endif
 #include "rvtest_setup.h"

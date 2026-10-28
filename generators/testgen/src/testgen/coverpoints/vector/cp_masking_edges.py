@@ -24,6 +24,10 @@ def make_mask_edges(instr_name: str, instr_type: str, coverpoint: str, test_data
     VLMAX/2 + 1 Ones, and a random mask
     """
     assert test_data.config.sew is not None, "SEW must be set for vector tests"
+    config = get_instruction_type_config(instr_type)
+    assert config.vector_data is not None
+    if not config.vector_data.maskable:
+        raise ValueError(f"{coverpoint} requires a maskable instruction, got {instr_name} ({instr_type})")
 
     cp_masking_edges_data = [
         PresetMask.ONES,

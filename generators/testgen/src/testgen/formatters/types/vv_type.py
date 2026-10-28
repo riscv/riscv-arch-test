@@ -20,7 +20,7 @@ from testgen.data.state import TestData
 from testgen.formatters.registry import InstructionTypeConfig, VectorTypeConfig, add_instruction_formatter
 from testgen.instructions.vector import parse_vector_instruction_info
 
-vmvr_config = InstructionTypeConfig(required_params={"vd", "vs2"}, vector_data=VectorTypeConfig())
+vmvr_config = InstructionTypeConfig(required_params={"vd", "vs2"}, vector_data=VectorTypeConfig(maskable=False))
 vext_config = InstructionTypeConfig(
     required_params={"vd", "vs2"},
     vector_data=VectorTypeConfig(overlap_constraints={("vd_bottom", "vs2")}),
@@ -31,12 +31,16 @@ vm_config = InstructionTypeConfig(
         mask_regs={"vs2"},
         overlap_constraints={("vd", "vs2")},
         masked_constraints={("vd", "v0")},
+        require_zero_vstart=True,
     ),
 )
 vv_config = InstructionTypeConfig(required_params={"vd", "vs2"}, vector_data=VectorTypeConfig())
-vv_egs4_config = InstructionTypeConfig(required_params={"vd", "vs2"}, vector_data=VectorTypeConfig(egs=4))
+vv_egs4_config = InstructionTypeConfig(
+    required_params={"vd", "vs2"}, vector_data=VectorTypeConfig(egs=4, maskable=False)
+)
 vs_egs4_config = InstructionTypeConfig(
-    required_params={"vd", "vs2"}, vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, egs=4)
+    required_params={"vd", "vs2"},
+    vector_data=VectorTypeConfig(overlap_constraints={("vd", "vs2")}, egs=4, maskable=False),
 )
 
 

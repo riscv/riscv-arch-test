@@ -5,8 +5,6 @@ normative_rule_definitions:
   # Valid bit of leaf and/or non-leaf PTEs from 0 to 1 and are visible to a hart will
   # eventually become visible within a bounded timeframe to subsequent implicit accesses
   # by that hart to such PTEs.
+  # The bound is implementation-defined, so each test waits a fixed time before the retry.
   - name: Svvptc_explicit_stores_update_valid_bit
-    coverpoint:
-      [
-        "Not tested: bounded-time visibility is not observable in signature tests",
-      ]
+    coverpoint: ["Svvptc_cg/cp_{load, store, fetch}"]

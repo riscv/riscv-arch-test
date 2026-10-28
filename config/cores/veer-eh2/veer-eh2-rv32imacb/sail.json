@@ -308,6 +308,83 @@
           "supports_pte_write": false
         },
         "include_in_device_tree": false
+      },
+      // DCCM: 256 KB at 0xF004_0000 holding the .data section (see link.ld). It is the
+      // only memory where EH2 allows AMOs and LR/SC, and the IFU cannot fetch from it.
+      // Must match DCCM_ORIGIN/DCCM_LENGTH in link.ld.
+      //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/design/lsu/eh2_lsu_addrcheck.sv#L199-L200
+      {
+        "base": {
+          "len": 64,
+          "value": "0xF0040000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x40000"
+        },
+        "attributes": {
+          "mem_type": "MainMemory",
+          "cacheable": false,
+          "coherent": true,
+          "executable": false,
+          "readable": true,
+          "writable": true,
+          "read_idempotent": true,
+          "write_idempotent": true,
+          "misaligned_exceptions": {
+            "load_store": { "None": null },
+            "vector": { "None": null },
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
+          },
+          "atomic_support": "AMOArithmetic",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
+          "reservability": "RsrvEventual",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": true
+      },
+      // Testbench DCCM preload control words at 0xFFFF_FFF0 (see link.ld), in the last
+      // 4 KB page since Sail regions are page aligned. They are not
+      // DUT memory: the testbench reads them from program.hex before reset, and no test
+      // accesses them. The region only lets Sail load the ELF segment that holds them.
+      //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/testbench/tb_top.sv#L1204-L1257
+      {
+        "base": {
+          "len": 64,
+          "value": "0xFFFFF000"
+        },
+        "size": {
+          "len": 64,
+          "value": "0x1000"
+        },
+        "attributes": {
+          "mem_type": "IOMemory",
+          "cacheable": false,
+          "coherent": true,
+          "executable": false,
+          "readable": true,
+          "writable": false,
+          "read_idempotent": false,
+          "write_idempotent": false,
+          "misaligned_exceptions": {
+            "load_store": { "None": null },
+            "vector": { "None": null },
+            "amo": "AccessFault",
+            "lrsc": "AccessFault"
+          },
+          "atomic_support": "AMONone",
+          "misaligned_atomicity_granule_size_exp": 0,
+          "vector_misaligned_atomicity_granule_size_exp": 0,
+          "reservability": "RsrvNone",
+          "supports_cbo_zero": false,
+          "supports_pte_read": false,
+          "supports_pte_write": false
+        },
+        "include_in_device_tree": false
       }
     ]
   },
@@ -320,9 +397,11 @@
     "cache_block_size_exp": 6,
     "reservation": {
       // Reservation set size/alignment as a power of 2. Minimum 2 on RV32.
-      "reservation_set_size_exp": 3,
-      // LR/SC outside the DCCM raises an access fault, so no reservation is ever made.
-      "require_exact_reservation_addr": false,
+      // EH2 reserves the 32-bit word that LR read, and SC succeeds only to that same word.
+      //   Quote: "(lsu_addr_dc5[pt.XLEN-1:pt.XLEN_ADDR_OFF] == lr_addr[i][pt.XLEN-1:pt.XLEN_ADDR_OFF]) & lsu_pkt_dc5.valid & lsu_pkt_dc5.sc & lr_vld[i]"
+      //   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/design/lsu/eh2_lsu_lsc_ctl.sv#L422
+      "reservation_set_size_exp": 2,
+      "require_exact_reservation_addr": true,
       // Some implementations (e.g. SiFive U74) also invalidate the
       // reservation on stores from the same hart.  If this is set to `true`, the
       // model invalidates the reservation if a store from the same hart lies within

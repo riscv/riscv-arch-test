@@ -41,6 +41,7 @@ from testgen.priv.extensions.sv.Sv import (
 from testgen.priv.registry import add_priv_test_generator
 
 MPRV_CG = "Sv_Sm_mstatus_mprv_cg"
+_VA_ZEROS = Crosses("Sv_Sm_VA_cg", "cp_VA_d_mode", "cp_VA_d_mode", "cp_VA_i_mode")
 _MPRV = Crosses(MPRV_CG, "cp_mprv_store", "cp_mprv_load", "cp_mprv_ins")
 _UPAGE_MPRV = {
     "set": Crosses(
@@ -254,6 +255,7 @@ def _t_va_all_zeros(test_data: TestData, test_chunks: list[TestChunk], sv: SvMod
             permissions=permissions,
             style=style,
             driver_mode="Mmode",
+            crosses=_VA_ZEROS,
         )
     chunk.raw_data.extend(sv_data(sv, regs, (0,), data_region_body=VA_ZEROS_DATA))
     chunk.trap_sigupd_count = 3

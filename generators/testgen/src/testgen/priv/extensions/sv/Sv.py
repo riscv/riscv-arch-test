@@ -122,11 +122,22 @@ def _add_rsw_readback(test_data: TestData, sv: SvMode, regs: SvRegs, level: int,
     ]
 
 
+#: The default crosses of the VA-extreme tests (the all-ones VAs); Sv_Sm passes its own for VA 0.
+_VA_CROSSES = Crosses("Sv_VA_cg", "cp_VA_d_mode", "cp_VA_d_mode", "cp_VA_i_mode")
+
+
 def _extreme_access(
-    test_data: TestData, regs: SvRegs, name: str, va: str, mode: str, style: str, driver_mode: str
+    test_data: TestData,
+    regs: SvRegs,
+    name: str,
+    va: str,
+    mode: str,
+    style: str,
+    driver_mode: str,
+    crosses: Crosses | None = None,
 ) -> list[str]:
     operations = ("store", "load") if style.startswith("rw") else ("exec",)
-    crosses = Crosses("Sv_VA_cg", "cp_VA_d_mode", "cp_VA_d_mode", "cp_VA_i_mode")
+    crosses = crosses or _VA_CROSSES
     labels = {
         operation: test_data.add_testcase(
             f"{name}_{operation}", crosses.by_operation()[operation], crosses.covergroup
@@ -179,7 +190,7 @@ def emit_access(
     crosses: Crosses | None = None,
 ) -> list[str]:
     if style in ("rw_byte", "rw_word", "x_only"):
-        return _extreme_access(test_data, regs, name, va, mode, style, driver_mode)
+        return _extreme_access(test_data, regs, name, va, mode, style, driver_mode, crosses)
     setup: tuple[str, ...] = ()
     cleanup: tuple[str, ...] = ()
     if style.startswith("mprv_"):
@@ -981,6 +992,7 @@ def add_va_extreme_test(
     permissions: PteExpression,
     style: str,
     driver_mode: str = "Smode",
+    crosses: Crosses | None = None,
 ) -> None:
     chunk.code.extend(
         [
@@ -995,7 +1007,7 @@ def add_va_extreme_test(
             ),
             "sfence.vma",
             "",
-            *emit_access(test_data, sv, regs, 0, style, f"test{number}", va, "Smode", driver_mode),
+            *emit_access(test_data, sv, regs, 0, style, f"test{number}", va, "Smode", driver_mode, crosses=crosses),
             "",
         ]
     )

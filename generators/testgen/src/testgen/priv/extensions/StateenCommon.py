@@ -196,12 +196,21 @@ def illegal_access_tests(
 
 
 def walk_tests(
-    test_data: TestData, cg: str, cp: str, csr: str, *, modes: list[str], base: str, guard: str | None = None
+    test_data: TestData,
+    cg: str,
+    cp: str,
+    csr: str,
+    *,
+    modes: list[str],
+    base: str,
+    guard: str | None = None,
+    ignore_bits: int = 0,
 ) -> list[str]:
-    """Walk a one and a zero through every bit of a CSR from each mode."""
+    """Walk a one and a zero through every bit of a CSR from each mode. Bits in `ignore_bits` are walked but not checked."""
+    mask = ~ignore_bits & 0xFFFFFFFFFFFFFFFF if ignore_bits else None
     lines = [comment_banner(cp, f"Walking ones and zeros on {csr} from {', '.join(modes)} mode")]
     for mode in modes:
         prefix = f"{mode.lower()}_" if len(modes) > 1 else ""
-        walk = csr_walk_test(test_data, (csr, None), cg, cp, bin_prefix=prefix)
+        walk = csr_walk_test(test_data, (csr, mask), cg, cp, bin_prefix=prefix)
         lines += _mode_block(mode, base, walk)
     return gated(lines, guard)

@@ -140,12 +140,12 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
         )
     ]
 
-    # The walk writes and checks only the bits in its mask.  The mask holds the bits Sail models: SE0(63),
-    # ENVCFG(62), CONTEXT(57), P1P13(56), SRMCFG(55) and FCSR(1).  Sail does not implement Sscsrind, Ssaia,
-    # Ssctr or Zcmt and reads CSRIND(60), AIA(59), IMSIC(58), CTR(54) and JVT(2) as zero, so each of those is
-    # walked only where its extension is absent and the bit is read-only zero.  Where the extension is present
-    # its csr_walk bin reports missing until Sail implements it (TODO: walk these bits everywhere then).
-    # Bit 0 (C) controls custom state, which no configuration parameter describes and csr_walk does not cover.
+    # The walk writes and checks only the bits in its mask: every bit that Sail models, the defined ones and
+    # the reserved ones, which are read-only zero.  Sail does not implement Sscsrind, Ssaia, Ssctr or Zcmt and
+    # reads CSRIND(60), AIA(59), IMSIC(58), CTR(54) and JVT(2) as zero, so each of those is walked only where
+    # its extension is absent and the bit is read-only zero.  Where the extension is present its csr_walk bin
+    # reports missing until Sail implements it (TODO: walk these bits everywhere then).  Bit 0 (C) controls
+    # custom state, which no configuration parameter describes and csr_walk does not cover, so it is not walked.
     # On RV32 mstateen0 is the low word and the high bits live in mstateen0h.
     lines.extend(
         [
@@ -156,7 +156,7 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
     lines.extend(
         csr_walk_test(
             test_data,
-            ("mstateen0", 0xC380000000000002),
+            ("mstateen0", 0xE3BFFFFFFFFFFFFA),
             covergroup,
             coverpoint,
             maskedwrites=True,
@@ -180,7 +180,7 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
     lines.extend(
         csr_walk_test(
             test_data,
-            ("mstateen0h", 0xC3800000),
+            ("mstateen0h", 0xE3BFFFFF),
             covergroup,
             coverpoint,
             maskedwrites=True,

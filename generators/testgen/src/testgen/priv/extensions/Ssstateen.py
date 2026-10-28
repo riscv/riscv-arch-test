@@ -170,13 +170,14 @@ def _generate_walking_ones(test_data: TestData) -> list[str]:
             test_data.add_testcase("sstateen0_walk_se0_1_smode", coverpoint, covergroup),
         ]
     )
-    # The walk writes and checks C(0) and FCSR(1), which Sail models.  Sail does not implement Zcmt and reads
-    # JVT(2) as zero, so JVT is walked only without Zcmt, where it is read-only zero; with Zcmt its csr_walk bin
-    # reports missing until Sail implements Zcmt (TODO: walk JVT everywhere then).
+    # The walk writes and checks every bit Sail models: C(0), FCSR(1) and the reserved bits, which are read-only
+    # zero.  Sail does not implement Zcmt and reads JVT(2) as zero, so JVT is walked only without Zcmt, where it
+    # is read-only zero; with Zcmt its csr_walk bin reports missing until Sail implements Zcmt (TODO: walk JVT
+    # everywhere then).
     lines.extend(
         csr_walk_test(
             test_data,
-            ("sstateen0", 0x3),
+            ("sstateen0", 0xFFFFFFFFFFFFFFFB),
             covergroup,
             coverpoint,
             maskedwrites=True,

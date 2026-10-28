@@ -70,8 +70,12 @@ covergroup ExceptionsVf64_vfadd_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -227,8 +231,12 @@ covergroup ExceptionsVf64_vfadd_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -384,8 +392,12 @@ covergroup ExceptionsVf64_vfclass_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -541,8 +553,12 @@ covergroup ExceptionsVf64_vfcvt_f_x_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -698,8 +714,12 @@ covergroup ExceptionsVf64_vfcvt_f_xu_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -855,8 +875,12 @@ covergroup ExceptionsVf64_vfcvt_rtz_x_f_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -1012,8 +1036,12 @@ covergroup ExceptionsVf64_vfcvt_rtz_xu_f_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -1169,8 +1197,12 @@ covergroup ExceptionsVf64_vfcvt_x_f_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -1326,8 +1358,12 @@ covergroup ExceptionsVf64_vfcvt_xu_f_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -1483,8 +1519,12 @@ covergroup ExceptionsVf64_vfdiv_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -1640,8 +1680,12 @@ covergroup ExceptionsVf64_vfdiv_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -1797,8 +1841,12 @@ covergroup ExceptionsVf64_vfmacc_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -1954,8 +2002,12 @@ covergroup ExceptionsVf64_vfmacc_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -2111,8 +2163,12 @@ covergroup ExceptionsVf64_vfmadd_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -2268,8 +2324,12 @@ covergroup ExceptionsVf64_vfmadd_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -2425,8 +2485,12 @@ covergroup ExceptionsVf64_vfmax_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -2582,8 +2646,12 @@ covergroup ExceptionsVf64_vfmax_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -2739,8 +2807,12 @@ covergroup ExceptionsVf64_vfmerge_vfm_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -2896,8 +2968,12 @@ covergroup ExceptionsVf64_vfmin_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -3053,8 +3129,12 @@ covergroup ExceptionsVf64_vfmin_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -3210,8 +3290,12 @@ covergroup ExceptionsVf64_vfmsac_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -3367,8 +3451,12 @@ covergroup ExceptionsVf64_vfmsac_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -3524,8 +3612,12 @@ covergroup ExceptionsVf64_vfmsub_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -3681,8 +3773,12 @@ covergroup ExceptionsVf64_vfmsub_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -3838,8 +3934,12 @@ covergroup ExceptionsVf64_vfmul_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -3995,8 +4095,12 @@ covergroup ExceptionsVf64_vfmul_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -4152,8 +4256,12 @@ covergroup ExceptionsVf64_vfmv_f_s_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -4309,8 +4417,12 @@ covergroup ExceptionsVf64_vfmv_s_f_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -4466,8 +4578,12 @@ covergroup ExceptionsVf64_vfmv_v_f_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -4623,8 +4739,12 @@ covergroup ExceptionsVf64_vfnmacc_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -4780,8 +4900,12 @@ covergroup ExceptionsVf64_vfnmacc_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -4937,8 +5061,12 @@ covergroup ExceptionsVf64_vfnmadd_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -5094,8 +5222,12 @@ covergroup ExceptionsVf64_vfnmadd_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -5251,8 +5383,12 @@ covergroup ExceptionsVf64_vfnmsac_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -5408,8 +5544,12 @@ covergroup ExceptionsVf64_vfnmsac_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -5565,8 +5705,12 @@ covergroup ExceptionsVf64_vfnmsub_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -5722,8 +5866,12 @@ covergroup ExceptionsVf64_vfnmsub_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -5879,8 +6027,12 @@ covergroup ExceptionsVf64_vfrdiv_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -6036,8 +6188,12 @@ covergroup ExceptionsVf64_vfrec7_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -6193,8 +6349,12 @@ covergroup ExceptionsVf64_vfredmax_vs_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -6350,8 +6510,12 @@ covergroup ExceptionsVf64_vfredmin_vs_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -6507,8 +6671,12 @@ covergroup ExceptionsVf64_vfredosum_vs_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -6664,8 +6832,12 @@ covergroup ExceptionsVf64_vfredusum_vs_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -6821,8 +6993,12 @@ covergroup ExceptionsVf64_vfrsqrt7_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -6978,8 +7154,12 @@ covergroup ExceptionsVf64_vfrsub_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -7135,8 +7315,12 @@ covergroup ExceptionsVf64_vfsgnj_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -7292,8 +7476,12 @@ covergroup ExceptionsVf64_vfsgnj_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -7449,8 +7637,12 @@ covergroup ExceptionsVf64_vfsgnjn_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -7606,8 +7798,12 @@ covergroup ExceptionsVf64_vfsgnjn_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -7763,8 +7959,12 @@ covergroup ExceptionsVf64_vfsgnjx_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -7920,8 +8120,12 @@ covergroup ExceptionsVf64_vfsgnjx_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -8077,8 +8281,12 @@ covergroup ExceptionsVf64_vfslide1down_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -8234,8 +8442,12 @@ covergroup ExceptionsVf64_vfslide1up_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -8391,8 +8603,12 @@ covergroup ExceptionsVf64_vfsqrt_v_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -8548,8 +8764,12 @@ covergroup ExceptionsVf64_vfsub_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -8705,8 +8925,12 @@ covergroup ExceptionsVf64_vfsub_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -8862,8 +9086,12 @@ covergroup ExceptionsVf64_vmfeq_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -9019,8 +9247,12 @@ covergroup ExceptionsVf64_vmfeq_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -9176,8 +9408,12 @@ covergroup ExceptionsVf64_vmfge_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -9333,8 +9569,12 @@ covergroup ExceptionsVf64_vmfgt_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -9490,8 +9730,12 @@ covergroup ExceptionsVf64_vmfle_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -9647,8 +9891,12 @@ covergroup ExceptionsVf64_vmfle_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -9804,8 +10052,12 @@ covergroup ExceptionsVf64_vmflt_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -9961,8 +10213,12 @@ covergroup ExceptionsVf64_vmflt_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -10118,8 +10374,12 @@ covergroup ExceptionsVf64_vmfne_vf_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 
@@ -10275,8 +10535,12 @@ covergroup ExceptionsVf64_vmfne_vv_cg with function sample(ins_t ins);
     //////////////////////////////////////////////////////////////////////////////////
 
     mstatus_fs_state : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "mstatus", "fs") {
-        bins fs_initial = {1};
-        bins fs_clean   = {2};
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_1
+            bins fs_initial = {1};
+        `endif
+        `ifdef UDB_MSTATUS_FS_LEGAL_VALUES_2
+            bins fs_clean   = {2};
+        `endif
         bins fs_dirty   = {3};
     }
 

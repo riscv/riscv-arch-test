@@ -135,6 +135,14 @@ coverpoints:
     expectation: Illegal instruction if 0, else successful
     rules:
       - stateen0_fcsr0_misa_f0_illegal_fpu_instr
+  - name: cp_fcsr_fp_instrs
+    goal: fcsr controls floating-point instructions when misa.F = 0
+    description: |-
+      If Zfinx is supported:
+      with misa.F = 0 and mstateen0.fcsr = {0,1}, execute fadd.s, fcvt.w.s, fcvt.s.w, and fclass.s from S (if supported) and U-mode
+    expectation: Illegal instruction if 0, else successful
+    rules:
+      - stateen0_fcsr0_misa_f0_illegal_fpu_instr
   - name: cp_mstateen0_se0_controls_sstateen0
     goal: mstateen.SE0 controls access to sstateen0
     description: For mstateen0.SE0 = {0,1} write and read back sstateen0.
@@ -143,5 +151,18 @@ coverpoints:
     rules:
       - mstateen_bit_63_op
       - mstateen0_se0_op
+  - name: cp_mstateen_se_controls_sstateen123
+    goal: Bit 63 of mstateen1-3 controls access to sstateen1-3
+    description: |-
+      For N = 1-3 and mstateenN bit 63 = {0,1}, read and write sstateenN from S-mode, and check the value read.
+      For RV32, bit 63 is bit 31 of mstateenNh.
+    expectation: |-
+      Illegal instruction if 0. If 1, access succeeds and sstateenN reads 0 (it has no defined bits).
+      Bit 63 may be read-only zero without the hypervisor extension; the bit = 1 bins are then unreachable.
+    bins: 3 CSRs * 2 states * 3 ops
+    rules:
+      - mstateen_bit_63_op
+      - stateen_illegal_state_access
+      - stateen_reserved_roz
   - heading: "Note: All of these tests are performed in M-mode unless otherwise noted."
   - heading: "Note: Smstateen implies U-mode (otherwise there is no need for this extension)"

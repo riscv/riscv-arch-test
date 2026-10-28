@@ -38,7 +38,7 @@ The install script checks out the pinned commit and installs `run-c910.sh`. `ci.
 suites that fail.
 
 The model runs at 1,000 to 2,000 cycles per second. The CSR tests in `S`, `U` and
-`ExceptionsZaamo` take about 280,000 cycles, so on a busy host they can exceed the 300 s limit
+`Exceptions_Zaamo` take about 280,000 cycles, so on a busy host they can exceed the 300 s limit
 that `run_tests.py` sets for each test.
 
 ## Platform

@@ -422,33 +422,42 @@ def _t_mstatus_mxr(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
         test_chunks.append(end_sv_test(test_data, regs))
 
 
-def _t_nleaf_pte_dau(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
-    for mode in ("Smode", "Umode"):
+def _nleaf_pte_bits(
+    test_data: TestData,
+    test_chunks: list[TestChunk],
+    sv: SvMode,
+    name: str,
+    cross_prefix: str,
+    modes: tuple[str, ...],
+    cases: list[tuple[str, str, str]],
+) -> None:
+    """Set each (description, PTE bit expression, expected) case in each non-leaf PTE of a level-0 walk."""
+    for mode in modes:
         regs = SvRegs.allocate(test_data)
         m = mode[0].lower()
         crosses = Crosses(
-            PERMISSIONS_CG, f"cp_PTE_DAU_nleaf_write_{m}", f"cp_PTE_DAU_nleaf_read_{m}", f"cp_PTE_DAU_nleaf_exec_{m}"
+            PERMISSIONS_CG, f"{cross_prefix}_write_{m}", f"{cross_prefix}_read_{m}", f"{cross_prefix}_exec_{m}"
         )
         chunk = begin_sv_test(
             test_data,
             regs,
             sv,
             mode,
-            f"{sv.name}_nleaf_pte_DAU_{mode}",
+            f"{sv.name}_nleaf_pte_{name}_{mode}",
             coverpoint=cross_names(crosses),
             code_prefix=("#ifdef S1P12P0_OR_LATER_SUPPORTED", ""),
         )
         number = 0
         for table_level in range(sv.levels - 1, 0, -1):
-            for bit in ("PTE_D", "PTE_A", "PTE_U"):
+            for description, bit, expected in cases:
                 number += 1
                 permissions = PteFlags(user=mode == "Umode")
                 chunk.code.extend(
                     [
                         *level_header(sv, 0),
                         (
-                            f"// Test case {number}: Non-leaf {bit.removeprefix('PTE_')} bit set at level {table_level}"
-                            f" | Test in {mode[0]}-Mode | expected = RWX fault"
+                            f"// Test case {number}: Non-leaf {description} set at level {table_level}"
+                            f" | Test in {mode[0]}-Mode | expected = {expected}"
                         ),
                         *create_page_mapping(
                             sv,
@@ -466,6 +475,27 @@ def _t_nleaf_pte_dau(test_data: TestData, test_chunks: list[TestChunk], sv: SvMo
         chunk.raw_data.extend(sv_data(sv, regs, (0,)))
         chunk.trap_sigupd_count = trap_sigupd_count(number * 3)
         test_chunks.append(end_sv_test(test_data, regs))
+
+
+def _t_nleaf_pte_dau(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
+    cases = [(f"{bit.removeprefix('PTE_')} bit", bit, "RWX fault") for bit in ("PTE_D", "PTE_A", "PTE_U")]
+    _nleaf_pte_bits(test_data, test_chunks, sv, "DAU", "cp_PTE_DAU_nleaf", ("Smode", "Umode"), cases)
+
+
+def _t_nleaf_pte_reserved(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
+    """Walk a 1 through bits 63:54 of each non-leaf PTE.
+
+    N, PBMT, and bits 58:54 are all reserved in non-leaf PTEs whether or not Svnapot and Svpbmt are implemented,
+    so those accesses fault. Bits 60:59 are reserved unless Svrsw60t59b is implemented, in which case they are
+    ignored and the accesses complete; the reference model decides which.
+    """
+    if sv.name == "sv32":
+        return
+    cases = [
+        (f"bit {bit}", f"(1 << {bit})", "RWX fault unless Svrsw60t59b" if bit in (59, 60) else "RWX fault")
+        for bit in range(54, 64)
+    ]
+    _nleaf_pte_bits(test_data, test_chunks, sv, "reserved", "cp_PTE_rsv_nleaf", ("Smode",), cases)
 
 
 def _t_nleaf_pte_level0(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode) -> None:
@@ -1017,13 +1047,13 @@ def _t_va_all_ones(test_data: TestData, test_chunks: list[TestChunk], sv: SvMode
     test_chunks.append(end_sv_test(test_data, regs))
 
 
-#: The cross that samples satp accesses in each suite: S-mode accesses in Sv, M-mode accesses in SvSm.
-_SATP_ACCESS_CROSS = {"Sv": "cp_access_s", "SvSm": "cp_access_m"}
+#: The cross and covergroup that sample satp accesses from each mode: S-mode in the Sv group, M-mode in Sv_Sm.
+_SATP_ACCESS_CROSS = {"Smode": ("cp_access_s", "Sv_satp_cg"), "Mmode": ("cp_access_m", "Sv_Sm_satp_cg")}
 
 
-def satp_csr_read(test_data: TestData, name: str, check_reg: int, csr: str = "satp") -> list[str]:
-    suite = test_data.testsuite
-    label = test_data.add_testcase(name, _SATP_ACCESS_CROSS[suite], f"{suite}_satp_cg")
+def satp_csr_read(test_data: TestData, name: str, check_reg: int, csr: str = "satp", mode: str = "Smode") -> list[str]:
+    coverpoint, covergroup = _SATP_ACCESS_CROSS[mode]
+    label = test_data.add_testcase(name, coverpoint, covergroup)
     return [label, gen_csr_read_sigupd(check_reg, (csr, None), test_data)]
 
 
@@ -1040,7 +1070,7 @@ def satp_access_ops(test_data: TestData, mode: str, sources: tuple[int, int, int
     lines = []
     for operation, source in zip(("csrw", "csrs", "csrc"), sources, strict=True):
         lines.append(f"{operation} satp, x{source}")
-        lines.extend(satp_csr_read(test_data, f"{mode[0].lower()}_{operation}", check_reg))
+        lines.extend(satp_csr_read(test_data, f"{mode[0].lower()}_{operation}", check_reg, mode=mode))
     return lines
 
 
@@ -1137,6 +1167,7 @@ def _make_sv(test_data: TestData, sv: SvMode) -> list[TestChunk]:
     _t_page_perm_topics(test_data, test_chunks, sv)
     _t_va_all_ones(test_data, test_chunks, sv)
     _t_satp_access(test_data, test_chunks, sv)
+    _t_nleaf_pte_reserved(test_data, test_chunks, sv)
     return test_chunks
 
 

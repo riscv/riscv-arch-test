@@ -44,6 +44,14 @@ coverpoints:
     bins: 2 states x 2 accesses
     rules:
       - stateen0_fcsr0_misa_f0_illegal_fpu_instr
+  - name: cp_fcsr_fp_instrs
+    goal: fcsr controls floating-point instructions when misa.F = 0
+    description: |-
+      If Zfinx is supported:
+      with misa.F = 0 and sstateen0.fcsr = {0,1}, execute fadd.s, fcvt.w.s, fcvt.s.w, and fclass.s from S and U-mode
+    expectation: Illegal instruction if 0, else successful
+    rules:
+      - stateen0_fcsr0_misa_f0_illegal_fpu_instr
   - name: cp_jvt
     goal: jvt controls access
     description: |-

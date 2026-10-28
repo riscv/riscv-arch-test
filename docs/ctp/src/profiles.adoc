@@ -109,6 +109,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Svadu|Page Table Update|<<t-Svadu-coverpoints>>||||o|o
 |Svpbmt|Page-based Memory Types|<<t-Svpbmt-coverpoints>>|||x|x|x
 |Svnapot|Naturally Aligned Pages|<<t-Svnapot-coverpoints>>|||o|x|x
+|Svvptc|Valid PTEs Visible without Fence|<<t-Svvptc-coverpoints>>||||o|o
 |Svukte|User Kernel Translation Enable|<<t-Svukte-coverpoints>>|||o|o|o
 |Sscofpmf|Counter Filtering|<<t-Sscofpmf_common-coverpoints>>|||o|x|x
 |Ssstateen|Supervisor State Enable|<<t-Ssstateen-coverpoints>>|||o||x
@@ -157,8 +158,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |SsstrictV|Vector Strict|<<t-SsstrictV-coverpoints>>|||o|o|o
 8+^|Hypervisor
 |H|Hypervisor Instructions|<<t-H-coverpoints>>|||o|o|x
-|ExceptionsH|Hypervisor Exceptions|<<t-ExceptionsH-coverpoints>>|||o|o|x
-|ExceptionsHV|Hypervisor Vector Exceptions|<<t-ExceptionsHV-coverpoints>>|||o|o|x
 |InterruptsH|Hypervisor Interrupts|<<t-InterruptsH-coverpoints>>|||o|o|x
 |EndianH|Hypervisor Endian|<<t-EndianH-coverpoints>>|||||
 |PMPH|Hypervisor PMP|<<t-PMPH-coverpoints>>|||o|o|x
@@ -176,7 +175,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |SsstateenH|Hypervisor State Enable|<<t-SsstateenH-coverpoints>>|||o|o|x
 |SvaduH|Hypervisor TLB Update|<<t-SvaduH-coverpoints>>|||o|o|o
 |ZicfilpH|Hypervisor Landing Pad|<<t-ZicfilpH-coverpoints>>|||o|o|o
-|ZicfissH|Hypervisor Shadow Stack|<<t-ZicfissH-coverpoints>>|||o|o|o
 8+^|Miscellaneous RV{A/B}23 Extensions
 |Ss1p13|Supervisor 1p13|<<t-Ss1p13-coverpoints>>||||x|x
 |Ssnpm|Pointer Masking|<<t-Ssnpm-coverpoints>>||||x|x
@@ -184,9 +182,7 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |Zabha|Subword Atomics|<<t-Zabha-coverpoints>>||||o|o
 |Zama16b|Main memory PMA supports misaligned atomics within 16-byte regions|<<t-Zama16b-coverpoints>>|||||x
 |Zicfilp|Landing Pads|<<t-Zicfilp_common-coverpoints>>||||o|o
-|ZicfissU|User Shadow Stack|<<t-ZicfissU-coverpoints>>||||o|o
-|ZicfissS|Supervisor Shadow Stack|<<t-ZicfissS-coverpoints>>||||o|o
-|ZicfissSm|Machine Shadow Stack|<<t-ZicfissSm-coverpoints>>||||o|o
+|Zicfiss|Shadow Stack|<<t-Zicfiss_common-coverpoints>>||||o|o
 |Zfbfmin|BF16 Convert|<<t-Zfbfmin-coverpoints>>||||o|o
 |Zimop|Maybe-Ops|<<t-Zimop-coverpoints>>||||x|x
 |Zcmop|Compressed Maybe-Ops|<<t-Zcmop-coverpoints>>||||x|x
@@ -254,7 +250,6 @@ All privileged suites require at least version 1.12 of the privileged specificat
 |===
 |Coverage File|Description|RVI20|uController|RVA22S64|RVB23S64|RVA23S64
 |Zvkt|Constant-time vector crypto|||x|x|x
-|Svvptc|Valid PTEs appear within bounded time without fence||||x|x
 |===
 
 Furthermore, the following features are not supported in this version of the certification test plan:

@@ -9,17 +9,16 @@ H boots to HS-mode and tests the hypervisor CSRs and instructions in HS, VS, U a
 walks, the VS CSR replicas, the hypervisor load/store, fence and trap instructions, and the virtual-instruction
 exceptions.  The M-mode tests, and the mstatus.TVM tests whose traps are taken in M-mode, are the Sm suite's Sm_H group.
 
+The H suite also contains the H_F, H_V, and H_VF tests.  They repeat the S_F, S_V, and S_VF tests from VS-mode and VU-mode, and cross
+vsstatus.FS and vsstatus.VS with the HS-level sstatus.FS and sstatus.VS.  They run when F, Zve32x, or Zve32f is also supported.
+
 include::{testplansdir}/priv/H.adoc[]
 
 include::norm/H_norm_rules.adoc[]
 
-==== ExceptionsH Hypervisor Exceptions
+==== Hypervisor Exceptions
 
-include::{testplansdir}/priv/ExceptionsH.adoc[]
-
-==== ExceptionsHV Hypervisor Vector Exceptions
-
-include::{testplansdir}/priv/ExceptionsHV.adoc[]
+The hypervisor exception tests are the <<t-Exceptions_H-coverpoints,Exceptions_H>> and <<t-Exceptions_HSm-coverpoints,Exceptions_HSm>> groups of the Exceptions suite.
 
 ==== InterruptsH Hypervisor Interrupts
 
@@ -130,10 +129,6 @@ include::{testplansdir}/priv/SvaduH.adoc[]
 ==== ZicfilpH Hypervisor Landing Pads
 
 include::{testplansdir}/priv/ZicfilpH.adoc[]
-
-==== ZicfissH Hypervisor Shadow Stack
-
-include::{testplansdir}/priv/ZicfissH.adoc[]
 
 ==== SsdbltrpH Hypervisor Double Trap
 

@@ -169,6 +169,7 @@ _CSR_ALIASES = {
     "stimecmp": 0x14D,
     "stimecmph": 0x15D,
     "satp": 0x180,
+    "vsstatus": 0x200,
     "mstatus": 0x300,
     "misa": 0x301,
     "medeleg": 0x302,

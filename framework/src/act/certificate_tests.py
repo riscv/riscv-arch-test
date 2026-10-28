@@ -116,6 +116,7 @@ RVA23_EXTENSIONS = frozenset(
         "Svinval",
         "Svnapot",
         "Svpbmt",
+        "Svvptc",
     }
 )
 

@@ -26,7 +26,7 @@ covergroup Zca_c_add_cg with function sample(ins_t ins);
 
     // c.add with rd = 0, rs2 != 0 is a hint
     cp_c_hint_add : coverpoint ins.get_gpr_reg(ins.current.rs2) iff (ins.trap == 0 && ins.get_gpr_reg(ins.current.rd) == x0) {
-        bins rs2[] = {[x1:x31]}; // rs2 != 0
+        ignore_bins x0 = {x0}; // rd = rs2 = x0 encodes c.ebreak
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
@@ -126,7 +126,7 @@ covergroup Zca_c_addi_cg with function sample(ins_t ins);
 
     // c.addi with rd != 0, imm = 0 is a hint
     cp_c_hint_addi : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0 && ins.current.imm == 0) {
-        bins rd[] = {[x1:x31]}; // rd != x0
+        ignore_bins x0 = {x0}; // rd = x0 with imm = 0 is c.nop
     }
 
     cp_rs1_edges : coverpoint unsigned'(ins.current.rs1_val)  iff (ins.trap == 0 )  {
@@ -769,7 +769,7 @@ covergroup Zca_c_mv_cg with function sample(ins_t ins);
 
     // c.mv with rd = 0, rs2 != 0 is a hint
     cp_c_hint_mv : coverpoint ins.get_gpr_reg(ins.current.rs2) iff (ins.trap == 0 && ins.get_gpr_reg(ins.current.rd) == x0) {
-        bins rs2[] = {[x1:x31]}; // rs2 != 0
+        ignore_bins x0 = {x0}; // rd = rs2 = x0 is reserved
     }
 
     cp_rd_nx0 : coverpoint ins.get_gpr_reg(ins.current.rd) iff (ins.trap == 0) {

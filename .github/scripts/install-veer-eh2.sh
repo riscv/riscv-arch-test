@@ -10,7 +10,7 @@ set -euo pipefail
 INSTALL_DIR="${1:?Usage: install-veer-eh2.sh <install-dir>}"
 VEER_EH2_REPO="https://github.com/chipsalliance/Cores-VeeR-EH2.git"
 VEER_EH2_COMMIT="a7203d02d4774c9b8aa08b4827ec300d2c80a388"
-VERILATOR_VERSION="v5.036"
+VERILATOR_VERSION="v5.052"
 
 mkdir -p "$INSTALL_DIR/bin"
 
@@ -36,13 +36,15 @@ git init "$INSTALL_DIR/Cores-VeeR-EH2"
 )
 
 # 3. Verilate with atomics and every bit-manipulation extension, and a single hart since ACT
-#    is single-hart. Zbkb and Zbkx are off by default.
+#    is single-hart. Zbkb and Zbkx are off by default. AMOs and LR/SC work only in the DCCM,
+#    so link.ld places .data there; the DCCM is enlarged from 64 KB to 256 KB to hold the
+#    largest ACT .data sections.
 mkdir -p "$INSTALL_DIR/eh2"
 (
   cd "$INSTALL_DIR/eh2"
   RV_ROOT="$INSTALL_DIR/Cores-VeeR-EH2" \
     make -f "$INSTALL_DIR/Cores-VeeR-EH2/tools/Makefile" verilator-build -j"$(nproc)" \
-    CONF_PARAMS='-set atomic_enable=1 -set num_threads=1 -set bitmanip_zba=1 -set bitmanip_zbb=1 -set bitmanip_zbc=1 -set bitmanip_zbs=1 -set bitmanip_zbkb=1 -set bitmanip_zbkx=1'
+    CONF_PARAMS='-set atomic_enable=1 -set num_threads=1 -set bitmanip_zba=1 -set bitmanip_zbb=1 -set bitmanip_zbc=1 -set bitmanip_zbs=1 -set bitmanip_zbkb=1 -set bitmanip_zbkx=1 -set dccm_size=256'
 )
 
 # 4. Install the per-test runner

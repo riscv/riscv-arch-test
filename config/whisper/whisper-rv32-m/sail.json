@@ -522,7 +522,7 @@
       "supported": true
     },
     "C": {
-      "mutable_misa": false
+      "mutable_misa": true
     },
     "V": {
       "mutable_misa": false,
@@ -1003,17 +1003,17 @@
       // The number of supported triggers.  This has to be
       // non-negative, and greater than 0 if Sdtrig is supported.
       // The model does not support more than 16 triggers.
-      "num_triggers": 16,
+      "num_triggers": 4,
       // `breakpoint_reentrancy` must be one of the below strings:
       // . `Use_tcontrol`: use the `mte` and `mpte` bits in the `tcontrol` CSR (this also makes the `tcontrol` CSR available)
       // . `Use_interrupt_enables`: use `mstatus.MIE` and the `SIE` bits in `sstatus` and `vsstatus`
       // . `No_reentrancy_support`: no specific support for reentrancy
       // Note: `Use_tcontrol` hardwires medeleg[3] to 0, which breaks the
       // `sbreak` test in `riscv-tests`.
-      "breakpoint_reentrancy": "Use_interrupt_enables",
+      "breakpoint_reentrancy": "Use_tcontrol",
       // CSRs
       "mcontext": {
-        "supported": false
+        "supported": true
       },
       "hcontext": {
         "supported": false
@@ -1038,7 +1038,7 @@
         // value is ignored when `etrigger` is not supported.
         "supported_exceptions": {
           "len": "xlen",
-          "value": "0"
+          "value": "0xDBBFF"
         }
       },
       "itrigger": {
@@ -1049,7 +1049,7 @@
         // value is ignored when `itrigger` is not supported.
         "supported_interrupts": {
           "len": "xlen",
-          "value": "0"
+          "value": "0x3EEE"
         }
       },
       "mcontrol6": {
@@ -1070,7 +1070,7 @@
         "mhselect": {
           // Values 1, 4 and 5, match on `mcontext`. Requires the
           // `mcontext` CSR. Values 1 and 5 also require H.
-          "mcontext_match": false,
+          "mcontext_match": true,
           // Values 2 and 6, match on the VMID in `hgatp`. Requires H.
           "vmid_match": false
         },
@@ -1085,7 +1085,7 @@
         // above these are read only zero. At most 6 and 16 on RV32,
         // 13 and 32 on RV64.
         "mhvalue_len": 6,
-        "svalue_len": 16
+        "svalue_len": 0
       }
     },
     // The double trap extensions are not enabled by default because

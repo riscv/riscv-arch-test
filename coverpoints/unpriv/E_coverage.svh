@@ -4412,7 +4412,160 @@ endgroup
 function void e_sample(int hart, int issue, ins_t ins);
 
     case (traceDataQ[hart][issue][0].inst_name)
+        "add"     : begin
+            E_add_cg.sample(ins);
+        end
+        "addi"     : begin
+            E_addi_cg.sample(ins);
+        end
+        "and"     : begin
+            E_and_cg.sample(ins);
+        end
+        "andi"     : begin
+            E_andi_cg.sample(ins);
+        end
+        "auipc"     : begin
+            E_auipc_cg.sample(ins);
+        end
+        "beq"     : begin
+            E_beq_cg.sample(ins);
+        end
+        "bge"     : begin
+            E_bge_cg.sample(ins);
+        end
+        "bgeu"     : begin
+            E_bgeu_cg.sample(ins);
+        end
+        "blt"     : begin
+            E_blt_cg.sample(ins);
+        end
+        "bltu"     : begin
+            E_bltu_cg.sample(ins);
+        end
+        "bne"     : begin
+            E_bne_cg.sample(ins);
+        end
+        "fence"     : begin
+            E_fence_cg.sample(ins);
+        end
+        "jal"     : begin
+            E_jal_cg.sample(ins);
+        end
+        "jalr"     : begin
+            E_jalr_cg.sample(ins);
+        end
+        "lb"     : begin
+            E_lb_cg.sample(ins);
+        end
+        "lbu"     : begin
+            E_lbu_cg.sample(ins);
+        end
+        "lh"     : begin
+            E_lh_cg.sample(ins);
+        end
+        "lhu"     : begin
+            E_lhu_cg.sample(ins);
+        end
+        "lui"     : begin
+            E_lui_cg.sample(ins);
+        end
+        "lw"     : begin
+            E_lw_cg.sample(ins);
+        end
+        "nop"     : begin
+            E_nop_cg.sample(ins);
+        end
+        "or"     : begin
+            E_or_cg.sample(ins);
+        end
+        "ori"     : begin
+            E_ori_cg.sample(ins);
+        end
+        "sb"     : begin
+            E_sb_cg.sample(ins);
+        end
+        "sh"     : begin
+            E_sh_cg.sample(ins);
+        end
+        "sll"     : begin
+            E_sll_cg.sample(ins);
+        end
+        "slli"     : begin
+            E_slli_cg.sample(ins);
+        end
+        "slt"     : begin
+            E_slt_cg.sample(ins);
+        end
+        "slti"     : begin
+            E_slti_cg.sample(ins);
+        end
+        "sltiu"     : begin
+            E_sltiu_cg.sample(ins);
+        end
+        "sltu"     : begin
+            E_sltu_cg.sample(ins);
+        end
+        "sra"     : begin
+            E_sra_cg.sample(ins);
+        end
+        "srai"     : begin
+            E_srai_cg.sample(ins);
+        end
+        "srl"     : begin
+            E_srl_cg.sample(ins);
+        end
+        "srli"     : begin
+            E_srli_cg.sample(ins);
+        end
+        "sub"     : begin
+            E_sub_cg.sample(ins);
+        end
+        "sw"     : begin
+            E_sw_cg.sample(ins);
+        end
+        "xor"     : begin
+            E_xor_cg.sample(ins);
+        end
+        "xori"     : begin
+            E_xori_cg.sample(ins);
+        end
 `ifdef UDB_MXLEN_64
+        "addiw"     : begin
+            E_addiw_cg.sample(ins);
+        end
+        "addw"     : begin
+            E_addw_cg.sample(ins);
+        end
+        "ld"     : begin
+            E_ld_cg.sample(ins);
+        end
+        "lwu"     : begin
+            E_lwu_cg.sample(ins);
+        end
+        "sd"     : begin
+            E_sd_cg.sample(ins);
+        end
+        "slliw"     : begin
+            E_slliw_cg.sample(ins);
+        end
+        "sllw"     : begin
+            E_sllw_cg.sample(ins);
+        end
+        "sraiw"     : begin
+            E_sraiw_cg.sample(ins);
+        end
+        "sraw"     : begin
+            E_sraw_cg.sample(ins);
+        end
+        "srliw"     : begin
+            E_srliw_cg.sample(ins);
+        end
+        "srlw"     : begin
+            E_srlw_cg.sample(ins);
+        end
+        "subw"     : begin
+            E_subw_cg.sample(ins);
+        end
 `endif
         default: ; // a case needs at least one item, and some configurations select none
     endcase

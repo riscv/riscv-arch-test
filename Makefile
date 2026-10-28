@@ -12,8 +12,9 @@ CONFIG_FILES ?=
 # EXCLUDE_EXTENSIONS overrides EXTENSIONS to exclude particular extensions from test generation. Applies as a negative filter after EXTENSIONS.
 # CERTIFICATE limits the selected tests to those relevant to the specified certificate.
 # ENABLE_EXPERIMENTAL_EXTENSIONS enables tests for extensions that are not ratified.
+# Each simulator's config/<sim>/ci.yaml lists the extensions its CI skips, with the reasons.
 EXTENSIONS  ?=
-EXCLUDE_EXTENSIONS ?= SdtrigSm,SdtrigS,SdtrigU
+EXCLUDE_EXTENSIONS ?=
 CERTIFICATE ?=
 ENABLE_EXPERIMENTAL_EXTENSIONS ?=
 
@@ -160,7 +161,7 @@ help:
 	@printf '  make CONFIG_FILES=config/spike/spike-rv64-max/test_config.yaml  # build ELFs for one config\n'
 	@printf '  make spike-rv64-max                  # build & run a single config\n'
 	@printf '  make tests EXTENSIONS=I,M            # generate just I and M tests\n'
-	@printf '  make EXCLUDE_EXTENSIONS=ExceptionsSm # skip an extension\n'
+	@printf '  make EXCLUDE_EXTENSIONS=Exceptions_Sm # skip an extension\n'
 	@printf '  make CERTIFICATE=RVA23               # build RVA23 tests only\n'
 	@printf '  make coverage                        # coverage build\n'
 
@@ -273,13 +274,6 @@ RUN_CMD_FILES := $(shell find config -name run_cmd.txt)
 $(foreach f,$(RUN_CMD_FILES),\
   $(foreach d,$(filter-out config,$(subst /, ,$(patsubst %/run_cmd.txt,%,$(f)))),\
     $(eval _TARGETS_$(d) += $(f))))
-
-# Keep spike-reference comparison configs available as explicit targets, but
-# exclude them from the aggregate `make whisper` target.
-WHISPER_RUN_TARGET_EXCLUDES := \
-  config/whisper/whisper-rv32-max-spike-ref/run_cmd.txt \
-  config/whisper/whisper-rv64-max-spike-ref/run_cmd.txt
-_TARGETS_whisper := $(filter-out $(WHISPER_RUN_TARGET_EXCLUDES),$(_TARGETS_whisper))
 
 # Collect all unique target names
 ALL_RUN_TARGETS := $(sort $(foreach f,$(RUN_CMD_FILES),\

@@ -3,4 +3,19 @@
 parameter_definitions:
   - name: TIME_CSR_IMPLEMENTED
     coverpoint: ["cp_cntr"]
-    effect: ["Skip `time` and `timeh` if False"]
+    effect:
+      [
+        "If False, `time` and `timeh` reads trap to M-mode, which emulates them from `mtime`",
+      ]
+  - name: MCOUNTENABLE_EN
+    coverpoint: ["cp_cntr"]
+    effect:
+      [
+        "With U-mode, skip each of `cycle`, `time`, and `instret` (and their high halves) whose bit is False",
+      ]
+  - name: SCOUNTENABLE_EN
+    coverpoint: ["cp_cntr"]
+    effect:
+      [
+        "With S-mode, skip each of `cycle`, `time`, and `instret` (and their high halves) whose bit is False",
+      ]

@@ -29,19 +29,24 @@ include::{testplansdir}/priv/InterruptsS.adoc[]
 
 include::norm/InterruptsS_norm_rules.adoc[]
 
-==== SstcSm Machine-Mode Supervisor Timer Compare
+==== Sstc Supervisor Timer Compare
 
-These tests are run on any configuration with machine mode when the Sstc supervisor timer compare extension is supported.
+The Sstc suite has one covergroup per group of tests: Sstc_Sm_cg (M-mode) and Sstc_cg (S-mode and U-mode).
+The Sstc_Sm tests require Sm, so they are not part of a certificate without Sm, such as RVA23.
 
-include::{testplansdir}/priv/SstcSm.adoc[]
-
-include::norm/SstcSm_norm_rules.adoc[]
-
-==== Sstc Supervisor-Mode Supervisor Timer Compare
+===== Sstc Supervisor-Mode Supervisor Timer Compare
 
 These tests are run on any configuration with supervisor mode when the Sstc supervisor timer compare extension is supported.
 
 include::{testplansdir}/priv/Sstc.adoc[]
+
+===== Sstc_Sm Machine-Mode Supervisor Timer Compare
+
+These tests are run on any configuration with machine mode when the Sstc supervisor timer compare extension is supported.
+
+include::{testplansdir}/priv/Sstc_Sm.adoc[]
+
+===== Sstc Normative Rules
 
 include::norm/Sstc_norm_rules.adoc[]
 

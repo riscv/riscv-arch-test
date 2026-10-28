@@ -171,24 +171,20 @@ def format_vsxseg_like_type(
 
     equivalent_load = "vl" + instr_str[2:]
     if params.maskval:
-        test = [
-            f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}, v0.t",
-            f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}, v0.t",
-        ]
+        test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}, v0.t"]
+        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}, v0.t"
     else:
-        test = [
-            f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}",
-            f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}",
-        ]
+        test = [f"{instr_str} v{params.vs3}, (x{params.rs1}), v{params.vs2}"]
+        read_back = f"{equivalent_load} v{params.vd}, (x{params.rs1}), v{params.vs2}"
 
     # We no longer need vs2. This allows us to have enough registers for length SIGUPD where the maximum number of
     # registers (25) are required by the test section
     test_data.vec_regs.deallocate_operand("vs2")
 
     if params.vector_suite == "length":
-        check = [*write_sigupd_v_len(test_data, params, params.lmul, segments=segments)]
+        check = [read_back, *write_sigupd_v_len(test_data, params, params.lmul, segments=segments)]
     else:
-        check = [*write_sigupd_v(test_data, params)]
+        check = [read_back, *write_sigupd_v(test_data, params)]
 
     # This can only be released after sigupd
     if params.maskval:

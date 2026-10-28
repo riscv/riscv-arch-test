@@ -48,8 +48,14 @@ covergroup Smstateen_cg with function sample(ins_t ins);
     }
     mstateen_walk_csrs: coverpoint ins.current.insn[31:20] {
             bins mstateen0 = {CSR_MSTATEEN0};
+            bins mstateen1 = {CSR_MSTATEEN1};
+            bins mstateen2 = {CSR_MSTATEEN2};
+            bins mstateen3 = {CSR_MSTATEEN3};
             `ifdef UDB_MXLEN_32
                     bins mstateen0h = {CSR_MSTATEEN0H};
+                    bins mstateen1h = {CSR_MSTATEEN1H};
+                    bins mstateen2h = {CSR_MSTATEEN2H};
+                    bins mstateen3h = {CSR_MSTATEEN3H};
             `endif
     }
 
@@ -319,11 +325,27 @@ covergroup Smstateen_cg with function sample(ins_t ins);
 
 
 `ifdef SSSTATEEN_SUPPORTED
-    // Only sstateen0 is gated by mstateen0.SE0 in this suite; sstateen1-3 are
-    // exercised from the Ssstateen suite instead.
     sstateen0_csr: coverpoint ins.current.insn[31:20] {
             bins sstateen0 = {CSR_SSTATEEN0};
     }
+    sstateen123_csrs: coverpoint ins.current.insn[31:20] {
+            bins sstateen1 = {CSR_SSTATEEN1};
+            bins sstateen2 = {CSR_SSTATEEN2};
+            bins sstateen3 = {CSR_SSTATEEN3};
+    }
+    // Bit 63 (SE<n>) of the mstateen<n> matching the sstateen<n> being accessed; n is
+    // the low two bits of the CSR address. On RV32 the bit is bit 31 of mstateen<n>h.
+    `ifdef UDB_MXLEN_64
+        mstateen_se_n: coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, int'(CSR_MSTATEEN0) + int'(ins.current.insn[21:20]), "mstateen", "mstateen")[63] {
+                bins se_disabled = {1'b0};
+                bins se_enabled  = {1'b1};
+        }
+    `else
+        mstateen_se_n: coverpoint get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_BEFORE, int'(CSR_MSTATEEN0H) + int'(ins.current.insn[21:20]), "mstateenh", "mstateenh")[31] {
+                bins se_disabled = {1'b0};
+                bins se_enabled  = {1'b1};
+        }
+    `endif
 
     `ifdef UDB_MXLEN_64
         se0: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstateen0", "se0")[0] {
@@ -342,6 +364,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
     cp_walking_ones: cross priv_mode_m, mstateen_walk_csrs, csrops, csr_walk;
 `ifdef SSSTATEEN_SUPPORTED
     cp_mstateen0_se0_controls_sstateen0: cross csrops, priv_mode_s, se0, sstateen0_csr;
+    cp_mstateen_se_controls_sstateen123: cross csrops, priv_mode_s, mstateen_se_n, sstateen123_csrs;
 `endif
 
 `ifdef ZFINX_SUPPORTED

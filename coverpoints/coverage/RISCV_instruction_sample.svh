@@ -2018,6 +2018,55 @@
             ins.add_vm(3);
             ins.add_v0();
         end
+        "vdot4a.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vs1(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vdot4a.vx"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_rs1(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vdot4asu.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vs1(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vdot4asu.vx"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_rs1(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vdot4au.vv"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_vs1(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vdot4au.vx"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_rs1(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
+        "vdot4aus.vx"     : begin
+            ins.add_vd(0);
+            ins.add_vs2(1);
+            ins.add_rs1(2);
+            ins.add_vm(3);
+            ins.add_v0();
+        end
         "vfadd.vf"     : begin
             ins.add_vd(0);
             ins.add_vs2(1);

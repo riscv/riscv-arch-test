@@ -38,7 +38,7 @@ PRIV_TRAP_SIGUPD_COUNT = 1500
 # Extension Configuration
 # =============================================================================
 
-EXPERIMENTAL_EXTENSIONS = frozenset({"Zibi"})
+EXPERIMENTAL_EXTENSIONS = frozenset({"Zibi", "Zvdot4a8i"})
 
 # Extensions that should generate RV32E/RV64E variants
 # TODO: Add Zcmp and Zcmt when implemented

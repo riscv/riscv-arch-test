@@ -25,7 +25,7 @@ _SINGLE_LETTER_EXTENSION = re.compile(r"[a-z](?:\d+p\d+)?", re.IGNORECASE)
 _MARCH_VERSION = re.compile(r"\d+p\d+$", re.IGNORECASE)
 
 # Extensions that are available only with --enable-experimental-extensions.
-EXPERIMENTAL_EXTENSIONS = frozenset({"Zibi"})
+EXPERIMENTAL_EXTENSIONS = frozenset({"Zibi", "Zvdot4a8i"})
 _EXPERIMENTAL_EXTENSIONS_LOWER = frozenset(extension.lower() for extension in EXPERIMENTAL_EXTENSIONS)
 
 

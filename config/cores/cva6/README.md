@@ -20,7 +20,7 @@ no PMP entries (`NrPMPEntries=0`); its parameters are in
 .github/scripts/install-cva6.sh ~/repos/cva6-builds
 export PATH=$HOME/repos/cva6-builds/bin:$PATH
 export CVA6_SNAPSHOT=$HOME/repos/cva6-builds
-make cv32a65x EXCLUDE_EXTENSIONS=InterruptsSm
+make cv32a65x EXCLUDE_EXTENSIONS=InterruptsSm,PMP_Sm_cfg_A_tor_zero
 make cv32a60x EXCLUDE_EXTENSIONS=InterruptsSm
 ```
 

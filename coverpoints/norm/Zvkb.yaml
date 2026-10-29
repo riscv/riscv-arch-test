@@ -25,14 +25,14 @@ normative_rule_definitions:
   # Since vl and vstart refer to elements, Vector Crypto instructions that use element
   # groups require that these values are an integer multiple of the Element Group Size
   # (EGS).
-  - names: [veccrypto_vl_egsconstr, veccrypto_vstart_egsconstr]
+  - name: veccrypto_vl_vstart_egsconstr
     coverpoint:
       [
         "TODO: no coverpoint verifies vl/vstart are rejected when not a multiple of EGS - the functional suites only ever generate compliant values",
       ]
 
   # Instructions that violate the vl or vstart requirements are reserved.
-  - names: [veccrypto_vl_rsv, veccrypto_vstart_rsv]
+  - name: veccrypto_vl_vstart_rsv
     coverpoint:
       [
         "TODO: no Ssstrict-equivalent suite exists for the vector-crypto extensions to exercise vl/vstart values that violate the EGS constraint",
@@ -76,33 +76,14 @@ normative_rule_definitions:
     coverpoint: ["Zvkg_vghsh_vv_cg/cp_vd_egs4"]
 
   # The Zvknhb, Zvkn, Zvknc, Zvkng, and Zvksc extensions depend on ext:zve64x[].
-  - names:
-      [
-        Zvknhb_depZve64x,
-        Zvkn_depZve64x,
-        Zvknc_depZve64x,
-        Zvkng_depZve64x,
-        Zvksc_depZve64x,
-      ]
+  - name: Zvknhb_Zvkn_Zvknc_Zvkng_Zvksc_depZve64x
     coverpoint:
       [
         "TODO: extension-composition fact; no dedicated coverpoint exists for it (Zvkn/Zvknc/Zvkng/Zvksc are not separate suites in this repo)",
       ]
 
   # All of the other Vector Crypto Extensions depend on ext:zve32x[].
-  - names:
-      [
-        Zvkb_depZve32x,
-        Zvkg_depZve32x,
-        Zvkned_depZve32x,
-        Zvknha_depZve32x,
-        Zvksed_depZve32x,
-        Zvksh_depZve32x,
-        Zvks_depZve32x,
-        Zvksc_depZve32x,
-        Zvksg_depZve32x,
-        Zvkt_depZve32x,
-      ]
+  - name: Zvkb_Zvkg_Zvkned_Zvknha_Zvksed_Zvksh_Zvks_Zvksc_Zvksg_Zvkt_depZve32x
     coverpoint:
       [
         "TODO: extension-composition fact; no dedicated coverpoint exists for it (Zvks/Zvksc/Zvksg/Zvkt are not separate suites in this repo)",
@@ -116,10 +97,6 @@ normative_rule_definitions:
       [
         "TODO: independence from an unrelated extension's implementation is not something a coverpoint can assert one way or the other",
       ]
-
-  # All of the other Vector Crypto Extensions depend on Zve32x.
-  - name: Zvkb_Zvkg_Zvkned_Zvknha_Zvksed_Zvksh_Zvks_Zvksc_Zvksg_Zvkt_depZve32x
-    coverpoint: ["Definition, checked through UDB"]
 
   # Each bit of Op1 is inverted and logically ANDed with the corresponding bits in vs2.
   - name: vandn_op

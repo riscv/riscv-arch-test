@@ -1,0 +1,131 @@
+# Parameter mappings
+
+parameter_definitions:
+  - name: NUM_PMP_ENTRIES
+    coverpoint: ["all coverpoints", "PMP_Sm: cp_pmp64_{write, read}"]
+    effect:
+      [
+        "The tests run only when NUM_PMP_ENTRIES > 0",
+        "PMP_Sm: cp_pmp64_* exist only with 64 entries",
+      ]
+  - name: NUM_USABLE_PMP_ENTRIES
+    coverpoint:
+      [
+        "all coverpoints",
+        "PMP_Sm: cp_pmp64_{write, read}",
+        "PMP_Sm: cp_partial_{match, covered}, cp_misaligned_mag16",
+        "PMP_S, PMP_U: cp_misaligned_partial",
+        "PMP_F, PMP_Zca: cp_misaligned_mag16",
+        "PMP_Zaamo: cp_partial_match, cp_misaligned_mag16",
+        "PMP_Zalrsc: cp_partial_match",
+      ]
+    effect:
+      [
+        "PMP_Sm, PMP_S, PMP_U: Entry NUM_USABLE_PMP_ENTRIES - 1 is the locked background entry, except in cp_none_* and cp_misaligned_partial",
+        "PMP_Sm: cp_pmp64_* bins for entries at or above NUM_USABLE_PMP_ENTRIES - 1 cannot be hit",
+        "PMP_Sm, PMP_F, PMP_Zca, PMP_Zaamo, PMP_Zalrsc: Tests of the partial-match coverpoints run only when NUM_USABLE_PMP_ENTRIES >= 16: each case has its own entries below the background entry",
+        "PMP_S, PMP_U: cp_misaligned_partial needs at least 5 entries",
+        "PMP_F, PMP_Zca, PMP_Zicbo, PMP_Zaamo, PMP_Zacas, PMP_Zalrsc: Entry NUM_USABLE_PMP_ENTRIES - 1 is the locked background entry",
+        "PMP_Zacas: The tests run only when NUM_USABLE_PMP_ENTRIES >= 16: each case has its own entries below the background entry",
+      ]
+  - name: PMP_GRANULARITY
+    coverpoint:
+      [
+        "all coverpoints",
+        "PMP_Sm: cp_grain_*",
+        "PMP_Sm: cp_cfg_A_all_{even, odd}",
+        "PMP_Sm: cp_partial_{match, covered}, cp_misaligned_mag16",
+        "PMP_F, PMP_Zca: cp_misaligned_mag16",
+        "PMP_Zaamo: cp_partial_match, cp_misaligned_mag16",
+        "PMP_Zalrsc: cp_partial_match",
+      ]
+    effect:
+      [
+        "PMP_Sm, PMP_S, PMP_U, PMP_F, PMP_Zca, PMP_Zicbo, PMP_Zaamo, PMP_Zalrsc: Sets the grain g = 2^(G+2) and so the size and placement of every region under test",
+        "PMP_Sm: cp_grain_* exist only when G >= 1 (PMP_GRANULARITY > 2)",
+        "PMP_Sm: NA4 is not selectable when G >= 1",
+        "PMP_Sm: cp_partial_{match, covered} need G = 0 (PMP_GRANULARITY = 2) for 4-byte regions",
+        "PMP_Sm, PMP_F, PMP_Zca, PMP_Zaamo: cp_misaligned_mag16 needs G <= 1 (PMP_GRANULARITY <= 3) so that one-grain regions split a 16-byte granule",
+        "PMP_Zaamo, PMP_Zalrsc: cp_partial_match needs G = 0 (PMP_GRANULARITY = 2) for 4-byte regions",
+        "PMP_Zacas: cp_partial_match_d needs G = 0 (PMP_GRANULARITY = 2) for 4-byte regions",
+        "PMP_Zacas: cp_partial_match_q and cp_misaligned_mag16 need G <= 1 (PMP_GRANULARITY <= 3) for 8-byte regions",
+      ]
+  - name: PMP_NA4_SUPPORTED
+    coverpoint:
+      [
+        "PMP_Sm: cp_cfg_A_NA4_all, cp_cfg_A_na4_{x, r, w}, cp_cfg_A_all_{even, odd}, cp_partial_{match, covered}",
+        "PMP_S, PMP_U: cp_cfg_A_na4_{jalr, lw, sw}",
+        "PMP_Zca: cp_misaligned_na4, cp_cret_na4",
+        "PMP_Zaamo, PMP_Zalrsc: cp_partial_match",
+        "PMP_Zacas: cp_partial_match_d",
+      ]
+    effect:
+      [
+        "PMP_Sm, PMP_S, PMP_U, PMP_Zca: NA4 coverpoints and tests exist only when true",
+        "PMP_Sm: Readback of A = NA4 in cp_cfg_A_all_*",
+        "PMP_Zaamo, PMP_Zacas, PMP_Zalrsc: NA4 bins and test exist only when true",
+      ]
+  - name: PMP_NAPOT_SUPPORTED
+    coverpoint:
+      [
+        "PMP_Sm: cp_cfg_{X, R, W}, cp_cfg_A_napot_*, cp_priority_*, cp_pmp64_*, cp_partial_covered",
+        "PMP_S, PMP_U: cp_cfg_A_napot_{jalr, lw, sw}",
+        "PMP_Zca: cp_misaligned_napot, cp_cret_napot",
+        "PMP_Zacas: cp_partial_match_q",
+      ]
+    effect:
+      [
+        "PMP_Sm: NAPOT test file runs only when true; the background entry uses TOR when false",
+        "PMP_S, PMP_U, PMP_Zca: NAPOT test file runs only when true",
+        "PMP_Zacas: NAPOT bins and test exist only when true",
+      ]
+  - name: PMP_TOR_SUPPORTED
+    coverpoint:
+      [
+        "PMP_Sm: cp_cfg_A_tor*, cp_grain_*_to_TOR, cp_cfg_L_modify, cp_partial_match, cp_misaligned_{mag16, partial}",
+        "PMP_S, PMP_U: cp_cfg_A_tor_{jalr, lw, sw}, cp_none_{jalr, lw, sw}, cp_misaligned_partial",
+        "PMP_F: cp_misaligned_mag16",
+        "PMP_Zca: cp_misaligned_tor, cp_cret_tor, cp_misaligned_mag16",
+        "PMP_Zaamo: cp_partial_match, cp_misaligned_mag16",
+        "PMP_Zacas: cp_partial_match_d, cp_partial_match_q, cp_misaligned_mag16",
+        "PMP_Zalrsc: cp_partial_match",
+      ]
+    effect:
+      [
+        "PMP_Sm: TOR coverpoints, bins and tests exist only when true",
+        "PMP_S, PMP_U, PMP_Zca: TOR coverpoints and tests exist only when true",
+        "PMP_F: The coverpoint and its test exist only when true",
+        "PMP_Zaamo, PMP_Zacas: TOR bins and tests exist only when true",
+        "PMP_Zalrsc: TOR bins and test exist only when true",
+      ]
+  - name: MXLEN
+    coverpoint:
+      [
+        "PMP_Sm: cp_pmpaddr_upper_zero, cp_pmpcfg_walk*, cp_pmpcfg_zero, cp_pmpcfg_odd_rv64, cp_cfg_A_all_odd",
+        "PMP_Sm: cp_partial_{match, covered}, cp_misaligned_{mag16, partial}",
+        "PMP_S, PMP_U: cp_cfg_R, cp_cfg_W, cp_misaligned_partial",
+        "PMP_F: cp_misaligned_mag16",
+        "PMP_Zca: cp_cfg_R, cp_cfg_W, cp_misaligned_mag16",
+        "PMP_Zaamo: cp_cfg_RW, cp_partial_match, cp_misaligned_mag16",
+        "PMP_Zacas: cp_partial_match_q",
+        "PMP_Zalrsc: cp_cfg_RW, cp_partial_match",
+      ]
+    effect:
+      [
+        "PMP_Sm: RV64: cp_pmpaddr_upper_zero, the even pmpcfg CSRs, and the odd pmpcfg CSRs as illegal. RV32: the odd pmpcfg CSRs as legal",
+        "PMP_Sm: cp_partial_{match, covered} exist only on RV64; lwu, ld and sd bins of cp_misaligned_* only on RV64",
+        "PMP_S, PMP_U: lwu, ld and sd bins exist only on RV64",
+        "PMP_F: fld and fsd bins exist only on RV64: on RV32 they are wider than XLEN",
+        "PMP_Zca: c.ld, c.ldsp, c.sd and c.sdsp bins exist only on RV64; Zcf only on RV32",
+        "PMP_Zca: c.fld and c.fsd are in cp_misaligned_mag16 only on RV64: on RV32 they are wider than XLEN",
+        "PMP_Zaamo: The .d AMO bins exist only on RV64",
+        "PMP_Zaamo, PMP_Zalrsc: cp_partial_match exists only on RV64",
+        "PMP_Zacas: amocas.q exists only on RV64",
+        "PMP_Zalrsc: lr.d and sc.d bins exist only on RV64",
+      ]
+  - name: MISALIGNED_LDST
+    coverpoint: ["cp_misaligned_partial"]
+    effect:
+      [
+        "The coverpoint and its test exist only when true: the misaligned loads and stores must not raise address-misaligned exceptions",
+      ]

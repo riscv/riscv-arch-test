@@ -18,3 +18,7 @@
     Zacas_amocas_d_cg = new(); Zacas_amocas_d_cg.set_inst_name("obj_Zacas_amocas_d");
     Zacas_amocas_q_cg = new(); Zacas_amocas_q_cg.set_inst_name("obj_Zacas_amocas_q");
 `endif
+`ifdef ZABHA_SUPPORTED
+    ZacasZabha_amocas_b_cg = new(); ZacasZabha_amocas_b_cg.set_inst_name("obj_ZacasZabha_amocas_b");
+    ZacasZabha_amocas_h_cg = new(); ZacasZabha_amocas_h_cg.set_inst_name("obj_ZacasZabha_amocas_h");
+`endif

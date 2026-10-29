@@ -10,7 +10,7 @@ set -euo pipefail
 INSTALL_DIR="${1:?Usage: install-hazard3.sh <install-dir>}"
 HAZARD3_REPO="https://github.com/Wren6991/Hazard3.git"
 HAZARD3_COMMIT="ba0c83c657a21f2e9946cf02cbc6c8d3d9a7dab6" # develop
-VERILATOR_VERSION="v5.036"
+VERILATOR_VERSION="v5.052"
 
 mkdir -p "$INSTALL_DIR/bin"
 

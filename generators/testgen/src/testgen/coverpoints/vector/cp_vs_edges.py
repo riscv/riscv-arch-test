@@ -36,6 +36,7 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
     vl = 1
     lmul = get_base_lmul(instr_name, instr_type, sew)
     register = coverpoint.split("_")[1]
+    ignore_vector_safety = False
 
     type_config = get_instruction_type_config(instr_type)
     assert type_config.vector_data is not None, "Vector data must be provided for all vector instruction types"
@@ -48,7 +49,7 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
         elif suffix.startswith("ls"):
             edges = VECTOR_EDGES.vls_edges
             info = parse_vector_instruction_info(instr_name, instr_type)
-            multiplier = info.get_size_multiplier(register, sew, type_config.vector_data.widened_regs)
+            multiplier = info.get_size_multiplier(register, sew, type_config.vector_data)
 
             suffix += f"_emul{get_lmul_flag(multiplier)}"
         elif suffix == "eew1":
@@ -69,6 +70,9 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             lmul = int(egs_match.group(1))
             vl = int(egs_match.group(1))
             suffix += f"_emul{lmul}"
+        elif suffix == "eew16" and register == "vs1":
+            suffix += f"_emul{get_lmul_flag(16 / test_data.config.sew)}"
+            ignore_vector_safety = True
 
     test_chunks = []
     for edge in edges:
@@ -85,6 +89,7 @@ def make_vs_edges(instr_name: str, instr_type: str, coverpoint: str, test_data: 
             additional_no_overlap=additional_no_overlap,
             masked=False,
             suite="base",
+            ignore_vector_safety=ignore_vector_safety,
             **presets,
         )
 

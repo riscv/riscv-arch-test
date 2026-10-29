@@ -9,428 +9,74 @@
 # ///
 
 """
-Generate ASCIIDoc table from normative rules JSON and coverpoints YAML.
+Generate AsciiDoc tables of normative rules and their coverpoints.
+
+Each coverpoints/norm/<suite>.yaml maps normative rules to coverpoints.  This script writes
+<suite>_norm_rules.adoc with one row per entry: the rule names, their text from the ISA manual's
+norm-rules.json, and the coverpoints.  Every rule name must exist in norm-rules.json, except in a
+suite whose rules are not yet tagged in the ISA manual.  Such a file says where the tags are pending
+with a top-level 'untagged_upstream' key, and its unknown names are warnings instead of errors.
 
 Usage:
-  generate_norm_table.py [--json PATH] [--yaml PATH] [--out PATH]
-
-Defaults:
-    json: coverpoints/norm/norm-rules.json
-    yaml: coverpoints/norm
-    out:  docs/ctp/build/generated/norm/
-
-The script writes an .adoc file containing a table with columns:
-  - normative rule name
-  - normative rule text
-  - coverpoints
-
-It also prints (and writes) a small report of names present in one file but not the other.
+  generate_norm_table.py --json norm-rules.json --yaml DIR --param DIR --out DIR [--report FILE]
 """
 
 import argparse
 import json
-import os
 import re
 import sys
-import urllib.request
-from collections.abc import Iterable, Iterator
+from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
-from urllib.parse import quote, urlparse
+from typing import Any, NamedTuple
+from urllib.parse import quote
 
-from ruamel.yaml import YAML, YAMLError
+from ruamel.yaml import YAML
 
-
-def load_json(path: Path | str, cache_path: Path | str | None = None) -> dict[str, Any] | list[Any]:
-    """Load JSON from a local file path or an HTTP/HTTPS URL."""
-    path_str = str(path)
-    parsed = urlparse(path_str)
-    if parsed.scheme in ("http", "https"):
-        try:
-            with urllib.request.urlopen(path_str, timeout=20) as resp:
-                text = resp.read().decode("utf-8")
-                if cache_path:
-                    cache = Path(cache_path)
-                    cache.parent.mkdir(parents=True, exist_ok=True)
-                    cache.write_text(text, encoding="utf-8")
-                return json.loads(text)
-        except (OSError, ValueError) as e:
-            raise RuntimeError(f"Failed to download JSON from {path}: {e}") from e
-    # Load from local file
-    text = Path(path).read_text(encoding="utf-8")
-    # Save to cache if cache_path is provided
-    if cache_path:
-        cache = Path(cache_path)
-        cache.parent.mkdir(parents=True, exist_ok=True)
-        cache.write_text(text, encoding="utf-8")
-    return json.loads(text)
+# The ISA manual publishes the unprivileged and privileged volumes as a single document.
+SPEC_URL = "https://riscv.github.io/riscv-isa-manual/snapshot/spec/index.html"
 
 
-def load_yaml(path: Path | str) -> dict[str, Any] | list[dict[str, Any]]:
-    """Load YAML with fallback parsing if standard parsing fails."""
-    text = Path(path).read_text(encoding="utf-8")
-    yaml_parser = YAML(typ="safe", pure=True)
-    try:
-        return yaml_parser.load(text)
-    except YAMLError:
-        return parse_coverpoints_fallback(text)
+class NormYamlError(Exception):
+    pass
 
 
-def parse_coverpoints_fallback(text: str) -> list[dict[str, Any]]:
-    """Parse a relaxed subset of the YAML file and return a list of
-    groups where each group is a dict: {'names': [name,...], 'coverpoint': <str>}.
+class NormYaml(NamedTuple):
+    groups: list[tuple[list[str], list[str]]]  # (rule names, coverpoints) for each entry
+    untagged_upstream: str | None  # where the suite's rule tags are pending, if not yet in the ISA manual
 
-    This tolerant parser scans the file for occurrences of 'name:',
-    'names:' and 'coverpoint:' lines and builds groups from contiguous
-    entries. It's intended as a fallback when PyYAML fails to parse the
-    file due to non-YAML expressions present in coverpoint values.
-    """
-    lines = text.splitlines()
+
+def load_norm_yaml(path: Path) -> NormYaml:
+    """Read and check a coverpoints/norm YAML file."""
+    data = YAML(typ="safe", pure=True).load(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict) or not set(data) <= {"untagged_upstream", "normative_rule_definitions"}:
+        raise NormYamlError(f"{path}: expected 'normative_rule_definitions' and optionally 'untagged_upstream'")
+    untagged = data.get("untagged_upstream")
+    if "untagged_upstream" in data and (not isinstance(untagged, str) or not untagged.strip()):
+        raise NormYamlError(f"{path}: 'untagged_upstream' must say where the rule tags are pending")
     groups = []
-
-    name = None
-    names = []
-    cover = None
-
-    def flush_group() -> None:
-        nonlocal name, names, cover
-        all_names = []
-        if name:
-            all_names.extend(split_name_list(name))
-        for n in names:
-            all_names.extend(split_name_list(n))
-        if all_names:
-            groups.append({"names": all_names, "coverpoint": cover})
-        name = None
-        names = []
-        cover = None
-
-    for line in lines:
-        bline = line.strip()
-        if not bline:
-            # blank line separates entries
-            if name or names or cover:
-                flush_group()
-            continue
-
-        m_name = re.match(r"^name:\s*(.+)$", bline)
-        m_names = re.match(r"^names:\s*(.+)$", bline)
-        m_cover = re.match(r"^coverpoint:\s*(.+)$", bline)
-
-        if m_name:
-            val = m_name.group(1).strip()
-            val = val.strip("\"'")
-            # finalize any previous group
-            if name or names or cover:
-                flush_group()
-            name = val
-        elif m_names:
-            val = m_names.group(1).strip()
-            # Expect bracketed list like [a, b] or comma list
-            if val.startswith("[") and val.endswith("]"):
-                inner = val[1:-1]
-                parts = [p.strip() for p in inner.split(",") if p.strip()]
-                names.extend(parts)
-            else:
-                parts = [p.strip() for p in val.split(",") if p.strip()]
-                names.extend(parts)
-        elif m_cover:
-            cover = m_cover.group(1).strip().strip("\"'")
-        else:
-            # Try to catch list-style '- name: value' entries
-            m_dash_name = re.match(r"^-+\s*name:\s*(.+)$", bline)
-            if m_dash_name:
-                val = m_dash_name.group(1).strip().strip("\"'")
-                if name or names or cover:
-                    flush_group()
-                name = val
-            # otherwise ignore unrecognized lines
-
-    # flush any trailing group
-    if name or names or cover:
-        flush_group()
-
-    return groups
+    for i, item in enumerate(data["normative_rule_definitions"] or []):
+        where = f"{path}: entry {i + 1}"
+        if not isinstance(item, dict) or set(item) not in ({"name", "coverpoint"}, {"names", "coverpoint"}):
+            raise NormYamlError(f"{where}: expected 'name' or 'names', and 'coverpoint'")
+        names = item.get("names", [item.get("name")])
+        coverpoints = item["coverpoint"]
+        if not isinstance(names, list) or not names or not all(isinstance(n, str) and n for n in names):
+            raise NormYamlError(f"{where}: rule names must be non-empty strings")
+        if not isinstance(coverpoints, list) or not coverpoints or not all(isinstance(c, str) for c in coverpoints):
+            raise NormYamlError(f"{where} ({', '.join(names)}): 'coverpoint' must be a non-empty list of strings")
+        if len(set(names)) != len(names):
+            raise NormYamlError(f"{where}: repeated rule name in {names}")
+        groups.append((names, coverpoints))
+    repeated = sorted(n for n, k in Counter(n for names, _ in groups for n in names).items() if k > 1)
+    if repeated:
+        raise NormYamlError(f"{path}: rules listed in more than one entry: {', '.join(repeated)}")
+    return NormYaml(groups, untagged)
 
 
-def find_normative_rules(data: dict[str, Any] | list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Extract normative rules list from JSON data."""
-    if isinstance(data, dict):
-        if "normative_rules" in data:
-            return data["normative_rules"]
-        # Search for first list of dicts with 'name' key
-        for v in data.values():
-            if isinstance(v, list) and v and isinstance(v[0], dict) and "name" in v[0]:
-                return v
-    elif isinstance(data, list):
-        return data
-    raise ValueError("Could not locate normative rules list in JSON")
-
-
-def iter_rules(rules_list: list[dict[str, Any]]) -> Iterator[tuple[str, list[dict[str, Any]], str]]:
-    """Yield (rule name, tags, chapter) for each normative rule in the JSON.
-
-    Each norm: tag in the ISA manual is one normative rule, named by the tag without
-    the norm: prefix. The manual's JSON has one entry per tag with the tag's text on the
-    entry. Older JSON had one entry per rule definition with the rule's tags in a "tags"
-    list; each of those tags (except context tags) is yielded once as a rule of its own,
-    so coverpoint files keyed by tag names resolve against either form.
-    """
-    seen: set[str] = set()
-    for entry in rules_list:
-        if not isinstance(entry, dict):
-            continue
-        chapter = entry.get("chapter_name") or entry.get("def_filename") or "unknown"
-        if "tags" in entry or "tag" in entry:
-            tags = entry.get("tags") or entry.get("tag") or []
-            for tg in [tags] if isinstance(tags, dict) else tags:
-                if not isinstance(tg, dict) or not tg.get("name") or tg.get("context"):
-                    continue
-                name = str(tg["name"]).removeprefix("norm:")
-                if name not in seen:
-                    seen.add(name)
-                    yield name, [tg], chapter
-        elif entry.get("name") and entry["name"] not in seen:
-            name = str(entry["name"])
-            seen.add(name)
-            tag = {"name": f"norm:{name}", "text": entry.get("text", ""), "tag_filename": entry.get("tag_filename", "")}
-            yield name, [tag], chapter
-
-
-def extract_rule_text(tags: dict[str, Any] | list[Any] | None) -> str:
-    """Extract text from tags structure (dict, list, or mixed)."""
-    if not tags:
-        return ""
-
-    texts = []
-    items = [tags] if isinstance(tags, dict) else tags if isinstance(tags, list) else []
-
-    for item in items:
-        if isinstance(item, dict):
-            text = item.get("text")
-            if isinstance(text, list):
-                texts.extend(str(x).strip() for x in text if x)
-            elif text:
-                texts.append(str(text).strip())
-        elif item:
-            texts.append(str(item).strip())
-
-    return " ".join(texts)
-
-
-def split_name_list(val: str | list[str] | None) -> list[str]:
-    """Split name(s) into a list, handling various formats."""
-    if not val:
-        return []
-    if isinstance(val, list):
-        return [n for v in val for n in split_name_list(v)]
-    s = str(val).strip().strip("\"'")
-    # Remove list brackets if present
-    if s.startswith("[") and s.endswith("]"):
-        s = s[1:-1]
-    parts = s.split(",") if "," in s else [s]
-    return [p.strip().strip("\"'") for p in parts if p.strip().strip("\"'")]
-
-
-def extract_names_from_item(item: dict[str, Any]) -> list[str]:
-    """Extract and normalize names from a YAML item."""
-    names = []
-    # Process 'names' field (can be list or string)
-    if "names" in item:
-        n = item["names"]
-        names.extend(
-            split_name_list(el) if isinstance(n, list) else split_name_list(n)
-            for el in ([n] if not isinstance(n, list) else n)
-        )
-        names = [name for sublist in names for name in sublist]  # Flatten
-    # Process 'name' field (prepend to preserve order)
-    if "name" in item:
-        names = split_name_list(item["name"]) + names
-    return names
-
-
-def process_items_to_groups(items: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Convert list of items to groups with names and coverpoints."""
-    groups = []
-    for item in items:
-        if not isinstance(item, dict):
-            continue
-        names = extract_names_from_item(item)
-        if names:
-            groups.append({"names": names, "coverpoint": item.get("coverpoint")})
-    return groups
-
-
-def build_coverpoint_groups(yaml_data: dict[str, Any] | list[dict[str, Any]] | None) -> list[dict[str, Any]]:
-    """Extract groups from YAML data in various formats."""
-    if isinstance(yaml_data, list):
-        return process_items_to_groups(yaml_data)
-
-    if not isinstance(yaml_data, dict):
-        return []
-
-    # Check for nested list under a key
-    for v in yaml_data.values():
-        if (
-            isinstance(v, list)
-            and v
-            and isinstance(v[0], dict)
-            and any(key in v[0] for key in ("name", "names", "coverpoint"))
-        ):
-            return process_items_to_groups(v)
-
-    # Top-level mapping: key -> {coverpoint: ...}
-    groups = []
-    for k, v in yaml_data.items():
-        if isinstance(v, dict) and "coverpoint" in v:
-            groups.append({"names": split_name_list(k), "coverpoint": v["coverpoint"]})
-
-    # Also check nested 'coverpoints' key
-    if "coverpoints" in yaml_data:
-        cp_data = yaml_data["coverpoints"]
-        if isinstance(cp_data, dict):
-            for k, v in cp_data.items():
-                if isinstance(v, dict) and "coverpoint" in v:
-                    groups.append({"names": split_name_list(k), "coverpoint": v["coverpoint"]})
-
-    return groups
-
-
-def normalize_coverpoint(cp: str | list[Any] | None) -> str:
-    """Normalize coverpoint value for AsciiDoc output."""
-    c = ", ".join(str(x) for x in cp) if isinstance(cp, list) else str(cp).strip() if cp else ""
-
-    # Strip brackets and quotes
-    c = c.strip("[]\"'")
-    # Clean up braces and pipes
-    c = re.sub(r"}+", "}", c).replace("|", "&#124;")
-    return c
-
-
-def make_adoc_table(rows: list[tuple[str, str, Any]], outpath: Path, base: str | None = None) -> None:
-    """Generate AsciiDoc table from rows."""
-    lines = []
-    # Add auto-generation header comment with absolute paths
-    argv_abs = [str(Path(arg).resolve()) if Path(arg).exists() else arg for arg in sys.argv]
-    command_line = " ".join(argv_abs)
-    gen_date = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
-    lines.extend(
-        [
-            "// WARNING: This file was automatically generated.",
-            "// Do not modify by hand.",
-            "// Generation command: " + command_line,
-            "// Generation date: " + gen_date,
-            "",
-        ]
-    )
-    if base:
-        lines.extend([f"[[t-{base}-normative-rules]]", f".{base} Normative Rules"])
-
-    if not rows:
-        lines.append("No normative rules found for this section.")
-        lines.append("")
-    else:
-        lines.extend(['[cols="1,4,3", options="header"]', "|===", "|Normative Rule |Rule Text |Coverpoints", ""])
-
-    for name, text, cp in rows:
-        n = name.replace("|", "&#124;")
-        t = (text or "").replace("|", "&#124;")
-        c = normalize_coverpoint(cp)
-
-        # Use multi-paragraph cell only for plain text with newlines.
-        # Avoid 'a|' when the text contains link: macros — asciidoctor
-        # fails to parse multi-line 'a|' cells that contain inline link
-        # macros, producing "dropping cells from incomplete row" errors.
-        if "\n" in t and not (t.strip().startswith("<p") or "<a href=" in t or "pass:[" in t or "link:" in t):
-            lines.append(f"|{n} |a|{t} |{c}")
-        else:
-            # Collapse any remaining newlines so the row stays on one line
-            t = t.replace("\n", " ")
-            lines.append(f"|{n} |{t} |{c}")
-        lines.append("")
-
-    if rows:
-        lines.extend(["|===", ""])
-    # Append link to corresponding parameters table if base is provided
-    if base:
-        # norm files live in src/norm and parameters in src/param, so use ../param
-        lines.extend([f"include::../param/{base}_parameters.adoc[]", ""])
-    outpath.parent.mkdir(parents=True, exist_ok=True)
-    outpath.write_text("\n".join(lines), encoding="utf-8")
-
-
-def pick_cover_for_name(coverpoint: str | list[str] | None, names: list[str], idx: int) -> str | list[str] | None:
-    """If `coverpoint` contains a brace-delimited list (e.g. "{A, B, C}..."),
-    attempt to select the item corresponding to position `idx` in `names`.
-    Otherwise return the original coverpoint.
-    """
-    if not coverpoint:
-        return coverpoint
-
-    # Accept a single-element list containing the string (common when YAML
-    # coverpoint is written as a flow list). If coverpoint is a list with
-    # multiple elements, leave it unchanged.
-    if isinstance(coverpoint, list):
-        if len(coverpoint) == 1 and isinstance(coverpoint[0], str):
-            s = coverpoint[0]
-        else:
-            return coverpoint
-    elif isinstance(coverpoint, str):
-        s = coverpoint
-    else:
-        return coverpoint
-
-    # If there is a slash, keep the entire right-hand side and select the
-    # corresponding element from the left-hand brace-list.
-    slash_pos = s.find("/")
-    if slash_pos != -1:
-        left = s[:slash_pos]
-        right = s[slash_pos + 1 :]
-        # Try to find a brace-delimited list on the left side first
-        m_left = re.search(r"\{([^}]*)\}", left)
-        if m_left:
-            # If the YAML group contains a single normative name, preserve
-            # the entire brace-delimited list (don't pick a single element).
-            if len(names) == 1:
-                return left + "/" + right
-            inner = m_left.group(1)
-            parts = [p.strip() for p in inner.split(",") if p.strip()]
-            if 0 <= idx < len(parts):
-                # preserve the right-hand side exactly as it appears
-                return parts[idx] + "/" + right
-        else:
-            # No brace group on left. Try splitting on commas (single or multiple names).
-            parts = [p.strip() for p in left.split(",") if p.strip()]
-            if parts:
-                # If the YAML group contains a single normative name, preserve
-                # the entire left-hand listing instead of selecting an element.
-                if len(names) == 1:
-                    return left + "/" + right
-                if 0 <= idx < len(parts):
-                    return parts[idx] + "/" + right
-                # If only one part and names indicates a single normative name, prefer that
-                if len(parts) == 1:
-                    return parts[0] + "/" + right
-            # As a last resort, if the YAML names list contains a single name,
-            # use it (this handles cases like mul_op where names==[mul_op]).
-            if len(names) == 1 and idx == 0:
-                return names[0] + "/" + right
-
-    # Fallback: find the first {...} group anywhere and pick element
-    m = re.search(r"\{([^}]*)\}", s)
-    if not m:
-        return coverpoint
-
-    inner = m.group(1)
-    parts = [p.strip() for p in inner.split(",") if p.strip()]
-    if not parts:
-        return coverpoint
-
-    # If index is within parts, return that part. Otherwise, return original.
-    if 0 <= idx < len(parts):
-        return parts[idx]
-    return coverpoint
+def load_norm_rules(path: Path) -> dict[str, dict[str, Any]]:
+    """Rule name -> norm-rules.json entry."""
+    return {entry["name"]: entry for entry in json.loads(path.read_text(encoding="utf-8"))["normative_rules"]}
 
 
 # Inline macros defined by riscv-isa-manual's src/lib/macros.rb.  The normative rule text is
@@ -457,17 +103,16 @@ def expand_isa_manual_macros(text: str) -> str:
             # vmv<nr>r.v, which the manual's JSON carries double-escaped as &amp;#60; and &amp;#62;
             name = name.replace("&amp;", "&")
             mnemonic = "".join(t if t.startswith("&") else t.upper() for t in _ENTITY_SPLIT_RE.split(name))
-            return mnemonic + ("\u00a0" + ",\u00a0".join(args) if args else "")
+            return mnemonic + (" " + ", ".join(args) if args else "")
         if kind in ("ext", "extlink"):
             return f"`{name.capitalize()}`"
         if kind in ("csr", "csrlink"):
             parts = ([] if name in ("", ":") else [name.lower()]) + ([args[0].upper()] if args else [])
-            return "`" + ".\u2060".join(parts) + "`"
+            return "`" + ".⁠".join(parts) + "`"
         if kind == "qty":
-            return name + "\u00a0" + (args[0] if args else "")
-        if kind == "xref":
-            return name
-        return m.group(0)
+            return name + " " + (args[0] if args else "")
+        # xref
+        return name
 
     return _ISA_MANUAL_MACRO_RE.sub(expand, text)
 
@@ -481,427 +126,105 @@ def plain_xrefs(text: str) -> str:
     return _XREF_RE.sub(lambda m: (m.group(2) or m.group(1)).strip(), text)
 
 
-def truncate_rule_text(text: str) -> str:
-    """Return rule text without truncation."""
-    return text
+def rule_link(name: str, text: str) -> str:
+    """The rule's text as one AsciiDoc link to its tag in the ISA manual."""
+    disp = plain_xrefs(expand_isa_manual_macros(" ".join(text.split())))
+    # Math is pre-rendered to images in the ISA manual build; those images do not exist here.
+    disp = re.sub(r"image:[^\[]*\[[^\]]*\]", "[math expression]", disp)
+    if not disp:
+        return ""
+    # Escape the link text; commas would otherwise separate link attributes and '|' table cells.
+    disp = (
+        disp.replace("\\", "\\\\").replace('"', '\\"').replace("]", "\\]").replace(",", "&#44;").replace("|", "&#124;")
+    )
+    return f"link:{SPEC_URL}#{quote('norm:' + name, safe='')}[{disp}]"
 
 
-def render_rule_text(name: str, json_text_map: dict[str, str], json_links_map: dict[str, list[str]]) -> str:
-    """Return the display text (with links) for a normative rule name."""
-    text = truncate_rule_text(json_text_map.get(name, ""))
-    links = json_links_map.get(name, [])
-    if links:
-        text = (text + "  " + " ".join(links)).strip()
-    return text
+def generation_header() -> list[str]:
+    argv_abs = [str(Path(arg).resolve()) if Path(arg).exists() else arg for arg in sys.argv]
+    gen_date = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    return [
+        "// WARNING: This file was automatically generated.",
+        "// Do not modify by hand.",
+        "// Generation command: " + " ".join(argv_abs),
+        "// Generation date: " + gen_date,
+        "",
+    ]
 
 
-def build_rows_from_groups(
-    groups: Iterable[dict[str, Any]], json_text_map: dict[str, str], json_links_map: dict[str, list[str]]
-) -> tuple[list[tuple[str, str, Any]], dict[str, Any], set[str]]:
-    """Create table rows while keeping grouped names on a single row.
-
-    When a YAML entry contains multiple names, emit one row whose Normative Rule
-    cell lists all of those names (comma-separated) instead of one row per name.
-    Coverpoints are still resolved per-name when brace lists are used, and the
-    resulting coverpoints are combined into the single row to avoid losing
-    information.
-    """
-
-    rows: list[tuple[str, str, Any]] = []
-    cover_map: dict[str, Any] = {}
-    yaml_names: set[str] = set()
-
-    for g in groups:
-        if not isinstance(g, dict):
-            continue
-
-        names = g.get("names", []) or []
-        if not names:
-            continue
-
-        names = list(names)
-        cp = g.get("coverpoint")
-
-        yaml_names.update(names)
-
-        # Resolve coverpoints per-name so brace lists (e.g. "{A, B}/cp") remain aligned.
-        chosen_cps = [pick_cover_for_name(cp, names, idx) for idx in range(len(names))]
-        cover_map.update({n: c for n, c in zip(names, chosen_cps, strict=False)})
-
-        if len(names) == 1:
-            n = names[0]
-            text = render_rule_text(n, json_text_map, json_links_map)
-            rows.append((n, text, chosen_cps[0]))
-            continue
-
-        # Multi-name group: keep a single row with the names combined.
-        combined_name = ", ".join(names)
-
-        # Combine rule texts, preserving order and collapsing duplicates.
-        text_parts: list[tuple[str, str]] = []
-        seen_texts: set[str] = set()
-        for n in names:
-            t = render_rule_text(n, json_text_map, json_links_map)
-            if not t:
-                continue
-            if t in seen_texts:
-                continue
-            text_parts.append((n, t))
-            seen_texts.add(t)
-
-        if not text_parts:
-            text = ""
-        elif len(text_parts) == 1:
-            text = text_parts[0][1]
-        else:
-            # Annotate which text corresponds to which name when they differ.
-            text = "\n".join(f"{n}: {t}" for n, t in text_parts)
-
-        # Combine coverpoints; keep per-name detail when they differ.
-        unique_cps: list[Any] = []
-        for c in chosen_cps:
-            if c not in unique_cps:
-                unique_cps.append(c)
-
-        if len(unique_cps) == 1:
-            cp_cell = unique_cps[0]
-        else:
-            cp_bits = []
-            for n, c in zip(names, chosen_cps, strict=False):
-                val = "" if c is None else str(c)
-                cp_bits.append(f"{n}: {val}")
-            cp_cell = "; ".join(cp_bits)
-
-        rows.append((combined_name, text, cp_cell))
-
-    return rows, cover_map, yaml_names
+def make_adoc_table(
+    base: str, groups: list[tuple[list[str], list[str]]], texts: dict[str, str], has_params: bool
+) -> str:
+    lines = [*generation_header(), f"[[t-{base}-normative-rules]]", f".{base} Normative Rules"]
+    if groups:
+        lines += ['[cols="1,4,3", options="header"]', "|===", "|Normative Rule |Rule Text |Coverpoints", ""]
+        for names, coverpoints in groups:
+            parts = [(n, texts[n]) for n in names if texts[n]]
+            parts = [p for i, p in enumerate(parts) if p[1] not in [q[1] for q in parts[:i]]]
+            text = parts[0][1] if len(parts) == 1 else " ".join(f"{n}: {t}" for n, t in parts)
+            cell = ", ".join(coverpoints).replace("|", "&#124;")
+            lines += [f"|{', '.join(names)} |{text} |{cell}", ""]
+        lines += ["|===", ""]
+    else:
+        lines += ["No normative rules found for this section.", ""]
+    # Generated files live in src/norm and src/param, so use ../param
+    lines += [f"include::../param/{base}_parameters.adoc[]" if has_params else "*UDB Parameters:* None.", ""]
+    return "\n".join(lines)
 
 
 def main() -> None:
-    p = argparse.ArgumentParser(description="Generate ASCIIDoc table from normative rules JSON and coverpoints YAML")
-    # Default: download the canonical norm-rules.json from the ISA manual snapshot
-    # canonical remote JSON used as default and as the fetch target when
-    # --always-fetch is requested
-    canonical_json_url = "https://riscv.github.io/riscv-isa-manual/snapshot/norm-rules/norm-rules.json"
-    p.add_argument("--json", default=canonical_json_url, help="Path or URL to norm-rules.json")
-    p.add_argument(
-        "--yaml",
-        default="coverpoints/norm",
-        help="Path to a YAML file or a directory containing YAML files (default directory: coverpoints/norm)",
-    )
-    p.add_argument(
-        "--out",
-        default="docs/ctp/build/generated/norm/",
-        help="Output directory for ASCIIDoc files (default: docs/ctp/build/generated/norm/)",
-    )
-    p.add_argument(
-        "--report",
-        default="coverpoints/norm/mismatch_report.txt",
-        help="Report file or directory when --yaml is a directory",
-    )
-    p.add_argument(
-        "--always-fetch",
-        action="store_true",
-        help="Always fetch the canonical remote JSON and update local cache even when --json is a local path",
-    )
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--json", required=True, type=Path, help="the ISA manual's norm-rules.json")
+    p.add_argument("--yaml", required=True, type=Path, help="directory of normative rule to coverpoint YAML files")
+    p.add_argument("--param", required=True, type=Path, help="directory of parameter YAML files")
+    p.add_argument("--out", required=True, type=Path, help="output directory for the AsciiDoc tables")
+    p.add_argument("--report", type=Path, help="write the rules that no YAML file maps here, by chapter")
     args = p.parse_args()
 
-    # If paths are relative and not found from current CWD, try resolving
-    # them relative to the script directory so running from repo root still works.
-    script_dir = Path(__file__).resolve().parent
+    rules = load_norm_rules(args.json)
+    texts: dict[str, str] = defaultdict(str, {name: rule_link(name, entry["text"]) for name, entry in rules.items()})
 
-    # Parse args as Paths
-    json_path = args.json  # Keep as string if URL
-    yaml_path = Path(args.yaml)
-    out_path = Path(args.out)
-    report_path = Path(args.report)
+    yaml_files = sorted(args.yaml.glob("*.yaml"))
+    if not yaml_files:
+        sys.exit(f"Error: no YAML files in {args.yaml}")
 
-    # If args.json is an HTTP(S) URL, we'll download it later; skip filesystem checks.
-    if urlparse(args.json).scheme not in ("http", "https"):
-        json_path_obj = Path(args.json)
-        if not json_path_obj.exists():
-            alt = script_dir / args.json
-            if alt.exists():
-                json_path = alt
-            else:
-                print(f"Error: JSON file not found: {args.json}", file=sys.stderr)
-                sys.exit(2)
-        else:
-            json_path = json_path_obj
-
-    if not yaml_path.exists():
-        alt = script_dir / args.yaml
-        if alt.exists():
-            yaml_path = alt
-        else:
-            print(f"Error: YAML file not found: {args.yaml}", file=sys.stderr)
-            sys.exit(2)
-
-    # Compute a cache path under the repository's coverpoints/norm directory.
-    repo_root = script_dir.parent.parent
-    cache_path = repo_root / "coverpoints" / "norm" / "norm-rules.json"
-
-    # Load JSON. Default behavior: if args.json is a URL it will be downloaded
-    # and cached. If args.json is a local path the local file will be read.
-    # If --always-fetch is set, force a download from the canonical remote
-    # URL and update the cache; this ensures the run uses the remote copy.
-    if args.always_fetch:
+    args.out.mkdir(parents=True, exist_ok=True)
+    errors: list[str] = []
+    mapped: set[str] = set()
+    for yfile in yaml_files:
         try:
-            jdata = load_json(canonical_json_url, cache_path=cache_path)
-        except (RuntimeError, OSError, json.JSONDecodeError) as e:
-            print(f"Error: failed to fetch canonical JSON ({canonical_json_url}): {e}", file=sys.stderr)
-            sys.exit(2)
-    else:
-        jdata = load_json(json_path, cache_path=cache_path)
-    print(f"Loaded normative rules JSON from: {json_path} to {cache_path}")
-    rules_list = find_normative_rules(jdata)
-
-    # Build a mapping of JSON rule name -> text for fast lookup
-    json_text_map = {}
-    json_links_map = {}
-    json_names = set()
-    json_def_map = {}
-    for name, tags, chapter in iter_rules(rules_list):
-        json_names.add(name)
-        # Build ASCIIDoc linked text for tags associated with this rule.
-        # The link should apply to the tagged text (tag['text']) and the
-        # tag 'name' (e.g. 'norm:...') should not be printed.
-        linked_text_parts = []
-        # The ISA manual publishes the unprivileged and privileged volumes as a single document.
-        SPEC_BASE = "https://riscv.github.io/riscv-isa-manual/snapshot/spec/index.html"
-        tags_iter = [tags] if isinstance(tags, dict) else list(tags) if tags is not None else []
-        for tg in tags_iter:
-            if not isinstance(tg, dict):
-                continue
-            tag_name = tg.get("name")
-            tag_text = tg.get("text") or ""
-            if not tag_name:
-                continue
-            # assemble URL with fragment pointing to the tag name
-            # Percent-encode the fragment to produce a safe URL fragment.
-            # Use urllib.parse.quote with an empty 'safe' to encode reserved
-            # characters (e.g., ':') so the fragment is valid when embedded in
-            # a link target.
-            frag = quote(str(tag_name), safe="")
-            url = f"{SPEC_BASE}#{frag}"
-            # Prepare display text: collapse whitespace and remove surrounding newlines
-            disp = " ".join(str(tag_text).split())
-            disp = expand_isa_manual_macros(disp)
-            # Strip asciidoctor image macros (e.g. image:path/stem-xxx.svg[...])
-            # that reference pre-rendered math from the ISA manual build.
-            # These images don't exist in the CTP build context.
-            disp = re.sub(r"image:[^\[]*\[[^\]]*\]", "[math expression]", disp)
-            disp = plain_xrefs(disp)
-            # Replace any vertical bar '|' with the HTML entity '&#124;'
-            # instead of truncating. This preserves more of the text while
-            # preventing Asciidoc table column parsing from being broken by
-            # literal '|' characters appearing inside quoted link or cell
-            # text.
-            if "|" in disp:
-                disp = disp.replace("|", "&#124;")
-            # ASCIIDoc inline link: link:url["display text"]
-            # Use quoted display text to allow commas in the text (otherwise
-            # Asciidoctor will treat commas as attribute separators). Also
-            # escape double-quotes, backslashes and closing brackets inside
-            # the display text.
-            if disp:
-                esc = disp.replace("\\", "\\\\").replace('"', '\\"').replace("]", "\\]")
-                # encode comma as HTML entity so Asciidoctor won't treat it
-                # as an attribute separator and we can emit an unquoted
-                # link:URL[display text] form (no visible quotes).
-                if "," in esc:
-                    esc = esc.replace(",", "&#44;")
-                # final safety: replace any remaining '|' with '&#124;'
-                if "|" in esc:
-                    esc = esc.replace("|", "&#124;")
-                # Store as a tuple so we can render multi-link cases as HTML
-                # paragraphs (anchors) later to avoid relying on the Asciidoc
-                # 'a|' multi-paragraph cell marker which was showing up as a
-                # visible 'a' in some renderers.
-                linked_text_parts.append((url, esc))
+            groups, untagged = load_norm_yaml(yfile)
+        except NormYamlError as e:
+            errors.append(str(e))
+            continue
+        names = {n for ns, _ in groups for n in ns}
+        mapped |= names
+        unknown = sorted(names - rules.keys())
+        if untagged is None and unknown:
+            errors.append(f"{yfile}: {len(unknown)} rules not in {args.json.name}: {', '.join(unknown)}")
+            continue
+        if untagged is not None:
+            if unknown:
+                print(f"warning: {yfile.name}: {len(unknown)} rules not yet tagged in the ISA manual ({untagged})")
             else:
-                # fallback to linking the tag name (without printing 'norm:')
-                # but per request do not print the tag name; so skip if no display text
-                pass
+                print(f"warning: {yfile.name}: every rule is now in {args.json.name}; remove 'untagged_upstream'")
+        base = yfile.stem
+        adoc = make_adoc_table(base, groups, texts, (args.param / f"{base}.yaml").exists())
+        (args.out / f"{base}_norm_rules.adoc").write_text(adoc, encoding="utf-8")
 
-        # If we created linked parts, use them as the rule text; when there
-        # are multiple linked parts, join them with a blank line so they
-        # render as separate paragraphs. The presence of newlines will
-        # cause the adoc table generator to emit an 'a|' (asciidoc) cell
-        # so the paragraphs are preserved.
-        if linked_text_parts:
-            # If there's only a single linked part, keep the original
-            # Asciidoc link: macro so existing consumers that prefer it
-            # keep working. If there are multiple link parts, convert
-            # them into HTML paragraphs with anchor tags. This avoids
-            # emitting the Asciidoc 'a|' multi-paragraph marker which
-            # some renderers were showing as a visible 'a'.
-            if len(linked_text_parts) == 1:
-                url, esc = linked_text_parts[0]
-                # We've encoded commas to '&#44;' and escaped ']' already,
-                # so emit the simple inline link form without surrounding
-                # quotes to avoid visible quotation marks in the ADOC.
-                joined = f"link:{url}[{esc}]"
-            else:
-                # For multiple links, emit simple inline Asciidoc link macros
-                # separated by single spaces (no HTML/passthrough and no
-                # blank lines between parts). This collapses any paragraph
-                # separation into single-space separated links so the table
-                # cell remains a single-line cell and avoids emitting 'a|'.
-                parts = []
-                for url, esc in linked_text_parts:
-                    # commas are encoded and brackets escaped above; emit
-                    # the plain inline link macro to avoid visible quotes.
-                    parts.append(f"link:{url}[{esc}]")
-                joined = " ".join(parts)
+    if errors:
+        sys.exit("\n".join(f"Error: {e}" for e in errors))
 
-            json_text_map[name] = joined
-            json_links_map[name] = []
-        else:
-            # Extract rule text and collapse any internal newlines/whitespace
-            # into single spaces so we never emit multi-paragraph cells
-            # (which previously required the 'a|' marker).
-            raw_text = extract_rule_text(tags) or ""
-            text = " ".join(str(raw_text).split())
-            text = expand_isa_manual_macros(text)
-            text = plain_xrefs(text)
-            # Replace any literal '|' characters with the HTML entity
-            # to avoid breaking Asciidoc table parsing.
-            if "|" in text:
-                text = text.replace("|", "&#124;")
-            json_text_map[name] = text
-            json_links_map[name] = []
-        # capture the chapter for later grouping in reports
-        json_def_map[name] = chapter
-
-    # If args.yaml is a directory, process every .yaml/.yml file inside
-    if yaml_path.is_dir():
-        yaml_files = sorted(list(yaml_path.glob("*.yaml")) + list(yaml_path.glob("*.yml")))
-        if not yaml_files:
-            print(f"No YAML files found in directory: {yaml_path}", file=sys.stderr)
-            sys.exit(2)
-
-        # Always treat --out as a directory
-        out_dir = out_path
-
-        # Determine report directory
-        report_dir = report_path if report_path.is_dir() else report_path.parent
-
-        # Accumulate per-YAML missing-in-JSON lists, and track all YAML names seen
-        per_yaml_missing = {}
-        all_yaml_names = set()
-
-        for yfile in yaml_files:
-            ydata = load_yaml(yfile)
-            groups = build_coverpoint_groups(ydata)
-
-            # Build rows and mappings; keep grouped names on a single row.
-            rows, _cover_map, yaml_names = build_rows_from_groups(groups, json_text_map, json_links_map)
-
-            # record per-yaml missing-in-json
-            missing_in_json = sorted(yaml_names - json_names)
-            base = yfile.stem
-            per_yaml_missing[base] = missing_in_json
-
-            # accumulate all yaml names seen
-            all_yaml_names.update(yaml_names)
-
-            # Write adoc for this yaml
-            out_dir.mkdir(parents=True, exist_ok=True)
-            report_dir.mkdir(parents=True, exist_ok=True)
-            outpath = out_dir / f"{base}_norm_rules.adoc"
-            make_adoc_table(rows, outpath, base=base)
-
-        # After processing all YAMLs, create a single combined mismatch report
-        # missing_in_yaml = JSON names that did not appear in any YAML
-        missing_in_yaml = sorted(json_names - all_yaml_names)
-
-        report_lines = []
-        report_lines.append("Mismatch report")
-        report_lines.append("===============")
-        report_lines.append("")
-        report_lines.append(f"Total JSON rules: {len(json_names)}")
-        report_lines.append(f"Total YAML coverpoints (unique names seen): {len(all_yaml_names)}")
-        report_lines.append("")
-        # Per-YAML sections: only include files that have missing names
-        for base in sorted(per_yaml_missing.keys()):
-            missing = per_yaml_missing[base]
-            if not missing:
-                # omit files with no missing names from the report
-                continue
-            report_lines.append(f"YAML file: {base}.yaml")
-            report_lines.append("-" * (10 + len(base)))
-            report_lines.append("Names present in YAML but missing from JSON:")
-            report_lines.extend(["  " + n for n in missing])
-            report_lines.append("")
-
-        # Now list JSON-only names organized by def_filename (chapter)
-        report_lines.append("Names present in JSON but missing from any YAML (organized by chapter):")
-        if missing_in_yaml:
-            # group by chapter
-            chapter_map = {}
-            for name in missing_in_yaml:
-                chapter = json_def_map.get(name, "unknown") or "unknown"
-                chapter_map.setdefault(chapter, []).append(name)
-
-            for chap in sorted(chapter_map.keys()):
-                report_lines.append(f"Chapter: {chap}")
-                report_lines.extend("  " + n for n in sorted(chapter_map[chap]))
-                report_lines.append("")
-        else:
-            report_lines.append("  (none)")
-
-        # Write the single report file. If args.report is a directory, write mismatch_report.txt inside it.
-        if report_path.is_dir() or str(report_path).endswith(os.sep):
-            rpt_dir = report_path
-            rpt_dir.mkdir(parents=True, exist_ok=True)
-            final_report_path = rpt_dir / "mismatch_report.txt"
-        else:
-            report_path.parent.mkdir(parents=True, exist_ok=True)
-            final_report_path = report_path
-
-        final_report_path.write_text("\n".join(report_lines), encoding="utf-8")
-
-        return
-
-    # Single YAML file mode
-    ydata = load_yaml(args.yaml)
-    groups = build_coverpoint_groups(ydata)
-
-    # Build a name->coverpoint map and the set of yaml names for mismatch reporting
-    rows, _cover_map, yaml_names = build_rows_from_groups(groups, json_text_map, json_links_map)
-
-    missing_in_json = sorted(yaml_names - json_names)
-    missing_in_yaml = sorted(json_names - yaml_names)
-
-    # Always treat --out as a directory
-    out_dir = out_path
-    out_dir.mkdir(parents=True, exist_ok=True)
-    base = yaml_path.stem
-    outpath = out_dir / f"{base}_norm_rules.adoc"
-    make_adoc_table(rows, outpath, base=base)
-
-    # Write the mismatch report only to the report file (do not print to stdout)
-    report_lines = []
-    report_lines.append("Mismatch report")
-    report_lines.append("===============")
-    report_lines.append("")
-    report_lines.append(f"Total JSON rules: {len(json_names)}")
-    report_lines.append(f"Total YAML coverpoints: {len(yaml_names)}")
-    report_lines.append("")
-    report_lines.append("Names present in YAML but missing from JSON:")
-    if missing_in_json:
-        report_lines.extend(["  " + n for n in missing_in_json])
-    else:
-        report_lines.append("  (none)")
-    report_lines.append("")
-    report_lines.append("Names present in JSON but missing from YAML:")
-    if missing_in_yaml:
-        report_lines.extend(["  " + n for n in missing_in_yaml])
-    else:
-        report_lines.append("  (none)")
-
-    report_path.write_text("\n".join(report_lines), encoding="utf-8")
+    unmapped = sorted(rules.keys() - mapped)
+    print(f"{len(rules) - len(unmapped)} of {len(rules)} normative rules are mapped to coverpoints")
+    if args.report:
+        by_chapter: dict[str, list[str]] = {}
+        for name in unmapped:
+            by_chapter.setdefault(rules[name]["chapter_name"], []).append(name)
+        report = ["Normative rules that no coverpoints/norm YAML file maps, by chapter", ""]
+        for chapter, names in sorted(by_chapter.items()):
+            report += [f"{chapter}:", *(f"  {n}" for n in names), ""]
+        args.report.write_text("\n".join(report), encoding="utf-8")
 
 
 if __name__ == "__main__":

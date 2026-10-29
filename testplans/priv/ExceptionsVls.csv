@@ -307,5 +307,5 @@ vs1r.v,VSR,x,x,x,x,x,x,x,,x,,,,,x,x,x
 vs2r.v,VSR,x,x,x,x,x,x,x,,x,,,,,x,x,x
 vs4r.v,VSR,x,x,x,x,x,x,x,,x,,,,,x,x,x
 vs8r.v,VSR,x,x,x,x,x,x,x,,x,,,,,x,x,x
-vsm.v,VSR,x,x,x,x,x,x,x,,x,,,,,x,x,x
-vlm.v,VLR,x,x,x,x,x,x,x,,x,,,,,x,x,x
+vsm.v,VSM,x,x,x,x,x,x,x,,x,,,,,x,x,x
+vlm.v,VLM,x,x,x,x,x,x,x,,x,,,,,x,x,x

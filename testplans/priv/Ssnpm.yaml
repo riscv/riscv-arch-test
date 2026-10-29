@@ -48,18 +48,19 @@ coverpoints:
       - pm_ignore_upper_bits
       - pm_deterministic_effect
       - ssnpm_definition
-      - pm_all_priv_modes
       - pm_per_mode_control
       - pm_config_next_higher
       - pm_apply_explicit
       - pm_cpu_only
       - pm_mode_only_dependency
-      - "UPDATED WITH CTP :"
       - pm_rv64_only
       - pmlen_supported_values
       - pmlen_mode_depend
       - pm_ignore_va
       - pm_ignore_pa
+    notes: |-
+      pm_all_priv_modes ("Such tools can be applied in all privilege modes (U, S, and M).") is no longer a tagged rule in the ISA manual.
+      UPDATED WITH CTP : pm_rv64_only, pmlen_supported_values, pmlen_mode_depend, pm_ignore_va, pm_ignore_pa
   - name: cp_pmlen_zicfiss_amo
     goal: Verify that upper PMLEN bits are ignored for the Zicfiss shadow stack AMO instructions when pointer masking is enabled
     description: |-

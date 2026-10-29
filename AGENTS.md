@@ -31,7 +31,8 @@
 
 - `make help`: list supported targets and variables.
 - `make tests`: generate assembly tests and coverpoints without compiling them.
-- `make`: generate tests and build ELFs for the default Spike RV32 and RV64 configurations.
+- `CONFIG_FILES=config/spike/spike-rv64-max/test_config.yaml make`: build tests and ELFs for one or more configs. `CONFIG_FILES` is required for `make`.
+- `make coverage` uses `CONFIG_FILES` if set. Otherwise it uses the Sail rv32/rv64 max configs.
 - `CONFIG_FILES=config/cores/<vendor>/<config>/test_config.yaml make`: build tests for one DUT configuration.
 - `make <config-target>`: build and run one or more configurations discovered from `run_cmd.txt`.
 - `EXTENSIONS=I,M make tests` or `EXTENSIONS=I make <config-target>`: restrict work to selected suites. `EXCLUDE_EXTENSIONS=Sm` applies a negative filter.
@@ -46,7 +47,7 @@
 - Privileged test generators are under `generators/testgen/src/testgen/priv/extensions/`. They write assembly under `tests/priv/`. Handwritten privileged functional coverage is under `coverpoints/priv/`.
 - A testcase checks one coverpoint bin. A `TestChunk` is an unsplittable group of testcases. A test file is one `.S` or `.c` file. A test suite is one extension directory.
 - Test headers are strict YAML between `START_TEST_CONFIG` and `END_TEST_CONFIG`. Supported keys are `REQUIRED_EXTENSIONS`, `FORBIDDEN_EXTENSIONS`, `MARCH`, `NEEDS_SIGNATURE`, `MIN_HARTS`, and `params`. Unknown keys fail validation.
-- CSV columns start with `Instruction`, `Type`, `RV32`, and `RV64`, followed by an optional `REQUIRED_EXTENSIONS` column (see `docs/DeveloperGuide.md`) and the coverpoints. `Type` must name a registered formatter. Coverpoint columns must name registered generators. Use `testplans/I.csv` as a reference.
+- CSV columns start with `Instruction`, `Type`, `RV32`, and `RV64`, followed by an optional `ExtraExtensions` column (see `docs/DeveloperGuide.md`) and the coverpoints. `Type` must name a registered formatter. Coverpoint columns must name registered generators. Use `testplans/I.csv` as a reference.
 - Registry modules are discovered automatically. Use the registry decorators and do not add manual imports. Files with names that start with `_` are not discovered.
 
 | Subsystem              | Decorator                                    | Directory                                          |

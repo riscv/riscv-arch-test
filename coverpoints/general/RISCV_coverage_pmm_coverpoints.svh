@@ -263,15 +263,15 @@
     }
 
     // Misaligned address (e.g. scratch+1); upper 7 bits = 0x01 or 0x00
-    misaligned_addr: coverpoint ((ins.current.rs1_val + ins.current.imm) & 2'b11) {
+    misaligned_addr: coverpoint ((ins.current.rs1_val + ins.current.imm) & 64'b11) {
         type_option.weight = 0;
         bins misaligned = {[2'b01:2'b11]};
     }
 
     `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
         // Exception should write xtval with masked version of pointer.
-        illegal_addr: coverpoint ((ins.current.rs1_val + ins.current.imm) & 48'hFFFF_FFFF_FFFF) {
+        illegal_addr: coverpoint ((ins.current.rs1_val + ins.current.imm) & 64'h0000_FFFF_FFFF_FFFF) {
             type_option.weight = 0;
-            bins is_illegal_base = {`RVMODEL_ACCESS_FAULT_ADDRESS& 48'hFFFF_FFFF_FFFF};
+            bins is_illegal_base = {`RVMODEL_ACCESS_FAULT_ADDRESS & 64'h0000_FFFF_FFFF_FFFF};
         }
     `endif

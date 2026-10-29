@@ -7,23 +7,43 @@ ci_enabled: true
 # Run experimental extensions in their dedicated workflow job.
 exclude_configs:
   - spike-rv64-experimental
-# Smstateen:
-#   - spike-rv64-max: mstateen0.P1P13 is writable on RV64; it controls hedelegh, which exists only on
-#     RV32 with H (https://github.com/riscv-software-src/riscv-isa-sim/issues/2464)
-#   - spike-rv{32,64}-max: spike implements scontext but keeps mstateen0.CONTEXT read-only zero, which
-#     Sail cannot model (https://github.com/riscv/sail-riscv/issues/2013); S-mode can also access
-#     scontext while CONTEXT is 0 (https://github.com/riscv-software-src/riscv-isa-sim/issues/2465)
-#   - spike-rv{32,64}-mu: mstateen0.ENVCFG is writable without S
-#     (https://github.com/riscv-software-src/riscv-isa-sim/issues/2464)
-# Sdtrig* not yet supported in Sail reference (https://github.com/riscv/sail-riscv/issues/222)
-# PMPZalrsc: an sc without a reservation is PMP-checked on its first byte only (check_load_reservation
-#   translates with size 1), so an sc.d that a PMP entry matches only in part fails without the
-#   store/AMO access fault that sc_retire_permission requires
-#   (https://github.com/riscv-software-src/riscv-isa-sim/issues/2466)
-# Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm : Failing due to mismatch in stval/mtval ,Issue Link (https://github.com/riscv/sail-riscv/issues/1962)
-exclude_extensions: "Smstateen,SdtrigSm,SdtrigS,SdtrigU,PMPZalrsc,Ssnpm,SsnpmSm,Smmpm,SmnpmS,SmnpmSSm,SmnpmU,SmnpmUSm"
+exclude_extensions:
+  # Sail lacks Ssaia/Sscsrind, so expects illegal instead of virtual instruction for their CSRs from VU-mode
+  # (https://github.com/riscv/sail-riscv/issues/1134).
+  - H_vucsr
+  # spike-rv32-max only: scontext is 16 bits wide on RV32 in Spike but 32 bits in Sail (cp_context).
+  # https://github.com/riscv/sail-riscv/issues/2054
+  # The exclusion applies to every Spike config, so the other configs, which pass, lose Smstateen too until
+  # exclusions can be given per config.
+  - Smstateen
+  # Spike stores tdata2 as written (trigger_t::tdata2_write in riscv/triggers.cc), so
+  # an all-ones write to an mcontrol6 NAPOT trigger reads back with bit maskmax6-1 set; the Debug spec requires it to
+  # read 0 (fix: https://github.com/riscv-software-src/riscv-isa-sim/pull/2481). Drop it when the Spike pin includes it.
+  - SdtrigSm_mcontrol6_napot_allones
+  # Sscofpmf_Sm_access fails on rv32-max only; the other Sscofpmf groups pass. Spike hardwires mhpmcounter3..31
+  # to 0 but keeps mhpmevent3..31 writable (https://github.com/riscv-software-src/riscv-isa-sim/issues/2370). Sail's
+  # writable_hpm_counters makes both or neither writable, so no reference config matches.
+  - Sscofpmf_Sm_access
+  - Sscofpmf_Sm_inhibit
+  - Sscofpmf_Sm_mcounteren
+  - Sscofpmf_Sm_overflow
+  - Sscofpmf_Sm_shadow
+  - Sscofpmf_S_inhibit
+  - Sscofpmf_S_mcounteren
+  - Sscofpmf_S_overflow
+  - Sscofpmf_S_shadow
+  - Sscofpmf_U_inhibit
+  - Sscofpmf_U_overflow
+  # An sc without a reservation is PMP-checked on its first byte only (check_load_reservation translates with
+  # size 1), so an sc.d that a PMP entry matches only in part fails without the store/AMO access fault that
+  # sc_retire_permission requires (https://github.com/riscv-software-src/riscv-isa-sim/issues/2466).
+  - PMP_Zalrsc_partial
 install_script: ".github/scripts/install-spike.sh"
 apt_packages: "device-tree-compiler libboost-regex-dev libboost-system-dev"
 shards: 1
 config_shards:
+  spike-rv32-mu: 2
+  spike-rv32-max: 2
+  spike-rv64-m: 2
+  spike-rv64-mu: 2
   spike-rv64-max: 2

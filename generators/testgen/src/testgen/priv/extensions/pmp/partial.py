@@ -29,6 +29,7 @@ from testgen.asm.helpers import comment_banner, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.pmp.helpers import cfg_byte, cfg_shift, set_pmpcfg, zero_pmp_regs
+from testgen.priv.extensions.pmp.probes import covergroup
 
 SLOT_BYTES = 16
 _SLOTS = 40
@@ -254,7 +255,7 @@ def make_partial_chunk(
     chunk.code.extend([*zero_pmp_regs(), "", "RVTEST_PMP_SET_BACKGROUND x4", ""])
     for case in cases:
         case_coverpoint = case.coverpoint or coverpoint
-        chunk.code.extend([*case_setup(case), *probe(test_data, case, case_coverpoint, test_data.testsuite), ""])
+        chunk.code.extend([*case_setup(case), *probe(test_data, case, case_coverpoint, covergroup(test_data)), ""])
     chunk.raw_data.extend(partial_blob())
     return test_data.end_test_chunk()
 
@@ -375,10 +376,16 @@ def _misaligned_blob() -> list[str]:
 
 
 def make_misaligned_chunk(
-    test_data: TestData, setup: list[str], coverpoint: str, description: str, *, lower_mode: str | None = None
+    test_data: TestData,
+    group: str,
+    setup: list[str],
+    coverpoint: str,
+    description: str,
+    *,
+    lower_mode: str | None = None,
 ) -> TestChunk:
     """Misaligned loads and stores across each end of one region, from M-mode or ``lower_mode``."""
-    chunk = test_data.begin_test_chunk("misaligned_partial")
+    chunk = test_data.begin_test_chunk(f"{group}_misaligned_partial")
     chunk.section_header = comment_banner(coverpoint, description)
     chunk.code.extend([*_MISALIGNED_DEFINES, "", *zero_pmp_regs(), "", *setup, "RVTEST_SFENCE_VMA_IF_SUPPORTED"])
     if lower_mode:
@@ -386,7 +393,7 @@ def make_misaligned_chunk(
     for case, probe in _MISALIGNED_CASES:
         where = "start" if case.name == "upper" else "end"
         chunk.code.extend(["", f"// Across the {where} of the region: it holds the {case.name} bytes of each access"])
-        chunk.code.extend(probe(test_data, case, coverpoint, test_data.testsuite))
+        chunk.code.extend(probe(test_data, case, coverpoint, covergroup(test_data)))
     if lower_mode:
         chunk.code.append("RVTEST_TSBI_GOTO_MMODE")
     chunk.raw_data.extend(_misaligned_blob())

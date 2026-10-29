@@ -931,36 +931,6 @@ covergroup Vf32_vfcvt_f_x_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_NaN_input
-    //////////////////////////////////////////////////////////////////////////////////
-
-`ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
-            bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
-            bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
-        `endif
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
-    `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
-            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
-`endif
-
-    //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vfp_flags_nx
     // For instructions that can raise NX but not NV/DZ/OF/UF
     // with the standard test vectors: int→float conversions
@@ -1029,34 +999,26 @@ covergroup Vf32_vfcvt_f_x_v_cg with function sample(ins_t ins);
     //// end cp_vs2////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges_f_sew32
+    // cp_vs2_edges
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_f_sew32 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[31:0]  iff (ins.trap == 0 )  {
-        // Standard precision coverpoints
-        bins pos0                   = {32'h00000000};
-        bins neg0                   = {32'h80000000};
-        bins pos1                   = {32'h3F800000};
-        bins neg1                   = {32'hBF800000};
-        bins posminnorm             = {32'h00800000};
-        bins negmaxnorm             = {32'hFF7FFFFF};
-        bins posinfinity            = {32'h7F800000};
-        bins neginfinity            = {32'hFF800000};
-        bins pos0p5                 = {32'h3F000000};
-        bins pos1p5                 = {32'h3FC00000};
-        bins neg2                   = {32'hC0000000};
-        bins pi                     = {32'h40490FDB};
-        bins twoToEmax              = {32'h7F000000};   // 2^127
-        bins onePulp                = {32'h3F800001};   // 1 + ULP
-        bins largestsubnorm         = {32'h007FFFFF};
-        bins negSubnormLeadingOne   = {32'h80400000};   // subnormal with MSB of fraction = 1
-        bins min_subnorm            = {32'h00000001};
-        bins canonicalQNaN          = {32'h7FC00000};   // quiet NaN, canonical payload
-        bins negNoncanonicalQNaN    = {[32'hFFC00001:32'hFFFFFFFF]}; // other quiet NaNs
-        bins sNaN_payload1          = {32'h7F800001};   // signaling NaN with payload 1
+    cp_vs2_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "1")  iff (ins.trap == 0 )  {
+        // Edges values of vs2, assuming vl = 1
+        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
+        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
+        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
+        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
+        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
+        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
+        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
+        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
+        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
+        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
+        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
+        bins random     = {vs_random    };   //  = {(SEW){random}}
     }
 
-    //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
+    //// end cp_vs2_edges////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
@@ -1161,36 +1123,6 @@ covergroup Vf32_vfcvt_f_xu_v_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_NaN_input
-    //////////////////////////////////////////////////////////////////////////////////
-
-`ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
-            bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
-            bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
-        `endif
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
-    `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
-            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
-`endif
-
-    //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vfp_flags_nx
     // For instructions that can raise NX but not NV/DZ/OF/UF
     // with the standard test vectors: int→float conversions
@@ -1259,34 +1191,26 @@ covergroup Vf32_vfcvt_f_xu_v_cg with function sample(ins_t ins);
     //// end cp_vs2////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges_f_sew32
+    // cp_vs2_edges
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_f_sew32 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[31:0]  iff (ins.trap == 0 )  {
-        // Standard precision coverpoints
-        bins pos0                   = {32'h00000000};
-        bins neg0                   = {32'h80000000};
-        bins pos1                   = {32'h3F800000};
-        bins neg1                   = {32'hBF800000};
-        bins posminnorm             = {32'h00800000};
-        bins negmaxnorm             = {32'hFF7FFFFF};
-        bins posinfinity            = {32'h7F800000};
-        bins neginfinity            = {32'hFF800000};
-        bins pos0p5                 = {32'h3F000000};
-        bins pos1p5                 = {32'h3FC00000};
-        bins neg2                   = {32'hC0000000};
-        bins pi                     = {32'h40490FDB};
-        bins twoToEmax              = {32'h7F000000};   // 2^127
-        bins onePulp                = {32'h3F800001};   // 1 + ULP
-        bins largestsubnorm         = {32'h007FFFFF};
-        bins negSubnormLeadingOne   = {32'h80400000};   // subnormal with MSB of fraction = 1
-        bins min_subnorm            = {32'h00000001};
-        bins canonicalQNaN          = {32'h7FC00000};   // quiet NaN, canonical payload
-        bins negNoncanonicalQNaN    = {[32'hFFC00001:32'hFFFFFFFF]}; // other quiet NaNs
-        bins sNaN_payload1          = {32'h7F800001};   // signaling NaN with payload 1
+    cp_vs2_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "1")  iff (ins.trap == 0 )  {
+        // Edges values of vs2, assuming vl = 1
+        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
+        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
+        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
+        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
+        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
+        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
+        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
+        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
+        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
+        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
+        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
+        bins random     = {vs_random    };   //  = {(SEW){random}}
     }
 
-    //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
+    //// end cp_vs2_edges////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32
@@ -8517,6 +8441,10 @@ covergroup Vf32_vfncvt_f_f_w_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -8827,29 +8755,6 @@ covergroup Vf32_vfncvt_f_x_w_cg with function sample(ins_t ins);
     //// end cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_NaN_input
-    //////////////////////////////////////////////////////////////////////////////////
-
-`ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
-        `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
-            bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
-        `endif
-    `ifdef D_SUPPORTED
-        `ifdef COVER_VFCUSTOM32
-            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
-            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
-        `endif
-    `endif
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`endif
-
-    //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vfp_flags_nx
     // For instructions that can raise NX but not NV/DZ/OF/UF
     // with the standard test vectors: int→float conversions
@@ -8908,34 +8813,26 @@ covergroup Vf32_vfncvt_f_x_w_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges_f_emul2_sew32
+    // cp_vs2_edges_emul2
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_f_emul2_sew32 : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val)[63:0]  iff (ins.trap == 0 )  {
-        // (Double Precision)
-        bins pos0                   = {64'h0000000000000000};
-        bins neg0                   = {64'h8000000000000000};
-        bins pos1                   = {64'h3FF0000000000000};
-        bins neg1                   = {64'hBFF0000000000000};
-        bins posminnorm             = {64'h0010000000000000};
-        bins negmaxnorm             = {64'hFFEFFFFFFFFFFFFF};
-        bins posinfinity            = {64'h7FF0000000000000};
-        bins neginfinity            = {64'hFFF0000000000000};
-        bins pos0p5                 = {64'h3FE0000000000000};
-        bins pos1p5                 = {64'h3FF8000000000000};
-        bins neg2                   = {64'hC000000000000000};
-        bins pi                     = {64'h400921FB54442D18};
-        bins twoToEmax              = {64'h7FE0000000000000};   // 2^1023
-        bins onePulp                = {64'h3FF0000000000001};   // 1 + ULP
-        bins largestsubnorm         = {64'h000FFFFFFFFFFFFF};
-        bins negSubnormLeadingOne   = {64'h8008000000000000};
-        bins min_subnorm            = {64'h0000000000000001};
-        bins canonicalQNaN          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
-        bins negNoncanonicalQNaN    = {[64'hFFF8000000000001:64'hFFFFFFFFFFFFFFFF]}; // other quiet NaNs
-        bins sNaN_payload1          = {64'h7FF0000000000001};   // signaling NaN with payload 1
+    cp_vs2_edges_emul2 : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "2")  iff (ins.trap == 0 )  {
+        // Edges values of vs2 (emul = 2), assuming vl = 1
+        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
+        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
+        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
+        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
+        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
+        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
+        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
+        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
+        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
+        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
+        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
+        bins random     = {vs_random    };   //  = {(SEW){random}}
     }
 
-    //// end cp_vs2_edges_f_emul2_sew32////////////////////////////////////////////////
+    //// end cp_vs2_edges_emul2////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vs2_emul2
@@ -9109,29 +9006,6 @@ covergroup Vf32_vfncvt_f_xu_w_cg with function sample(ins_t ins);
     //// end cp_custom_vdOverlapBtmVs2_vd_vs2_lmul1/2/4 ////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_NaN_input
-    //////////////////////////////////////////////////////////////////////////////////
-
-`ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
-        `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
-            bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
-        `endif
-    `ifdef D_SUPPORTED
-        `ifdef COVER_VFCUSTOM32
-            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
-            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
-        `endif
-    `endif
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`endif
-
-    //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////////////////////////////////////
     // cp_custom_vfp_flags_nx
     // For instructions that can raise NX but not NV/DZ/OF/UF
     // with the standard test vectors: int→float conversions
@@ -9190,34 +9064,26 @@ covergroup Vf32_vfncvt_f_xu_w_cg with function sample(ins_t ins);
     }
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges_f_emul2_sew32
+    // cp_vs2_edges_emul2
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_f_emul2_sew32 : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val)[63:0]  iff (ins.trap == 0 )  {
-        // (Double Precision)
-        bins pos0                   = {64'h0000000000000000};
-        bins neg0                   = {64'h8000000000000000};
-        bins pos1                   = {64'h3FF0000000000000};
-        bins neg1                   = {64'hBFF0000000000000};
-        bins posminnorm             = {64'h0010000000000000};
-        bins negmaxnorm             = {64'hFFEFFFFFFFFFFFFF};
-        bins posinfinity            = {64'h7FF0000000000000};
-        bins neginfinity            = {64'hFFF0000000000000};
-        bins pos0p5                 = {64'h3FE0000000000000};
-        bins pos1p5                 = {64'h3FF8000000000000};
-        bins neg2                   = {64'hC000000000000000};
-        bins pi                     = {64'h400921FB54442D18};
-        bins twoToEmax              = {64'h7FE0000000000000};   // 2^1023
-        bins onePulp                = {64'h3FF0000000000001};   // 1 + ULP
-        bins largestsubnorm         = {64'h000FFFFFFFFFFFFF};
-        bins negSubnormLeadingOne   = {64'h8008000000000000};
-        bins min_subnorm            = {64'h0000000000000001};
-        bins canonicalQNaN          = {64'h7FF8000000000000};   // quiet NaN, canonical payload
-        bins negNoncanonicalQNaN    = {[64'hFFF8000000000001:64'hFFFFFFFFFFFFFFFF]}; // other quiet NaNs
-        bins sNaN_payload1          = {64'h7FF0000000000001};   // signaling NaN with payload 1
+    cp_vs2_edges_emul2 : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "2")  iff (ins.trap == 0 )  {
+        // Edges values of vs2 (emul = 2), assuming vl = 1
+        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
+        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
+        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
+        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
+        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
+        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
+        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
+        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
+        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
+        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
+        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
+        bins random     = {vs_random    };   //  = {(SEW){random}}
     }
 
-    //// end cp_vs2_edges_f_emul2_sew32////////////////////////////////////////////////
+    //// end cp_vs2_edges_emul2////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cp_vs2_emul2
@@ -9455,6 +9321,10 @@ covergroup Vf32_vfncvt_rod_f_f_w_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -9763,6 +9633,10 @@ covergroup Vf32_vfncvt_rtz_x_f_w_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -10071,6 +9945,10 @@ covergroup Vf32_vfncvt_rtz_xu_f_w_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -10388,6 +10266,10 @@ covergroup Vf32_vfncvt_x_f_w_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -10705,6 +10587,10 @@ covergroup Vf32_vfncvt_xu_f_w_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -20227,6 +20113,10 @@ covergroup Vf32_vfwadd_wf_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -20576,6 +20466,10 @@ covergroup Vf32_vfwadd_wv_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -20945,7 +20839,7 @@ covergroup Vf32_vfwadd_wv_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Vf32_vfwcvt_f_x_v_cg with function sample(ins_t ins);
+covergroup Vf32_vfwcvt_f_f_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
     get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -20956,9 +20850,18 @@ covergroup Vf32_vfwcvt_f_x_v_cg with function sample(ins_t ins);
     bins true = {1'b1};
     }
 
-    cp_asm_count : coverpoint ins.ins_str == "vfwcvt.f.x.v"  iff (ins.trap == 0 )  {
+    cp_asm_count : coverpoint ins.ins_str == "vfwcvt.f.f.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
+    }
+
+    cp_csr_fflags_v : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
+        // Value of FCSR.fflags
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
     }
 
     //////////////////////////////////////////////////////////////////////////////////
@@ -20990,6 +20893,71 @@ covergroup Vf32_vfwcvt_f_x_v_cg with function sample(ins_t ins);
 `endif
 
     //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfp_flags_nv
+    // For instructions that can only raise NV (comparison, min, max).
+    // These instructions compare or select operands exactly — no rounding occurs,
+    // so NX/DZ/OF/UF are never raised. NV fires when either operand is a sNaN.
+    //////////////////////////////////////////////////////////////////////////////////
+
+`ifndef COVER_VFCUSTOM64
+    cp_csr_fflags_vdoun_nv : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+    }
+
+    cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
+`else
+    `ifdef D_SUPPORTED
+    cp_csr_fflags_vdoun_nv : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+    }
+
+    cp_custom_vfp_flags_nv : cross std_vec, cp_csr_fflags_vdoun_nv;
+    `endif
+`endif
+
+    //// end cp_custom_vfp_flags_nv////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_custom_vfp_flags_set
+    // Universal flag-set check: every flag-setting FP instruction can raise NV
+    // (sNaN input). DZ/NX/OF/UF are covered by per-instruction specific columns.
+    //////////////////////////////////////////////////////////////////////////////////
+
+`ifndef COVER_VFCUSTOM64
+    cp_csr_fflags_vdoun_set : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+    }
+
+    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
+`else
+    `ifdef D_SUPPORTED
+    cp_csr_fflags_vdoun_set : coverpoint {
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "fcsr", "fflags")[4:0],
+        get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "fcsr", "fflags")[4:0]
+    } iff (ins.trap == 0 )  {
+        wildcard bins NV   = {10'b0????_1????};
+        wildcard bins NV1  = {10'b1????_1????};
+    }
+
+    cp_custom_vfp_flags_set : cross std_vec, cp_csr_fflags_vdoun_set;
+    `endif
+`endif
+
+    //// end cp_custom_vfp_flags_set////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -21127,7 +21095,7 @@ covergroup Vf32_vfwcvt_f_x_v_cg with function sample(ins_t ins);
 
 endgroup
 // ---------------------
-covergroup Vf32_vfwcvt_f_xu_v_cg with function sample(ins_t ins);
+covergroup Vf32_vfwcvt_f_x_v_cg with function sample(ins_t ins);
     option.per_instance = 0;
     std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
     get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
@@ -21138,40 +21106,10 @@ covergroup Vf32_vfwcvt_f_xu_v_cg with function sample(ins_t ins);
     bins true = {1'b1};
     }
 
-    cp_asm_count : coverpoint ins.ins_str == "vfwcvt.f.xu.v"  iff (ins.trap == 0 )  {
+    cp_asm_count : coverpoint ins.ins_str == "vfwcvt.f.x.v"  iff (ins.trap == 0 )  {
         // Number of times instruction is executed
         bins count[]  = {1};
     }
-
-    //////////////////////////////////////////////////////////////////////////////////
-    // cp_custom_vfp_NaN_input
-    //////////////////////////////////////////////////////////////////////////////////
-
-`ifndef COVER_VFCUSTOM64
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-        `ifdef COVER_VFCUSTOM16
-            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
-            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
-        `endif
-        `ifdef COVER_VFCUSTOM32
-            bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
-            bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
-        `endif
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-`else
-    `ifdef D_SUPPORTED
-    vs2_element0_sqNAN : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val) {
-            bins vs2_0_qNaN = {64'h7FF8_0000_0000_0000}; // qNaN input (canonical double)
-            bins vs2_0_sNaN = {64'h7FF0_0000_0000_0001}; // sNaN input (double)
-    }
-
-    cp_custom_vfp_NaN_input : cross std_vec, vs2_element0_sqNAN;
-    `endif
-`endif
-
-    //// end cp_custom_vfp_NaN_input////////////////////////////////////////////////
 
     cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
         // Edges values of v0 (vector mask register)
@@ -21223,34 +21161,170 @@ covergroup Vf32_vfwcvt_f_xu_v_cg with function sample(ins_t ins);
     //// end cp_vs2////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
-    // cp_vs2_edges_f_sew32
+    // cp_vs2_edges
     //////////////////////////////////////////////////////////////////////////////////
 
-    cp_vs2_edges_f_sew32 : coverpoint get_vr_element_zero(ins.hart, ins.issue, ins.current.vs2_val)[31:0]  iff (ins.trap == 0 )  {
-        // Standard precision coverpoints
-        bins pos0                   = {32'h00000000};
-        bins neg0                   = {32'h80000000};
-        bins pos1                   = {32'h3F800000};
-        bins neg1                   = {32'hBF800000};
-        bins posminnorm             = {32'h00800000};
-        bins negmaxnorm             = {32'hFF7FFFFF};
-        bins posinfinity            = {32'h7F800000};
-        bins neginfinity            = {32'hFF800000};
-        bins pos0p5                 = {32'h3F000000};
-        bins pos1p5                 = {32'h3FC00000};
-        bins neg2                   = {32'hC0000000};
-        bins pi                     = {32'h40490FDB};
-        bins twoToEmax              = {32'h7F000000};   // 2^127
-        bins onePulp                = {32'h3F800001};   // 1 + ULP
-        bins largestsubnorm         = {32'h007FFFFF};
-        bins negSubnormLeadingOne   = {32'h80400000};   // subnormal with MSB of fraction = 1
-        bins min_subnorm            = {32'h00000001};
-        bins canonicalQNaN          = {32'h7FC00000};   // quiet NaN, canonical payload
-        bins negNoncanonicalQNaN    = {[32'hFFC00001:32'hFFFFFFFF]}; // other quiet NaNs
-        bins sNaN_payload1          = {32'h7F800001};   // signaling NaN with payload 1
+    cp_vs2_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "1")  iff (ins.trap == 0 )  {
+        // Edges values of vs2, assuming vl = 1
+        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
+        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
+        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
+        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
+        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
+        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
+        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
+        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
+        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
+        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
+        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
+        bins random     = {vs_random    };   //  = {(SEW){random}}
     }
 
-    //// end cp_vs2_edges_f_sew32         //////////////////////////////////////////////////
+    //// end cp_vs2_edges////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vl_lmul_sew32_lmul4max
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vlmul")  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2) {
+        // Value of VTYPE.vlmul (vector register grouping), SEW = 32, excluding LMUL = 8
+        `ifdef LMULf2_SUPPORTED
+            bins half   = {7};
+        `endif
+        bins one    = {0};
+        bins two    = {1};
+        bins four   = {2};
+    }
+
+    cp_csr_vl_edges : coverpoint vl_check(ins.hart, ins.issue)  iff (ins.trap == 0 )  {
+        // Edges values of VL (vector length)
+        bins one        = {vl_one       };
+        bins vlmax      = {vl_vlmax     };
+        bins legal      = {vl_legal     };
+    }
+
+    cr_vl_lmul_lmul4max_sew32 : cross cp_csr_vtype_lmul_all_lmul4max_sew32_lmul_le_4, cp_csr_vl_edges  iff (ins.trap == 0 & get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vsew") == 2)  {
+        // Cross coverage all legal LMULs (excluding LMUL = 8) for SEW = 32 and vl edges (1, random, vlmax)
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+
+    //// end cr_vl_lmul_lmul4max_sew32////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cr_vtype_agnostic_lmul4max
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_csr_vtype_vta : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vta")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vta (vector tail agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    cp_csr_vtype_vma : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vma")  iff (ins.trap == 0)  {
+        // Value of VTYPE.vma (vector mask agnostic)
+        bins undisturbed = {0};
+        bins agnostic    = {1};
+    }
+
+    mask_enabled_agnostic: coverpoint ins.current.insn[25] {
+        bins enabled = {1'b0};
+    }
+
+    cr_vtype_agnostic_lmul4max : cross cp_csr_vtype_vta,cp_csr_vtype_vma,mask_enabled_agnostic iff (ins.trap == 0 )  {
+        // Cross coverage of vector tail and mask agnostic behaviors
+    }
+
+    //// end cr_vtype_agnostic_lmul4max////////////////////////////////////////////////
+
+endgroup
+// ---------------------
+covergroup Vf32_vfwcvt_f_xu_v_cg with function sample(ins_t ins);
+    option.per_instance = 0;
+    std_vec: coverpoint {get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vtype", "vill") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vstart", "vstart") == 0 &
+    get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") != 0 &
+                        ins.trap == 0
+                    }
+    {
+    bins true = {1'b1};
+    }
+
+    cp_asm_count : coverpoint ins.ins_str == "vfwcvt.f.xu.v"  iff (ins.trap == 0 )  {
+        // Number of times instruction is executed
+        bins count[]  = {1};
+    }
+
+    cp_masking_edges : coverpoint mask_edges_check(ins.hart, ins.issue, ins.prev.v_wdata[0])  iff (ins.trap == 0 & ins.current.vm == 0)  {
+        // Edges values of v0 (vector mask register)
+        bins zero           = {mask_zero            };
+        bins ones           = {mask_ones            };
+        bins vlmaxm1ones    = {mask_vlmaxm1ones     };
+        bins vlmaxd2p1ones  = {mask_vlmaxd2p1ones   };
+        bins random         = {mask_random          };
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vd_emul2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vd_emul2 : coverpoint ins.get_vr_reg(ins.current.vd) iff (ins.trap == 0) {
+        // VD register assignment (widening instruction, excluding odd registers)
+        ignore_bins v1 = {v1};
+        ignore_bins v3 = {v3};
+        ignore_bins v5 = {v5};
+        ignore_bins v7 = {v7};
+        ignore_bins v9 = {v9};
+        ignore_bins v11 = {v11};
+        ignore_bins v13 = {v13};
+        ignore_bins v15 = {v15};
+        ignore_bins v17 = {v17};
+        ignore_bins v19 = {v19};
+        ignore_bins v21 = {v21};
+        ignore_bins v23 = {v23};
+        ignore_bins v25 = {v25};
+        ignore_bins v27 = {v27};
+        ignore_bins v29 = {v29};
+        ignore_bins v31 = {v31};
+    }
+
+    //// end cp_vd_emul2////////////////////////////////////////////////
+
+    cp_vl_0 : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vl", "vl") {
+    bins zero = {0};
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs2
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs2 : coverpoint ins.get_vr_reg(ins.current.vs2)  iff (ins.trap == 0 )  {
+        // VS2 register assignment
+    }
+
+    //// end cp_vs2////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////////////
+    // cp_vs2_edges
+    //////////////////////////////////////////////////////////////////////////////////
+
+    cp_vs2_edges : coverpoint vs_edges_check(ins.hart, ins.issue, ins.current.vs2_val, "1")  iff (ins.trap == 0 )  {
+        // Edges values of vs2, assuming vl = 1
+        bins zero       = {vs_zero      };   //  = {(`SEW){1'b0}},
+        bins one        = {vs_one       };   //  = {(`SEW-1){1'b0}, {1'b1}},
+        bins two        = {vs_two       };   //  = {(`SEW-2){1'b0}, {2'b10}},
+        bins min        = {vs_min       };   //  = {{1'b1}, (`SEW-1){1'b0}},
+        bins minp1      = {vs_minp1     };   //  = {{1'b1}, (`SEW-2){1'b0}, {1'b1}},
+        bins max        = {vs_max       };   //  = {{1'b0}, (`SEW-1){1'b1}},
+        bins maxm1      = {vs_maxm1     };   //  = {{1'b0}, (`SEW-2){1'b1}, {1'b0}},
+        bins ones       = {vs_ones      };   //  = {(`SEW){1'b1}},
+        bins onesm1     = {vs_onesm1    };   //  = {(`SEW-1){1'b1}, {1'b0}},
+        bins walkodd    = {vs_walkodd   };   //  = {(`SEW/2){2'b10}},
+        bins walkeven   = {vs_walkeven  };   //  = {(`SEW/2){2'b01}},
+        bins random     = {vs_random    };   //  = {(SEW){random}}
+    }
+
+    //// end cp_vs2_edges////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////////////
     // cr_vl_lmul_sew32_lmul4max
@@ -27664,6 +27738,10 @@ covergroup Vf32_vfwsub_wf_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -28013,6 +28091,10 @@ covergroup Vf32_vfwsub_wv_cg with function sample(ins_t ins);
 
 `ifndef COVER_VFCUSTOM64
     vs2_element0_sqNAN : coverpoint get_vr_element_zero_widen(ins.hart, ins.issue, ins.current.vs2_val) {
+        `ifdef COVER_VFCUSTOM8
+            bins vs2_0_qNaN = {64'h0000_0000_0000_7E00}; // qNaN input (canonical half)
+            bins vs2_0_sNaN = {64'h0000_0000_0000_7D00}; // sNaN input (half)
+        `endif
         `ifdef COVER_VFCUSTOM16
             bins vs2_0_qNaN = {64'h0000_0000_7FC0_0000}; // qNaN input (canonical single)
             bins vs2_0_sNaN = {64'h0000_0000_7FA0_0000}; // sNaN input (single)
@@ -31506,6 +31588,9 @@ function void vf32_sample(int hart, int issue, ins_t ins);
             end
             "vfwadd.wv"     : begin
                 Vf32_vfwadd_wv_cg.sample(ins);
+            end
+            "vfwcvt.f.f.v"     : begin
+                Vf32_vfwcvt_f_f_v_cg.sample(ins);
             end
             "vfwcvt.f.x.v"     : begin
                 Vf32_vfwcvt_f_x_v_cg.sample(ins);

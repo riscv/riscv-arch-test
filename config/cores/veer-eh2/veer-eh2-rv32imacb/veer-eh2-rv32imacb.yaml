@@ -37,8 +37,8 @@ implemented_extensions:
   #   Quote: "Atomics support is selected with the ATOMIC_ENABLE build argument when the VeeR
   #   EH2 core is built."
   #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/docs/source/csrs.md#L476
-  # NOTE: AMOs are illegal outside the DCCM on this core, and the ACT image lives in system
-  # memory, so every AMO the tests execute is expected to fault.
+  # AMOs and LR/SC are illegal outside the DCCM on this core, so link.ld places the ACT
+  # .data section (where the tests' AMO and LR/SC targets live) in the DCCM.
   #   Quote: "# Make atomic instructions illegal outside of DCCM."
   #   https://github.com/chipsalliance/Cores-VeeR-EH2/blob/a7203d02/configs/veer.config#L2604
   - { name: A, version: "= 2.1" }

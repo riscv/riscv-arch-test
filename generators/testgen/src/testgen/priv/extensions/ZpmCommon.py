@@ -50,6 +50,7 @@ PMM_CONFIGS = [
     (0b10, 7, "pmm10"),
     (0b11, 16, "pmm11"),
 ]
+PMLEN_BY_PMM = {pmm: pmlen for pmm, pmlen, _ in PMM_CONFIGS}
 
 # Values used to seed memory, write new data, and detect an unexpected load result.
 VALUE_OLD = 0xABCD_1234_ABCD_1234
@@ -432,6 +433,21 @@ def _walk_asm(mode: str, tables: list[str], va_reg: str, test_data: TestData) ->
 def _ifdef(guard: str, body: list[str]) -> list[str]:
     """Wrap assembly lines in a preprocessor feature guard."""
     return [f"#ifdef {guard}", *body, f"#endif // {guard}"]
+
+
+# Extension that owns the PMM field of each CSR.
+_PMM_EXTENSION = {"mseccfg": "SMMPM", "menvcfg": "SMNPM", "senvcfg": "SSNPM"}
+
+
+def pmm_ifdef(csr: str, pmlen: int, body: list[str]) -> list[str]:
+    """Wrap *body* in the guard for PMLEN *pmlen* of the PMM field in *csr*.
+
+    The config defines UDB_SUPPORTED_PMLEN_<EXT>_<N> for each supported PMLEN. PMLEN 0 (PMM=00,
+    no masking) is always legal, so it is not guarded.
+    """
+    if pmlen == 0:
+        return body
+    return _ifdef(f"UDB_SUPPORTED_PMLEN_{_PMM_EXTENSION[csr]}_{pmlen}", body)
 
 
 def _access(
@@ -1216,10 +1232,14 @@ def generate_mprv_mpp_m_tests(test_data: TestData, cg: str) -> list[str]:
     for mseccfg_pmm, mseccfg_pmlen, _ in PMM_CONFIGS:
         prefix = f"mprv_mseccfg{mseccfg_pmm:02b}_nosatp_mppm"
         lines.extend(
-            [
-                *set_pmm_field("mseccfg", mseccfg_pmm, mseccfg_pmlen, test_data),
-                *_mprv_lw_sw_probe("PRV_M", "cp_pm_mprv_mpp_m", prefix, test_data, cg),
-            ]
+            pmm_ifdef(
+                "mseccfg",
+                mseccfg_pmlen,
+                [
+                    *set_pmm_field("mseccfg", mseccfg_pmm, mseccfg_pmlen, test_data),
+                    *_mprv_lw_sw_probe("PRV_M", "cp_pm_mprv_mpp_m", prefix, test_data, cg),
+                ],
+            )
         )
     lines.extend([*set_pmm_field("mseccfg", 0b00, 0, test_data), *mprv_teardown(test_data, sum_bit=False)])
     return lines
@@ -1261,10 +1281,10 @@ def generate_mprv_lower_mode_tests(
 
         # mseccfg.PMM only exists with Smmpm; without it the sweep collapses to one pass.
         for mseccfg_pmm, mseccfg_pmlen, _ in PMM_CONFIGS:
-            lines.extend(_ifdef("SMMPM_SUPPORTED", set_pmm_field("mseccfg", mseccfg_pmm, mseccfg_pmlen, test_data)))
+            mseccfg_body = _ifdef("SMMPM_SUPPORTED", set_pmm_field("mseccfg", mseccfg_pmm, mseccfg_pmlen, test_data))
 
             for pmm, pmlen, _ in PMM_CONFIGS:
-                lines.extend(set_pmm_field(pmm_csr, pmm, pmlen, test_data))
+                pmm_body = set_pmm_field(pmm_csr, pmm, pmlen, test_data)
 
                 for satp_mode in ["bare", "sv39"] if s_mode else ["bare"]:
                     cfg = f"mseccfg{mseccfg_pmm:02b}_{pmm_csr}{pmm:02b}"
@@ -1274,8 +1294,11 @@ def generate_mprv_lower_mode_tests(
                         probe = _ifdef(
                             "SV39_SUPPORTED", [SV39.satp_setup, "sfence.vma", *probe, "csrwi satp, 0", "sfence.vma"]
                         )
-                    lines.extend(probe)
+                    pmm_body.extend(probe)
 
+                mseccfg_body.extend(pmm_ifdef(pmm_csr, pmlen, pmm_body))
+
+            lines.extend(pmm_ifdef("mseccfg", mseccfg_pmlen, mseccfg_body))
     lines.extend(
         [
             *_ifdef("SMMPM_SUPPORTED", set_pmm_field("mseccfg", 0b00, 0, test_data)),

@@ -1,1 +1,0 @@
-run-ara.sh --elf

@@ -209,6 +209,11 @@
             ins.add_rs2(1);
             ins.add_imm_addr(2);
         end
+        "beqi"     : begin
+            ins.add_rs1(0);
+            ins.add_imm2(1);
+            ins.add_imm_addr(2);
+        end
         "bext"     : begin
             ins.add_rd(0);
             ins.add_rs1(1);
@@ -252,6 +257,11 @@
         "bne"     : begin
             ins.add_rs1(0);
             ins.add_rs2(1);
+            ins.add_imm_addr(2);
+        end
+        "bnei"     : begin
+            ins.add_rs1(0);
+            ins.add_imm2(1);
             ins.add_imm_addr(2);
         end
         "brev8"     : begin
@@ -1187,24 +1197,18 @@
         end
         "hsv.b"     : begin
             ins.add_rs2(0);
-            ins.add_mem_offset(1);
-            ins.add_rs1(2);
+            ins.add_rs1(1);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
         end
         "hsv.h"     : begin
             ins.add_rs2(0);
-            ins.add_mem_offset(1);
-            ins.add_rs1(2);
+            ins.add_rs1(1);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
         end
         "hsv.w"     : begin
             ins.add_rs2(0);
-            ins.add_mem_offset(1);
-            ins.add_rs1(2);
+            ins.add_rs1(1);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
         end
         "jal"     : begin
             ins.add_rd(0);
@@ -6473,10 +6477,8 @@
         end
         "hsv.d"     : begin
             ins.add_rs2(0);
-            ins.add_mem_offset(1);
-            ins.add_rs1(2);
+            ins.add_rs1(1);
             ins.current.inst_category = INST_CAT_STORE;
-            ins.add_mem_address();
         end
         "ld"     : begin
             ins.add_rd(0);

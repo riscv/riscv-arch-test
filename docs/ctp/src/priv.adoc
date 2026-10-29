@@ -2,7 +2,7 @@
 [appendix]
 == Privileged Test Plan
 
-Privileged https://drive.google.com/drive/folders/11hTR2Yl48kOMODxhwrSsC-eXYtM_rJJE?usp=share_link:[test plan spreadsheets] are available.  They need to be edited into a more standardized format. Each test plan spreadsheet contains multiple columns for the applicable configurations.  For example, Sm applies to any configuration with machine mode, S applies to any configuration with supervisor mode, and SmF applies to any configuration with floating-point.
+Privileged https://drive.google.com/drive/folders/11hTR2Yl48kOMODxhwrSsC-eXYtM_rJJE?usp=share_link:[test plan spreadsheets] are available.  They need to be edited into a more standardized format. Each test plan spreadsheet contains multiple columns for the applicable configurations.  For example, Sm applies to any configuration with machine mode, S applies to any configuration with supervisor mode, and the Sm_F tests within Sm apply to any configuration that also has floating-point.
 
 The privileged testplan is organized by major categories of behaviors or extensions in the following sections.
 Each of these categories has multiple coverage files with suffixes indicating the circumstances to which they apply.
@@ -18,8 +18,6 @@ include::priv_csr_instr.adoc[]
 include::exceptions.adoc[]
 
 include::interrupts.adoc[]
-
-include::zicntr.adoc[]
 
 include::endian.adoc[]
 

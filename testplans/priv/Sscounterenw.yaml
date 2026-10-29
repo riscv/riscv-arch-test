@@ -8,5 +8,5 @@ coverpoints:
     expectation: Match reference model
     bins: 2*XLEN
     rules:
-      - For any hpmcounter that is not read-only zero, the corresponding bit in scounteren must be writable.
-  - heading: Note that this overlaps tests in ZicntrS
+      - Sscounterenw_hpmcounter_scounteren
+  - heading: Note that this overlaps tests in S_Zicntr

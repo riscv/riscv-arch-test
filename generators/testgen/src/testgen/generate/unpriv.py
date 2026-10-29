@@ -11,7 +11,7 @@
 import re
 from pathlib import Path
 
-from testgen.constants import INDENT, TESTCASES_PER_FILE, get_flen_for_extensions
+from testgen.constants import INDENT, TESTCASES_PER_FILE, VLEN_MAX, get_flen_for_extensions
 from testgen.coverpoints import generate_tests_for_coverpoint
 from testgen.data.config import TestConfig
 from testgen.data.registers import IntegerRegisterFile
@@ -52,7 +52,7 @@ def generate_unpriv_extension_tests(
     Args:
         xlen: Target XLEN (32 or 64)
         E_ext: Whether to generate RV32E tests
-        testsuite: Testsuite to generate tests for (e.g., 'I', 'M', 'ZcbM', 'MisalignD')
+        testsuite: Testsuite to generate tests for (e.g., 'I', 'M', 'Zcb', 'Zicclsm')
         testplan_dir: Directory containing testplan CSV files
         output_test_dir: Directory to output generated tests
         is_vector: Set in vector test suites
@@ -77,20 +77,20 @@ def generate_unpriv_extension_tests(
     output_dir.mkdir(parents=True, exist_ok=True)
     generated_files: set[Path] = set()
 
-    # One test configuration per ExtraExtension entry; a row with an extra extension gets its own
+    # One test configuration per ExtraExtensions entry; a row with an extra extension gets its own
     # file/covergroup name prefix, header requirements, and FLEN, but stays in this testsuite's directory.
-    test_configs: dict[str, TestConfig] = {}
-    for extra_extension in {instr_data.extra_extension for instr_data in instructions}:
+    test_configs: dict[tuple[str, ...], TestConfig] = {}
+    for extra_extensions in {instr_data.extra_extensions for instr_data in instructions}:
         ext_components, _ = canonicalize_extensions(
-            testsuite, xlen, E_ext, sew=sew, instr_name=instructions[0].instr_name, extra_extension=extra_extension
+            testsuite, xlen, E_ext, sew=sew, instr_name=instructions[0].instr_name, extra_extensions=extra_extensions
         )
-        test_configs[extra_extension] = TestConfig(
+        test_configs[extra_extensions] = TestConfig(
             xlen=xlen,
             flen=get_flen_for_extensions(ext_components),
             testsuite=testsuite,
             E_ext=E_ext,
             sew=sew,
-            extra_extension=extra_extension,
+            extra_extensions=extra_extensions,
         )
 
     # Iterate through each instruction in the testsuite; generate separate test files for each
@@ -107,7 +107,7 @@ def generate_unpriv_extension_tests(
                 instr_data.instr_name,
                 instr_data.instr_type,
                 instr_data.coverpoints,
-                test_configs[instr_data.extra_extension],
+                test_configs[instr_data.extra_extensions],
                 output_dir,
                 is_vector,
             )
@@ -193,6 +193,7 @@ def _generate_unpriv_tests_for_instruction(
                 "#define RVTEST_VECTOR",
                 f"#define RVTEST_SEW {sew}",
                 f"#define VDSEW {vdsew}",
+                f"#define RVTEST_VLEN_MAX {VLEN_MAX}",
             ]
         else:
             extra_defines = []

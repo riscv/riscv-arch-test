@@ -290,7 +290,7 @@ covergroup H_vscause_cg with function sample(ins_t ins);
             bins b_17_reserved = {17};
             bins b_18_software_check = {18};
             bins b_19_hardware_error = {19};
-            bins b_31_24_custom[] = {[31:24]};
+            bins b_31_24_custom[] = {[24:31]};
         `elsif ZICFILP_SUPPORTED
             bins b_18_software_check = {18};
         `elsif ZICFISS_SUPPORTED
@@ -315,7 +315,7 @@ covergroup H_vscause_cg with function sample(ins_t ins);
             bins b_13_counter_overflow = {13};
             bins b_14_reserved = {14};
             bins b_15_reserved = {15};
-            bins b_31_16_custom[] = {[31:16]};
+            bins b_31_16_custom[] = {[16:31]};
         `elsif SSCOFPMF_SUPPORTED
             bins b_13_counter_overflow = {13};
         `endif

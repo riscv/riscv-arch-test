@@ -20,6 +20,7 @@ COVERPOINTDIR="${5}"
 UDBHEADERDIR="${6}"
 ENVHEADERDIR="${7}"
 COVERAGELIST="${8}"
+VERILATOR_BUILD_JOBS="${VERILATOR_BUILD_JOBS:-1}"
 
 # Clean old coverage database
 rm -rf "${WKDIR}" "${COVERAGEDAT}"
@@ -49,7 +50,8 @@ pushd "${WKDIR}" >/dev/null
 
 # Compile
 if ! verilator --binary --timing --coverage-user --coverage-merge-instances \
-  --coverage-max-bins 8192 --top-module testbench \
+  --coverage-max-bins 8192 --top-module testbench -j "${VERILATOR_BUILD_JOBS}" \
+  -MAKEFLAGS OPT_FAST=-O1 -MAKEFLAGS OPT_SLOW=-O1 -MAKEFLAGS OPT_GLOBAL=-O1 \
   "${INC_DIRS[@]}" "${DEFINE_ARGS[@]}" "${COMPILE_FILES[@]}" --Mdir obj_dir >verilator.log 2>&1; then
   echo "ERROR collecting coverage. Verilator failed; see ${WKDIR}/verilator.log" >&2
   exit 1

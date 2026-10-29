@@ -691,7 +691,7 @@ covergroup Zicfiss_H_cg with function sample(ins_t ins);
     // which the trace does not re-log, so henvcfg.SSE is sampled as its effective value.
     vs_sse_state: coverpoint {(get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1),
                               ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
-                               get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse"))} {
+                               (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse") == 1))} {
         bins inactive_men_off = {2'b00};
         bins inactive_hen_off = {2'b10};
         bins active           = {2'b11};
@@ -699,7 +699,7 @@ covergroup Zicfiss_H_cg with function sample(ins_t ins);
     // VU-mode additionally needs senvcfg.SSE. menvcfg.SSE=0 forces both children read-only zero,
     // which the trace does not re-log, so both are sampled as their effective values.
     vu_sse_state: coverpoint {((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
-                               get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse")),
+                               (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse") == 1)),
                               ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
                                (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))} {
         bins inactive_both   = {2'b00};
@@ -708,7 +708,7 @@ covergroup Zicfiss_H_cg with function sample(ins_t ins);
         bins active          = {2'b11};
     }
     vu_sse_inactive: coverpoint {((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
-                                  get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse")),
+                                  (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse") == 1)),
                                  ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
                                   (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1))} {
         bins both_off = {2'b00};
@@ -744,7 +744,7 @@ covergroup Zicfiss_H_cg with function sample(ins_t ins);
                            ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
                             (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "senvcfg", "sse") == 1)),
                            ((get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "menvcfg", "sse") == 1) &&
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse"))} {
+                            (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "henvcfg", "sse") == 1))} {
         bins m0s0h0 = {3'b000};
         bins m1s0h0 = {3'b100};
         bins m1s0h1 = {3'b101};

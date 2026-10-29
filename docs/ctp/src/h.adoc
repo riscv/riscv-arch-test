@@ -100,10 +100,6 @@ include::{testplansdir}/priv/ZkrH.adoc[]
 
 include::{testplansdir}/priv/SstcH.adoc[]
 
-==== SsstateenH Hypervisor State Enable
-
-include::{testplansdir}/priv/SsstateenH.adoc[]
-
 ==== SscrindH Hypervisor Indirect CSR Access
 
 Hypervisor indirect CSR access.

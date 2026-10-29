@@ -14,8 +14,11 @@ from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.StateenCommon import (
     FEATURES,
+    GateWrite,
+    StateenFeature,
     feature_tests,
     illegal_access_tests,
+    stateen_walk_tests,
     walk_tests,
 )
 from testgen.priv.registry import add_priv_test_generator
@@ -23,17 +26,12 @@ from testgen.priv.registry import add_priv_test_generator
 CG = "Smstateen_cg"
 MSTATEEN_REGS = [f"mstateen{n}" for n in range(4)]
 MSTATEENH_REGS = [f"{csr}h" for csr in MSTATEEN_REGS]
-# TODO: Walk these bits everywhere and restore the skipped imsic and aia features once Sail models
-# Zcmt, Ssctr and Smaia/Ssaia.  The bits are walked only where the extension is absent (read-only zero).
-MSTATEEN0_SAIL_GAP_BITS = [
-    (1 << 2, "ZCMT_SUPPORTED"),  # JVT
-    (1 << 54, "SSCTR_SUPPORTED"),  # CTR
-    (0b11 << 58, "SSAIA_SUPPORTED"),  # IMSIC, AIA
-    (1 << 60, "SSCSRIND_SUPPORTED"),  # CSRIND
-]
+MODES = ["M", "U", "S", "VS", "VU"]
+# TODO: Enable the skipped features once Sail models Smaia/Ssaia, Sscsrind, Zcmt and Smctr
 # (feature, coverpoint)
 FEATURE_COVERPOINTS = [
     ("envcfg", "cp_envcfg"),
+    # ("csrind", "cp_csrind"),
     # ("imsic", "cp_imsic"),
     # ("aia", "cp_aia"),
     # ("jvt", "cp_jvt_access"),
@@ -46,17 +44,31 @@ FEATURE_COVERPOINTS = [
 ]
 
 
-def _se_gates_sstateen(test_data: TestData, n: int) -> list[str]:
-    """Access sstateen<n> from S-mode with mstateen<n>.SE<n> set and clear."""
-    cp = "cp_mstateen0_se0_controls_sstateen0" if n == 0 else "cp_mstateen_se_controls_sstateen123"
-    feat = replace(FEATURES["se"], csrs=(f"sstateen{n}",))
-    return feature_tests(test_data, CG, cp, feat, gate=f"mstateen{n}", modes=["S"], base="M")
+def _mstateen_states(feat: StateenFeature, gate: str = "mstateen0") -> list[list[GateWrite]]:
+    """Clear the bit in `gate`, then set it and the bit in each lower-level CSR.
+
+    Clearing the bit in `gate` makes it read-only zero in the lower-level CSRs, so they must be set again.
+    """
+    return [[(gate, 0)], [(gate, 1), *((csr, 1) for csr in feat.lower_csrs)]]
 
 
-def _se0_only_walk(test_data: TestData) -> list[str]:
-    """Walk sstateen0 from M-mode and S-mode with only mstateen0.SE0 set."""
-    cp = "cp_mstateen0_se0_only_sstateen0"
-    walk = walk_tests(test_data, CG, cp, "sstateen0", modes=["M", "S"], base="M")
+def _se_tests(test_data: TestData, n: int, csr: str) -> list[str]:
+    """Access `csr` with mstateen<n>.SE<n> set and clear: sstateen<n> from S and VS-mode, hstateen<n> from HS-mode."""
+    if csr == "sstateen":
+        feat = replace(FEATURES["se"], csrs=(f"sstateen{n}",), lower_csrs=(f"hstateen{n}",))
+        cp, modes = "cp_mstateen_se_controls_sstateen", ["S", "VS"]
+    else:
+        feat = replace(
+            FEATURES["se"], csrs=(f"hstateen{n}", f"hstateen{n}h"), guard="defined(H_SUPPORTED)", lower_csrs=()
+        )
+        cp, modes = "cp_mstateen_se_controls_hstateen", ["S"]
+    return feature_tests(test_data, CG, cp, feat, states=_mstateen_states(feat, f"mstateen{n}"), modes=modes, base="M")
+
+
+def _se0_only_walk(test_data: TestData, csr: str, guard: str) -> list[str]:
+    """Walk sstateen0 or hstateen0 from M-mode and S-mode with only mstateen0.SE0 set."""
+    cp = f"cp_mstateen0_se0_only_{csr}"
+    walk = walk_tests(test_data, CG, cp, csr, modes=["M", "S"], base="M")
     save, saveh, tmp = test_data.int_regs.get_registers(3)
     lines = [
         f"csrr x{save}, mstateen0  # save mstateen0",
@@ -78,7 +90,7 @@ def _se0_only_walk(test_data: TestData) -> list[str]:
         f"mv x{saveh}, zero",
     ]
     test_data.int_regs.return_registers([save, saveh, tmp])
-    return gated(lines, "defined(S_SUPPORTED)")
+    return gated(lines, guard)
 
 
 @add_priv_test_generator(
@@ -100,40 +112,23 @@ def make_smstateen(test_data: TestData) -> list[TestChunk]:
             test_data,
             CG,
             "cp_csr_illegal_accesses",
-            MSTATEEN_REGS,
-            modes=["U", "S"],
+            MSTATEEN_REGS + MSTATEENH_REGS,
+            modes=["U", "S", "VS", "VU"],
             base="M",
-            rv32_csrs=tuple(MSTATEENH_REGS),
         )
     )
     for key, cp in FEATURE_COVERPOINTS:
+        feat = FEATURES[key]
         tc = test_data.new_test_chunk(test_chunks)
-        tc.code.extend(
-            feature_tests(test_data, CG, cp, FEATURES[key], gate="mstateen0", modes=["M", "U", "S"], base="M")
-        )
-    for n in range(4):
-        tc = test_data.new_test_chunk(test_chunks)
-        tc.code.extend(_se_gates_sstateen(test_data, n))
+        tc.code.extend(feature_tests(test_data, CG, cp, feat, states=_mstateen_states(feat), modes=MODES, base="M"))
+    for csr in ("sstateen", "hstateen"):
+        for n in range(4):
+            tc = test_data.new_test_chunk(test_chunks)
+            tc.code.extend(_se_tests(test_data, n, csr))
     tc = test_data.new_test_chunk(test_chunks)
-    tc.code.extend(_se0_only_walk(test_data))
-
-    for csr in MSTATEEN_REGS:
-        gap = MSTATEEN0_SAIL_GAP_BITS if csr == "mstateen0" else None
-        gap_h = [(bits >> 32, define) for bits, define in gap or [] if bits >> 32]
-        tc = test_data.new_test_chunk(test_chunks)
-        tc.code.extend(walk_tests(test_data, CG, "cp_walking_ones", csr, modes=["M"], base="M", sail_gap_bits=gap))
-        tc = test_data.new_test_chunk(test_chunks)
-        tc.code.extend(
-            walk_tests(
-                test_data,
-                CG,
-                "cp_walking_ones",
-                f"{csr}h",
-                modes=["M"],
-                base="M",
-                guard="__riscv_xlen == 32",
-                sail_gap_bits=gap_h or None,
-            )
-        )
+    tc.code.extend(_se0_only_walk(test_data, "sstateen0", "defined(S_SUPPORTED)"))
+    tc = test_data.new_test_chunk(test_chunks)
+    tc.code.extend(_se0_only_walk(test_data, "hstateen0", "defined(H_SUPPORTED)"))
+    stateen_walk_tests(test_data, test_chunks, CG, "cp_walking_ones", MSTATEEN_REGS, base="M")
     test_chunks.append(test_data.end_test_chunk())
     return test_chunks

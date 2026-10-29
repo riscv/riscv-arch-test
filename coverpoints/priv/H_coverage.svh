@@ -290,7 +290,7 @@ covergroup H_vscause_cg with function sample(ins_t ins);
             bins b_17_reserved = {17};
             bins b_18_software_check = {18};
             bins b_19_hardware_error = {19};
-            bins b_31_24_custom[] = {[31:24]};
+            bins b_31_24_custom[] = {[24:31]};
         `elsif ZICFILP_SUPPORTED
             bins b_18_software_check = {18};
         `elsif ZICFISS_SUPPORTED
@@ -315,7 +315,7 @@ covergroup H_vscause_cg with function sample(ins_t ins);
             bins b_13_counter_overflow = {13};
             bins b_14_reserved = {14};
             bins b_15_reserved = {15};
-            bins b_31_16_custom[] = {[31:16]};
+            bins b_31_16_custom[] = {[16:31]};
         `elsif SSCOFPMF_SUPPORTED
             bins b_13_counter_overflow = {13};
         `endif
@@ -1099,32 +1099,32 @@ covergroup H_Zicntr_cg with function sample(ins_t ins);
     }
 
     // The enable bit of the accessed counter in each counter-enable register
-    mcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[ins.current.insn[24:20]] {
+    mcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[int'(ins.current.insn[24:20])] {
         bins disabled = {0};
         bins enabled  = {1};
     }
-    hcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[ins.current.insn[24:20]] {
+    hcounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[int'(ins.current.insn[24:20])] {
         bins disabled = {0};
         bins enabled  = {1};
     }
-    scounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[ins.current.insn[24:20]] {
+    scounteren_bit: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[int'(ins.current.insn[24:20])] {
         bins disabled = {0};
         bins enabled  = {1};
     }
     // The same bits held while another counter-enable register is walked
-    mcounteren_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[ins.current.insn[24:20]] {
+    mcounteren_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mcounteren", "mcounteren")[int'(ins.current.insn[24:20])] {
         bins one = {1};
     }
-    hcounteren_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[ins.current.insn[24:20]] {
+    hcounteren_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[int'(ins.current.insn[24:20])] {
         bins one = {1};
     }
-    hcounteren_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[ins.current.insn[24:20]] {
+    hcounteren_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "hcounteren", "hcounteren")[int'(ins.current.insn[24:20])] {
         bins zero = {0};
     }
-    scounteren_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[ins.current.insn[24:20]] {
+    scounteren_one: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[int'(ins.current.insn[24:20])] {
         bins one = {1};
     }
-    scounteren_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[ins.current.insn[24:20]] {
+    scounteren_zero: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scounteren", "scounteren")[int'(ins.current.insn[24:20])] {
         bins zero = {0};
     }
 

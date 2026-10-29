@@ -18,7 +18,7 @@
 // TD is a trace record (ins.prev or ins.current). ZICFILP_RS1 is its decoded rs1 for jalr, c.jr and c.jalr,
 // and x0 for any other instruction. c.ebreak shares the c.jalr encoding with rs1=x0 and has no rs1 operand.
 `define ZICFILP_INDIRECT(TD)   ((TD.insn ==? JALR) || (TD.insn ==? C_JR) || (TD.insn ==? C_JALR))
-`define ZICFILP_RS1(TD)        ((`ZICFILP_INDIRECT(TD) && TD.has_rs1) ? ins.get_gpr_reg(TD.rs1) : x0)
+`define ZICFILP_RS1(TD)        gpr_name_t'((`ZICFILP_INDIRECT(TD) && TD.has_rs1) ? ins.get_gpr_reg(TD.rs1) : x0)
 `define ZICFILP_RS1_LINK(TD)   ((`ZICFILP_RS1(TD) == x1) || (`ZICFILP_RS1(TD) == x5) || (`ZICFILP_RS1(TD) == x7))
 `define ZICFILP_LP_JALR(TD)    ((TD.insn ==? JALR) && !`ZICFILP_RS1_LINK(TD))
 `define ZICFILP_LP_CJUMP(TD)   (((TD.insn ==? C_JR) || (TD.insn ==? C_JALR)) && (`ZICFILP_RS1(TD) != x0) && !`ZICFILP_RS1_LINK(TD))
@@ -131,7 +131,7 @@ covergroup Zicfilp_Sm_cg with function sample(ins_t ins);
 
     // ELP before the current instruction: the previous instruction set it
     elp_before: coverpoint (`ZICFILP_LP_BRANCH(ins.prev) &&
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "mseccfg", "mlpe")) {
+                            (get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "mseccfg", "mlpe") == 1)) {
         bins no_lp_expected = {1'b0};
     }
 
@@ -295,7 +295,7 @@ covergroup Zicfilp_S_cg with function sample(ins_t ins);
 
     // ELP before the current instruction: the previous instruction set it
     elp_before: coverpoint (`ZICFILP_LP_BRANCH(ins.prev) &&
-                            get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "menvcfg", "lpe")) {
+                            (get_csr_val(ins.hart, ins.issue, `SAMPLE_PREV, "menvcfg", "lpe") == 1)) {
         bins no_lp_expected = {1'b0};
     }
 

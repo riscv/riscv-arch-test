@@ -1132,10 +1132,6 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
         wildcard bins leaflvl_w_0 = {8'b11?0?0?1};
     }
 
-    PTE_x_spage_d: coverpoint ins.current.pte_d[7:0] {
-        wildcard bins leaflvl_x_s = {8'b11?01001};
-    }
-
     PTE_spage_d: coverpoint ins.current.pte_d[7:0] {
         wildcard bins leaflvl_s = {8'b11?01111};
     }
@@ -1150,10 +1146,6 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
 
     PTE_w_unset_upage_d: coverpoint ins.current.pte_d[7:0] {
         wildcard bins leaflvl_w_0 = {8'b11?1?0?1};
-    }
-
-    PTE_x_upage_d: coverpoint ins.current.pte_d[7:0] {
-        wildcard bins leaflvl_x_u = {8'b11?11001};
     }
 
     PTE_Abit_unset_d: coverpoint ins.current.pte_d[7:0] {
@@ -1307,12 +1299,6 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
     cp_PTE_r_set_w_unset_zicbom_u: cross PTE_r_set_w_unset_upage_d, PageType_d, cbo_ins, priv_mode_u {
         ignore_bins ig1 = binsof(cbo_ins.zicboz_ins);
     }
-    cp_PTE_rw_unset_zicbom_s: cross PTE_x_spage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s {
-        ignore_bins ig1 = binsof(cbo_ins.zicboz_ins);
-    }
-    cp_PTE_rw_unset_zicbom_u: cross PTE_x_upage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_u {
-        ignore_bins ig1 = binsof(cbo_ins.zicboz_ins);
-    }
 
     // A Zicboz instruction is allowed if a store instruction is permitted to access the corresponding physical addresses
     cp_PTE_w_unset_zicboz_s: cross PTE_w_unset_spage_d, PageType_d, store_page_fault, cbo_ins, priv_mode_s, sum_sstatus {
@@ -1390,11 +1376,11 @@ covergroup Sv_Zicbo_cg with function sample(ins_t ins);
         // Example: Setup a giga page in sv48, lvl 3 pte (tera) should point to lvl2 page table, but it points to non existent PA
         // The walk faults before any data physical address exists, so check where the pointer PTE points instead
         `ifdef UDB_MXLEN_64
-            nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[53:10] == (`RVMODEL_ACCESS_FAULT_ADDRESS >> 12)) {
+            nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[53:10] == 44'(`RVMODEL_ACCESS_FAULT_ADDRESS >> 12)) {
                 bins non_existent_pa = {1};
             }
         `else
-            nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[31:10] == (`RVMODEL_ACCESS_FAULT_ADDRESS >> 12)) {
+            nonleaf_ppn_nonexistent: coverpoint (ins.current.pte_d[31:10] == 22'(`RVMODEL_ACCESS_FAULT_ADDRESS >> 12)) {
                 bins non_existent_pa = {1};
             }
         `endif

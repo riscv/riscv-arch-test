@@ -311,7 +311,7 @@ covergroup Smstateen_cg with function sample(ins_t ins);
     `endif
 
     `ifdef SDTRIG_SUPPORTED
-        cp_context: cross csrops, scontext_csr, context_state, priv_mode_all_sup;
+        cp_context: cross csrops, context_csrs, context_state, priv_mode_all_sup;
     `endif
 
     `ifdef SM1P13P0_OR_LATER_SUPPORTED

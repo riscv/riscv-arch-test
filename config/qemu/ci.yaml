@@ -20,14 +20,13 @@ exclude_extensions:
   # QEMU accepts UXL=1, which Sail cannot model yet (https://github.com/riscv/sail-riscv/issues/1150)
   - S-
   - S_scsr-
-  # qemu#4200, qemu#4201
+  # RV32 has no mseccfgh (https://gitlab.com/qemu-project/qemu/-/work_items/4680).
   - Ssstrict_Sm_CSR
+  # qemu-rv32-m: without S-mode, QEMU executes sfence.vma in M-mode, where Sail raises illegal instruction.
   - Ssstrict_Sm_IllegalInstr
+  # On RV32, a write to mstateen0 clears mstateen0h.ENVCFG, so senvcfg and henvcfg trap in S-mode
+  # (https://gitlab.com/qemu-project/qemu/-/work_items/4611).
   - Ssstrict_S_CSR
-  - Ssstrict_S_IllegalInstr
-  - Ssstrict_U_IllegalInstr
-  # TODO: Remove SsstrictV when sail SsstrictV is implemented
-  - SsstrictV
   # amocas with rd=x0 corrupts subsequent branch on x0 (https://gitlab.com/qemu-project/qemu/-/work_items/3526)
   - Zacas
   # https://gitlab.com/qemu-project/qemu/-/work_items/3969 seems to apply to mip.LCOFIP not writable either

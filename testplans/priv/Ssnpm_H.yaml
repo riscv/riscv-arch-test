@@ -56,7 +56,6 @@ notes: |-
   not send it to A'.  With vsatp paged, the VS stage does the same job, as in Ssnpm: VAs with leading 1s are
   mapped to pm_hi_page, never to A'.
 
-
 coverpoints:
   - name: cp_vs_pmm
     goal: henvcfg.PMM masks loads and stores in VS-mode, for guest physical (vsatp = Bare) and guest virtual (vsatp paged) addresses

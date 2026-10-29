@@ -155,8 +155,9 @@ endgroup
 // ---------------------
 `endif
 function void zcf_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
 `ifdef UDB_MXLEN_32
         "c.flw"     : begin
             Zcf_c_flw_cg.sample(ins);

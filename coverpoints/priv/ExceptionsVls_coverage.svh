@@ -34369,8 +34369,9 @@ covergroup ExceptionsVls_vsuxseg8ei8_v_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void exceptionsvls_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "vl1re16.v"     : begin
             ExceptionsVls_vl1re16_v_cg.sample(ins);
         end

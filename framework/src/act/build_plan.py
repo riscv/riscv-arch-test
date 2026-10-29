@@ -412,10 +412,15 @@ def gen_coverage_tasks(
     dry_run: bool = False,
     enable_experimental_extensions: bool = False,
     exclude_sm: bool = False,
+    jobs: int = 1,
 ) -> list[BuildTask]:
     """Generate BuildTasks for coverage UCDB generation, reports, and summary merging."""
     tasks: list[BuildTask] = []
     coverage_reports: list[Path] = []
+    # Split this config's job share across its Verilator builds so the total stays near jobs.
+    simulator_build_env: tuple[tuple[str, str], ...] = ()
+    if coverage_simulator == CoverageSimulator.VERILATOR:
+        simulator_build_env = (("VERILATOR_BUILD_JOBS", str(max(1, jobs // len(coverage_targets)))),)
 
     # Resolve package resources once for use in commands and dependency tracking.
     # Uses importlib.resources.files() which returns a real filesystem path when the
@@ -533,7 +538,9 @@ def gen_coverage_tasks(
                 outputs=(simulator_artifact,),
                 deps=rvvi_deps,
                 extra_inputs=coverage_inputs if dry_run else (*coverage_inputs, tracelist_file),
-                action=SubprocessAction(cmd=coverage_cmd, stdout_file=simulator_log, cwd=coverage_dir),
+                action=SubprocessAction(
+                    cmd=coverage_cmd, stdout_file=simulator_log, cwd=coverage_dir, env=simulator_build_env
+                ),
                 intermediate=True,
                 timeout=COVERAGE_STEP_TIMEOUT_SECONDS,
             )
@@ -588,6 +595,7 @@ def generate_build_plan(
     dry_run: bool = False,
     enable_experimental_extensions: bool = False,
     exclude_sm: bool = False,
+    jobs: int = 1,
 ) -> list[BuildTask]:
     """Build the full DAG of tasks for a single config."""
     if coverage_enabled and config.ref_model_type != RefModelType.SAIL:
@@ -696,6 +704,7 @@ def generate_build_plan(
                 dry_run,
                 enable_experimental_extensions,
                 exclude_sm,
+                jobs,
             )
         )
 

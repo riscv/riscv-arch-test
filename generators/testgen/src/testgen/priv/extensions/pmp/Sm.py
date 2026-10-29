@@ -1047,18 +1047,38 @@ _LDST = gen_accesses([("ld", None), ("sd", None)])
     "PMP",
     extra_defines=["#define BOOT_TO_MMODE"],
     required_extensions=["Sm"],
-    params=["MXLEN: 64", ENTRIES_PARAM, "PMP_GRANULARITY: 2", "PMP_NA4_SUPPORTED: true", "PMP_NAPOT_SUPPORTED: true"],
+    params=["MXLEN: 64", ENTRIES_PARAM, "PMP_GRANULARITY: 2", "PMP_NA4_SUPPORTED: true"],
 )
 def make_pmpsm_partial_na4(test_data: TestData) -> list[TestChunk]:
     return [
         make_partial_chunk(
             test_data,
             "Sm_partial_na4",
-            [*ALIGNED_NA4, *COVERING],
+            ALIGNED_NA4,
             _LDST,
             "cp_partial_match",
             "ld and sd on aligned doublewords that NA4 entries match in the lower half, the upper half or both;\n"
-            "the access fails even with L=0. A lower-numbered entry covering the whole doubleword decides instead.",
+            "the access fails even with L=0.",
+        )
+    ]
+
+
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Sm"],
+    params=["MXLEN: 64", ENTRIES_PARAM, "PMP_GRANULARITY: 2", "PMP_NA4_SUPPORTED: true", "PMP_NAPOT_SUPPORTED: true"],
+)
+def make_pmpsm_partial_covered(test_data: TestData) -> list[TestChunk]:
+    return [
+        make_partial_chunk(
+            test_data,
+            "Sm_partial_covered",
+            COVERING,
+            _LDST,
+            "cp_partial_covered",
+            "ld and sd on an aligned doubleword that a lower-numbered read-only NAPOT entry covers and a higher\n"
+            "NA4 entry matches in part; the covering entry decides, so ld succeeds and sd fails.",
         )
     ]
 

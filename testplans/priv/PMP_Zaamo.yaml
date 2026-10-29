@@ -32,14 +32,12 @@ coverpoints:
       - pmp_entry_priority
   - name: cp_misaligned_mag16
     goal: Verify that a misaligned AMO inside a 16-byte granule fails when the deciding entry matches only part of it.
-    description: Zama16b, as in PMP_Sm cp_misaligned_mag16. Every .w AMO 2 bytes, and every .d AMO on RV64 4 bytes, below the middle of the granule.
+    description: Zama16b, as in PMP_Sm cp_misaligned_mag16. Every .w AMO 2 bytes, and every .d AMO on RV64 4 bytes, below the middle of the granule. With Zabha, every .h AMO 1 byte below the middle, in its own test.
     expectation: "Store/AMO access fault: the AMO is a single memory operation."
-    bins: 3 placements × 2 L × 9 AMOs (18 on RV64)
+    bins: 3 placements × 2 L × 9 AMOs (18 on RV64; 9 more with Zabha)
     rules:
       - pmp_full_match_required
       - pmp_misaligned_access_behavior
       - pma_mag_op_within
       - pma_mag_insts
       - mcause_exccode_st_sc_amo
-  - heading: Not yet implemented in ACT4 (no coverpoint or test yet)
-  - goal: "Open item: with Zabha, the halfword AMOs (amo*.h, and amocas.h with Zacas) are in the misaligned atomicity granule's instruction set. Add them to cp_misaligned_mag16, 1 byte below the middle of the granule."

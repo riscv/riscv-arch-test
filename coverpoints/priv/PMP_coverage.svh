@@ -3007,6 +3007,17 @@ covergroup PMP_Zaamo_cg with function sample(ins_t ins,logic [7:0] pmpcfg [63:0]
     wildcard bins amomax_w = {AMOMAX_W};
     wildcard bins amominu_w = {AMOMINU_W};
     wildcard bins amomaxu_w = {AMOMAXU_W};
+    `ifdef ZABHA_SUPPORTED
+      wildcard bins amoswap_h = {AMOSWAP_H};
+      wildcard bins amoadd_h = {AMOADD_H};
+      wildcard bins amoxor_h = {AMOXOR_H};
+      wildcard bins amoand_h = {AMOAND_H};
+      wildcard bins amoor_h = {AMOOR_H};
+      wildcard bins amomin_h = {AMOMIN_H};
+      wildcard bins amomax_h = {AMOMAX_H};
+      wildcard bins amominu_h = {AMOMINU_H};
+      wildcard bins amomaxu_h = {AMOMAXU_H};
+    `endif
     `ifdef UDB_MXLEN_64
       wildcard bins amoswap_d = {AMOSWAP_D};
       wildcard bins amoadd_d = {AMOADD_D};
@@ -3279,6 +3290,9 @@ covergroup PMP_Zacas_cg with function sample(ins_t ins, pmp_partial_t partial);
 
   amocas_wd: coverpoint ins.current.insn {
     type_option.weight = 0;
+    `ifdef ZABHA_SUPPORTED
+      wildcard bins amocas_h = {AMOCAS_H};
+    `endif
     wildcard bins amocas_w = {AMOCAS_W};
     wildcard bins amocas_d = {AMOCAS_D};
   }

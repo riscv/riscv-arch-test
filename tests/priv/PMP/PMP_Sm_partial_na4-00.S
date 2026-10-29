@@ -15,12 +15,11 @@
 #   NUM_USABLE_PMP_ENTRIES: '>=16'
 #   PMP_GRANULARITY: 2
 #   PMP_NA4_SUPPORTED: true
-#   PMP_NAPOT_SUPPORTED: true
 # MARCH: rv${XLEN}i_zicsr_zifencei
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 24
+#define SIGUPD_COUNT 22
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_MMODE
@@ -37,7 +36,7 @@ RVTEST_BEGIN
 /////////////////////////////////
 // cp_partial_match
 //   ld and sd on aligned doublewords that NA4 entries match in the lower half, the upper half or both;
-//   the access fails even with L=0. A lower-numbered entry covering the whole doubleword decides instead.
+//   the access fails even with L=0.
 /////////////////////////////////
 
 // Clear every pmpcfg and pmpaddr CSR
@@ -222,36 +221,6 @@ PMP_Sm_cg_cp_partial_match_na4_both_L1_sd:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_partial_match_na4_both_L1_sd, PMP_Sm_cg_cp_partial_match_na4_both_L1_sd_str)
 
-// napot_covers: slot 6, entries 8, 9
-  LA(x5, PMP_PARTIAL_BASE)
-  LI(x6, 96)
-  add x5, x5, x6
-  srl x5, x5, PMP_SHIFT
-  csrw pmpaddr8, x5
-  LA(x5, PMP_PARTIAL_BASE)
-  LI(x6, 96)
-  add x5, x5, x6
-  srl x5, x5, PMP_SHIFT
-  csrw pmpaddr9, x5
-  LI(x4, (((PMP_L | PMP_R | PMP_NAPOT) & 0xFF) << PMP_CFG_SHIFT(8)))
-  csrs pmpcfg2, x4
-  LI(x4, (((PMP_L | PMP_R | PMP_W | PMP_X | PMP_NA4) & 0xFF) << PMP_CFG_SHIFT(9)))
-  csrs pmpcfg2, x4
-  RVTEST_SFENCE_VMA_IF_SUPPORTED
-  LA(a5, PMP_PARTIAL_BASE)
-  LI(x6, 96 + 0)
-  add a5, a5, x6
-  LI(a4, RVTEST_PMP_RET_ENCODING)
-PMP_Sm_cg_cp_partial_covered_napot_covers_ld:
-  ld a4, 0(a5)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_partial_covered_napot_covers_ld, PMP_Sm_cg_cp_partial_covered_napot_covers_ld_str)
-  LI(a4, RVTEST_PMP_RET_ENCODING)
-PMP_Sm_cg_cp_partial_covered_napot_covers_sd:
-  sd a4, 0(a5)
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_Sm_cg_cp_partial_covered_napot_covers_sd, PMP_Sm_cg_cp_partial_covered_napot_covers_sd_str)
-
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -280,8 +249,6 @@ PMP_Sm_cg_cp_partial_match_na4_upper_L1_ld_str: .string "\"test: 9; cg: PMP_Sm_c
 PMP_Sm_cg_cp_partial_match_na4_upper_L1_sd_str: .string "\"test: 10; cg: PMP_Sm_cg; cp: cp_partial_match; bin: na4_upper_L1_sd\""
 PMP_Sm_cg_cp_partial_match_na4_both_L1_ld_str: .string "\"test: 11; cg: PMP_Sm_cg; cp: cp_partial_match; bin: na4_both_L1_ld\""
 PMP_Sm_cg_cp_partial_match_na4_both_L1_sd_str: .string "\"test: 12; cg: PMP_Sm_cg; cp: cp_partial_match; bin: na4_both_L1_sd\""
-PMP_Sm_cg_cp_partial_covered_napot_covers_ld_str: .string "\"test: 13; cg: PMP_Sm_cg; cp: cp_partial_covered; bin: napot_covers_ld\""
-PMP_Sm_cg_cp_partial_covered_napot_covers_sd_str: .string "\"test: 14; cg: PMP_Sm_cg; cp: cp_partial_covered; bin: napot_covers_sd\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

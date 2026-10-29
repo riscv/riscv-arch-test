@@ -112,3 +112,24 @@ def make_pmpzaamo_partial_granule(test_data: TestData) -> list[TestChunk]:
             "operation, so it fails.",
         )
     ]
+
+
+@add_priv_test_generator(
+    "PMP",
+    extra_defines=["#define BOOT_TO_MMODE"],
+    required_extensions=["Zaamo", "Zabha", "Sm", "Zama16b"],
+    march_extensions=["Zaamo", "Zabha", "Sm"],
+    params=[ENTRIES_PARAM, "PMP_GRANULARITY: '<=3'", "PMP_TOR_SUPPORTED: true"],
+)
+def make_pmpzaamo_zabha_granule(test_data: TestData) -> list[TestChunk]:
+    return [
+        make_partial_chunk(
+            test_data,
+            "Zaamo_zabha_partial_granule",
+            GRANULE_TOR,
+            granule_accesses(halves=[(f"{amo}.h", None) for amo in _AMOS]),
+            "cp_misaligned_mag16",
+            "Misaligned .h AMOs inside a 16-byte granule that one-grain TOR entries match in the lower part, the\n"
+            "upper part or both. Within a misaligned atomicity granule the AMO is one memory operation, so it fails.",
+        )
+    ]

@@ -239,11 +239,11 @@ def _make_none_chunk(test_data: TestData, mode: Mode) -> TestChunk:
         *set_pmpcfg(0, "PMPREGION_BELOW | PMPREGION_ABOVE"),
         "RVTEST_SFENCE_VMA_IF_SUPPORTED",
         f"RVTEST_TSBI_GOTO_{mode.letter}MODE",
-        *gen_rwx(test_data, "no_match", "cp_none"),
+        *gen_rwx(test_data, "no_match", cross_by_access(execute="cp_none_jalr", load="cp_none_lw", store="cp_none_sw")),
         "RVTEST_TSBI_GOTO_MMODE",
     ]
     chunk.section_header = comment_banner(
-        f"{mode.suite} cp_none",
+        f"{mode.suite} cp_none_jalr, cp_none_lw and cp_none_sw",
         f"{{jalr, sw, lw}} from {mode.letter} mode at a grain that no PMP entry matches; each raises an access fault.",
     )
     chunk.code.extend(body)

@@ -20,9 +20,25 @@
 `define PMP_PARTIAL_SVH
 
 // Test-selection parameters of the partial-match tests, as single macros for `ifdef.
-`ifdef UDB_NUM_USABLE_PMP_ENTRIES_16
-  `define PMP_PARTIAL_ENTRIES
-`elsif UDB_NUM_USABLE_PMP_ENTRIES_64
+// PMP_PARTIAL_ENTRIES: NUM_USABLE_PMP_ENTRIES >= 16. UDB defines one macro per value, so the values below 16
+// are listed.
+`ifdef UDB_NUM_USABLE_PMP_ENTRIES_0
+`elsif UDB_NUM_USABLE_PMP_ENTRIES_1
+`elsif UDB_NUM_USABLE_PMP_ENTRIES_2
+`elsif UDB_NUM_USABLE_PMP_ENTRIES_3
+`elsif UDB_NUM_USABLE_PMP_ENTRIES_4
+`elsif UDB_NUM_USABLE_PMP_ENTRIES_5
+`elsif UDB_NUM_USABLE_PMP_ENTRIES_6
+`elsif UDB_NUM_USABLE_PMP_ENTRIES_7
+`elsif UDB_NUM_USABLE_PMP_ENTRIES_8
+`elsif UDB_NUM_USABLE_PMP_ENTRIES_9
+`elsif UDB_NUM_USABLE_PMP_ENTRIES_10
+`elsif UDB_NUM_USABLE_PMP_ENTRIES_11
+`elsif UDB_NUM_USABLE_PMP_ENTRIES_12
+`elsif UDB_NUM_USABLE_PMP_ENTRIES_13
+`elsif UDB_NUM_USABLE_PMP_ENTRIES_14
+`elsif UDB_NUM_USABLE_PMP_ENTRIES_15
+`else
   `define PMP_PARTIAL_ENTRIES
 `endif
 `ifdef UDB_PMP_GRANULARITY_2
@@ -79,7 +95,7 @@ function automatic pmp_partial_t pmp_partial(ins_t ins);
   pmp_partial_t result;
   int bytes;
   logic [`UDB_MXLEN-1:0] vaddr, pmpaddr;
-  logic [63:0] first, last, region, top, prev_top;
+  logic [63:0] first, last, region, top, tor_top, prev_top;
   logic [63:0] lo [64], hi [64];   // entry i matches bytes lo[i] to hi[i]; none when lo[i] > hi[i]
   logic [7:0] cfg [64];
   logic contains_first, contains_last;
@@ -106,10 +122,12 @@ function automatic pmp_partial_t pmp_partial(ins_t ins);
       cfg[i] = get_csr_val_addr(ins.hart, ins.issue, `SAMPLE_AFTER, CSR_PMPCFG0 + 2*(i/8), "pmpcfg", "pmpcfg") >> (8*(i%8));
     `endif
     top = 64'(pmpaddr) << 2;
+    // TOR ignores pmpaddr[G-1:0], which read as ones in a NAPOT entry below a TOR entry.
+    tor_top = (64'(pmpaddr) & ~((64'd1 << (`UDB_PMP_GRANULARITY - 2)) - 1)) << 2;
     lo[i] = 1;
     hi[i] = 0;
     case (cfg[i][4:3])
-      2'b01: if (top > prev_top) begin lo[i] = prev_top; hi[i] = top - 1; end   // TOR
+      2'b01: if (tor_top > prev_top) begin lo[i] = prev_top; hi[i] = tor_top - 1; end   // TOR
       2'b10: begin lo[i] = top; hi[i] = top + 3; end                           // NA4
       2'b11: begin                                                             // NAPOT
         napot_ones = 0;
@@ -120,7 +138,7 @@ function automatic pmp_partial_t pmp_partial(ins_t ins);
       end
       default: ;                                                               // OFF
     endcase
-    prev_top = top;
+    prev_top = tor_top;
   end
 
   // d: the deciding entry; s: the next entry that matches any byte.

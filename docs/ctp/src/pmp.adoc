@@ -8,13 +8,13 @@ The `cp_none_*` and `cp_misaligned_partial` tests leave the background entry uns
 Tests for an address-matching mode run only when its UDB parameter (`PMP_NA4_SUPPORTED`, `PMP_NAPOT_SUPPORTED` or `PMP_TOR_SUPPORTED`) is true, and region sizes follow `PMP_GRANULARITY`.
 PMP combined with virtual memory is tested by the PMP_Sv, PMP_SvZicbo and PMP_Svadu groups.
 The testplan also describes a PMPV suite for vector loads and stores, which is not implemented yet.
-An aligned load, store or AMO is a single memory operation, so it fails when the lowest-numbered entry that matches any of its bytes does not match all of them, whatever L, R, W and X are.
+An aligned load or store of at most XLEN bits, and any aligned AMO, is a single memory operation, so it fails when the lowest-numbered entry that matches any of its bytes does not match all of them, whatever L, R, W and X are.
 The `cp_partial_*` coverpoints test this with 4-byte NA4 and TOR entries (G = 0) and 8-byte NAPOT and TOR entries (G {le} 1) over the lower half, the upper half or both halves of the access, with L = 0 and L = 1.
 With Zama16b, a misaligned access inside a 16-byte granule is also a single memory operation, which the `cp_misaligned_mag16` coverpoints test with one-grain TOR entries (G {le} 1).
 These tests give each case its own entries below the background entry, so they need `NUM_USABLE_PMP_ENTRIES` {ge} 16.
 Outside a misaligned atomicity granule, a misaligned access may be split into memory operations that are checked separately.
 When `MISALIGNED_LDST` is true, `cp_misaligned_partial` checks that an access partly in a region it may not use, with the rest matching no entry, faults whether or not it is split.
-Those tests check only the trap: `mtval` may hold the address of the access or of its faulting part, and the Addr. Offset field of a transformed `mtinst` or `htinst` follows it, so the trap handler records none of them (`IMPRECISE_ACCESS_FAULT_XTVAL`). Part of a split store may also become visible.
+Those tests check only the trap: `mtval` may hold the address of the access or of its faulting part, and the Addr. Offset field of a transformed `mtinst` or `htinst` follows it, so the trap handler does not record `mtval` and checks `mtinst` and `htinst` with the Addr. Offset cleared (`IMPRECISE_ACCESS_FAULT_XTVAL`). Part of a split store may also become visible.
 A misaligned access outside a granule that straddles two permitted regions has no single expected result and is not tested.
 
 ==== PMP_Sm Machine

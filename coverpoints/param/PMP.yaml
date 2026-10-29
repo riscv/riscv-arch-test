@@ -87,7 +87,7 @@ parameter_definitions:
         "PMP_F: cp_misaligned_mag16",
         "PMP_Zca: cp_misaligned_tor, cp_cret_tor, cp_misaligned_mag16",
         "PMP_Zaamo: cp_partial_match, cp_misaligned_mag16",
-        "PMP_Zacas: cp_partial_match_d, cp_partial_match_q, cp_misaligned_mag16",
+        "PMP_Zacas: cp_partial_match_{d, q}, cp_misaligned_mag16",
         "PMP_Zalrsc: cp_partial_match",
       ]
     effect:

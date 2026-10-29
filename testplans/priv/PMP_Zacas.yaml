@@ -25,9 +25,9 @@ coverpoints:
       - mcause_exccode_st_sc_amo
   - name: cp_misaligned_mag16
     goal: Verify that a misaligned amocas inside a 16-byte granule fails when the deciding entry matches only part of it.
-    description: Zama16b, as in PMP_Sm cp_misaligned_mag16. amocas.w 2 bytes and amocas.d 4 bytes below the middle of the granule.
+    description: Zama16b, as in PMP_Sm cp_misaligned_mag16. amocas.w 2 bytes and amocas.d 4 bytes below the middle of the granule. With Zabha, amocas.h 1 byte below the middle, in its own test.
     expectation: "Store/AMO access fault: the AMO is a single memory operation."
-    bins: 3 placements × 2 L × {amocas.w, amocas.d}
+    bins: 3 placements × 2 L × {amocas.w, amocas.d} (and amocas.h with Zabha)
     rules:
       - pmp_full_match_required
       - pmp_misaligned_access_behavior

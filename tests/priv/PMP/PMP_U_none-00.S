@@ -32,7 +32,7 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// PMPU cp_none
+// PMPU cp_none_jalr, cp_none_lw and cp_none_sw
 //   {jalr, sw, lw} from U mode at a grain that no PMP entry matches; each raises an access fault.
 /////////////////////////////////
 
@@ -69,21 +69,21 @@ RVTEST_BEGIN
   RVTEST_FENCEI
   LA(a4, TEST_FOR_EXECUTION)
   LA(ra, 1f)
-PMP_U_cg_cp_none_no_match_1_jalr:
+PMP_U_cg_cp_none_jalr_no_match_1_jalr:
   jalr x0, 0(a4)
 1:
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_none_no_match_1_jalr, PMP_U_cg_cp_none_no_match_1_jalr_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_none_jalr_no_match_1_jalr, PMP_U_cg_cp_none_jalr_no_match_1_jalr_str)
   LA(a5, TEST_FOR_EXECUTION)
   LI(a4, RVTEST_PMP_RET_ENCODING)
-PMP_U_cg_cp_none_no_match_2_sw:
+PMP_U_cg_cp_none_sw_no_match_2_sw:
   sw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_none_no_match_2_sw, PMP_U_cg_cp_none_no_match_2_sw_str)
-PMP_U_cg_cp_none_no_match_3_lw:
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_none_sw_no_match_2_sw, PMP_U_cg_cp_none_sw_no_match_2_sw_str)
+PMP_U_cg_cp_none_lw_no_match_3_lw:
   lw a4, 0(a5)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_none_no_match_3_lw, PMP_U_cg_cp_none_no_match_3_lw_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, PMP_U_cg_cp_none_lw_no_match_3_lw, PMP_U_cg_cp_none_lw_no_match_3_lw_str)
   RVTEST_TSBI_GOTO_MMODE
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
@@ -116,9 +116,9 @@ RETURN_INSTRUCTION:
   .option pop
 
 // Testcase strings
-PMP_U_cg_cp_none_no_match_1_jalr_str: .string "\"test: 91; cg: PMP_U_cg; cp: cp_none; bin: no_match_1_jalr\""
-PMP_U_cg_cp_none_no_match_2_sw_str: .string "\"test: 92; cg: PMP_U_cg; cp: cp_none; bin: no_match_2_sw\""
-PMP_U_cg_cp_none_no_match_3_lw_str: .string "\"test: 93; cg: PMP_U_cg; cp: cp_none; bin: no_match_3_lw\""
+PMP_U_cg_cp_none_jalr_no_match_1_jalr_str: .string "\"test: 91; cg: PMP_U_cg; cp: cp_none_jalr; bin: no_match_1_jalr\""
+PMP_U_cg_cp_none_sw_no_match_2_sw_str: .string "\"test: 92; cg: PMP_U_cg; cp: cp_none_sw; bin: no_match_2_sw\""
+PMP_U_cg_cp_none_lw_no_match_3_lw_str: .string "\"test: 93; cg: PMP_U_cg; cp: cp_none_lw; bin: no_match_3_lw\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

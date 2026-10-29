@@ -2575,11 +2575,15 @@ skp_\__MODE__\()tval:
         csrr    T3, CSR_HTINST
       .endif
         #ifdef IMPRECISE_ACCESS_FAULT_XTVAL
-        csrr    T2, CSR_XCAUSE                        // the Addr. Offset field of a transformed
-        LI(     T6, CAUSE_LOAD_ACCESS)                //   mtinst or htinst follows the imprecise xtval,
-        beq     T2, T6, skp_\__MODE__\()tinst         //   so don't record it either
-        LI(     T6, CAUSE_STORE_ACCESS)
-        beq     T2, T6, skp_\__MODE__\()tinst
+        csrr    T2, CSR_XCAUSE                        // the Addr. Offset field (bits 19:15) of a
+        LI(     T6, CAUSE_LOAD_ACCESS)                //   transformed mtinst or htinst follows the
+        beq     T2, T6, msk_\__MODE__\()tinst         //   imprecise xtval, so clear it for load and
+        LI(     T6, CAUSE_STORE_ACCESS)               //   store/AMO access faults and check the rest
+        bne     T2, T6, skp_msk_\__MODE__\()tinst
+msk_\__MODE__\()tinst:
+        LI(     T6, ~(0x1F << 15))
+        and     T3, T3, T6
+skp_msk_\__MODE__\()tinst:
         #endif
         // Word 5: xtinst. Sail writes the transformed instruction for a load, store, AMO, HLV/HSV or
         // CBO fault on each cause its sail.json enables in extensions.H.transformed_instruction,
@@ -2604,7 +2608,6 @@ skp_\__MODE__\()tval:
       .else
         TRAP_SIGUPD_ZERO(T4, T3, 5, T2, sv_\__MODE__\()tinst, sv_Htinst_str) // write word 5: htinst
       .endif
-        skp_\__MODE__\()tinst:
     #endif
   .endif
 

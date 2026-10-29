@@ -4,14 +4,11 @@ normative_rule_definitions:
     coverpoint: ["Sstc_cg/{cp_supervisor_stce, cp_supervisor_tm}"]
   # This extension adds the STCE bit to the menvcfg and henvcfg CSRs.
   - name: stce_bit_exist
-    # henvcfg.STCE is covered by Sstc_H_cg/cp_vs_stimecmp_accessible
     coverpoint:
       [
         "Sstc_cg/{cp_supervisor_stce, cp_user_stce}",
         "Sstc_H_cg/cp_vs_stimecmp_accessible",
       ]
-
-  # menvcfg_stce_exists and menvcfg_stce_rdonly0 are mapped in Sm.yaml (menvcfg walk).
 
   # The STCE bit enables stimecmp for S-mode when set to one.
   - name: menvcfg_stce_enable_op
@@ -27,7 +24,6 @@ normative_rule_definitions:
   # exception, STCE in henvcfg is read-only zero, and STIP in mip and sip reverts to its
   # defined behavior as if this extension is not implemented.
   - name: menvcfg_stce_zero_op
-    # cp_trigger_sti_sstc covers the STIP half with STCE = 0; vstimecmp and henvcfg.STCE need H (Sstc_H, Sstc_HSm)
     coverpoint:
       [
         "Sstc_cg/{cp_supervisor_stce, cp_user_stce}",
@@ -52,7 +48,7 @@ normative_rule_definitions:
   # stimecmp or vstimecmp register while executing in a mode less privileged than M
   # will cause an illegal-instruction exception.
   - name: mcounteren_tm_clr
-    # U-mode accesses to stimecmp trap whatever TM is, so only S-mode exercises TM; vstimecmp needs H (Sstc_H)
+    # U-mode accesses to stimecmp trap whatever TM is, so Sstc_cg checks TM only in S-mode
     coverpoint:
       [
         "Sstc_cg/cp_supervisor_tm",
@@ -83,7 +79,7 @@ normative_rule_definitions:
         "Sstc_cg/cp_supervisor_stce",
       ]
 
-  # mip_sip_stip_op and sip_stip_sie_stie are mapped in this file (InterruptsSm_cg).
+  # The next four rules are also mapped in Sm.yaml and S.yaml.
 
   # The Sstc extension adds the STCE (STimecmp Enable) bit to menvcfg CSR.
   - name: menvcfg_stce_exists
@@ -128,7 +124,7 @@ normative_rule_definitions:
         "InterruptsSm_cg/cp_write_stip_sstc",
       ]
 
-  # The rules below need H; they are covered by the H and HSm groups.
+  # The rules below need H.
 
   # The STCE bit enables vstimecmp for VS-mode when set to one.
   - name: henvcfg_stce_op

@@ -183,8 +183,9 @@ covergroup Zibi_bnei_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void zibi_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "beqi"     : begin
             Zibi_beqi_cg.sample(ins);
         end

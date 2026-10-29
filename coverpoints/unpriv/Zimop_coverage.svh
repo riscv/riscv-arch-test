@@ -2709,8 +2709,9 @@ covergroup Zimop_mop_rr_7_cg with function sample(ins_t ins);
 endgroup
 // ---------------------
 function void zimop_sample(int hart, int issue, ins_t ins);
+    string inst_name = traceDataQ[hart][issue][0].inst_name;
 
-    case (traceDataQ[hart][issue][0].inst_name)
+    case (inst_name)
         "mop.r.0"     : begin
             Zimop_mop_r_0_cg.sample(ins);
         end

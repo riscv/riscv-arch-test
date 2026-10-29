@@ -105,12 +105,6 @@ covergroup Ssstateen_cg with function sample(ins_t ins);
         sstateen0_csr: coverpoint ins.current.insn[31:20] {
             bins sstateen0 = {CSR_SSTATEEN0};
         }
-        sstateen_csrs: coverpoint ins.current.insn[31:20] {
-            bins sstateen0 = {CSR_SSTATEEN0};
-            bins sstateen1 = {CSR_SSTATEEN1};
-            bins sstateen2 = {CSR_SSTATEEN2};
-            bins sstateen3 = {CSR_SSTATEEN3};
-        }
         // SE<n> of mstateen<n> and hstateen<n> for the sstateen<n> being accessed
         se_state: coverpoint {mstateen_se_n(ins), hstateen_se_n(ins)} {
             bins se_h0 = {2'b10};

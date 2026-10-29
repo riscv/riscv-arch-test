@@ -5,11 +5,6 @@
 ci_enabled: true
 
 exclude_extensions:
-  # InterruptsSm: the Verilator testharness is built without the UART (InclUART=0), so
-  # there is no external interrupt source behind the PLIC, and machine external
-  # interrupts (MEI) cannot be raised.
-  # https://github.com/openhwfoundation/cva6/blob/81245a47fad8fe1a5d562d953ef2662e099def76/corev_apu/tb/ariane_testharness.sv#L586-L590
-  - InterruptsSm
   # PMP_Sm_cfg_A_tor_zero stores to, loads from and jumps to address 0. In the testharness
   # address 0 is the debug module (DebugBase=0x0, DebugLength=0x1000), which answers every
   # access with OKAY, while Sail expects an access fault because there is no memory at 0.

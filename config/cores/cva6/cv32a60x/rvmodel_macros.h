@@ -96,10 +96,17 @@
 #define CLINT_BASE_ADDRESS 0x02000000
 #define RVMODEL_MSIP_ADDRESS (CLINT_BASE_ADDRESS + 0x0)
 
+// install-cva6.sh puts an interrupt generator in the testharness GPIO slot at the same
+// address as Sail's simple_interrupt_generator (sail.json), so one store reaches both.
+#define RVMODEL_SET_MEXT_INT(_R1, _R2)                                  \
+    li _R1, 0x80000800           ; /* set | MEI (bit 11) */             \
+    li _R2, 0x40000004           ; /* simple_interrupt_generator + 4 */ \
+    sw _R1, 0(_R2)
 
-#define RVMODEL_SET_MEXT_INT(_R1, _R2)
-
-#define RVMODEL_CLR_MEXT_INT(_R1, _R2)
+#define RVMODEL_CLR_MEXT_INT(_R1, _R2)                                  \
+    li _R1, 0x00000800           ; /* clear | MEI (bit 11) */           \
+    li _R2, 0x40000004           ; /* simple_interrupt_generator + 4 */ \
+    sw _R1, 0(_R2)
 
 ##### Supervisor Interrupts #####
 

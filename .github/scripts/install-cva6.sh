@@ -41,6 +41,83 @@ git init "$INSTALL_DIR/cva6"
   git submodule update --init --recursive -- "${submodules[@]}"
 )
 
+# Replace the testharness GPIO error slave with an interrupt generator compatible with
+# Sail's simple_interrupt_generator, so tests can raise machine external interrupts.
+patch -p1 -l -d "$INSTALL_DIR/cva6" <<'ACT_CVA6_TB_PATCH'
+--- a/corev_apu/tb/ariane_testharness.sv
++++ b/corev_apu/tb/ariane_testharness.sv
+@@ -375,24 +375,45 @@
+   // GPIO
+   // ------------------------------
+
+-  // GPIO not implemented, adding an error slave here
++  // ACT patch: interrupt generator in the GPIO slot, compatible with Sail's
++  // simple_interrupt_generator. Offset 0 reads the version (0x00010001). A write to
++  // offset 4 with bit 11 (MEI) set raises (bit 31 = 1) or clears (bit 31 = 0) the
++  // machine external interrupt input of the core.
++  logic                         act_irq_req;
++  logic                         act_irq_we;
++  logic [AXI_ADDRESS_WIDTH-1:0] act_irq_addr;
++  logic [AXI_DATA_WIDTH/8-1:0]  act_irq_be;
++  logic [AXI_DATA_WIDTH-1:0]    act_irq_wdata;
++  logic                         act_mei;
+
+-  ariane_axi_soc::req_slv_t  gpio_req;
+-  ariane_axi_soc::resp_slv_t gpio_resp;
+-  `AXI_ASSIGN_TO_REQ(gpio_req, master[ariane_soc::GPIO])
+-  `AXI_ASSIGN_FROM_RESP(master[ariane_soc::GPIO], gpio_resp)
+-  axi_err_slv #(
+-    .AxiIdWidth ( ariane_axi_soc::IdWidthSlave ),
+-    .req_t      ( ariane_axi_soc::req_slv_t    ),
+-    .resp_t     ( ariane_axi_soc::resp_slv_t   )
+-  ) i_gpio_err_slv (
+-    .clk_i      ( clk_i      ),
+-    .rst_ni     ( ndmreset_n ),
+-    .test_i     ( test_en    ),
+-    .slv_req_i  ( gpio_req ),
+-    .slv_resp_o ( gpio_resp )
++  axi2mem #(
++    .AXI_ID_WIDTH   ( ariane_axi_soc::IdWidthSlave ),
++    .AXI_ADDR_WIDTH ( AXI_ADDRESS_WIDTH            ),
++    .AXI_DATA_WIDTH ( AXI_DATA_WIDTH               ),
++    .AXI_USER_WIDTH ( AXI_USER_WIDTH               )
++  ) i_act_irq_axi2mem (
++    .clk_i  ( clk_i                    ),
++    .rst_ni ( ndmreset_n               ),
++    .slave  ( master[ariane_soc::GPIO] ),
++    .req_o  ( act_irq_req              ),
++    .we_o   ( act_irq_we               ),
++    .addr_o ( act_irq_addr             ),
++    .be_o   ( act_irq_be               ),
++    .user_o (                          ),
++    .data_o ( act_irq_wdata            ),
++    .user_i ( '0                       ),
++    .data_i ( 64'h0000_0000_0001_0001  )
+   );
+
++  always_ff @(posedge clk_i or negedge ndmreset_n) begin
++    if (!ndmreset_n) begin
++      act_mei <= 1'b0;
++    end else if (act_irq_req && act_irq_we && act_irq_addr[11:0] == 12'h004
++                 && act_irq_be[4] && act_irq_wdata[32+11]) begin
++      act_mei <= act_irq_wdata[32+31];
++    end
++  end
++
+
+   // ------------------------------
+   // Memory + Exclusive Access
+@@ -643,7 +664,7 @@
+     .rst_ni               ( ndmreset_n          ),
+     .boot_addr_i          ( ariane_soc::ROMBase ), // start fetching from ROM
+     .hart_id_i            ( {56'h0, hart_id}    ),
+-    .irq_i                ( irqs                ),
++    .irq_i                ( irqs | {1'b0, act_mei} ),
+     .ipi_i                ( ipi                 ),
+     .time_irq_i           ( timer_irq           ),
+     .rvfi_probes_o        ( rvfi_probes         ),
+ACT_CVA6_TB_PATCH
+
 # 2. Verilator and Spike, at the versions CVA6's own CI uses. The testharness links
 #    Spike's libfesvr/libriscv/libdisasm, and spike-dasm decodes the debug trace.
 bash "$INSTALL_DIR/cva6/verif/regress/install-verilator.sh"

@@ -20,8 +20,8 @@ no PMP entries (`NrPMPEntries=0`); its parameters are in
 .github/scripts/install-cva6.sh ~/repos/cva6-builds
 export PATH=$HOME/repos/cva6-builds/bin:$PATH
 export CVA6_SNAPSHOT=$HOME/repos/cva6-builds
-make cv32a65x EXCLUDE_EXTENSIONS=InterruptsSm,PMP_Sm_cfg_A_tor_zero
-make cv32a60x EXCLUDE_EXTENSIONS=InterruptsSm
+make cv32a65x EXCLUDE_EXTENSIONS=PMP_Sm_cfg_A_tor_zero
+make cv32a60x
 ```
 
 The install script clones CVA6, builds the Verilator and Spike versions CVA6's own CI uses (the
@@ -29,6 +29,12 @@ testharness links Spike's libraries), verilates one testharness per configuratio
 `<install-dir>/cva6/work-ver-<config>/`, and installs the shared `run-cva6.sh` runner. It needs
 `riscv64-unknown-elf-gcc` on `PATH`. The two exports do what `.github/scripts/setup-cva6.sh` does
 in CI. The excluded extensions and their reasons are listed in `ci.yaml`.
+
+The testharness has no external interrupt source, so `install-cva6.sh` patches it to replace
+the GPIO error slave at `0x4000_0000` with an interrupt generator that matches Sail's
+`simple_interrupt_generator`. Writing `0x80000800` to `0x4000_0004` raises the machine external
+interrupt, and writing `0x00000800` clears it. `sail.json` places Sail's generator at the same
+address, so `RVMODEL_SET_MEXT_INT` and `RVMODEL_CLR_MEXT_INT` drive both models with one store.
 
 The testharness halts on a write to `tohost`: 1 is a pass, any other value a fail. The runner
 passes the `tohost` address to the simulator and turns the testharness verdict into an `RVCP-SUMMARY`

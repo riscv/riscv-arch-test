@@ -3,16 +3,21 @@
 These configurations run the [CVA6](https://github.com/openhwfoundation/cva6) core in its Verilator
 testharness (`corev_apu/tb/ariane_testharness.sv`), pinned to CVA6 commit `81245a4`.
 
-| Config     | ISA                                             | Modes |
-| ---------- | ----------------------------------------------- | ----- |
-| `cv32a65x` | RV32IMC_Zicsr_Zifencei_Zcb_Zba_Zbb_Zbc_Zbkc_Zbs | M     |
-| `cv32a60x` | RV32IMC_Zicsr_Zifencei_Zcb_Zba_Zbb_Zbc_Zbkc_Zbs | M     |
+| Config               | ISA                                                                                                    | Modes   |
+| -------------------- | ------------------------------------------------------------------------------------------------------ | ------- |
+| `cv32a65x`           | RV32IMC_Zicsr_Zifencei_Zcb_Zba_Zbb_Zbc_Zbkc_Zbs                                                        | M       |
+| `cv32a60x`           | RV32IMC_Zicsr_Zifencei_Zcb_Zba_Zbb_Zbc_Zbkc_Zbs                                                        | M       |
+| `cv64a6_imafdc_sv39` | RV64IMAFDC_Zicsr_Zifencei_Zicntr_Zihpm_Zicbom_Zicond_Zcb_Zba_Zbb_Zbc_Zbs_Zbkb_Zbkc_Zbkx_Zkne_Zknd_Zknh | M, S, U |
 
 `cv32a65x` is the 6-stage, M-mode-only release configuration described in the
 [CV32A65X Design Document](https://docs.openhwfoundation.org/projects/cva6-user-manual/04_cv32a65x/design/design.html).
 Its RTL parameters are in `core/include/cv32a65x_config_pkg.sv`. `cv32a60x` is the same ISA with
 no PMP entries (`NrPMPEntries=0`); its parameters are in
-`core/include/cv32a60x_config_pkg.sv`. Both share `ci.yaml` and `install-cva6.sh`.
+`core/include/cv32a60x_config_pkg.sv`. `cv64a6_imafdc_sv39` is the 64-bit application-class
+configuration with S and U modes, Sv39, 8 PMP entries and the HPDcache; it runs the
+`cv64a6_imafdc_sv39_hpdcache` target, whose parameters are in
+`core/include/cv64a6_imafdc_sv39_hpdcache_config_pkg.sv`. All three share `ci.yaml` and
+`install-cva6.sh`.
 
 ## Building and running
 
@@ -22,6 +27,7 @@ export PATH=$HOME/repos/cva6-builds/bin:$PATH
 export CVA6_SNAPSHOT=$HOME/repos/cva6-builds
 make cv32a65x EXCLUDE_EXTENSIONS=InterruptsSm
 make cv32a60x EXCLUDE_EXTENSIONS=InterruptsSm
+make cv64a6_imafdc_sv39 EXCLUDE_EXTENSIONS="$(.github/scripts/ci_config.py --exclusions config/cores/cva6/ci.yaml)"
 ```
 
 The install script clones CVA6, builds the Verilator and Spike versions CVA6's own CI uses (the

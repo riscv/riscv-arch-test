@@ -9,12 +9,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // helper coverpoints for illegal compressed instruction coverage for the Ssstrict extension
-    // Sweeps of more than 1024 values are split on insn[12] because Verilator ignores larger bin arrays
 
     compressed00 : coverpoint ins.current.insn[15:2] iff (ins.current.insn[1:0] == 2'b00) {
         // exhaustive test of 2^14 compressed instructions with op=00 with following exclusions that would be hard to test
-        bins c00a_0[]     = {[14'b000_0_0000000000:14'b000_0_1111111111]};
-        bins c00a_1[]     = {[14'b000_1_0000000000:14'b000_1_1111111111]};
+        bins c00a[]       = {[14'b00000000000000:14'b00011111111111]};
         ignore_bins c_fld = {[14'b00100000000000:14'b00111111111111]}; // c.fld throw exceptions for bad addresses
         ignore_bins c_lw  = {[14'b01000000000000:14'b01011111111111]}; // c.lw throw exceptions for bad addresses
         ignore_bins c_flw_ld = {[14'b01100000000000:14'b01111111111111]}; // c.flw/c.ld throw exceptions for bad addresses
@@ -47,19 +45,14 @@
         wildcard ignore_bins c_rd_x2 = {14'b00??00010?????, 14'b010?00010?????}; // c.addi/c.addiw/c.li with rd = x2 clobber the signature pointer
         ignore_bins c_addi16sp = {[14'b011_0_00010_00001:14'b011_0_00010_11111], [14'b011_1_00010_00000:14'b011_1_00010_11111]}; // c.addi16sp with nzimm != 0 moves the signature pointer
         bins illegal_c_addi16sp = {14'b011_0_00010_00000}; // c.addi16sp with nzimm = 0 is reserved
-        bins c01_0[] = {[14'b000_0_00000_00000:14'b000_0_11111_11111]};
-        bins c01_1[] = {[14'b000_1_00000_00000:14'b000_1_11111_11111]};
+        bins c01[] = {[0:14'b00011111111111]};
         `ifdef UDB_MXLEN_32
             ignore_bins c_jal = {[14'b00100000000000:14'b00111111111111]}; // c.jal jumps to a random place
         `else
             bins illegal_c_addiw[] = {[14'b001_0_00000_00000:14'b001_0_00000_11111], [14'b001_1_00000_00000:14'b001_1_00000_11111]}; // RV64 c.addiw with rd = x0 is reserved
             ignore_bins c_addiw = {[14'b001_0_00001_00000:14'b001_0_11111_11111], [14'b001_1_00001_00000:14'b001_1_11111_11111]}; // legal RV64 c.addiw is not swept
         `endif
-        bins c01b_0[] = {[14'b010_0_00000_00000:14'b010_0_11111_11111]};
-        bins c01b_1[] = {[14'b010_1_00000_00000:14'b010_1_11111_11111]};
-        bins c01b_2[] = {[14'b011_0_00000_00000:14'b011_0_00001_11111], [14'b011_0_00010_00001:14'b011_0_11111_11111]};
-        bins c01b_3[] = {[14'b011_1_00000_00000:14'b011_1_11111_11111]};
-        bins c01b_4[] = {[14'b100_0_00000_00000:14'b100_0_11111_11111]};
+        bins c01b[] = {[14'b01000000000000:14'b011_0_00001_11111], [14'b011_0_00010_00001:14'b10001_111111111]};
         `ifdef UDB_MXLEN_32
             ignore_bins c_srli_srai_custom = {[14'b10010_000000000:14'b10010_111111111]}; // reserved for custom use in RV32Zca; behavior is unpredictable
         `else

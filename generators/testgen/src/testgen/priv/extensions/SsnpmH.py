@@ -20,8 +20,8 @@ guest physical address bits, beyond the VS-stage modes' widths, which masking cl
 henvcfg.PMM applies to VS-mode and senvcfg.PMM to VU-mode.  An HLV or HSV from HS-mode takes henvcfg.PMM when
 hstatus.SPVP = 1 and senvcfg.PMM when SPVP = 0; from U-mode with hstatus.HU = 1 it takes henvcfg.PMM when SPVP = 1
 and hstatus.HUPMM when SPVP = 0.  In each case the other PMM fields hold a different value.  HLVX is never masked,
-and nor is an access with vsstatus.MXR = 1; those cases enable every PMM field.  A PMM value selects PMLEN = 7 (10) or 16 (11) only when the
-configuration supports that PMLEN.
+and nor is an access with vsstatus.MXR = 1; those cases enable every PMM field.  A PMM value selects PMLEN = 7 (10)
+or 16 (11) only when the configuration supports that PMLEN.
 """
 
 from collections.abc import Sequence
@@ -52,7 +52,7 @@ _PMM_ON_DEFINE = [
     f"#define {_OTHER_ON} 2",
     "#endif",
 ]
-_PMM_FIELDS = ("henvcfg", "senvcfg", "hstatus")
+_PMM_CSRS = ("henvcfg", "senvcfg", "hstatus")
 # Store mnemonic and the load that reads its data back
 _STORES = {"sd": "ld", "hsv.d": "ld"}
 
@@ -65,12 +65,13 @@ def _tags(g: SvMode) -> tuple[int, int]:
     return (max(msb, 57), msb if 48 <= msb < 57 else 48)
 
 
-def _access(test_data: TestData, name: str, coverpoint: str, op: str, tag: int, mode: str) -> list[str]:
+def _probe(test_data: TestData, name: str, coverpoint: str, op: str, tag: int, mode: str) -> list[str]:
     """``op`` in ``mode`` (VS, VU, U, or S for HS) at pm_lo_page with bit ``tag`` set, checked back in HS-mode."""
-    kwargs = {"coverpoint": coverpoint, "mode": None if mode == "S" else mode}
+    run_mode = None if mode == "S" else mode
+    upper_tag = 1 << (tag - 48)
     if op in _STORES:
-        return probe_store(op, _STORES[op], 1 << (tag - 48), name, test_data, _CG, **kwargs)
-    return probe_load(op, 1 << (tag - 48), name, test_data, _CG, **kwargs)
+        return probe_store(op, _STORES[op], upper_tag, name, test_data, _CG, coverpoint=coverpoint, mode=run_mode)
+    return probe_load(op, upper_tag, name, test_data, _CG, coverpoint=coverpoint, mode=run_mode)
 
 
 def _pmm_cases(
@@ -83,7 +84,7 @@ def _pmm_cases(
     setup: Sequence[str] = (),
 ) -> list[str]:
     """``ops`` in ``mode`` for each PMM value of ``field``, with the other PMM fields enabled when it is 00."""
-    others = [other for other in _PMM_FIELDS if other != field]
+    others = [other for other in _PMM_CSRS if other != field]
     lines = []
     for pmm, pmlen, label in PMM_CONFIGS:
         body = [*setup, *set_pmm_field(field, pmm, pmlen, test_data)]
@@ -93,14 +94,15 @@ def _pmm_cases(
             )
         for op in ops:
             for tag in _tags(g):
-                body.extend(_access(test_data, f"{g.name}_{op}_{field}_{label}_bit{tag}", coverpoint, op, tag, mode))
+                body.extend(_probe(test_data, f"{g.name}_{op}_{field}_{label}_bit{tag}", coverpoint, op, tag, mode))
         lines.extend(pmm_ifdef(field, pmlen, body))
-    lines.extend(line for csr in _PMM_FIELDS for line in set_pmm_field(csr, 0, 0, test_data))
+    lines.extend(_set_all_pmm(test_data, 0))
     return lines
 
 
 def _set_all_pmm(test_data: TestData, value: int | str) -> list[str]:
-    return [line for csr in _PMM_FIELDS for line in set_pmm_field(csr, value, None if value else 0, test_data)]
+    pmlen = None if isinstance(value, str) else 0
+    return [line for csr in _PMM_CSRS for line in set_pmm_field(csr, value, pmlen, test_data)]
 
 
 def _make_ssnpmh(test_data: TestData, g: SvMode) -> list[TestChunk]:
@@ -164,11 +166,11 @@ def _make_ssnpmh(test_data: TestData, g: SvMode) -> list[TestChunk]:
         for value in (0, 1):
             lines.extend(spvp[value])
             for bit in _tags(g):
-                lines.extend(_access(test_data, f"{g.name}_spvp{value}_bit{bit}", coverpoint, "hlvx.wu", bit, mode))
+                lines.extend(_probe(test_data, f"{g.name}_spvp{value}_bit{bit}", coverpoint, "hlvx.wu", bit, mode))
     lines.extend([*hu[0], *csr_op("csrs", "vsstatus", "SSTATUS_MXR", test_data)])
     for mode in ("VS", "VU"):
         for bit in _tags(g):
-            lines.extend(_access(test_data, f"{g.name}_{mode.lower()}_bit{bit}", "cp_mxr_pmm", "ld", bit, mode))
+            lines.extend(_probe(test_data, f"{g.name}_{mode.lower()}_bit{bit}", "cp_mxr_pmm", "ld", bit, mode))
     lines.extend([*csr_op("csrc", "vsstatus", "SSTATUS_MXR", test_data), *_set_all_pmm(test_data, 0)])
     tc.code.extend(lines)
     end(tc)

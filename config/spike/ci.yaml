@@ -10,7 +10,7 @@ exclude_configs:
 exclude_extensions:
   # From VU-mode, mireg-mireg6 raise virtual instruction instead of illegal instruction: they are M-level CSRs, but
   # sscsrind_reg_csr_t::verify_permissions (riscv/csrs.cc) raises virtual instruction for any VU-mode access before
-  # the privilege check.
+  # the privilege check (https://github.com/riscv-software-src/riscv-isa-sim/issues/2501).
   - H_vucsr
   # spike-rv32-max only: scontext is 16 bits wide on RV32 in Spike but 32 bits in Sail (cp_context).
   # https://github.com/riscv/sail-riscv/issues/2054

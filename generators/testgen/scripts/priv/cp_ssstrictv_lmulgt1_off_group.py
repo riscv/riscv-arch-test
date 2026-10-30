@@ -65,7 +65,7 @@ def _emit_one(instruction: str, lmul: int, role: str, off_reg: int, sew: int) ->
     common.writeLine(f"\n# Testcase {CP} (lmul={lmul}, sew={sew}, off_role={role}, reg=v{off_reg})")
     scratch = common.pickPrivScratch(instruction_data[1])
     emit_vsetivli(scratch, vl=1, sew=sew, lmul=lmul)
-    init_operand_regs(instruction, instruction_data[0], sew, scratch)
+    init_operand_regs(instruction, instruction_data[0], scratch)
     # Re-emit vsetivli right before the test so SAMPLE_BEFORE sees vtype/vl/vstart
     # (rvvi shim does not carry forward unchanged CSRs — simulator-issues/005).
     emit_vsetivli(scratch, vl=1, sew=sew, lmul=lmul)
@@ -135,7 +135,7 @@ def _emit_vill_test(instruction: str) -> None:
     scratch = common.pickPrivScratch(instruction_data[1])
     # Initialize operand vector regs first (while vtype is still legal).
     emit_vsetivli(scratch, vl=1, sew=sew, lmul=1)
-    init_operand_regs(instruction, instruction_data[0], sew, scratch)
+    init_operand_regs(instruction, instruction_data[0], scratch)
     # Now set vill=1 — illegal SEW=64 / LMUL=1/8 combo.
     common.writeLine(f"vsetivli x{scratch}, 1, e64, mf8, tu, mu",
                       "# vill=1 (illegal SEW=64, LMUL=1/8)")

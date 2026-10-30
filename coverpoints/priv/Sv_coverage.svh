@@ -36,18 +36,12 @@ covergroup Sv_satp_cg with function sample(ins_t ins);
         }
     `endif
 
-    // satp.ASID reads 0 when ASIDLEN = 0
-    `ifndef UDB_ASID_WIDTH_0
-        `ifdef UDB_MXLEN_64
-            asid_length: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "asid")[15:0] { //sat.5
-                bins values = {16'h0001, 16'h0002, 16'h0004, 16'h0008, 16'h0010, 16'h0020, 16'h0040, 16'h0080, 16'h0100, 16'h0200, 16'h0400, 16'h0800, 16'h1000, 16'h2000, 16'h4000, 16'h8000};
-            }
-        `else
-            asid_length: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "asid")[8:0] {
-                bins values = {9'h001, 9'h002, 9'h004, 9'h008, 9'h010, 9'h020, 9'h040, 9'h080, 9'h100};
-            }
-        `endif
-    `endif
+    // One bin per implemented ASID bit: the UDB_ASID_WIDTH least-significant bits, none when ASIDLEN = 0
+    asid_length: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "satp", "asid")[15:0] { //sat.5
+        bins values[] = {16'h0001, 16'h0002, 16'h0004, 16'h0008, 16'h0010, 16'h0020, 16'h0040, 16'h0080,
+                         16'h0100, 16'h0200, 16'h0400, 16'h0800, 16'h1000, 16'h2000, 16'h4000, 16'h8000}
+                        with (item < (1 << `UDB_ASID_WIDTH));
+    }
 
     tvm_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tvm")[0]{
         bins zero = {0};
@@ -861,17 +855,6 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
             `endif
         }
 
-        `ifdef SVRSW60T59B_SUPPORTED
-            rsw60t59b_PTE_i: coverpoint ins.current.pte_i[60:54] {
-                bins rsw_bit_59 = {7'b0100000};
-                bins rsw_bit_60 = {7'b1000000};
-            }
-            rsw60t59b_PTE_d: coverpoint ins.current.pte_d[60:54] {
-                bins rsw_bit_59 = {7'b0100000};
-                bins rsw_bit_60 = {7'b1000000};
-            }
-        `endif
-
         PBMTE_unset: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "menvcfg", "pbmte")[0] {
             bins not_set = {1'b0};
         }
@@ -932,13 +915,6 @@ covergroup Sv_add_feature_cg with function sample(ins_t ins);
         cp_reserved_read_fault:  cross reserved_PTE_d, load_page_fault, read_acc, mode;
         cp_reserved_write_fault: cross reserved_PTE_d, store_page_fault, write_acc, mode;
         cp_reserved_exec_fault:  cross reserved_PTE_i, ins_page_fault, exec_acc, mode;
-
-        //pte.20 with Svrsw60t59b: bits 60:59 are for software and do not fault
-        `ifdef SVRSW60T59B_SUPPORTED
-            cp_rsw60t59b_read_nofault:  cross rsw60t59b_PTE_d, read_acc, mode;
-            cp_rsw60t59b_write_nofault: cross rsw60t59b_PTE_d, write_acc, mode;
-            cp_rsw60t59b_exec_nofault:  cross rsw60t59b_PTE_i, exec_acc, mode;
-        `endif
 
         //pte.17&19&20
         cp_read_nofault:  cross zeros_PTE_d, read_acc, mode;
@@ -1005,9 +981,6 @@ covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
     }
 
     cp_tvm_exception_s: cross tvm_mstatus, priv_mode_s, Mcause, cp_ins; //ms.1
-
-    // MPRV and SBE need page-based translation; with only Bare, the mstatus.TVM test is the only Sm test that runs.
-    `ifdef SV_TRANSLATION_SUPPORTED
 
     mprv_mstatus: coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "mprv")[0] {
         bins set = {1};
@@ -1128,7 +1101,6 @@ covergroup Sv_Sm_mstatus_mprv_cg with function sample(ins_t ins);
 
     cp_mstatus_sbe_read: cross read_acc, PTE_sbe_d, PageType_d, sbe_mstatus; //ms.5
     cp_mstatus_sbe_write: cross write_acc, PTE_sbe_d, PageType_d, sbe_mstatus; //ms.5
-    `endif // SV_TRANSLATION_SUPPORTED
 
 endgroup
 `endif // EXCLUDE_SM

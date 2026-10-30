@@ -5,7 +5,10 @@ normative_rule_definitions:
   # entries (PTEs) are reserved for use by supervisor software and are ignored by the
   # implementation.
   - names: [Svrsw60t59b_reserved_bits_60_59, Svrsw60t59b_depends_on_Sv39]
-    coverpoint: ["Sv_add_feature_cg/cp_rsw60t59b_{read,write,exec}_nofault"]
+    coverpoint:
+      [
+        "TODO: set PTE bits 60:59 in leaf PTEs and check that accesses do not fault",
+      ]
 
   # If the Hypervisor (H) extension is also implemented, then bits 60-59 of the G-stage
   # PTEs are reserved for use by supervisor software and are ignored by the

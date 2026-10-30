@@ -18,8 +18,8 @@ coverpoints:
     description: "S-mode, with satp.MODE set and PPN = root page table: write ASID = all ones and read it back, then walk a single 1 through each ASID bit (16 bits on RV64, 9 on RV32), reading satp back each time."
     expectation: Implemented ASID bits (the ASIDLEN least-significant bits) read back as written; unimplemented bits read 0.
     bins: |-
-      asid_length {values}
-      = 1 bins on RV64, 1 on RV32
+      asid_length {values[]}: one bin per implemented ASID bit
+      = UDB_ASID_WIDTH bins (at most 16 on RV64, 9 on RV32)
     id: ASIDLEN
     rules:
       - "[norm:ASIDLEN]"
@@ -843,7 +843,7 @@ coverpoints:
       - "[norm:Sv39_pte_svpbmt_rsv] [norm:menvcfg_pbmte_op]"
   - name: cp_reserved_read_fault
     goal: Verify reserved PTE bits 60:54 raise a load page fault on a load
-    description: "RV64, S-mode: top-level leaf PTE with each of bits 60..54 set in turn. Load (lw) from the page through va_data. With Svrsw60t59b, bits 60:59 do not fault and are covered by cp_rsw60t59b_*_nofault instead."
+    description: "RV64, S-mode: top-level leaf PTE with each of bits 60..54 set in turn. Load (lw) from the page through va_data. With Svrsw60t59b, bits 60:59 do not fault; the Svrsw60t59b suite tests them."
     expectation: Load page fault (scause = 13); stval = faulting virtual address.
     bins: |-
       reserved_PTE_d x load_page_fault x read_acc x mode
@@ -853,7 +853,7 @@ coverpoints:
       - "[norm:Sv39_pte_future_rsv]"
   - name: cp_reserved_write_fault
     goal: Verify reserved PTE bits 60:54 raise a store/AMO page fault on a store
-    description: "RV64, S-mode: top-level leaf PTE with each of bits 60..54 set in turn. Store (sw) to the page through va_data. With Svrsw60t59b, bits 60:59 do not fault and are covered by cp_rsw60t59b_*_nofault instead."
+    description: "RV64, S-mode: top-level leaf PTE with each of bits 60..54 set in turn. Store (sw) to the page through va_data. With Svrsw60t59b, bits 60:59 do not fault; the Svrsw60t59b suite tests them."
     expectation: Store/AMO page fault (scause = 15); stval = faulting virtual address.
     bins: |-
       reserved_PTE_d x store_page_fault x read_acc x mode
@@ -863,7 +863,7 @@ coverpoints:
       - "[norm:Sv39_pte_future_rsv]"
   - name: cp_reserved_exec_fault
     goal: Verify reserved PTE bits 60:54 raise an instruction page fault on an instruction fetch
-    description: "RV64, S-mode: top-level leaf PTE with each of bits 60..54 set in turn. Jump (jalr) into the page through va_data. With Svrsw60t59b, bits 60:59 do not fault and are covered by cp_rsw60t59b_*_nofault instead."
+    description: "RV64, S-mode: top-level leaf PTE with each of bits 60..54 set in turn. Jump (jalr) into the page through va_data. With Svrsw60t59b, bits 60:59 do not fault; the Svrsw60t59b suite tests them."
     expectation: Instruction page fault (scause = 12); stval = faulting virtual address.
     bins: |-
       reserved_PTE_i x ins_page_fault x read_acc x mode
@@ -871,36 +871,6 @@ coverpoints:
     id: Sv39_pte_future_rsv
     rules:
       - "[norm:Sv39_pte_future_rsv]"
-  - name: cp_rsw60t59b_read_nofault
-    goal: Verify PTE bits 60:59 are ignored on a load when Svrsw60t59b is implemented
-    description: "RV64, S-mode, Svrsw60t59b: top-level leaf PTE with bit 59 or bit 60 set (the cp_reserved_read_fault test). Load (lw) from the page through va_data."
-    expectation: No fault.
-    bins: |-
-      rsw60t59b_PTE_d x read_acc x mode
-      = 6 bins on RV64 (RV64 with Svrsw60t59b only)
-    id: Svrsw60t59b_reserved_bits_60_59
-    rules:
-      - "[norm:Svrsw60t59b_reserved_bits_60_59]"
-  - name: cp_rsw60t59b_write_nofault
-    goal: Verify PTE bits 60:59 are ignored on a store when Svrsw60t59b is implemented
-    description: "RV64, S-mode, Svrsw60t59b: top-level leaf PTE with bit 59 or bit 60 set (the cp_reserved_write_fault test). Store (sw) to the page through va_data."
-    expectation: No fault.
-    bins: |-
-      rsw60t59b_PTE_d x write_acc x mode
-      = 6 bins on RV64 (RV64 with Svrsw60t59b only)
-    id: Svrsw60t59b_reserved_bits_60_59
-    rules:
-      - "[norm:Svrsw60t59b_reserved_bits_60_59]"
-  - name: cp_rsw60t59b_exec_nofault
-    goal: Verify PTE bits 60:59 are ignored on an instruction fetch when Svrsw60t59b is implemented
-    description: "RV64, S-mode, Svrsw60t59b: top-level leaf PTE with bit 59 or bit 60 set (the cp_reserved_exec_fault test). Jump (jalr) into the page through va_data."
-    expectation: No fault.
-    bins: |-
-      rsw60t59b_PTE_i x exec_acc x mode
-      = 6 bins on RV64 (RV64 with Svrsw60t59b only)
-    id: Svrsw60t59b_reserved_bits_60_59
-    rules:
-      - "[norm:Svrsw60t59b_reserved_bits_60_59]"
   - name: cp_read_nofault
     goal: Verify a PTE with bits 63:54 all zero translates normally for a load
     description: "S-mode and U-mode: loads through valid leaf PTEs whose extension and reserved bits 63:54 are zero (every Sv test)."

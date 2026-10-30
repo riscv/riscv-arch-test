@@ -354,6 +354,15 @@ covergroup H_vscsr_cg with function sample(ins_t ins);
     }
     cp_csr_insufficient_priv:        cross priv_mode_vs, csrr, csr_machine, nonzerord;
 
+    // Every write to a read-only CSR number raises illegal instruction in VS-mode, as in S_scsr_cg
+    csrrw : coverpoint ins.current.insn {
+        wildcard bins csrrw = {CSRRW};
+    }
+    csr_sro : coverpoint ins.current.insn[31:20] {
+        bins sro[] = {[12'hC00:12'hEFF]};
+    }
+    cp_csr_ro:                       cross priv_mode_vs, csrrw, csr_sro;
+
     // HS and VS H CSRs raise virtual instruction in VS-mode when the access is legal in HS-mode
     hsvscsrname : coverpoint ins.current.insn[31:20] {
         bins hstatus    = {CSR_HSTATUS};

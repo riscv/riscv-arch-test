@@ -173,7 +173,7 @@ exclude_extensions:
   # All three Zicfilp suites pass on qemu-rv64-max, but exclusions apply to every QEMU config.
   - Zicfilp_S
   - Zicfilp_U
-  # Zicfiss_U, Zicfiss_S, Zicfiss_Sm excluded due to QEMU bugs:
+  # Zicfiss_U, Zicfiss_S, Zicfiss_Sm, Zicfiss_H excluded due to QEMU bugs:
   #  1. sspopchk raises a software-check exception where a store/AMO access fault must take priority
   #     (https://gitlab.com/qemu-project/qemu/-/work_items/4379)
   #  2. the M-mode SSAMOSWAP access fault leaves mtval=0, while QEMU's other store/AMO access faults
@@ -189,13 +189,15 @@ exclude_extensions:
   #  7. SSPOPCHK with satp.MODE=Bare below M does not fault (https://gitlab.com/qemu-project/qemu/-/work_items/4432)
   #  8. senvcfg.SSE keeps 1 after menvcfg.SSE is cleared (https://gitlab.com/qemu-project/qemu/-/work_items/4224)
   #  9. on RV32, a write to mstateen0 clears mstateen0h.ENVCFG, so the S-mode senvcfg setup in Zicfiss_U and
-  #     Zicfiss_S raises an illegal instruction (https://gitlab.com/qemu-project/qemu/-/issues/4611)
+  #     Zicfiss_S and the HS-mode henvcfg accesses in Zicfiss_H raise an illegal instruction
+  #     (https://gitlab.com/qemu-project/qemu/-/issues/4611)
   #  10. SSAMOSWAP from M-mode with mstatus.MPRV=1, MPP=S raises a store/AMO access fault, and the xwr=010
   #     encoding is decoded with the current mode's SSE enable, so MPRV loads and U-mode accesses with
   #     senvcfg.SSE=0 page-fault on an SS page (Zicfiss_Sm; https://gitlab.com/qemu-project/qemu/-/work_items/4674)
   - Zicfiss_U
   - Zicfiss_S
   - Zicfiss_Sm
+  - Zicfiss_H
 # qemu-rv32-mu, qemu-rv64-mu: U-mode cbo.zero/clean/flush/inval raise illegal-instruction without S-mode
 #   because check_zicbo_envcfg() also requires senvcfg, which does not exist
 #   (https://gitlab.com/qemu-project/qemu/-/work_items/4596)

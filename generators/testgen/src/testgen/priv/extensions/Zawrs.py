@@ -190,16 +190,21 @@ def wrs_resume_helper(
                             write_sigupd(r_cause, test_data),
                         ]
                     )
-                    # Disarm timers so no pending interrupt carries into the next testcase
-                    lines.append(f"RVTEST_CLR_MTIME_INT_{priv}")
+                    # Disarm the timer that was armed so no pending interrupt carries into the next testcase.
+                    # Below M-mode that is the supervisor timer with Sstc, and mtimecmp is written through T-SBI
+                    # only without Sstc (for example on M+U cores). RVA23 mandates Sstc, so it never does.
                     if lower:
                         lines.extend(
                             [
                                 "#ifdef SSTC_SUPPORTED",
                                 f"RVTEST_CLR_SSTC_INT_{priv}",
+                                "#else",
+                                f"RVTEST_CLR_MTIME_INT_{priv}",
                                 "#endif",
                             ]
                         )
+                    else:
+                        lines.append("RVTEST_CLR_MTIME_INT_M")
 
     if lower:
         lines.extend(
@@ -238,7 +243,7 @@ def wrs_no_mie_helper(
         *([f"mstatus.SIE = 1{' (if S supported)' if priv == 'U' else ''}"] if lower else []),
         "mie = all 0s",
         "mstatus.TW = 1" if lower else "mstatus.TW = 0",
-        "mip = {SSIP + SEIP + STIP + MSIP + MEIP + MTIP}" if lower else "mip = {MSIP + MEIP + MTIP}",
+        "mip = {SSIP + SEIP + STIP + MSIP + MEIP + MTIP (without Sstc)}" if lower else "mip = {MSIP + MEIP + MTIP}",
         f"execute {{WRS.NTO/WRS.STO}} in {priv} mode" if lower else "execute WRS.STO in M mode",
         "2 bins" if lower else "1 bin",
     ]
@@ -247,6 +252,10 @@ def wrs_no_mie_helper(
     if lower:
         guard += " || defined(S_SUPPORTED)"
     lines = [comment_banner(coverpoint, "\n".join(description)), guard]
+    # Below M-mode the machine timer is raised only without Sstc: with Sstc (as in RVA23) mtimecmp is not
+    # written through T-SBI, because machine timer interrupts are not part of a supervisor-mode profile.
+    # Sstc implies S-mode, whose interrupts keep the guard above satisfied.
+    mti_guard = "#if defined(UDB_MTI_INTR_IMPL) && !defined(SSTC_SUPPORTED)" if lower else "#ifdef UDB_MTI_INTR_IMPL"
     # wrs.nto can only be tested in non-M mode using TW = 1
     wrs_list = ["WRS.STO", "WRS.NTO"] if lower else ["WRS.STO"]
 
@@ -266,7 +275,7 @@ def wrs_no_mie_helper(
                 "#ifdef UDB_MSI_INTR_IMPL",
                 f"RVTEST_SET_MSW_INT_{priv}",
                 "#endif",
-                "#ifdef UDB_MTI_INTR_IMPL",
+                mti_guard,
                 f"RVTEST_SET_MTIME_INT_{priv}",
                 "#endif",
             ]
@@ -342,7 +351,7 @@ def wrs_no_mie_helper(
                 "#ifdef UDB_MSI_INTR_IMPL",
                 f"RVTEST_CLR_MSW_INT_{priv}",
                 "#endif",
-                "#ifdef UDB_MTI_INTR_IMPL",
+                mti_guard,
                 f"RVTEST_CLR_MTIME_INT_{priv}",
                 "#endif",
             ]

@@ -714,7 +714,9 @@
 
   // Flavors to run from supervisor mode
 
-  #ifdef STANDARD_SM_SUPPORTED
+  // These reach machine interrupt sources only through T-SBI, so they need a T-SEE but not
+  // a standard M-mode; they are emitted whenever a lower privilege mode can call them.
+  #ifdef U_SUPPORTED
 
     rvtest_set_mtime_int_soon_su:
       #if defined(RVMODEL_MTIME_ADDRESS) && defined(RVMODEL_MTIMECMP_ADDRESS) && defined(RVMODEL_TIMER_INT_SOON_DELAY)
@@ -803,7 +805,7 @@
         RVMODEL_CLR_MEXT_INT(a0, a1) // platform-specific interrupt controller
       #endif
       ret
-  #endif
+  #endif // U_SUPPORTED
 
   #ifdef S_SUPPORTED
     #ifdef SSTC_SUPPORTED

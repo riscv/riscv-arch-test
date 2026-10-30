@@ -2801,8 +2801,8 @@ excpt_\__MODE__\()hndlr_tbl:
 
 // Each routine below clears its interrupt source through the RVTEST_CLR_*_INT
 // flavor for the mode this handler runs in: _M performs the operation directly,
-// _S (S/HS handlers) goes through T-SBI. Both flavors live in rvtest_setup.h and
-// exist only when Sm is supported; without Sm these interrupts are unexpected.
+// _S (S/HS handlers) goes through T-SBI. Both flavors live in rvtest_setup.h.
+// Without a standard M-mode these handlers are not emitted.
 #ifdef STANDARD_SM_SUPPORTED
 
 \__MODE__\()clr_Msw_int:                             // M-mode software interrupt

@@ -47,8 +47,7 @@ normative_rule_definitions:
     coverpoint:
       [
         "Interrupts_cg/cp_trigger",
-        "Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi}",
-        "Interrupts_Sm_cg/cp_priority_levels_{vs, vu}",
+        "Interrupts_Sm_cg/{cp_trigger, cp_trigger_tsbi, cp_priority_levels}",
       ]
 
   # each privilege mode x that can respond to interrupts has a two-level stack of
@@ -820,5 +819,6 @@ normative_rule_definitions:
   - name: mideleg_hroz
     coverpoint:
       [
+        "Interrupts_cg/cp_hideleg_lcofi_roz (HS-mode writes bit 13 of hideleg, hie and hip with mideleg bit 13 = 0)",
         "Interrupts_SmShlcofideleg_cg/cp_trigger_lcofi_m (hideleg bit 13 reads zero while mideleg bit 13 is zero)",
       ]

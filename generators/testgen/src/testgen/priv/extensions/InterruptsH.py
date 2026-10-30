@@ -11,9 +11,12 @@
 The suite boots to HS-mode, where mideleg delegates the S-level, VS-level and guest external interrupts.
 Delegation of the VS-level interrupts to VS-mode is covered by the trigger and priority crosses (Interrupts.py and
 InterruptsCommon.py).  The tests here check the hip, hie, vsip and vsie aliases and what VS-mode sees in sip.
+With Sscofpmf, they also clear mideleg[13] through T-SBI and check that bit 13 of hideleg, hie and hip is then
+read-only zero.
 """
 
 from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.tsbi import tsbi_call_or_direct
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.registry import add_priv_test_generator
@@ -121,6 +124,45 @@ def _hcsr_tests(test_data: TestData) -> list[str]:
     return lines
 
 
+def _hroz_tests(test_data: TestData) -> list[str]:
+    """With mideleg[13] = 0, bit 13 (LCOFI) of hideleg, hie and hip is read-only zero.
+
+    Sscofpmf makes mideleg[13] writable, and the suite boots with it set.  HS-mode clears it through T-SBI, writes 1
+    to bit 13 of each CSR and reads it back, then sets mideleg[13] again.
+    """
+    tmp_reg = test_data.int_regs.get_register()
+    lines = [
+        comment_banner(
+            "cp_hideleg_lcofi_roz",
+            "With mideleg[13] = 0 (cleared through T-SBI), write 1 to bit 13 of hideleg, hie and hip and read it back.\n"
+            "Each reads 0",
+        ),
+        "#ifdef SSCOFPMF_SUPPORTED",
+        f"LI(x{tmp_reg}, MIP_LCOFIP)",
+        tsbi_call_or_direct(f"csrc mideleg, x{tmp_reg} # mideleg[13] = 0", "S"),
+    ]
+    for csr in ("hideleg", "hie", "hip"):
+        lines.extend(
+            [
+                f"LI(x{tmp_reg}, MIP_LCOFIP)",
+                test_data.add_testcase(f"mideleg_lcofi0_{csr}", "cp_hideleg_lcofi_roz", _CG),
+                f"csrw {csr}, x{tmp_reg} # {csr}[13] = 1 is ignored",
+                f"csrr x{tmp_reg}, {csr}",
+                write_sigupd(tmp_reg, test_data),
+                f"csrw {csr}, zero",
+            ]
+        )
+    lines.extend(
+        [
+            f"LI(x{tmp_reg}, MIP_LCOFIP)",
+            tsbi_call_or_direct(f"csrs mideleg, x{tmp_reg} # restore mideleg[13] = 1", "S"),
+            "#endif // SSCOFPMF_SUPPORTED",
+        ]
+    )
+    test_data.int_regs.return_register(tmp_reg)
+    return lines
+
+
 def _sie_vs_tests(test_data: TestData) -> list[str]:
     """In VS-mode, sip is vsip: it shows the delegated VS-level interrupts and not the pending HS-level ones."""
     tmp_reg = test_data.int_regs.get_register()
@@ -176,7 +218,7 @@ def make_interrupts_h(test_data: TestData) -> list[TestChunk]:
     test_chunks: list[TestChunk] = []
 
     tc = test_data.new_test_chunk(test_chunks, "h_hcsr")
-    tc.code.extend(_hcsr_tests(test_data))
+    tc.code.extend([*_hcsr_tests(test_data), *_hroz_tests(test_data)])
 
     tc = test_data.new_test_chunk(test_chunks, "h_vs")
     tc.code.extend(_sie_vs_tests(test_data))

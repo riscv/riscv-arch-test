@@ -39,225 +39,225 @@ RVTEST_BEGIN
 /////////////////////////////////
 
 // Identity map the test image in both stages
-  LA(x9, rvtest_code_begin)
-  srli x9, x9, 22
-  slli x9, x9, 20
-  srli x9, x9, 18
-  LA(x8, rvtest_Hroot_pg_tbl)
-  add x9, x9, x8
   LA(x6, rvtest_code_begin)
   srli x6, x6, 22
   slli x6, x6, 20
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x9)
+  srli x6, x6, 18
+  LA(x14, rvtest_Hroot_pg_tbl)
+  add x6, x6, x14
   LA(x9, rvtest_code_begin)
   srli x9, x9, 22
-  slli x9, x9, 22
-  srli x9, x9, 20
-  LA(x8, rvtest_Vroot_pg_tbl)
-  add x9, x9, x8
+  slli x9, x9, 20
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x6)
   LA(x6, rvtest_code_begin)
   srli x6, x6, 22
-  slli x6, x6, 20
-  LI(x8, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x9)
-  LA(x9, rvtest_data_begin)
+  slli x6, x6, 22
+  srli x6, x6, 20
+  LA(x14, rvtest_Vroot_pg_tbl)
+  add x6, x6, x14
+  LA(x9, rvtest_code_begin)
   srli x9, x9, 22
   slli x9, x9, 20
-  srli x9, x9, 18
-  LA(x8, rvtest_Hroot_pg_tbl)
-  add x9, x9, x8
+  LI(x14, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x6)
   LA(x6, rvtest_data_begin)
   srli x6, x6, 22
   slli x6, x6, 20
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x9)
+  srli x6, x6, 18
+  LA(x14, rvtest_Hroot_pg_tbl)
+  add x6, x6, x14
   LA(x9, rvtest_data_begin)
   srli x9, x9, 22
-  slli x9, x9, 22
-  srli x9, x9, 20
-  LA(x8, rvtest_Vroot_pg_tbl)
-  add x9, x9, x8
+  slli x9, x9, 20
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x6)
   LA(x6, rvtest_data_begin)
   srli x6, x6, 22
+  slli x6, x6, 22
+  srli x6, x6, 20
+  LA(x14, rvtest_Vroot_pg_tbl)
+  add x6, x6, x14
+  LA(x9, rvtest_data_begin)
+  srli x9, x9, 22
+  slli x9, x9, 20
+  LI(x14, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x6)
+  LA(x6, rvtest_sig_end)
+  srli x6, x6, 22
   slli x6, x6, 20
-  LI(x8, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x9)
+  srli x6, x6, 18
+  LA(x14, rvtest_Hroot_pg_tbl)
+  add x6, x6, x14
   LA(x9, rvtest_sig_end)
   srli x9, x9, 22
   slli x9, x9, 20
-  srli x9, x9, 18
-  LA(x8, rvtest_Hroot_pg_tbl)
-  add x9, x9, x8
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x6)
   LA(x6, rvtest_sig_end)
   srli x6, x6, 22
-  slli x6, x6, 20
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x9)
+  slli x6, x6, 22
+  srli x6, x6, 20
+  LA(x14, rvtest_Vroot_pg_tbl)
+  add x6, x6, x14
   LA(x9, rvtest_sig_end)
   srli x9, x9, 22
-  slli x9, x9, 22
-  srli x9, x9, 20
-  LA(x8, rvtest_Vroot_pg_tbl)
-  add x9, x9, x8
-  LA(x6, rvtest_sig_end)
-  srli x6, x6, 22
-  slli x6, x6, 20
-  LI(x8, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x9)
+  slli x9, x9, 20
+  LI(x14, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x6)
 // Map the code region again at the guest alias
-  LA(x9, rvtest_Hroot_pg_tbl + (((0xC0000000) >> 22) & 0xfff) * 4)
-  LA(x6, rvtest_code_begin)
-  srli x6, x6, 22
-  slli x6, x6, 20
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x9)
-  LA(x9, rvtest_Vroot_pg_tbl + (((0x30000000) >> 22) & 0x3ff) * 4)
-  LI(x6, (((0xC0000000) >> 22) << 20) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x6, 0(x9)
-// Register the alias of rvtest_code_begin
-  LI(x6, ((0x30000000) >> 22) << 22)
+  LA(x6, rvtest_Hroot_pg_tbl + (((0xC0000000) >> 22) & 0xfff) * 4)
   LA(x9, rvtest_code_begin)
-  slli x9, x9, 10
-  srli x9, x9, 10
+  srli x9, x9, 22
+  slli x9, x9, 20
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x14
+  SREG x9, 0(x6)
+  LA(x6, rvtest_Vroot_pg_tbl + (((0x30000000) >> 22) & 0x3ff) * 4)
+  LI(x9, (((0xC0000000) >> 22) << 20) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x9, 0(x6)
+// Register the alias of rvtest_code_begin
+  LI(x9, ((0x30000000) >> 22) << 22)
+  LA(x6, rvtest_code_begin)
+  slli x6, x6, 10
+  srli x6, x6, 10
+  or x9, x9, x6
+  LA(x6, Vtramptbl_sv)
+  SREG x9, code_bgn_off(x6)
+
+  LI(x9, 0x80000000)
+  LA(x6, rvtest_Hroot_pg_tbl)
+  srli x6, x6, 12
   or x6, x6, x9
-  LA(x9, Vtramptbl_sv)
-  SREG x6, code_bgn_off(x9)
-
-  LI(x6, 0x80000000)
-  LA(x9, rvtest_Hroot_pg_tbl)
-  srli x9, x9, 12
-  or x9, x9, x6
-  csrw hgatp, x9
-  LI(x6, 0x80000000)
-  LA(x9, rvtest_Vroot_pg_tbl)
-  srli x9, x9, 12
-  or x9, x9, x6
-  csrw vsatp, x9
+  csrw hgatp, x6
+  LI(x9, 0x80000000)
+  LA(x6, rvtest_Vroot_pg_tbl)
+  srli x6, x6, 12
+  or x6, x6, x9
+  csrw vsatp, x6
   hfence.gvma
   hfence.vvma
-  LI(x14, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x14
-  LI(x14, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x14
+  LI(x15, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x15
+  LI(x15, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x15
   csrw hedeleg, zero
-  LI(x13, (1 << CAUSE_FETCH_PAGE_FAULT) | (1 << CAUSE_LOAD_PAGE_FAULT) | (1 << CAUSE_STORE_PAGE_FAULT) | (1 << CAUSE_FETCH_GUEST_PAGE_FAULT) | (1 << CAUSE_LOAD_GUEST_PAGE_FAULT) | (1 << CAUSE_STORE_GUEST_PAGE_FAULT))
-  csrw hedeleg, x13
-  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x6, rvtest_vlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x15, PTE_V)
-  or x6, x6, x15
-  SREG x6, 0(x9)
-  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x6, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R))
-  SREG x6, 0(x9)
-  LA(x9, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x6, rvtest_hlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x15, PTE_V)
-  or x6, x6, x15
-  SREG x6, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x6, svh_page)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x15
-  SREG x6, 0(x9)
-  hfence.vvma
-  hfence.gvma
-  LI(x6, 0x90407000)
-  LI(x9, 0x2f5)
-  RVTEST_TSBI_GOTO_VSMODE
-Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_inv_g_rwx_store:
-  sw x9, 8(x6)
-  LI(x9, -1)
-Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_inv_g_rwx_load:
-  lw x9, 8(x6)
-Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_inv_g_rwx_exec:
-  jalr ra, 0(x6)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_inv_g_rwx_load, Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_inv_g_rwx_load_str)
-
-  LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x9, rvtest_vlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x13, PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x14)
-  LA(x14, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x9, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_R | PTE_V))
-  SREG x9, 0(x14)
-  LA(x14, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x13, PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x14)
-  LA(x14, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x13
-  SREG x9, 0(x14)
-  hfence.vvma
-  hfence.gvma
-  LI(x8, 0x90407000)
-  LI(x13, 0x2f8)
-  RVTEST_TSBI_GOTO_VSMODE
-Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_r_g_rwx_store:
-  sw x13, 8(x8)
-  LI(x13, -1)
-Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_r_g_rwx_load:
-  lw x13, 8(x8)
-Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_r_g_rwx_exec:
-  jalr ra, 0(x8)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_r_g_rwx_load, Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_r_g_rwx_load_str)
-
+  LI(x8, (1 << CAUSE_FETCH_PAGE_FAULT) | (1 << CAUSE_LOAD_PAGE_FAULT) | (1 << CAUSE_STORE_PAGE_FAULT) | (1 << CAUSE_FETCH_GUEST_PAGE_FAULT) | (1 << CAUSE_LOAD_GUEST_PAGE_FAULT) | (1 << CAUSE_STORE_GUEST_PAGE_FAULT))
+  csrw hedeleg, x8
   LA(x6, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x9, rvtest_vlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x8, PTE_V)
-  or x9, x9, x8
-  SREG x9, 0(x6)
+  LA(x14, rvtest_vlvl0_pg_tbl)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x15, PTE_V)
+  or x14, x14, x15
+  SREG x14, 0(x6)
   LA(x6, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x9, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x9, 0(x6)
+  LI(x14, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R))
+  SREG x14, 0(x6)
   LA(x6, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x8, PTE_V)
-  or x9, x9, x8
-  SREG x9, 0(x6)
+  LA(x14, rvtest_hlvl0_pg_tbl)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x15, PTE_V)
+  or x14, x14, x15
+  SREG x14, 0(x6)
   LA(x6, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x9, svh_page)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R)
-  or x9, x9, x8
-  SREG x9, 0(x6)
+  LA(x14, svh_page)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x14, x14, x15
+  SREG x14, 0(x6)
   hfence.vvma
   hfence.gvma
   LI(x13, 0x90407000)
-  LI(x15, 0x2fb)
+  LI(x14, 0x309)
+  RVTEST_TSBI_GOTO_VSMODE
+Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_inv_g_rwx_store:
+  sw x14, 8(x13)
+  LI(x14, -1)
+Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_inv_g_rwx_load:
+  lw x14, 8(x13)
+Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_inv_g_rwx_exec:
+  jalr ra, 0(x13)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_inv_g_rwx_load, Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_inv_g_rwx_load_str)
+
+  LA(x6, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x8, rvtest_vlvl0_pg_tbl)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x15, PTE_V)
+  or x8, x8, x15
+  SREG x8, 0(x6)
+  LA(x6, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x8, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_R | PTE_V))
+  SREG x8, 0(x6)
+  LA(x6, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x8, rvtest_hlvl0_pg_tbl)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x15, PTE_V)
+  or x8, x8, x15
+  SREG x8, 0(x6)
+  LA(x6, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x8, svh_page)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x8, x8, x15
+  SREG x8, 0(x6)
+  hfence.vvma
+  hfence.gvma
+  LI(x9, 0x90407000)
+  LI(x8, 0x30c)
+  RVTEST_TSBI_GOTO_VSMODE
+Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_r_g_rwx_store:
+  sw x8, 8(x9)
+  LI(x8, -1)
+Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_r_g_rwx_load:
+  lw x8, 8(x9)
+Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_r_g_rwx_exec:
+  jalr ra, 0(x9)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_r_g_rwx_load, Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_r_g_rwx_load_str)
+
+  LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x15, rvtest_vlvl0_pg_tbl)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x13, PTE_V)
+  or x15, x15, x13
+  SREG x15, 0(x14)
+  LA(x14, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x15, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x15, 0(x14)
+  LA(x14, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x15, rvtest_hlvl0_pg_tbl)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x13, PTE_V)
+  or x15, x15, x13
+  SREG x15, 0(x14)
+  LA(x14, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x15, svh_page)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R)
+  or x15, x15, x13
+  SREG x15, 0(x14)
+  hfence.vvma
+  hfence.gvma
+  LI(x13, 0x90407000)
+  LI(x15, 0x30f)
   RVTEST_TSBI_GOTO_VSMODE
 Sv_H_twostage_cg_cp_hedeleg_guest_page_fault_vs_rwx_g_inv_store:
   sw x15, 8(x13)
@@ -275,14 +275,14 @@ Sv_H_twostage_cg_cp_hedeleg_guest_page_fault_vs_rwx_g_inv_exec:
   hfence.gvma
   hfence.vvma
   LA(x13, rvtest_code_begin)
-  LA(x6, Vtramptbl_sv)
-  SREG x13, code_bgn_off(x6)
-  LI(x8, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x8
-  LI(x8, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x8
-  LI(x8, HENVCFGH_ADUE | HENVCFGH_PBMTE)
-  csrc henvcfgh, x8
+  LA(x14, Vtramptbl_sv)
+  SREG x13, code_bgn_off(x14)
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x6
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x6
+  LI(x6, HENVCFGH_ADUE | HENVCFGH_PBMTE)
+  csrc henvcfgh, x6
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE | MENVCFGH_PBMTE)
   csrw hedeleg, zero
 
@@ -349,15 +349,15 @@ rvtest_vlvl0_pg_tbl:
   .endif
 
 // Testcase strings
-Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_inv_g_rwx_store_str: .string "\"test: 502; cg: Sv_H_twostage_cg; cp: cp_hedeleg_page_fault; bin: vs_inv_g_rwx_store\""
-Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_inv_g_rwx_load_str: .string "\"test: 503; cg: Sv_H_twostage_cg; cp: cp_hedeleg_page_fault; bin: vs_inv_g_rwx_load\""
-Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_inv_g_rwx_exec_str: .string "\"test: 504; cg: Sv_H_twostage_cg; cp: cp_hedeleg_page_fault; bin: vs_inv_g_rwx_exec\""
-Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_r_g_rwx_store_str: .string "\"test: 505; cg: Sv_H_twostage_cg; cp: cp_hedeleg_page_fault; bin: vs_r_g_rwx_store\""
-Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_r_g_rwx_load_str: .string "\"test: 506; cg: Sv_H_twostage_cg; cp: cp_hedeleg_page_fault; bin: vs_r_g_rwx_load\""
-Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_r_g_rwx_exec_str: .string "\"test: 507; cg: Sv_H_twostage_cg; cp: cp_hedeleg_page_fault; bin: vs_r_g_rwx_exec\""
-Sv_H_twostage_cg_cp_hedeleg_guest_page_fault_vs_rwx_g_inv_store_str: .string "\"test: 508; cg: Sv_H_twostage_cg; cp: cp_hedeleg_guest_page_fault; bin: vs_rwx_g_inv_store\""
-Sv_H_twostage_cg_cp_hedeleg_guest_page_fault_vs_rwx_g_inv_load_str: .string "\"test: 509; cg: Sv_H_twostage_cg; cp: cp_hedeleg_guest_page_fault; bin: vs_rwx_g_inv_load\""
-Sv_H_twostage_cg_cp_hedeleg_guest_page_fault_vs_rwx_g_inv_exec_str: .string "\"test: 510; cg: Sv_H_twostage_cg; cp: cp_hedeleg_guest_page_fault; bin: vs_rwx_g_inv_exec\""
+Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_inv_g_rwx_store_str: .string "\"test: 522; cg: Sv_H_twostage_cg; cp: cp_hedeleg_page_fault; bin: vs_inv_g_rwx_store\""
+Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_inv_g_rwx_load_str: .string "\"test: 523; cg: Sv_H_twostage_cg; cp: cp_hedeleg_page_fault; bin: vs_inv_g_rwx_load\""
+Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_inv_g_rwx_exec_str: .string "\"test: 524; cg: Sv_H_twostage_cg; cp: cp_hedeleg_page_fault; bin: vs_inv_g_rwx_exec\""
+Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_r_g_rwx_store_str: .string "\"test: 525; cg: Sv_H_twostage_cg; cp: cp_hedeleg_page_fault; bin: vs_r_g_rwx_store\""
+Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_r_g_rwx_load_str: .string "\"test: 526; cg: Sv_H_twostage_cg; cp: cp_hedeleg_page_fault; bin: vs_r_g_rwx_load\""
+Sv_H_twostage_cg_cp_hedeleg_page_fault_vs_r_g_rwx_exec_str: .string "\"test: 527; cg: Sv_H_twostage_cg; cp: cp_hedeleg_page_fault; bin: vs_r_g_rwx_exec\""
+Sv_H_twostage_cg_cp_hedeleg_guest_page_fault_vs_rwx_g_inv_store_str: .string "\"test: 528; cg: Sv_H_twostage_cg; cp: cp_hedeleg_guest_page_fault; bin: vs_rwx_g_inv_store\""
+Sv_H_twostage_cg_cp_hedeleg_guest_page_fault_vs_rwx_g_inv_load_str: .string "\"test: 529; cg: Sv_H_twostage_cg; cp: cp_hedeleg_guest_page_fault; bin: vs_rwx_g_inv_load\""
+Sv_H_twostage_cg_cp_hedeleg_guest_page_fault_vs_rwx_g_inv_exec_str: .string "\"test: 530; cg: Sv_H_twostage_cg; cp: cp_hedeleg_guest_page_fault; bin: vs_rwx_g_inv_exec\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

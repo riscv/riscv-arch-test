@@ -42,81 +42,81 @@ RVTEST_BEGIN
   srli x6, x6, 22
   slli x6, x6, 20
   srli x6, x6, 18
-  LA(x8, rvtest_Hroot_pg_tbl)
-  add x6, x6, x8
+  LA(x14, rvtest_Hroot_pg_tbl)
+  add x6, x6, x14
   LA(x15, rvtest_code_begin)
   srli x15, x15, 22
   slli x15, x15, 20
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x8
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x14
   SREG x15, 0(x6)
   LA(x6, rvtest_code_begin)
   srli x6, x6, 22
   slli x6, x6, 22
   srli x6, x6, 20
-  LA(x8, rvtest_Vroot_pg_tbl)
-  add x6, x6, x8
+  LA(x14, rvtest_Vroot_pg_tbl)
+  add x6, x6, x14
   LA(x15, rvtest_code_begin)
   srli x15, x15, 22
   slli x15, x15, 20
-  LI(x8, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x8
+  LI(x14, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x14
   SREG x15, 0(x6)
   LA(x6, rvtest_data_begin)
   srli x6, x6, 22
   slli x6, x6, 20
   srli x6, x6, 18
-  LA(x8, rvtest_Hroot_pg_tbl)
-  add x6, x6, x8
+  LA(x14, rvtest_Hroot_pg_tbl)
+  add x6, x6, x14
   LA(x15, rvtest_data_begin)
   srli x15, x15, 22
   slli x15, x15, 20
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x8
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x14
   SREG x15, 0(x6)
   LA(x6, rvtest_data_begin)
   srli x6, x6, 22
   slli x6, x6, 22
   srli x6, x6, 20
-  LA(x8, rvtest_Vroot_pg_tbl)
-  add x6, x6, x8
+  LA(x14, rvtest_Vroot_pg_tbl)
+  add x6, x6, x14
   LA(x15, rvtest_data_begin)
   srli x15, x15, 22
   slli x15, x15, 20
-  LI(x8, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x8
+  LI(x14, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x14
   SREG x15, 0(x6)
   LA(x6, rvtest_sig_end)
   srli x6, x6, 22
   slli x6, x6, 20
   srli x6, x6, 18
-  LA(x8, rvtest_Hroot_pg_tbl)
-  add x6, x6, x8
+  LA(x14, rvtest_Hroot_pg_tbl)
+  add x6, x6, x14
   LA(x15, rvtest_sig_end)
   srli x15, x15, 22
   slli x15, x15, 20
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x8
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x14
   SREG x15, 0(x6)
   LA(x6, rvtest_sig_end)
   srli x6, x6, 22
   slli x6, x6, 22
   srli x6, x6, 20
-  LA(x8, rvtest_Vroot_pg_tbl)
-  add x6, x6, x8
+  LA(x14, rvtest_Vroot_pg_tbl)
+  add x6, x6, x14
   LA(x15, rvtest_sig_end)
   srli x15, x15, 22
   slli x15, x15, 20
-  LI(x8, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x8
+  LI(x14, PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x14
   SREG x15, 0(x6)
 // Map the code region again at the guest alias
   LA(x6, rvtest_Hroot_pg_tbl + (((0xC0000000) >> 22) & 0xfff) * 4)
   LA(x15, rvtest_code_begin)
   srli x15, x15, 22
   slli x15, x15, 20
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x8
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x14
   SREG x15, 0(x6)
   LA(x6, rvtest_Vroot_pg_tbl + (((0x30000000) >> 22) & 0x3ff) * 4)
   LI(x15, (((0xC0000000) >> 22) << 20) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
@@ -144,429 +144,188 @@ RVTEST_BEGIN
   hfence.vvma
 
 // Testcase: hfence_vvma with rs1_x0_rs2_x0
-  LI(x9, HGATP32_VMID)
-  csrs hgatp, x9
-  LI(x9, SATP32_ASID)
-  csrs vsatp, x9
-  LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x8, rvtest_vlvl0_pg_tbl)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x13, PTE_V)
-  or x8, x8, x13
-  SREG x8, 0(x14)
-  LA(x14, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x8, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x8, 0(x14)
-  LA(x14, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x8, rvtest_hlvl0_pg_tbl)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x13, PTE_V)
-  or x8, x8, x13
-  SREG x8, 0(x14)
-  LA(x14, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x8, fence_page_a)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x13
-  SREG x8, 0(x14)
-  LA(x14, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
-  LA(x8, fence_page_b)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x13
-  SREG x8, 0(x14)
-  hfence.gvma
-  hfence.vvma
-  LI(x13, 0x90407000)
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x15, 0(x13)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_x0, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_x0_str)
-  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x6, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x6, 0(x9)
-Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_x0:
-  hfence.vvma x0, x0
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x6, 0(x13)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_x0, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_x0_str)
-
-
-// Testcase: hfence_vvma with rs1_x0_rs2_asid
-  LI(x14, HGATP32_VMID)
-  csrs hgatp, x14
-  LI(x14, SATP32_ASID)
-  csrs vsatp, x14
-  LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x14, rvtest_vlvl0_pg_tbl)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x8, PTE_V)
-  or x14, x14, x8
-  SREG x14, 0(x15)
-  LA(x15, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x14, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x14, 0(x15)
-  LA(x15, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x14, rvtest_hlvl0_pg_tbl)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x8, PTE_V)
-  or x14, x14, x8
-  SREG x14, 0(x15)
-  LA(x15, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x14, fence_page_a)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x14, x14, x8
-  SREG x14, 0(x15)
-  LA(x15, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
-  LA(x14, fence_page_b)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x14, x14, x8
-  SREG x14, 0(x15)
-  hfence.gvma
-  hfence.vvma
-  LI(x6, 0x90407000)
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x13, 0(x6)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_asid, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_asid_str)
-  LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x9, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x9, 0(x8)
-  LI(x13, SATP32_ASID)
-  csrr x8, vsatp
-  and x8, x8, x13
-  srli x8, x8, 22
-Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_asid:
-  hfence.vvma x0, x8
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x8, 0(x6)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_asid, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_asid_str)
-
-
-// Testcase: hfence_vvma with rs1_va_rs2_x0
-  LI(x15, HGATP32_VMID)
-  csrs hgatp, x15
-  LI(x15, SATP32_ASID)
-  csrs vsatp, x15
-  LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x15, rvtest_vlvl0_pg_tbl)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x6, PTE_V)
-  or x15, x15, x6
-  SREG x15, 0(x14)
-  LA(x14, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x15, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x15, 0(x14)
-  LA(x14, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x15, rvtest_hlvl0_pg_tbl)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x6, PTE_V)
-  or x15, x15, x6
-  SREG x15, 0(x14)
-  LA(x14, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x15, fence_page_a)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x6
-  SREG x15, 0(x14)
-  LA(x14, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
-  LA(x15, fence_page_b)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x6
-  SREG x15, 0(x14)
-  hfence.gvma
-  hfence.vvma
-  LI(x9, 0x90407000)
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x6, 0(x9)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_x0, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_x0_str)
-  LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x6, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x6, 0(x13)
-Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_x0:
-  hfence.vvma x9, x0
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x14, 0(x9)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_x0, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_x0_str)
-
-
-// Testcase: hfence_vvma with rs1_va_rs2_asid
-  LI(x9, HGATP32_VMID)
-  csrs hgatp, x9
-  LI(x9, SATP32_ASID)
-  csrs vsatp, x9
-  LA(x6, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x14, rvtest_vlvl0_pg_tbl)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x9, PTE_V)
-  or x14, x14, x9
-  SREG x14, 0(x6)
-  LA(x6, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x14, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x14, 0(x6)
-  LA(x6, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x14, rvtest_hlvl0_pg_tbl)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x9, PTE_V)
-  or x14, x14, x9
-  SREG x14, 0(x6)
-  LA(x6, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x14, fence_page_a)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x14, x14, x9
-  SREG x14, 0(x6)
-  LA(x6, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
-  LA(x14, fence_page_b)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x14, x14, x9
-  SREG x14, 0(x6)
-  hfence.gvma
-  hfence.vvma
-  LI(x6, 0x90407000)
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x14, 0(x6)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asid, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asid_str)
-  LA(x14, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x15, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x15, 0(x14)
-  LI(x9, SATP32_ASID)
-  csrr x8, vsatp
-  and x8, x8, x9
-  srli x8, x8, 22
-Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asid:
-  hfence.vvma x6, x8
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x9, 0(x6)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asid, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asid_str)
-
-
-// Testcase: hfence_vvma with rs1_va_rs2_asidmax
-  LI(x6, HGATP32_VMID)
-  csrs hgatp, x6
-  LI(x6, SATP32_ASID)
-  csrs vsatp, x6
-  LA(x6, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x15, rvtest_vlvl0_pg_tbl)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x8, PTE_V)
-  or x15, x15, x8
-  SREG x15, 0(x6)
-  LA(x6, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x15, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x15, 0(x6)
-  LA(x6, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x15, rvtest_hlvl0_pg_tbl)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x8, PTE_V)
-  or x15, x15, x8
-  SREG x15, 0(x6)
-  LA(x6, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x15, fence_page_a)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x8
-  SREG x15, 0(x6)
-  LA(x6, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
-  LA(x15, fence_page_b)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x8
-  SREG x15, 0(x6)
-  hfence.gvma
-  hfence.vvma
-  LI(x13, 0x90407000)
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x9, 0(x13)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asidmax, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asidmax_str)
-  LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x9, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x9, 0(x8)
-  LI(x15, (SATP32_ASID) >> 22)
-Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asidmax:
-  hfence.vvma x13, x15
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x8, 0(x13)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asidmax, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asidmax_str)
-
-
-// Testcase: hfence_gvma with rs1_x0_rs2_x0
-  LI(x14, HGATP32_VMID)
-  csrs hgatp, x14
-  LI(x14, SATP32_ASID)
-  csrs vsatp, x14
-  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x13, rvtest_vlvl0_pg_tbl)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x8, PTE_V)
-  or x13, x13, x8
-  SREG x13, 0(x9)
-  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x13, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x13, 0(x9)
-  LA(x9, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x13, rvtest_hlvl0_pg_tbl)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x8, PTE_V)
-  or x13, x13, x8
-  SREG x13, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x13, fence_page_a)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x8
-  SREG x13, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
-  LA(x13, fence_page_b)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x8
-  SREG x13, 0(x9)
-  hfence.gvma
-  hfence.vvma
-  LI(x8, 0x90407000)
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x13, 0(x8)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_x0, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_x0_str)
-  LA(x15, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x13, fence_page_b)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x9
-  SREG x13, 0(x15)
-Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_x0:
-  hfence.gvma x0, x0
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x14, 0(x8)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_x0, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_x0_str)
-
-
-// Testcase: hfence_gvma with rs1_x0_rs2_vmid
-  LI(x15, HGATP32_VMID)
-  csrs hgatp, x15
-  LI(x15, SATP32_ASID)
-  csrs vsatp, x15
-  LA(x6, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x9, rvtest_vlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x14, PTE_V)
-  or x9, x9, x14
-  SREG x9, 0(x6)
-  LA(x6, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x9, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x9, 0(x6)
-  LA(x6, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x14, PTE_V)
-  or x9, x9, x14
-  SREG x9, 0(x6)
-  LA(x6, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x9, fence_page_a)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x14
-  SREG x9, 0(x6)
-  LA(x6, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
-  LA(x9, fence_page_b)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x14
-  SREG x9, 0(x6)
-  hfence.gvma
-  hfence.vvma
-  LI(x6, 0x90407000)
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x9, 0(x6)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_vmid, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_vmid_str)
-  LA(x13, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x8, fence_page_b)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x9
-  SREG x8, 0(x13)
-  LI(x14, HGATP32_VMID)
-  csrr x13, hgatp
-  and x13, x13, x14
-  srli x13, x13, 22
-Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_vmid:
-  hfence.gvma x0, x13
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x9, 0(x6)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_vmid, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_vmid_str)
-
-
-// Testcase: hfence_gvma with rs1_gpa_rs2_x0
-  LI(x9, HGATP32_VMID)
-  csrs hgatp, x9
-  LI(x9, SATP32_ASID)
-  csrs vsatp, x9
-  LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LI(x8, HGATP32_VMID)
+  csrs hgatp, x8
+  LI(x8, SATP32_ASID)
+  csrs vsatp, x8
+  LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x15, rvtest_vlvl0_pg_tbl)
   srli x15, x15, 12
   slli x15, x15, 10
   LI(x9, PTE_V)
   or x15, x15, x9
+  SREG x15, 0(x13)
+  LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x15, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x15, 0(x13)
+  LA(x13, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x15, rvtest_hlvl0_pg_tbl)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x9, PTE_V)
+  or x15, x15, x9
+  SREG x15, 0(x13)
+  LA(x13, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x15, fence_page_a)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x9
+  SREG x15, 0(x13)
+  LA(x13, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LA(x15, fence_page_b)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x9
+  SREG x15, 0(x13)
+  hfence.gvma
+  hfence.vvma
+  LI(x14, 0x90407000)
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x6, 0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_x0, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_x0_str)
+  LA(x6, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x9, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x9, 0(x6)
+Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_x0:
+  hfence.vvma x0, x0
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x9, 0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_x0, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_x0_str)
+
+
+// Testcase: hfence_vvma with rs1_x0_rs2_asid
+  LI(x15, HGATP32_VMID)
+  csrs hgatp, x15
+  LI(x15, SATP32_ASID)
+  csrs vsatp, x15
+  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x6, rvtest_vlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x8, PTE_V)
+  or x6, x6, x8
+  SREG x6, 0(x9)
+  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x6, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x6, 0(x9)
+  LA(x9, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x6, rvtest_hlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x8, PTE_V)
+  or x6, x6, x8
+  SREG x6, 0(x9)
+  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x6, fence_page_a)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x8
+  SREG x6, 0(x9)
+  LA(x9, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LA(x6, fence_page_b)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x8
+  SREG x6, 0(x9)
+  hfence.gvma
+  hfence.vvma
+  LI(x6, 0x90407000)
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x15, 0(x6)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_asid, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_asid_str)
+  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x15, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x15, 0(x9)
+  LI(x8, SATP32_ASID)
+  csrr x15, vsatp
+  and x15, x15, x8
+  srli x15, x15, 22
+Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_asid:
+  hfence.vvma x0, x15
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x13, 0(x6)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_asid, Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_asid_str)
+
+
+// Testcase: hfence_vvma with rs1_va_rs2_x0
+  LI(x6, HGATP32_VMID)
+  csrs hgatp, x6
+  LI(x6, SATP32_ASID)
+  csrs vsatp, x6
+  LA(x6, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x14, rvtest_vlvl0_pg_tbl)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x8, PTE_V)
+  or x14, x14, x8
+  SREG x14, 0(x6)
+  LA(x6, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x14, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x14, 0(x6)
+  LA(x6, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x14, rvtest_hlvl0_pg_tbl)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x8, PTE_V)
+  or x14, x14, x8
+  SREG x14, 0(x6)
+  LA(x6, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x14, fence_page_a)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x14, x14, x8
+  SREG x14, 0(x6)
+  LA(x6, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LA(x14, fence_page_b)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x14, x14, x8
+  SREG x14, 0(x6)
+  hfence.gvma
+  hfence.vvma
+  LI(x14, 0x90407000)
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x13, 0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_x0, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_x0_str)
+  LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x9, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x9, 0(x8)
+Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_x0:
+  hfence.vvma x14, x0
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x9, 0(x14)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_x0, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_x0_str)
+
+
+// Testcase: hfence_vvma with rs1_va_rs2_asid
+  LI(x15, HGATP32_VMID)
+  csrs hgatp, x15
+  LI(x15, SATP32_ASID)
+  csrs vsatp, x15
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x15, rvtest_vlvl0_pg_tbl)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x6, PTE_V)
+  or x15, x15, x6
   SREG x15, 0(x8)
   LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
   LI(x15, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
@@ -575,118 +334,359 @@ Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_vmid:
   LA(x15, rvtest_hlvl0_pg_tbl)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x9, PTE_V)
-  or x15, x15, x9
+  LI(x6, PTE_V)
+  or x15, x15, x6
   SREG x15, 0(x8)
   LA(x8, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
   LA(x15, fence_page_a)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x9
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x6
   SREG x15, 0(x8)
   LA(x8, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
   LA(x15, fence_page_b)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x9
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x6
   SREG x15, 0(x8)
   hfence.gvma
   hfence.vvma
-  LI(x6, 0x90407000)
+  LI(x8, 0x90407000)
   RVTEST_TSBI_GOTO_VSMODE
-  lw x14, 0(x6)
+  lw x13, 0(x8)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_x0, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_x0_str)
-  LA(x8, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asid, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asid_str)
+  LA(x6, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x13, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x13, 0(x6)
+  LI(x15, SATP32_ASID)
+  csrr x13, vsatp
+  and x13, x13, x15
+  srli x13, x13, 22
+Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asid:
+  hfence.vvma x8, x13
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x13, 0(x8)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asid, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asid_str)
+
+
+// Testcase: hfence_vvma with rs1_va_rs2_asidmax
+  LI(x9, HGATP32_VMID)
+  csrs hgatp, x9
+  LI(x9, SATP32_ASID)
+  csrs vsatp, x9
+  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x14, rvtest_vlvl0_pg_tbl)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x8, PTE_V)
+  or x14, x14, x8
+  SREG x14, 0(x9)
+  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x14, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x14, 0(x9)
+  LA(x9, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x14, rvtest_hlvl0_pg_tbl)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x8, PTE_V)
+  or x14, x14, x8
+  SREG x14, 0(x9)
+  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x14, fence_page_a)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x14, x14, x8
+  SREG x14, 0(x9)
+  LA(x9, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LA(x14, fence_page_b)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x14, x14, x8
+  SREG x14, 0(x9)
+  hfence.gvma
+  hfence.vvma
+  LI(x9, 0x90407000)
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x8, 0(x9)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asidmax, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asidmax_str)
+  LA(x6, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x13, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x13, 0(x6)
+  LI(x14, (SATP32_ASID) >> 22)
+Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asidmax:
+  hfence.vvma x9, x14
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x8, 0(x9)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asidmax, Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asidmax_str)
+
+
+// Testcase: hfence_gvma with rs1_x0_rs2_x0
+  LI(x6, HGATP32_VMID)
+  csrs hgatp, x6
+  LI(x6, SATP32_ASID)
+  csrs vsatp, x6
+  LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x6, rvtest_vlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x13)
+  LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x6, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x6, 0(x13)
+  LA(x13, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x6, rvtest_hlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x13)
+  LA(x13, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x6, fence_page_a)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x13)
+  LA(x13, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LA(x6, fence_page_b)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x13)
+  hfence.gvma
+  hfence.vvma
+  LI(x13, 0x90407000)
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x8, 0(x13)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_x0, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_x0_str)
+  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
   LA(x14, fence_page_b)
   srli x14, x14, 12
   slli x14, x14, 10
   LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
   or x14, x14, x15
-  SREG x14, 0(x8)
-  LI(x8, (0xD0407000) >> 2)
-Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_x0:
-  hfence.gvma x8, x0
+  SREG x14, 0(x9)
+Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_x0:
+  hfence.gvma x0, x0
   RVTEST_TSBI_GOTO_VSMODE
-  lw x14, 0(x6)
+  lw x14, 0(x13)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_x0, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_x0_str)
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_x0, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_x0_str)
 
 
-// Testcase: hfence_gvma with rs1_gpa_rs2_vmid
+// Testcase: hfence_gvma with rs1_x0_rs2_vmid
+  LI(x9, HGATP32_VMID)
+  csrs hgatp, x9
+  LI(x9, SATP32_ASID)
+  csrs vsatp, x9
+  LA(x14, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x6, rvtest_vlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x13, PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x14)
+  LA(x14, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x6, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x6, 0(x14)
+  LA(x14, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x6, rvtest_hlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x13, PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x14)
+  LA(x14, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x6, fence_page_a)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x14)
+  LA(x14, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LA(x6, fence_page_b)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x14)
+  hfence.gvma
+  hfence.vvma
+  LI(x13, 0x90407000)
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x8, 0(x13)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_vmid, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_vmid_str)
+  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x14, fence_page_b)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x14, x14, x6
+  SREG x14, 0(x9)
+  LI(x9, HGATP32_VMID)
+  csrr x14, hgatp
+  and x14, x14, x9
+  srli x14, x14, 22
+Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_vmid:
+  hfence.gvma x0, x14
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x6, 0(x13)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_vmid, Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_vmid_str)
+
+
+// Testcase: hfence_gvma with rs1_gpa_rs2_x0
   LI(x13, HGATP32_VMID)
   csrs hgatp, x13
   LI(x13, SATP32_ASID)
   csrs vsatp, x13
-  LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x8, rvtest_vlvl0_pg_tbl)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x9, PTE_V)
-  or x8, x8, x9
-  SREG x8, 0(x13)
-  LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x8, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x8, 0(x13)
-  LA(x13, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x8, rvtest_hlvl0_pg_tbl)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x9, PTE_V)
-  or x8, x8, x9
-  SREG x8, 0(x13)
-  LA(x13, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x8, fence_page_a)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x9
-  SREG x8, 0(x13)
-  LA(x13, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
-  LA(x8, fence_page_b)
-  srli x8, x8, 12
-  slli x8, x8, 10
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x8, x8, x9
-  SREG x8, 0(x13)
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x6, rvtest_vlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x13, PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x8)
+  LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x6, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x6, 0(x8)
+  LA(x8, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x6, rvtest_hlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x13, PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x6, fence_page_a)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LA(x6, fence_page_b)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x8)
   hfence.gvma
   hfence.vvma
-  LI(x14, 0x90407000)
+  LI(x13, 0x90407000)
   RVTEST_TSBI_GOTO_VSMODE
-  lw x9, 0(x14)
+  lw x15, 0(x13)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmid, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmid_str)
-  LA(x6, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_x0, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_x0_str)
+  LA(x14, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
   LA(x15, fence_page_b)
   srli x15, x15, 12
   slli x15, x15, 10
   LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
   or x15, x15, x8
-  SREG x15, 0(x6)
-  LI(x13, (0xD0407000) >> 2)
-  LI(x6, HGATP32_VMID)
-  csrr x9, hgatp
-  and x9, x9, x6
-  srli x9, x9, 22
-Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmid:
-  hfence.gvma x13, x9
+  SREG x15, 0(x14)
+  LI(x8, (0xD0407000) >> 2)
+Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_x0:
+  hfence.gvma x8, x0
   RVTEST_TSBI_GOTO_VSMODE
-  lw x15, 0(x14)
+  lw x15, 0(x13)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmid, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmid_str)
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_x0, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_x0_str)
 
 
-// Testcase: hfence_gvma with rs1_gpa_rs2_vmidmax
+// Testcase: hfence_gvma with rs1_gpa_rs2_vmid
   LI(x15, HGATP32_VMID)
   csrs hgatp, x15
   LI(x15, SATP32_ASID)
   csrs vsatp, x15
+  LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x14, rvtest_vlvl0_pg_tbl)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x6, PTE_V)
+  or x14, x14, x6
+  SREG x14, 0(x13)
+  LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x14, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x14, 0(x13)
+  LA(x13, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x14, rvtest_hlvl0_pg_tbl)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x6, PTE_V)
+  or x14, x14, x6
+  SREG x14, 0(x13)
+  LA(x13, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x14, fence_page_a)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x14, x14, x6
+  SREG x14, 0(x13)
+  LA(x13, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LA(x14, fence_page_b)
+  srli x14, x14, 12
+  slli x14, x14, 10
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x14, x14, x6
+  SREG x14, 0(x13)
+  hfence.gvma
+  hfence.vvma
+  LI(x6, 0x90407000)
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x13, 0(x6)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmid, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmid_str)
+  LA(x15, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x13, fence_page_b)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x14
+  SREG x13, 0(x15)
+  LI(x13, (0xD0407000) >> 2)
+  LI(x14, HGATP32_VMID)
+  csrr x9, hgatp
+  and x9, x9, x14
+  srli x9, x9, 22
+Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmid:
+  hfence.gvma x13, x9
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x8, 0(x6)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmid, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmid_str)
+
+
+// Testcase: hfence_gvma with rs1_gpa_rs2_vmidmax
+  LI(x8, HGATP32_VMID)
+  csrs hgatp, x8
+  LI(x8, SATP32_ASID)
+  csrs vsatp, x8
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x13, rvtest_vlvl0_pg_tbl)
   srli x13, x13, 12
@@ -722,26 +722,26 @@ Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmid:
   hfence.vvma
   LI(x13, 0x90407000)
   RVTEST_TSBI_GOTO_VSMODE
-  lw x9, 0(x13)
+  lw x6, 0(x13)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmidmax, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmidmax_str)
-  LA(x14, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmidmax, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmidmax_str)
+  LA(x8, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
   LA(x6, fence_page_b)
   srli x6, x6, 12
   slli x6, x6, 10
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x9
-  SREG x6, 0(x14)
-  LI(x6, (0xD0407000) >> 2)
-  LI(x14, (HGATP32_VMID) >> 22)
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x8)
+  LI(x14, (0xD0407000) >> 2)
+  LI(x15, (HGATP32_VMID) >> 22)
 Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmidmax:
-  hfence.gvma x6, x14
+  hfence.gvma x14, x15
   RVTEST_TSBI_GOTO_VSMODE
-  lw x8, 0(x13)
+  lw x15, 0(x13)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmidmax, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmidmax_str)
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmidmax, Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmidmax_str)
 
 
 // Testcase: sfence_vma with rs1_x0_rs2_x0
@@ -749,68 +749,12 @@ Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmidmax:
   csrs hgatp, x13
   LI(x13, SATP32_ASID)
   csrs vsatp, x13
-  LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x13, rvtest_vlvl0_pg_tbl)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x14, PTE_V)
-  or x13, x13, x14
-  SREG x13, 0(x15)
-  LA(x15, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x13, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x13, 0(x15)
-  LA(x15, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x13, rvtest_hlvl0_pg_tbl)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x14, PTE_V)
-  or x13, x13, x14
-  SREG x13, 0(x15)
-  LA(x15, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x13, fence_page_a)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x14
-  SREG x13, 0(x15)
-  LA(x15, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
-  LA(x13, fence_page_b)
-  srli x13, x13, 12
-  slli x13, x13, 10
-  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x13, x13, x14
-  SREG x13, 0(x15)
-  hfence.gvma
-  hfence.vvma
-  LI(x9, 0x90407000)
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x8, 0(x9)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_x0, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_x0_str)
-  LA(x14, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x6, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x6, 0(x14)
-  RVTEST_TSBI_GOTO_VSMODE
-Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_x0:
-  sfence.vma x0, x0
-  lw x13, 0(x9)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_x0, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_x0_str)
-
-
-// Testcase: sfence_vma with rs1_x0_rs2_asid
-  LI(x9, HGATP32_VMID)
-  csrs hgatp, x9
-  LI(x9, SATP32_ASID)
-  csrs vsatp, x9
   LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
   LA(x15, rvtest_vlvl0_pg_tbl)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x8, PTE_V)
-  or x15, x15, x8
+  LI(x13, PTE_V)
+  or x15, x15, x13
   SREG x15, 0(x9)
   LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
   LI(x15, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
@@ -819,147 +763,87 @@ Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_x0:
   LA(x15, rvtest_hlvl0_pg_tbl)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x8, PTE_V)
-  or x15, x15, x8
+  LI(x13, PTE_V)
+  or x15, x15, x13
   SREG x15, 0(x9)
   LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
   LA(x15, fence_page_a)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x8
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x13
   SREG x15, 0(x9)
   LA(x9, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
   LA(x15, fence_page_b)
   srli x15, x15, 12
   slli x15, x15, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x8
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x13
   SREG x15, 0(x9)
   hfence.gvma
   hfence.vvma
-  LI(x9, 0x90407000)
+  LI(x15, 0x90407000)
   RVTEST_TSBI_GOTO_VSMODE
-  lw x6, 0(x9)
+  lw x14, 0(x15)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_asid, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_asid_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_x0, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_x0_str)
   LA(x14, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
   LI(x8, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x8, 0(x14)
-  LI(x6, SATP32_ASID)
-  csrr x14, vsatp
-  and x14, x14, x6
-  srli x14, x14, 22
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_asid:
-  sfence.vma x0, x14
-  lw x6, 0(x9)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_asid, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_asid_str)
-
-
-// Testcase: sfence_vma with rs1_va_rs2_x0
-  LI(x8, HGATP32_VMID)
-  csrs hgatp, x8
-  LI(x8, SATP32_ASID)
-  csrs vsatp, x8
-  LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x9, rvtest_vlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x14, PTE_V)
-  or x9, x9, x14
-  SREG x9, 0(x13)
-  LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x9, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x9, 0(x13)
-  LA(x13, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x9, rvtest_hlvl0_pg_tbl)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x14, PTE_V)
-  or x9, x9, x14
-  SREG x9, 0(x13)
-  LA(x13, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x9, fence_page_a)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x14
-  SREG x9, 0(x13)
-  LA(x13, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
-  LA(x9, fence_page_b)
-  srli x9, x9, 12
-  slli x9, x9, 10
-  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x9, x9, x14
-  SREG x9, 0(x13)
-  hfence.gvma
-  hfence.vvma
-  LI(x6, 0x90407000)
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x14, 0(x6)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_x0, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_x0_str)
-  LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x14, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x14, 0(x13)
-  RVTEST_TSBI_GOTO_VSMODE
-Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_x0:
-  sfence.vma x6, x0
-  lw x9, 0(x6)
+Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_x0:
+  sfence.vma x0, x0
+  lw x9, 0(x15)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_x0, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_x0_str)
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_x0, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_x0_str)
 
 
-// Testcase: sfence_vma with rs1_va_rs2_asid
+// Testcase: sfence_vma with rs1_x0_rs2_asid
   LI(x15, HGATP32_VMID)
   csrs hgatp, x15
   LI(x15, SATP32_ASID)
   csrs vsatp, x15
-  LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x14, rvtest_vlvl0_pg_tbl)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x8, PTE_V)
-  or x14, x14, x8
-  SREG x14, 0(x13)
-  LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x14, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x14, 0(x13)
-  LA(x13, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x14, rvtest_hlvl0_pg_tbl)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x8, PTE_V)
-  or x14, x14, x8
-  SREG x14, 0(x13)
-  LA(x13, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x14, fence_page_a)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x14, x14, x8
-  SREG x14, 0(x13)
-  LA(x13, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
-  LA(x14, fence_page_b)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x14, x14, x8
-  SREG x14, 0(x13)
+  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x6, rvtest_vlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x13, PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x9)
+  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x6, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x6, 0(x9)
+  LA(x9, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x6, rvtest_hlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x13, PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x9)
+  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x6, fence_page_a)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x9)
+  LA(x9, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LA(x6, fence_page_b)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x13, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x13
+  SREG x6, 0(x9)
   hfence.gvma
   hfence.vvma
-  LI(x9, 0x90407000)
+  LI(x8, 0x90407000)
   RVTEST_TSBI_GOTO_VSMODE
-  lw x6, 0(x9)
+  lw x14, 0(x8)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asid, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asid_str)
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_asid, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_asid_str)
   LA(x14, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
   LI(x13, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x13, 0(x14)
@@ -968,293 +852,166 @@ Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_x0:
   and x13, x13, x14
   srli x13, x13, 22
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asid:
-  sfence.vma x9, x13
-  lw x14, 0(x9)
+Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_asid:
+  sfence.vma x0, x13
+  lw x9, 0(x8)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asid, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asid_str)
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_asid, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_asid_str)
 
 
-// Testcase: sfence_vma with rs1_va_rs2_asidmax
-  LI(x8, HGATP32_VMID)
-  csrs hgatp, x8
-  LI(x8, SATP32_ASID)
-  csrs vsatp, x8
-  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x6, rvtest_vlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x8, PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x9)
-  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x6, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x6, 0(x9)
-  LA(x9, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x6, rvtest_hlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x8, PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x6, fence_page_a)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
-  LA(x6, fence_page_b)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x9)
+// Testcase: sfence_vma with rs1_va_rs2_x0
+  LI(x14, HGATP32_VMID)
+  csrs hgatp, x14
+  LI(x14, SATP32_ASID)
+  csrs vsatp, x14
+  LA(x6, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x8, rvtest_vlvl0_pg_tbl)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x14, PTE_V)
+  or x8, x8, x14
+  SREG x8, 0(x6)
+  LA(x6, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x8, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x8, 0(x6)
+  LA(x6, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x8, rvtest_hlvl0_pg_tbl)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x14, PTE_V)
+  or x8, x8, x14
+  SREG x8, 0(x6)
+  LA(x6, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x8, fence_page_a)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x8, x8, x14
+  SREG x8, 0(x6)
+  LA(x6, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LA(x8, fence_page_b)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x8, x8, x14
+  SREG x8, 0(x6)
   hfence.gvma
   hfence.vvma
-  LI(x14, 0x90407000)
+  LI(x15, 0x90407000)
   RVTEST_TSBI_GOTO_VSMODE
-  lw x8, 0(x14)
+  lw x13, 0(x15)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asidmax, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asidmax_str)
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_x0, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_x0_str)
+  LA(x14, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x13, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x13, 0(x14)
+  RVTEST_TSBI_GOTO_VSMODE
+Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_x0:
+  sfence.vma x15, x0
+  lw x9, 0(x15)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_x0, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_x0_str)
+
+
+// Testcase: sfence_vma with rs1_va_rs2_asid
+  LI(x9, HGATP32_VMID)
+  csrs hgatp, x9
+  LI(x9, SATP32_ASID)
+  csrs vsatp, x9
+  LA(x6, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x8, rvtest_vlvl0_pg_tbl)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x14, PTE_V)
+  or x8, x8, x14
+  SREG x8, 0(x6)
+  LA(x6, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x8, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x8, 0(x6)
+  LA(x6, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x8, rvtest_hlvl0_pg_tbl)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x14, PTE_V)
+  or x8, x8, x14
+  SREG x8, 0(x6)
+  LA(x6, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x8, fence_page_a)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x8, x8, x14
+  SREG x8, 0(x6)
+  LA(x6, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LA(x8, fence_page_b)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x8, x8, x14
+  SREG x8, 0(x6)
+  hfence.gvma
+  hfence.vvma
+  LI(x9, 0x90407000)
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x13, 0(x9)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asid, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asid_str)
   LA(x15, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
   LI(x6, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
   SREG x6, 0(x15)
-  LI(x15, (SATP32_ASID) >> 22)
+  LI(x14, SATP32_ASID)
+  csrr x13, vsatp
+  and x13, x13, x14
+  srli x13, x13, 22
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asidmax:
-  sfence.vma x14, x15
-  lw x15, 0(x14)
+Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asid:
+  sfence.vma x9, x13
+  lw x6, 0(x9)
   RVTEST_TSBI_GOTO_SMODE
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asidmax, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asidmax_str)
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asid, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asid_str)
 
 
-// Testcase: hfence_gvma with vmid_switch
+// Testcase: sfence_vma with rs1_va_rs2_asidmax
   LI(x14, HGATP32_VMID)
-  csrc hgatp, x14
+  csrs hgatp, x14
   LI(x14, SATP32_ASID)
   csrs vsatp, x14
-  LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x14, rvtest_vlvl0_pg_tbl)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x6, PTE_V)
-  or x14, x14, x6
-  SREG x14, 0(x13)
-  LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x14, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x14, 0(x13)
-  LA(x13, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x14, rvtest_hlvl0_pg_tbl)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x6, PTE_V)
-  or x14, x14, x6
-  SREG x14, 0(x13)
-  LA(x13, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x14, fence_page_a)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x14, x14, x6
-  SREG x14, 0(x13)
-  LA(x13, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
-  LA(x14, fence_page_b)
-  srli x14, x14, 12
-  slli x14, x14, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x14, x14, x6
-  SREG x14, 0(x13)
-  hfence.gvma
-  hfence.vvma
-  LI(x13, 0x90407000)
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x9, 0(x13)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_fence_cg_cp_hfence_gvma_vmid_switch, Sv_H_fence_cg_cp_hfence_gvma_vmid_switch_str)
-  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x6, fence_page_b)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x9)
-  LI(x14, HGATP32_VMID)
-  csrs hgatp, x14
-  LI(x14, HGATP32_VMID)
-  csrr x6, hgatp
-  and x6, x6, x14
-  srli x6, x6, 22
-Sv_H_fence_cg_cp_hfence_gvma_vmid_switch:
-  hfence.gvma x0, x6
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x9, 0(x13)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_fence_cg_cp_hfence_gvma_vmid_switch, Sv_H_fence_cg_cp_hfence_gvma_vmid_switch_str)
-
-
-// Testcase: hfence_vvma with vmid_switch
-  LI(x13, HGATP32_VMID)
-  csrc hgatp, x13
-  LI(x13, SATP32_ASID)
-  csrs vsatp, x13
   LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x6, rvtest_vlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
+  LA(x9, rvtest_vlvl0_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
   LI(x8, PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x15)
+  or x9, x9, x8
+  SREG x9, 0(x15)
   LA(x15, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x6, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x6, 0(x15)
+  LI(x9, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x9, 0(x15)
   LA(x15, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x6, rvtest_hlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
+  LA(x9, rvtest_hlvl0_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
   LI(x8, PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x15)
+  or x9, x9, x8
+  SREG x9, 0(x15)
   LA(x15, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x6, fence_page_a)
-  srli x6, x6, 12
-  slli x6, x6, 10
+  LA(x9, fence_page_a)
+  srli x9, x9, 12
+  slli x9, x9, 10
   LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x15)
+  or x9, x9, x8
+  SREG x9, 0(x15)
   LA(x15, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
-  LA(x6, fence_page_b)
-  srli x6, x6, 12
-  slli x6, x6, 10
+  LA(x9, fence_page_b)
+  srli x9, x9, 12
+  slli x9, x9, 10
   LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x8
-  SREG x6, 0(x15)
-  hfence.gvma
-  hfence.vvma
-  LI(x14, 0x90407000)
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x9, 0(x14)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x9 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x9, Sv_H_fence_cg_cp_hfence_vvma_vmid_switch, Sv_H_fence_cg_cp_hfence_vvma_vmid_switch_str)
-  LA(x6, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x15, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x15, 0(x6)
-  LI(x6, HGATP32_VMID)
-  csrs hgatp, x6
-Sv_H_fence_cg_cp_hfence_vvma_vmid_switch:
-  hfence.vvma x0, x0
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x8, 0(x14)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_fence_cg_cp_hfence_vvma_vmid_switch, Sv_H_fence_cg_cp_hfence_vvma_vmid_switch_str)
-
-
-// Testcase: hfence_vvma with asid_switch
-  LI(x14, HGATP32_VMID)
-  csrs hgatp, x14
-  LI(x14, SATP32_ASID)
-  csrc vsatp, x14
-  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x15, rvtest_vlvl0_pg_tbl)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x6, PTE_V)
-  or x15, x15, x6
-  SREG x15, 0(x9)
-  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x15, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x15, 0(x9)
-  LA(x9, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x15, rvtest_hlvl0_pg_tbl)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x6, PTE_V)
-  or x15, x15, x6
-  SREG x15, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x15, fence_page_a)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x6
-  SREG x15, 0(x9)
-  LA(x9, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
-  LA(x15, fence_page_b)
-  srli x15, x15, 12
-  slli x15, x15, 10
-  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x15, x15, x6
-  SREG x15, 0(x9)
-  hfence.gvma
-  hfence.vvma
-  LI(x8, 0x90407000)
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x13, 0(x8)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_fence_cg_cp_hfence_vvma_asid_switch, Sv_H_fence_cg_cp_hfence_vvma_asid_switch_str)
-  LA(x14, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x15, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x15, 0(x14)
-  LI(x13, SATP32_ASID)
-  csrs vsatp, x13
-  LI(x13, SATP32_ASID)
-  csrr x15, vsatp
-  and x15, x15, x13
-  srli x15, x15, 22
-Sv_H_fence_cg_cp_hfence_vvma_asid_switch:
-  hfence.vvma x0, x15
-  RVTEST_TSBI_GOTO_VSMODE
-  lw x15, 0(x8)
-  RVTEST_TSBI_GOTO_SMODE
-  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_fence_cg_cp_hfence_vvma_asid_switch, Sv_H_fence_cg_cp_hfence_vvma_asid_switch_str)
-
-
-// Testcase: sfence_vma with vmid_switch
-  LI(x8, HGATP32_VMID)
-  csrc hgatp, x8
-  LI(x8, SATP32_ASID)
-  csrs vsatp, x8
-  LA(x15, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
-  LA(x6, rvtest_vlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x9, PTE_V)
-  or x6, x6, x9
-  SREG x6, 0(x15)
-  LA(x15, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x6, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x6, 0(x15)
-  LA(x15, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
-  LA(x6, rvtest_hlvl0_pg_tbl)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x9, PTE_V)
-  or x6, x6, x9
-  SREG x6, 0(x15)
-  LA(x15, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
-  LA(x6, fence_page_a)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x9
-  SREG x6, 0(x15)
-  LA(x15, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
-  LA(x6, fence_page_b)
-  srli x6, x6, 12
-  slli x6, x6, 10
-  LI(x9, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
-  or x6, x6, x9
-  SREG x6, 0(x15)
+  or x9, x9, x8
+  SREG x9, 0(x15)
   hfence.gvma
   hfence.vvma
   LI(x15, 0x90407000)
@@ -1262,27 +1019,270 @@ Sv_H_fence_cg_cp_hfence_vvma_asid_switch:
   lw x8, 0(x15)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x8 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
-  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_fence_cg_cp_sfence_vma_vs_vmid_switch, Sv_H_fence_cg_cp_sfence_vma_vs_vmid_switch_str)
-  LA(x14, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
-  LI(x13, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
-  SREG x13, 0(x14)
+  RVTEST_SIGUPD(x2, x5, x4, x8, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asidmax, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asidmax_str)
+  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x14, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x14, 0(x9)
+  LI(x13, (SATP32_ASID) >> 22)
+  RVTEST_TSBI_GOTO_VSMODE
+Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asidmax:
+  sfence.vma x15, x13
+  lw x14, 0(x15)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asidmax, Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asidmax_str)
+
+
+// Testcase: hfence_gvma with vmid_switch
+  LI(x15, HGATP32_VMID)
+  csrc hgatp, x15
+  LI(x15, SATP32_ASID)
+  csrs vsatp, x15
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x13, rvtest_vlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x15, PTE_V)
+  or x13, x13, x15
+  SREG x13, 0(x8)
+  LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x13, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x13, 0(x8)
+  LA(x8, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x15, PTE_V)
+  or x13, x13, x15
+  SREG x13, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x13, fence_page_a)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x15
+  SREG x13, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LA(x13, fence_page_b)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x15, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x15
+  SREG x13, 0(x8)
+  hfence.gvma
+  hfence.vvma
+  LI(x13, 0x90407000)
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x14, 0(x13)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_fence_cg_cp_hfence_gvma_vmid_switch, Sv_H_fence_cg_cp_hfence_gvma_vmid_switch_str)
+  LA(x6, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x8, fence_page_b)
+  srli x8, x8, 12
+  slli x8, x8, 10
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x8, x8, x14
+  SREG x8, 0(x6)
+  LI(x14, HGATP32_VMID)
+  csrs hgatp, x14
+  LI(x14, HGATP32_VMID)
+  csrr x8, hgatp
+  and x8, x8, x14
+  srli x8, x8, 22
+Sv_H_fence_cg_cp_hfence_gvma_vmid_switch:
+  hfence.gvma x0, x8
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x15, 0(x13)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_fence_cg_cp_hfence_gvma_vmid_switch, Sv_H_fence_cg_cp_hfence_gvma_vmid_switch_str)
+
+
+// Testcase: hfence_vvma with vmid_switch
+  LI(x13, HGATP32_VMID)
+  csrc hgatp, x13
+  LI(x13, SATP32_ASID)
+  csrs vsatp, x13
+  LA(x9, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x13, rvtest_vlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x6, PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x9)
+  LA(x9, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x13, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x13, 0(x9)
+  LA(x9, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x13, rvtest_hlvl0_pg_tbl)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x6, PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x9)
+  LA(x9, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x13, fence_page_a)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x9)
+  LA(x9, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LA(x13, fence_page_b)
+  srli x13, x13, 12
+  slli x13, x13, 10
+  LI(x6, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x13, x13, x6
+  SREG x13, 0(x9)
+  hfence.gvma
+  hfence.vvma
+  LI(x8, 0x90407000)
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x6, 0(x8)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_fence_cg_cp_hfence_vvma_vmid_switch, Sv_H_fence_cg_cp_hfence_vvma_vmid_switch_str)
+  LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x14, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x14, 0(x13)
   LI(x13, HGATP32_VMID)
   csrs hgatp, x13
+Sv_H_fence_cg_cp_hfence_vvma_vmid_switch:
+  hfence.vvma x0, x0
   RVTEST_TSBI_GOTO_VSMODE
-Sv_H_fence_cg_cp_sfence_vma_vs_vmid_switch:
-  sfence.vma x0, x0
-  lw x6, 0(x15)
+  lw x15, 0(x8)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_fence_cg_cp_hfence_vvma_vmid_switch, Sv_H_fence_cg_cp_hfence_vvma_vmid_switch_str)
+
+
+// Testcase: hfence_vvma with asid_switch
+  LI(x8, HGATP32_VMID)
+  csrs hgatp, x8
+  LI(x8, SATP32_ASID)
+  csrc vsatp, x8
+  LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x15, rvtest_vlvl0_pg_tbl)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x8, PTE_V)
+  or x15, x15, x8
+  SREG x15, 0(x13)
+  LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x15, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x15, 0(x13)
+  LA(x13, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x15, rvtest_hlvl0_pg_tbl)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x8, PTE_V)
+  or x15, x15, x8
+  SREG x15, 0(x13)
+  LA(x13, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x15, fence_page_a)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x8
+  SREG x15, 0(x13)
+  LA(x13, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LA(x15, fence_page_b)
+  srli x15, x15, 12
+  slli x15, x15, 10
+  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x15, x15, x8
+  SREG x15, 0(x13)
+  hfence.gvma
+  hfence.vvma
+  LI(x8, 0x90407000)
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x15, 0(x8)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_fence_cg_cp_hfence_vvma_asid_switch, Sv_H_fence_cg_cp_hfence_vvma_asid_switch_str)
+  LA(x15, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x13, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x13, 0(x15)
+  LI(x14, SATP32_ASID)
+  csrs vsatp, x14
+  LI(x14, SATP32_ASID)
+  csrr x13, vsatp
+  and x13, x13, x14
+  srli x13, x13, 22
+Sv_H_fence_cg_cp_hfence_vvma_asid_switch:
+  hfence.vvma x0, x13
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x6, 0(x8)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_fence_cg_cp_hfence_vvma_asid_switch, Sv_H_fence_cg_cp_hfence_vvma_asid_switch_str)
+
+
+// Testcase: sfence_vma with vmid_switch
+  LI(x14, HGATP32_VMID)
+  csrc hgatp, x14
+  LI(x14, SATP32_ASID)
+  csrs vsatp, x14
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LA(x6, rvtest_vlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x8)
+  LA(x8, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x6, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x6, 0(x8)
+  LA(x8, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x6, rvtest_hlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x6, fence_page_a)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LA(x6, fence_page_b)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x8)
+  hfence.gvma
+  hfence.vvma
+  LI(x8, 0x90407000)
+  RVTEST_TSBI_GOTO_VSMODE
+  lw x6, 0(x8)
   RVTEST_TSBI_GOTO_SMODE
   # Check if x6 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x6, Sv_H_fence_cg_cp_sfence_vma_vs_vmid_switch, Sv_H_fence_cg_cp_sfence_vma_vs_vmid_switch_str)
+  LA(x15, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x14, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x14, 0(x15)
+  LI(x9, HGATP32_VMID)
+  csrs hgatp, x9
+  RVTEST_TSBI_GOTO_VSMODE
+Sv_H_fence_cg_cp_sfence_vma_vs_vmid_switch:
+  sfence.vma x0, x0
+  lw x14, 0(x8)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_fence_cg_cp_sfence_vma_vs_vmid_switch, Sv_H_fence_cg_cp_sfence_vma_vs_vmid_switch_str)
 
   csrw vsatp, zero
   csrw hgatp, zero
   hfence.gvma
   hfence.vvma
-  LA(x13, rvtest_code_begin)
-  LA(x14, Vtramptbl_sv)
-  SREG x13, code_bgn_off(x14)
+  LA(x15, rvtest_code_begin)
+  LA(x6, Vtramptbl_sv)
+  SREG x15, code_bgn_off(x6)
 
 // Instantiate trap handlers and other epilog code, call RVMODEL_HALT at end of test
 RVTEST_CODE_END
@@ -1334,25 +1334,25 @@ rvtest_vlvl1_pg_tbl:
 #endif
 
 // Testcase strings
-Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_x0_str: .string "\"test: 520; cg: Sv_H_fence_cg; cp: cp_hfence_vvma; bin: rs1_x0_rs2_x0\""
-Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_asid_str: .string "\"test: 521; cg: Sv_H_fence_cg; cp: cp_hfence_vvma; bin: rs1_x0_rs2_asid\""
-Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_x0_str: .string "\"test: 522; cg: Sv_H_fence_cg; cp: cp_hfence_vvma; bin: rs1_va_rs2_x0\""
-Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asid_str: .string "\"test: 523; cg: Sv_H_fence_cg; cp: cp_hfence_vvma; bin: rs1_va_rs2_asid\""
-Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asidmax_str: .string "\"test: 524; cg: Sv_H_fence_cg; cp: cp_hfence_vvma; bin: rs1_va_rs2_asidmax\""
-Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_x0_str: .string "\"test: 525; cg: Sv_H_fence_cg; cp: cp_hfence_gvma; bin: rs1_x0_rs2_x0\""
-Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_vmid_str: .string "\"test: 526; cg: Sv_H_fence_cg; cp: cp_hfence_gvma; bin: rs1_x0_rs2_vmid\""
-Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_x0_str: .string "\"test: 527; cg: Sv_H_fence_cg; cp: cp_hfence_gvma; bin: rs1_gpa_rs2_x0\""
-Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmid_str: .string "\"test: 528; cg: Sv_H_fence_cg; cp: cp_hfence_gvma; bin: rs1_gpa_rs2_vmid\""
-Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmidmax_str: .string "\"test: 529; cg: Sv_H_fence_cg; cp: cp_hfence_gvma; bin: rs1_gpa_rs2_vmidmax\""
-Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_x0_str: .string "\"test: 530; cg: Sv_H_fence_cg; cp: cp_sfence_vma_vs; bin: rs1_x0_rs2_x0\""
-Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_asid_str: .string "\"test: 531; cg: Sv_H_fence_cg; cp: cp_sfence_vma_vs; bin: rs1_x0_rs2_asid\""
-Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_x0_str: .string "\"test: 532; cg: Sv_H_fence_cg; cp: cp_sfence_vma_vs; bin: rs1_va_rs2_x0\""
-Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asid_str: .string "\"test: 533; cg: Sv_H_fence_cg; cp: cp_sfence_vma_vs; bin: rs1_va_rs2_asid\""
-Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asidmax_str: .string "\"test: 534; cg: Sv_H_fence_cg; cp: cp_sfence_vma_vs; bin: rs1_va_rs2_asidmax\""
-Sv_H_fence_cg_cp_hfence_gvma_vmid_switch_str: .string "\"test: 535; cg: Sv_H_fence_cg; cp: cp_hfence_gvma; bin: vmid_switch\""
-Sv_H_fence_cg_cp_hfence_vvma_vmid_switch_str: .string "\"test: 536; cg: Sv_H_fence_cg; cp: cp_hfence_vvma; bin: vmid_switch\""
-Sv_H_fence_cg_cp_hfence_vvma_asid_switch_str: .string "\"test: 537; cg: Sv_H_fence_cg; cp: cp_hfence_vvma; bin: asid_switch\""
-Sv_H_fence_cg_cp_sfence_vma_vs_vmid_switch_str: .string "\"test: 538; cg: Sv_H_fence_cg; cp: cp_sfence_vma_vs; bin: vmid_switch\""
+Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_x0_str: .string "\"test: 540; cg: Sv_H_fence_cg; cp: cp_hfence_vvma; bin: rs1_x0_rs2_x0\""
+Sv_H_fence_cg_cp_hfence_vvma_rs1_x0_rs2_asid_str: .string "\"test: 541; cg: Sv_H_fence_cg; cp: cp_hfence_vvma; bin: rs1_x0_rs2_asid\""
+Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_x0_str: .string "\"test: 542; cg: Sv_H_fence_cg; cp: cp_hfence_vvma; bin: rs1_va_rs2_x0\""
+Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asid_str: .string "\"test: 543; cg: Sv_H_fence_cg; cp: cp_hfence_vvma; bin: rs1_va_rs2_asid\""
+Sv_H_fence_cg_cp_hfence_vvma_rs1_va_rs2_asidmax_str: .string "\"test: 544; cg: Sv_H_fence_cg; cp: cp_hfence_vvma; bin: rs1_va_rs2_asidmax\""
+Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_x0_str: .string "\"test: 545; cg: Sv_H_fence_cg; cp: cp_hfence_gvma; bin: rs1_x0_rs2_x0\""
+Sv_H_fence_cg_cp_hfence_gvma_rs1_x0_rs2_vmid_str: .string "\"test: 546; cg: Sv_H_fence_cg; cp: cp_hfence_gvma; bin: rs1_x0_rs2_vmid\""
+Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_x0_str: .string "\"test: 547; cg: Sv_H_fence_cg; cp: cp_hfence_gvma; bin: rs1_gpa_rs2_x0\""
+Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmid_str: .string "\"test: 548; cg: Sv_H_fence_cg; cp: cp_hfence_gvma; bin: rs1_gpa_rs2_vmid\""
+Sv_H_fence_cg_cp_hfence_gvma_rs1_gpa_rs2_vmidmax_str: .string "\"test: 549; cg: Sv_H_fence_cg; cp: cp_hfence_gvma; bin: rs1_gpa_rs2_vmidmax\""
+Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_x0_str: .string "\"test: 550; cg: Sv_H_fence_cg; cp: cp_sfence_vma_vs; bin: rs1_x0_rs2_x0\""
+Sv_H_fence_cg_cp_sfence_vma_vs_rs1_x0_rs2_asid_str: .string "\"test: 551; cg: Sv_H_fence_cg; cp: cp_sfence_vma_vs; bin: rs1_x0_rs2_asid\""
+Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_x0_str: .string "\"test: 552; cg: Sv_H_fence_cg; cp: cp_sfence_vma_vs; bin: rs1_va_rs2_x0\""
+Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asid_str: .string "\"test: 553; cg: Sv_H_fence_cg; cp: cp_sfence_vma_vs; bin: rs1_va_rs2_asid\""
+Sv_H_fence_cg_cp_sfence_vma_vs_rs1_va_rs2_asidmax_str: .string "\"test: 554; cg: Sv_H_fence_cg; cp: cp_sfence_vma_vs; bin: rs1_va_rs2_asidmax\""
+Sv_H_fence_cg_cp_hfence_gvma_vmid_switch_str: .string "\"test: 555; cg: Sv_H_fence_cg; cp: cp_hfence_gvma; bin: vmid_switch\""
+Sv_H_fence_cg_cp_hfence_vvma_vmid_switch_str: .string "\"test: 556; cg: Sv_H_fence_cg; cp: cp_hfence_vvma; bin: vmid_switch\""
+Sv_H_fence_cg_cp_hfence_vvma_asid_switch_str: .string "\"test: 557; cg: Sv_H_fence_cg; cp: cp_hfence_vvma; bin: asid_switch\""
+Sv_H_fence_cg_cp_sfence_vma_vs_vmid_switch_str: .string "\"test: 558; cg: Sv_H_fence_cg; cp: cp_sfence_vma_vs; bin: vmid_switch\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

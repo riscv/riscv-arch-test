@@ -115,6 +115,18 @@ coverpoints:
     expectation: Implicit VS-stage page-table accesses are user-level G-stage loads, or stores for A/D updates, checked as implicit accesses rather than as the original access type.  Each case raises a guest-page fault reported for the original access type (instruction, load or store/AMO), with htval = the guest physical address of the VS-stage PTE >> 2 and, if htval is nonzero, htinst = the pseudoinstruction 0x3000 (read) or 0x3020 (write) on RV64, 0x2000 or 0x2020 on RV32.
     bins: VS x {sw, lw, jalr} x stage_modes x htinst pseudoinstruction {read, write}
     notes: The write bin needs Svadu, which makes the VS-stage A/D update an implicit store.
+  - name: cp_implicit_mxr
+    goal: MXR does not apply to implicit VS-stage page-table reads
+    description: In VS-mode, load through a VS-stage level-0 page table at a guest physical address whose G-stage leaf is execute-only, with vsstatus.MXR = 0 and 1 and sstatus.MXR = 0.
+    expectation: MXR makes execute-only pages readable only by explicit loads.  Each load raises a load guest-page fault with htinst = the read pseudoinstruction.
+    bins: VS x lw x stage_modes x vsstatus.MXR {0, 1} x sstatus.MXR {0, 1} x htinst read pseudoinstruction
+    notes: The sstatus.MXR = 1 cases are not generated, because Sail applies sstatus.MXR to the G-stage check of implicit accesses.  Their bins stay open.
+  - name: cp_twostage_access_fault
+    goal: Access faults during two-stage translation report the original access type
+    description: In VS-mode, store, load and fetch where the G-stage leaf maps the page to RVMODEL_ACCESS_FAULT_ADDRESS, where the G-stage maps the VS-stage level-0 page table there, and where a G-stage level-1 PTE points at a table there.
+    expectation: Each access raises a store/AMO, load or instruction access fault.  A fault on an implicit page-table read is reported for the original access type.
+    bins: VS x {sw, lw, jalr} x stage_modes x access fault
+    notes: Generated only when the DUT defines RVMODEL_ACCESS_FAULT_ADDRESS.
   - name: |-
       cp_hedeleg_page_fault
       cp_hedeleg_guest_page_fault
@@ -170,6 +182,18 @@ coverpoints:
     description: In HS-mode with hstatus.SPVP = 1, execute hlvx.wu on a VS-stage read-only page (G-stage RWX) and on a G-stage read-only page (VS-stage RWX), with each vsstatus.MXR and sstatus.MXR.
     expectation: Load page fault for the VS-stage read-only page, load guest-page fault for the G-stage read-only page.  MXR makes executable pages readable but does not grant execute permission, so it never avoids the fault.
     bins: stage_modes x 2 vsstatus.MXR x 2 sstatus.MXR x {load page fault, load guest-page fault}
+  - name: cp_hlv_implicit
+    goal: Guest-page faults on the implicit VS-stage page-table accesses of HLV, HLVX and HSV
+    description: In HS-mode with hstatus.SPVP = 1, execute hlv.w, hlvx.wu and hsv.w through a VS-stage level-0 page table at a guest physical address whose G-stage leaf is execute-only, read-only (hlvx.wu only), or read-only while the hart updates a VS-stage leaf with A = D = 0 (menvcfg.ADUE = henvcfg.ADUE = 1).
+    expectation: The page-table reads are implicit loads, so they need G-stage read permission, also for HLVX.  The execute-only table raises a load or store guest-page fault with htinst = the read pseudoinstruction.  hlvx.wu reads through the read-only table.  The A/D update raises a guest-page fault with htinst = the write pseudoinstruction.
+    bins: HS x {hlv.w, hlvx.wu, hsv.w} x stage_modes x htinst pseudoinstruction {read, write}
+    notes: The write bin needs Svadu.
+  - name: cp_hlv_root_gpf
+    goal: A guest-page fault on the read of the VS-stage root table
+    description: In HS-mode with hstatus.SPVP = 1, set vsatp.PPN to a guest physical page whose G-stage leaf is invalid, and execute hlv.w, hlvx.wu and hsv.w.
+    expectation: Each raises a load or store guest-page fault with htval = the guest physical address of the root PTE >> 2 and htinst = the read pseudoinstruction.
+    bins: HS x {hlv.w, hlvx.wu, hsv.w} x stage_modes x htinst read pseudoinstruction x htval in the root table
+    notes: Needs htval to report the guest physical address.
   - heading: vsatp, satp and hgatp MODE, and henvcfg (Sv_H_csr_cg)
   - name: cp_vsatp_mode_field
     goal: supported/unsupported MODE encodings

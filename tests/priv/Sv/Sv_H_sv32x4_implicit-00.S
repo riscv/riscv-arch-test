@@ -17,7 +17,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 29
+#define SIGUPD_COUNT 30
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
@@ -32,10 +32,11 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_implicit_gpf, cp_twostage_adue
+// cp_implicit_gpf, cp_twostage_adue, cp_implicit_mxr
 //   In VS-mode, access through a VS-stage leaf table whose G-stage leaf is invalid, execute-only, not user,
 //   has A clear, or is read-only while the hardware updates VS-stage A/D bits, and through VS-stage and
-//   G-stage leaves with A or D clear, with menvcfg.ADUE and henvcfg.ADUE = 0, 1.  Updated PTEs are checked
+//   G-stage leaves with A or D clear, with menvcfg.ADUE and henvcfg.ADUE = 0, 1.  Updated PTEs are checked.
+//   Load through an execute-only table with vsstatus.MXR = 1
 /////////////////////////////////
 
 // Identity map the test image in both stages
@@ -917,19 +918,70 @@ Sv_H_twostage_cg_cp_twostage_adue_g_svadu_store_page_pte:
   LREG x14, 0(x14)
   # Check if x14 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x14, Sv_H_twostage_cg_cp_twostage_adue_g_svadu_store_page_pte, Sv_H_twostage_cg_cp_twostage_adue_g_svadu_store_page_pte_str)
+  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE | MENVCFGH_PBMTE)
+  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x6
+  LI(x6, SSTATUS_MXR)
+  csrs vsstatus, x6
+  LA(x13, rvtest_Vroot_pg_tbl + (((0x90407000) >> 22) & 0x3ff) * 4)
+  LI(x9, ((((0xD0407000 + 0x1000)) >> 12) << 10) | (PTE_V))
+  SREG x9, 0(x13)
+  LA(x13, rvtest_vlvl0_pg_tbl + (((0x90407000) >> 12) & 0x3ff) * 4)
+  LI(x9, (((0xD0407000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x9, 0(x13)
+  LA(x13, rvtest_Hroot_pg_tbl + ((((0xD0407000 + 0x1000)) >> 22) & 0xfff) * 4)
+  LA(x9, rvtest_hlvl0_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x8, PTE_V)
+  or x9, x9, x8
+  SREG x9, 0(x13)
+  LA(x13, rvtest_hlvl0_pg_tbl + ((((0xD0407000 + 0x1000)) >> 12) & 0x3ff) * 4)
+  LA(x9, rvtest_vlvl0_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
+  or x9, x9, x8
+  SREG x9, 0(x13)
+  LA(x13, rvtest_Hroot_pg_tbl + (((0xD0407000) >> 22) & 0xfff) * 4)
+  LA(x9, rvtest_hlvl0_pg_tbl)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x8, PTE_V)
+  or x9, x9, x8
+  SREG x9, 0(x13)
+  LA(x13, rvtest_hlvl0_pg_tbl + (((0xD0407000) >> 12) & 0x3ff) * 4)
+  LA(x9, svh_page)
+  srli x9, x9, 12
+  slli x9, x9, 10
+  LI(x8, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x9, x9, x8
+  SREG x9, 0(x13)
+  hfence.vvma
+  hfence.gvma
+  LI(x9, 0x90407000)
+  LI(x13, 0x29b)
+  RVTEST_TSBI_GOTO_VSMODE
+  LI(x13, -1)
+Sv_H_twostage_cg_cp_implicit_mxr_table_xonly_vsmxr1_load:
+  lw x13, 8(x9)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_twostage_cg_cp_implicit_mxr_table_xonly_vsmxr1_load, Sv_H_twostage_cg_cp_implicit_mxr_table_xonly_vsmxr1_load_str)
+
   csrw vsatp, zero
   csrw hgatp, zero
   hfence.gvma
   hfence.vvma
   LA(x13, rvtest_code_begin)
-  LA(x6, Vtramptbl_sv)
-  SREG x13, code_bgn_off(x6)
-  LI(x8, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x8
-  LI(x8, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x8
-  LI(x8, HENVCFGH_ADUE | HENVCFGH_PBMTE)
-  csrc henvcfgh, x8
+  LA(x15, Vtramptbl_sv)
+  SREG x13, code_bgn_off(x15)
+  LI(x9, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x9
+  LI(x9, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x9
+  LI(x9, HENVCFGH_ADUE | HENVCFGH_PBMTE)
+  csrc henvcfgh, x9
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFGH, MENVCFGH_ADUE | MENVCFGH_PBMTE)
   csrw hedeleg, zero
 
@@ -1037,6 +1089,7 @@ Sv_H_twostage_cg_cp_twostage_adue_g_svadu_load_exec_str: .string "\"test: 408; c
 Sv_H_twostage_cg_cp_twostage_adue_g_svadu_load_page_pte_str: .string "\"test: 409; cg: Sv_H_twostage_cg; cp: cp_twostage_adue; bin: g_svadu_load_page_pte\""
 Sv_H_twostage_cg_cp_twostage_adue_g_svadu_store_store_str: .string "\"test: 410; cg: Sv_H_twostage_cg; cp: cp_twostage_adue; bin: g_svadu_store_store\""
 Sv_H_twostage_cg_cp_twostage_adue_g_svadu_store_page_pte_str: .string "\"test: 411; cg: Sv_H_twostage_cg; cp: cp_twostage_adue; bin: g_svadu_store_page_pte\""
+Sv_H_twostage_cg_cp_implicit_mxr_table_xonly_vsmxr1_load_str: .string "\"test: 412; cg: Sv_H_twostage_cg; cp: cp_implicit_mxr; bin: table_xonly_vsmxr1_load\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

@@ -17,7 +17,7 @@
 ##### END_TEST_CONFIG #####
 
 // Define the size of the signature region
-#define SIGUPD_COUNT 29
+#define SIGUPD_COUNT 30
 
 // Extra defines (if needed) to enable trap handlers, fpu, vector, etc.
 #define BOOT_TO_SMODE
@@ -32,10 +32,11 @@ RVTEST_BEGIN
 
 
 /////////////////////////////////
-// cp_implicit_gpf, cp_twostage_adue
+// cp_implicit_gpf, cp_twostage_adue, cp_implicit_mxr
 //   In VS-mode, access through a VS-stage leaf table whose G-stage leaf is invalid, execute-only, not user,
 //   has A clear, or is read-only while the hardware updates VS-stage A/D bits, and through VS-stage and
-//   G-stage leaves with A or D clear, with menvcfg.ADUE and henvcfg.ADUE = 0, 1.  Updated PTEs are checked
+//   G-stage leaves with A or D clear, with menvcfg.ADUE and henvcfg.ADUE = 0, 1.  Updated PTEs are checked.
+//   Load through an execute-only table with vsstatus.MXR = 1
 /////////////////////////////////
 
 // Identity map the test image in both stages
@@ -1799,6 +1800,120 @@ Sv_H_twostage_cg_cp_twostage_adue_g_svadu_store_page_pte:
   LREG x13, 0(x13)
   # Check if x13 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
   RVTEST_SIGUPD(x2, x5, x4, x13, Sv_H_twostage_cg_cp_twostage_adue_g_svadu_store_page_pte, Sv_H_twostage_cg_cp_twostage_adue_g_svadu_store_page_pte_str)
+  RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
+  LI(x9, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x9
+  LI(x9, SSTATUS_MXR)
+  csrs vsstatus, x9
+  LA(x8, rvtest_Vroot_pg_tbl + (((0x07028500403000) >> 48) & 0x1ff) * 8)
+  LA(x6, rvtest_vlvl3_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x8)
+  LA(x8, rvtest_vlvl3_pg_tbl + (((0x07028500403000) >> 39) & 0x1ff) * 8)
+  LA(x6, rvtest_vlvl2_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x8)
+  LA(x8, rvtest_vlvl2_pg_tbl + (((0x07028500403000) >> 30) & 0x1ff) * 8)
+  LA(x6, rvtest_vlvl1_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x8)
+  LA(x8, rvtest_vlvl1_pg_tbl + (((0x07028500403000) >> 21) & 0x1ff) * 8)
+  LI(x6, ((((0x7028500403000 + 0x1000)) >> 12) << 10) | (PTE_V))
+  SREG x6, 0(x8)
+  LA(x8, rvtest_vlvl0_pg_tbl + (((0x07028500403000) >> 12) & 0x1ff) * 8)
+  LI(x6, (((0x7028500403000) >> 12) << 10) | (PTE_D | PTE_A | PTE_X | PTE_W | PTE_R | PTE_V))
+  SREG x6, 0(x8)
+  LA(x8, rvtest_Hroot_pg_tbl + ((((0x7028500403000 + 0x1000)) >> 48) & 0x7ff) * 8)
+  LA(x6, rvtest_hlvl3_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x8)
+  LA(x8, rvtest_hlvl3_pg_tbl + ((((0x7028500403000 + 0x1000)) >> 39) & 0x1ff) * 8)
+  LA(x6, rvtest_hlvl2_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x8)
+  LA(x8, rvtest_hlvl2_pg_tbl + ((((0x7028500403000 + 0x1000)) >> 30) & 0x1ff) * 8)
+  LA(x6, rvtest_hlvl1_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x8)
+  LA(x8, rvtest_hlvl1_pg_tbl + ((((0x7028500403000 + 0x1000)) >> 21) & 0x1ff) * 8)
+  LA(x6, rvtest_hlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + ((((0x7028500403000 + 0x1000)) >> 12) & 0x1ff) * 8)
+  LA(x6, rvtest_vlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x8)
+  LA(x8, rvtest_Hroot_pg_tbl + (((0x7028500403000) >> 48) & 0x7ff) * 8)
+  LA(x6, rvtest_hlvl3_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x8)
+  LA(x8, rvtest_hlvl3_pg_tbl + (((0x7028500403000) >> 39) & 0x1ff) * 8)
+  LA(x6, rvtest_hlvl2_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x8)
+  LA(x8, rvtest_hlvl2_pg_tbl + (((0x7028500403000) >> 30) & 0x1ff) * 8)
+  LA(x6, rvtest_hlvl1_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x8)
+  LA(x8, rvtest_hlvl1_pg_tbl + (((0x7028500403000) >> 21) & 0x1ff) * 8)
+  LA(x6, rvtest_hlvl0_pg_tbl)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x8)
+  LA(x8, rvtest_hlvl0_pg_tbl + (((0x7028500403000) >> 12) & 0x1ff) * 8)
+  LA(x6, svh_page)
+  srli x6, x6, 12
+  slli x6, x6, 10
+  LI(x14, PTE_D | PTE_A | PTE_U | PTE_X | PTE_W | PTE_R | PTE_V)
+  or x6, x6, x14
+  SREG x6, 0(x8)
+  hfence.vvma
+  hfence.gvma
+  LI(x13, 0x07028500403000)
+  LI(x15, 0x199)
+  RVTEST_TSBI_GOTO_VSMODE
+  LI(x15, -1)
+Sv_H_twostage_cg_cp_implicit_mxr_table_xonly_vsmxr1_load:
+  lw x15, 8(x13)
+  RVTEST_TSBI_GOTO_SMODE
+  # Check if x15 contains the expected result. x2 is the signature ptr, x5 is the link ptr, x4 is a temp reg.
+  RVTEST_SIGUPD(x2, x5, x4, x15, Sv_H_twostage_cg_cp_implicit_mxr_table_xonly_vsmxr1_load, Sv_H_twostage_cg_cp_implicit_mxr_table_xonly_vsmxr1_load_str)
+
   csrw vsatp, zero
   csrw hgatp, zero
   hfence.gvma
@@ -1806,12 +1921,12 @@ Sv_H_twostage_cg_cp_twostage_adue_g_svadu_store_page_pte:
   LA(x9, rvtest_code_begin)
   LA(x14, Vtramptbl_sv)
   SREG x9, code_bgn_off(x14)
-  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
-  csrc sstatus, x6
-  LI(x6, SSTATUS_SUM | SSTATUS_MXR)
-  csrc vsstatus, x6
-  LI(x6, HENVCFG_ADUE | HENVCFG_PBMTE)
-  csrc henvcfg, x6
+  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
+  csrc sstatus, x13
+  LI(x13, SSTATUS_SUM | SSTATUS_MXR)
+  csrc vsstatus, x13
+  LI(x13, HENVCFG_ADUE | HENVCFG_PBMTE)
+  csrc henvcfg, x13
   RVTEST_TSBI_CSR_CLEAR(CSR_MENVCFG, MENVCFG_ADUE | MENVCFG_PBMTE)
   csrw hedeleg, zero
 
@@ -1949,6 +2064,7 @@ Sv_H_twostage_cg_cp_twostage_adue_g_svadu_load_exec_str: .string "\"test: 150; c
 Sv_H_twostage_cg_cp_twostage_adue_g_svadu_load_page_pte_str: .string "\"test: 151; cg: Sv_H_twostage_cg; cp: cp_twostage_adue; bin: g_svadu_load_page_pte\""
 Sv_H_twostage_cg_cp_twostage_adue_g_svadu_store_store_str: .string "\"test: 152; cg: Sv_H_twostage_cg; cp: cp_twostage_adue; bin: g_svadu_store_store\""
 Sv_H_twostage_cg_cp_twostage_adue_g_svadu_store_page_pte_str: .string "\"test: 153; cg: Sv_H_twostage_cg; cp: cp_twostage_adue; bin: g_svadu_store_page_pte\""
+Sv_H_twostage_cg_cp_implicit_mxr_table_xonly_vsmxr1_load_str: .string "\"test: 154; cg: Sv_H_twostage_cg; cp: cp_implicit_mxr; bin: table_xonly_vsmxr1_load\""
 
 // End of test data section and model specific data
 RVTEST_DATA_END

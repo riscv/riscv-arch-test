@@ -17,7 +17,7 @@ are in the HSm group.
 from collections.abc import Sequence
 
 from testgen.asm.csr import gen_csr_read_sigupd
-from testgen.asm.helpers import comment_banner, write_sigupd
+from testgen.asm.helpers import comment_banner, gated, write_sigupd
 from testgen.data.state import TestData
 from testgen.data.test_chunk import TestChunk
 from testgen.priv.extensions.sv.access import virtual_address
@@ -777,10 +777,11 @@ def _t_implicit(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs
     chunk = begin_chunk(
         test_data,
         f"H_{g.name}_implicit",
-        "cp_implicit_gpf, cp_twostage_adue",
+        "cp_implicit_gpf, cp_twostage_adue, cp_implicit_mxr",
         "In VS-mode, access through a VS-stage leaf table whose G-stage leaf is invalid, execute-only, not user,\n"
         "has A clear, or is read-only while the hardware updates VS-stage A/D bits, and through VS-stage and\n"
-        "G-stage leaves with A or D clear, with menvcfg.ADUE and henvcfg.ADUE = 0, 1.  Updated PTEs are checked",
+        "G-stage leaves with A or D clear, with menvcfg.ADUE and henvcfg.ADUE = 0, 1.  Updated PTEs are checked.\n"
+        "Load through an execute-only table with vsstatus.MXR = 1",
         stages=(g, vs),
     )
     va = vs.data_va
@@ -797,8 +798,123 @@ def _t_implicit(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs
         for check in checks:
             mode, pte_va = ptes[check]
             code.extend(read_pte(test_data, mode, 0, pte_va, TWO_CG, coverpoint, f"{name}_{check}_pte"))
+    # MXR applies only to explicit loads, so vsstatus.MXR does not make the table readable.  The sstatus.MXR = 1 cases
+    # are not generated, because Sail applies sstatus.MXR to the G-stage check of implicit accesses.
+    setup = [
+        *menvcfg_bits(g.xlen, adue=0),
+        *status_bits("vsstatus", reg, mxr=1),
+        *map_leaf_table(test_data, g, vs, PteFlags(), perm_flags("x", True), G_LEAF),
+    ]
+    ops = ("load",)
+    code.extend(
+        guest_access(test_data, TWO_CG, "cp_implicit_mxr", "table_xonly_vsmxr1", "VS", va, setup=setup, ops=ops)
+    )
     test_data.int_regs.return_register(reg)
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
+    test_chunks.append(test_data.end_test_chunk())
+
+
+def _t_access_fault(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode) -> None:
+    """Access faults of the original access type on the final supervisor physical address, on reading a VS-stage leaf
+    table, and on reading a G-stage leaf table, each in the region at RVMODEL_ACCESS_FAULT_ADDRESS."""
+    chunk = begin_chunk(
+        test_data,
+        f"H_{g.name}_access_fault",
+        "cp_twostage_access_fault",
+        "In VS-mode, store, load and fetch where the G-stage leaf maps the access to RVMODEL_ACCESS_FAULT_ADDRESS,\n"
+        "where the G-stage maps the VS-stage leaf table there, and where a G-stage non-leaf PTE points at a table\n"
+        "there.  Each takes an access fault of the original access type",
+        stages=(g, vs),
+    )
+    table_gpa = f"({g.data_va} + 0x1000)"
+    # The guest physical address whose G-stage leaf PTE is at access_fault_pte_address
+    g_fault_gpa = g.access_fault_walk_va(g.data_va, 0)
+    pte, addr, tmp = test_data.int_regs.get_registers(3)
+    regs = (pte, addr, tmp)
+    nonleaf = PteFlags.nonleaf()
+    cases = (
+        (
+            "leaf",
+            f"{vs.data_va} + (RVMODEL_ACCESS_FAULT_ADDRESS & 0xFFF)",
+            [
+                *create_page_mapping(
+                    vs,
+                    leaf_level=0,
+                    leaf_flags=VS_LEAF,
+                    virtual_address=vs.data_va,
+                    physical_address=g.data_va,
+                    regs=regs,
+                    pa_is_label=False,
+                ),
+                *create_page_mapping(
+                    g,
+                    leaf_level=0,
+                    leaf_flags=G_LEAF,
+                    virtual_address=g.data_va,
+                    physical_address="RVMODEL_ACCESS_FAULT_ADDRESS",
+                    regs=regs,
+                    pa_is_label=False,
+                ),
+            ],
+        ),
+        (
+            "vs_table",
+            vs.access_fault_walk_va(vs.data_va, 0),
+            [
+                *create_page_walk(vs, leaf_level=1, virtual_address=vs.data_va, regs=regs),
+                *write_pte(
+                    vs,
+                    level=1,
+                    flags=nonleaf,
+                    virtual_address=vs.data_va,
+                    physical_address=table_gpa,
+                    regs=regs,
+                    pa_is_label=False,
+                ),
+                *create_page_mapping(
+                    g,
+                    leaf_level=0,
+                    leaf_flags=G_LEAF,
+                    virtual_address=table_gpa,
+                    physical_address="RVMODEL_ACCESS_FAULT_ADDRESS",
+                    regs=regs,
+                    pa_is_label=False,
+                ),
+            ],
+        ),
+        (
+            "g_table",
+            vs.data_va,
+            [
+                *create_page_mapping(
+                    vs,
+                    leaf_level=0,
+                    leaf_flags=VS_LEAF,
+                    virtual_address=vs.data_va,
+                    physical_address=g_fault_gpa,
+                    regs=regs,
+                    pa_is_label=False,
+                ),
+                *create_page_walk(g, leaf_level=1, virtual_address=g_fault_gpa, regs=regs),
+                *write_pte(
+                    g,
+                    level=1,
+                    flags=nonleaf,
+                    virtual_address=g_fault_gpa,
+                    physical_address=g.access_fault_pte_address(),
+                    regs=regs,
+                    pa_is_label=False,
+                ),
+            ],
+        ),
+    )
+    test_data.int_regs.return_registers(list(regs))
+    code = guest_chunk_setup(test_data, g, vs, "VS")
+    for name, va, ptes in cases:
+        setup = [*ptes, "hfence.vvma", "hfence.gvma"]
+        code.extend(guest_access(test_data, TWO_CG, "cp_twostage_access_fault", name, "VS", va, setup=setup))
+    code.extend(guest_chunk_teardown(test_data, g.xlen))
+    chunk.code.extend(gated(code, "defined(RVMODEL_ACCESS_FAULT_ADDRESS)"))
     test_chunks.append(test_data.end_test_chunk())
 
 
@@ -1054,6 +1170,46 @@ HLV_PERM_CASES = (
     ("r", "rwx", "cp_hlvx_perm", ("hlvx",)),
     ("rwx", "r", "cp_hlvx_perm", ("hlvx",)),
 )
+# HLV, HLVX and HSV through a VS-stage leaf table whose G-stage leaf is execute-only, or read-only while the hardware
+# updates VS-stage A/D bits.  The table reads are implicit loads, so HLVX needs G-stage read permission, not execute.
+# (name, menvcfg.ADUE, henvcfg.ADUE, VS-stage leaf, G-stage leaf of the VS-stage leaf table, accesses)
+HLV_IMPLICIT_CASES = (
+    ("table_xonly", 0, 0, PteFlags(), perm_flags("x", True), ("hlv", "hlvx", "hsv")),
+    ("table_readable", 0, 0, PteFlags(), perm_flags("r", True), ("hlvx",)),
+    ("table_readonly", 1, 1, VS_NO_AD, perm_flags("r", True), ("hlv", "hlvx", "hsv")),
+)
+
+
+def _hlv_root_gpf(test_data: TestData, g: SvMode, vs: SvMode, va: str) -> list[str]:
+    """HLV, HLVX and HSV with vsatp.PPN at a guest physical page whose G-stage leaf is invalid, so the read of the
+    VS-stage root table takes a guest-page fault."""
+    root_gpa = f"({g.data_va} + 0x2000)"
+    ppn_bits = 22 if vs.xlen == 32 else 44
+    pte, addr, tmp = test_data.int_regs.get_registers(3)
+    save = test_data.int_regs.get_register()
+    setup = [
+        *create_page_mapping(
+            g,
+            leaf_level=0,
+            leaf_flags=PteFlags(valid=False, user=True),
+            virtual_address=root_gpa,
+            physical_address="svh_page",
+            regs=(pte, addr, tmp),
+        ),
+        "hfence.gvma",
+        f"csrr x{save}, vsatp",
+        f"srli x{tmp}, x{save}, {ppn_bits}",
+        f"slli x{tmp}, x{tmp}, {ppn_bits}",
+        f"LI(x{addr}, {root_gpa} >> 12)",
+        f"or x{tmp}, x{tmp}, x{addr}",
+        f"csrw vsatp, x{tmp}",
+        "hfence.vvma",
+    ]
+    test_data.int_regs.return_registers([pte, addr, tmp])
+    ops = ("hlv", "hlvx", "hsv")
+    lines = guest_access(test_data, HLV_CG, "cp_hlv_root_gpf", "root_invalid", None, va, setup=setup, ops=ops)
+    test_data.int_regs.return_register(save)
+    return [*lines, f"csrw vsatp, x{save}", "hfence.vvma"]
 
 
 def _t_hlv(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvMode) -> None:
@@ -1062,11 +1218,13 @@ def _t_hlv(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvM
     chunk = begin_chunk(
         test_data,
         f"H_{g.name}_hlv",
-        "cp_hlv_priv, cp_hlv_mxr, cp_hlvx_perm",
+        "cp_hlv_priv, cp_hlv_mxr, cp_hlvx_perm, cp_hlv_implicit, cp_hlv_root_gpf",
         "In HS-mode, execute hlv.w, hlvx.wu and hsv.w on VS-stage pages with U = 0, 1, with hstatus.SPVP = 0, 1,\n"
         "vsstatus.SUM = 0, 1 and sstatus.SUM = 0, 1 (ignored), hlv.w and hlvx.wu on execute-only VS-stage and\n"
         "G-stage pages, and hlvx.wu on read-only VS-stage and G-stage pages (a load page fault or load guest-page\n"
-        "fault, because HLVX needs execute permission), with vsstatus.MXR = 0, 1 and sstatus.MXR = 0, 1",
+        "fault, because HLVX needs execute permission), with vsstatus.MXR = 0, 1 and sstatus.MXR = 0, 1.\n"
+        "Execute them through a VS-stage leaf table whose G-stage leaf is execute-only, readable, or read-only\n"
+        "while the hardware updates VS-stage A/D bits, and with a VS-stage root table whose G-stage leaf is invalid",
         stages=(g, vs),
     )
     va = f"{vs.data_va} + 8"
@@ -1098,6 +1256,16 @@ def _t_hlv(test_data: TestData, test_chunks: list[TestChunk], g: SvMode, vs: SvM
                 ]
                 name = f"vs_{vs_perm}_g_{g_perm}_vsmxr{vs_mxr}_smxr{s_mxr}"
                 code.extend(guest_access(test_data, HLV_CG, coverpoint, name, None, va, setup=setup, ops=ops))
+    for name, m_adue, h_adue, vs_flags, table_flags, ops in HLV_IMPLICIT_CASES:
+        setup = [
+            *menvcfg_bits(g.xlen, adue=m_adue),
+            *henvcfg_bits(g.xlen, reg, adue=h_adue),
+            *map_leaf_table(test_data, g, vs, vs_flags, table_flags, G_LEAF),
+            *status_bits("vsstatus", reg),
+            *status_bits("sstatus", reg),
+        ]
+        code.extend(guest_access(test_data, HLV_CG, "cp_hlv_implicit", name, None, va, setup=setup, ops=ops))
+    code.extend(_hlv_root_gpf(test_data, g, vs, va))
     code.extend(set_csr_bits("hstatus", "HSTATUS_SPVP", "0", reg))
     test_data.int_regs.return_register(reg)
     chunk.code.extend([*code, *guest_chunk_teardown(test_data, g.xlen)])
@@ -1409,6 +1577,7 @@ def _two_stage_tests(test_data: TestData, g: SvMode, vs: SvMode) -> list[TestChu
     for mode in ("VS", "VU"):
         _t_two_stage(test_data, test_chunks, g, vs, mode)
     _t_implicit(test_data, test_chunks, g, vs)
+    _t_access_fault(test_data, test_chunks, g, vs)
     _t_page_sizes(test_data, test_chunks, g, vs)
     _t_hlv(test_data, test_chunks, g, vs)
     if g.xlen == 32:

@@ -2124,6 +2124,9 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
     page_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
         bins page_fault = {6'b101100, 6'b101101, 6'b101111};
     }
+    access_fault : coverpoint {ins.current.csr_wb[CSR_SCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "scause", "scause")[4:0]} {
+        bins access_fault = {6'b100001, 6'b100101, 6'b100111};
+    }
     // A page fault delegated to VS-mode
     vs_page_fault : coverpoint {ins.current.csr_wb[CSR_VSCAUSE], get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "vscause", "vscause")[4:0]} {
         bins page_fault = {6'b101100, 6'b101101, 6'b101111};
@@ -2151,6 +2154,13 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
             `ifdef SVADU_SUPPORTED
                 bins write = {'h2020};
             `endif
+        `endif
+    }
+    htinst_read : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") iff (ins.current.csr_wb[CSR_HTINST]) {
+        `ifdef UDB_MXLEN_64
+            bins read = {'h3000};
+        `else
+            bins read = {'h2000};
         `endif
     }
     // A fetch at the last halfword of a page
@@ -2251,6 +2261,12 @@ covergroup Sv_H_twostage_cg with function sample(ins_t ins);
     }
     // Guest-page faults on implicit VS-stage page-table reads and A/D writes
     cp_implicit_gpf    : cross priv_mode_vs, access, stage_modes, htinst_pseudo;
+    // MXR does not make an execute-only G-stage leaf of a VS-stage page table readable to an implicit read
+    cp_implicit_mxr    : cross priv_mode_vs, lw, stage_modes, vsstatus_mxr, mstatus_mxr, htinst_read;
+    `ifdef RVMODEL_ACCESS_FAULT_ADDRESS
+        // An access fault on the final address or on a VS-stage or G-stage page-table read reports the original access
+        cp_twostage_access_fault : cross priv_mode_vs, access, stage_modes, access_fault;
+    `endif
     // Page faults go to VS-mode when hedeleg delegates them; guest-page faults cannot be delegated
     cp_hedeleg_page_fault       : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, hedeleg_page_faults, vs_page_fault;
     cp_hedeleg_guest_page_fault : cross priv_mode_vs_vu, access, vsatp_paged, hgatp_paged, hedeleg_page_faults, guest_page_fault;
@@ -2348,6 +2364,39 @@ covergroup Sv_H_hlv_cg with function sample(ins_t ins);
         bins off = {0};
         bins on  = {1};
     }
+    // The pseudoinstruction that htinst holds after a guest-page fault on an implicit VS-stage access
+    htinst_pseudo : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") iff (ins.current.csr_wb[CSR_HTINST]) {
+        `ifdef UDB_MXLEN_64
+            bins read  = {'h3000};
+            `ifdef SVADU_SUPPORTED
+                bins write = {'h3020};
+            `endif
+        `else
+            bins read  = {'h2000};
+            `ifdef SVADU_SUPPORTED
+                bins write = {'h2020};
+            `endif
+        `endif
+    }
+    htinst_read : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htinst", "htinst") iff (ins.current.csr_wb[CSR_HTINST]) {
+        `ifdef UDB_MXLEN_64
+            bins read = {'h3000};
+        `else
+            bins read = {'h2000};
+        `endif
+    }
+    `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
+        // htval holds the guest physical address of the VS-stage root PTE, shifted right by 2
+        htval_root : coverpoint get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") iff (ins.current.csr_wb[CSR_HTVAL]) {
+            `ifdef UDB_MXLEN_64
+                bins root = {[0:$]} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") >> 10) ==
+                                         (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "vsatp") & 64'h00000fffffffffff));
+            `else
+                bins root = {[0:$]} iff ((get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "htval", "htval") >> 10) ==
+                                         (get_csr_val(ins.hart, ins.issue, `SAMPLE_BEFORE, "vsatp", "vsatp") & 32'h003fffff));
+            `endif
+        }
+    `endif
 
     // hstatus.SPVP selects VU-level or VS-level access; vsstatus.SUM applies and sstatus.SUM does not
     cp_hlv_priv  : cross priv_mode_hs, hlv, stage_modes, hstatus_spvp, vsstatus_sum, sstatus_sum;
@@ -2355,6 +2404,12 @@ covergroup Sv_H_hlv_cg with function sample(ins_t ins);
     cp_hlv_mxr   : cross priv_mode_hs, hlv_load, stage_modes, vsstatus_mxr, sstatus_mxr;
     // HLVX needs execute permission in both stages, which neither MXR grants
     cp_hlvx_perm : cross priv_mode_hs, hlvx, stage_modes, vsstatus_mxr, sstatus_mxr, load_fault;
+    // Guest-page faults on the implicit VS-stage page-table reads and A/D writes of HLV, HLVX and HSV
+    cp_hlv_implicit : cross priv_mode_hs, hlv, stage_modes, htinst_pseudo;
+    `ifdef UDB_REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
+        // A guest-page fault on the read of the VS-stage root table
+        cp_hlv_root_gpf : cross priv_mode_hs, hlv, stage_modes, htinst_read, htval_root;
+    `endif
 endgroup
 
 covergroup Sv_H_csr_cg with function sample(ins_t ins);

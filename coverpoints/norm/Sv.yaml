@@ -830,6 +830,9 @@ normative_rule_definitions:
         "Sv_H_gstage_cg/cp_hgatp_perm",
         "Sv_H_twostage_cg/cp_twostage_perm",
         "Sv_H_twostage_cg/cp_implicit_gpf",
+        "Sv_H_twostage_cg/cp_implicit_mxr",
+        "Sv_H_twostage_cg/cp_twostage_access_fault",
+        "Sv_H_hlv_cg/cp_hlv_implicit",
         "Sv_HZicbo_cg/{cp_vs_sum,cp_g_pte}",
       ]
 
@@ -877,6 +880,7 @@ normative_rule_definitions:
         "Sv_H_twostage_cg/cp_implicit_gpf",
         "Sv_HSm_trap_cg/cp_guest_page_fault_m",
         "Sv_HSm_trap_cg/cp_implicit_gpf_m",
+        "Sv_H_hlv_cg/{cp_hlv_implicit,cp_hlv_root_gpf}",
         "Sv_HZicbo_cg/{cp_vs_gpa,cp_vs_gpa_implicit,cp_g_pte}",
       ]
 
@@ -890,6 +894,7 @@ normative_rule_definitions:
         "Sv_H_twostage_cg/cp_hgatp_sv32x4_gpa",
         "Sv_HSm_trap_cg/cp_guest_page_fault_m",
         "Sv_HSm_trap_cg/cp_implicit_gpf_m",
+        "Sv_H_hlv_cg/cp_hlv_root_gpf",
         "Sv_HZicbo_cg/{cp_vs_gpa,cp_vs_gpa_implicit,cp_g_pte}",
       ]
 
@@ -930,13 +935,14 @@ normative_rule_definitions:
         "Sv_H_twostage_cg/cp_hedeleg_guest_page_fault",
       ]
 
-  # vsstatus.MXR affects only the VS-stage; the HS-level MXR affects both stages
+  # vsstatus.MXR affects only the VS-stage; the HS-level MXR affects both stages.  MXR applies only to explicit loads.
   - names: [vsstatus_mxr_vm, sstatus_mxr_vm]
     coverpoint:
       [
         "Sv_H_vsstage_cg/cp_vsstatus_mxr",
         "Sv_H_gstage_cg/cp_hgatp_mxr",
         "Sv_H_twostage_cg/cp_twostage_mxr",
+        "Sv_H_twostage_cg/cp_implicit_mxr",
       ]
 
   # vsstatus.SUM in VS-mode
@@ -951,6 +957,7 @@ normative_rule_definitions:
       [
         "Sv_H_hlv_cg/cp_hlv_priv",
         "Sv_H_hlv_cg/cp_hlv_mxr",
+        "Sv_H_hlv_cg/cp_hlv_root_gpf",
         "Sv_HSm_mprv_cg/cp_vsatp_mprv_effects",
         "Sv_HSm_mprv_cg/cp_hgatp_mprv_effects",
         "Sv_HSm_mprv_cg/cp_mprv_sum",
@@ -958,9 +965,14 @@ normative_rule_definitions:
       ]
 
   # HLVX reads execute-only pages, and raises a load page fault or load guest-page fault on a readable page that is
-  # not executable in the VS-stage or the G-stage
+  # not executable in the VS-stage or the G-stage.  Its implicit page-table reads need read permission.
   - name: hlsv_u_op
-    coverpoint: ["Sv_H_hlv_cg/cp_hlv_mxr", "Sv_H_hlv_cg/cp_hlvx_perm"]
+    coverpoint:
+      [
+        "Sv_H_hlv_cg/cp_hlv_mxr",
+        "Sv_H_hlv_cg/cp_hlvx_perm",
+        "Sv_H_hlv_cg/cp_hlv_implicit",
+      ]
 
   # henvcfg.PBMTE gates Svpbmt in the VS-stage, and menvcfg.PBMTE in the G-stage
   - names: [henvcfg_pbmte_op, Svpbmt_vsatp_stage_override_rule]

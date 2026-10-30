@@ -24,6 +24,14 @@ _MIRRORED_INDEX_DEFINES: list[str] = [
     "RVMODEL_HPM_COUNTER",
 ]
 
+# Presence defines: the SystemVerilog define is emitted when any of the listed macros has an active #define.
+_PRESENCE_DEFINES: dict[str, list[str]] = {
+    # The DUT has a supervisor external interrupt controller instead of raising SEI through mip.SEIP
+    "RVMODEL_SEXT_INT_EXTERNAL": ["RVMODEL_SET_SEXT_INT", "RVMODEL_SET_SEXT_INT_M"],
+}
+
+_PRESENCE_RE = re.compile(r"^\s*#define\s+(\w+)")
+
 _DEFINE_RE = re.compile(r"^\s*#define\s+(\w+)\s+(0[xX][0-9a-fA-F]+|\d+)\b")
 
 
@@ -43,6 +51,16 @@ def _scan_h_defines(h_path: Path, names: list[str]) -> dict[str, str]:
         name, value = match.group(1), match.group(2)
         if name in wanted:
             found[name] = value
+    return found
+
+
+def _scan_h_presence(h_path: Path) -> set[str]:
+    """Return the names with an active #define in h_path, whatever their value or parameters."""
+    found: set[str] = set()
+    for line in h_path.read_text().splitlines():
+        match = _PRESENCE_RE.match(line)
+        if match is not None:
+            found.add(match.group(1))
     return found
 
 
@@ -72,6 +90,10 @@ def generate_rvmodel_svh(dut_include_dir: Path, output_dir: Path) -> None:
     for name in _MIRRORED_INDEX_DEFINES:
         if name in defines:
             lines.append(f"`define {name} {int(defines[name], 0)}")
+    present = _scan_h_presence(input_h)
+    for name, sources in _PRESENCE_DEFINES.items():
+        if present.intersection(sources):
+            lines.append(f"`define {name}")
     lines += ["", f"`endif // {guard}", ""]
 
     output_svh.write_text("\n".join(lines))

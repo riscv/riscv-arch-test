@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Interrupts_Sgei
+source: https://docs.google.com/spreadsheets/d/1gBymMadMSRy4SW_nYUmglFAe1-LtjaqOA6aXcrxCAsk/edit?gid=1560685057#gid=1560685057
+description: |
+  Guest external interrupts.  Tests run if H is implemented with GEILEN > 0, using the DUT's RVMODEL_SET/CLR_GUEST_EXT_INT hooks.
+  Boot to SMODE.  hideleg = 0 unless otherwise stated.
+coverpoints:
+  - name: cp_trigger_sgei
+    goal: trigger HS-mode SGEI
+    description: In HS-mode, with sstatus.SIE = {0/1} and hgeip & hgeie != 0, write hie.SGEIE = {0/1}
+    expectation: hip.SGEIP = 1.  If SIE = 1 and SGEIE = 1, interrupt to HS-mode with cause 12
+    bins: 2 * 2
+  - name: cp_trigger_sgei_lower
+    goal: SGEI is taken from every mode below HS
+    description: With sstatus.SIE = 0, hgeip & hgeie != 0 and hie.SGEIE = {0/1}, change to {U, VS, VU} mode
+    expectation: If SGEIE = 1, interrupt to HS-mode with cause 12 on entering the mode, whatever sstatus.SIE and vsstatus.SIE are
+    bins: 3 priv * 2
+  - name: cp_priority_sgei
+    goal: SGEI has lower priority than any S*I and higher priority than VS*I
+    description: With sstatus.SIE = 1, hvip = 0x444, hideleg = 0, hie = 0x1444, sie = 1s, hgeip & hgeie != 0, and sip = {none, SEIP, STIP, SSIP}
+    expectation: Take the S-level interrupt first if one is pending, then SGEI (cause 12), then VSEI, VSSI and VSTI
+    bins: "4"
+  - name: cp_hgeie
+    goal: hgeie enables SGEI
+    description: With sstatus.SIE = 0, for i in 1...GEILEN, with hgeip = {0, 1 in i, 1s in all writable bits}, hgeie = 1 in bit i
+    expectation: hip.SGEIP = 1 if hgeip & hgeie != 0
+    bins: GEILEN * 3
+  - name: cp_trigger_vsei_hgeip
+    goal: trigger HS-mode VSEI with HGEIP
+    description: |-
+      With sstatus.SIE = 0, hvip = 0, hideleg = 0, hie = 0, for i in 1...GEILEN: hgeip = {0, 1 in i, 1 in all writable bits except i}, hgeie[i] = {0/1}, hstatus.VGEIN = i
+      Also VGEIN = 0 with hgeip = hgeie = 1s in all writable bits
+    expectation: hip.VSEIP = hgeip[i] independent of hgeie.  With VGEIN = 0, hip.VSEIP = 0 and hip.SGEIP = 1.
+    bins: GEILEN * 3 * 2 + 1

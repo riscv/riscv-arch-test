@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Interrupts_SmShlcofideleg
+description: |
+  Shlcofideleg with mideleg[13] = 0.  Tests run if Sm, H, Sscofpmf and Shlcofideleg are implemented.
+  Boot to MMODE with mideleg = 0s.  mideleg[13] = 0 makes hideleg[13] read-only zero, so LCOFI goes to M-mode from every mode.
+coverpoints:
+  - name: cp_trigger_lcofi_m
+    goal: LCOFI is not delegated when mideleg[13] = 0
+    description: |-
+      With mideleg = 0, write hideleg[13] = 1 and read it back, then set mie.LCOFIE = 1 and vsstatus.SIE = 1
+      raise LCOFI in M-mode with mstatus.MIE = {0/1}, or with MIE = 0 and then change to {HS, U, VS, VU} mode
+      In VS-mode, read sip
+    expectation: hideleg[13] reads 0.  M-mode takes LCOFI when MIE = 1, and every other mode takes it on entry.  VS-mode reads vsip.LCOFIP = 0.
+    bins: 2 MIE + 4 priv

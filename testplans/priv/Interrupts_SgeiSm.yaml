@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=testplan.schema.json
+suite: Interrupts_SgeiSm
+description: |
+  Guest external interrupts from every mode.  Tests run if Sm and H are implemented with GEILEN > 0, using the DUT's RVMODEL_SET/CLR_GUEST_EXT_INT hooks.
+  Boot to MMODE with mideleg = 0s.  mideleg[12] is read-only one when GEILEN > 0, so SGEI still goes to HS-mode.
+coverpoints:
+  - name: cp_trigger_sgei
+    goal: SGEI goes to HS-mode from every mode
+    description: With mideleg = 0, hideleg = 0 and hgeip & hgeie != 0, set mstatus.MIE = {0/1}, mstatus.SIE = {0/1} and hie.SGEIE = {0/1}, then read mip in M-mode or change to {HS, U, VS, VU} mode
+    expectation: |-
+      M-mode never takes SGEI and reads mip.SGEIP = 1.
+      HS-mode takes it (cause 12) when SIE = 1 and SGEIE = 1; U, VS and VU modes take it when SGEIE = 1.
+    bins: 5 priv * 2 MIE * 2 SIE * 2 SGEIE

@@ -16,8 +16,8 @@ normative_rule_definitions:
       [
         "Sstc_cg/cp_supervisor_stce",
         "Sstc_Sm_cg/cp_machine_stce",
-        "InterruptsSm_cg/cp_trigger_sti_sstc",
-        "InterruptsSm_cg/cp_write_stip_sstc",
+        "Interrupts_Sm_cg/cp_trigger_sti_sstc",
+        "Interrupts_Sm_cg/cp_write_stip_sstc",
       ]
   # When this extension is implemented and STCE in menvcfg is zero, an attempt to access
   # stimecmp or vstimecmp in a mode other than M-mode raises an illegal-instruction
@@ -30,8 +30,8 @@ normative_rule_definitions:
         "Sstc_Sm_cg/cp_machine_stce",
         "Sstc_H_cg/{cp_hs_vstimecmp_accessible, cp_vs_stimecmp_accessible, cp_vu_timecmp_inaccessible}",
         "Sstc_H_cg/cp_vstip",
-        "InterruptsSm_cg/cp_trigger_sti_sstc",
-        "InterruptsSm_cg/cp_write_stip_sstc",
+        "Interrupts_Sm_cg/cp_trigger_sti_sstc",
+        "Interrupts_Sm_cg/cp_write_stip_sstc",
       ]
   # Further, if the H extension is implemented, then hip.VSTIP also reverts its defined
   # behavior as if this extension is not implemented.
@@ -40,8 +40,8 @@ normative_rule_definitions:
       [
         "Sstc_Sm_cg/cp_machine_stce",
         "Sstc_H_cg/cp_vstip",
-        "InterruptsSm_cg/cp_trigger_sti_sstc",
-        "InterruptsSm_cg/cp_write_stip_sstc",
+        "Interrupts_Sm_cg/cp_trigger_sti_sstc",
+        "Interrupts_Sm_cg/cp_write_stip_sstc",
       ]
 
   # when the TM bit in the mcounteren register is clear, attempts to access the
@@ -87,16 +87,16 @@ normative_rule_definitions:
       [
         "Sstc_Sm_cg/cp_machine_stce",
         "Sstc_cg/cp_supervisor_stce",
-        "InterruptsSm_cg/cp_trigger_sti_sstc",
-        "InterruptsSm_cg/cp_write_stip_sstc",
+        "Interrupts_Sm_cg/cp_trigger_sti_sstc",
+        "Interrupts_Sm_cg/cp_write_stip_sstc",
       ]
   # When the Sstc extension is not implemented, STCE is read-only zero.
   - name: menvcfg_stce_rdonly0
     coverpoint:
       [
         "Sstc_Sm_cg/cp_machine_stce",
-        "InterruptsSm_cg/cp_trigger_sti_sstc",
-        "InterruptsSm_cg/cp_write_stip_sstc",
+        "Interrupts_Sm_cg/cp_trigger_sti_sstc",
+        "Interrupts_Sm_cg/cp_write_stip_sstc",
       ]
   # A supervisor timer interrupt becomes pending, as reflected in the STIP bit in the mip
   # and sip registers whenever time contains a value greater than or equal to stimecmp,
@@ -108,9 +108,9 @@ normative_rule_definitions:
   - name: mip_sip_stip_op
     coverpoint:
       [
-        "InterruptsS_cg/cp_trigger_sti_sstc",
-        "InterruptsSm_cg/cp_trigger_sti_sstc",
-        "InterruptsSm_cg/cp_write_stip_sstc",
+        "Interrupts_cg/cp_trigger_sti_sstc",
+        "Interrupts_Sm_cg/cp_trigger_sti_sstc",
+        "Interrupts_Sm_cg/cp_write_stip_sstc",
       ]
   # Bits sip.STIP and sie.STIE are the interrupt-pending and interrupt-enable bits for
   # supervisor-level timer interrupts. If implemented, STIP is read-only in sip. When the
@@ -122,9 +122,9 @@ normative_rule_definitions:
   - name: sip_stip_sie_stie
     coverpoint:
       [
-        "InterruptsS_cg/cp_trigger_sti_sstc",
-        "InterruptsSm_cg/cp_trigger_sti_sstc",
-        "InterruptsSm_cg/cp_write_stip_sstc",
+        "Interrupts_cg/cp_trigger_sti_sstc",
+        "Interrupts_Sm_cg/cp_trigger_sti_sstc",
+        "Interrupts_Sm_cg/cp_write_stip_sstc",
       ]
 
   # The rules below need H.
@@ -181,13 +181,13 @@ normative_rule_definitions:
   - names: [hip_vstip_enable, hideleg_op]
     coverpoint:
       [
-        "InterruptsS_cg/{cp_trigger_vsti_sstc, cp_trigger_vsti_sstc_vs, cp_trigger_vsti_sstc_tsbi}",
-        "InterruptsSm_cg/cp_trigger_vsti_sstc",
+        "Interrupts_cg/{cp_trigger_vsti_sstc, cp_trigger_vsti_sstc_vs, cp_trigger_vsti_sstc_tsbi}",
+        "Interrupts_Sm_cg/cp_trigger_vsti_sstc",
       ]
 
   # hip.VSTIP is hvip.VSTIP OR the vstimecmp comparison, which counts only when menvcfg.STCE and henvcfg.STCE are set
   - names: [hip_vstip_defined_v0]
-    coverpoint: ["InterruptsS_cg/cp_trigger_vsti_sstc", "Sstc_H_cg/cp_vstip"]
+    coverpoint: ["Interrupts_cg/cp_trigger_vsti_sstc", "Sstc_H_cg/cp_vstip"]
   - names: [hip_vstip_acc]
     coverpoint: ["Sstc_H_cg/cp_vstip"]
 

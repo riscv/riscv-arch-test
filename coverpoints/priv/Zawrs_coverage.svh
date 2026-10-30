@@ -39,12 +39,16 @@ covergroup Zawrs_Sm_cg with function sample(ins_t ins);
 
     mstatus_tw:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
         bins zero = {0};
-        bins one  = {1};
+        `ifdef U_SUPPORTED
+            bins one  = {1}; // TW is read-only zero without a mode below M
+        `endif
     }
 
-    mstatus_tw_one:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
-        bins one = {1};
-    }
+    `ifdef U_SUPPORTED
+        mstatus_tw_one:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
+            bins one = {1};
+        }
+    `endif
 
     mstatus_tw_zero:  coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mstatus", "tw")) {
         bins zero = {0};
@@ -61,16 +65,20 @@ covergroup Zawrs_Sm_cg with function sample(ins_t ins);
         bins one = {1};
     }
 
-    mip_mtip_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")) {
-        bins one = {1};
-    }
+    `ifdef UDB_MTI_INTR_IMPL
+        mip_mtip_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")) {
+            bins one = {1};
+        }
+    `endif
 
     mie_zeros: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mie")) {
         bins zeros = {0}; // zero in all 6 interrupt enable bits
     }
-    mie_mtie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")) {
-        bins one = {1};
-    }
+    `ifdef UDB_MTI_INTR_IMPL
+        mie_mtie_one: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mie", "mtie")) {
+            bins one = {1};
+        }
+    `endif
 
     mip_any_ones: coverpoint (get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "mtip")[0] ||
                            get_csr_val(ins.hart, ins.issue, `SAMPLE_AFTER, "mip", "meip")[0] ||
